@@ -19,7 +19,7 @@ class HomepageController extends AbstractController
       return $this->redirectToRoute('app_homepage');
     }
 
-    #[Route('/accueil', name: 'app_homepage')]
+    #[Route('/', name: 'app_homepage')]
     public function index(): Response
     {
         return $this->render('homepage/index.html.twig', [
