@@ -5,16 +5,19 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     const ROLE_ADMIN_FONC = 'ROLE_ADMIN_FONC';
     const ROLE_USER = 'ROLE_USER';
+    const ROLE_REQUERANT = 'ROLE_REQUERANT';
     const ROLE_REDACTEUR_PRECONTENTIEUX = 'ROLE_REDACTEUR_PRECONTENTIEUX';
     const ROLE_CHEF_PRECONTENTIEUX = 'ROLE_CHEF_PRECONTENTIEUX';
 
@@ -44,6 +47,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateChangementMDP = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isVerified = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -72,6 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             self::ROLE_REDACTEUR_PRECONTENTIEUX,
             self::ROLE_CHEF_PRECONTENTIEUX,
             self::ROLE_ADMIN_FONC,
+            self::ROLE_REQUERANT,
           ])
         ) {
           $roles[]=$role;
@@ -95,7 +102,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roles = $this->getRoles();
         return in_array(self::ROLE_ADMIN_FONC, $roles);
     }
-    
+
     /**
      * @see UserInterface
      *
@@ -164,6 +171,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDateChangementMDP(?\DateTimeInterface $dateChangementMDP): static
     {
         $this->dateChangementMDP = $dateChangementMDP;
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

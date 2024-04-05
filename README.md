@@ -14,5 +14,5 @@ L'administrateur fonctionnel est obligatoire pour valider/invalider les nouveaux
 
 ### Création d'un compte
 ```
-php bin/console app:admin:ajout
+php bin/console a:a:a <admin>
 ```

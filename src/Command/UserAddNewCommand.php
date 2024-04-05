@@ -16,15 +16,16 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Mailer\MailerInterface;
 
 #[AsCommand(
     name: 'app:admin:ajout',
     description: 'Création d\'un administrateur fonctionnel',
 )]
-class AdminCreateAdminFuncCommand extends Command
+class UserAddNewCommand extends Command
 {
     use EmailTraitCommand;
-    
+
     /** @var EntityManagerInterface */
     private $_em;
     /** @var UserPasswordHasherInterface */
@@ -42,11 +43,13 @@ class AdminCreateAdminFuncCommand extends Command
     public function __construct(
       EntityManagerInterface $em,
       UserPasswordHasherInterface $passwordHasher,
-      Validator $validator
+      Validator $validator,
+      MailerInterface $mailer
     ) {
         $this->_validator = $validator;
         $this->_passwordHasher = $passwordHasher;
         $this->_em = $em;
+        $this->setMailer($mailer);
         parent::__construct();
     }
 
@@ -136,6 +139,8 @@ class AdminCreateAdminFuncCommand extends Command
         $account->setPassword(
             $passwordHasher->hashPassword($account, $password)
         );
+
+
         $ar->add($account, true);
 
         $html = str_replace([
@@ -168,7 +173,7 @@ class AdminCreateAdminFuncCommand extends Command
           subject: 'Création de votre compte administrateur fonctionnel pour PRECONTENTIEUX',
           html: $html
         );
-
+        dump($password);
         $io->success("Le compte $username a été ajouté avec succès !");
         return Command::SUCCESS;
     }

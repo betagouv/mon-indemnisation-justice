@@ -26,6 +26,9 @@
             "migrations/.gitignore"
         ]
     },
+    "friend-of-pastry-garden/utils-bundle": {
+        "version": "1.0.7"
+    },
     "phpunit/phpunit": {
         "version": "9.6",
         "recipe": {
@@ -275,6 +278,9 @@
             "config/packages/web_profiler.yaml",
             "config/routes/web_profiler.yaml"
         ]
+    },
+    "symfonycasts/verify-email-bundle": {
+        "version": "v1.17.0"
     },
     "twig/extra-bundle": {
         "version": "v3.8.0"
