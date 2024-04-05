@@ -73,8 +73,8 @@ RUN apt autoremove -y
 COPY docker/php.ini "$PHP_INI_DIR/php.ini"
 COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
 
-#RUN a2ensite 000-default.conf && \
-#    service apache2 restart
+RUN a2ensite 000-default.conf && \
+    service apache2 restart
 
 # --- wkhtml2pdf
 RUN apt-get update && \
@@ -98,8 +98,8 @@ RUN apt-get update && \
 # --- pdftk /
 
 # --- semaphore
-#RUN docker-php-ext-install sysvsem && \
-#    service apache2 restart
+RUN docker-php-ext-install sysvsem && \
+    service apache2 restart
 # --- semaphore /
 
 ###> storage right ###
