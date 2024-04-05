@@ -9,6 +9,11 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+    role_hierarchy:
+        ROLE_ADMIN_FONC: [ROLE_USER]
+        ROLE_CHEF_PRECONTENTIEUX: [ROLE_REDACTEUR_PRECONTENTIEUX]
+        ROLE_REDACTEUR_PRECONTENTIEUX: [ROLE_USER]
+        ROLE_REQUERANT: [ROLE_USER]
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -20,10 +25,11 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
+                default_target_path: app_redirect
             logout:
                 path: app_logout
                 # where to redirect after logout
-                # target: app_any_route
+                target: app_homepage
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
