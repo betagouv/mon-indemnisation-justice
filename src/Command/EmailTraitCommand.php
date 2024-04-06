@@ -3,18 +3,18 @@
 namespace App\Command;
 
 use FOPG\Component\UtilsBundle\Env\Env;
-use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
 
 trait EmailTraitCommand {
-  private ?MailerInterface $_mailer=null;
+  private ?TransportInterface $_transport=null;
 
-  public function getMailer(): ?MailerInterface {
-    return $this->_mailer;
+  public function getMailer(): ?TransportInterface {
+    return $this->_transport;
   }
 
-  public function setMailer(MailerInterface $mailer): self {
-    $this->_mailer=$mailer;
+  public function setMailer(TransportInterface $mailer): self {
+    $this->_transport=$mailer;
 
     return $this;
   }

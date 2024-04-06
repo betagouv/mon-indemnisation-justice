@@ -16,7 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 
 #[AsCommand(
     name: 'app:admin:ajout',
@@ -44,7 +44,7 @@ class UserAddNewCommand extends Command
       EntityManagerInterface $em,
       UserPasswordHasherInterface $passwordHasher,
       Validator $validator,
-      MailerInterface $mailer
+      TransportInterface $mailer
     ) {
         $this->_validator = $validator;
         $this->_passwordHasher = $passwordHasher;
@@ -173,7 +173,7 @@ class UserAddNewCommand extends Command
           subject: 'Création de votre compte administrateur fonctionnel pour PRECONTENTIEUX',
           html: $html
         );
-        dump($password);
+
         $io->success("Le compte $username a été ajouté avec succès !");
         return Command::SUCCESS;
     }
