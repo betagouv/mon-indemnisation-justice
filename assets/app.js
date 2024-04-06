@@ -6,5 +6,17 @@ import './bootstrap.js';
  * which should already be in your base.html.twig.
  */
 import './styles/app.css';
+import '../node_modules/@gouvfr/dsfr/dist/utility/icons/icons.css';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+require('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js');
+
+const $ = require('jquery');
+window.jQuery = $;
+window.$ = $;
+
+const routes = require('../public/js/fos_js_routes.json');
+import Routing from '../vendor/friendsofsymfony/jsrouting-bundle/Resources/public/js/router.min';
+Routing.setRoutingData(routes);
+window.Routing = Routing;
+
+$(document).ready(() => {});

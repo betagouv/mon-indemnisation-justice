@@ -1,3 +1,3 @@
-body {
-    background-color: skyblue;
-}
+@import "~@gouvfr/dsfr/dist/dsfr/dsfr.min";
+@import "~@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.css";
+@import "~remixicon/fonts/remixicon";
