@@ -6,6 +6,16 @@
   <main class="fr-pt-md-14v" role="main" id="content">
     <div class="fr-container fr-container--fluid fr-mb-md-14v">
       <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+        {# gestion des flashbags #}
+        {% for message in app.flashes('notice') %}
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-alert fr-alert--success">
+            <h3 class="fr-alert__title"></h3>
+            <p>{{ message|trans }}</p>
+          </div>
+        </div>
+        {% endfor %}
+        {# /gestion des flashbags #}
         {% if error %}
         <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
           <div class="fr-alert fr-alert--error">
@@ -76,7 +86,7 @@
                                 </div>
                             </div>
                             <p>
-                            <a href="[À MODIFIER - url de la page de récupération]" class="fr-link">{{'login.forgotten_password'|trans}}</a>
+                            <a href="{{path('app_resend_password_requerant')}}" class="fr-link">{{'login.forgotten_password'|trans}}</a>
                             </p>
                           </div>
                         </div>

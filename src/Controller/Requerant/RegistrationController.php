@@ -4,6 +4,9 @@ namespace App\Controller\Requerant;
 
 use App\Entity\User;
 use App\Form\Requerant\RegistrationFormType;
+use App\Form\Requerant\ResendPasswordFormType;
+use App\Service\PasswordGenerator;
+use App\Service\Mailer\Mailer;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -19,17 +22,60 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 class RegistrationController extends AbstractController
 {
 
-    public function __construct(private EmailVerifier $emailVerifier,private EntityManagerInterface $em)
+    public function __construct(
+      private Mailer $mailer,
+      private EmailVerifier $emailVerifier,
+      private EntityManagerInterface $em,
+      private UserPasswordHasherInterface $userPasswordHasher,
+      private PasswordGenerator $passwordGenerator
+    )
     {
     }
 
-    #[Route('/creer-un-compte', name: 'app_add_requerant')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+
+    #[Route('/mot-de-passe-oublie', name: 'app_resend_password_requerant')]
+    public function resendPassword(Request $request): Response
     {
+      $form = $this->createForm(ResendPasswordFormType::class, null);
+      $form->handleRequest($request);
+      if ($form->isSubmitted() && $form->isValid()) {
+        $email = $form->get('email')->getData();
+        $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
+        if($user && $user->hasRole(User::ROLE_REQUERANT)) {
+          $tmpPassword = $this->passwordGenerator->new();
+          /** génération d'un nouveau mot de passe et envoi */
+          $user->setPassword(
+              $this->userPasswordHasher->hashPassword(
+                  $user,
+                  $tmpPassword
+              )
+          );
+          $this->em->flush();
+
+          $htmlTemplate = $this->render('registration/resend_password_email.html.twig',['user' => $user,'password' => $tmpPassword]);
+          $this->mailer->sendTo($user, 'Changement de mot de passe', $htmlTemplate->getContent());
+
+          $this->addFlash(
+            'notice',
+            'resend_password.update_done'
+          );
+
+          return $this->redirectToRoute('app_login');
+        }
+      }
+      return $this->render('registration/resend_password.html.twig', [
+          'resendPasswordForm' => $form,
+      ]);
+    }
+
+    #[Route('/creer-un-compte', name: 'app_add_requerant')]
+    public function register(Request $request): Response
+    {
+        $userPasswordHasher = $this->userPasswordHasher;
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
-
+        $entityManager=$this->em;
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             $user->setPassword(

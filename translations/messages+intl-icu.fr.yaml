@@ -28,3 +28,7 @@ register:
 requerant:
   homepage:
     title: "Mes dossiers"
+resend_password:
+  title: "Mot de passe oublié"
+  submit: "Envoyer un nouveau mot de passe"
+  update_done: "Votre mot de passe a été mis à jour. Veuillez consulter votre messagerie afin de vous connecter."
