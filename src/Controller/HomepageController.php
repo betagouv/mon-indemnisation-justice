@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\Breadcrumb\Breadcrumb;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,10 +21,14 @@ class HomepageController extends AbstractController
     }
 
     #[Route('/', name: 'app_homepage')]
-    public function index(): Response
+    public function index(Breadcrumb $breadcrumb): Response
     {
+        $breadcrumb->add("homepage.title", null);
+        $user = $this->getUser();
+        if($user && $user->hasRole(User::ROLE_REQUERANT))
+          $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
         return $this->render('homepage/index.html.twig', [
-            'controller_name' => 'HomepageController',
+            'breadcrumb' => $breadcrumb,
         ]);
     }
 }

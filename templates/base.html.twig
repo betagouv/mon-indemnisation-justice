@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html
+  lang="{{ app.request.locale|split('_')[0] }}"
+  data-fr-scheme="system"
+>
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
@@ -19,8 +22,11 @@
               <div class="fr-col-12">
               {% include('header.html.twig') %}
               </div>
+              <div class="fr-col-12">{{ include('breadcrumb.html.twig') }}</div>
+              <div class="fr-col-12">
+              {% block body %}{% endblock %}
+              </div>
           </div>
       </div>
-      {% block body %}{% endblock %}
     </body>
 </html>

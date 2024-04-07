@@ -1,156 +1,131 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}{{'login.title'|trans}}{% endblock %}
 
 {% block body %}
-<form method="post">
-{% if error %}
-    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-{% endif %}
-
-{% if app.user %}
-    <div>You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a></div>
-{% endif %}
-
-<main class="fr-pt-md-14v" role="main" id="content">
+  <main class="fr-pt-md-14v" role="main" id="content">
     <div class="fr-container fr-container--fluid fr-mb-md-14v">
-        <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
-                    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-                        <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
-                            <h1>Connexion à [Nom de service-site]</h1>
-                            <div>
-                                <form id="login-1760">
-                                    <fieldset class="fr-fieldset" id="login-1760-fieldset" aria-labelledby="login-1760-fieldset-legend login-1760-fieldset-messages">
-                                        <legend class="fr-fieldset__legend" id="login-1760-fieldset-legend">
-                                            <h2>Se connecter avec son compte</h2>
-                                        </legend>
-                                        <div class="fr-fieldset__element">
-                                            <p class="fr-text--sm">Description — Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                                        </div>
-                                        <div class="fr-fieldset__element">
-                                            <fieldset class="fr-fieldset" id="credentials" aria-labelledby="credentials-messages">
-                                                <div class="fr-fieldset__element">
-                                                    <span class="fr-hint-text">Sauf mention contraire, tous les champs sont obligatoires.</span>
-                                                </div>
-                                                <div class="fr-fieldset__element">
-                                                    <div class="fr-input-group">
-                                                        <label class="fr-label" for="username">
-                                                            Identifiant
-                                                            <span class="fr-hint-text">Format attendu : nom@domaine.fr</span>
-                                                        </label>
-                                                        <input
-                                                          class="fr-input"
-                                                          autocomplete="email"
-                                                          aria-required="true"
-                                                          aria-describedby="username-1757-messages"
-                                                          type="email"
-                                                          value="{{ last_username }}"
-                                                          name="_username"
-                                                          id="username"
-                                                          required
-                                                          autofocus
-                                                        >
-                                                        <div class="fr-messages-group" id="username-1757-messages" aria-live="assertive">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="fr-fieldset__element">
-                                                    <div class="fr-password" id="password-1758">
-                                                        <label class="fr-label" for="password">
-                                                            Mot de passe
-                                                        </label>
-                                                        <div class="fr-input-wrap">
-                                                            <input
-                                                              class="fr-password__input fr-input"
-                                                              aria-describedby="password-1758-input-messages"
-                                                              aria-required="true"
-                                                              name="_password"
-                                                              autocomplete="current-password"
-                                                              id="password"
-                                                              type="password"
-                                                              required
-                                                            >
-                                                        </div>
-                                                        <div class="fr-messages-group" id="password-1758-input-messages" aria-live="assertive">
-                                                        </div>
-                                                        <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
-                                                            <input aria-label="Afficher le mot de passe" id="password-1758-show" type="checkbox" aria-describedby="password-1758-show-messages">
-                                                            <label class="fr-password__checkbox fr-label" for="password-1758-show">
-                                                                Afficher
-                                                            </label>
-                                                            <div class="fr-messages-group" id="password-1758-show-messages" aria-live="assertive">
-                                                            </div>
-                                                        </div>
-                                                        <p>
-                                                            <a href="[À MODIFIER - url de la page de récupération]" class="fr-link">Mot de passe oublié ?</a>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div class="fr-messages-group" id="credentials-messages" aria-live="assertive">
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                        <div class="fr-fieldset__element">
-                                            <div class="fr-checkbox-group fr-checkbox-group--sm">
-                                                <input name="remember" id="remember-1759" type="checkbox" aria-describedby="remember-1759-messages">
-                                                <label class="fr-label" for="remember-1759">
-                                                    Se souvenir de moi
-                                                </label>
-                                                <div class="fr-messages-group" id="remember-1759-messages" aria-live="assertive">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="fr-fieldset__element">
-                                            <ul class="fr-btns-group">
-                                                <li>
-                                                    <button class="fr-mt-2v fr-btn" type="submit">
-                                                        Se connecter
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="fr-messages-group" id="login-1760-fieldset-messages" aria-live="assertive">
-                                        </div>
-                                    </fieldset>
-                                </form>
-                            </div>
-                            <hr>
-                            <h2>Vous n’avez pas de compte ?</h2>
-                            <ul class="fr-btns-group">
-                                <li>
-                                    <a href="{{path('app_add_requerant')}}" class="fr-btn fr-btn--secondary">
-                                        Créer un compte
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+        {% if error %}
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-alert fr-alert--error">
+            <h3 class="fr-alert__title">{{'login.error.title'|trans}}</h3>
+            <p>{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+          </div>
         </div>
-    </div>
-</main>
+        {% endif %}
+
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
+            <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+              <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
+                <div>
+                  <form method="post">
+                    <fieldset class="fr-fieldset" id="login-1760-fieldset" aria-labelledby="login-1760-fieldset-legend login-1760-fieldset-messages">
+                      <legend class="fr-fieldset__legend" id="login-1760-fieldset-legend">
+                          <h2>{{'login.comment'|trans}}</h2>
+                      </legend>
+                      <div class="fr-fieldset__element">
+                          <p class="fr-text--sm">{{'login.details'|trans}}</p>
+                      </div>
+                    </fieldset>
+                    <div class="fr-fieldset__element">
+                      <fieldset class="fr-fieldset" id="credentials" aria-labelledby="credentials-messages">
+                        <div class="fr-fieldset__element">
+                          <div class="fr-input-group">
+                            <label class="fr-label" for="username">{{'login.email'|trans}}
+                              <span class="fr-hint-text">{{'login.email_example'|trans}}</span>
+                            </label>
+                            <input
+                              type="email"
+                              value="{{ last_username }}"
+                              name="_username"
+                              id="username"
+                              class="fr-input"
+                              autocomplete="email"
+                              required
+                              autofocus
+                            >
+                          </div>
+                        </div>
+                        <div class="fr-fieldset__element">
+                          <div class="fr-password" id="password-1758">
+                            <label class="fr-label" for="password">
+                            {{'login.password'|trans}}
+                            </label>
+                            <div class="fr-input-wrap">
+                              <input
+                                aria-required="true"
+                                aria-describedby="password-1758-input-messages"
+                                type="password"
+                                name="_password"
+                                id="password"
+                                class="fr-input fr-password__input"
+                                autocomplete="current-password"
+                                required
+                              >
+                            </div>
+                            <div class="fr-messages-group" id="password-1758-input-messages" aria-live="assertive">
+                            </div>
+                            <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
+                                <input aria-label="Afficher le mot de passe" id="password-1758-show" type="checkbox" aria-describedby="password-1758-show-messages">
+                                <label class="fr-password__checkbox fr-label" for="password-1758-show">
+                                    {{'global.display'|trans}}
+                                </label>
+                                <div class="fr-messages-group" id="password-1758-show-messages" aria-live="assertive">
+                                </div>
+                            </div>
+                            <p>
+                            <a href="[À MODIFIER - url de la page de récupération]" class="fr-link">{{'login.forgotten_password'|trans}}</a>
+                            </p>
+                          </div>
+                        </div>
+                        <div class="fr-messages-group" id="credentials-messages" aria-live="assertive">
+                        </div>
+                      </fieldset>
+                    </div>
+                    <div class="fr-fieldset__element">
+                      <ul class="fr-btns-group">
+                        <li>
+                          <button class="fr-btn fr-mt-2v" type="submit">
+                              {{'login.connect'|trans}}
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                    <input type="hidden" name="_csrf_token"
+                           value="{{ csrf_token('authenticate') }}"
+                    >
+
+                    {#
+                        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+                        See https://symfony.com/doc/current/security/remember_me.html
+
+                        <div class="checkbox mb-3">
+                            <label>
+                                <input type="checkbox" name="_remember_me"> Remember me
+                            </label>
+                        </div>
+                    #}
 
 
-
-
-        <input type="hidden" name="_csrf_token"
-               value="{{ csrf_token('authenticate') }}"
-        >
-
-        {#
-            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-            See https://symfony.com/doc/current/security/remember_me.html
-
-            <div class="checkbox mb-3">
-                <label>
-                    <input type="checkbox" name="_remember_me"> Remember me
-                </label>
+                  </form>
+                </div>
+                <hr>
+                <h2>{{'login.no_account_title'|trans}}</h2>
+                <ul class="fr-btns-group">
+                    <li>
+                      <a href="{{path('app_add_requerant')}}" class="fr-btn fr-btn--secondary">
+                      {{'login.create_account'|trans}}
+                      </a>
+                    </li>
+                </ul>
+              </div>
             </div>
-        #}
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 
-
-    </form>
 {% endblock %}

@@ -1,0 +1,30 @@
+global:
+  display: "Afficher"
+header:
+  name: Précontentieux
+  service: baseline - précisions sur l‘organisation
+homepage:
+  title: "Accueil - Précontentieux - Ministère de la justice"
+login:
+  title: Se connecter
+  comment: "Connexion à Précontentieux"
+  create_account: "Créer un compte"
+  details: "Sauf mention contraire, tous les champs sont obligatoires."
+  email: "Adresse mail"
+  email_example: "Format attendu : nom@domaine.fr"
+  forgotten_password: "Mot de passe oublié ?"
+  password: "Mot de passe"
+  connect: "Connexion"
+  error:
+    title: "Erreur de connexion"
+  no_account_title: "Vous n’avez pas de compte ?"
+logout:
+  title: Se déconnecter
+register:
+  title: "Créer un compte"
+  terms: "J'accepte les termes d'utilisation"
+  error:
+    title: "Erreur à la création de compte"
+requerant:
+  homepage:
+    title: "Mes dossiers"
