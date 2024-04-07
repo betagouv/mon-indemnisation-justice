@@ -14,6 +14,7 @@ class DefaultController extends AbstractController
     {
         $breadcrumb->add('homepage.title','app_homepage');
         $breadcrumb->add('requerant.homepage.title',null);
+        $user = $this->getUser();
         return $this->render('requerant/default/index.html.twig', [
             'breadcrumb' => $breadcrumb,
         ]);

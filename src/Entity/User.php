@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Contracts\EntityInterface;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -50,6 +52,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
 
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
+
+    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant')]
+    private Collection $brisPortes;
+
+    #[ORM\ManyToOne]
+    private ?Civilite $civilite = null;
+
+    public function __construct()
+    {
+        $this->brisPortes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -189,6 +202,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BrisPorte>
+     */
+    public function getBrisPortes(): Collection
+    {
+        return $this->brisPortes;
+    }
+
+    public function addBrisPorte(BrisPorte $brisPorte): static
+    {
+        if (!$this->brisPortes->contains($brisPorte)) {
+            $this->brisPortes->add($brisPorte);
+            $brisPorte->setRequerant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBrisPorte(BrisPorte $brisPorte): static
+    {
+        if ($this->brisPortes->removeElement($brisPorte)) {
+            // set the owning side to null (unless already changed)
+            if ($brisPorte->getRequerant() === $this) {
+                $brisPorte->setRequerant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCivilite(): ?Civilite
+    {
+        return $this->civilite;
+    }
+
+    public function setCivilite(?Civilite $civilite): static
+    {
+        $this->civilite = $civilite;
 
         return $this;
     }

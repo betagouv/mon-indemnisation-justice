@@ -3,5 +3,26 @@
 {% block title %}{{'requerant.homepage.title'|trans}}{% endblock %}
 
 {% block body %}
-@todo
+<div class="fr-container">
+  <div class="fr-grid">
+    <div class="fr-col-12">
+      <table class="fr-table">
+        <thead>
+          <tr>
+            <th>N° PV</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for brisPorte in app.user.brisPortes %}
+          <tr>
+            <td>{{brisPorte.numeroPV}}</td>
+            <td>...</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}
