@@ -1,0 +1,149 @@
+include:
+  - project: anje/template-ci/symfony
+    ref: main
+    file:
+      - 'package.yml'
+      - 'build.yml'
+  - project: anje/template-ci/clevercloud
+    ref: main
+    file:
+      - 'deploy.yml'
+      - 'destroy.yml'
+
+stages:
+  - 🔨build
+  - 📦package
+  - 🚀deploy
+  - 🗑destroy
+
+variables:
+  GIT_DEPTH: 0
+  APP_NAME: "se-precontentieux-webapp-$CI_COMMIT_REF_SLUG"
+  CI_PROJECT_IMAGE: ${APP_NAME}:${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
+  BRANCH_NAME: ${CI_COMMIT_REF_SLUG}
+
+build:
+  stage: 🔨build
+  image: "registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu"
+  before_script:
+    - apt-get update
+    - apt-get install zip unzip
+    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    - php -r "unlink('composer-setup.php');"
+  script:
+    - echo "Install dependencies Symfony application with composer"
+    - composer install --optimize-autoloader --classmap-authoritative --apcu-autoloader
+    - cp .env.$APP_ENV .env
+    - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
+  artifacts:
+    paths:
+      - vendor/
+      - .env*
+      - composer.lock
+    expire_in: 05 min
+  cache:
+    paths:
+      - vendor/
+
+package:
+  stage: 📦package
+  needs:
+    - job : build
+      artifacts: true
+  image:
+    name: "gcr.io/kaniko-project/executor:v1.9.0-debug"
+    entrypoint: [ '' ]
+  script:
+    - echo "Package to Docker image Spring boot application"
+    - mkdir -p /kaniko/.docker
+    - echo "$REGISTRY_AUTH" | base64 -d > /kaniko/.docker/config.json
+    - ls -lsa /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}/Dockerfile"
+      --destination "${REGISTRY_URL}/${CI_PROJECT_IMAGE}"
+  variables:
+    DOCKERFILE_PATH: 'docker-internet'
+
+deploy-reviewapp:
+  stage: 🚀deploy
+  needs:
+    - job: init
+      artifacts: true
+    - job: build
+  extends:
+    - .template:load:env
+    - .template:clevercloud:deploy
+  variables:
+    APP_FQDN: "${CI_COMMIT_REF_SLUG}.precontentieux.app.cc.anje-justice.fr"
+    CC_DOCKER_EXPOSED_HTTP_PORT: 80
+    CC_FORCE_HTTPS: 1
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    url: "https://${CI_COMMIT_REF_SLUG}.precontentieux.app.cc.anje-justice.fr"
+  when: manual
+  except:
+    - recette
+    - master
+
+deploy-develop:
+  stage: 🚀deploy
+  needs:
+    - job: init
+      artifacts: true
+    - job: build
+  extends:
+    - .template:load:env
+    - .template:clevercloud:deploy
+  variables:
+    APP_FQDN: "dev.precontentieux.app.cc.anje-justice.fr"
+    CC_DOCKER_EXPOSED_HTTP_PORT: 80
+    CC_FORCE_HTTPS: 1
+  environment:
+    name: dev/$CI_COMMIT_REF_SLUG
+    url: "https://dev.precontentieux.app.cc.anje-justice.fr"
+  only:
+    - develop
+
+deploy-recette:
+  stage: 🚀deploy
+  needs:
+    - job: init
+      artifacts: true
+    - job: build
+  extends:
+    - .template:load:env
+    - .template:clevercloud:deploy
+  variables:
+    APP_FQDN: "recette.precontentieux.app.cc.anje-justice.fr"
+    CC_DOCKER_EXPOSED_HTTP_PORT: 80
+    CC_FORCE_HTTPS: 1
+  environment:
+    name: recette/$CI_COMMIT_REF_SLUG
+    url: "https://recette.precontentieux.app.cc.anje-justice.fr"
+  only:
+    - recette
+
+
+deploy-production:
+  stage: 🚀deploy
+  needs:
+    - job: package
+  extends: .template:clevercloud:deploy
+  variables:
+    APP_FQDN: "precontentieux.app.cc.anje-justice.fr"
+    CC_DOCKER_EXPOSED_HTTP_PORT: 8080
+    CC_FORCE_HTTPS: 1
+    CLEVER_PGNAME: "postgresql_a8e84bf5-a2d7-463c-80cf-e868ea65ac18"
+  environment:
+    name: prod/$CI_COMMIT_REF_SLUG
+    url: "https://precontentieux.app.cc.anje-justice.fr"
+  when: manual
+  only:
+    - master
+
+destroy-app-clevercloud:
+  stage: 🗑destroy
+  extends: .template:clevercloud:destroy
