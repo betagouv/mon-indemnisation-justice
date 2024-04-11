@@ -64,10 +64,8 @@ package:
     - >-
       /kaniko/executor
       --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}/Dockerfile"
+      --dockerfile "${CI_PROJECT_DIR}/.docker/Dockerfile"
       --destination "${REGISTRY_URL}/${CI_PROJECT_IMAGE}"
-  variables:
-    DOCKERFILE_PATH: 'docker-internet'
 
 deploy-reviewapp:
   stage: 🚀deploy
@@ -85,6 +83,7 @@ deploy-reviewapp:
   except:
     - recette
     - master
+    - develop
 
 deploy-develop:
   stage: 🚀deploy
