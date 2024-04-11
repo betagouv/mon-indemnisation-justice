@@ -33,7 +33,7 @@ build:
     - php -r "unlink('composer-setup.php');"
   script:
     - echo "Install dependencies Symfony application with composer"
-    - composer install --optimize-autoloader --classmap-authoritative --apcu-autoloader
+    - composer install --optimize-autoloader --apcu-autoloader
     - cp .env.$APP_ENV .env
     - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
   artifacts:
