@@ -21,6 +21,8 @@ variables:
   APP_NAME: "se-precontentieux-webapp-$CI_COMMIT_REF_SLUG"
   CI_PROJECT_IMAGE: ${APP_NAME}:${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
   BRANCH_NAME: ${CI_COMMIT_REF_SLUG}
+  APP_ENV: "internet"
+
 
 build:
   stage: 🔨build
