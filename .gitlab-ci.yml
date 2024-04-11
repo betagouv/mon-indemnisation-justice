@@ -70,9 +70,7 @@ package:
 deploy-reviewapp:
   stage: 🚀deploy
   needs:
-    - job: init
-      artifacts: true
-    - job: build
+    - job: package
   extends: .template:clevercloud:deploy
   variables:
     APP_FQDN: "${CI_COMMIT_REF_SLUG}.precontentieux.app.cc.anje-justice.fr"
