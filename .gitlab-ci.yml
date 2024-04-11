@@ -73,9 +73,7 @@ deploy-reviewapp:
     - job: init
       artifacts: true
     - job: build
-  extends:
-    - .template:load:env
-    - .template:clevercloud:deploy
+  extends: .template:clevercloud:deploy
   variables:
     APP_FQDN: "${CI_COMMIT_REF_SLUG}.precontentieux.app.cc.anje-justice.fr"
     CC_DOCKER_EXPOSED_HTTP_PORT: 80
@@ -91,12 +89,8 @@ deploy-reviewapp:
 deploy-develop:
   stage: 🚀deploy
   needs:
-    - job: init
-      artifacts: true
-    - job: build
-  extends:
-    - .template:load:env
-    - .template:clevercloud:deploy
+    - job: package
+  extends: .template:clevercloud:deploy
   variables:
     APP_FQDN: "dev.precontentieux.app.cc.anje-justice.fr"
     CC_DOCKER_EXPOSED_HTTP_PORT: 80
@@ -110,12 +104,8 @@ deploy-develop:
 deploy-recette:
   stage: 🚀deploy
   needs:
-    - job: init
-      artifacts: true
-    - job: build
-  extends:
-    - .template:load:env
-    - .template:clevercloud:deploy
+    - job: package
+  extends: .template:clevercloud:deploy
   variables:
     APP_FQDN: "recette.precontentieux.app.cc.anje-justice.fr"
     CC_DOCKER_EXPOSED_HTTP_PORT: 80
