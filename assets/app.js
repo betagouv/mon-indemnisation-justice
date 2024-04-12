@@ -7,9 +7,6 @@ import './bootstrap.js';
  * which should already be in your base.html.twig.
  */
 import './styles/app.css';
-import '../node_modules/@gouvfr/dsfr/dist/utility/icons/icons.css';
-
-require('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js');
 
 const $ = require('jquery');
 window.jQuery = $;

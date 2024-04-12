@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html
   lang="{{ app.request.locale|split('_')[0] }}"
-  data-fr-scheme="system"
 >
     <head>
+        <!-- ZONE DSFR -->
+        <link rel="apple-touch-icon" href="/dsfr/favicon/apple-touch-icon.png" />
+        <link rel="icon" href="/dsfr/favicon/favicon.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/dsfr/favicon/favicon.ico" type="image/x-icon" />
+        <link rel="manifest" href="/dsfr/favicon/manifest.webmanifest" crossorigin="use-credentials" />
+        <link rel="stylesheet" href="/dsfr/utility/icons/icons.min.css" />
+        <link rel="stylesheet" href="/dsfr/dsfr.min.css" />
+        <!-- /ZONE DSFR -->
+
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">

@@ -16,9 +16,13 @@
         "dev-server": "encore dev-server",
         "dev": "encore dev",
         "watch": "encore dev --watch",
-        "build": "encore production --progress"
+        "build": "encore production --progress",
+        "postinstall": "copy-dsfr-to-public",
+        "predev": "only-include-used-icons",
+        "prebuild": "only-include-used-icons"
     },
     "dependencies": {
+        "@codegouvfr/react-dsfr": "^1.9.8",
         "@gouvfr/dsfr": "^1.11.2",
         "@hotwired/stimulus": "^3.2.2",
         "@symfony/stimulus-bridge": "^3.2.2",
