@@ -2,6 +2,7 @@
     "devDependencies": {
         "@babel/core": "^7.17.0",
         "@babel/preset-env": "^7.16.0",
+        "@babel/preset-react": "^7.24.1",
         "@symfony/webpack-encore": "^4.0.0",
         "core-js": "^3.23.0",
         "regenerator-runtime": "^0.13.9",
@@ -22,6 +23,9 @@
         "@hotwired/stimulus": "^3.2.2",
         "@symfony/stimulus-bridge": "^3.2.2",
         "jquery": "^3.7.1",
+        "prop-types": "^15.8.1",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
         "remixicon": "^4.2.0"
     }
 }
