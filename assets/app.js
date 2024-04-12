@@ -13,7 +13,7 @@ window.jQuery = $;
 window.$ = $;
 
 const routes = require('../public/js/fos_js_routes.json');
-import Routing from '../vendor/friendsofsymfony/jsrouting-bundle/Resources/public/js/router.min';
+const Routing = require('fos-router');
 Routing.setRoutingData(routes);
 window.Routing = Routing;
 

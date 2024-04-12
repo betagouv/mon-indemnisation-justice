@@ -71,4 +71,16 @@ Encore
     //.autoProvidejQuery()
 ;
 
+const FosRouting = require('fos-router/webpack/FosRouting');
+Encore
+  .addPlugin(
+    new FosRouting(
+    /**new FosRouting(
+        { target: './assets/js/routes.json' }, // <- path to dumped routes.json
+        false // <- set false to suppress automatic recompilation of the file
+        )
+        */
+    )
+  )
+;
 module.exports = Encore.getWebpackConfig();
