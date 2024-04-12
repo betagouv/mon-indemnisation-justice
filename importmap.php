@@ -19,9 +19,6 @@ return [
     '@symfony/stimulus-bundle' => [
         'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
     ],
-    '@symfony/ux-react' => [
-        'path' => './vendor/symfony/ux-react/assets/dist/loader.js',
-    ],
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],

@@ -3,7 +3,5 @@
 {% block title %}{{'requerant.homepage.title'|trans}}{% endblock %}
 
 {% block body %}
-  <div {{ react_component('Hello') }}>
-  Loading ...
-  </div>
+  <div {{ stimulus_controller('ping') }}></div>
 {% endblock %}
