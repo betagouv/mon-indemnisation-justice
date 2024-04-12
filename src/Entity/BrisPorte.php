@@ -2,14 +2,25 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\BrisPorteRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource(
+  operations:[
+    new Get(),
+    new GetCollection(),
+    new Put(),
+  ]
+)]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
 class BrisPorte
 {
     use SinistreTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
