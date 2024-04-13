@@ -4,8 +4,9 @@
 
 {% block body %}
   {% set user = app.user %}
-  <div {{ stimulus_controller('brisporte_list',{
+  <div {{ stimulus_controller('dossier_list',{
     user: user|serialize('json',{groups: 'user:read'}),
+    brisPortes: brisPortes|serialize('json',{groups: 'sinistre:read'}),
     breadcrumb: breadcrumb|serialize('json'),
     version: {label: 'beta'}
   }) }}></div>

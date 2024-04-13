@@ -1,24 +1,52 @@
 import React, {useState,useEffect} from 'react';
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
-import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import { fr } from "@codegouvfr/react-dsfr";
-
+import { Table } from "@codegouvfr/react-dsfr/Table";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import {
+  trans,
+  BRIS_PORTE_CREATE_TITLE,
+  REQUERANT_HOMEPAGE_TITLE,
+  SINISTRE_FIELD_DATE_DECLARATION,
+  SINISTRE_FIELD_STATUT,
+  SINISTRE_FIELD_DATE_DERNIER_STATUT,
+  GLOBAL_ACTIONS
+} from '../../translator';
 const BrisPortes = function(props) {
 
+  console.log(props);
+
+  const data = [
+    /**['Donnée','Donnée'],*/
+  ];
+
+  const headers = [
+    trans(SINISTRE_FIELD_DATE_DECLARATION),
+    trans(SINISTRE_FIELD_STATUT),
+    trans(SINISTRE_FIELD_DATE_DERNIER_STATUT),
+    trans(GLOBAL_ACTIONS)
+  ];
+
   return (
-    <>
-      <Tabs
-        tabs={[
-            { label: "Tab 1", iconId: "fr-icon-add-line", content: <p>Content of tab1</p> },
-            { label: "Tab 2", iconId: "fr-icon-ball-pen-fill", content: <p>Content of tab2</p> },
-            { label: "Tab 3", content: <p>Content of tab3</p> }
-        ]}
-      />
-      <div className={fr.cx("fr-accordions-group")}>
-          <Accordion label="Name of the Accordion 1"><p>Content of the Accordion 1</p></Accordion>
-          <Accordion label="Name of the Accordion 2">Content of the Accordion 2</Accordion>
+    <div className="fr-grid-row">
+      <div clasName="fr-col-12">
+        <Table
+          caption={trans(REQUERANT_HOMEPAGE_TITLE)}
+          data={data}
+          headers={headers}
+          fixed
+        />
       </div>
-    </>
+      <div className="fr-col-9">
+      </div>
+      <div className="fr-col-3">
+        <Button
+        linkProps={{
+          href: '#'
+        }}
+        >{trans(BRIS_PORTE_CREATE_TITLE)}
+        </Button>
+      </div>
+    </div>
   );
 }
 

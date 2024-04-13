@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\BrisPorteRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
   operations:[
@@ -21,6 +22,7 @@ class BrisPorte
 {
     use SinistreTrait;
 
+    #[Groups('sinistre:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

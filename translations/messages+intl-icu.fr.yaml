@@ -1,5 +1,9 @@
+bris_porte:
+  create:
+    title: "Déclarer un bris de porte"
 global:
   display: "Afficher"
+  actions: "Actions"
 header:
   name: Précontentieux
   service: baseline - précisions sur l‘organisation
@@ -32,3 +36,8 @@ resend_password:
   title: "Mot de passe oublié"
   submit: "Envoyer un nouveau mot de passe"
   update_done: "Votre mot de passe a été mis à jour. Veuillez consulter votre messagerie afin de vous connecter."
+sinistre:
+  field:
+    date_declaration: "Date de déclaration"
+    statut: "Statut du dossier"
+    date_dernier_statut: "Date du dernier statut"

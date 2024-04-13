@@ -12,7 +12,8 @@ export default class extends Controller {
     static values = {
       user: Object,
       version: Object,
-      breadcrumb: Object
+      breadcrumb: Object,
+      brisPortes: Array
     }
     connect() {
       const container = this.element;
@@ -28,7 +29,7 @@ export default class extends Controller {
                 <FilAriane breadcrumb={this.breadcrumbValue}/>
               </div>
               <div className="fr-col-12">
-                <BrisPortes />
+                <BrisPortes items={this.brisPortesValue} />
               </div>
             </div>
           </div>
