@@ -13,8 +13,6 @@ import {
 } from '../../translator';
 const BrisPortes = function(props) {
 
-  console.log(props);
-
   const data = [
     /**['Donnée','Donnée'],*/
   ];
@@ -28,7 +26,7 @@ const BrisPortes = function(props) {
 
   return (
     <div className="fr-grid-row">
-      <div clasName="fr-col-12">
+      <div className="fr-col-12">
         <Table
           caption={trans(REQUERANT_HOMEPAGE_TITLE)}
           data={data}
@@ -41,7 +39,7 @@ const BrisPortes = function(props) {
       <div className="fr-col-3">
         <Button
         linkProps={{
-          href: '#'
+          href: Routing.generate('app_declare_bris_porte')
         }}
         >{trans(BRIS_PORTE_CREATE_TITLE)}
         </Button>
