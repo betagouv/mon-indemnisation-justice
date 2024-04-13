@@ -17,4 +17,5 @@ const Routing = require('fos-router');
 Routing.setRoutingData(routes);
 window.Routing = Routing;
 
+
 $(document).ready(() => {});

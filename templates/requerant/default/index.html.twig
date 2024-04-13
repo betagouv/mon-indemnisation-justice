@@ -1,7 +1,12 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_react.html.twig' %}
 
 {% block title %}{{'requerant.homepage.title'|trans}}{% endblock %}
 
 {% block body %}
-  <div {{ stimulus_controller('brisporte_list') }}></div>
+  {% set user = app.user %}
+  <div {{ stimulus_controller('brisporte_list',{
+    user: user|serialize('json',{groups: 'user:read'}),
+    breadcrumb: breadcrumb|serialize('json'),
+    version: {label: 'beta'}
+  }) }}></div>
 {% endblock %}

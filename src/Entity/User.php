@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use App\Contracts\EntityInterface;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,7 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+  operations:[
+    new Get(),
+  ]
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -24,11 +32,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     const ROLE_REDACTEUR_PRECONTENTIEUX = 'ROLE_REDACTEUR_PRECONTENTIEUX';
     const ROLE_CHEF_PRECONTENTIEUX = 'ROLE_CHEF_PRECONTENTIEUX';
 
+    #[Groups('user:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups('user:read')]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -44,6 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\Column]
     private ?string $password = null;
 
+    #[Groups('user:read')]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $username = null;
 
@@ -56,6 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant')]
     private Collection $brisPortes;
 
+    #[Groups('user:read')]
     #[ORM\ManyToOne]
     private ?Civilite $civilite = null;
 

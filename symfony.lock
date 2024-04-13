@@ -81,21 +81,6 @@
             "tests/bootstrap.php"
         ]
     },
-    "symfony/asset-mapper": {
-        "version": "6.4",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "6.4",
-            "ref": "6c28c471640cc2c6e60812ebcb961c526ef8997f"
-        },
-        "files": [
-            "assets/app.js",
-            "assets/styles/app.css",
-            "config/packages/asset_mapper.yaml",
-            "importmap.php"
-        ]
-    },
     "symfony/console": {
         "version": "6.4",
         "recipe": {
@@ -287,6 +272,21 @@
         "files": [
             "config/packages/twig.yaml",
             "templates/base.html.twig"
+        ]
+    },
+    "symfony/ux-translator": {
+        "version": "2.16",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.9",
+            "ref": "bc396565cc4cab95692dd6df810553dc22e352e1"
+        },
+        "files": [
+            "assets/translator.js",
+            "config/packages/ux_translator.yaml",
+            "var/translations/configuration.js",
+            "var/translations/index.js"
         ]
     },
     "symfony/validator": {
