@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
 use App\Contracts\EntityInterface;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +19,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
   operations:[
     new Get(),
-  ]
+    new Patch(
+      name: '_api_user_patch'
+      #,
+      #security: "is_granted('ROLE_ADMIN') or object.id == user.id"
+  )]
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -64,6 +69,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
 
+    #[Groups('user:read')]
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant')]
     private Collection $brisPortes;
 
@@ -71,8 +77,81 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\ManyToOne]
     private ?Civilite $civilite = null;
 
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nom = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $prenom1 = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $prenom2 = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $mnemo = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $fonction = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $titre = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $grade = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $prenom3 = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $telephone = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $portable = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $communeNaissance = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $paysNaissance = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $dateNaissance = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $sirenSiret = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $raisonSociale = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $isPersonneMorale = null;
+
+    #[Groups('user:read')]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Adresse $adresse = null;
+
+    #[Groups('user:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nomNaissance = null;
+
     public function __construct()
     {
+        $this->adresse = new Adresse();
         $this->brisPortes = new ArrayCollection();
     }
 
@@ -161,7 +240,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -256,6 +335,222 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     public function setCivilite(?Civilite $civilite): static
     {
         $this->civilite = $civilite;
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenom1(): ?string
+    {
+        return $this->prenom1;
+    }
+
+    public function setPrenom1(?string $prenom1): static
+    {
+        $this->prenom1 = $prenom1;
+
+        return $this;
+    }
+
+    public function getPrenom2(): ?string
+    {
+        return $this->prenom2;
+    }
+
+    public function setPrenom2(?string $prenom2): static
+    {
+        $this->prenom2 = $prenom2;
+
+        return $this;
+    }
+
+    public function getMnemo(): ?string
+    {
+        return $this->mnemo;
+    }
+
+    public function setMnemo(?string $mnemo): static
+    {
+        $this->mnemo = $mnemo;
+
+        return $this;
+    }
+
+    public function getFonction(): ?string
+    {
+        return $this->fonction;
+    }
+
+    public function setFonction(?string $fonction): static
+    {
+        $this->fonction = $fonction;
+
+        return $this;
+    }
+
+    public function getTitre(): ?string
+    {
+        return $this->titre;
+    }
+
+    public function setTitre(?string $titre): static
+    {
+        $this->titre = $titre;
+
+        return $this;
+    }
+
+    public function getGrade(): ?string
+    {
+        return $this->grade;
+    }
+
+    public function setGrade(?string $grade): static
+    {
+        $this->grade = $grade;
+
+        return $this;
+    }
+
+    public function getPrenom3(): ?string
+    {
+        return $this->prenom3;
+    }
+
+    public function setPrenom3(?string $prenom3): static
+    {
+        $this->prenom3 = $prenom3;
+
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): static
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getPortable(): ?string
+    {
+        return $this->portable;
+    }
+
+    public function setPortable(?string $portable): static
+    {
+        $this->portable = $portable;
+
+        return $this;
+    }
+
+    public function getCommuneNaissance(): ?string
+    {
+        return $this->communeNaissance;
+    }
+
+    public function setCommuneNaissance(?string $communeNaissance): static
+    {
+        $this->communeNaissance = $communeNaissance;
+
+        return $this;
+    }
+
+    public function getPaysNaissance(): ?string
+    {
+        return $this->paysNaissance;
+    }
+
+    public function setPaysNaissance(?string $paysNaissance): static
+    {
+        $this->paysNaissance = $paysNaissance;
+
+        return $this;
+    }
+
+    public function getDateNaissance(): ?\DateTimeInterface
+    {
+        return $this->dateNaissance;
+    }
+
+    public function setDateNaissance(?\DateTimeInterface $dateNaissance): static
+    {
+        $this->dateNaissance = $dateNaissance;
+
+        return $this;
+    }
+
+    public function getSirenSiret(): ?string
+    {
+        return $this->sirenSiret;
+    }
+
+    public function setSirenSiret(?string $sirenSiret): static
+    {
+        $this->sirenSiret = $sirenSiret;
+
+        return $this;
+    }
+
+    public function getRaisonSociale(): ?string
+    {
+        return $this->raisonSociale;
+    }
+
+    public function setRaisonSociale(?string $raisonSociale): static
+    {
+        $this->raisonSociale = $raisonSociale;
+
+        return $this;
+    }
+
+    public function isPersonneMorale(): ?bool
+    {
+        return $this->isPersonneMorale;
+    }
+
+    public function setPersonneMorale(bool $isPersonneMorale): static
+    {
+        $this->isPersonneMorale = $isPersonneMorale;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?Adresse
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?Adresse $adresse): static
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getNomNaissance(): ?string
+    {
+        return $this->nomNaissance;
+    }
+
+    public function setNomNaissance(?string $nomNaissance): static
+    {
+        $this->nomNaissance = $nomNaissance;
 
         return $this;
     }

@@ -2,14 +2,23 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CiviliteRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource(
+  operations:[
+    new Get(name: '_api_civilite_get'),
+    new GetCollection(name: '_api_civilite_get_collection'),
+  ]
+  )]
 #[ORM\Entity(repositoryClass: CiviliteRepository::class)]
 class Civilite
 {
     use ReferentielTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

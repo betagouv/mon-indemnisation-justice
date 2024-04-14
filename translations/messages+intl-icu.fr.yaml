@@ -1,9 +1,16 @@
+adresse:
+  field:
+    ligne1: "Adresse"
+    code_postal: "Code postal"
+    localite: "Ville"
 bris_porte:
   create:
     title: "Déclarer un bris de porte"
+  section: "Informations relative au bris de porte"
 global:
   display: "Afficher"
   actions: "Actions"
+  error_empty_field: "Le champs est obligatoire"
 header:
   name: Précontentieux
   service: baseline - précisions sur l‘organisation
@@ -37,7 +44,22 @@ resend_password:
   submit: "Envoyer un nouveau mot de passe"
   update_done: "Votre mot de passe a été mis à jour. Veuillez consulter votre messagerie afin de vous connecter."
 sinistre:
+  declare_bris_porte:
+    title: "Déclarer un bris de porte"
   field:
     date_declaration: "Date de déclaration"
     statut: "Statut du dossier"
     date_dernier_statut: "Date du dernier statut"
+user:
+  section: "Données personnelles"
+  field:
+    nom_naissance: "Nom de naissance"
+    nom: "Nom"
+    prenoms: "Prénom(s)"
+    date_naissance: "Né(e) le"
+    lieu_naissance: "à"
+    pays_naissance: "Pays"
+    prenom1: "Premier prénom"
+    prenom2: "Deuxième prénom"
+    prenom3: "Troisième prénom"
+    civilite: "Civilité"

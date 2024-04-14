@@ -41,7 +41,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
       - { path: ^/administration, roles: ROLE_ADMIN_FONC }
-      - { path: ^/requerant, roles: ROLE_REQUERANT }
+      - { path: ^/(requerant|sinistre), roles: ROLE_REQUERANT }
 
 when@test:
     security:
