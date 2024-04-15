@@ -1,9 +1,9 @@
 FROM registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu
 
-COPY docker-internet/config/php.ini "$PHP_INI_DIR/php.ini"
+COPY .docker/config/php.ini "$PHP_INI_DIR/php.ini"
 
 RUN rm /etc/apache2/sites-available/000-default.conf && rm /etc/apache2/sites-enabled/000-default.conf
-COPY docker-internet/config/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY .docker/config/000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN ln -s /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
 # Apache encore de la config
