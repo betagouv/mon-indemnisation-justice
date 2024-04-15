@@ -29,7 +29,7 @@ build:
   image: "registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu"
   before_script:
     - apt-get update
-    - apt-get install zip unzip nodejs
+    - apt-get install -y zip unzip nodejs
     - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
     - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
     - php -r "unlink('composer-setup.php');"
