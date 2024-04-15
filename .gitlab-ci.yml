@@ -48,14 +48,14 @@ build:
   artifacts:
     paths:
       - vendor/
-      - public/build/
+      - public/
       - .env*
       - composer.lock
     expire_in: 05 min
   cache:
     paths:
       - vendor/
-      - public/build/
+      - public/
 
 package:
   stage: 📦package
