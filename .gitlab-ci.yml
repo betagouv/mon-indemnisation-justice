@@ -78,6 +78,7 @@ deploy-reviewapp:
     APP_FQDN: "${CI_COMMIT_REF_SLUG}.precontentieux.app.cc.anje-justice.fr"
     CC_DOCKER_EXPOSED_HTTP_PORT: 8080
     CC_FORCE_HTTPS: 1
+    CLEVER_PGNAME: "postgresql_5c61b184-3c4e-4aed-8982-e73978bb435e"
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     url: "https://${CI_COMMIT_REF_SLUG}.precontentieux.app.cc.anje-justice.fr"
@@ -96,6 +97,7 @@ deploy-develop:
     APP_FQDN: "dev.precontentieux.app.cc.anje-justice.fr"
     CC_DOCKER_EXPOSED_HTTP_PORT: 8080
     CC_FORCE_HTTPS: 1
+    CLEVER_PGNAME: "postgresql_9c6a16f6-acc0-4152-8bc4-29f21ef185d1"
   environment:
     name: dev/$CI_COMMIT_REF_SLUG
     url: "https://dev.precontentieux.app.cc.anje-justice.fr"
@@ -111,6 +113,7 @@ deploy-recette:
     APP_FQDN: "recette.precontentieux.app.cc.anje-justice.fr"
     CC_DOCKER_EXPOSED_HTTP_PORT: 8080
     CC_FORCE_HTTPS: 1
+    CLEVER_PGNAME: "postgresql_9c6a16f6-acc0-4152-8bc4-29f21ef185d1"
   environment:
     name: recette/$CI_COMMIT_REF_SLUG
     url: "https://recette.precontentieux.app.cc.anje-justice.fr"
@@ -127,7 +130,7 @@ deploy-production:
     APP_FQDN: "precontentieux.app.cc.anje-justice.fr"
     CC_DOCKER_EXPOSED_HTTP_PORT: 8080
     CC_FORCE_HTTPS: 1
-    CLEVER_PGNAME: "postgresql_a8e84bf5-a2d7-463c-80cf-e868ea65ac18"
+    CLEVER_PGNAME: "postgresql_9c6a16f6-acc0-4152-8bc4-29f21ef185d1"
   environment:
     name: prod/$CI_COMMIT_REF_SLUG
     url: "https://precontentieux.app.cc.anje-justice.fr"
