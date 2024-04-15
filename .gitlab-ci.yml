@@ -37,6 +37,8 @@ build:
     - echo "Install dependencies Symfony application with composer"
     - composer install --optimize-autoloader --apcu-autoloader
     - cp .env.$APP_ENV .env
+    - php bin/console doctrine:database:create
+    - php bin/console d:s:u --force
     - php bin/console a:i
     - php bin/console a:a:charger
     - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
