@@ -74,7 +74,7 @@ deploy-reviewapp:
   extends: .template:clevercloud:deploy
   variables:
     APP_FQDN: "${CI_COMMIT_REF_SLUG}.precontentieux.app.cc.anje-justice.fr"
-    CC_DOCKER_EXPOSED_HTTP_PORT: 80
+    CC_DOCKER_EXPOSED_HTTP_PORT: 8080
     CC_FORCE_HTTPS: 1
   environment:
     name: review/$CI_COMMIT_REF_SLUG
@@ -92,7 +92,7 @@ deploy-develop:
   extends: .template:clevercloud:deploy
   variables:
     APP_FQDN: "dev.precontentieux.app.cc.anje-justice.fr"
-    CC_DOCKER_EXPOSED_HTTP_PORT: 80
+    CC_DOCKER_EXPOSED_HTTP_PORT: 8080
     CC_FORCE_HTTPS: 1
   environment:
     name: dev/$CI_COMMIT_REF_SLUG
@@ -107,7 +107,7 @@ deploy-recette:
   extends: .template:clevercloud:deploy
   variables:
     APP_FQDN: "recette.precontentieux.app.cc.anje-justice.fr"
-    CC_DOCKER_EXPOSED_HTTP_PORT: 80
+    CC_DOCKER_EXPOSED_HTTP_PORT: 8080
     CC_FORCE_HTTPS: 1
   environment:
     name: recette/$CI_COMMIT_REF_SLUG
