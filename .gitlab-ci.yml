@@ -60,7 +60,6 @@ package:
     - echo "Package to Docker image Spring boot application"
     - mkdir -p /kaniko/.docker
     - echo "$REGISTRY_AUTH" | base64 -d > /kaniko/.docker/config.json
-    - cat /kaniko/.docker/config.json
     - ls -lsa /kaniko/.docker/config.json
     - >-
       /kaniko/executor
