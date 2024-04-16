@@ -39,6 +39,15 @@ build:
     - echo "Install dependencies Symfony application with composer"
     - composer install --optimize-autoloader --apcu-autoloader
     - cp .env.$APP_ENV .env
+    - sed -i "s|__PSQL_HOST__|${PSQL_HOST}|g" .env.$APP_ENV
+    - sed -i "s|__PSQL_PORT__|${PSQL_PORT}|g" .env.$APP_ENV
+    - sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME}|g" .env.$APP_ENV
+    - sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD}|g" .env.$APP_ENV
+    - sed -i "s|__PSQL_DB__|${PSQL_DB}|g" .env.$APP_ENV
+    - sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV
+    - sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV
+    - sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV
+    - sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV
     - npm install
     - npm run build
     - php bin/console d:s:u --force
