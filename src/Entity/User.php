@@ -151,6 +151,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
 
     public function __construct()
     {
+        $this->isPersonneMorale = false;
         $this->adresse = new Adresse();
         $this->brisPortes = new ArrayCollection();
     }
