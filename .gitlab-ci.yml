@@ -36,8 +36,7 @@ build:
     - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
     - php -r "unlink('composer-setup.php');"
   script:
-    - echo "Install dependencies Symfony application with composer"
-    - composer install --optimize-autoloader --apcu-autoloader
+    - echo "Set .env.${APP_ENV}"
     - cp .env.$APP_ENV .env
     - sed -i "s|__PSQL_HOST__|${PSQL_HOST}|g" .env.$APP_ENV
     - sed -i "s|__PSQL_PORT__|${PSQL_PORT}|g" .env.$APP_ENV
@@ -48,9 +47,13 @@ build:
     - sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV
     - sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV
     - sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV
+    - echo "Install dependencies Symfony application with composer"
+    - composer install --optimize-autoloader --apcu-autoloader
+    - echo "Update database"
+    - php bin/console d:s:u --force
+    - echo "Install Npm & Assets"
     - npm install
     - npm run build
-    - php bin/console d:s:u --force
     - php bin/console a:i
     - php bin/console a:a:charger
     - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
