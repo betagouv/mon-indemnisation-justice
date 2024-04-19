@@ -20,9 +20,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
 class BrisPorte
 {
-    use SinistreTrait;
+    use PrejudiceTrait;
 
-    #[Groups('sinistre:read')]
+    #[Groups('prejudice:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

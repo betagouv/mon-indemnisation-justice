@@ -18,11 +18,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
   operations:[
-    new Get(),
+    new Get(
+      name: '_api_user_get'
+    ),
     new Patch(
       name: '_api_user_patch'
-      #,
-      #security: "is_granted('ROLE_ADMIN') or object.id == user.id"
+      #,security: "is_granted('ROLE_REQUERANT')"
   )]
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -73,21 +74,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant')]
     private Collection $brisPortes;
 
-    #[Groups('user:read')]
-    #[ORM\ManyToOne]
-    private ?Civilite $civilite = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $nom = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $prenom1 = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $prenom2 = null;
 
     #[Groups('user:read')]
     #[ORM\Column(length: 255, nullable: true)]
@@ -106,38 +92,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     private ?string $grade = null;
 
     #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $prenom3 = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $telephone = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $portable = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $communeNaissance = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $paysNaissance = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $dateNaissance = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $sirenSiret = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $raisonSociale = null;
-
-    #[Groups('user:read')]
     #[ORM\Column(options: ['default' => false])]
     private ?bool $isPersonneMorale = null;
 
@@ -146,11 +100,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     private ?Adresse $adresse = null;
 
     #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $nomNaissance = null;
+    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
+    private ?PersonnePhysique $personnePhysique = null;
+
+    #[Groups('user:read')]
+    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
+    private ?PersonneMorale $personneMorale = null;
 
     public function __construct()
     {
+        $this->personneMorale = new PersonneMorale();
+        $this->personnePhysique = new PersonnePhysique();
         $this->isPersonneMorale = false;
         $this->adresse = new Adresse();
         $this->brisPortes = new ArrayCollection();
@@ -328,54 +288,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this;
     }
 
-    public function getCivilite(): ?Civilite
-    {
-        return $this->civilite;
-    }
-
-    public function setCivilite(?Civilite $civilite): static
-    {
-        $this->civilite = $civilite;
-
-        return $this;
-    }
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(?string $nom): static
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getPrenom1(): ?string
-    {
-        return $this->prenom1;
-    }
-
-    public function setPrenom1(?string $prenom1): static
-    {
-        $this->prenom1 = $prenom1;
-
-        return $this;
-    }
-
-    public function getPrenom2(): ?string
-    {
-        return $this->prenom2;
-    }
-
-    public function setPrenom2(?string $prenom2): static
-    {
-        $this->prenom2 = $prenom2;
-
-        return $this;
-    }
-
     public function getMnemo(): ?string
     {
         return $this->mnemo;
@@ -424,112 +336,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this;
     }
 
-    public function getPrenom3(): ?string
-    {
-        return $this->prenom3;
-    }
-
-    public function setPrenom3(?string $prenom3): static
-    {
-        $this->prenom3 = $prenom3;
-
-        return $this;
-    }
-
-    public function getTelephone(): ?string
-    {
-        return $this->telephone;
-    }
-
-    public function setTelephone(?string $telephone): static
-    {
-        $this->telephone = $telephone;
-
-        return $this;
-    }
-
-    public function getPortable(): ?string
-    {
-        return $this->portable;
-    }
-
-    public function setPortable(?string $portable): static
-    {
-        $this->portable = $portable;
-
-        return $this;
-    }
-
-    public function getCommuneNaissance(): ?string
-    {
-        return $this->communeNaissance;
-    }
-
-    public function setCommuneNaissance(?string $communeNaissance): static
-    {
-        $this->communeNaissance = $communeNaissance;
-
-        return $this;
-    }
-
-    public function getPaysNaissance(): ?string
-    {
-        return $this->paysNaissance;
-    }
-
-    public function setPaysNaissance(?string $paysNaissance): static
-    {
-        $this->paysNaissance = $paysNaissance;
-
-        return $this;
-    }
-
-    public function getDateNaissance(): ?\DateTimeInterface
-    {
-        return $this->dateNaissance;
-    }
-
-    public function setDateNaissance(?\DateTimeInterface $dateNaissance): static
-    {
-        $this->dateNaissance = $dateNaissance;
-
-        return $this;
-    }
-
-    public function getSirenSiret(): ?string
-    {
-        return $this->sirenSiret;
-    }
-
-    public function setSirenSiret(?string $sirenSiret): static
-    {
-        $this->sirenSiret = $sirenSiret;
-
-        return $this;
-    }
-
-    public function getRaisonSociale(): ?string
-    {
-        return $this->raisonSociale;
-    }
-
-    public function setRaisonSociale(?string $raisonSociale): static
-    {
-        $this->raisonSociale = $raisonSociale;
-
-        return $this;
-    }
-
-    public function isPersonneMorale(): ?bool
+    public function getIsPersonneMorale(): ?bool
     {
         return $this->isPersonneMorale;
     }
 
-    public function setPersonneMorale(bool $isPersonneMorale): static
+    public function setIsPersonneMorale(bool $isPersonneMorale): static
     {
-        $this->isPersonneMorale = $isPersonneMorale;
+      $this->isPersonneMorale = $isPersonneMorale;
 
-        return $this;
+      return $this;
+    }
+
+    public function isPersonneMorale(): ?bool
+    {
+        return $this->getIsPersonneMorale();
     }
 
     public function getAdresse(): ?Adresse
@@ -544,14 +365,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this;
     }
 
-    public function getNomNaissance(): ?string
+    public function getPersonnePhysique(): ?PersonnePhysique
     {
-        return $this->nomNaissance;
+        return $this->personnePhysique;
     }
 
-    public function setNomNaissance(?string $nomNaissance): static
+    public function setPersonnePhysique(?PersonnePhysique $personnePhysique): static
     {
-        $this->nomNaissance = $nomNaissance;
+        $this->personnePhysique = $personnePhysique;
+
+        return $this;
+    }
+
+    public function getPersonneMorale(): ?PersonneMorale
+    {
+        return $this->personneMorale;
+    }
+
+    public function setPersonneMorale(?PersonneMorale $personneMorale): static
+    {
+        $this->personneMorale= $personneMorale;
 
         return $this;
     }

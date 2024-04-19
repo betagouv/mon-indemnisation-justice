@@ -5,9 +5,9 @@ namespace App\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-trait SinistreTrait
+trait PrejudiceTrait
 {
-    #[ORM\ManyToOne(inversedBy: 'sinistres')]
+    #[ORM\ManyToOne(inversedBy: 'prejudices')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $requerant = null;
 

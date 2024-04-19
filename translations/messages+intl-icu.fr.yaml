@@ -53,6 +53,7 @@ sinistre:
 user:
   section: "Données personnelles"
   field:
+    is_personne_morale: "Représentez vous une société ?"
     nom_naissance: "Nom de naissance"
     nom: "Nom"
     prenoms: "Prénom(s)"
@@ -63,3 +64,11 @@ user:
     prenom2: "Deuxième prénom"
     prenom3: "Troisième prénom"
     civilite: "Civilité"
+personne:
+  field:
+    numero_securite_sociale: "N° sécurité sociale"
+    code_securite_sociale: "Code sécurité"
+personne_morale:
+  field:
+    siren_siret: "Siren/siret"
+    raison_sociale: "Raison sociale"

@@ -1,7 +1,9 @@
 import React, {useState,useEffect} from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import Civilite from './Civilite';
-import Adresse from './Adresse';
+import { getStateOnEmpty } from '../utils/check_state';
+import SecuriteSociale from './SecuriteSociale';
 import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -16,25 +18,21 @@ import { trans,
 } from '../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 
-const getStateOnEmpty = (data) => {
-  if(!data || data.length==0)
-    return "error";
-  return "default";
-}
+const PersonnePhysique = function({isPersonneMorale,personnePhysique}) {
 
-export const Personne = function({user}) {
+  const [numeroSS, setNumeroSS]=useState(personnePhysique.numeroSecuriteSociale);
+  const [codeSS, setCodeSS]=useState(personnePhysique.codeSecuriteSociale);
+  const [civilite,setCivilite]=useState(personnePhysique.civilite??"");
+  const [nom, setNom]=useState(personnePhysique.nom??"");
+  const [prenom1, setPrenom1]=useState(personnePhysique.prenom1??"");
+  const [prenom2, setPrenom2]=useState(personnePhysique.prenom2??"");
+  const [prenom3, setPrenom3]=useState(personnePhysique.prenom3??"");
+  const [nomNaissance, setNomNaissance]=useState(personnePhysique.nomNaissance??"");
+  const [dateNaissance, setDateNaissance]=useState(personnePhysique.dateNaissance??"");
+  const [communeNaissance, setCommuneNaissance]=useState(personnePhysique.communeNaissance??"");
 
-  const [civilite,setCivilite]=useState(user.civilite??"");
-  const [nom, setNom]=useState(user.nom??"");
-  const [prenom1, setPrenom1]=useState(user.prenom1??"");
-  const [prenom2, setPrenom2]=useState(user.prenom2??"");
-  const [prenom3, setPrenom3]=useState(user.prenom3??"");
-  const [nomNaissance, setNomNaissance]=useState(user.nomNaissance??"");
-  const [dateNaissance, setDateNaissance]=useState(user.dateNaissance??"");
-  const [communeNaissance, setCommuneNaissance]=useState(user.communeNaissance??"");
-
-  const [stateNom, setStateNom]=useState(getStateOnEmpty(user.nom));
-  const [statePrenom1, setStatePrenom1]=useState(getStateOnEmpty(user.prenom1));
+  const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nom));
+  const [statePrenom1, setStatePrenom1]=useState(getStateOnEmpty(personnePhysique.prenom1));
 
   useEffect(() => {
     setStateNom(getStateOnEmpty(nom));
@@ -42,10 +40,10 @@ export const Personne = function({user}) {
   },[nom,nomNaissance]);
 
   useEffect(() => {
-    const url =Routing.generate('_api_user_patch',{id:user.id});
+    const url =Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
     const data = { nom:nom, nomNaissance: nomNaissance,
-      prenom1: prenom1, prenom2: prenom2, prenom3: prenom3,
-      communeNaissance: communeNaissance
+      prenom1: prenom1, prenom2: prenom2, prenom3: prenom3, codeSecuriteSociale: codeSS,
+      communeNaissance: communeNaissance, numeroSecuriteSociale: numeroSS
     };
     if(civilite) { data['civilite']=civilite }
     fetch(url, {
@@ -56,13 +54,17 @@ export const Personne = function({user}) {
     .then((response) => response.json())
     .then((data) => console.log('backup'))
     ;
-  },[nom,nomNaissance,prenom1,prenom2,prenom3,civilite,dateNaissance,communeNaissance]);
+  },[codeSS, nom, nomNaissance, numeroSS, prenom1, prenom2, prenom3,
+    civilite, dateNaissance, communeNaissance, numeroSS
+  ]);
+
+  const _isPersonneMorale=isPersonneMorale;
 
   return (
     <>
       <div className="fr-grid-row">
         <div className="fr-col-12">
-          <h5>Identité</h5>
+          <h5>{ _isPersonneMorale ? 'Identité du requérant' : 'Identité de la personne' }</h5>
         </div>
         <div className="fr-col-3">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
@@ -90,7 +92,7 @@ export const Personne = function({user}) {
         <div className="fr-col-3">
           <Input
             label={trans(LOGIN_EMAIL)}
-            nativeInputProps={{value: user.email}}
+            nativeInputProps={{value: personnePhysique.email}}
             disabled
           />
         </div>
@@ -142,10 +144,23 @@ export const Personne = function({user}) {
             }}
           />
         </div>
-        <div className="fr-col-12">
-          <Adresse adresse={user.adresse} />
+        <div className="fr-col-1">
+        </div>
+        <div className="fr-col-6">
+          <SecuriteSociale
+            codeSS={codeSS}
+            numeroSS={numeroSS}
+            setCodeSS={setCodeSS}
+            setNumeroSS={setNumeroSS}
+          />
         </div>
       </div>
     </>
   );
 }
+
+PersonnePhysique.propTypes = {
+  nom: PropTypes.string
+}
+
+export default PersonnePhysique;

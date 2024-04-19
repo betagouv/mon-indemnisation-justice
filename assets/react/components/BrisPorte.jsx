@@ -4,7 +4,7 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { trans, BRIS_PORTE_SECTION,USER_SECTION } from '../../translator';
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { Personne } from './Personne';
+import User from './User';
 
 const BrisPorte = function({user}) {
 
@@ -34,7 +34,9 @@ const BrisPorte = function({user}) {
         />
       </div>
       <div className="fr-col-12">
-        <Personne user={user}/>
+        <User
+          user={user}
+        />
       </div>
     </div>
   );
