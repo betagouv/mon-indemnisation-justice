@@ -7,7 +7,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 trait ReferentielTrait
 {
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
     #[Groups(["read"])]
     private ?string $code = null;
 

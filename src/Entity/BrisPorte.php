@@ -40,6 +40,33 @@ class BrisPorte implements PrejudiceInterface
     #[ORM\ManyToOne(inversedBy: 'brisPortes')]
     private ?Adresse $adresse = null;
 
+    #[Groups('prejudice:read')]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateOperationPJ = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isPorteBlindee = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isErreurPorte = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $identitePersonneRecherchee = null;
+
+    #[Groups('prejudice:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nomRemiseAttestation = null;
+
+    #[Groups('prejudice:read')]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $prenomRemiseAttestation = null;
+
+    #[ORM\ManyToOne]
+    private ?QualiteRequerant $qualiteRequerant = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $precisionRequerant = null;
+
     public function __construct()
     {
         $this->init();
@@ -73,4 +100,101 @@ class BrisPorte implements PrejudiceInterface
 
         return $this;
     }
+
+    public function getDateOperationPJ(): ?\DateTimeInterface
+    {
+        return $this->dateOperationPJ;
+    }
+
+    public function setDateOperationPJ(?\DateTimeInterface $dateOperationPJ): static
+    {
+        $this->dateOperationPJ = $dateOperationPJ;
+
+        return $this;
+    }
+
+    public function isPorteBlindee(): ?bool
+    {
+        return $this->isPorteBlindee;
+    }
+
+    public function setPorteBlindee(?bool $isPorteBlindee): static
+    {
+        $this->isPorteBlindee = $isPorteBlindee;
+
+        return $this;
+    }
+
+    public function isErreurPorte(): ?bool
+    {
+        return $this->isErreurPorte;
+    }
+
+    public function setErreurPorte(?bool $isErreurPorte): static
+    {
+        $this->isErreurPorte = $isErreurPorte;
+
+        return $this;
+    }
+
+    public function getIdentitePersonneRecherchee(): ?string
+    {
+        return $this->identitePersonneRecherchee;
+    }
+
+    public function setIdentitePersonneRecherchee(?string $identitePersonneRecherchee): static
+    {
+        $this->identitePersonneRecherchee = $identitePersonneRecherchee;
+
+        return $this;
+    }
+
+    public function getNomRemiseAttestation(): ?string
+    {
+        return $this->nomRemiseAttestation;
+    }
+
+    public function setNomRemiseAttestation(?string $nomRemiseAttestation): static
+    {
+        $this->nomRemiseAttestation = $nomRemiseAttestation;
+
+        return $this;
+    }
+
+    public function getPrenomRemiseAttestation(): ?string
+    {
+        return $this->prenomRemiseAttestation;
+    }
+
+    public function setPrenomRemiseAttestation(?string $prenomRemiseAttestation): static
+    {
+        $this->prenomRemiseAttestation = $prenomRemiseAttestation;
+
+        return $this;
+    }
+
+    public function getQualiteRequerant(): ?QualiteRequerant
+    {
+        return $this->qualiteRequerant;
+    }
+
+    public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): static
+    {
+        $this->qualiteRequerant = $qualiteRequerant;
+
+        return $this;
+    }
+
+    public function getPrecisionRequerant(): ?string
+    {
+        return $this->precisionRequerant;
+    }
+
+    public function setPrecisionRequerant(?string $precisionRequerant): static
+    {
+        $this->precisionRequerant = $precisionRequerant;
+
+        return $this;
+    }
+
 }

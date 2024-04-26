@@ -4,6 +4,8 @@ adresse:
     code_postal: "Code postal"
     localite: "Ville"
 bris_porte:
+  edit:
+    title: "Déclarer un bris de porte"
   create:
     title: "Déclarer un bris de porte"
   section: "Informations relative au bris de porte"
@@ -46,8 +48,6 @@ resend_password:
   submit: "Envoyer un nouveau mot de passe"
   update_done: "Votre mot de passe a été mis à jour. Veuillez consulter votre messagerie afin de vous connecter."
 sinistre:
-  declare_bris_porte:
-    title: "Déclarer un bris de porte"
   field:
     date_declaration: "Date de déclaration"
     statut: "Statut du dossier"

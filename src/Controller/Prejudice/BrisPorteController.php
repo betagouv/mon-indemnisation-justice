@@ -37,7 +37,7 @@ class BrisPorteController extends AbstractController
       $breadcrumb = $this->breadcrumb;
       $breadcrumb->add('homepage.title','app_homepage');
       $breadcrumb->add('requerant.homepage.title','app_requerant_homepage');
-      $breadcrumb->add('sinistre.declare_bris_porte.title', null);
+      $breadcrumb->add('bris_porte.edit.title', null);
 
       return $this->render('prejudice/declare_bris_porte.html.twig', [
           'breadcrumb' => $breadcrumb,

@@ -21,22 +21,6 @@ trait PrejudiceTrait
 
     #[Groups('prejudice:read')]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateOperationPJ = null;
-
-    #[Groups('prejudice:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $nomRemiseAttestation = null;
-
-    #[Groups('prejudice:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $prenomRemiseAttestation = null;
-
-    #[Groups('prejudice:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $qualiteRemiseAttestation = null;
-
-    #[Groups('prejudice:read')]
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateAttestationInformation = null;
 
     #[Groups('prejudice:read')]
@@ -45,7 +29,7 @@ trait PrejudiceTrait
 
     #[Groups('prejudice:read')]
     private $lastStatut;
-    
+
     public function init(): void
     {
       $this->statuts = new ArrayCollection();
@@ -83,54 +67,6 @@ trait PrejudiceTrait
     public function setCategorie(?Categorie $categorie): static
     {
         $this->categorie = $categorie;
-
-        return $this;
-    }
-
-    public function getDateOperationPJ(): ?\DateTimeInterface
-    {
-        return $this->dateOperationPJ;
-    }
-
-    public function setDateOperationPJ(?\DateTimeInterface $dateOperationPJ): static
-    {
-        $this->dateOperationPJ = $dateOperationPJ;
-
-        return $this;
-    }
-
-    public function getNomRemiseAttestation(): ?string
-    {
-        return $this->nomRemiseAttestation;
-    }
-
-    public function setNomRemiseAttestation(?string $nomRemiseAttestation): static
-    {
-        $this->nomRemiseAttestation = $nomRemiseAttestation;
-
-        return $this;
-    }
-
-    public function getPrenomRemiseAttestation(): ?string
-    {
-        return $this->prenomRemiseAttestation;
-    }
-
-    public function setPrenomRemiseAttestation(?string $prenomRemiseAttestation): static
-    {
-        $this->prenomRemiseAttestation = $prenomRemiseAttestation;
-
-        return $this;
-    }
-
-    public function getQualiteRemiseAttestation(): ?string
-    {
-        return $this->qualiteRemiseAttestation;
-    }
-
-    public function setQualiteRemiseAttestation(?string $qualiteRemiseAttestation): static
-    {
-        $this->qualiteRemiseAttestation = $qualiteRemiseAttestation;
 
         return $this;
     }
