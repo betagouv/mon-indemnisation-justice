@@ -32,7 +32,6 @@ const BrisPortes = function({items}) {
     items.map((item) => {
       const dateDeclaration = Date.parse(item.dateDeclaration);
       tmp[tmp.length]=[format(dateDeclaration,"dd/MM/yy"),"@todo","@todo","@todo"];
-      console.log(item);
     });
     setData(tmp);
     setIsLoading(true);

@@ -22,12 +22,13 @@ class BrisPorteController extends AbstractController
 
         $user = $this->getUser();
         /** @var Categorie $categorie */
-        $categorie = $em->getRepository(Categorie::class)->findOneBy(['mnemo' => Categorie::MNEMO_BRIS_PORTE],['dateDeclaration' => 'ASC']);
+        $categorie = $em->getRepository(Categorie::class)->findOneBy(['mnemo' => Categorie::MNEMO_BRIS_PORTE]);
 
         /** @var BrisPorte $brisPorte */
         $brisPorte = new BrisPorte();
         $brisPorte->setRequerant($user);
         $brisPorte->setCategorie($categorie);
+        $brisPorte->setDateDeclaration(new \DateTime());
         $em->persist($brisPorte);
         $em->flush();
 

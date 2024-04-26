@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Contracts\PrejudiceInterface;
-use App\Entity\Prejudice;
+use App\Entity\BrisPorte;
 use App\Repository\StatutRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -32,7 +32,7 @@ class Statut
 
     #[ORM\ManyToOne(inversedBy: 'statuts')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Prejudice $prejudice = null;
+    private ?BrisPorte $prejudice = null;
 
     #[Groups('prejudice:read')]
     #[ORM\Column(length: 40)]
