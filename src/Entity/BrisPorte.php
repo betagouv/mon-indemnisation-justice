@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
 use App\Contracts\PrejudiceInterface;
 use App\Repository\BrisPorteRepository;
@@ -16,9 +16,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
   operations:[
-    new Get(),
+    new Get(
+      name: '_api_bris_porte_get'
+    ),
     new GetCollection(),
-    new Put(),
+    new Patch(
+      name: '_api_bris_porte_patch'
+    ),
   ]
 )]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
@@ -44,12 +48,15 @@ class BrisPorte implements PrejudiceInterface
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateOperationPJ = null;
 
-    #[ORM\Column(nullable: true)]
+    #[Groups('prejudice:read')]
+    #[ORM\Column(nullable: true,options: ['default' => false])]
     private ?bool $isPorteBlindee = null;
 
-    #[ORM\Column(nullable: true)]
+    #[Groups('prejudice:read')]
+    #[ORM\Column(nullable: true,options: ['default' => false])]
     private ?bool $isErreurPorte = null;
 
+    #[Groups('prejudice:read')]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $identitePersonneRecherchee = null;
 
@@ -61,9 +68,11 @@ class BrisPorte implements PrejudiceInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenomRemiseAttestation = null;
 
+    #[Groups('prejudice:read')]
     #[ORM\ManyToOne]
     private ?QualiteRequerant $qualiteRequerant = null;
 
+    #[Groups('prejudice:read')]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
@@ -125,9 +134,26 @@ class BrisPorte implements PrejudiceInterface
         return $this;
     }
 
+    public function getIsPorteBlindee(): ?bool
+    {
+        return $this->isPorteBlindee();
+    }
+
+    public function setIsPorteBlindee(?bool $isPorteBlindee): static
+    {
+        $this->setPorteBlindee($isPorteBlindee);
+
+        return $this;
+    }
+
     public function isErreurPorte(): ?bool
     {
         return $this->isErreurPorte;
+    }
+
+    public function getIsErreurPorte(): ?bool
+    {
+        return $this->isErreurPorte();
     }
 
     public function setErreurPorte(?bool $isErreurPorte): static
@@ -137,6 +163,13 @@ class BrisPorte implements PrejudiceInterface
         return $this;
     }
 
+    public function setIsErreurPorte(?bool $isErreurPorte): static
+    {
+        $this->setErreurPorte($isErreurPorte);
+
+        return $this;
+    }
+    
     public function getIdentitePersonneRecherchee(): ?string
     {
         return $this->identitePersonneRecherchee;

@@ -8,8 +8,21 @@ bris_porte:
     title: "Déclarer un bris de porte"
   create:
     title: "Déclarer un bris de porte"
+  field:
+    date_operation_pj: "Date de l'opération de police judiciaire"
+    is_porte_blindee: "Porte blindée"
+    is_erreur_porte: "Erreur de porte"
+    identite_personne_recherchee: "Si NON, préciser l'identité de la personne recherchée"
+    prefix_remise_attestation: "Attestation remise à : "
+    nom_remise_attestation: "NOM"
+    prenom_remise_attestation: "PRENOM"
   section: "Informations relative au bris de porte"
 global:
+  yes: "Oui"
+  no: "Non"
+  step:
+    next: "Etape suivante"
+    previous: "Etape précédente"
   btn:
     update: "Modifier"
   display: "Afficher"

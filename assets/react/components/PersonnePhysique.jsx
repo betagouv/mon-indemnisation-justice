@@ -17,6 +17,7 @@ import { trans,
    USER_FIELD_PRENOM2, USER_FIELD_PRENOM3
 } from '../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import { castDate } from '../utils/cast';
 
 const PersonnePhysique = function({personnePhysique}) {
 
@@ -28,7 +29,7 @@ const PersonnePhysique = function({personnePhysique}) {
   const [prenom2, setPrenom2]=useState(personnePhysique.prenom2??"");
   const [prenom3, setPrenom3]=useState(personnePhysique.prenom3??"");
   const [nomNaissance, setNomNaissance]=useState(personnePhysique.nomNaissance??"");
-  const [dateNaissance, setDateNaissance]=useState(personnePhysique.dateNaissance??"");
+  const [dateNaissance, setDateNaissance]=useState(castDate(personnePhysique.dateNaissance));
   const [communeNaissance, setCommuneNaissance]=useState(personnePhysique.communeNaissance??"");
 
   const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nom));
