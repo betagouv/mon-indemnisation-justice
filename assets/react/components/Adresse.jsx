@@ -33,19 +33,39 @@ const Adresse = ({adresse}) => {
       <div className="fr-col-12">
         <Input
           label={trans(ADRESSE_FIELD_LIGNE1)}
-          nativeInputProps={{name: 'ligne1', value: ligne1, onChange: ev => setLigne1(ev.target.value)}}
+          nativeInputProps={{
+            name: 'ligne1',
+            value: ligne1,
+            onChange: ev => setLigne1(ev.target.value),
+            maxLength: 255
+          }}
         />
         <Input
-          nativeInputProps={{name: 'ligne2', value: ligne2, onChange: ev => setLigne2(ev.target.value)}}
+          nativeInputProps={{
+            name: 'ligne2',
+            value: ligne2,
+            onChange: ev => setLigne2(ev.target.value),
+            maxLength: 255
+          }}
         />
         <Input
-          nativeInputProps={{name: 'ligne3', value: ligne3, onChange: ev => setLigne3(ev.target.value)}}
+          nativeInputProps={{
+            name: 'ligne3',
+            value: ligne3,
+            onChange: ev => setLigne3(ev.target.value),
+            maxLength: 255
+          }}
         />
       </div>
       <div className="fr-col-3">
         <Input
           label={trans(ADRESSE_FIELD_CODE_POSTAL)}
-          nativeInputProps={{name: 'codePostal', value: codePostal, onChange: ev => setCodePostal(ev.target.value)}}
+          nativeInputProps={{
+            name: 'codePostal',
+            value: codePostal,
+            onChange: ev => setCodePostal(ev.target.value),
+            maxLength: 5
+          }}
         />
       </div>
       <div className="fr-col-1">
@@ -53,7 +73,12 @@ const Adresse = ({adresse}) => {
       <div className="fr-col-8">
         <Input
           label={trans(ADRESSE_FIELD_LOCALITE)}
-          nativeInputProps={{name: 'localite', value: localite, onChange: ev => setLocalite(ev.target.value)}}
+          nativeInputProps={{
+            name: 'localite',
+            value: localite,
+            onChange: ev => setLocalite(ev.target.value),
+            maxLength: 255
+          }}
         />
       </div>
     </div>

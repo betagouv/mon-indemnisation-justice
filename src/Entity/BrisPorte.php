@@ -6,7 +6,11 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\GetCollection;
+use App\Contracts\PrejudiceInterface;
 use App\Repository\BrisPorteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -18,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
   ]
 )]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
-class BrisPorte
+class BrisPorte implements PrejudiceInterface
 {
     use PrejudiceTrait;
 
@@ -28,9 +32,11 @@ class BrisPorte
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups('prejudice:read')]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $numeroPV = null;
 
+    #[Groups('prejudice:read')]
     #[ORM\ManyToOne(inversedBy: 'brisPortes')]
     private ?Adresse $adresse = null;
 

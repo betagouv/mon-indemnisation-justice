@@ -30,7 +30,7 @@ export default class extends Controller {
               </div>
               <div className="fr-col-12">
                 <h1>{trans(SINISTRE_DECLARE_BRIS_PORTE_TITLE)}</h1>
-                <BrisPorte user={this.userValue} />
+                <BrisPorte user={this.userValue} brisPorte={this.brisPorteValue}/>
               </div>
             </div>
           </div>

@@ -1,11 +1,15 @@
 import React, {useState,useEffect} from 'react';
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import { castNumber } from '../utils/cast';
 import { trans,
   PERSONNE_FIELD_NUMERO_SECURITE_SOCIALE
 } from '../../translator';
 
+
+
 const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
+
 
   return (
     <div className="fr-grid-row">
@@ -15,7 +19,7 @@ const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
           nativeInputProps={{
             name: 'numeroSecuriteSociale',
             value: numeroSS,
-            onChange: ev => setNumeroSS(ev.target.value),
+            onChange: ev => setNumeroSS(castNumber(ev.target.value)),
             maxLength: 13
           }}
         />
@@ -28,7 +32,7 @@ const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
           nativeInputProps={{
             name: 'codeSecuriteSociale',
             value: codeSS,
-            onChange: ev => setCodeSS(ev.target.value),
+            onChange: ev => setCodeSS(castNumber(ev.target.value)),
             maxLength: 2
           }}
         />

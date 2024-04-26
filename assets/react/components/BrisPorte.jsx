@@ -10,14 +10,13 @@ const BrisPorte = function({user}) {
 
   const sections = [trans(USER_SECTION),trans(BRIS_PORTE_SECTION)];
   const [step,setStep]=useState(0);
-  const [currentStep,setCurrentStep]=useState(1)
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
-
+  function incrementStep() { setStep(step+1); }
+  function decrementStep() { setStep(step-1); }
   function getCurrentStep() { return step+1; }
 
   useEffect(() => {
-    setCurrentStep(step+1);
     setTitle(sections[step]);
     if(sections[step+1])
       setNextTitle(sections[step+1]);
@@ -27,16 +26,24 @@ const BrisPorte = function({user}) {
     <div className="fr-grid-row">
       <div className="fr-col-12">
         <Stepper
-          currentStep={currentStep}
+          currentStep={getCurrentStep()}
           nextTitle={nextTitle}
           stepCount={sections.length}
           title={title}
         />
       </div>
       <div className="fr-col-12">
-        <User
-          user={user}
-        />
+        {(step===0) &&
+        <>
+          <User user={user} />
+          <Button onClick={incrementStep}>Next</Button>
+        </>
+        }
+        {(step===1) &&
+        <>
+          <Button onClick={decrementStep}>Previous</Button>
+        </>
+        }
       </div>
     </div>
   );

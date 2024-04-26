@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { getStateOnEmpty } from '../utils/check_state';
+import { castNumber } from '../utils/cast';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { fr } from "@codegouvfr/react-dsfr";
 import { trans,
@@ -48,7 +49,12 @@ const PersonneMorale = ({personneMorale}) => {
           label={trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)}
           state={stateSirenSiret}
           stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-          nativeInputProps={{name: 'sirenSiret', value: sirenSiret, onChange: ev => setSirenSiret(ev.target.value)}}
+          nativeInputProps={{
+            name: 'sirenSiret',
+            value: sirenSiret,
+            onChange: ev => setSirenSiret(castNumber(ev.target.value)),
+            maxLength: 255
+          }}
         />
       </div>
       <div className="fr-col-1">
@@ -58,7 +64,12 @@ const PersonneMorale = ({personneMorale}) => {
           label={trans(PERSONNE_MORALE_FIELD_RAISON_SOCIALE)}
           state={stateRaisonSociale}
           stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-          nativeInputProps={{name: 'raisonSociale', value: raisonSociale, onChange: ev => setRaisonSociale(ev.target.value)}}
+          nativeInputProps={{
+            name: 'raisonSociale',
+            value: raisonSociale,
+            onChange: ev => setRaisonSociale(ev.target.value),
+            maxLength: 255
+          }}
         />
       </div>
     </div>

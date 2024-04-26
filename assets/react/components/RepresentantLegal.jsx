@@ -18,7 +18,7 @@ import { trans,
 } from '../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 
-const PersonnePhysique = function({personnePhysique}) {
+const RepresentantLegal = function({personnePhysique}) {
 
   const [numeroSS, setNumeroSS]=useState(personnePhysique.numeroSecuriteSociale);
   const [codeSS, setCodeSS]=useState(personnePhysique.codeSecuriteSociale);
@@ -62,7 +62,7 @@ const PersonnePhysique = function({personnePhysique}) {
     <>
       <div className="fr-grid-row">
         <div className="fr-col-12">
-          <h5>Identité de la personne</h5>
+          <h5>Identité du représentant légal</h5>
         </div>
         <div className="fr-col-3">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
@@ -157,8 +157,8 @@ const PersonnePhysique = function({personnePhysique}) {
   );
 }
 
-PersonnePhysique.propTypes = {
+RepresentantLegal.propTypes = {
   nom: PropTypes.string
 }
 
-export default PersonnePhysique;
+export default RepresentantLegal;

@@ -2,6 +2,7 @@ import React, {useState,useEffect} from 'react';
 import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { format } from "date-fns";
 import {
   trans,
   BRIS_PORTE_CREATE_TITLE,
@@ -11,11 +12,11 @@ import {
   SINISTRE_FIELD_DATE_DERNIER_STATUT,
   GLOBAL_ACTIONS
 } from '../../translator';
-const BrisPortes = function(props) {
+const BrisPortes = function({items}) {
 
-  const data = [
-    /**['Donnée','Donnée'],*/
-  ];
+  const [isLoading, setIsLoading]=useState(false);
+
+  const [data,setData] = useState([]);
 
   const headers = [
     trans(SINISTRE_FIELD_DATE_DECLARATION),
@@ -23,6 +24,19 @@ const BrisPortes = function(props) {
     trans(SINISTRE_FIELD_DATE_DERNIER_STATUT),
     trans(GLOBAL_ACTIONS)
   ];
+
+  useEffect(() => {
+    if(true===isLoading)
+      return;
+    let tmp=[];
+    items.map((item) => {
+      const dateDeclaration = Date.parse(item.dateDeclaration);
+      tmp[tmp.length]=[format(dateDeclaration,"dd/MM/yy"),"@todo","@todo","@todo"];
+      console.log(item);
+    });
+    setData(tmp);
+    setIsLoading(true);
+  },[isLoading])
 
   return (
     <div className="fr-grid-row">
@@ -39,7 +53,7 @@ const BrisPortes = function(props) {
       <div className="fr-col-3">
         <Button
         linkProps={{
-          href: Routing.generate('app_declare_bris_porte')
+          href: Routing.generate('app_bris_porte_add')
         }}
         >{trans(BRIS_PORTE_CREATE_TITLE)}
         </Button>

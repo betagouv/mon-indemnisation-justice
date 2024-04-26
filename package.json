@@ -31,6 +31,7 @@
         "@hotwired/stimulus": "^3.2.2",
         "@symfony/stimulus-bridge": "^3.2.2",
         "axios": "^1.6.8",
+        "date-fns": "^3.6.0",
         "jquery": "^3.7.1",
         "prop-types": "^15.8.1",
         "react": "^18.2.0",
