@@ -10,7 +10,8 @@ import {
   SINISTRE_FIELD_DATE_DECLARATION,
   SINISTRE_FIELD_STATUT,
   SINISTRE_FIELD_DATE_DERNIER_STATUT,
-  GLOBAL_ACTIONS
+  GLOBAL_ACTIONS,
+  GLOBAL_BTN_UPDATE
 } from '../../translator';
 const BrisPortes = function({items}) {
 
@@ -31,7 +32,19 @@ const BrisPortes = function({items}) {
     let tmp=[];
     items.map((item) => {
       const dateDeclaration = Date.parse(item.dateDeclaration);
-      tmp[tmp.length]=[format(dateDeclaration,"dd/MM/yy"),"@todo","@todo","@todo"];
+      const lastStatut = item.lastStatut.code;
+      const dateLastStatut = Date.parse(item.lastStatut.date);
+      tmp[tmp.length]=[
+        format(dateDeclaration,"dd/MM/yy"),
+        lastStatut,
+        format(dateLastStatut,"dd/MM/yy HH:mm"),
+        <Button
+        linkProps={{
+          href: Routing.generate('app_bris_porte_edit',{id: item.id})
+        }}
+        >{trans(GLOBAL_BTN_UPDATE)}
+        </Button>
+      ];
     });
     setData(tmp);
     setIsLoading(true);

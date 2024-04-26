@@ -40,6 +40,11 @@ class BrisPorte implements PrejudiceInterface
     #[ORM\ManyToOne(inversedBy: 'brisPortes')]
     private ?Adresse $adresse = null;
 
+    public function __construct()
+    {
+        $this->init();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

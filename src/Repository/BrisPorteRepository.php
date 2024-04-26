@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Contracts\PrejudiceInterface;
 use App\Entity\BrisPorte;
+use App\Entity\Categorie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,33 +18,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BrisPorteRepository extends ServiceEntityRepository
 {
+    use PrejudiceRepositoryTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BrisPorte::class);
     }
-
-    //    /**
-    //     * @return BrisPorte[] Returns an array of BrisPorte objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('b.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?BrisPorte
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

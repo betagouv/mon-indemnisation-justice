@@ -20,6 +20,7 @@ class DefaultController extends AbstractController
           ->getRepository(BrisPorte::class)
           ->findBy(['requerant' => $this->getUser()])
         ;
+
         return $this->render('requerant/default/index.html.twig', [
             'breadcrumb' => $breadcrumb,
             'brisPortes' => $brisPortes

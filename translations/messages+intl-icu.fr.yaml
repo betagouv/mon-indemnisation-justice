@@ -8,6 +8,8 @@ bris_porte:
     title: "Déclarer un bris de porte"
   section: "Informations relative au bris de porte"
 global:
+  btn:
+    update: "Modifier"
   display: "Afficher"
   actions: "Actions"
   error_empty_field: "Le champs est obligatoire"

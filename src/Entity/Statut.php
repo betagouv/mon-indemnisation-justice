@@ -30,6 +30,7 @@ class Statut
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups('prejudice:read')]
     #[ORM\ManyToOne(inversedBy: 'statuts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?BrisPorte $prejudice = null;
@@ -46,17 +47,23 @@ class Statut
     #[ORM\JoinColumn(nullable: false)]
     private ?User $emetteur = null;
 
+    public function __construct()
+    {
+      $this->date = new \DateTime();
+      $this->code = self::CODE_EN_COURS_DE_CONSTITUTION;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getPrejudice(): ?Prejudice
+    public function getPrejudice(): ?PrejudiceInterface
     {
         return $this->prejudice;
     }
 
-    public function setPrejudice(?Prejudice $prejudice): static
+    public function setPrejudice(?PrejudiceInterface $prejudice): static
     {
         $this->prejudice = $prejudice;
 
