@@ -8,18 +8,21 @@ import { trans, BRIS_PORTE_FIELD_DATE_OPERATION_PJ,
     BRIS_PORTE_FIELD_PRENOM_REMISE_ATTESTATION,
     GLOBAL_YES, GLOBAL_NO
 } from '../../translator';
-import { castDate } from '../utils/cast';
+import Requerant from './Requerant';
+import { castDate,formatUrl,formatDate } from '../utils/cast';
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 
 const BrisPorte = ({brisPorte}) => {
-  console.log(brisPorte);
+
   const [loading, setLoading]=useState(false);
-  const [dateOperationPJ, setDateOperationPJ]=useState(castDate(brisPorte.dateOperationPJ));
+  const [dateOperationPJ, setDateOperationPJ]=useState(castDate(brisPorte.dateOperationPJ??""));
   const [isPorteBlindee, setIsPorteBlindee]=useState(brisPorte.isPorteBlindee);
   const [isErreurPorte, setIsErreurPorte]=useState(brisPorte.isErreurPorte);
   const [identitePersonneRecherchee, setIdentitePersonneRecherchee]=useState(brisPorte.identitePersonneRecherchee??'');
   const [nomRemiseAttestation, setNomRemiseAttestation]=useState(brisPorte.nomRemiseAttestation??'');
   const [prenomRemiseAttestation, setPrenomRemiseAttestation]=useState(brisPorte.prenomRemiseAttestation??'');
+  const [qualiteRequerant, setQualiteRequerant]=useState(brisPorte.qualiteRequerant);
+  const [precisionRequerant, setPrecisionRequerant]=useState(brisPorte.precisionRequerant??"");
 
   useEffect(() => {
     if(!loading) {
@@ -28,9 +31,10 @@ const BrisPorte = ({brisPorte}) => {
     }
 
     const url =Routing.generate('_api_bris_porte_patch',{id:brisPorte.id});
-    const data = { dateOperationPJ: dateOperationPJ, isPorteBlindee: isPorteBlindee,
+    const data = { dateOperationPJ: formatDate(dateOperationPJ), isPorteBlindee: isPorteBlindee,
       isErreurPorte: isErreurPorte,identitePersonneRecherchee: identitePersonneRecherchee,
-      nomRemiseAttestation: nomRemiseAttestation, prenomRemiseAttestation: prenomRemiseAttestation
+      nomRemiseAttestation: nomRemiseAttestation, prenomRemiseAttestation: prenomRemiseAttestation,
+      qualiteRequerant: formatUrl(qualiteRequerant), precisionRequerant: precisionRequerant
     };
 
     fetch(url, {
@@ -42,7 +46,8 @@ const BrisPorte = ({brisPorte}) => {
     .then((data) => console.log('backup bp'))
     ;
   },[dateOperationPJ,isPorteBlindee,isErreurPorte,identitePersonneRecherchee,
-    nomRemiseAttestation, prenomRemiseAttestation
+    nomRemiseAttestation, prenomRemiseAttestation, qualiteRequerant,
+    precisionRequerant
   ]);
 
   return (
@@ -130,6 +135,15 @@ const BrisPorte = ({brisPorte}) => {
             onChange: ev=>setPrenomRemiseAttestation(ev.target.value),
             maxLength: 255
           }}
+        />
+      </div>
+      <div className="fr-col-12">
+        <h5>@todo</h5>
+        <Requerant
+          qualiteRequerant={qualiteRequerant}
+          setQualiteRequerant={setQualiteRequerant}
+          precisionRequerant={precisionRequerant}
+          setPrecisionRequerant={setPrecisionRequerant}
         />
       </div>
     </div>

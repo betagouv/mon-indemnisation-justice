@@ -10,3 +10,21 @@ export const castDate = (input) => {
     return format(input,"yyyy-MM-dd");
   return "";
 }
+
+export const castUrl = (input) => {
+  if(!input)
+    return "";
+  return input;
+}
+
+export const formatUrl=(input) => {
+  if(!input)
+    return null;
+  return input;
+}
+
+export const formatDate=(input) => {
+  if(!input)
+    return null;
+  return input;
+}

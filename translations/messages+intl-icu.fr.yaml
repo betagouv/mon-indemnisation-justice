@@ -16,6 +16,8 @@ bris_porte:
     prefix_remise_attestation: "Attestation remise à : "
     nom_remise_attestation: "NOM"
     prenom_remise_attestation: "PRENOM"
+    qualite_representant: "Qualité"
+    precision_representant: "Si autre (à préciser)"
   section: "Informations relative au bris de porte"
 global:
   yes: "Oui"
