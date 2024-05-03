@@ -2,7 +2,10 @@ import React, {useState,useEffect} from 'react';
 import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { trans, BRIS_PORTE_SECTION,USER_SECTION,GLOBAL_STEP_NEXT,GLOBAL_STEP_PREVIOUS } from '../../translator';
+import { trans, BRIS_PORTE_SECTION,USER_SECTION,
+  GLOBAL_STEP_NEXT,GLOBAL_STEP_PREVIOUS,
+  BRIS_PORTE_EDIT_UPDATE_CONSTITUE
+} from '../../translator';
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import BrisPorte from './BrisPorte';
 import User from './User';
@@ -32,18 +35,33 @@ const BrisPortePanel = function({user,brisPorte}) {
           stepCount={sections.length}
           title={title}
         />
-      </div>
-      <div className="fr-col-12">
         {(step===0) &&
         <>
-          <User user={user} />
-          <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+          <div className="fr-col-12">
+            <User user={user} />
+          </div>
+          <div className="fr-col-12">
+            <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+          </div>
         </>
         }
         {(step===1) &&
         <>
-          <BrisPorte brisPorte={brisPorte} />
-          <Button onClick={decrementStep}>{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+          <div className="fr-col-12">
+            <BrisPorte brisPorte={brisPorte} />
+          </div>
+          <div className="fr-col-9">
+            <Button onClick={decrementStep}>{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+          </div>
+          <div className="fr-col-3">
+            <Button
+              linkProps={{
+                href: Routing.generate('app_requerant_update_statut_to_constitue',{id:brisPorte.id})
+              }}
+            >
+            {trans(BRIS_PORTE_EDIT_UPDATE_CONSTITUE)}
+            </Button>
+          </div>
         </>
         }
       </div>

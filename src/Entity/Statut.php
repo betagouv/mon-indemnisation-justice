@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Contracts\EntityInterface;
 use App\Contracts\PrejudiceInterface;
 use App\Entity\BrisPorte;
 use App\Repository\StatutRepository;
@@ -12,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StatutRepository::class)]
 #[ApiResource]
-class Statut
+class Statut implements EntityInterface
 {
     const CODE_EN_COURS_DE_CONSTITUTION = 'EN_COURS_DE_CONSTITUTION';
     const CODE_CONSTITUE                = 'CONSTITUE';

@@ -4,10 +4,13 @@ namespace App\Controller\Prejudice;
 
 use App\Entity\BrisPorte;
 use App\Entity\Categorie;
+use App\Entity\Statut;
 use App\Entity\User;
+use App\Repository\StatutRepository;
 use App\Service\Breadcrumb\Breadcrumb;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -17,7 +20,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class BrisPorteController extends AbstractController
 {
     public function __construct(
-      private Breadcrumb $breadcrumb
+      private Breadcrumb $breadcrumb,
+      private StatutRepository $statutRepository
     )
     {
 
@@ -43,5 +47,16 @@ class BrisPorteController extends AbstractController
           'breadcrumb' => $breadcrumb,
           'brisPorte' => $brisPorte
       ]);
+    }
+
+    #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', methods: ['GET'], options: ['expose' => true])]
+    public function redirection(BrisPorte $brisPorte): RedirectResponse
+    {
+      $statut = new Statut();
+      $statut->setCode(Statut::CODE_CONSTITUE);
+      $statut->setPrejudice($brisPorte);
+      $statut->setEmetteur($this->getUser());
+      $this->statutRepository->add($statut,true);
+      return $this->redirectToRoute('app_requerant_homepage');
     }
 }

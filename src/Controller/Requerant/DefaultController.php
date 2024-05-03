@@ -12,9 +12,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(User::ROLE_REQUERANT)]
+#[Route('/requerant')]
 class DefaultController extends AbstractController
 {
-    #[Route('/requerant/accueil', name: 'app_requerant_homepage')]
+    #[Route('/accueil', name: 'app_requerant_homepage')]
     public function index(Breadcrumb $breadcrumb, EntityManagerInterface $em): Response
     {
         $breadcrumb->add('homepage.title','app_homepage');

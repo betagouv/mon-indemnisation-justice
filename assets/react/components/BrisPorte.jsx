@@ -52,7 +52,7 @@ const BrisPorte = ({brisPorte}) => {
       nomRemiseAttestation: nomRemiseAttestation, prenomRemiseAttestation: prenomRemiseAttestation,
       qualiteRequerant: formatUrl(qualiteRequerant), precisionRequerant: precisionRequerant
     };
-    
+
     fetch(url, {
       method: 'PATCH',
       headers: {'Content-Type': 'application/merge-patch+json'},
@@ -154,7 +154,6 @@ const BrisPorte = ({brisPorte}) => {
         />
       </div>
       <div className="fr-col-12">
-        <h5>@todo</h5>
         <Requerant
           qualiteRequerant={qualiteRequerant}
           setQualiteRequerant={setQualiteRequerant}

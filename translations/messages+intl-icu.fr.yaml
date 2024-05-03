@@ -6,6 +6,7 @@ adresse:
 bris_porte:
   edit:
     title: "Déclarer un bris de porte"
+    update_constitue: "Je déclare mon bris de porte"
   create:
     title: "Déclarer un bris de porte"
   field:
