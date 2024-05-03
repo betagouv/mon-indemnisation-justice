@@ -9,26 +9,42 @@ import { trans, BRIS_PORTE_FIELD_DATE_OPERATION_PJ,
     GLOBAL_YES, GLOBAL_NO
 } from '../../translator';
 import Requerant from './Requerant';
-import { castDate,formatUrl,formatDate } from '../utils/cast';
+import { checkUrl, castDate, checkDate, checkString, formatUrl,castUrl,formatDate } from '../utils/cast';
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 
 const BrisPorte = ({brisPorte}) => {
 
-  const [loading, setLoading]=useState(false);
   const [dateOperationPJ, setDateOperationPJ]=useState(castDate(brisPorte.dateOperationPJ??""));
   const [isPorteBlindee, setIsPorteBlindee]=useState(brisPorte.isPorteBlindee);
   const [isErreurPorte, setIsErreurPorte]=useState(brisPorte.isErreurPorte);
   const [identitePersonneRecherchee, setIdentitePersonneRecherchee]=useState(brisPorte.identitePersonneRecherchee??'');
   const [nomRemiseAttestation, setNomRemiseAttestation]=useState(brisPorte.nomRemiseAttestation??'');
   const [prenomRemiseAttestation, setPrenomRemiseAttestation]=useState(brisPorte.prenomRemiseAttestation??'');
-  const [qualiteRequerant, setQualiteRequerant]=useState(brisPorte.qualiteRequerant);
+  const [qualiteRequerant, setQualiteRequerant]=useState(castUrl(brisPorte.qualiteRequerant));
   const [precisionRequerant, setPrecisionRequerant]=useState(brisPorte.precisionRequerant??"");
 
+  const [recordActived, setRecordActived]=useState(false);
+
+  function mustBeRecorded() {
+    const test =
+    !checkDate(dateOperationPJ,brisPorte.dateOperationPJ)||
+    (isPorteBlindee!==brisPorte.isPorteBlindee)||
+    (isErreurPorte!==brisPorte.isErreurPorte)||
+    !checkString(identitePersonneRecherchee,brisPorte.identitePersonneRecherchee)||
+    !checkString(nomRemiseAttestation,brisPorte.nomRemiseAttestation)||
+    !checkString(prenomRemiseAttestation,brisPorte.prenomRemiseAttestation)||
+    !checkUrl(qualiteRequerant,brisPorte.qualiteRequerant)||
+    !checkString(precisionRequerant,brisPorte.precisionRequerant)||
+    (true === recordActived)
+    ;
+
+    setRecordActived(test);
+    return test;
+  }
+
   useEffect(() => {
-    if(!loading) {
-      setLoading(true);
+    if(false === mustBeRecorded())
       return;
-    }
 
     const url =Routing.generate('_api_bris_porte_patch',{id:brisPorte.id});
     const data = { dateOperationPJ: formatDate(dateOperationPJ), isPorteBlindee: isPorteBlindee,
@@ -36,7 +52,7 @@ const BrisPorte = ({brisPorte}) => {
       nomRemiseAttestation: nomRemiseAttestation, prenomRemiseAttestation: prenomRemiseAttestation,
       qualiteRequerant: formatUrl(qualiteRequerant), precisionRequerant: precisionRequerant
     };
-
+    
     fetch(url, {
       method: 'PATCH',
       headers: {'Content-Type': 'application/merge-patch+json'},

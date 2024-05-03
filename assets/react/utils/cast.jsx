@@ -28,3 +28,15 @@ export const formatDate=(input) => {
     return null;
   return input;
 }
+
+export const checkDate=(date1,date2) => {
+  return castDate(date1??"") === castDate(date2??"");
+}
+
+export const checkString=(str1,str2) => {
+  return (str1??"") === (str2??"");
+}
+
+export const checkUrl=(url1,url2) => {
+  return castUrl(url1??"") === castUrl(url2??"");
+}

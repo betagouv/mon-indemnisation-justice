@@ -8,6 +8,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Select } from "@codegouvfr/react-dsfr/Select";
+import { castDate,formatUrl,formatDate } from '../utils/cast';
 import { trans,
   BRIS_PORTE_SECTION,USER_SECTION,
   USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
@@ -28,22 +29,47 @@ const RepresentantLegal = function({personnePhysique}) {
   const [prenom2, setPrenom2]=useState(personnePhysique.prenom2??"");
   const [prenom3, setPrenom3]=useState(personnePhysique.prenom3??"");
   const [nomNaissance, setNomNaissance]=useState(personnePhysique.nomNaissance??"");
-  const [dateNaissance, setDateNaissance]=useState(personnePhysique.dateNaissance??"");
+  const [dateNaissance, setDateNaissance]=useState(castDate(personnePhysique.dateNaissance??""));
   const [communeNaissance, setCommuneNaissance]=useState(personnePhysique.communeNaissance??"");
 
   const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nom));
   const [statePrenom1, setStatePrenom1]=useState(getStateOnEmpty(personnePhysique.prenom1));
+  const [recordActived, setRecordActived]=useState(false);
 
   useEffect(() => {
     setStateNom(getStateOnEmpty(nom));
     setStatePrenom1(getStateOnEmpty(prenom1));
   },[nom,nomNaissance]);
 
+  function mustBeRecorded() {
+    const test =
+      (numeroSS !== personnePhysique.numeroSecuriteSociale) ||
+      (codeSS !== personnePhysique.codeSecuriteSociale) ||
+      (civilite !== personnePhysique.civilite) ||
+      (nom !== personnePhysique.nom) ||
+      (prenom1 !== personnePhysique.prenom1) ||
+      (prenom2 !== personnePhysique.prenom2) ||
+      (prenom3 !== personnePhysique.prenom3) ||
+      (nomNaissance !== personnePhysique.nomNaissance) ||
+      (dateNaissance !== castDate(personnePhysique.dateNaissance??'')) ||
+      (communeNaissance !== personnePhysique.communeNaissance) ||
+      (true === recordActived)
+    ;
+
+    setRecordActived(test);
+    return test;
+  }
+
   useEffect(() => {
+
+    if(false === mustBeRecorded())
+      return;
+
     const url =Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
     const data = { nom:nom, nomNaissance: nomNaissance,
       prenom1: prenom1, prenom2: prenom2, prenom3: prenom3, codeSecuriteSociale: codeSS,
-      communeNaissance: communeNaissance, numeroSecuriteSociale: numeroSS
+      communeNaissance: communeNaissance, numeroSecuriteSociale: numeroSS,
+      dateNaissance: formatDate(dateNaissance)
     };
     if(civilite) { data['civilite']=civilite }
     fetch(url, {

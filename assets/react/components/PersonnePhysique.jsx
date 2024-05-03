@@ -34,13 +34,35 @@ const PersonnePhysique = function({personnePhysique}) {
 
   const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nom));
   const [statePrenom1, setStatePrenom1]=useState(getStateOnEmpty(personnePhysique.prenom1));
+  const [recordActived, setRecordActived]=useState(false);
 
+  function mustBeRecorded() {
+    const test =
+      (numeroSS !== personnePhysique.numeroSecuriteSociale) ||
+      (codeSS !== personnePhysique.codeSecuriteSociale) ||
+      (civilite !== personnePhysique.civilite) ||
+      (nom !== personnePhysique.nom) ||
+      (prenom1 !== personnePhysique.prenom1) ||
+      (prenom2 !== personnePhysique.prenom2) ||
+      (prenom3 !== personnePhysique.prenom3) ||
+      (nomNaissance !== personnePhysique.nomNaissance) ||
+      (dateNaissance !== personnePhysique.dateNaissance) ||
+      (communeNaissance !== personnePhysique.communeNaissance) ||
+      (true === recordActived)
+    ;
+    setRecordActived(test);
+    return test;
+  }
   useEffect(() => {
     setStateNom(getStateOnEmpty(nom));
     setStatePrenom1(getStateOnEmpty(prenom1));
   },[nom,nomNaissance]);
 
   useEffect(() => {
+
+    if(false === mustBeRecorded())
+      return;
+
     const url =Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
     const data = { nom:nom, nomNaissance: nomNaissance,
       prenom1: prenom1, prenom2: prenom2, prenom3: prenom3, codeSecuriteSociale: codeSS,

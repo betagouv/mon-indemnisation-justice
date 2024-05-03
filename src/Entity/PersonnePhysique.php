@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
@@ -76,8 +77,8 @@ class PersonnePhysique
     private ?string $paysNaissance = null;
 
     #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $dateNaissance = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateNaissance = null;
 
     #[Groups('user:read')]
     #[ORM\Column(length: 255, nullable: true)]

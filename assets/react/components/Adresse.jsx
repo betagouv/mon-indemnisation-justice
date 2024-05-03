@@ -13,8 +13,24 @@ const Adresse = ({adresse}) => {
   const [ligne3,setLigne3]=useState(adresse.ligne3??"");
   const [codePostal,setCodePostal]=useState(adresse.codePostal??"");
   const [localite,setLocalite]=useState(adresse.localite??"");
+  const [recordActived, setRecordActived]=useState(false);
+
+  function mustBeRecorded() {
+    const test =
+      (ligne1 !== adresse.ligne1) ||
+      (ligne2 !== adresse.ligne2) ||
+      (ligne3 !== adresse.ligne3) ||
+      (codePostal !== adresse.codePostal) ||
+      (localite !== adresse.localite) ||
+      (true === recordActived)
+    ;
+    setRecordActived(test);
+    return test;
+  }
 
   useEffect(() => {
+    if(false === mustBeRecorded())
+      return;
     const url =Routing.generate('_api_adresse_patch',{id:adresse.id});
     const data = { ligne1: ligne1, ligne2: ligne2, ligne3: ligne3,
       codePostal:codePostal, localite: localite };
@@ -24,7 +40,7 @@ const Adresse = ({adresse}) => {
       body: JSON.stringify(data)
     })
     .then((response) => response.json())
-    .then((data) => console.log('backup adresse'))
+    .then((data) => {})
     ;
   },[ligne1,ligne2,ligne3,codePostal,localite]);
 
