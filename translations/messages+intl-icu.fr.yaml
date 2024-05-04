@@ -1,3 +1,6 @@
+admin:
+  homepage:
+    title: "Administration des utilisateurs"
 adresse:
   field:
     ligne1: "Adresse"
@@ -82,6 +85,8 @@ user:
     prenom2: "Deuxième prénom"
     prenom3: "Troisième prénom"
     civilite: "Civilité"
+    role: "Rôle"
+    active: "Compte activé"
 personne:
   field:
     numero_securite_sociale: "N° sécurité sociale"

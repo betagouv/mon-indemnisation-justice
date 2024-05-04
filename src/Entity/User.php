@@ -107,6 +107,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale = null;
 
+    #[Groups('user:read')]
+    private $plaintextRole;
+
+    #[Groups('user:read')]
+    #[ORM\Column(options: ['default' => true])]
+    private bool $active = true;
+
     public function __construct()
     {
         $this->personneMorale = new PersonneMorale();
@@ -114,6 +121,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         $this->isPersonneMorale = false;
         $this->adresse = new Adresse();
         $this->brisPortes = new ArrayCollection();
+        $this->active = true;
     }
 
     public function getId(): ?int
@@ -133,6 +141,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this;
     }
 
+    public function getPlaintextRole(): string
+    {
+        if($this->hasRole(self::ROLE_CHEF_PRECONTENTIEUX))
+          return self::ROLE_CHEF_PRECONTENTIEUX;
+        if($this->hasRole(self::ROLE_REDACTEUR_PRECONTENTIEUX))
+          return self::ROLE_REDACTEUR_PRECONTENTIEUX;
+        return '';
+    }
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->getRoles());
@@ -385,6 +401,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     public function setPersonneMorale(?PersonneMorale $personneMorale): static
     {
         $this->personneMorale= $personneMorale;
+
+        return $this;
+    }
+
+    public function getActive(): bool
+    {
+        return $this->isActive();
+    }
+
+    public function isActive():bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): static
+    {
+        $this->active = $active;
 
         return $this;
     }
