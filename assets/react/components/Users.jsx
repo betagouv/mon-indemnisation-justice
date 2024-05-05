@@ -13,54 +13,75 @@ import {
   GLOBAL_ACTIONS,
   GLOBAL_BTN_UPDATE
 } from '../../translator';
+
 const Users = function({items}) {
 
   const [isLoading, setIsLoading]=useState(false);
-
   const [data,setData] = useState([]);
-  const [_items,setItems]=useState(items);
-
   const headers = [
     trans(LOGIN_EMAIL),
     trans(USER_FIELD_ROLE),
     trans(USER_FIELD_ACTIVE)
   ];
 
-  function handleActive(checked,index) {
-    console.log(index);
+  function handleCheck(id) {
+    let copyData = [...data];
+    copyData.map((item,index) => {
+      if(item.id === id)
+        copyData[index]['active']=!item.active;
+
+      const url =Routing.generate('_api_user_patch',{id:item.id});
+      const data = { active: copyData[index]['active'] };
+
+      fetch(url, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/merge-patch+json'},
+        body: JSON.stringify(data)
+      })
+      .then((response) => response.json())
+      .then((data) => console.log('backup user'))
+      ;
+    });
+    setData(copyData);
   }
 
   useEffect(() => {
 
     if(true===isLoading)
       return;
-
-    let tmp=[];
-    items.map((item) => {
-      let index = tmp.length;
-      tmp[index]=[
-        item.email,
-        item.plaintextRole,
-        <ToggleSwitch
-            checked={_items[index]}
-            onChange={checked => handleActive(checked,index)}
-        />,
-      ];
-    });
-
-    setData(tmp);
+    setData(items);
     setIsLoading(true);
-  },[isLoading,_items])
+  },[isLoading])
 
   return (
     <div className="fr-grid-row">
       <div className="fr-col-12">
-        <Table
-          caption={trans(ADMIN_HOMEPAGE_TITLE)}
-          data={data}
-          headers={headers}
-          fixed
-        />
+        <div className="fr-table">
+          <table>
+            <caption>{trans(ADMIN_HOMEPAGE_TITLE)}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{trans(LOGIN_EMAIL)}</th>
+                <th scope="col">{trans(USER_FIELD_ROLE)}</th>
+                <th scope="col">{trans(USER_FIELD_ACTIVE)}</th>
+              </tr>
+            </thead>
+            <tbody>
+            {data.map((item) => (
+              <tr key={item.id}>
+                <td>{item.email}</td>
+                <td>{item.plaintextRole}</td>
+                <td>
+                  <ToggleSwitch
+                      checked={item.active}
+                      onChange={() => handleCheck(item.id)}
+                  />
+                </td>
+              </tr>)
+            )}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className="fr-col-9">
       </div>
