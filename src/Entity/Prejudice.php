@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(PrejudiceInterface::DISCRIMINATOR_MAP)]
-abstract class Prejudice
+abstract class Prejudice implements PrejudiceInterface
 {
     #[Groups('prejudice:read','prejudice:write')]
     #[ORM\Id]
@@ -48,6 +48,10 @@ abstract class Prejudice
     protected $discriminator;
 
     protected $discr;
+
+    #[Groups('prejudice:read')]
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $reference = null;
 
     public function __construct()
     {
@@ -132,6 +136,18 @@ abstract class Prejudice
     public function setDateDeclaration(\DateTimeInterface $dateDeclaration): static
     {
         $this->dateDeclaration = $dateDeclaration;
+
+        return $this;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function setReference(?string $reference): static
+    {
+        $this->reference = $reference;
 
         return $this;
     }

@@ -6,7 +6,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
-use App\Contracts\PrejudiceInterface;
 use App\Repository\BrisPorteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -28,7 +27,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
   ]
 )]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
-class BrisPorte extends Prejudice implements PrejudiceInterface
+class BrisPorte extends Prejudice
 {
     #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -235,5 +234,4 @@ class BrisPorte extends Prejudice implements PrejudiceInterface
 
         return $this;
     }
-
 }

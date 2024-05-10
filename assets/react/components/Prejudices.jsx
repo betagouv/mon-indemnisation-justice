@@ -21,6 +21,7 @@ const Prejudices = function({items}) {
 
   const headers = [
     trans(SINISTRE_FIELD_DATE_DECLARATION),
+    "@Référence",
     trans(SINISTRE_FIELD_STATUT),
     trans(SINISTRE_FIELD_DATE_DERNIER_STATUT),
     trans(GLOBAL_ACTIONS)
@@ -39,6 +40,7 @@ const Prejudices = function({items}) {
         href = Routing.generate('app_bris_porte_view',{id: item.id});
       tmp[tmp.length]=[
         format(dateDeclaration,"dd/MM/yy"),
+        item.reference,
         lastStatut,
         format(dateLastStatut,"dd/MM/yy HH:mm"),
         <Button
