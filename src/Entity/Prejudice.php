@@ -26,7 +26,8 @@ abstract class Prejudice
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'prejudices')]
+    #[Groups('prejudice:read')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     protected ?User $requerant = null;
 

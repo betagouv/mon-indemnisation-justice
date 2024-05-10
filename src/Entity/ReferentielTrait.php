@@ -8,15 +8,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 trait ReferentielTrait
 {
     #[ORM\Column(length: 50, unique: true)]
-    #[Groups(["read"])]
+    #[Groups(['user:read','prejudice:read','read'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Groups(["read"])]
+    #[Groups(['user:read','prejudice:read','read'])]
     private ?string $mnemo = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["read"])]
+    #[Groups(['user:read','prejudice:read','read'])]
     private ?string $libelle = null;
 
     public string $libelleLong;

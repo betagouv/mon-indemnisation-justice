@@ -11,6 +11,11 @@ export const castDate = (input) => {
   return "";
 }
 
+export const normalizeDate = (input) => {
+  if(input)
+    return format(input,"dd/MM/yyyy");
+  return "";
+}
 export const castUrl = (input) => {
   if(!input)
     return "";

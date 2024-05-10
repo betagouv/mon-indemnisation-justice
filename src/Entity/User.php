@@ -38,13 +38,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     const ROLE_REDACTEUR_PRECONTENTIEUX = 'ROLE_REDACTEUR_PRECONTENTIEUX';
     const ROLE_CHEF_PRECONTENTIEUX = 'ROLE_CHEF_PRECONTENTIEUX';
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read'])]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -60,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\Column]
     private ?string $password = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $username = null;
 
@@ -73,7 +73,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[Groups('user:read')]
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant')]
     private Collection $brisPortes;
-
 
     #[Groups('user:read')]
     #[ORM\Column(length: 255, nullable: true)]
@@ -91,19 +90,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $grade = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read'])]
     #[ORM\Column(options: ['default' => false])]
     private ?bool $isPersonneMorale = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Adresse $adresse = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read'])]
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonnePhysique $personnePhysique = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read'])]
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale = null;
 

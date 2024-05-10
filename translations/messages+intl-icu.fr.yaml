@@ -7,6 +7,8 @@ adresse:
     code_postal: "Code postal"
     localite: "Ville"
 bris_porte:
+  view:
+    title: "Consulter un bris de porte"
   edit:
     title: "Déclarer un bris de porte"
     update_constitue: "Je déclare mon bris de porte"

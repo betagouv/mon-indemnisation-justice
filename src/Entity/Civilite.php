@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CiviliteRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
   operations:[
@@ -19,6 +20,7 @@ class Civilite
 {
     use ReferentielTrait;
 
+    #[Groups(['user:read','prejudice:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
