@@ -23,64 +23,64 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 class PersonnePhysique
 {
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 13, nullable: true)]
     private ?string $numeroSecuriteSociale = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 2, nullable: true)]
     private ?string $codeSecuriteSociale = null;
 
     #[ORM\OneToOne(mappedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
     private ?User $compte = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\ManyToOne]
     private ?Civilite $civilite = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom1 = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom2 = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom3 = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $portable = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $communeNaissance = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $paysNaissance = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateNaissance = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomNaissance = null;
 

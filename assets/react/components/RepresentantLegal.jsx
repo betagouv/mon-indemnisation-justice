@@ -71,6 +71,7 @@ const RepresentantLegal = function({personnePhysique}) {
       communeNaissance: communeNaissance, numeroSecuriteSociale: numeroSS,
       dateNaissance: formatDate(dateNaissance)
     };
+
     if(civilite) { data['civilite']=civilite }
     fetch(url, {
       method: 'PATCH',

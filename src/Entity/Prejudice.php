@@ -20,11 +20,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\DiscriminatorMap(PrejudiceInterface::DISCRIMINATOR_MAP)]
 abstract class Prejudice
 {
-    #[Groups('prejudice:read')]
+    #[Groups('prejudice:read','prejudice:write')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    public ?int $id = null;
 
     #[Groups('prejudice:read')]
     #[ORM\ManyToOne]
@@ -40,7 +40,7 @@ abstract class Prejudice
     #[ORM\OneToMany(targetEntity: Statut::class, mappedBy: 'prejudice')]
     protected Collection $statuts;
 
-    #[Groups('prejudice:read')]
+    #[Groups('prejudice:read','prejudice:write')]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     protected ?\DateTimeInterface $dateDeclaration = null;
 

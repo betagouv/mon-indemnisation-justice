@@ -90,19 +90,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $grade = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(options: ['default' => false])]
     private ?bool $isPersonneMorale = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Adresse $adresse = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonnePhysique $personnePhysique = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale = null;
 

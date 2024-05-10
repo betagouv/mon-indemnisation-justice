@@ -1,7 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import CiviliteView from '../Civilite/View';
 import { getStateOnEmpty } from '../../utils/check_state';
 import SecuriteSociale from '../SecuriteSociale';
 import { fr } from "@codegouvfr/react-dsfr";

@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
   )]
 class PersonneMorale
 {
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -31,11 +31,11 @@ class PersonneMorale
     #[ORM\OneToOne(mappedBy: 'personneMorale', cascade: ['persist', 'remove'])]
     private ?User $compte = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $sirenSiret = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
 
