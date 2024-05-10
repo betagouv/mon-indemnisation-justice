@@ -2,18 +2,18 @@ import { Controller } from '@hotwired/stimulus';
 import ReactDOM from 'react-dom';
 import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
-import BrisPortes from '../react/components/BrisPortes';
 import Entete from '../react/components/Entete';
 import FilAriane from '../react/components/FilAriane';
+import BrisPortePanel from '../react/components/BrisPortePanel';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
-
+import {trans,BRIS_PORTE_EDIT_TITLE} from '../translator';
 export default class extends Controller {
     static values = {
       user: Object,
       version: Object,
       breadcrumb: Object,
-      brisPortes: Array
+      brisPorte: Object
     }
     connect() {
       const container = this.element;
@@ -29,7 +29,8 @@ export default class extends Controller {
                 <FilAriane breadcrumb={this.breadcrumbValue}/>
               </div>
               <div className="fr-col-12">
-                <BrisPortes items={this.brisPortesValue} />
+                <h1>{trans(BRIS_PORTE_EDIT_TITLE)}</h1>
+                <BrisPortePanel user={this.userValue} brisPorte={this.brisPorteValue}/>
               </div>
             </div>
           </div>

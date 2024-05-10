@@ -17,73 +17,67 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
   operations:[
     new Get(
+      normalizationContext: ['groups' => ['prejudice:read']],
       name: '_api_bris_porte_get'
     ),
     new GetCollection(),
     new Patch(
+      normalizationContext: ['groups' => ['prejudice:write']],
       name: '_api_bris_porte_patch'
     ),
   ]
 )]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
-class BrisPorte implements PrejudiceInterface
+class BrisPorte extends Prejudice implements PrejudiceInterface
 {
-    use PrejudiceTrait;
-
-    #[Groups('prejudice:read')]
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
-    #[Groups('prejudice:read')]
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $numeroPV = null;
+    protected ?string $numeroPV = null;
 
-    #[Groups('prejudice:read')]
-    #[ORM\ManyToOne(inversedBy: 'brisPortes')]
+    #[Groups(['prejudice:read','prejudice:write'])]
+    #[ORM\ManyToOne(inversedBy: 'brisPortes',cascade:["persist"])]
     private ?Adresse $adresse = null;
 
-    #[Groups('prejudice:read')]
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateOperationPJ = null;
 
-    #[Groups('prejudice:read')]
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(nullable: true,options: ['default' => false])]
     private ?bool $isPorteBlindee = null;
 
-    #[Groups('prejudice:read')]
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(nullable: true,options: ['default' => false])]
     private ?bool $isErreurPorte = null;
 
-    #[Groups('prejudice:read')]
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $identitePersonneRecherchee = null;
 
-    #[Groups('prejudice:read')]
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomRemiseAttestation = null;
 
-    #[Groups('prejudice:read')]
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenomRemiseAttestation = null;
 
-    #[Groups('prejudice:read')]
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\ManyToOne]
     private ?QualiteRequerant $qualiteRequerant = null;
 
-    #[Groups('prejudice:read')]
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
+    #[Groups(['prejudice:read','prejudice:write'])]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateAttestationInformation = null;
+
     public function __construct()
     {
-        $this->init();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
+      $this->adresse = new Adresse();
+      parent::__construct();
     }
 
     public function getNumeroPV(): ?string
@@ -169,7 +163,7 @@ class BrisPorte implements PrejudiceInterface
 
         return $this;
     }
-    
+
     public function getIdentitePersonneRecherchee(): ?string
     {
         return $this->identitePersonneRecherchee;
@@ -226,6 +220,18 @@ class BrisPorte implements PrejudiceInterface
     public function setPrecisionRequerant(?string $precisionRequerant): static
     {
         $this->precisionRequerant = $precisionRequerant;
+
+        return $this;
+    }
+
+    public function getDateAttestationInformation(): ?\DateTimeInterface
+    {
+        return $this->dateAttestationInformation;
+    }
+
+    public function setDateAttestationInformation(\DateTimeInterface $dateAttestationInformation): static
+    {
+        $this->dateAttestationInformation = $dateAttestationInformation;
 
         return $this;
     }

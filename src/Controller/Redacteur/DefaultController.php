@@ -2,7 +2,7 @@
 
 namespace App\Controller\Redacteur;
 
-use App\Entity\BrisPorte;
+use App\Entity\Prejudice;
 use App\Entity\User;
 use App\Entity\Statut;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,14 +34,13 @@ class DefaultController extends AbstractController
         $statuts = $em->getRepository(Statut::class)->findBy(['code' => [
           Statut::CODE_CONSTITUE
           ]]);
-        $brisPortes = $em
-          ->getRepository(BrisPorte::class)
-          ->findBy([])
+        $prejudices = $em
+          ->getRepository(Prejudice::class)
+          ->findByStatuts($statuts,[],0,10)
         ;
-
         return $this->render('redacteur/default/index.html.twig', [
             'breadcrumb' => $breadcrumb,
-            'brisPortes' => $brisPortes
+            'prejudices' => $prejudices
         ]);
     }
 }

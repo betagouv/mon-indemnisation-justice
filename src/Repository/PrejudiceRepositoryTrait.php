@@ -14,15 +14,9 @@ trait PrejudiceRepositoryTrait {
     $classname = $this->getEntityName();
     /** @var EntityManagerInterface $em */
     $em = $this->getEntityManager();
-    /** @var Categorie $categorie */
-    $categorie = $em
-      ->getRepository(Categorie::class)
-      ->findOneBy(['mnemo' => Categorie::MNEMO_BRIS_PORTE])
-    ;
     /** @var PrejudiceInterface $prejudice */
     $prejudice = new $classname();
     $prejudice->setRequerant($user);
-    $prejudice->setCategorie($categorie);
     $em->persist($prejudice);
     $em->flush();
 
@@ -35,4 +29,6 @@ trait PrejudiceRepositoryTrait {
 
     return $prejudice;
   }
+
+
 }
