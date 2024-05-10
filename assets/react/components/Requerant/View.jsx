@@ -18,9 +18,6 @@ const RequerantView = function({
   qualiteRequerant,
   precisionRequerant
 }) {
-  console.log(qualiteRequerant);
-  const CODE_QUALITE_REQUERANT_AUTRE = '4';
-
   return (
     <>
       <div className="fr-grid-row">

@@ -31,7 +31,6 @@ const Prejudices = function({items}) {
       return;
     let tmp=[];
     items.map((item) => {
-      console.log(item);
       const dateDeclaration = Date.parse(item.dateDeclaration);
       const lastStatut = item.lastStatut.code;
       const dateLastStatut = Date.parse(item.lastStatut.date);
