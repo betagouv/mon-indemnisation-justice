@@ -97,3 +97,6 @@ personne_morale:
   field:
     siren_siret: "Siren/siret"
     raison_sociale: "Raison sociale"
+prejudice:
+  field:
+    reference: "Référence"

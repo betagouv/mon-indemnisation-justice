@@ -32,6 +32,9 @@ class Statut implements EntityInterface
     private ?int $id = null;
 
     #[Groups('prejudice:read')]
+    public ?string $libelle = null;
+
+    #[Groups('prejudice:read')]
     #[ORM\ManyToOne(inversedBy: 'statuts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?BrisPorte $prejudice = null;
@@ -59,6 +62,30 @@ class Statut implements EntityInterface
         return $this->id;
     }
 
+    public function getLibelle(): string
+    {
+        switch($this->getCode()) {
+          case self::CODE_EN_COURS_DE_CONSTITUTION:
+            return "Demande d'indemnisation en cours de constitution";
+          case self::CODE_CONSTITUE:
+            return "Demande d'indemnisation constituée";
+          case self::CODE_RENVOI_EN_CONSTITUTION:
+            return "Demande de pièce(s) complémentaire(s) sur la demande d'indemnisation";
+          case self::CODE_VALIDE:
+            return "Demande d'indemnisation validée (en attente signature)";
+          case self::CODE_REJETE:
+            return "Demande d'indemnisation rejetée (en attente signature)";
+          case self::CODE_SIGNATURE_VALIDEE:
+            return "Demande d'indemnisation validée";
+          case self::CODE_SIGNATURE_REJETEE:
+            return "Demande d'indemnisation rejetée";
+          case self::CODE_ACCORD_OFFRE:
+            return "Proposition d'indemnisation acceptée";
+          case self::CODE_REFUS_OFFRE:
+            return "Proposition d'indemnisation rejetée";
+        }
+        return "";
+    }
     public function getPrejudice(): ?PrejudiceInterface
     {
         return $this->prejudice;

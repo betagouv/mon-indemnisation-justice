@@ -6,7 +6,7 @@
   {% set user = app.user %}
   <div {{ stimulus_controller('bris_porte_edit',{
     user: user|serialize('json',{groups: 'user:write'}),
-    brisPorte: brisPorte|serialize('json',{groups: 'prejudice:write'}),
+    brisPorte: brisPorte|serialize('json'),
     breadcrumb: breadcrumb|serialize('json'),
     version: {label: 'beta'}
   }) }}></div>

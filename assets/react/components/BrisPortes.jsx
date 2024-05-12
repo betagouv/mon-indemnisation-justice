@@ -5,6 +5,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { format } from "date-fns";
 import {
   trans,
+  PREJUDICE_FIELD_REFERENCE,
   BRIS_PORTE_CREATE_TITLE,
   REQUERANT_HOMEPAGE_TITLE,
   SINISTRE_FIELD_DATE_DECLARATION,
@@ -20,7 +21,8 @@ const BrisPortes = function({items}) {
   const [data,setData] = useState([]);
 
   const headers = [
-    trans(SINISTRE_FIELD_DATE_DECLARATION),
+    trans(PREJUDICE_FIELD_REFERENCE),
+    //trans(SINISTRE_FIELD_DATE_DECLARATION),
     trans(SINISTRE_FIELD_STATUT),
     trans(SINISTRE_FIELD_DATE_DERNIER_STATUT),
     trans(GLOBAL_ACTIONS)
@@ -32,10 +34,11 @@ const BrisPortes = function({items}) {
     let tmp=[];
     items.map((item) => {
       const dateDeclaration = Date.parse(item.dateDeclaration);
-      const lastStatut = item.lastStatut.code;
+      const lastStatut = item.lastStatut.libelle;
       const dateLastStatut = Date.parse(item.lastStatut.date);
       tmp[tmp.length]=[
-        format(dateDeclaration,"dd/MM/yy"),
+        item.reference,
+        //format(dateDeclaration,"dd/MM/yy"),
         lastStatut,
         format(dateLastStatut,"dd/MM/yy HH:mm"),
         <Button
