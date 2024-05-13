@@ -5,6 +5,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { format } from "date-fns";
 import {
   trans,
+  PREJUDICE_FIELD_REFERENCE,
   BRIS_PORTE_CREATE_TITLE,
   REQUERANT_HOMEPAGE_TITLE,
   SINISTRE_FIELD_DATE_DECLARATION,
@@ -20,8 +21,7 @@ const Prejudices = function({items}) {
   const [data,setData] = useState([]);
 
   const headers = [
-    trans(SINISTRE_FIELD_DATE_DECLARATION),
-    "@Référence",
+    trans(PREJUDICE_FIELD_REFERENCE),
     trans(SINISTRE_FIELD_STATUT),
     trans(SINISTRE_FIELD_DATE_DERNIER_STATUT),
     trans(GLOBAL_ACTIONS)
@@ -32,14 +32,12 @@ const Prejudices = function({items}) {
       return;
     let tmp=[];
     items.map((item) => {
-      const dateDeclaration = Date.parse(item.dateDeclaration);
-      const lastStatut = item.lastStatut.code;
+      const lastStatut = item.lastStatut.libelle;
       const dateLastStatut = Date.parse(item.lastStatut.date);
       let href = null;
       if(item.discriminator === 'BrisPorte')
         href = Routing.generate('app_bris_porte_view',{id: item.id});
       tmp[tmp.length]=[
-        format(dateDeclaration,"dd/MM/yy"),
         item.reference,
         lastStatut,
         format(dateLastStatut,"dd/MM/yy HH:mm"),
