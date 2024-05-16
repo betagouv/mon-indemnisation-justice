@@ -12,7 +12,7 @@ import {
   SINISTRE_FIELD_STATUT,
   SINISTRE_FIELD_DATE_DERNIER_STATUT,
   GLOBAL_ACTIONS,
-  GLOBAL_BTN_UPDATE
+  GLOBAL_BTN_VIEW
 } from '../../translator';
 const Prejudices = function({items}) {
 
@@ -43,7 +43,7 @@ const Prejudices = function({items}) {
         format(dateLastStatut,"dd/MM/yy HH:mm"),
         <Button
         linkProps={{ href: href }}
-        >{trans(GLOBAL_BTN_UPDATE)}
+        >{trans(GLOBAL_BTN_VIEW)}
         </Button>
       ];
     });

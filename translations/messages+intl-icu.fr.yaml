@@ -32,6 +32,7 @@ global:
     next: "Etape suivante"
     previous: "Etape précédente"
   btn:
+    view: "Consulter"
     update: "Modifier"
   display: "Afficher"
   actions: "Actions"
