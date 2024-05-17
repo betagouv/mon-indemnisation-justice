@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
 import Entete from '../react/components/Entete';
+import PiedDePage from '../react/components/PiedDePage';
 import QuiSommesNousHeader from '../react/components/QuiSommesNousHeader';
 import CategorieDemandes from '../react/components/CategorieDemandes';
 import FilAriane from '../react/components/FilAriane';
@@ -34,6 +35,7 @@ export default class extends Controller {
                 </div>
               </div>
             </div>
+            <PiedDePage />
           </>
         </React.StrictMode>
       )

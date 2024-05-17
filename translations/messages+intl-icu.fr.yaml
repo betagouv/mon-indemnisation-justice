@@ -35,6 +35,15 @@ categorie_demande:
   perte_loyer:
     title: "Perte de loyers"
     chapo: "En raison du placement sous scellés d'un bien immobilier pour les besoins d'une enquête judiciaire"
+  dysfonctionnement_justice:
+    title: "Dysfonctionnements du service public de la justice"
+    chapo: "Délai de procédure déraisonnable devant les juridictions de l'ordre judiciaire, non restitution des scellés, mise en fourrière injustifiée, ..."
+  accident:
+    title: "Accident impliquant un véhicule de la Direction des services judiciaires"
+    chapo: ""
+  sinistre:
+    title: "Sinistre causé par un bâtiment judiciaire"
+    chapo: ""
 global:
   yes: "Oui"
   no: "Non"
