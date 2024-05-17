@@ -4,7 +4,7 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { trans, CATEGORIE_DEMANDE_WAITING
 } from '../../translator';
 
-const CategorieDemandeCard = function({title,chapo,enabled=true,vertical=true}) {
+const CategorieDemandeCard = function({title,chapo,href='#',enabled=true,vertical=true}) {
 
   const tagTitle = (true==enabled) ? title : <div style={{color:"gray"}}>{title}</div>;
   return (
@@ -17,9 +17,7 @@ const CategorieDemandeCard = function({title,chapo,enabled=true,vertical=true}) 
       imageAlt={title}
       horizontal={!vertical}
       imageUrl="https://www.systeme-de-design.gouv.fr/img/placeholder.16x9.png"
-      linkProps={{
-        href: '#'
-      }}
+      linkProps={{ href: href }}
       size="medium"
       title={tagTitle}
       titleAs="h3"

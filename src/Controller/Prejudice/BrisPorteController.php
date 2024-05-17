@@ -7,6 +7,7 @@ use App\Entity\Categorie;
 use App\Entity\Statut;
 use App\Entity\User;
 use App\Repository\StatutRepository;
+use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,6 +26,7 @@ use Symfony\Component\ExpressionLanguage\Expression;
 class BrisPorteController extends AbstractController
 {
     public function __construct(
+      private Version $version,
       private Breadcrumb $breadcrumb,
       private StatutRepository $statutRepository
     )

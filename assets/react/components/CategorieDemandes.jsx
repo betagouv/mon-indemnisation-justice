@@ -20,6 +20,7 @@ const CategorieDemandes = function() {
             title={trans(CATEGORIE_DEMANDE_BRIS_PORTE_TITLE)}
             chapo={trans(CATEGORIE_DEMANDE_BRIS_PORTE_CHAPO)}
             enabled={true}
+            href={Routing.generate('app_bris_porte_test_eligibilite')}
           />
         </div>
         <div className="fr-col-4">
