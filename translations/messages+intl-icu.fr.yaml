@@ -25,6 +25,16 @@ bris_porte:
     qualite_representant: "Qualité"
     precision_representant: "Si autre (à préciser)"
   section: "Informations relative au bris de porte"
+categorie_demande:
+  title: "Catégories de demandes"
+  chapo: "Vous avez la possibilité d'effectuer un test d'éligibilité suivi d'une demande amiable d'indemnisation en sélectionnant l'une des catégories suivantes."
+  waiting: "Disponible prochainement"
+  bris_porte:
+    title: "Bris de porte"
+    chapo: "Ou autres dégâts matériels causés dans le cadre d'une opération de police judiciaire"
+  perte_loyer:
+    title: "Perte de loyers"
+    chapo: "En raison du placement sous scellés d'un bien immobilier pour les besoins d'une enquête judiciaire"
 global:
   yes: "Oui"
   no: "Non"
@@ -41,9 +51,22 @@ header:
   name: Précontentieux
   service: baseline - précisions sur l‘organisation
 homepage:
-  title: "Accueil - Précontentieux - Ministère de la justice"
+  title: "Précontentieux"
+  qui_sommes_nous:
+    title: "Qui sommes nous ?"
+    chapo: "
+    <p>Situé au sein de la Direction des Services Judiciaires (DSJ), le <b>pôle précontentieux</b>
+    a pour mission de <b>traiter les demandes amiables d'indemnisation</b> formulées par les usagers
+    ou les tiers du fait des préjudices causés :<br/>
+      <ul>
+        <li>Soit par le <b>fonctionnement du service public de la justice judiciaire</b></li>
+        <li>Soit par un <b>accident impliquant un véhicule de la Direction des Services Judiciaires</b> (DSJ) du ministère de la justice</li>
+        <li>Soit par un <b>bâtiment judiciaire</b></li>
+      </ul>
+    </p>
+    "
 login:
-  title: Se connecter
+  title: Se connecter à mon espace
   comment: "Connexion à Précontentieux"
   create_account: "Créer un compte"
   details: "Sauf mention contraire, tous les champs sont obligatoires."

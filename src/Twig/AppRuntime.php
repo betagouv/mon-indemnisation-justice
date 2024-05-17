@@ -2,6 +2,7 @@
 
 namespace App\Twig;
 
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Form\Form;
@@ -95,6 +96,17 @@ class AppRuntime implements RuntimeExtensionInterface
       $tmp = str_replace($key,$value, $tmp);
     return $tmp;
   }
+
+  public function emptyUser(): User {
+    $user = new User();
+    $reflectionClass = new \ReflectionClass(User::class);
+    $reflectionClass->getProperty('id')->setValue($user,0);
+    $reflectionClass->getProperty('adresse')->setValue($user,null);
+    $reflectionClass->getProperty('personnePhysique')->setValue($user,null);
+    $reflectionClass->getProperty('personneMorale')->setValue($user,null);
+    return $user;
+  }
+
   public function setEnvironment(Environment $env): self {
     $this->_env = $env;
 

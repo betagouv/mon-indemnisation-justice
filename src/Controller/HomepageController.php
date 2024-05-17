@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,7 @@ class HomepageController extends AbstractController
     }
 
     #[Route('/', name: 'app_homepage')]
-    public function index(Breadcrumb $breadcrumb): Response
+    public function index(Breadcrumb $breadcrumb, Version $version): Response
     {
         $breadcrumb->add("homepage.title", null);
         $user = $this->getUser();
@@ -33,6 +34,7 @@ class HomepageController extends AbstractController
           $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
         return $this->render('homepage/index.html.twig', [
             'breadcrumb' => $breadcrumb,
+            'version' => $version,
         ]);
     }
 }

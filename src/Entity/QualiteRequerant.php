@@ -10,6 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: QualiteRequerantRepository::class)]
 #[ApiResource(
+  cacheHeaders: [
+    'max_age' => 6000,
+    'shared_max_age' => 12000,
+    'vary' => ['Authorization', 'Accept-Language']
+  ],
   operations:[
     new Get(name: '_api_qualite_representant_get'),
     new GetCollection(name: '_api_qualite_representant_get_collection'),
