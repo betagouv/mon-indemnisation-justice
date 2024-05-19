@@ -13,8 +13,14 @@ bris_porte:
       le service enquêteur et saisissez les informations qui y sont renseignées dans
       le formulaire ci-dessous"
       btn: "Vérifier mon éligibilité à l'indemnisation"
-      no_eligible_title: "Vous n'êtes pas éligible à l'indemnisation"
+      eligible_chapo: "Le résultat indiqué ci-dessus découle des éléments saisis et est communiqué à titre informatif."
+      eligible_description: "Effectuer votre demande amiable d'indemnisation en cliquant sur le bouton ci-dessous."
+      eligible_title: "Vous êtes éligible à l'indemnisation"
       no_eligible_chapo: "Le résultat indiqué ci-dessus découle des éléments saisis et est communiqué à titre informatif."
+      no_eligible_description: "Les informations saisies ne vous permettent pas d'obtenir une indemnisation"
+      no_eligible_title: "Vous n'êtes pas éligible à l'indemnisation"
+      error_continue_btn: "Effectuer ma demande d'indemnisation"
+      success_continue_btn: "Accéder au formulaire de demande d'indemnisation"
     title: "Tester mon éligibilité : Bris de porte"
     h1: "Bris de porte"
     h2: "Quelles sont les conditions à remplir pour être indemnisé(e) ?"
@@ -69,14 +75,17 @@ categorie_demande:
     title: "Sinistre causé par un bâtiment judiciaire"
     chapo: ""
 global:
+  field_required: "Le(s) champ(s) doivent être renseigné(s) pour poursuivre : "
   yes: "Oui"
   no: "Non"
+  and_or: " et/ou "
   step:
     next: "Etape suivante"
     previous: "Etape précédente"
   btn:
     view: "Consulter"
     update: "Modifier"
+    stop: "Abandonner"
   display: "Afficher"
   actions: "Actions"
   error_empty_field: "Le champs est obligatoire"

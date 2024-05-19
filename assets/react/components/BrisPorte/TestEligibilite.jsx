@@ -1,17 +1,26 @@
 import React,{useState,useEffect} from 'react';
 import {trans, BRIS_PORTE_TEST_ELIGIBILITE_H2,
-  BRIS_PORTE_TEST_ELIGIBILITE_DESCRIPTION,
   BRIS_PORTE_TEST_ELIGIBILITE_BTN,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_CHAPO,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_TITLE,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO,
+  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ERROR_CONTINUE_BTN,
+  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_SUCCESS_CONTINUE_BTN,
+  BRIS_PORTE_TEST_ELIGIBILITE_DESCRIPTION,
   BRIS_PORTE_TEST_ELIGIBILITE_MODAL_BTN,
+  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_CHAPO,
+  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO,
+  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_DESCRIPTION,
+  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_TITLE,
+  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO,
+  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_DESCRIPTION,
+  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_TITLE,
   BRIS_PORTE_FIELD_DATE_OPERATION_PJ,
   BRIS_PORTE_FIELD_IS_ERREUR_PORTE,
-  BRIS_PORTE_FIELD_NUMERO_PV,
   BRIS_PORTE_FIELD_NUMERO_PARQUET,
+  BRIS_PORTE_FIELD_NUMERO_PV,
+  GLOBAL_AND_OR,
   GLOBAL_NO,
-  GLOBAL_YES
+  GLOBAL_YES,
+  GLOBAL_BTN_STOP,
+  GLOBAL_FIELD_REQUIRED
 } from '../../../translator';
 import parse from 'html-react-parser';
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -35,7 +44,27 @@ const TestEligibilite = function() {
   const [numeroParquet, setNumeroParquet]=useState("");
   const [panel, setPanel]=useState("common");
   function handleTestEligibilite() {
-    setPanel("alert");
+    if(!dateOperationPJ) {
+      alert(trans(GLOBAL_FIELD_REQUIRED)+trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ));
+      return;
+    }
+    if(!numeroPV && !numeroParquet) {
+      alert(trans(GLOBAL_FIELD_REQUIRED)+trans(BRIS_PORTE_FIELD_NUMERO_PV)+trans(GLOBAL_AND_OR)+trans(BRIS_PORTE_FIELD_NUMERO_PARQUET));
+      return;
+    }
+    if(false === isErreurPorte)
+      setPanel("alert");
+    else
+      setPanel("success");
+  }
+
+  function handleStop() {
+    modal.close();
+    setPanel("common");
+  }
+
+  function handleContinue() {
+    alert("ici");
   }
 
   return (
@@ -130,12 +159,46 @@ const TestEligibilite = function() {
             {("alert" == panel) &&
             <>
               <Alert
-                description="This is the description"
+                description={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_DESCRIPTION)}
                 onClose={function noRefCheck(){}}
                 severity="error"
                 title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_TITLE)}
               />
               <p>{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO)}</p>
+              <div className="fr-col-12">
+                <ul className="fr-btns-group fr-btns-group--inline-lg">
+                  <li>
+                    <Button onClick={handleContinue} priority="secondary">
+                    {trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ERROR_CONTINUE_BTN)}
+                    </Button>
+                  </li>
+                  <li>
+                    <Button onClick={handleStop}>
+                    {trans(GLOBAL_BTN_STOP)}
+                    </Button>
+                  </li>
+                </ul>
+              </div>
+            </>
+            }
+            {("success" == panel) &&
+            <>
+              <Alert
+                description={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_DESCRIPTION)}
+                onClose={function noRefCheck(){}}
+                severity="success"
+                title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_TITLE)}
+              />
+              <p>{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO)}</p>
+              <div className="fr-col-12">
+                <ul className="fr-btns-group fr-btns-group--inline-lg">
+                  <li>
+                    <Button onClick={handleContinue}>
+                    {trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_SUCCESS_CONTINUE_BTN)}
+                    </Button>
+                  </li>
+                </ul>
+              </div>
             </>
             }
           </div>
