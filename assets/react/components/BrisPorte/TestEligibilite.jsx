@@ -23,6 +23,8 @@ import {trans, BRIS_PORTE_TEST_ELIGIBILITE_H2,
   GLOBAL_FIELD_REQUIRED
 } from '../../../translator';
 import parse from 'html-react-parser';
+import Submit from '../Submit';
+import Hidden from '../Hidden';
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
@@ -43,6 +45,7 @@ const TestEligibilite = function() {
   const [numeroPV, setNumeroPV]=useState("");
   const [numeroParquet, setNumeroParquet]=useState("");
   const [panel, setPanel]=useState("common");
+
   function handleTestEligibilite() {
     if(!dateOperationPJ) {
       alert(trans(GLOBAL_FIELD_REQUIRED)+trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ));
@@ -63,12 +66,18 @@ const TestEligibilite = function() {
     setPanel("common");
   }
 
-  function handleContinue() {
-    alert("ici");
+  const handleContinue = (event) => {
+    if(panel == "common")
+      event.preventDefault();
   }
 
   return (
-    <>
+    <form onSubmit={handleContinue} name="form" action={Routing.generate("app_inscription")} method="POST">
+      <Hidden name="dateOperationPJ" value={dateOperationPJ} />
+      <Hidden name="type" value="BRI" />
+      <Hidden name="numeroPV" value={numeroPV} />
+      <Hidden name="numeroParquet" value={numeroParquet} />
+      <Hidden name="isErreurPorte" value={isErreurPorte} />
       <div className="fr-grid-row">
         <div className="fr-col-8">
           <h2>{trans(BRIS_PORTE_TEST_ELIGIBILITE_H2)}</h2>
@@ -93,7 +102,9 @@ const TestEligibilite = function() {
                 <Input
                   label={trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}
                   nativeInputProps={{
-                    type: 'date',value: dateOperationPJ, onChange: ev=>setDateOperationPJ(ev.target.value)
+                    type: 'date',
+                    value: dateOperationPJ,
+                    onChange: ev=>setDateOperationPJ(ev.target.value)
                   }}
                 />
               </div>
@@ -168,9 +179,12 @@ const TestEligibilite = function() {
               <div className="fr-col-12">
                 <ul className="fr-btns-group fr-btns-group--inline-lg">
                   <li>
-                    <Button onClick={handleContinue} priority="secondary">
-                    {trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ERROR_CONTINUE_BTN)}
-                    </Button>
+                    <Submit
+                      label={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ERROR_CONTINUE_BTN)}
+                      type="secondary"
+                    />
+
+
                   </li>
                   <li>
                     <Button onClick={handleStop}>
@@ -193,9 +207,9 @@ const TestEligibilite = function() {
               <div className="fr-col-12">
                 <ul className="fr-btns-group fr-btns-group--inline-lg">
                   <li>
-                    <Button onClick={handleContinue}>
-                    {trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_SUCCESS_CONTINUE_BTN)}
-                    </Button>
+                    <Submit
+                      label={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_SUCCESS_CONTINUE_BTN)}
+                    />
                   </li>
                 </ul>
               </div>
@@ -203,7 +217,7 @@ const TestEligibilite = function() {
             }
           </div>
       </modal.Component>
-    </>
+    </form>
   );
 }
 
