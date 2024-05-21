@@ -6,7 +6,7 @@ const QuiSommesNousHeader = function() {
   return (
     <>
       <h1>{trans(HOMEPAGE_QUI_SOMMES_NOUS_TITLE)}</h1>
-      <p>{parse(trans(HOMEPAGE_QUI_SOMMES_NOUS_CHAPO))}</p>      
+      {parse(trans(HOMEPAGE_QUI_SOMMES_NOUS_CHAPO))}
     </>
   );
 }

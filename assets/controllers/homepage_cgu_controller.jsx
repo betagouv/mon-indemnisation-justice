@@ -4,11 +4,13 @@ import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
 import Entete from '../react/components/Entete';
 import PiedDePage from '../react/components/PiedDePage';
+import QuiSommesNousHeader from '../react/components/QuiSommesNousHeader';
+import CategorieDemandes from '../react/components/CategorieDemandes';
 import FilAriane from '../react/components/FilAriane';
-import Inscription from '../react/components/Inscription';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
-
 startReactDsfr({ defaultColorScheme: "system" });
+import {trans, CGU_CONTENT} from '../translator';
+import parse from 'html-react-parser';
 
 export default class extends Controller {
     static values = {
@@ -26,12 +28,7 @@ export default class extends Controller {
             <div className="fr-container">
               <div className="fr-grid-row">
                 <div className="fr-col-12">
-                  <FilAriane breadcrumb={this.breadcrumbValue}/>
-                </div>
-                <div className="fr-col-6">
-                </div>
-                <div className="fr-col-6">
-                  <Inscription user={this.userValue}/>
+                  {parse(trans(CGU_CONTENT))}
                 </div>
               </div>
             </div>

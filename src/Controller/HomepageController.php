@@ -37,4 +37,13 @@ class HomepageController extends AbstractController
             'version' => $version,
         ]);
     }
+
+    #[Route('/conditions-generales-d-utilisation', name: 'app_cgu',options: ['expose' => true])]
+    public function cgu(Breadcrumb $breadcrumb, Version $version): Response
+    {
+        return $this->render('homepage/cgu.html.twig', [
+            'breadcrumb' => $breadcrumb,
+            'version' => $version,
+        ]);
+    }
 }

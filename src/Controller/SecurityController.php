@@ -48,6 +48,9 @@ class SecurityController extends AbstractController
     #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
     public function inscription(Request $request): Response
     {
+        $breadcrumb = $this->breadcrumb;
+        $breadcrumb->add('homepage.title','app_homepage');
+
         $session = $request->getSession();
         $type = $request->get('type') ?? 'NONE';
         $fields=['type' => $type];

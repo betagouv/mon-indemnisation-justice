@@ -74,6 +74,12 @@ categorie_demande:
   sinistre:
     title: "Sinistre causé par un bâtiment judiciaire"
     chapo: ""
+cgu:
+  title: "Conditions générales d'utilisation"
+  content: "
+  <h1>Conditions générales d'utilisation</h1>
+  <span>...</span>
+  "
 global:
   field_required: "Le(s) champ(s) doivent être renseigné(s) pour poursuivre : "
   yes: "Oui"
@@ -90,6 +96,8 @@ global:
   actions: "Actions"
   error_empty_field: "Le champs est obligatoire"
 header:
+  brand: "Ministère<br/>de la justice"
+  title: "Ministère de la justice"
   name: Précontentieux
   service: baseline - précisions sur l‘organisation
 homepage:
@@ -110,6 +118,7 @@ homepage:
 login:
   title: Se connecter à mon espace
   comment: "Connexion à Précontentieux"
+  confirm_password: "Confirmer votre mot de passe"
   create_account: "Créer un compte"
   details: "Sauf mention contraire, tous les champs sont obligatoires."
   email: "Adresse mail"
@@ -134,6 +143,16 @@ resend_password:
   title: "Mot de passe oublié"
   submit: "Envoyer un nouveau mot de passe"
   update_done: "Votre mot de passe a été mis à jour. Veuillez consulter votre messagerie afin de vous connecter."
+security:
+  inscription:
+    title: "Créer un compte"
+    description: "Sauf mention contraire, tous les champs sont obligatoires"
+    chapo: "L'inscription au formulaire de demande d'indemnisation nécessite la création d'un compte"
+    account_allready_exist: "Vous possédez déjà un compte"
+    connect_space_btn: "Se connecter à mon espace"
+    cgu_prefix: "Je certifie avoir lu et accepté les "
+    cgu_content: "Conditions générales d'utilisation"
+    submit: "Valider mon inscription et poursuivre ma demande"
 sinistre:
   field:
     date_declaration: "Date de déclaration"

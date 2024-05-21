@@ -1,15 +1,16 @@
 import React,{useState} from 'react';
-import { trans, HOMEPAGE_TITLE, LOGIN_TITLE } from '../../translator';
+import { trans, HEADER_BRAND, HEADER_TITLE, HOMEPAGE_TITLE, LOGIN_TITLE } from '../../translator';
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import parse from 'html-react-parser';
 
 const Entete = ({user,version}) => {
   return (
     <Header
-      brandTop={<>Ministère<br/>justice</>}
+      brandTop={parse(trans(HEADER_BRAND))}
       homeLinkProps={{
         href: '/',
-        title: 'Ministère justice'
+        title: trans(HEADER_TITLE)
       }}
       serviceTitle={
         <>
