@@ -14,7 +14,8 @@ export default class extends Controller {
     static values = {
       user: Object,
       version: Object,
-      breadcrumb: Object
+      breadcrumb: Object,
+      csrfToken: String
     }
     connect() {
       const container = this.element;
@@ -31,7 +32,7 @@ export default class extends Controller {
                 <div className="fr-col-6">
                 </div>
                 <div className="fr-col-6">
-                  <Inscription user={this.userValue}/>
+                  <Inscription user={this.userValue} csrfToken={this.csrfTokenValue}/>
                 </div>
               </div>
             </div>

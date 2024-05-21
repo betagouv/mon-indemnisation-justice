@@ -7,6 +7,7 @@ import {trans,
   USER_FIELD_NOM_NAISSANCE,
   USER_FIELD_PRENOMS,
   USER_FIELD_NOM,
+  LOGIN_EMAIL_EXAMPLE,
   SECURITY_INSCRIPTION_CGU_PREFIX,
   SECURITY_INSCRIPTION_CGU_CONTENT,
   SECURITY_INSCRIPTION_CHAPO,
@@ -20,10 +21,11 @@ import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { PasswordInput } from "@codegouvfr/react-dsfr/blocks/PasswordInput"
-import { Br, Hidden, Submit } from '../utils/fundamental';
+import { Br, Submit, Hidden } from '../utils/fundamental';
+import { check_empty, check_email, state_error_if_false } from '../utils/check_state';
 import Civilite from './Civilite';
 
-const Inscription = ({user}) => {
+const Inscription = ({user,csrfToken}) => {
   const [civilite,setCivilite]=useState(user.personnePhysique.civilite??"");
   const [prenom1, setPrenom1]=useState(user.personnePhysique.prenom1??"");
   const [nom, setNom]=useState(user.personnePhysique.nom??"");
@@ -33,22 +35,37 @@ const Inscription = ({user}) => {
   const [confirmPassword, setConfirmPassword]=useState("");
   const [cguAccepted, setCguAccepted]=useState(false);
   const [loading, setLoading]=useState(false);
+  const [submittable, setSubmittable]=useState(false);
   const toggleCguAccepted = () => setCguAccepted(!cguAccepted);
   const textCgu = <>
     <div>{trans(SECURITY_INSCRIPTION_CGU_PREFIX)}</div>
     <a href={Routing.generate('app_cgu')} target="_blank">{trans(SECURITY_INSCRIPTION_CGU_CONTENT)}</a>
   </>;
+  const checkValidity = () => {
+    return
+      !check_empty(civilite) &&
+      !check_empty(prenom1) &&
+      !check_empty(nom) &&
+      !check_empty(email) &&
+      !check_email(email)
+    ;
+  }
 
   useEffect(() => {
     setLoading(true);
   },[]);
+  useEffect(() => {
+    setSubmittable(checkValidity());
+  },[civilite, prenom1, nom, email]);
+
   const handleSubmit = (event) => {
     if(loading == false)
       event.preventDefault();
-    alert('ci');
   }
   return (
     <form method="POST" action={Routing.generate('app_inscription')} onSubmit={handleSubmit}>
+      <Hidden name="_csrf_token" value={csrfToken} />
+      <Hidden name="type" value={"BRI"} />
       <h5>{trans(SECURITY_INSCRIPTION_ACCOUNT_ALLREADY_EXIST)}</h5>
       <Button linkProps={{ href: Routing.generate('app_login') }} priority="secondary">
       {trans(SECURITY_INSCRIPTION_CONNECT_SPACE_BTN)}
@@ -93,6 +110,8 @@ const Inscription = ({user}) => {
         <div className="fr-col-12">
           <Input
             label={trans(LOGIN_EMAIL)}
+            state={state_error_if_false(check_empty(email)||check_email(email))}
+            stateRelatedMessage={!(check_empty(email)||check_email(email)) ? trans(LOGIN_EMAIL_EXAMPLE) : ""}
             nativeInputProps={{name: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
           />
         </div>
@@ -122,7 +141,7 @@ const Inscription = ({user}) => {
           />
         </div>
         <div className="fr-col-12">
-          <Submit label={SECURITY_INSCRIPTION_SUBMIT} />
+          <Submit disabled={!submittable} label={trans(SECURITY_INSCRIPTION_SUBMIT)} />
         </div>
       </div>
     </form>
