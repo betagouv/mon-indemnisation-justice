@@ -153,6 +153,10 @@ security:
     cgu_prefix: "Je certifie avoir lu et accepté les "
     cgu_content: "Conditions générales d'utilisation"
     submit: "Valider mon inscription et poursuivre ma demande"
+    message:
+      invalid_length_password: "Votre mot de passe doit contenir au moins %length% caractères"
+      invalid_number_password: "Votre mot de passe doit contenir au moins %length% chiffres"
+      same_password: "Votre mot de passe doit être identique au mot de passe de confirmation"
 sinistre:
   field:
     date_declaration: "Date de déclaration"

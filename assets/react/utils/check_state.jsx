@@ -17,12 +17,14 @@ export const check_email = (email) => {
 }
 
 export const check_empty = (a) => {
-  return !a||(a.length == 0);
+  if(!a)
+    return true;
+  return (a.length == 0);
 }
 
 export const check_equal = (a,b) => {
-  if(!b||!a||(b.length == 0)||(a.length==0))
-    return true;
+  if((!check_empty(a)&&check_empty(b))||(check_empty(a)&&!check_empty(b)))
+    return false;
   return (a == b);
 }
 
@@ -30,6 +32,14 @@ export const state_error_if_false = (test) => {
   return (false == test) ? STATE_ERROR : "";
 }
 
+export const check_numbers = (a,ln) => {
+  if(!a)
+    return false;
+  return (a.replaceAll(/[^\d]/gi,'').length>=ln);
+}
+
 export const check_min_length = (a,ln) => {
-  return (a && (a.length>=ln));
+  if(!a)
+    return false;
+  return (a.length>=ln);
 }

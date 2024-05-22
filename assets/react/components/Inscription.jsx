@@ -12,6 +12,9 @@ import {trans,
   SECURITY_INSCRIPTION_CGU_CONTENT,
   SECURITY_INSCRIPTION_CHAPO,
   SECURITY_INSCRIPTION_DESCRIPTION,
+  SECURITY_INSCRIPTION_MESSAGE_INVALID_LENGTH_PASSWORD,
+  SECURITY_INSCRIPTION_MESSAGE_INVALID_NUMBER_PASSWORD,
+  SECURITY_INSCRIPTION_MESSAGE_SAME_PASSWORD,
   SECURITY_INSCRIPTION_TITLE,
   SECURITY_INSCRIPTION_SUBMIT,
   SECURITY_INSCRIPTION_ACCOUNT_ALLREADY_EXIST,
@@ -22,10 +25,15 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { PasswordInput } from "@codegouvfr/react-dsfr/blocks/PasswordInput"
 import { Br, Submit, Hidden } from '../utils/fundamental';
-import { check_empty, check_email, state_error_if_false } from '../utils/check_state';
+import { check_empty, check_email, state_error_if_false,
+  check_min_length, check_numbers, check_equal } from '../utils/check_state';
 import Civilite from './Civilite';
 
 const Inscription = ({user,csrfToken}) => {
+
+  const MIN_LENGTH_PASSWORD=8;
+  const NUMBERS_IN_PASSWORD=1;
+
   const [civilite,setCivilite]=useState(user.personnePhysique.civilite??"");
   const [prenom1, setPrenom1]=useState(user.personnePhysique.prenom1??"");
   const [nom, setNom]=useState(user.personnePhysique.nom??"");
@@ -42,13 +50,18 @@ const Inscription = ({user,csrfToken}) => {
     <a href={Routing.generate('app_cgu')} target="_blank">{trans(SECURITY_INSCRIPTION_CGU_CONTENT)}</a>
   </>;
   const checkValidity = () => {
-    return
+    const test = !check_empty(password) &&
+      check_min_length(password,MIN_LENGTH_PASSWORD) &&
+      check_numbers(password,NUMBERS_IN_PASSWORD) &&
       !check_empty(civilite) &&
       !check_empty(prenom1) &&
       !check_empty(nom) &&
       !check_empty(email) &&
-      !check_email(email)
+      check_email(email) &&
+      check_equal(password,confirmPassword) &&
+      cguAccepted
     ;
+    return test;
   }
 
   useEffect(() => {
@@ -56,12 +69,23 @@ const Inscription = ({user,csrfToken}) => {
   },[]);
   useEffect(() => {
     setSubmittable(checkValidity());
-  },[civilite, prenom1, nom, email]);
+  },[civilite, prenom1, nom, email, password, confirmPassword, cguAccepted]);
 
   const handleSubmit = (event) => {
     if(loading == false)
       event.preventDefault();
   }
+  const manageMsgPassword = (pwd,cPwd) => {
+    const messages=[];
+    if(!check_empty(pwd) && !check_min_length(pwd,MIN_LENGTH_PASSWORD))
+      messages.push({message: trans(SECURITY_INSCRIPTION_MESSAGE_INVALID_LENGTH_PASSWORD).replace('%length%', MIN_LENGTH_PASSWORD),severity: 'error'});
+    if(!check_empty(pwd) && !check_numbers(pwd,NUMBERS_IN_PASSWORD))
+      messages.push({message: trans(SECURITY_INSCRIPTION_MESSAGE_INVALID_NUMBER_PASSWORD).replace('%length%', NUMBERS_IN_PASSWORD),severity: 'error'});
+    if(cPwd && !check_equal(pwd,cPwd))
+      messages.push({message: trans(SECURITY_INSCRIPTION_MESSAGE_SAME_PASSWORD),severity: 'error'});
+    return messages;
+  }
+
   return (
     <form method="POST" action={Routing.generate('app_inscription')} onSubmit={handleSubmit}>
       <Hidden name="_csrf_token" value={csrfToken} />
@@ -118,6 +142,7 @@ const Inscription = ({user,csrfToken}) => {
         <div className="fr-col-5">
           <PasswordInput
             label={trans(LOGIN_PASSWORD)}
+            messages={manageMsgPassword(password,confirmPassword)}
             nativeInputProps={{name: 'password', value: password, onChange: ev => setPassword(ev.target.value)}}
           />
         </div>

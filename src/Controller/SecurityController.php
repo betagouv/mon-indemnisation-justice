@@ -2,17 +2,20 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
     public function __construct(
+      private UserPasswordHasherInterface $userPasswordHasher,
       private Breadcrumb $breadcrumb,
       private AuthenticationUtils $authenticationUtils,
       private Version $version
@@ -73,6 +76,7 @@ class SecurityController extends AbstractController
     #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
     public function inscription(Request $request): Response
     {
+
         $user = $this->getUser();
         if(null !== $user)
           return $this->redirect('/redirect');
@@ -80,11 +84,31 @@ class SecurityController extends AbstractController
         $breadcrumb = $this->breadcrumb;
         $breadcrumb->add('homepage.title','app_homepage');
         $session = $request->getSession();
+        $submittedToken = $request->getPayload()->get('_csrf_token');
+        /**
+         * Le formulaire a bien été soumis
+         *
+         */
+        if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
+          $userPasswordHasher = $this->userPasswordHasher;
+          $user = new User();
+          $user->setEmail($request->get('email'));
+          $user->getPersonnePhysique()->setPrenom1($request->get('prenom1'));
+          $user->getPersonnePhysique()->setNom($request->get('nom'));
+          $user->setPassword(
+              $userPasswordHasher->hashPassword(
+                  $user,
+                  $request->get('password')
+              )
+          );
+          dd("WORK IN PROGRESS");
+          dd($user,$request);
+        }
         /**
          * Le formulaire a bien été identifié
          *
          */
-        if(true === self::has_fields($request)) {
+        elseif(true === self::has_fields($request)) {
           $fields = self::get_fields($request);
           if($fields['type'] === 'BRI')
             $breadcrumb->add('bris_porte.test_eligibilite.title','app_bris_porte_test_eligibilite');
@@ -96,6 +120,7 @@ class SecurityController extends AbstractController
           $session->set("test_eligibilite",$fields);
           dump($fields);
         }
+
         $error = $this->authenticationUtils->getLastAuthenticationError();
         $lastUsername = $this->authenticationUtils->getLastUsername();
         return $this->render('security/inscription.html.twig', [
