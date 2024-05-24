@@ -13,6 +13,7 @@
 'Credentials have expired.': 'Les identifiants ont expiré.'
 'Account is disabled.': 'Le compte est désactivé.'
 'Account is locked.': 'Le compte est bloqué.'
+'Account is not verified.': "Le compte n'a pas encore été vérifié. Veuillez cliquer sur le lien reçu par mail"
 'Too many failed login attempts, please try again later.': 'Plusieurs tentatives de connexion ont échoué, veuillez réessayer plus tard.'
 'Invalid or expired login link.': 'Lien de connexion invalide ou expiré.'
 'Bad credentials.' : 'Les identifiants sont invalides.'
