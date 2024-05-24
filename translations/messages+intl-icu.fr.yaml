@@ -117,15 +117,18 @@ homepage:
     "
 login:
   title: Se connecter à mon espace
+  btn: "Je me connecte à mon espace"
+  h1: "Me connecter à mon espace"
   comment: "Connexion à Précontentieux"
   confirm_password: "Confirmer votre mot de passe"
+  connect: "Connexion"
   create_account: "Créer un compte"
+  content: "Pour effectuer ou suivre une demande d'indemnisation, se connecter à son espace personnel"
   details: "Sauf mention contraire, tous les champs sont obligatoires."
   email: "Adresse mail"
   email_example: "Format attendu : nom@domaine.fr"
   forgotten_password: "Mot de passe oublié ?"
   password: "Mot de passe"
-  connect: "Connexion"
   error:
     title: "Erreur de connexion"
   no_account_title: "Vous n’avez pas de compte ?"

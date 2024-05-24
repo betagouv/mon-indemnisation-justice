@@ -15,4 +15,5 @@
 'Account is locked.': 'Le compte est bloqué.'
 'Too many failed login attempts, please try again later.': 'Plusieurs tentatives de connexion ont échoué, veuillez réessayer plus tard.'
 'Invalid or expired login link.': 'Lien de connexion invalide ou expiré.'
+'Bad credentials.' : 'Les identifiants sont invalides.'
 'Too many failed login attempts, please try again in %minutes% minute.': 'Plusieurs tentatives de connexion ont échoué, veuillez réessayer dans %minutes% minute.'

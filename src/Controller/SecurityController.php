@@ -39,19 +39,23 @@ class SecurityController extends AbstractController
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'], options: ['expose' => true])]
     public function login(): Response
     {
-        // get the login error if there is one
         $error = $this->authenticationUtils->getLastAuthenticationError();
-
-        // last username entered by the user
         $lastUsername = $this->authenticationUtils->getLastUsername();
-
+        $breadcrumb = $this->breadcrumb;
+        $breadcrumb->add('homepage.title','app_homepage');
+        $breadcrumb->add('login.title');
         $user = $this->getUser();
+        $errorMessage="";
+        if($error && $error->getMessage())
+          $errorMessage = $this->translator->trans($error->getMessage(),[],'security');
         if(null !== $user)
           return $this->redirect('/redirect');
 
-        return $this->render('security/login.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error,
+        return $this->render('security/connexion.html.twig', [
+          'last_username' => $lastUsername,
+          'error_message' => $errorMessage,
+          'breadcrumb' => $breadcrumb,
+          'version' => $this->version,
         ]);
     }
 
