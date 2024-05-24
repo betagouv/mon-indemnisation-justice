@@ -2,8 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Contracts\EntityInterface;
 use App\Repository\UserRepository;
@@ -18,6 +21,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
   operations:[
+    new GetCollection(
+      name: '_api_user_get_collection'
+    ),
     new Get(
       name: '_api_user_get'
     ),
@@ -46,6 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
 
     #[Groups(['user:read','prejudice:read'])]
     #[ORM\Column(length: 180)]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?string $email = null;
 
     /**

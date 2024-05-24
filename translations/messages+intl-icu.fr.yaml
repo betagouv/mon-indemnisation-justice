@@ -154,6 +154,7 @@ security:
     cgu_content: "Conditions générales d'utilisation"
     submit: "Valider mon inscription et poursuivre ma demande"
     message:
+      email_allready_exist: "Cette adresse est déjà utilisée, nous vous invitons à réinitialiser votre mot de passe si vous l'avez perdu"
       invalid_length_password: "Votre mot de passe doit contenir au moins %length% caractères"
       invalid_number_password: "Votre mot de passe doit contenir au moins %length% chiffres"
       same_password: "Votre mot de passe doit être identique au mot de passe de confirmation"

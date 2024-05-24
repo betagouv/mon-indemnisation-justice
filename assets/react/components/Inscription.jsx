@@ -12,6 +12,7 @@ import {trans,
   SECURITY_INSCRIPTION_CGU_CONTENT,
   SECURITY_INSCRIPTION_CHAPO,
   SECURITY_INSCRIPTION_DESCRIPTION,
+  SECURITY_INSCRIPTION_MESSAGE_EMAIL_ALLREADY_EXIST,
   SECURITY_INSCRIPTION_MESSAGE_INVALID_LENGTH_PASSWORD,
   SECURITY_INSCRIPTION_MESSAGE_INVALID_NUMBER_PASSWORD,
   SECURITY_INSCRIPTION_MESSAGE_SAME_PASSWORD,
@@ -34,6 +35,15 @@ const Inscription = ({user,csrfToken}) => {
   const MIN_LENGTH_PASSWORD=8;
   const NUMBERS_IN_PASSWORD=1;
 
+  const check_email_exists = () => {
+    setWaiting(true);
+    if(!check_email(email))
+      return false;
+    fetch(Routing.generate('_api_user_get_collection',{email: email}))
+      .then((response) => response.json())
+      .then((data) => {setEmailFree(data["hydra:totalItems"]==0);setWaiting(false);})
+    ;
+  }
   const [civilite,setCivilite]=useState(user.personnePhysique.civilite??"");
   const [prenom1, setPrenom1]=useState(user.personnePhysique.prenom1??"");
   const [nom, setNom]=useState(user.personnePhysique.nom??"");
@@ -44,13 +54,16 @@ const Inscription = ({user,csrfToken}) => {
   const [cguAccepted, setCguAccepted]=useState(false);
   const [loading, setLoading]=useState(false);
   const [submittable, setSubmittable]=useState(false);
+  const [emailFree, setEmailFree]=useState(false);
   const toggleCguAccepted = () => setCguAccepted(!cguAccepted);
+  const [waiting, setWaiting]=useState(false);
   const textCgu = <>
     <div>{trans(SECURITY_INSCRIPTION_CGU_PREFIX)}</div>
     <a href={Routing.generate('app_cgu')} target="_blank">{trans(SECURITY_INSCRIPTION_CGU_CONTENT)}</a>
   </>;
   const checkValidity = () => {
-    const test = !check_empty(password) &&
+    const test =
+      !check_empty(password) &&
       check_min_length(password,MIN_LENGTH_PASSWORD) &&
       check_numbers(password,NUMBERS_IN_PASSWORD) &&
       !check_empty(civilite) &&
@@ -59,7 +72,9 @@ const Inscription = ({user,csrfToken}) => {
       !check_empty(email) &&
       check_email(email) &&
       check_equal(password,confirmPassword) &&
-      cguAccepted
+      cguAccepted &&
+      emailFree &&
+      !waiting
     ;
     return test;
   }
@@ -69,7 +84,9 @@ const Inscription = ({user,csrfToken}) => {
   },[]);
   useEffect(() => {
     setSubmittable(checkValidity());
-  },[civilite, prenom1, nom, email, password, confirmPassword, cguAccepted]);
+  },[civilite, prenom1, nom, email, password, confirmPassword, cguAccepted, emailFree, waiting]);
+
+  useEffect(() => {check_email_exists();},[email]);
 
   const handleSubmit = (event) => {
     if(loading == false)
@@ -84,6 +101,14 @@ const Inscription = ({user,csrfToken}) => {
     if(cPwd && !check_equal(pwd,cPwd))
       messages.push({message: trans(SECURITY_INSCRIPTION_MESSAGE_SAME_PASSWORD),severity: 'error'});
     return messages;
+  }
+
+  function getErrorEmail(mail) {
+    if(!(check_empty(email)||check_email(email)))
+      return trans(LOGIN_EMAIL_EXAMPLE);
+    if(check_email(email) && !emailFree)
+      return trans(SECURITY_INSCRIPTION_MESSAGE_EMAIL_ALLREADY_EXIST);
+    return "";
   }
 
   return (
@@ -134,8 +159,8 @@ const Inscription = ({user,csrfToken}) => {
         <div className="fr-col-12">
           <Input
             label={trans(LOGIN_EMAIL)}
-            state={state_error_if_false(check_empty(email)||check_email(email))}
-            stateRelatedMessage={!(check_empty(email)||check_email(email)) ? trans(LOGIN_EMAIL_EXAMPLE) : ""}
+            state={state_error_if_false(check_empty(email)||(check_email(email)&&emailFree))}
+            stateRelatedMessage={getErrorEmail(email)}
             nativeInputProps={{name: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
           />
         </div>
