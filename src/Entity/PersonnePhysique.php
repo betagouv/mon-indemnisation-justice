@@ -266,4 +266,10 @@ class PersonnePhysique
 
         return $this;
     }
+
+    public function getNomComplet(): ?string
+    {
+        $civilite = $this->getCivilite() ? $this->getCivilite()->getLibelle() : null;
+        return implode(" ",[$civilite,$this->getPrenom1(),$this->getNom()]);
+    }
 }

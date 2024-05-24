@@ -1,11 +1,20 @@
-<h1>Hi! Please confirm your email!</h1>
-
-<p>
-    Please confirm your email address by clicking the following link: <br><br>
-    <a href="{{ signedUrl|raw }}">Confirm my Email</a>.
-    This link will expire in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
-</p>
-
-<p>
-    Cheers!
-</p>
+{% set name=('header.name'|trans) %}
+<html>
+  <head>
+    <title>{{'register.email.title'|trans|replace({'%email%': mail,'%name%':name})}}</title>
+  </head>
+  <body>
+    <p>{{'register.email.confirm_prefix'|trans|replace({'%nom_complet%':nomComplet, '%name%':name})|raw}} <a href="{{ signedUrl|raw }}">{{'register.email.confirm_btn'|trans}}</a>
+    </p>
+    <p>
+      {{'register.email.confirm_postfix'|trans}}<a href="{{url}}">{{'header.name'|trans}}</a>
+    </p>
+    <p>
+      {{'register.email.expired_at'|trans}} {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+    </p>
+    <p>
+      {{'register.email.thanks'|trans}}
+    </p>
+    <img src="{{urlTracking|raw}}"/>
+  </body>
+</html>

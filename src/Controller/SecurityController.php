@@ -2,23 +2,36 @@
 
 namespace App\Controller;
 
+use App\Entity\Tracking;
+use App\Entity\Civilite;
 use App\Entity\User;
+use App\Security\EmailVerifier;
 use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
+use Doctrine\ORM\EntityManagerInterface;
+use FOPG\Component\UtilsBundle\Env\Env;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
 {
     public function __construct(
+      private UrlGeneratorInterface $urlGenerator,
+      private TranslatorInterface $translator,
       private UserPasswordHasherInterface $userPasswordHasher,
       private Breadcrumb $breadcrumb,
       private AuthenticationUtils $authenticationUtils,
-      private Version $version
+      private Version $version,
+      private EntityManagerInterface $em,
+      private EmailVerifier $emailVerifier
     ) {
 
     }
@@ -73,10 +86,30 @@ class SecurityController extends AbstractController
       return $fields;
     }
 
+    private function handleUserRequest(Request $request, User $user): void
+    {
+          /** @var ?int $civiliteId */
+          $civiliteId = $request->get('civilite',null);
+          /** @var ?Civilite $civilite */
+          $civilite = (null !== $civiliteId) ? $this->em->getRepository(Civilite::class)->find($civiliteId) : null;
+          $userPasswordHasher = $this->userPasswordHasher;
+          $user->setEmail($request->get('email'));
+          $user->getPersonnePhysique()->setPrenom1($request->get('prenom1'));
+          $user->getPersonnePhysique()->setNom($request->get('nom'));
+          $user->getPersonnePhysique()->setNomNaissance($request->get('nomNaissance'));
+          $user->setPassword(
+              $userPasswordHasher->hashPassword(
+                  $user,
+                  $request->get('password')
+              )
+          );
+          $user->getPersonnePhysique()->setCivilite($civilite);
+          $user->addRole(User::ROLE_REQUERANT);
+    }
+
     #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
     public function inscription(Request $request): Response
     {
-
         $user = $this->getUser();
         if(null !== $user)
           return $this->redirect('/redirect');
@@ -85,40 +118,69 @@ class SecurityController extends AbstractController
         $breadcrumb->add('homepage.title','app_homepage');
         $session = $request->getSession();
         $submittedToken = $request->getPayload()->get('_csrf_token');
+        $fields = self::get_fields($request);
+        if($fields['type'] === 'BRI')
+          $breadcrumb->add('bris_porte.test_eligibilite.title','app_bris_porte_test_eligibilite');
+
         /**
          * Le formulaire a bien été soumis
          *
          */
         if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
-          $userPasswordHasher = $this->userPasswordHasher;
+          /**
+           * Création du nouveau compte
+           *
+           */
           $user = new User();
-          $user->setEmail($request->get('email'));
-          $user->getPersonnePhysique()->setPrenom1($request->get('prenom1'));
-          $user->getPersonnePhysique()->setNom($request->get('nom'));
-          $user->setPassword(
-              $userPasswordHasher->hashPassword(
-                  $user,
-                  $request->get('password')
-              )
+          $this->handleUserRequest($request, $user);
+          $this->em->persist($user);
+          $this->em->flush();
+
+          $urlTracking = $this->urlGenerator->generate(
+            'app_tracking',
+            ['id'=> $user->getId(),'md5' => md5($user->getEmail())],
+            UrlGeneratorInterface::ABSOLUTE_URL
           );
-          dd("WORK IN PROGRESS");
-          dd($user,$request);
+          /**
+           * Envoi du mail de confirmation
+           *
+           */
+          $appName = $this->translator->trans('header.name');
+          $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            (new TemplatedEmail())
+              ->from(new Address(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL')))
+              ->to($user->getEmail())
+              ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('register.email.title')))
+              ->htmlTemplate('registration/confirmation_email.html.twig')
+              ->context([
+                'mail' => $user->getEmail(),
+                'url' => Env::get('BASE_URL'),
+                'nomComplet' => $user->getNomComplet(),
+                'urlTracking' => $urlTracking,
+              ])
+          );
+          $this->em->getRepository(Tracking::class)->add($user,Tracking::EVENT_SEND_EMAIL_CREATE_ACCOUNT);
+
+          $breadcrumb->add('security.success.title',null);
+
+          return $this->render('security/success.html.twig', [
+            'user' => $user,
+            'breadcrumb' => $this->breadcrumb,
+            'version' => $this->version
+          ]);
         }
         /**
          * Le formulaire a bien été identifié
          *
          */
         elseif(true === self::has_fields($request)) {
-          $fields = self::get_fields($request);
-          if($fields['type'] === 'BRI')
-            $breadcrumb->add('bris_porte.test_eligibilite.title','app_bris_porte_test_eligibilite');
+          if($fields['type'] === 'BRI') { }
           else {
             $session->set("test_eligibilite",null);
             return $this->redirect('/');
           }
           $breadcrumb->add('security.inscription.title',null);
           $session->set("test_eligibilite",$fields);
-          dump($fields);
         }
 
         $error = $this->authenticationUtils->getLastAuthenticationError();

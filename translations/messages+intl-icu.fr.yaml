@@ -132,6 +132,13 @@ login:
 logout:
   title: Se déconnecter
 register:
+  email:
+    title: "Précontentieux : finalisation de l'activation de votre compte pour l'application %name%"
+    confirm_prefix: "Bonjour %nom_complet%,<br/>Nous prenons acte de votre ouverture de compte à l'application %name%. Pour finaliser l'activation de votre compte, veuillez cliquez sur le lien suivant : "
+    confirm_postfix: "Vous pouvez accéder directement à l'application via ce lien : "
+    confirm_btn: "lien de confirmation"
+    expired_at: "Ce lien expire dans "
+    thanks: "Cordialement"
   title: "Créer un compte"
   terms: "J'accepte les termes d'utilisation"
   error:
@@ -144,6 +151,15 @@ resend_password:
   submit: "Envoyer un nouveau mot de passe"
   update_done: "Votre mot de passe a été mis à jour. Veuillez consulter votre messagerie afin de vous connecter."
 security:
+  success:
+    title: "Confirmation de la création de votre espace personnel"
+    content: "
+    <h1>Finaliser la création de votre compte</h1>
+    <p>Pour finaliser la création de votre compte, nous vous invitons sur le
+    lien qui vous a été envoyé à l'adresse email renseignée : <b>%email%</b></p>
+    <p>Une fois votre compte créé, vous pourrez accéder à votre espace personnel pour effectuer votre demande d'indemnisation.</p>
+    "
+    btn: "J'ai finalisé la création de mon compte, je souhaite me connecter à mon espace personnel"
   inscription:
     title: "Créer un compte"
     description: "Sauf mention contraire, tous les champs sont obligatoires"

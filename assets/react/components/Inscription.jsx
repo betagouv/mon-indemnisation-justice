@@ -28,6 +28,7 @@ import { PasswordInput } from "@codegouvfr/react-dsfr/blocks/PasswordInput"
 import { Br, Submit, Hidden } from '../utils/fundamental';
 import { check_empty, check_email, state_error_if_false,
   check_min_length, check_numbers, check_equal } from '../utils/check_state';
+import { cast_number } from '../utils/cast';
 import Civilite from './Civilite';
 
 const Inscription = ({user,csrfToken}) => {
@@ -115,6 +116,7 @@ const Inscription = ({user,csrfToken}) => {
     <form method="POST" action={Routing.generate('app_inscription')} onSubmit={handleSubmit}>
       <Hidden name="_csrf_token" value={csrfToken} />
       <Hidden name="type" value={"BRI"} />
+      <Hidden name="civilite" value={cast_number(civilite)} />
       <h5>{trans(SECURITY_INSCRIPTION_ACCOUNT_ALLREADY_EXIST)}</h5>
       <Button linkProps={{ href: Routing.generate('app_login') }} priority="secondary">
       {trans(SECURITY_INSCRIPTION_CONNECT_SPACE_BTN)}
