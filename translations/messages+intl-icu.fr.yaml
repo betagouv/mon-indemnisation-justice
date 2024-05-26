@@ -127,7 +127,7 @@ login:
   details: "Sauf mention contraire, tous les champs sont obligatoires."
   email: "Adresse mail"
   email_example: "Format attendu : nom@domaine.fr"
-  forgotten_password: "Mot de passe oublié ?"
+  forgotten_password: "J'ai oublié mon mot de passe"
   password: "Mot de passe"
   error:
     title: "Erreur de connexion"
@@ -154,6 +154,15 @@ resend_password:
   submit: "Envoyer un nouveau mot de passe"
   update_done: "Votre mot de passe a été mis à jour. Veuillez consulter votre messagerie afin de vous connecter."
 security:
+  reset_password:
+    description: "Saisissez votre email ici, vous recevrez à cette adresse un courriel pour réinitialiser votre mot de passe"
+    title: "Mettre à jour mon mot de passe"
+    submit: "Revervoir un courriel pour mettre à jour votre mot de passe"
+    email:
+      title: "%name% : Réinitialisation de votre mot de passe"
+    success:
+      title: "Un courriel a été envoyé à votre messagerie"
+      description: "Vous avez reçu un courriel dans votre messagerie. Suivez les instructions contenues dans le courriel afin de finaliser votre réinitialisation"
   success:
     title: "Confirmation de la création de votre espace personnel"
     content: "

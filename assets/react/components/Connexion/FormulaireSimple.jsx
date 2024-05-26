@@ -1,26 +1,59 @@
 import React,{useState,useEffect} from 'react';
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Hidden, Submit, Br } from '../../utils/fundamental';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { PasswordInput } from "@codegouvfr/react-dsfr/blocks/PasswordInput";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { trans,
   LOGIN_BTN,
   LOGIN_EMAIL,
+  SECURITY_RESET_PASSWORD_SUCCESS_TITLE,
+  SECURITY_RESET_PASSWORD_SUCCESS_DESCRIPTION,
+  SECURITY_RESET_PASSWORD_SUBMIT,
   LOGIN_EMAIL_EXAMPLE,
   LOGIN_PASSWORD,
   LOGIN_CONTENT,
   LOGIN_ERROR_TITLE,
-  LOGIN_H1
+  LOGIN_FORGOTTEN_PASSWORD,
+  LOGIN_H1,
+  SECURITY_RESET_PASSWORD_DESCRIPTION
 } from '../../../translator';
+
+const modal = createModal({
+    id: "foo-modal",
+    isOpenedByDefault: false
+});
+
 const FormulaireSimple = ({errorMessage,csrfToken,lastUsername}) => {
+
+  const isOpen = useIsModalOpen(modal);
   const [email, setEmail]=useState(lastUsername);
   const [password,setPassword]=useState("");
   const [loading,setLoading]=useState(false);
+  const [modalEmailSent, setModalEmailSent]=useState(false);
+
   const handleSubmit = () => {
     if(loading == false)
       event.preventDefault();
   }
+
+  const handleSubmitResetPassword = (event) => {
+    setModalEmailSent(true);
+    const url = Routing.generate('app_send_reset_password');
+    fetch(url,{
+      method: "POST",
+      body: JSON.stringify({email: email})
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+    ;
+    event.preventDefault();
+  }
+
   useEffect(() => {
+    setModalEmailSent(false);
     setLoading(true);
   },[]);
 
@@ -57,10 +90,48 @@ const FormulaireSimple = ({errorMessage,csrfToken,lastUsername}) => {
           />
         </div>
         <div className="fr-col-12">
+          <a href="#" onClick={() => {modal.open()}}>{trans(LOGIN_FORGOTTEN_PASSWORD)}</a>
+          <Br space={2} />
+        </div>
+        <div className="fr-col-12">
           <Submit label={trans(LOGIN_BTN)} />
           <Br space={2} />
         </div>
       </div>
+      <modal.Component title={trans(LOGIN_FORGOTTEN_PASSWORD)}>
+        {!modalEmailSent &&
+        <div className="fr-grid-row">
+          <div className="fr-col-12">
+            <Alert
+              small
+              onClose={function noRefCheck(){}}
+              severity="info"
+              description={trans(SECURITY_RESET_PASSWORD_DESCRIPTION)}
+            />
+          </div>
+          <div className="fr-col-12">
+            <Input
+              label={trans(LOGIN_EMAIL)}
+              nativeInputProps={{placeholder: trans(LOGIN_EMAIL_EXAMPLE), value: email, onChange: ev => setEmail(ev.target.value)}}
+            />
+            <Br space={1}/>
+          </div>
+          <div className="fr-col-12">
+            <Button onClick={handleSubmitResetPassword}>
+            {trans(SECURITY_RESET_PASSWORD_SUBMIT)}
+            </Button>
+          </div>
+        </div>
+        }
+        {modalEmailSent &&
+        <Alert
+          description={trans(SECURITY_RESET_PASSWORD_SUCCESS_DESCRIPTION)}
+          onClose={() => {}}
+          severity="success"
+          title={trans(SECURITY_RESET_PASSWORD_SUCCESS_TITLE)}
+        />
+        }
+      </modal.Component>
     </form>
   )
 }

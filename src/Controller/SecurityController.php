@@ -6,12 +6,14 @@ use App\Entity\Tracking;
 use App\Entity\Civilite;
 use App\Entity\User;
 use App\Security\EmailVerifier;
-use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
+use App\Service\Mailer\Mailer;
+use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
 use FOPG\Component\UtilsBundle\Env\Env;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
@@ -34,6 +36,45 @@ class SecurityController extends AbstractController
       private EmailVerifier $emailVerifier
     ) {
 
+    }
+
+    #[Route(path: '/envoi-de-mon-mot-de-passe', name: 'app_send_reset_password', methods: ['POST'], options: ['expose' => true])]
+    public function send_email_for_reset(Request $request): JsonResponse
+    {
+      $content = json_decode($request->getContent(),true);
+      $email = $content['email']??null;
+      $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
+      $sent = false;
+      if($user && $user->hasRole(User::ROLE_REQUERANT)) {
+        $appName = $this->translator->trans('header.name');
+        $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+          (new TemplatedEmail())
+            ->from(new Address(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL')))
+            ->to($user->getEmail())
+            ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('security.reset_password.email.title')))
+            ->htmlTemplate('security/send_link_for_new_password.html.twig')
+            ->context([
+              'mail' => $user->getEmail(),
+              'url' => Env::get('BASE_URL'),
+              'nomComplet' => $user->getNomComplet(),
+          ])
+        );
+        $sent=true;
+      }
+      return new JsonResponse(['email' => $email,'sent' => $sent]);
+    }
+
+    #[Route(path: '/{id}/je-mets-a-jour-mon-mot-de-passe', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
+    public function reset_password(): Response
+    {
+      $breadcrumb = $this->breadcrumb;
+      $breadcrumb->add('homepage.title','app_homepage');
+      $breadcrumb->add('login.reset_password');
+
+      return $this->render('security/reset_password.html.twig',[
+        'breadcrumb' => $breadcrumb,
+        'version' => $this->version,
+      ]);
     }
 
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'], options: ['expose' => true])]
