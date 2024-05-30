@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -46,6 +47,15 @@ class SecurityController extends AbstractController
       $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
       $sent = false;
       if($user && $user->hasRole(User::ROLE_REQUERANT)) {
+        $user->generateExpirationLink();
+        $this->em->flush();
+
+        $url = $this->urlGenerator->generate(
+          'app_reset_password',
+          ['id'=> $user->getId(),'expirationLink' => $user->getExpirationLink()],
+          UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
         $appName = $this->translator->trans('header.name');
         $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
           (new TemplatedEmail())
@@ -54,8 +64,9 @@ class SecurityController extends AbstractController
             ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('security.reset_password.email.title')))
             ->htmlTemplate('security/send_link_for_new_password.html.twig')
             ->context([
+              'name' => $appName,
               'mail' => $user->getEmail(),
-              'url' => Env::get('BASE_URL'),
+              'url' => $url,
               'nomComplet' => $user->getNomComplet(),
           ])
         );
@@ -64,17 +75,41 @@ class SecurityController extends AbstractController
       return new JsonResponse(['email' => $email,'sent' => $sent]);
     }
 
-    #[Route(path: '/{id}/je-mets-a-jour-mon-mot-de-passe', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
-    public function reset_password(): Response
+    #[Route(path: '/{id}/je-mets-a-jour-mon-mot-de-passe/{expirationLink}', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
+    public function reset_password(?User $user, Request $request): Response
     {
       $breadcrumb = $this->breadcrumb;
       $breadcrumb->add('homepage.title','app_homepage');
-      $breadcrumb->add('login.reset_password');
+      $breadcrumb->add('security.reset_password.title');
 
-      return $this->render('security/reset_password.html.twig',[
-        'breadcrumb' => $breadcrumb,
-        'version' => $this->version,
-      ]);
+      $submittedToken = $request->getPayload()->get('_csrf_token');
+      $successMsg="";
+      if($user && $user->checkExpirationLink($request->get('expirationLink'))) {
+        /**
+         * Le formulaire a bien été soumis
+         *
+         */
+        if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
+          $userPasswordHasher = $this->userPasswordHasher;
+          $user->setPassword(
+              $userPasswordHasher->hashPassword(
+                  $user,
+                  $request->get('_password')
+              )
+          );
+          $user->setExpirationLink(null);
+          $user->setExpirationDatetime(null);
+          $successMsg = $this->translator->trans('security.reset_password.success.password_reseted');
+          $this->em->flush();
+        }
+        return $this->render('security/reset_password.html.twig',[
+          'user' => $user,
+          'successMsg' => $successMsg,
+          'breadcrumb' => $breadcrumb,
+          'version' => $this->version,
+        ]);
+      }
+      throw $this->createNotFoundException($this->translator->trans('security.reset_password.error.failed'));
     }
 
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'], options: ['expose' => true])]
