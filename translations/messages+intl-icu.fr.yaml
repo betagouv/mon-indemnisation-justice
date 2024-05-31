@@ -161,7 +161,7 @@ security:
     email:
       title: "%name% : Réinitialisation de votre mot de passe"
       link: "Je réinitialise mon mot de passe"
-      content: "Vous avez demandé à réinitialiser votre mot de passe. Cette action n'est valable que 15 minutes à partir de l'envoi de ce mail par l'application. Veuillez trouver ci-après le lien à suivre pour effectuer cette action :"
+      content: "Vous avez demandé à réinitialiser votre mot de passe. Veuillez trouver ci-après le lien à suivre pour effectuer cette action :"
     error:
       failed: "Le lien n'est pas valide ou expiré. Veuillez renouveller une nouvelle tentative de réinitialisation de votre mot de passe"
     success:

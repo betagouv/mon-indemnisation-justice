@@ -50,69 +50,73 @@ class SecurityController extends AbstractController
       $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
       $sent = false;
       if($user && $user->hasRole(User::ROLE_REQUERANT)) {
-        $user->generateExpirationLink();
-        $this->em->flush();
-
-        $url = $this->urlGenerator->generate(
-          'app_reset_password',
-          ['id'=> $user->getId(),'expirationLink' => $user->getExpirationLink()],
-          UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
+        /**
+         * Envoi du mail de confirmation
+         *
+         */
         $appName = $this->translator->trans('header.name');
-        $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-          (new TemplatedEmail())
-            ->from(new Address(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL')))
-            ->to($user->getEmail())
-            ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('security.reset_password.email.title')))
-            ->htmlTemplate('security/send_link_for_new_password.html.twig')
-            ->context([
-              'name' => $appName,
-              'mail' => $user->getEmail(),
-              'url' => $url,
-              'nomComplet' => $user->getNomComplet(),
+
+        $this->mailer
+          ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+          ->to($user->getEmail())
+          ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('security.reset_password.email.title')))
+          ->htmlTemplate('security/send_link_for_new_password.html.twig',[
+            'name' => $appName,
+            'mail' => $user->getEmail(),
+            'url' => Env::get('BASE_URL'),
+            'nomComplet' => $user->getNomComplet(),
           ])
-        );
+          ->send('app_reset_password', $user)
+        ;
         $sent=true;
       }
       return new JsonResponse(['email' => $email,'sent' => $sent]);
     }
 
-    #[Route(path: '/{id}/je-mets-a-jour-mon-mot-de-passe/{expirationLink}', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
-    public function reset_password(?User $user, Request $request): Response
+    #[Route(path: '/je-mets-a-jour-mon-mot-de-passe', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
+    public function reset_password(Request $request, UserRepository $ur): Response
     {
+      /** @var ?int $id */
+      $id = $request->query->get('id',null);
+      /** @var ?User $user */
+      $user = $ur->find($id);
+      if(
+        (null===$user) ||
+        (false === $this->mailer->check($request, $user))
+      )
+      {
+        throw $this->createNotFoundException($this->translator->trans('security.reset_password.error.failed'));
+      }
+
       $breadcrumb = $this->breadcrumb;
       $breadcrumb->add('homepage.title','app_homepage');
       $breadcrumb->add('security.reset_password.title');
 
       $submittedToken = $request->getPayload()->get('_csrf_token');
       $successMsg="";
-      if($user && $user->checkExpirationLink($request->get('expirationLink'))) {
-        /**
-         * Le formulaire a bien été soumis
-         *
-         */
-        if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
-          $userPasswordHasher = $this->userPasswordHasher;
-          $user->setPassword(
-              $userPasswordHasher->hashPassword(
-                  $user,
-                  $request->get('_password')
-              )
-          );
-          $user->setExpirationLink(null);
-          $user->setExpirationDatetime(null);
-          $successMsg = $this->translator->trans('security.reset_password.success.password_reseted');
-          $this->em->flush();
-        }
-        return $this->render('security/reset_password.html.twig',[
-          'user' => $user,
-          'successMsg' => $successMsg,
-          'breadcrumb' => $breadcrumb,
-          'version' => $this->version,
-        ]);
+      /**
+       * Le formulaire a bien été soumis
+       *
+       */
+      if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
+        $userPasswordHasher = $this->userPasswordHasher;
+        $user->setPassword(
+            $userPasswordHasher->hashPassword(
+                $user,
+                $request->get('_password')
+            )
+        );
+        $user->setExpirationLink(null);
+        $user->setExpirationDatetime(null);
+        $successMsg = $this->translator->trans('security.reset_password.success.password_reseted');
+        $this->em->flush();
       }
-      throw $this->createNotFoundException($this->translator->trans('security.reset_password.error.failed'));
+      return $this->render('security/reset_password.html.twig',[
+        'user' => $user,
+        'successMsg' => $successMsg,
+        'breadcrumb' => $breadcrumb,
+        'version' => $this->version,
+      ]);
     }
 
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'], options: ['expose' => true])]
