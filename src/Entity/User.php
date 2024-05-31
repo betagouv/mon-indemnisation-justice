@@ -126,12 +126,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\OneToMany(targetEntity: Tracking::class, mappedBy: 'account')]
     private Collection $trackings;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $expirationLink = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $expirationDatetime = null;
-
     public function __construct()
     {
         $this->personneMorale = new PersonneMorale();
@@ -141,24 +135,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         $this->brisPortes = new ArrayCollection();
         $this->active = true;
         $this->trackings = new ArrayCollection();
-    }
-
-    public function generateExpirationLink(int $delayInMinute=15): static
-    {
-        $now = new \DateTime();
-        $this->setExpirationLink(md5($this->getId().$now->format("YmdHis")));
-        $this->setExpirationDatetime($now->modify("+".$delayInMinute." minutes"));
-        return $this;
-    }
-
-    public function checkExpirationLink(string $expirationLink): bool
-    {
-        $now = new \DateTime();
-        return
-          ($this->getExpirationLink() === $expirationLink)
-          &&
-          ($this->getExpirationDatetime() > $now)
-        ;
     }
 
     public function getId(): ?int
@@ -491,30 +467,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
                 $tracking->setAccount(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getExpirationLink(): ?string
-    {
-        return $this->expirationLink;
-    }
-
-    public function setExpirationLink(?string $expirationLink): static
-    {
-        $this->expirationLink = $expirationLink;
-
-        return $this;
-    }
-
-    public function getExpirationDatetime(): ?\DateTimeInterface
-    {
-        return $this->expirationDatetime;
-    }
-
-    public function setExpirationDatetime(?\DateTimeInterface $expirationDatetime): static
-    {
-        $this->expirationDatetime = $expirationDatetime;
 
         return $this;
     }
