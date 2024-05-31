@@ -73,6 +73,9 @@ class BrisPorte extends Prejudice
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateAttestationInformation = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $numeroParquet = null;
+
     public function __construct()
     {
       $this->adresse = new Adresse();
@@ -231,6 +234,18 @@ class BrisPorte extends Prejudice
     public function setDateAttestationInformation(\DateTimeInterface $dateAttestationInformation): static
     {
         $this->dateAttestationInformation = $dateAttestationInformation;
+
+        return $this;
+    }
+
+    public function getNumeroParquet(): ?string
+    {
+        return $this->numeroParquet;
+    }
+
+    public function setNumeroParquet(?string $numeroParquet): static
+    {
+        $this->numeroParquet = $numeroParquet;
 
         return $this;
     }

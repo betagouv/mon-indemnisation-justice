@@ -12,6 +12,7 @@ use App\Service\Breadcrumb\Breadcrumb;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -35,9 +36,29 @@ class BrisPorteController extends AbstractController
     }
 
     #[Route('/ajouter-un-bris-de-porte', name: 'app_bris_porte_add', methods: ['POST', 'GET'], options: ['expose' => true])]
-    public function add(EntityManagerInterface $em): Response
+    public function add(EntityManagerInterface $em, Request $request): Response
     {
       $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($this->getUser());
+      $session = $request->getSession();
+      /** @var array $testEligibilite */
+      $testEligibilite = $session->get('test_eligibilite',[]);
+      /** @var ?string $type */
+      $type = $testEligibilite['type']??null;
+      /** @var ?\DateTime $dateOperationPJ */
+      $dateOperationPJ = !empty($testEligibilite['dateOperationPJ']) ? new \DateTime($testEligibilite['dateOperationPJ']) : null;
+      /** @var ?string $numeroPV */
+      $numeroPV = $testEligibilite['numeroPV']??null;
+      /** @var ?string $numeroParquet */
+      $numeroParquet = $testEligibilite['numeroParquet']??null;
+      /** @var bool $isErreurPorte */
+      $isErreurPorte = $testEligibilite['isErreurPorte'] ? ($testEligibilite['isErreurPorte']=="true") : false;
+      if($type === 'BRI') {
+        $brisPorte->setDateOperationPJ($dateOperationPJ);
+        $brisPorte->setNumeroPV($numeroPV);
+        $brisPorte->setNumeroParquet($numeroParquet);
+        $brisPorte->setIsErreurPorte($isErreurPorte);
+        $session->remove('test_eligibilite');
+      }
       return $this->redirectToRoute('app_bris_porte_edit',['id' => $brisPorte->getId()]);
     }
 
