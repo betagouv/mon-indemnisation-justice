@@ -104,21 +104,4 @@ class RegistrationController extends AbstractController
             'registrationForm' => $form,
         ]);
     }
-
-    #[Route('/validation-du-compte-requerant', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response
-    {
-        /** @var UserRepository $ur */
-        $ur = $this->em->getRepository(User::class);
-        /** @var ?int $id */
-        $id = $request->query->get('id',null);
-        /** @var ?User $user */
-        $user = $ur->find($id);
-        try {
-          if(null !== $user)
-            $this->emailVerifier->handleEmailConfirmation($request, $user);
-        } catch (VerifyEmailExceptionInterface $exception) { }
-
-        return $this->redirectToRoute('app_login');
-    }
 }

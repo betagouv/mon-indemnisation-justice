@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Tracking;
 use App\Entity\Civilite;
 use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Service\Mailer\SignedMailer;
 use App\Security\EmailVerifier;
 use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Mailer\Mailer;
@@ -33,6 +35,7 @@ class SecurityController extends AbstractController
       private Breadcrumb $breadcrumb,
       private AuthenticationUtils $authenticationUtils,
       private Version $version,
+      private SignedMailer $mailer,
       private EntityManagerInterface $em,
       private EmailVerifier $emailVerifier
     ) {
@@ -187,6 +190,25 @@ class SecurityController extends AbstractController
           $user->addRole(User::ROLE_REQUERANT);
     }
 
+    #[Route('/validation-du-compte-requerant', name: 'app_verify_email')]
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $ur): Response
+    {
+        /** @var ?int $id */
+        $id = $request->query->get('id',null);
+        /** @var ?User $user */
+        $user = $ur->find($id);
+        if(
+          (null!==$user) &&
+          (true === $this->mailer->check($request, $user))
+        )
+        {
+          $user->setIsVerified(true);
+          $this->em->flush();
+        }
+
+        return $this->redirectToRoute('app_login');
+    }
+
     #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
     public function inscription(Request $request): Response
     {
@@ -226,19 +248,20 @@ class SecurityController extends AbstractController
            *
            */
           $appName = $this->translator->trans('header.name');
-          $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-            (new TemplatedEmail())
-              ->from(new Address(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL')))
-              ->to($user->getEmail())
-              ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('register.email.title')))
-              ->htmlTemplate('registration/confirmation_email.html.twig')
-              ->context([
+
+          $this->mailer
+            ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+            ->to($user->getEmail())
+            ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('register.email.title')))
+            ->htmlTemplate('registration/confirmation_email.html.twig',[
                 'mail' => $user->getEmail(),
                 'url' => Env::get('BASE_URL'),
                 'nomComplet' => $user->getNomComplet(),
                 'urlTracking' => $urlTracking,
-              ])
-          );
+            ])
+            ->send('app_verify_email', $user)
+          ;
+
           $this->em->getRepository(Tracking::class)->add($user,Tracking::EVENT_SEND_EMAIL_CREATE_ACCOUNT);
 
           $breadcrumb->add('security.success.title',null);
