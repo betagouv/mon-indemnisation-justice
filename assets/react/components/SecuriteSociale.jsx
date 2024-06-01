@@ -13,7 +13,7 @@ const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
 
   return (
     <div className="fr-grid-row">
-      <div className="fr-col-9">
+      <div className="fr-col-9 fr-pr-md-1w">
         <Input
           label={trans(PERSONNE_FIELD_NUMERO_SECURITE_SOCIALE)}
           nativeInputProps={{
@@ -24,9 +24,7 @@ const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
           }}
         />
       </div>
-      <div className="fr-col-1">
-      </div>
-      <div className="fr-col-2">
+      <div className="fr-col-3">
         <Input
           label="&nbsp;"
           nativeInputProps={{

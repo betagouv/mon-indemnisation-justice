@@ -3,10 +3,14 @@ admin:
     title: "Administration des utilisateurs"
 adresse:
   field:
-    ligne1: "Adresse"
+    ligne1: "Adresse complète"
+    ligne1_bris_porte: "Adresse complète du logement concerné par le bris de porte"
+    ligne1_description: "Adresse où seront envoyé les courriers"
     code_postal: "Code postal"
     localite: "Ville"
 bris_porte:
+  pj:
+    section: "Documents à joindre obligatoirement à votre demande"
   test_eligibilite:
     modal:
       chapo: "Munissez-vous de l'attestation d'informations qui vous a été remise par
@@ -40,20 +44,23 @@ bris_porte:
   edit:
     title: "Déclarer un bris de porte"
     update_constitue: "Je déclare mon bris de porte"
+    details:
+      h5: "Informations sur le bris de porte"
   create:
     title: "Déclarer un bris de porte"
   field:
     numero_pv: "Numéro de Procès-verbal"
     numero_parquet: "Numéro de parquet ou d'instruction"
-    date_operation_pj: "Date de l'opération"
-    is_porte_blindee: "Porte blindée"
-    is_erreur_porte: "Erreur de porte"
+    date_operation_pj: "Date de l'opération de police judiciaire"
+    is_porte_blindee: "S'agit-il d'une porte blindée ?"
+    is_erreur_porte: "S'agit-il d'une erreur des services de police ?"
+    is_erreur_porte_hint_text: "Se référer aux mentions figurant sur l'attestation d'informations"
     identite_personne_recherchee: "Si NON, préciser l'identité de la personne recherchée"
     prefix_remise_attestation: "Attestation remise à : "
     nom_remise_attestation: "NOM"
     prenom_remise_attestation: "PRENOM"
-    qualite_representant: "Qualité"
-    precision_representant: "Si autre (à préciser)"
+    qualite_representant: "J'effectue ma demande en qualité de"
+    precision_representant: "Préciser votre qualité"
   section: "Informations relative au bris de porte"
 categorie_demande:
   title: "Catégories de demandes"
@@ -81,12 +88,14 @@ cgu:
   <span>...</span>
   "
 global:
+  informations_requirement: "Sauf mention contraire, tous les champs sont requis"
   field_required: "Le(s) champ(s) doivent être renseigné(s) pour poursuivre : "
   yes: "Oui"
   no: "Non"
   and_or: " et/ou "
+  optional: "(facultatif)"
   step:
-    next: "Etape suivante"
+    next: "Valider et passer à l'étape suivante"
     previous: "Etape précédente"
   btn:
     view: "Consulter"
@@ -199,13 +208,14 @@ sinistre:
     date_dernier_statut: "Date du dernier statut"
 user:
   section: "Données personnelles"
+  h5: "Votre identité"
   field:
-    is_personne_morale: "Représentez vous une société ?"
+    is_personne_morale: "Ma demande d'indemnisation concerne une personne morale"
     nom_naissance: "Nom de naissance"
-    nom: "Nom"
+    nom: "Nom d'usage"
     prenoms: "Prénom(s)"
-    date_naissance: "Né(e) le"
-    lieu_naissance: "à"
+    date_naissance: "Date de naissance"
+    lieu_naissance: "Ville de naissance"
     pays_naissance: "Pays"
     prenom1: "Premier prénom"
     prenom2: "Deuxième prénom"
@@ -218,9 +228,12 @@ personne:
     numero_securite_sociale: "N° sécurité sociale"
     code_securite_sociale: "Code sécurité"
 personne_morale:
+  title: "Identité de la société"
   field:
     siren_siret: "Siren/siret"
     raison_sociale: "Raison sociale"
+representant_legal:
+  title: "Identité du représentant légal"
 prejudice:
   field:
     reference: "Référence"

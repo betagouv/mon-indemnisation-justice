@@ -9,7 +9,7 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { trans,
-  BRIS_PORTE_SECTION,USER_SECTION,
+  BRIS_PORTE_SECTION,USER_SECTION,USER_H5, GLOBAL_OPTIONAL,
   USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
   USER_FIELD_PRENOMS,USER_FIELD_DATE_NAISSANCE,
   USER_FIELD_LIEU_NAISSANCE,USER_FIELD_PAYS_NAISSANCE,
@@ -21,8 +21,8 @@ import { castDate } from '../utils/cast';
 
 const PersonnePhysique = function({personnePhysique}) {
 
-  const [numeroSS, setNumeroSS]=useState(personnePhysique.numeroSecuriteSociale);
-  const [codeSS, setCodeSS]=useState(personnePhysique.codeSecuriteSociale);
+  const [numeroSS, setNumeroSS]=useState(personnePhysique.numeroSecuriteSociale??"");
+  const [codeSS, setCodeSS]=useState(personnePhysique.codeSecuriteSociale??"");
   const [civilite,setCivilite]=useState(personnePhysique.civilite??"");
   const [nom, setNom]=useState(personnePhysique.nom??"");
   const [prenom1, setPrenom1]=useState(personnePhysique.prenom1??"");
@@ -85,14 +85,12 @@ const PersonnePhysique = function({personnePhysique}) {
     <>
       <div className="fr-grid-row">
         <div className="fr-col-12">
-          <h5>Identité de la personne</h5>
+          <h5>{trans(USER_H5)}</h5>
         </div>
-        <div className="fr-col-3">
+        <div className="fr-col-2 fr-pr-md-1w">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
+        <div className="fr-col-5 fr-pr-md-1w">
           <Input
             label={trans(USER_FIELD_NOM)}
             state={stateNom}
@@ -100,26 +98,13 @@ const PersonnePhysique = function({personnePhysique}) {
             nativeInputProps={{name: 'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
+        <div className="fr-col-5">
         <Input
-          label={trans(USER_FIELD_NOM_NAISSANCE)}
+          label={trans(USER_FIELD_NOM_NAISSANCE)+" "+trans(GLOBAL_OPTIONAL)}
           nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
         />
         </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
-          <Input
-            label={trans(LOGIN_EMAIL)}
-            nativeInputProps={{value: personnePhysique.email}}
-            disabled
-          />
-        </div>
-      </div>
-      <div className="fr-grid-row">
-        <div className="fr-col-3">
+        <div className="fr-col-12">
           <Input
             label={trans(USER_FIELD_PRENOMS)}
             state={statePrenom1}
@@ -127,27 +112,7 @@ const PersonnePhysique = function({personnePhysique}) {
             nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM1), name: 'prenom1', value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
-          <Input
-            label="&nbsp;"
-            nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM2), name: 'prenom2', value: prenom2, onChange: ev => setPrenom2(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
-          <Input
-            label="&nbsp;"
-            nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM3), name: 'prenom3', value: prenom3, onChange: ev => setPrenom3(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-1">
-        </div>
-      </div>
-      <div className="fr-grid-row">
-        <div className="fr-col-3">
+        <div className="fr-col-2 fr-pr-md-1w">
           <Input
             label={trans(USER_FIELD_DATE_NAISSANCE)}
             nativeInputProps={{
@@ -155,9 +120,7 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
+        <div className="fr-col-5">
           <Input
             label={trans(USER_FIELD_LIEU_NAISSANCE)}
             nativeInputProps={{
@@ -165,9 +128,9 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-1">
+        <div className="fr-col-5">
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-7">
           <SecuriteSociale
             codeSS={codeSS}
             numeroSS={numeroSS}

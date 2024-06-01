@@ -4,6 +4,7 @@ import { castNumber } from '../utils/cast';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { fr } from "@codegouvfr/react-dsfr";
 import { trans,
+  PERSONNE_MORALE_TITLE,
   PERSONNE_MORALE_FIELD_SIREN_SIRET,
   PERSONNE_MORALE_FIELD_RAISON_SOCIALE,
   GLOBAL_ERROR_EMPTY_FIELD
@@ -42,24 +43,9 @@ const PersonneMorale = ({personneMorale}) => {
   return (
     <div className="fr-grid-row">
       <div className="fr-col-12">
-        <h5>Identité société</h5>
+        <h5>{trans(PERSONNE_MORALE_TITLE)}</h5>
       </div>
-      <div className="fr-col-5">
-        <Input
-          label={trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)}
-          state={stateSirenSiret}
-          stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-          nativeInputProps={{
-            name: 'sirenSiret',
-            value: sirenSiret,
-            onChange: ev => setSirenSiret(castNumber(ev.target.value)),
-            maxLength: 255
-          }}
-        />
-      </div>
-      <div className="fr-col-1">
-      </div>
-      <div className="fr-col-6">
+      <div className="fr-col-6 fr-pr-md-1w">
         <Input
           label={trans(PERSONNE_MORALE_FIELD_RAISON_SOCIALE)}
           state={stateRaisonSociale}
@@ -68,6 +54,19 @@ const PersonneMorale = ({personneMorale}) => {
             name: 'raisonSociale',
             value: raisonSociale,
             onChange: ev => setRaisonSociale(ev.target.value),
+            maxLength: 255
+          }}
+        />
+      </div>
+      <div className="fr-col-6">
+        <Input
+          label={trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)}
+          state={stateSirenSiret}
+          stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+          nativeInputProps={{
+            name: 'sirenSiret',
+            value: sirenSiret,
+            onChange: ev => setSirenSiret(castNumber(ev.target.value)),
             maxLength: 255
           }}
         />

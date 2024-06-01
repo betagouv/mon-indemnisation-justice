@@ -30,6 +30,11 @@ export const formatUrl=(input) => {
   return input;
 }
 
+export const generateUrl=(prefix,id) => {
+  if(!id)
+    return null;
+  return prefix+id;
+}
 export const formatDate=(input) => {
   if(!input)
     return null;

@@ -3,13 +3,17 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { trans, BRIS_PORTE_FIELD_DATE_OPERATION_PJ,
     BRIS_PORTE_FIELD_IS_PORTE_BLINDEE, BRIS_PORTE_FIELD_IS_ERREUR_PORTE,
     BRIS_PORTE_FIELD_IDENTITE_PERSONNE_RECHERCHEE,
+    BRIS_PORTE_FIELD_IS_ERREUR_PORTE_HINT_TEXT,
     BRIS_PORTE_FIELD_PREFIX_REMISE_ATTESTATION,
+    ADRESSE_FIELD_LIGNE1_BRIS_PORTE,
     BRIS_PORTE_FIELD_NOM_REMISE_ATTESTATION,
     BRIS_PORTE_FIELD_PRENOM_REMISE_ATTESTATION,
+    BRIS_PORTE_EDIT_DETAILS_H5,
     GLOBAL_YES, GLOBAL_NO
 } from '../../translator';
 import Requerant from './Requerant';
-import { checkUrl, castDate, checkDate, checkString, formatUrl,castUrl,formatDate } from '../utils/cast';
+import Adresse from './Adresse';
+import { checkUrl,generateUrl, castDate, checkDate, checkString, formatUrl,castUrl,formatDate } from '../utils/cast';
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 
 const BrisPorte = ({brisPorte}) => {
@@ -20,11 +24,18 @@ const BrisPorte = ({brisPorte}) => {
   const [identitePersonneRecherchee, setIdentitePersonneRecherchee]=useState(brisPorte.identitePersonneRecherchee??'');
   const [nomRemiseAttestation, setNomRemiseAttestation]=useState(brisPorte.nomRemiseAttestation??'');
   const [prenomRemiseAttestation, setPrenomRemiseAttestation]=useState(brisPorte.prenomRemiseAttestation??'');
-  const [qualiteRequerant, setQualiteRequerant]=useState(castUrl(brisPorte.qualiteRequerant));
+  const [qualiteRequerant, setQualiteRequerant]=useState(brisPorte.qualiteRequerant?generateUrl("/api/qualite_requerants/",brisPorte.qualiteRequerant.code):"");
   const [precisionRequerant, setPrecisionRequerant]=useState(brisPorte.precisionRequerant??"");
 
   const [recordActived, setRecordActived]=useState(false);
+  const [loading, setLoading]=useState(false);
 
+  useEffect(() => {
+    if(true===loading)
+      return;
+    console.log(brisPorte);
+    setLoading(true);
+  },[]);
   function mustBeRecorded() {
     const test =
     !checkDate(dateOperationPJ,brisPorte.dateOperationPJ)||
@@ -33,7 +44,7 @@ const BrisPorte = ({brisPorte}) => {
     !checkString(identitePersonneRecherchee,brisPorte.identitePersonneRecherchee)||
     !checkString(nomRemiseAttestation,brisPorte.nomRemiseAttestation)||
     !checkString(prenomRemiseAttestation,brisPorte.prenomRemiseAttestation)||
-    !checkUrl(qualiteRequerant,brisPorte.qualiteRequerant)||
+    !checkUrl(qualiteRequerant,brisPorte.qualiteRequerant?generateUrl("/api/qualite_requerants/",brisPorte.qualiteRequerant.code):null)||
     !checkString(precisionRequerant,brisPorte.precisionRequerant)||
     (true === recordActived)
     ;
@@ -69,11 +80,22 @@ const BrisPorte = ({brisPorte}) => {
   return (
     <div className="fr-grid-row">
       <div className="fr-col-12">
+        <h5>{trans(BRIS_PORTE_EDIT_DETAILS_H5)}</h5>
+      </div>
+      <div className="fr-col-4">
         <Input
           label={trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}
           nativeInputProps={{
             type: 'date',value: dateOperationPJ, onChange: ev=>setDateOperationPJ(ev.target.value)
           }}
+        />
+      </div>
+      <div className="fr-col-8">
+      </div>
+      <div className="fr-col-12">
+        <Adresse
+          adresse={brisPorte.adresse}
+          optionalLigne1Texte={trans(ADRESSE_FIELD_LIGNE1_BRIS_PORTE)}
         />
       </div>
       <div className="fr-col-12">
@@ -100,6 +122,7 @@ const BrisPorte = ({brisPorte}) => {
       </div>
       <div className="fr-col-12">
         <RadioButtons
+          hintText={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE_HINT_TEXT)}
           legend={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE)}
           orientation='horizontal'
           options={[
@@ -118,6 +141,14 @@ const BrisPorte = ({brisPorte}) => {
                     }
                 },
             ]}
+        />
+      </div>
+      <div className="fr-col-12">
+        <Requerant
+          qualiteRequerant={qualiteRequerant}
+          setQualiteRequerant={setQualiteRequerant}
+          precisionRequerant={precisionRequerant}
+          setPrecisionRequerant={setPrecisionRequerant}
         />
       </div>
       <div className="fr-col-12">
@@ -151,14 +182,6 @@ const BrisPorte = ({brisPorte}) => {
             onChange: ev=>setPrenomRemiseAttestation(ev.target.value),
             maxLength: 255
           }}
-        />
-      </div>
-      <div className="fr-col-12">
-        <Requerant
-          qualiteRequerant={qualiteRequerant}
-          setQualiteRequerant={setQualiteRequerant}
-          precisionRequerant={precisionRequerant}
-          setPrecisionRequerant={setPrecisionRequerant}
         />
       </div>
     </div>

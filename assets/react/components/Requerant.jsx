@@ -33,7 +33,7 @@ const Requerant = function({
   return (
     <>
       <div className="fr-grid-row">
-        <div className="fr-col-4">
+        <div className="fr-col-4 fr-pr-md-1w">
           <Referentiel
             label={trans(BRIS_PORTE_FIELD_QUALITE_REPRESENTANT)}
             route={Routing.generate("_api_qualite_representant_get_collection")}
@@ -41,9 +41,7 @@ const Requerant = function({
             setContent={setQualiteRequerant}
           />
         </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-7">
+        <div className="fr-col-8">
           {showPrecision &&
           <Input
             label={trans(BRIS_PORTE_FIELD_PRECISION_REPRESENTANT)}

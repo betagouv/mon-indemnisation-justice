@@ -15,6 +15,7 @@ import { trans,
   USER_FIELD_PRENOMS,USER_FIELD_DATE_NAISSANCE,
   USER_FIELD_LIEU_NAISSANCE,USER_FIELD_PAYS_NAISSANCE,
   GLOBAL_ERROR_EMPTY_FIELD, LOGIN_EMAIL, USER_FIELD_PRENOM1,
+  REPRESENTANT_LEGAL_TITLE,
    USER_FIELD_PRENOM2, USER_FIELD_PRENOM3
 } from '../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -89,14 +90,12 @@ const RepresentantLegal = function({personnePhysique}) {
     <>
       <div className="fr-grid-row">
         <div className="fr-col-12">
-          <h5>Identité du représentant légal</h5>
+          <h5>{trans(REPRESENTANT_LEGAL_TITLE)}</h5>
         </div>
-        <div className="fr-col-3">
+        <div className="fr-col-2 fr-pr-md-1w">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
+        <div className="fr-col-5 fr-pr-md-1w">
           <Input
             label={trans(USER_FIELD_NOM)}
             state={stateNom}
@@ -104,79 +103,18 @@ const RepresentantLegal = function({personnePhysique}) {
             nativeInputProps={{name: 'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
-        <Input
-          label={trans(USER_FIELD_NOM_NAISSANCE)}
-          nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
-        />
-        </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
+        <div className="fr-col-5">
           <Input
-            label={trans(LOGIN_EMAIL)}
-            nativeInputProps={{value: personnePhysique.email}}
-            disabled
+            label={trans(USER_FIELD_NOM_NAISSANCE)}
+            nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
           />
         </div>
-      </div>
-      <div className="fr-grid-row">
-        <div className="fr-col-3">
+        <div className="fr-col-12">
           <Input
             label={trans(USER_FIELD_PRENOMS)}
             state={statePrenom1}
             stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
             nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM1), name: 'prenom1', value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
-          <Input
-            label="&nbsp;"
-            nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM2), name: 'prenom2', value: prenom2, onChange: ev => setPrenom2(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
-          <Input
-            label="&nbsp;"
-            nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM3), name: 'prenom3', value: prenom3, onChange: ev => setPrenom3(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-1">
-        </div>
-      </div>
-      <div className="fr-grid-row">
-        <div className="fr-col-3">
-          <Input
-            label={trans(USER_FIELD_DATE_NAISSANCE)}
-            nativeInputProps={{
-              type: 'date',value: dateNaissance, onChange: ev=>setDateNaissance(ev.target.value)
-            }}
-          />
-        </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-3">
-          <Input
-            label={trans(USER_FIELD_LIEU_NAISSANCE)}
-            nativeInputProps={{
-              value: communeNaissance, onChange: ev => setCommuneNaissance(ev.target.value)
-            }}
-          />
-        </div>
-        <div className="fr-col-1">
-        </div>
-        <div className="fr-col-6">
-          <SecuriteSociale
-            codeSS={codeSS}
-            numeroSS={numeroSS}
-            setCodeSS={setCodeSS}
-            setNumeroSS={setNumeroSS}
           />
         </div>
       </div>

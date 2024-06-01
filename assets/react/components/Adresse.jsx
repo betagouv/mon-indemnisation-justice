@@ -3,10 +3,11 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { trans, ADRESSE_FIELD_LIGNE1,
   ADRESSE_FIELD_CODE_POSTAL,
-  ADRESSE_FIELD_LOCALITE
+  ADRESSE_FIELD_LOCALITE,
+  ADRESSE_FIELD_LIGNE1_DESCRIPTION
 } from '../../translator';
 
-const Adresse = ({adresse}) => {
+const Adresse = ({adresse,optionalLigne1Texte=null}) => {
 
   const [ligne1,setLigne1]=useState(adresse.ligne1??"");
   const [ligne2,setLigne2]=useState(adresse.ligne2??"");
@@ -44,11 +45,15 @@ const Adresse = ({adresse}) => {
     ;
   },[ligne1,ligne2,ligne3,codePostal,localite]);
 
+  const ligne1Text = (optionalLigne1Texte!==null) ? optionalLigne1Texte : trans(ADRESSE_FIELD_LIGNE1);
+  const ligne1HintText = (optionalLigne1Texte!==null) ? "" : trans(ADRESSE_FIELD_LIGNE1_DESCRIPTION);
+
   return (
     <div className="fr-grid-row">
       <div className="fr-col-12">
         <Input
-          label={trans(ADRESSE_FIELD_LIGNE1)}
+          label={ligne1Text}
+          hintText={ligne1HintText}
           nativeInputProps={{
             name: 'ligne1',
             value: ligne1,
@@ -56,24 +61,8 @@ const Adresse = ({adresse}) => {
             maxLength: 255
           }}
         />
-        <Input
-          nativeInputProps={{
-            name: 'ligne2',
-            value: ligne2,
-            onChange: ev => setLigne2(ev.target.value),
-            maxLength: 255
-          }}
-        />
-        <Input
-          nativeInputProps={{
-            name: 'ligne3',
-            value: ligne3,
-            onChange: ev => setLigne3(ev.target.value),
-            maxLength: 255
-          }}
-        />
       </div>
-      <div className="fr-col-3">
+      <div className="fr-col-2 fr-pr-md-1w">
         <Input
           label={trans(ADRESSE_FIELD_CODE_POSTAL)}
           nativeInputProps={{
@@ -84,9 +73,7 @@ const Adresse = ({adresse}) => {
           }}
         />
       </div>
-      <div className="fr-col-1">
-      </div>
-      <div className="fr-col-8">
+      <div className="fr-col-10">
         <Input
           label={trans(ADRESSE_FIELD_LOCALITE)}
           nativeInputProps={{

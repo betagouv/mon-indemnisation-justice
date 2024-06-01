@@ -57,6 +57,7 @@ class BrisPorteController extends AbstractController
         $brisPorte->setNumeroPV($numeroPV);
         $brisPorte->setNumeroParquet($numeroParquet);
         $brisPorte->setIsErreurPorte($isErreurPorte);
+        $em->flush();
         $session->remove('test_eligibilite');
       }
       return $this->redirectToRoute('app_bris_porte_edit',['id' => $brisPorte->getId()]);

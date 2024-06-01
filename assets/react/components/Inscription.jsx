@@ -137,7 +137,7 @@ const Inscription = ({user,csrfToken}) => {
         <div className="fr-col-12">
           <b>{trans(SECURITY_INSCRIPTION_DESCRIPTION)}</b>
         </div>
-        <div className="fr-col-4">
+        <div className="fr-col-4 fr-pr-md-1w">
           <Civilite civilite={civilite} setCivilite={setCivilite} />
         </div>
         <div className="fr-col-8">
@@ -146,7 +146,7 @@ const Inscription = ({user,csrfToken}) => {
             nativeInputProps={{name:'prenom1', placeholder: trans(USER_FIELD_PRENOMS), value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-6 fr-pr-md-1w">
         <Input
           label={trans(USER_FIELD_NOM)}
           nativeInputProps={{name:'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
@@ -166,7 +166,7 @@ const Inscription = ({user,csrfToken}) => {
             nativeInputProps={{name: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-5">
+        <div className="fr-col-5 fr-pr-md-1w">
           <PasswordInput
             label={trans(LOGIN_PASSWORD)}
             messages={manageMsgPassword(password,confirmPassword)}
