@@ -25,7 +25,6 @@ class Civilite
 {
     use ReferentielTrait;
 
-    #[Groups(['user:read','prejudice:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

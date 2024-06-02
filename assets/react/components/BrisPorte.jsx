@@ -17,7 +17,7 @@ import FormulaireReceveur from './PersonnePhysique/FormulaireReceveur';
 import Adresse from './Adresse';
 import { checkUrl,generateUrl, castDate, checkDate, checkString, formatUrl,castUrl,formatDate } from '../utils/cast';
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-
+import FormulaireSimple from './ServiceEnqueteur/FormulaireSimple';
 const BrisPorte = ({brisPorte}) => {
 
   const [dateOperationPJ, setDateOperationPJ]=useState(castDate(brisPorte.dateOperationPJ??""));
@@ -144,6 +144,18 @@ const BrisPorte = ({brisPorte}) => {
             ]}
         />
       </div>
+      {!isErreurPorte &&
+      <div className="fr-col-12">
+        <Input
+          label={trans(BRIS_PORTE_FIELD_IDENTITE_PERSONNE_RECHERCHEE)}
+          nativeInputProps={{
+            value: identitePersonneRecherchee,
+            onChange: ev=>setIdentitePersonneRecherchee(ev.target.value),
+            maxLength: 255
+          }}
+        />
+      </div>
+      }
       <div className="fr-col-12">
         <Requerant
           qualiteRequerant={qualiteRequerant}
@@ -156,14 +168,7 @@ const BrisPorte = ({brisPorte}) => {
         <FormulaireReceveur personnePhysique={brisPorte.receveurAttestation}/>
       </div>
       <div className="fr-col-12">
-        <Input
-          label={trans(BRIS_PORTE_FIELD_IDENTITE_PERSONNE_RECHERCHEE)}
-          nativeInputProps={{
-            value: identitePersonneRecherchee,
-            onChange: ev=>setIdentitePersonneRecherchee(ev.target.value),
-            maxLength: 255
-          }}
-        />
+        <FormulaireSimple serviceEnqueteurIri={brisPorte.serviceEnqueteur}/>
       </div>
     </div>
   );

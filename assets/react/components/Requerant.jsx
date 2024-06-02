@@ -14,6 +14,7 @@ import { trans,
 import { Input } from "@codegouvfr/react-dsfr/Input";
 
 const Requerant = function({
+  qualiteText=null,
   qualiteRequerant,
   setQualiteRequerant,
   precisionRequerant,
@@ -30,12 +31,14 @@ const Requerant = function({
     ;
   },[qualiteRequerant]);
 
+  const label = (null!==qualiteText) ? qualiteText : trans(BRIS_PORTE_FIELD_PRECISION_REPRESENTANT);
+
   return (
     <>
       <div className="fr-grid-row">
         <div className="fr-col-4 fr-pr-md-1w">
           <Referentiel
-            label={trans(BRIS_PORTE_FIELD_QUALITE_REPRESENTANT)}
+            label={label}
             route={Routing.generate("_api_qualite_representant_get_collection")}
             content={qualiteRequerant}
             setContent={setQualiteRequerant}
@@ -44,7 +47,7 @@ const Requerant = function({
         <div className="fr-col-8">
           {showPrecision &&
           <Input
-            label={trans(BRIS_PORTE_FIELD_PRECISION_REPRESENTANT)}
+            label={label}
             nativeInputProps={{
               value: precisionRequerant,
               onChange: ev=>setPrecisionRequerant(ev.target.value),

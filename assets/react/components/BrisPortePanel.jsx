@@ -63,17 +63,42 @@ const BrisPortePanel = function({id,user,brisPorte}) {
           <div className="fr-col-12">
             <BrisPorte brisPorte={brisPorte} />
           </div>
-          <div className="fr-col-9">
-            <Button onClick={decrementStep}>{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+          <div className="fr-col-12">
+            <Br space={2}/>
           </div>
-          <div className="fr-col-3">
-            <Button
-              linkProps={{
-                href: Routing.generate('app_requerant_update_statut_to_constitue',{id:brisPorte.id})
-              }}
-            >
-            {trans(BRIS_PORTE_EDIT_UPDATE_CONSTITUE)}
-            </Button>
+          <div className="fr-col-12">
+            <div className="fr-grid-row">
+              <div className="fr-col-12">
+                <ul className="fr-btns-group fr-btns-group--inline-sm">
+                  <li>
+                    <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+                  </li>
+                  <li>
+                    <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </>
+        }
+        {(step===2) &&
+        <>
+          <div className="fr-col-12">
+            <ul className="fr-btns-group fr-btns-group--inline-sm">
+              <li>
+                <Button
+                  linkProps={{
+                    href: Routing.generate('app_requerant_update_statut_to_constitue',{id:brisPorte.id})
+                  }}
+                >
+                {trans(BRIS_PORTE_EDIT_UPDATE_CONSTITUE)}
+                </Button>
+              </li>
+              <li>
+                <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+              </li>
+            </ul>
           </div>
         </>
         }

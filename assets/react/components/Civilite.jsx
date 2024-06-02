@@ -22,7 +22,7 @@ const Civilite = ({civilite,setCivilite}) => {
       label={trans(USER_FIELD_CIVILITE)}
       nativeSelectProps={{
           onChange: event => setCivilite(event.target.value),
-          value: civilite
+          value: civilite??""
       }}
     >
       <option value="" disabled hidden>Selectionnez une option</option>

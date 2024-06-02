@@ -9,6 +9,8 @@ adresse:
     code_postal: "Code postal"
     localite: "Ville"
 bris_porte:
+  service_enqueteur:
+    section: "Service enquêteur"
   pj:
     section: "Documents à joindre obligatoirement à votre demande"
   test_eligibilite:
@@ -89,6 +91,7 @@ cgu:
   <span>...</span>
   "
 global:
+  waiting: "Chargement en cours ..."
   informations_requirement: "Sauf mention contraire, tous les champs sont requis"
   field_required: "Le(s) champ(s) doivent être renseigné(s) pour poursuivre : "
   yes: "Oui"
@@ -97,7 +100,7 @@ global:
   optional: "(facultatif)"
   step:
     next: "Valider et passer à l'étape suivante"
-    previous: "Etape précédente"
+    previous: "Revenir à l'étape précédente"
   btn:
     view: "Consulter"
     update: "Modifier"
@@ -202,6 +205,15 @@ security:
       invalid_length_password: "Votre mot de passe doit contenir au moins %length% caractères"
       invalid_number_password: "Votre mot de passe doit contenir au moins %length% chiffres"
       same_password: "Votre mot de passe doit être identique au mot de passe de confirmation"
+service_enqueteur:
+  field:
+    nom: "Nom du service"
+    telephone: "Téléphone"
+    email: "Courriel"
+    numero_pv: "Numéro de procès-verbal"
+    juridiction: "Juridiction"
+    magistrat: "Nom du magistrat"
+    numero_parquet: "Numéro de parquet ou d'instruction"
 sinistre:
   field:
     date_declaration: "Date de déclaration"

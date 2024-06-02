@@ -82,10 +82,16 @@ class BrisPorte extends Prejudice
     #[ORM\JoinColumn(nullable: false)]
     private ?PersonnePhysique $receveurAttestation = null;
 
+    #[Groups(['prejudice:read','prejudice:write'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ServiceEnqueteur $serviceEnqueteur = null;
+
     public function __construct()
     {
       $this->receveurAttestation = new PersonnePhysique();
       $this->adresse = new Adresse();
+      $this->serviceEnqueteur = new ServiceEnqueteur();
       parent::__construct();
     }
 
@@ -265,6 +271,18 @@ class BrisPorte extends Prejudice
     public function setReceveurAttestation(?PersonnePhysique $receveurAttestation): static
     {
         $this->receveurAttestation = $receveurAttestation;
+
+        return $this;
+    }
+
+    public function getServiceEnqueteur(): ?ServiceEnqueteur
+    {
+        return $this->serviceEnqueteur;
+    }
+
+    public function setServiceEnqueteur(ServiceEnqueteur $serviceEnqueteur): static
+    {
+        $this->serviceEnqueteur = $serviceEnqueteur;
 
         return $this;
     }

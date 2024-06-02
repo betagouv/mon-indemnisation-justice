@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
@@ -23,6 +24,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 class PersonnePhysique
 {
+    #[ApiProperty(identifier: true)]
     #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -41,6 +43,7 @@ class PersonnePhysique
     private ?User $compte = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
+    //#[ApiProperty(uriTemplate: '_api_civilite_get')]
     #[ORM\ManyToOne]
     private ?Civilite $civilite = null;
 
