@@ -73,11 +73,18 @@ class BrisPorte extends Prejudice
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateAttestationInformation = null;
 
+    #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $numeroParquet = null;
 
+    #[Groups(['prejudice:read','prejudice:write'])]
+    #[ORM\ManyToOne(cascade:["persist"])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?PersonnePhysique $receveurAttestation = null;
+
     public function __construct()
     {
+      $this->receveurAttestation = new PersonnePhysique();
       $this->adresse = new Adresse();
       parent::__construct();
     }
@@ -246,6 +253,18 @@ class BrisPorte extends Prejudice
     public function setNumeroParquet(?string $numeroParquet): static
     {
         $this->numeroParquet = $numeroParquet;
+
+        return $this;
+    }
+
+    public function getReceveurAttestation(): ?PersonnePhysique
+    {
+        return $this->receveurAttestation;
+    }
+
+    public function setReceveurAttestation(?PersonnePhysique $receveurAttestation): static
+    {
+        $this->receveurAttestation = $receveurAttestation;
 
         return $this;
     }

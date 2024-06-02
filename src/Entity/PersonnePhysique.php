@@ -84,6 +84,14 @@ class PersonnePhysique
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomNaissance = null;
 
+    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[ORM\ManyToOne]
+    private ?QualiteRequerant $qualite = null;
+
+    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $precision = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -271,5 +279,29 @@ class PersonnePhysique
     {
         $civilite = $this->getCivilite() ? $this->getCivilite()->getLibelle() : null;
         return implode(" ",[$civilite,$this->getPrenom1(),$this->getNom()]);
+    }
+
+    public function getQualite(): ?QualiteRequerant
+    {
+        return $this->qualite;
+    }
+
+    public function setQualite(?QualiteRequerant $qualite): static
+    {
+        $this->qualite = $qualite;
+
+        return $this;
+    }
+
+    public function getPrecision(): ?string
+    {
+        return $this->precision;
+    }
+
+    public function setPrecision(?string $precision): static
+    {
+        $this->precision = $precision;
+
+        return $this;
     }
 }
