@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState,useEffect,useRef} from 'react';
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { trans, ADRESSE_FIELD_LIGNE1,
@@ -15,6 +15,9 @@ const Adresse = ({adresse,optionalLigne1Texte=null}) => {
   const [codePostal,setCodePostal]=useState(adresse.codePostal??"");
   const [localite,setLocalite]=useState(adresse.localite??"");
   const [recordActived, setRecordActived]=useState(false);
+
+  var keyUpTimer = useRef(null);
+  const KEY_UP_TIMER_DELAY = 1000;
 
   function mustBeRecorded() {
     const test =
@@ -35,14 +38,18 @@ const Adresse = ({adresse,optionalLigne1Texte=null}) => {
     const url =Routing.generate('_api_adresse_patch',{id:adresse.id});
     const data = { ligne1: ligne1, ligne2: ligne2, ligne3: ligne3,
       codePostal:codePostal, localite: localite };
-    fetch(url, {
-      method: 'PATCH',
-      headers: {'Content-Type': 'application/merge-patch+json'},
-      body: JSON.stringify(data)
-    })
-    .then((response) => response.json())
-    .then((data) => {})
-    ;
+    clearTimeout(keyUpTimer.current);
+    keyUpTimer.current = setTimeout(() => {
+      fetch(url, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/merge-patch+json'},
+        body: JSON.stringify(data)
+      })
+      .then((response) => response.json())
+      .then((data) => {})
+      .catch(() => {})
+      ;
+    },KEY_UP_TIMER_DELAY);
   },[ligne1,ligne2,ligne3,codePostal,localite]);
 
   const ligne1Text = (optionalLigne1Texte!==null) ? optionalLigne1Texte : trans(ADRESSE_FIELD_LIGNE1);

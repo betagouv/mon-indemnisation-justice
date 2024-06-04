@@ -19,7 +19,8 @@ import {trans,
   SECURITY_INSCRIPTION_TITLE,
   SECURITY_INSCRIPTION_SUBMIT,
   SECURITY_INSCRIPTION_ACCOUNT_ALLREADY_EXIST,
-  SECURITY_INSCRIPTION_CONNECT_SPACE_BTN
+  SECURITY_INSCRIPTION_CONNECT_SPACE_BTN,
+  GLOBAL_OPTIONAL
 } from '../../translator';
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
@@ -138,7 +139,7 @@ const Inscription = ({user,csrfToken}) => {
           <b>{trans(SECURITY_INSCRIPTION_DESCRIPTION)}</b>
         </div>
         <div className="fr-col-4 fr-pr-md-1w">
-          <Civilite civilite={civilite} setCivilite={setCivilite} />
+          <Civilite civilite={civilite} setCivilite={setCivilite} defaultOptionText={" "} />
         </div>
         <div className="fr-col-8">
           <Input
@@ -154,7 +155,7 @@ const Inscription = ({user,csrfToken}) => {
         </div>
         <div className="fr-col-6">
           <Input
-            label={trans(USER_FIELD_NOM_NAISSANCE)}
+            label={trans(USER_FIELD_NOM_NAISSANCE)+" "+trans(GLOBAL_OPTIONAL)}
             nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
           />
         </div>
@@ -194,6 +195,9 @@ const Inscription = ({user,csrfToken}) => {
         </div>
         <div className="fr-col-12">
           <Submit disabled={!submittable} label={trans(SECURITY_INSCRIPTION_SUBMIT)} />
+        </div>
+        <div className="fr-col-12">
+          <Br space={2}/>
         </div>
       </div>
     </form>

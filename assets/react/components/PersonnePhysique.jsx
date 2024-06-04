@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState,useEffect,useRef} from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import Civilite from './Civilite';
@@ -13,8 +13,7 @@ import { trans,
   USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
   USER_FIELD_PRENOMS,USER_FIELD_DATE_NAISSANCE,
   USER_FIELD_LIEU_NAISSANCE,USER_FIELD_PAYS_NAISSANCE,
-  GLOBAL_ERROR_EMPTY_FIELD, LOGIN_EMAIL, USER_FIELD_PRENOM1,
-   USER_FIELD_PRENOM2, USER_FIELD_PRENOM3
+  GLOBAL_ERROR_EMPTY_FIELD, LOGIN_EMAIL, USER_FIELD_PRENOM1
 } from '../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { castDate } from '../utils/cast';
@@ -26,8 +25,6 @@ const PersonnePhysique = function({personnePhysique}) {
   const [civilite,setCivilite]=useState(personnePhysique.civilite??"");
   const [nom, setNom]=useState(personnePhysique.nom??"");
   const [prenom1, setPrenom1]=useState(personnePhysique.prenom1??"");
-  const [prenom2, setPrenom2]=useState(personnePhysique.prenom2??"");
-  const [prenom3, setPrenom3]=useState(personnePhysique.prenom3??"");
   const [nomNaissance, setNomNaissance]=useState(personnePhysique.nomNaissance??"");
   const [dateNaissance, setDateNaissance]=useState(castDate(personnePhysique.dateNaissance));
   const [communeNaissance, setCommuneNaissance]=useState(personnePhysique.communeNaissance??"");
@@ -36,6 +33,9 @@ const PersonnePhysique = function({personnePhysique}) {
   const [statePrenom1, setStatePrenom1]=useState(getStateOnEmpty(personnePhysique.prenom1));
   const [recordActived, setRecordActived]=useState(false);
 
+  var keyUpTimer = useRef(null);
+  const KEY_UP_TIMER_DELAY = 1000;
+
   function mustBeRecorded() {
     const test =
       (numeroSS !== personnePhysique.numeroSecuriteSociale) ||
@@ -43,8 +43,6 @@ const PersonnePhysique = function({personnePhysique}) {
       (civilite !== personnePhysique.civilite) ||
       (nom !== personnePhysique.nom) ||
       (prenom1 !== personnePhysique.prenom1) ||
-      (prenom2 !== personnePhysique.prenom2) ||
-      (prenom3 !== personnePhysique.prenom3) ||
       (nomNaissance !== personnePhysique.nomNaissance) ||
       (dateNaissance !== personnePhysique.dateNaissance) ||
       (communeNaissance !== personnePhysique.communeNaissance) ||
@@ -62,22 +60,25 @@ const PersonnePhysique = function({personnePhysique}) {
 
     if(false === mustBeRecorded())
       return;
-
     const url =Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
     const data = { nom:nom, nomNaissance: nomNaissance,
-      prenom1: prenom1, prenom2: prenom2, prenom3: prenom3, codeSecuriteSociale: codeSS,
+      prenom1: prenom1, codeSecuriteSociale: codeSS,
       communeNaissance: communeNaissance, numeroSecuriteSociale: numeroSS
     };
     if(civilite) { data['civilite']=civilite }
-    fetch(url, {
-      method: 'PATCH',
-      headers: {'Content-Type': 'application/merge-patch+json'},
-      body: JSON.stringify(data)
-    })
-    .then((response) => response.json())
-    .then((data) => console.log('backup'))
-    ;
-  },[codeSS, nom, nomNaissance, numeroSS, prenom1, prenom2, prenom3,
+    if(dateNaissance) { data['dateNaissance']=dateNaissance }
+    clearTimeout(keyUpTimer.current);
+    keyUpTimer.current = setTimeout(() => {
+      fetch(url, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/merge-patch+json'},
+        body: JSON.stringify(data)
+      })
+        .then((response) => response.json())
+        .then((data) => {})
+      ;
+    }, KEY_UP_TIMER_DELAY);
+  },[codeSS, nom, nomNaissance, numeroSS, prenom1,
     civilite, dateNaissance, communeNaissance, numeroSS
   ]);
 
@@ -95,13 +96,21 @@ const PersonnePhysique = function({personnePhysique}) {
             label={trans(USER_FIELD_NOM)}
             state={stateNom}
             stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-            nativeInputProps={{name: 'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
+            nativeInputProps={{
+              value: nom,
+              onChange: ev => setNom(ev.target.value),
+              maxLength: 255
+            }}
           />
         </div>
         <div className="fr-col-5">
         <Input
           label={trans(USER_FIELD_NOM_NAISSANCE)+" "+trans(GLOBAL_OPTIONAL)}
-          nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
+          nativeInputProps={{
+            value: nomNaissance,
+            onChange: ev => setNomNaissance(ev.target.value),
+            maxLength: 255
+          }}
         />
         </div>
         <div className="fr-col-12">
@@ -109,14 +118,21 @@ const PersonnePhysique = function({personnePhysique}) {
             label={trans(USER_FIELD_PRENOMS)}
             state={statePrenom1}
             stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-            nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM1), name: 'prenom1', value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
+            nativeInputProps={{
+              placeholder: trans(USER_FIELD_PRENOMS),
+              value: prenom1,
+              onChange: ev => setPrenom1(ev.target.value),
+              maxLength: 255
+            }}
           />
         </div>
         <div className="fr-col-2 fr-pr-md-1w">
           <Input
             label={trans(USER_FIELD_DATE_NAISSANCE)}
             nativeInputProps={{
-              type: 'date',value: dateNaissance, onChange: ev=>setDateNaissance(ev.target.value)
+              type: 'date',
+              value: dateNaissance,
+              onChange: ev=>setDateNaissance(ev.target.value)
             }}
           />
         </div>
@@ -124,7 +140,9 @@ const PersonnePhysique = function({personnePhysique}) {
           <Input
             label={trans(USER_FIELD_LIEU_NAISSANCE)}
             nativeInputProps={{
-              value: communeNaissance, onChange: ev => setCommuneNaissance(ev.target.value)
+              value: communeNaissance,
+              onChange: ev => setCommuneNaissance(ev.target.value),
+              maxLength: 255
             }}
           />
         </div>

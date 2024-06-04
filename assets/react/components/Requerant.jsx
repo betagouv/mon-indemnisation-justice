@@ -3,6 +3,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import Referentiel from './Referentiel';
 import { getStateOnEmpty } from '../utils/check_state';
+import { castNumber } from '../utils/cast';
 import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -22,14 +23,15 @@ const Requerant = function({
 }) {
 
   const CODE_QUALITE_REQUERANT_AUTRE = '4';
-  const [showPrecision,setShowPrecision]=useState(false);
+  const [loading,setLoading]=useState(false);
 
   useEffect(() => {
-    fetch(qualiteRequerant)
-      .then((response) => response.json())
-      .then((data) => setShowPrecision(data.code===CODE_QUALITE_REQUERANT_AUTRE))
-    ;
-  },[qualiteRequerant]);
+    if(true===loading)
+      return;
+    setLoading(true);
+  },[])
+  const showPrecision = (qr) => (castNumber(qr) == CODE_QUALITE_REQUERANT_AUTRE);
+
 
   const label = (null!==qualiteText) ? qualiteText : trans(BRIS_PORTE_FIELD_PRECISION_REPRESENTANT);
 
@@ -45,7 +47,7 @@ const Requerant = function({
           />
         </div>
         <div className="fr-col-8">
-          {showPrecision &&
+          {showPrecision(qualiteRequerant) &&
           <Input
             label={label}
             nativeInputProps={{

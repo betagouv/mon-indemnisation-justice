@@ -1,8 +1,9 @@
 import React, {useState,useEffect} from 'react';
 import { Select } from "@codegouvfr/react-dsfr/Select";
-import { trans, USER_FIELD_CIVILITE } from '../../translator';
+import { trans, USER_FIELD_CIVILITE,
+GLOBAL_SELECT_OPTION } from '../../translator';
 
-const Civilite = ({civilite,setCivilite}) => {
+const Civilite = ({civilite,setCivilite, defaultOptionText=null}) => {
 
   const [civilites,setCivilites]=useState([]);
   const [isLoading,setIsLoading]=useState(false);
@@ -17,6 +18,7 @@ const Civilite = ({civilite,setCivilite}) => {
     setIsLoading(true);
   },[isLoading]);
 
+  const defaultText = defaultOptionText??trans(GLOBAL_SELECT_OPTION);
   return (
     <Select
       label={trans(USER_FIELD_CIVILITE)}
@@ -25,7 +27,7 @@ const Civilite = ({civilite,setCivilite}) => {
           value: civilite??""
       }}
     >
-      <option value="" disabled hidden>Selectionnez une option</option>
+      <option value="" disabled hidden>{defaultText}</option>
       {civilites.map((item) => <option key={item["@id"]} value={item["@id"]}>{item.libelle}</option>)}
     </Select>
   );

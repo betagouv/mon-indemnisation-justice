@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState,useEffect,useRef} from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import Civilite from '../Civilite';
@@ -25,17 +25,17 @@ const FormulaireReceveur = function({personnePhysique}) {
   const [civilite,setCivilite]=useState(personnePhysique.civilite??"");
   const [nom, setNom]=useState(personnePhysique.nom??"");
   const [prenom1, setPrenom1]=useState(personnePhysique.prenom1??"");
-  const [prenom2, setPrenom2]=useState(personnePhysique.prenom2??"");
-  const [prenom3, setPrenom3]=useState(personnePhysique.prenom3??"");
   const [nomNaissance, setNomNaissance]=useState(personnePhysique.nomNaissance??"");
-  const [dateNaissance, setDateNaissance]=useState(castDate(personnePhysique.dateNaissance));
-  const [communeNaissance, setCommuneNaissance]=useState(personnePhysique.communeNaissance??"");
-  const [qualiteRequerant, setQualiteRequerant]=useState(personnePhysique.qualite?generateUrl("/api/qualite_requerants/",personnePhysique.qualite.code):"");
+  const [qualiteRequerant, setQualiteRequerant]=useState(personnePhysique.qualite??"");
   const [precisionRequerant, setPrecisionRequerant]=useState(personnePhysique.precision??"");
 
   const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nom));
   const [statePrenom1, setStatePrenom1]=useState(getStateOnEmpty(personnePhysique.prenom1));
   const [recordActived, setRecordActived]=useState(false);
+  const [loading, setLoading]=useState(false);
+
+  var keyUpTimer = useRef(null);
+  const KEY_UP_TIMER_DELAY = 1000;
 
   function mustBeRecorded() {
     const test =
@@ -44,45 +44,55 @@ const FormulaireReceveur = function({personnePhysique}) {
       (civilite !== personnePhysique.civilite) ||
       (nom !== personnePhysique.nom) ||
       (prenom1 !== personnePhysique.prenom1) ||
-      (prenom2 !== personnePhysique.prenom2) ||
-      (prenom3 !== personnePhysique.prenom3) ||
       (nomNaissance !== personnePhysique.nomNaissance) ||
-      (dateNaissance !== personnePhysique.dateNaissance) ||
-      (communeNaissance !== personnePhysique.communeNaissance) ||
+      (qualiteRequerant !== personnePhysique.qualite) ||
       (precisionRequerant !== personnePhysique.precision) ||
       (true === recordActived)
     ;
     setRecordActived(test);
     return test;
   }
+
+  useEffect(() => {
+    if(true===loading)
+      return;
+    setLoading(true);
+  },[]);
+
   useEffect(() => {
     setStateNom(getStateOnEmpty(nom));
     setStatePrenom1(getStateOnEmpty(prenom1));
   },[nom,nomNaissance]);
 
   useEffect(() => {
+    if(false === loading)
+      return;
 
     if(false === mustBeRecorded())
       return;
 
     const url =Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
     const data = { nom:nom, nomNaissance: nomNaissance,
-      prenom1: prenom1, prenom2: prenom2, prenom3: prenom3,
-      codeSecuriteSociale: codeSS, communeNaissance: communeNaissance,
+      prenom1: prenom1, codeSecuriteSociale: codeSS,
       numeroSecuriteSociale: numeroSS, precision: precisionRequerant
     };
     if(civilite) { data['civilite']=civilite }
     if(qualiteRequerant) { data['qualite']=qualiteRequerant }
-    fetch(url, {
-      method: 'PATCH',
-      headers: {'Content-Type': 'application/merge-patch+json'},
-      body: JSON.stringify(data)
-    })
-    .then((response) => response.json())
-    .then((data) => console.log('backup'))
-    ;
-  },[codeSS, nom, nomNaissance, numeroSS, prenom1, prenom2, prenom3,
-    civilite, dateNaissance, communeNaissance, numeroSS, qualiteRequerant,
+
+    clearTimeout(keyUpTimer.current);
+    keyUpTimer.current = setTimeout(() => {
+      fetch(url, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/merge-patch+json'},
+        body: JSON.stringify(data)
+      })
+      .then((response) => response.json())
+      .then((data) => {})
+      .catch(() => {})
+      ;
+    },KEY_UP_TIMER_DELAY);
+  },[codeSS, nom, nomNaissance, numeroSS, prenom1,
+    civilite, numeroSS, qualiteRequerant,
     precisionRequerant
   ]);
 
@@ -100,13 +110,21 @@ const FormulaireReceveur = function({personnePhysique}) {
             label={trans(USER_FIELD_NOM)}
             state={stateNom}
             stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-            nativeInputProps={{name: 'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
+            nativeInputProps={{
+              value: nom,
+              onChange: ev => setNom(ev.target.value),
+              maxLength: 255
+            }}
           />
         </div>
         <div className="fr-col-5">
         <Input
           label={trans(USER_FIELD_NOM_NAISSANCE)+" "+trans(GLOBAL_OPTIONAL)}
-          nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
+          nativeInputProps={{
+            value: nomNaissance,
+            onChange: ev => setNomNaissance(ev.target.value),
+            maxLength: 255
+          }}
         />
         </div>
         <div className="fr-col-12">
@@ -114,7 +132,12 @@ const FormulaireReceveur = function({personnePhysique}) {
             label={trans(USER_FIELD_PRENOMS)}
             state={statePrenom1}
             stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-            nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM1), name: 'prenom1', value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
+            nativeInputProps={{
+              placeholder: trans(USER_FIELD_PRENOMS),
+              value: prenom1,
+              onChange: ev => setPrenom1(ev.target.value),
+              maxLength: 255
+            }}
           />
         </div>
         <div className="fr-col-12">

@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { trans, BRIS_PORTE_SERVICE_ENQUETEUR_SECTION,
   SERVICE_ENQUETEUR_FIELD_NOM, GLOBAL_WAITING,
@@ -19,34 +19,33 @@ const FormulaireSimple = ({serviceEnqueteurIri}) => {
   const [juridiction,setJuridiction]=useState("");
   const [magistrat,setMagistrat]=useState("");
 
+  var keyUpTimer = useRef(null);
+  const KEY_UP_TIMER_DELAY = 1000;
+
   useEffect(() => {
 
     if(false===loading)
       return;
 
-    const controller=new AbortController();
-    const signal = controller.signal;
-
     const url =Routing.generate('_api_service_enqueteur_patch',{id:castNumber(serviceEnqueteurIri)});
-
     const data = {
       numeroPV: numeroPV, numeroParquet: numeroParquet, telephone: telephone,
       courriel: courriel, juridiction: juridiction, magistrat: magistrat,
       nom: nom
     };
 
-    fetch(url, {
-      signal,
-      method: 'PATCH',
-      headers: {'Content-Type': 'application/merge-patch+json'},
-      body: JSON.stringify(data)
-    })
-      .then((response) => response.json())
-      .then((data) => console.log('backup sj'))
-      .catch(() => {})
-    ;
-    
-    return () => controller.abort();
+    clearTimeout(keyUpTimer.current);
+    keyUpTimer.current = setTimeout(() => {
+      fetch(url, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/merge-patch+json'},
+        body: JSON.stringify(data)
+      })
+        .then((response) => response.json())
+        .then((data) => { })
+        .catch(() => {})
+      ;
+    },KEY_UP_TIMER_DELAY);
   },[numeroPV,numeroParquet,juridiction,magistrat,telephone,courriel,nom])
   useEffect(() => {
     if(true===loading)

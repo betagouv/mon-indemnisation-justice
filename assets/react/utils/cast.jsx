@@ -3,8 +3,9 @@ import { format } from "date-fns";
 export const cast_number = (input) => castNumber(input);
 
 export const castNumber = (input) => {
-  const inputNumber = input.replace(/[^\d]/ig, "");
-  return inputNumber;
+  if(input)
+    return input.replace(/[^\d]/ig, "");
+  return "";
 }
 
 export const castDate = (input) => {

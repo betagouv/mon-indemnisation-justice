@@ -98,6 +98,7 @@ global:
   no: "Non"
   and_or: " et/ou "
   optional: "(facultatif)"
+  select_option: "Sélectionnez une option"
   step:
     next: "Valider et passer à l'étape suivante"
     previous: "Revenir à l'étape précédente"

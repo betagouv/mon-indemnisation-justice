@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { trans, BRIS_PORTE_FIELD_DATE_OPERATION_PJ,
     BRIS_PORTE_FIELD_IS_PORTE_BLINDEE, BRIS_PORTE_FIELD_IS_ERREUR_PORTE,
@@ -26,11 +26,14 @@ const BrisPorte = ({brisPorte}) => {
   const [identitePersonneRecherchee, setIdentitePersonneRecherchee]=useState(brisPorte.identitePersonneRecherchee??'');
   const [nomRemiseAttestation, setNomRemiseAttestation]=useState(brisPorte.nomRemiseAttestation??'');
   const [prenomRemiseAttestation, setPrenomRemiseAttestation]=useState(brisPorte.prenomRemiseAttestation??'');
-  const [qualiteRequerant, setQualiteRequerant]=useState(brisPorte.qualiteRequerant?generateUrl("/api/qualite_requerants/",brisPorte.qualiteRequerant.code):"");
+  const [qualiteRequerant, setQualiteRequerant]=useState(brisPorte.qualiteRequerant??"");
   const [precisionRequerant, setPrecisionRequerant]=useState(brisPorte.precisionRequerant??"");
 
   const [recordActived, setRecordActived]=useState(false);
   const [loading, setLoading]=useState(false);
+
+  var keyUpTimer = useRef(null);
+  const KEY_UP_TIMER_DELAY = 1000;
 
   useEffect(() => {
     if(true===loading)
@@ -55,6 +58,8 @@ const BrisPorte = ({brisPorte}) => {
   }
 
   useEffect(() => {
+    if(false===loading)
+      return;
     if(false === mustBeRecorded())
       return;
 
@@ -65,14 +70,18 @@ const BrisPorte = ({brisPorte}) => {
       qualiteRequerant: formatUrl(qualiteRequerant), precisionRequerant: precisionRequerant
     };
 
-    fetch(url, {
-      method: 'PATCH',
-      headers: {'Content-Type': 'application/merge-patch+json'},
-      body: JSON.stringify(data)
-    })
-    .then((response) => response.json())
-    .then((data) => console.log('backup bp'))
-    ;
+    clearTimeout(keyUpTimer.current);
+    keyUpTimer.current = setTimeout(() => {
+      fetch(url, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/merge-patch+json'},
+        body: JSON.stringify(data)
+      })
+        .then((response) => response.json())
+        .then((data) => {})
+        .catch(() => {})
+      ;
+    },KEY_UP_TIMER_DELAY);
   },[dateOperationPJ,isPorteBlindee,isErreurPorte,identitePersonneRecherchee,
     nomRemiseAttestation, prenomRemiseAttestation, qualiteRequerant,
     precisionRequerant
