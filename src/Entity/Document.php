@@ -5,9 +5,12 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\DocumentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ApiResource]
+#[Vich\Uploadable]
 class Document
 {
     const TYPE_ATTESTATION_INFORMATION = "attestation_information";
@@ -23,15 +26,21 @@ class Document
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(nullable: true)]
     private ?string $filename = null;
 
     #[ORM\Column(length: 40)]
     private ?string $type = null;
 
+    #[Vich\UploadableField(mapping: 'document', fileNameProperty: 'filename', size: 'size')]
+    private ?File $file = null;
+
     #[ORM\ManyToOne(inversedBy: 'documents')]
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $size = null;
 
     public function getId(): ?int
     {
@@ -73,4 +82,31 @@ class Document
 
         return $this;
     }
+
+    public function getSize(): ?string
+    {
+        return $this->size;
+    }
+
+    public function setSize(?string $size): static
+    {
+        $this->size = $size;
+
+        return $this;
+    }
+
+    public function getFile(): ?File
+    {
+        return $this->file;
+    }
+
+    public function setFile(?File $file = null): void
+    {
+        $this->file = $file;
+
+        if (null !== $file)
+            $this->date = new \DateTimeImmutable();
+    }
+
+
 }

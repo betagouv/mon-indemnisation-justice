@@ -1,0 +1,7 @@
+vich_uploader:
+    db_driver: orm
+
+    mappings:
+        document:
+            uri_prefix: /document
+            upload_destination: '%kernel.project_dir%/public/document'
