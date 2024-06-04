@@ -87,11 +87,16 @@ class BrisPorte extends Prejudice
     #[ORM\JoinColumn(nullable: false)]
     private ?ServiceEnqueteur $serviceEnqueteur = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?LiasseDocumentaire $liasseDocumentaire = null;
+
     public function __construct()
     {
       $this->receveurAttestation = new PersonnePhysique();
       $this->adresse = new Adresse();
       $this->serviceEnqueteur = new ServiceEnqueteur();
+      $this->liasseDocumentaire = new LiasseDocumentaire();
       parent::__construct();
     }
 
@@ -283,6 +288,18 @@ class BrisPorte extends Prejudice
     public function setServiceEnqueteur(ServiceEnqueteur $serviceEnqueteur): static
     {
         $this->serviceEnqueteur = $serviceEnqueteur;
+
+        return $this;
+    }
+
+    public function getLiasseDocumentaire(): ?LiasseDocumentaire
+    {
+        return $this->liasseDocumentaire;
+    }
+
+    public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static
+    {
+        $this->liasseDocumentaire = $liasseDocumentaire;
 
         return $this;
     }
