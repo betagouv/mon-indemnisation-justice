@@ -107,6 +107,4 @@ class Document
         if (null !== $file)
             $this->date = new \DateTimeImmutable();
     }
-
-
 }
