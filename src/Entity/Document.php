@@ -42,6 +42,9 @@ class Document
     #[ORM\Column(nullable: true)]
     private ?string $size = null;
 
+    #[ORM\Column(length: 255,nullable: true)]
+    private ?string $originalFilename = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -106,5 +109,17 @@ class Document
 
         if (null !== $file)
             $this->date = new \DateTimeImmutable();
+    }
+
+    public function getOriginalFilename(): ?string
+    {
+        return $this->originalFilename;
+    }
+
+    public function setOriginalFilename(string $originalFilename): static
+    {
+        $this->originalFilename = $originalFilename;
+
+        return $this;
     }
 }

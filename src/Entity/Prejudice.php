@@ -53,10 +53,16 @@ abstract class Prejudice implements PrejudiceInterface
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $reference = null;
 
+    #[Groups('prejudice:read')]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?LiasseDocumentaire $liasseDocumentaire = null;
+
     public function __construct()
     {
       $this->dateDeclaration = new \DateTime();
       $this->statuts = new ArrayCollection();
+      $this->liasseDocumentaire = new LiasseDocumentaire();
     }
 
     public function getId(): ?int
@@ -148,6 +154,18 @@ abstract class Prejudice implements PrejudiceInterface
     public function setReference(?string $reference): static
     {
         $this->reference = $reference;
+
+        return $this;
+    }
+
+    public function getLiasseDocumentaire(): ?LiasseDocumentaire
+    {
+        return $this->liasseDocumentaire;
+    }
+
+    public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static
+    {
+        $this->liasseDocumentaire = $liasseDocumentaire;
 
         return $this;
     }

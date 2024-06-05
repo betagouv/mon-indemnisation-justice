@@ -2,6 +2,7 @@ import React, {useState,useEffect} from 'react';
 import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Uploader } from './Uploader';
 import { Br } from "../utils/fundamental";
 import { trans, BRIS_PORTE_SECTION,USER_SECTION,
   GLOBAL_STEP_NEXT,GLOBAL_STEP_PREVIOUS,
@@ -84,6 +85,10 @@ const BrisPortePanel = function({id,user,brisPorte}) {
         }
         {(step===2) &&
         <>
+          <div className="fr-col-12">
+            <Uploader type={"attestation"} liasseDocumentaireIri={brisPorte.liasseDocumentaire}/>
+            <Br space={2} />
+          </div>
           <div className="fr-col-12">
             <ul className="fr-btns-group fr-btns-group--inline-sm">
               <li>
