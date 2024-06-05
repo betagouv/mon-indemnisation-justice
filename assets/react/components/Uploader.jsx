@@ -2,8 +2,10 @@ import React,{useState,useEffect,useRef} from 'react';
 
 import { castNumber } from '../utils/cast';
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { trans, DOCUMENT_DEFAULT, DOCUMENT_HINT_TEXT
+} from '../../translator';
 
-export const Uploader = ({liasseDocumentaireIri,type}) => {
+export const Uploader = ({liasseDocumentaireIri,type,label=null,hint_text=null}) => {
   const MAX_SIZE=2048*1000;
   const [errMsg,setErrMsg]=useState("");
 
@@ -24,10 +26,12 @@ export const Uploader = ({liasseDocumentaireIri,type}) => {
   }
 
   const getGrpClassnames = (msg) => "fr-upload-group "+(msg?"fr-input-group--error":"");
+  const _label=label??trans(DOCUMENT_DEFAULT);
+  const _hint_text=hint_text??trans(DOCUMENT_HINT_TEXT);
   return (
     <div className={getGrpClassnames(errMsg)}>
-      <label className="fr-label" htmlFor="file-upload">Ajouter des fichiers
-          <span className="fr-hint-text">Taille maximale : 500 Mo. Formats supportés : jpg, png, pdf. Plusieurs fichiers possibles. Lorem ipsum dolor sit amet, consectetur adipiscing.</span>
+      <label className="fr-label" htmlFor="file-upload">{_label}
+          <span className="fr-hint-text">{_hint_text}</span>
       </label>
       <input className="fr-upload" type="file" onChange={handleFileInput} />
       {errMsg &&

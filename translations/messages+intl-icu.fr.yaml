@@ -90,6 +90,10 @@ cgu:
   <h1>Conditions générales d'utilisation</h1>
   <span>...</span>
   "
+document:
+  attestation_information: "Attestation d'informations complétée par les force de l'ordre"
+  default: "Ajouter des fichiers"
+  hint_text: "Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf."
 global:
   waiting: "Chargement en cours ..."
   informations_requirement: "Sauf mention contraire, tous les champs sont requis"

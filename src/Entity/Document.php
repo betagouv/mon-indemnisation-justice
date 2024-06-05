@@ -2,14 +2,23 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\DocumentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
-#[ApiResource]
+#[ApiResource(
+  operations:[
+    new Get(name: '_api_document_get'),
+    new GetCollection(name: '_api_document_get_collection'),
+  ]
+)]
 #[Vich\Uploadable]
 class Document
 {
@@ -29,12 +38,14 @@ class Document
     #[ORM\Column(nullable: true)]
     private ?string $filename = null;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     #[ORM\Column(length: 40)]
     private ?string $type = null;
 
     #[Vich\UploadableField(mapping: 'document', fileNameProperty: 'filename', size: 'size')]
     private ?File $file = null;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     #[ORM\ManyToOne(inversedBy: 'documents')]
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;

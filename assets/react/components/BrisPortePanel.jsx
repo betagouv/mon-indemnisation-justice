@@ -2,9 +2,9 @@ import React, {useState,useEffect} from 'react';
 import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Uploader } from './Uploader';
+import { Document } from './PieceJointe/PieceJointe';
 import { Br } from "../utils/fundamental";
-import { trans, BRIS_PORTE_SECTION,USER_SECTION,
+import { trans, BRIS_PORTE_SECTION,USER_SECTION,DOCUMENT_ATTESTATION_INFORMATION,
   GLOBAL_STEP_NEXT,GLOBAL_STEP_PREVIOUS,
   BRIS_PORTE_EDIT_UPDATE_CONSTITUE,
   GLOBAL_INFORMATIONS_REQUIREMENT,
@@ -86,7 +86,11 @@ const BrisPortePanel = function({id,user,brisPorte}) {
         {(step===2) &&
         <>
           <div className="fr-col-12">
-            <Uploader type={"attestation"} liasseDocumentaireIri={brisPorte.liasseDocumentaire}/>
+            <Document
+              liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+              label={trans(DOCUMENT_ATTESTATION_INFORMATION)}
+              type={"attestation_information"}
+            />
             <Br space={2} />
           </div>
           <div className="fr-col-12">
