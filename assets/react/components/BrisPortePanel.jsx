@@ -21,7 +21,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
     trans(BRIS_PORTE_SECTION),
     trans(BRIS_PORTE_PJ_SECTION)
   ];
-  const [step,setStep]=useState(0);
+  const [step,setStep]=useState(2);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
   function incrementStep() { setStep(step+1); }

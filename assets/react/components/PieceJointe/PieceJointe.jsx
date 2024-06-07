@@ -5,8 +5,28 @@ import { trans, GLOBAL_WAITING
 
 export const Document = ({liasseDocumentaireIri,type,label}) => {
   const [loading,setLoading]=useState(false);
+  const [documents,setDocuments]=useState([]);
+  const [selectedFile,setSelectedFile]=useState(null);
+  const [reload, setReload]=useState(false);
+  const toggleReload = () => setReload(!reload);
+  useEffect(() => {
+    if(!selectedFile)
+      return;
+    const tmp=documents;
+    tmp.push(selectedFile);
+    setDocuments(tmp);
+    toggleReload();
+  },[selectedFile]);
 
   useEffect(() => {
+    if(!reload) { return; }
+    toggleReload();
+  },[reload]);
+
+  useEffect(() => {
+    if(true===loading)
+      return;
+    setLoading(true);
     const url = Routing.generate('_api_document_get_collection',{
       liasseDocumentaire: liasseDocumentaireIri,
       type: type
@@ -15,20 +35,43 @@ export const Document = ({liasseDocumentaireIri,type,label}) => {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        setLoading(true);
+        const count = data["hydra:totalItems"];
+        const items = data["hydra:member"];
+        setDocuments(items);
       })
-      .catch(() => setLoading(true))
+      .catch(() => {})
   },[]);
+
+
 
   return (
     <>
       {loading &&
-      <Uploader
-        label={label}
-        type={type}
-        liasseDocumentaireIri={liasseDocumentaireIri}
-      />
+      <>
+        <div className="fr-col-12">
+          <Uploader
+            label={label}
+            type={type}
+            liasseDocumentaireIri={liasseDocumentaireIri}
+            selectedFile={selectedFile}
+            setSelectedFile={setSelectedFile}
+          />
+        </div>
+        <div className="fr-col-12">
+          <div className="fr-grid-row">
+          {documents.map((item) =>
+            <div key={item.id} className="fr-col-4">
+              <a
+                target="_blank"
+                href={Routing.generate('app_document_download',{id:item.id, filename: item.filename})}
+              >
+              {item.originalFilename}
+              </a>
+            </div>)
+          }
+          </div>
+        </div>
+      </>
       }
       {!loading &&
       <>

@@ -45,6 +45,7 @@ class DocumentController extends AbstractController
         'filename' => $document->getFilename(),
         'size' => $document->getSize(),
         'type' => $document->getType(),
+        'originalFilename' => $document->getOriginalFilename(),
       ]);
     }
 

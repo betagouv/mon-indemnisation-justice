@@ -5,7 +5,7 @@ import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { trans, DOCUMENT_DEFAULT, DOCUMENT_HINT_TEXT
 } from '../../translator';
 
-export const Uploader = ({liasseDocumentaireIri,type,label=null,hint_text=null}) => {
+export const Uploader = ({liasseDocumentaireIri,type,selectedFile,setSelectedFile,label=null,hint_text=null}) => {
   const MAX_SIZE=2048*1000;
   const [errMsg,setErrMsg]=useState("");
 
@@ -15,12 +15,13 @@ export const Uploader = ({liasseDocumentaireIri,type,label=null,hint_text=null})
       setErrMsg("Taille de fichier supérieure à 2Mo");
       return;
     }
+
     const route = Routing.generate('app_document_upload',{type: type, id: castNumber(liasseDocumentaireIri)});
     const data = new FormData();
     data.append('file', ev.target.files[0]);
     fetch(route,{ method: "POST", body: data })
       .then((response) => response.json())
-      .then((data) => {console.log(data)})
+      .then((data) => setSelectedFile(data))
       .catch(() => {})
     ;
   }
@@ -28,6 +29,7 @@ export const Uploader = ({liasseDocumentaireIri,type,label=null,hint_text=null})
   const getGrpClassnames = (msg) => "fr-upload-group "+(msg?"fr-input-group--error":"");
   const _label=label??trans(DOCUMENT_DEFAULT);
   const _hint_text=hint_text??trans(DOCUMENT_HINT_TEXT);
+
   return (
     <div className={getGrpClassnames(errMsg)}>
       <label className="fr-label" htmlFor="file-upload">{_label}
