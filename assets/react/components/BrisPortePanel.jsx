@@ -4,7 +4,12 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
 import { Br } from "../utils/fundamental";
-import { trans, BRIS_PORTE_SECTION,USER_SECTION,DOCUMENT_ATTESTATION_INFORMATION,
+import { trans, BRIS_PORTE_SECTION,USER_SECTION,
+  DOCUMENT_ATTESTATION_INFORMATION_TITLE,
+  DOCUMENT_PHOTO_BRIS_PORTE_TITLE,
+  DOCUMENT_FACTURE_TITLE,
+  DOCUMENT_FACTURE_HINT,
+  DOCUMENT_PHOTO_BRIS_PORTE_HINT,
   GLOBAL_STEP_NEXT,GLOBAL_STEP_PREVIOUS,
   BRIS_PORTE_EDIT_UPDATE_CONSTITUE,
   GLOBAL_INFORMATIONS_REQUIREMENT,
@@ -88,8 +93,26 @@ const BrisPortePanel = function({id,user,brisPorte}) {
           <div className="fr-col-12">
             <Document
               liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-              label={trans(DOCUMENT_ATTESTATION_INFORMATION)}
+              label={trans(DOCUMENT_ATTESTATION_INFORMATION_TITLE)}
               type={"attestation_information"}
+            />
+            <Br space={2} />
+          </div>
+          <div className="fr-col-12">
+            <Document
+              liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+              label={trans(DOCUMENT_PHOTO_BRIS_PORTE_TITLE)}
+              hint_text={trans(DOCUMENT_PHOTO_BRIS_PORTE_HINT)}
+              type={"photo_prejudice"}
+            />
+            <Br space={2} />
+          </div>
+          <div className="fr-col-12">
+            <Document
+              liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+              label={trans(DOCUMENT_FACTURE_TITLE)}
+              hint_text={trans(DOCUMENT_FACTURE_HINT)}
+              type={"preuve_paiement_facture"}
             />
             <Br space={2} />
           </div>

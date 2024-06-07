@@ -91,7 +91,15 @@ cgu:
   <span>...</span>
   "
 document:
-  attestation_information: "Attestation d'informations complétée par les force de l'ordre"
+  attestation_information:
+    title: "Attestation d'informations complétée par les force de l'ordre"
+    hint: " "
+  photo_bris_porte:
+    title: "Photos de la porte endommagée"
+    hint: "Seuls les frais de remise en état à l'identique de la porte endommagée seront indemnisés"
+  facture:
+    title: "Facture acquittée et copie de mon relevé de compte bancaire attestant du paiement"
+    hint: " "
   default: "Ajouter des fichiers"
   hint_text: "Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf."
 global:

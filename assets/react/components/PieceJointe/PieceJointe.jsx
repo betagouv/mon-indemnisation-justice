@@ -3,7 +3,7 @@ import { Uploader } from '../Uploader';
 import { trans, GLOBAL_WAITING
 } from '../../../translator';
 
-export const Document = ({liasseDocumentaireIri,type,label}) => {
+export const Document = ({liasseDocumentaireIri,type,label,hint_text=null}) => {
   const [loading,setLoading]=useState(false);
   const [documents,setDocuments]=useState([]);
   const [selectedFile,setSelectedFile]=useState(null);
@@ -26,7 +26,6 @@ export const Document = ({liasseDocumentaireIri,type,label}) => {
   useEffect(() => {
     if(true===loading)
       return;
-    setLoading(true);
     const url = Routing.generate('_api_document_get_collection',{
       liasseDocumentaire: liasseDocumentaireIri,
       type: type
@@ -38,8 +37,9 @@ export const Document = ({liasseDocumentaireIri,type,label}) => {
         const count = data["hydra:totalItems"];
         const items = data["hydra:member"];
         setDocuments(items);
+        setLoading(true);
       })
-      .catch(() => {})
+      .catch(() => setLoading(true))
   },[]);
 
 
@@ -50,6 +50,7 @@ export const Document = ({liasseDocumentaireIri,type,label}) => {
       <>
         <div className="fr-col-12">
           <Uploader
+            hint_text={hint_text}
             label={label}
             type={type}
             liasseDocumentaireIri={liasseDocumentaireIri}
