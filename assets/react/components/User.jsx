@@ -11,7 +11,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { trans, USER_FIELD_IS_PERSONNE_MORALE,GLOBAL_YES,GLOBAL_NO } from '../../translator';
 
-const User = function({user,id}) {
+const User = function({user,id,toggleIsPersonneMorale}) {
 
   const [isPersonneMorale, setIsPersonneMorale] = useState(user.isPersonneMorale);
   const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ const User = function({user,id}) {
                 label: trans(GLOBAL_YES),
                 nativeInputProps: {
                   checked: isPersonneMorale,
-                  onChange: ()=> setIsPersonneMorale(true)
+                  onChange: ()=> {setIsPersonneMorale(true);toggleIsPersonneMorale()}
 
                 }
               },
@@ -53,7 +53,7 @@ const User = function({user,id}) {
                 label: trans(GLOBAL_NO),
                 nativeInputProps: {
                   checked: !isPersonneMorale,
-                  onChange: ()=> setIsPersonneMorale(false)
+                  onChange: ()=> {setIsPersonneMorale(false);toggleIsPersonneMorale()}
 
                 }
               }

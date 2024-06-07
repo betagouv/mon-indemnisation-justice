@@ -37,9 +37,12 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   const [step,setStep]=useState(0);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
+  const [isPersonneMorale,setIsPersonneMorale]=useState(user.isPersonneMorale);
   function incrementStep() { setStep(step+1); }
   function decrementStep() { setStep(step-1); }
   function getCurrentStep() { return step+1; }
+
+  const toggleIsPersonneMorale = () => setIsPersonneMorale(!isPersonneMorale);
 
   useEffect(() => {
     setTitle(sections[step]);
@@ -62,7 +65,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
           {trans(GLOBAL_INFORMATIONS_REQUIREMENT)}
           </div>
           <div className="fr-col-12">
-            <User user={user} id={id}/>
+            <User user={user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
           </div>
           <div className="fr-col-12">
             <Br space={2}/>
@@ -115,7 +118,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
             />
             <Br space={2} />
           </div>
-          {!user.isPersonneMorale &&
+          {!isPersonneMorale &&
           <div className="fr-col-12">
             <Document
               liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
@@ -135,7 +138,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
             />
             <Br space={2} />
           </div>
-          {user.isPersonneMorale &&
+          {isPersonneMorale &&
           <div className="fr-col-12">
             <Document
               liasseDocumentaireIri={user.personneMorale.liasseDocumentaire}
@@ -146,7 +149,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
             <Br space={2} />
           </div>
           }
-          {!user.isPersonneMorale &&
+          {!isPersonneMorale &&
           <div className="fr-col-12">
             <Document
               liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
