@@ -95,6 +95,16 @@ class PersonnePhysique
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precision = null;
 
+    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?LiasseDocumentaire $liasseDocumentaire = null;
+
+    public function __construct()
+    {
+      $this->liasseDocumentaire=new LiasseDocumentaire();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -304,6 +314,18 @@ class PersonnePhysique
     public function setPrecision(?string $precision): static
     {
         $this->precision = $precision;
+
+        return $this;
+    }
+
+    public function getLiasseDocumentaire(): ?LiasseDocumentaire
+    {
+        return $this->liasseDocumentaire;
+    }
+
+    public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static
+    {
+        $this->liasseDocumentaire = $liasseDocumentaire;
 
         return $this;
     }

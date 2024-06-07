@@ -8,7 +8,15 @@ import { trans, BRIS_PORTE_SECTION,USER_SECTION,
   DOCUMENT_ATTESTATION_INFORMATION_TITLE,
   DOCUMENT_PHOTO_BRIS_PORTE_TITLE,
   DOCUMENT_FACTURE_TITLE,
+  DOCUMENT_RIB_PRO_TITLE,
+  DOCUMENT_RIB_PRO_HINT,
+  DOCUMENT_RIB_HINT,
+  DOCUMENT_RIB_TITLE,
+  DOCUMENT_PIECE_IDENTITE_TITLE,
+  DOCUMENT_PIECE_IDENTITE_HINT,
   DOCUMENT_FACTURE_HINT,
+  DOCUMENT_TITRE_PROPRIETE_TITLE,
+  DOCUMENT_TITRE_PROPRIETE_HINT,
   DOCUMENT_PHOTO_BRIS_PORTE_HINT,
   GLOBAL_STEP_NEXT,GLOBAL_STEP_PREVIOUS,
   BRIS_PORTE_EDIT_UPDATE_CONSTITUE,
@@ -26,7 +34,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
     trans(BRIS_PORTE_SECTION),
     trans(BRIS_PORTE_PJ_SECTION)
   ];
-  const [step,setStep]=useState(2);
+  const [step,setStep]=useState(0);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
   function incrementStep() { setStep(step+1); }
@@ -107,12 +115,54 @@ const BrisPortePanel = function({id,user,brisPorte}) {
             />
             <Br space={2} />
           </div>
+          {!user.isPersonneMorale &&
+          <div className="fr-col-12">
+            <Document
+              liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
+              label={trans(DOCUMENT_PIECE_IDENTITE_TITLE)}
+              hint_text={trans(DOCUMENT_PIECE_IDENTITE_HINT)}
+              type={"carte_identite"}
+            />
+            <Br space={2} />
+          </div>
+          }
           <div className="fr-col-12">
             <Document
               liasseDocumentaireIri={brisPorte.liasseDocumentaire}
               label={trans(DOCUMENT_FACTURE_TITLE)}
               hint_text={trans(DOCUMENT_FACTURE_HINT)}
               type={"preuve_paiement_facture"}
+            />
+            <Br space={2} />
+          </div>
+          {user.isPersonneMorale &&
+          <div className="fr-col-12">
+            <Document
+              liasseDocumentaireIri={user.personneMorale.liasseDocumentaire}
+              label={trans(DOCUMENT_RIB_PRO_TITLE)}
+              hint_text={trans(DOCUMENT_RIB_PRO_HINT)}
+              type={"rib"}
+            />
+            <Br space={2} />
+          </div>
+          }
+          {!user.isPersonneMorale &&
+          <div className="fr-col-12">
+            <Document
+              liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
+              label={trans(DOCUMENT_RIB_TITLE)}
+              hint_text={trans(DOCUMENT_RIB_HINT)}
+              type={"rib"}
+            />
+            <Br space={2} />
+          </div>
+          }
+          <div className="fr-col-12">
+            <Document
+              liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+              label={trans(DOCUMENT_TITRE_PROPRIETE_TITLE)}
+              hint_text={trans(DOCUMENT_TITRE_PROPRIETE_HINT)}
+              type={"titre_propriete"}
             />
             <Br space={2} />
           </div>

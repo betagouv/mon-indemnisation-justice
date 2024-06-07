@@ -91,8 +91,20 @@ cgu:
   <span>...</span>
   "
 document:
+  piece_identite:
+    title: "Copie de ma pièce d'identité recto-verso"
+    hint: " "
+  titre_propriete:
+    title: "Titre de propriété"
+    hint: " "
   attestation_information:
     title: "Attestation d'informations complétée par les force de l'ordre"
+    hint: " "
+  rib_pro:
+    title: "Relevé d'identité bancaire de ma société"
+    hint: " "
+  rib:
+    title: "Mon relevé d'identité bancaire"
     hint: " "
   photo_bris_porte:
     title: "Photos de la porte endommagée"

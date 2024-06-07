@@ -39,6 +39,16 @@ class PersonneMorale
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
 
+    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?LiasseDocumentaire $liasseDocumentaire = null;
+
+    public function __construct()
+    {
+      $this->liasseDocumentaire=new LiasseDocumentaire();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -86,6 +96,18 @@ class PersonneMorale
     public function setSirenSiret(?string $sirenSiret): static
     {
         $this->sirenSiret = $sirenSiret;
+
+        return $this;
+    }
+
+    public function getLiasseDocumentaire(): ?LiasseDocumentaire
+    {
+        return $this->liasseDocumentaire;
+    }
+
+    public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static
+    {
+        $this->liasseDocumentaire = $liasseDocumentaire;
 
         return $this;
     }
