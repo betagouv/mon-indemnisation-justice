@@ -113,6 +113,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale = null;
 
+    #[Groups(['user:read','prejudice:read','user:write'])]
+    public readonly ?int $pId;
+
     #[Groups('user:read')]
     private $plaintextRole;
 
@@ -137,6 +140,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         $this->trackings = new ArrayCollection();
     }
 
+    public function getPId(): ?int
+    {
+      return $this->getId();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

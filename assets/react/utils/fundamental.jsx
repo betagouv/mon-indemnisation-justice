@@ -1,4 +1,5 @@
 import React from 'react';
+import {trans, GLOBAL_WAITING } from '../../translator';
 
 export const Br = ({space=1}) => {
   const rows = [];
@@ -12,5 +13,11 @@ export const Submit = ({label,type='primary',disabled=false}) => {
   const _type = (type=='secondary') ? 'fr-btn--secondary' : '';
   return (
     <button className={"fr-btn "+_type} disabled={disabled}>{label}</button>
+  );
+}
+
+export const Loading = () => {
+  return (
+    <h5>{trans(GLOBAL_WAITING)}</h5>
   );
 }

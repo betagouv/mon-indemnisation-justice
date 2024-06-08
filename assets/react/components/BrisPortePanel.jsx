@@ -3,6 +3,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
+import {default as RecapitulatifBrisPorte} from './BrisPorte/Recapitulatif';
 import { Br } from "../utils/fundamental";
 import { trans, BRIS_PORTE_SECTION,USER_SECTION,
   DOCUMENT_ATTESTATION_INFORMATION_TITLE,
@@ -21,6 +22,7 @@ import { trans, BRIS_PORTE_SECTION,USER_SECTION,
   GLOBAL_STEP_NEXT,GLOBAL_STEP_PREVIOUS,
   BRIS_PORTE_EDIT_UPDATE_CONSTITUE,
   GLOBAL_INFORMATIONS_REQUIREMENT,
+  VERIFICATION_SECTION,
   BRIS_PORTE_PJ_SECTION
 } from '../../translator';
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
@@ -32,8 +34,10 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   const sections = [
     trans(USER_SECTION),
     trans(BRIS_PORTE_SECTION),
-    trans(BRIS_PORTE_PJ_SECTION)
+    trans(BRIS_PORTE_PJ_SECTION),
+    trans(VERIFICATION_SECTION)
   ];
+  const gotoInformationSection= () => setStep(0);
   const [step,setStep]=useState(0);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
@@ -168,6 +172,27 @@ const BrisPortePanel = function({id,user,brisPorte}) {
               type={"titre_propriete"}
             />
             <Br space={2} />
+          </div>
+          <div className="fr-col-12">
+            <ul className="fr-btns-group fr-btns-group--inline-sm">
+              <li>
+                <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+              </li>
+              <li>
+                <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+              </li>
+            </ul>
+          </div>
+        </>
+        }
+        {(step===3) &&
+        <>
+          <div className="fr-col-12">
+            <RecapitulatifBrisPorte
+              brisPorte={brisPorte}
+              user={user}
+              revert={gotoInformationSection}
+            />
           </div>
           <div className="fr-col-12">
             <ul className="fr-btns-group fr-btns-group--inline-sm">

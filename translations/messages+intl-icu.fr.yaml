@@ -115,6 +115,7 @@ document:
   default: "Ajouter des fichiers"
   hint_text: "Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf."
 global:
+  revert: "Corriger la saisie"
   waiting: "Chargement en cours ..."
   informations_requirement: "Sauf mention contraire, tous les champs sont requis"
   field_required: "Le(s) champ(s) doivent être renseigné(s) pour poursuivre : "
@@ -172,6 +173,8 @@ login:
   no_account_title: "Vous n’avez pas de compte ?"
 logout:
   title: Se déconnecter
+verification:
+  section: "Vérification et soumission de ma demande"
 register:
   email:
     title: "Précontentieux : finalisation de l'activation de votre compte pour l'application %name%"
@@ -272,6 +275,7 @@ personne_morale:
     raison_sociale: "Raison sociale"
 representant_legal:
   title: "Identité du représentant légal"
+  small_title: "Représenté.e par"
 prejudice:
   field:
     reference: "Référence"
