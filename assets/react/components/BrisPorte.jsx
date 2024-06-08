@@ -69,7 +69,7 @@ const BrisPorte = ({brisPorte}) => {
       nomRemiseAttestation: nomRemiseAttestation, prenomRemiseAttestation: prenomRemiseAttestation,
       qualiteRequerant: formatUrl(qualiteRequerant), precisionRequerant: precisionRequerant
     };
-
+    
     clearTimeout(keyUpTimer.current);
     keyUpTimer.current = setTimeout(() => {
       fetch(url, {

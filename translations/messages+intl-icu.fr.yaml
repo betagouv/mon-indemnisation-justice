@@ -63,6 +63,7 @@ bris_porte:
     nom_remise_attestation: "NOM"
     prenom_remise_attestation: "PRENOM"
     qualite_representant: "J'effectue ma demande en qualité de"
+    qualite_remise_attestation: "En qualité de "
     precision_representant: "Préciser votre qualité"
   section: "Informations relative au bris de porte"
 categorie_demande:

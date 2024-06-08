@@ -62,7 +62,7 @@ const FormulaireReceveur = function({personnePhysique}) {
   useEffect(() => {
     setStateNom(getStateOnEmpty(nom));
     setStatePrenom1(getStateOnEmpty(prenom1));
-  },[nom,nomNaissance]);
+  },[nom,prenom1]);
 
   useEffect(() => {
     if(false === loading)
