@@ -6,6 +6,8 @@ import {default as RecapitulatifAdresse} from '../Adresse/Recapitulatif';
 const Recapitulatif = ({uri,adresseUri}) => {
 
   useEffect(() => {
+    if(true===loading)
+      return;
     fetch(uri)
       .then((response) => response.json())
       .then((data) => {

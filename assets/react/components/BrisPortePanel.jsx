@@ -37,7 +37,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
     trans(BRIS_PORTE_PJ_SECTION),
     trans(VERIFICATION_SECTION)
   ];
-  const gotoInformationSection= () => setStep(0);
+  const gotoFirstSection= () => setStep(0);
+  const gotoSecondSection= () => setStep(1);
   const [step,setStep]=useState(0);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
@@ -191,7 +192,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
             <RecapitulatifBrisPorte
               brisPorte={brisPorte}
               user={user}
-              revert={gotoInformationSection}
+              gotoFirstSection={gotoFirstSection}
+              gotoSecondSection={gotoSecondSection}
             />
           </div>
           <div className="fr-col-12">
