@@ -5,6 +5,7 @@ import {default as RecapitulatifRepresentantLegal} from '../RepresentantLegal/Re
 import {default as RecapitulatifServiceEnqueteur} from '../ServiceEnqueteur/Recapitulatif';
 import {default as RecapitulatifQualite} from '../QualiteRequerant/Recapitulatif';
 import {default as RecapitulatifReceveurAttestation} from '../ReceveurAttestation/Recapitulatif';
+import {default as RecapitulatifDocument} from '../Document/Recapitulatif';
 import { Br,Loading } from '../../utils/fundamental';
 import { normalizeDate } from '../../utils/cast';
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -15,7 +16,7 @@ import {trans,GLOBAL_REVERT,CATEGORIE_DEMANDE_BRIS_PORTE_TITLE,
   BRIS_PORTE_FIELD_QUALITE_REMISE_ATTESTATION,BRIS_PORTE_PJ_SECTION
 } from '../../../translator';
 
-const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection}) => {
+const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoThirdSection}) => {
 
   const personneMoraleUri = Routing.generate('_api_personne_morale_get',{id: user.personneMorale.id});
   const personnePhysiqueUri = Routing.generate('_api_personne_physique_get',{id: user.personnePhysique.id});
@@ -123,7 +124,16 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection}) => {
       {loading &&
         <>
           <h2>{trans(BRIS_PORTE_PJ_SECTION)}</h2>
-          @todo
+          <RecapitulatifDocument
+            isPersonneMorale={lUser.isPersonneMorale}
+            personneMoraleUri={personneMoraleUri}
+            personnePhysiqueUri={personnePhysiqueUri}
+            prejudiceUri={brisPorteUri}
+          />
+          <Button
+            onClick={gotoThirdSection}
+            priority="secondary"
+          >{trans(GLOBAL_REVERT)}</Button>
         </>
       }
       {!loading &&

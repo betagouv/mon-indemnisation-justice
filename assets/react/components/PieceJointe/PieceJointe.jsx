@@ -3,7 +3,7 @@ import { Uploader } from '../Uploader';
 import { trans, GLOBAL_WAITING
 } from '../../../translator';
 
-export const Document = ({liasseDocumentaireIri,type,label,hint_text=null}) => {
+export const Document = ({liasseDocumentaireIri,type,label,hint_text=null,readonly=false}) => {
   const [loading,setLoading]=useState(false);
   const [documents,setDocuments]=useState([]);
   const [selectedFile,setSelectedFile]=useState(null);
@@ -42,13 +42,15 @@ export const Document = ({liasseDocumentaireIri,type,label,hint_text=null}) => {
       .catch(() => setLoading(true))
   },[]);
 
-
-
   return (
     <>
       {loading &&
       <>
         <div className="fr-col-12">
+        {readonly &&
+          <label className="fr-label">{label}</label>
+        }
+        {!readonly &&
           <Uploader
             hint_text={hint_text}
             label={label}
@@ -57,6 +59,7 @@ export const Document = ({liasseDocumentaireIri,type,label,hint_text=null}) => {
             selectedFile={selectedFile}
             setSelectedFile={setSelectedFile}
           />
+        }
         </div>
         <div className="fr-col-12">
           <div className="fr-grid-row">

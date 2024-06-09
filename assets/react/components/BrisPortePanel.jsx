@@ -39,6 +39,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   ];
   const gotoFirstSection= () => setStep(0);
   const gotoSecondSection= () => setStep(1);
+  const gotoThirdSection= () => setStep(2);
   const [step,setStep]=useState(0);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
@@ -194,7 +195,9 @@ const BrisPortePanel = function({id,user,brisPorte}) {
               user={user}
               gotoFirstSection={gotoFirstSection}
               gotoSecondSection={gotoSecondSection}
+              gotoThirdSection={gotoThirdSection}
             />
+            <Br space={2}/>
           </div>
           <div className="fr-col-12">
             <ul className="fr-btns-group fr-btns-group--inline-sm">
