@@ -17,7 +17,7 @@ const CategorieDemandeCard = function({title,chapo,href='#',enabled=true,vertica
           </h3>
           <div className="fr-tile__start">
             {enabled &&
-            <p className="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">disponible</p>
+            <Badge as="span" noIcon severity="success">{"disponible"}</Badge>
             }
             {!enabled &&
             <Badge as="span" noIcon severity="warning">{trans(CATEGORIE_DEMANDE_WAITING)}</Badge>
