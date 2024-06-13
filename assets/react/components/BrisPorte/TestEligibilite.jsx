@@ -78,19 +78,19 @@ const TestEligibilite = function() {
       <Hidden name="numeroPV" value={numeroPV} />
       <Hidden name="numeroParquet" value={numeroParquet} />
       <Hidden name="isErreurPorte" value={isErreurPorte} />
-      <div className="fr-grid-row">
-        <div className="fr-col-8">
+      <section class="pr-eligibilite_conditions">
+        <div class="fr-pt-8w">
           <h2>{trans(BRIS_PORTE_TEST_ELIGIBILITE_H2)}</h2>
           {parse(trans(BRIS_PORTE_TEST_ELIGIBILITE_DESCRIPTION))}
-          <p>
-            <Button onClick={() => {modal.open()}}>
-            {trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}
-            </Button>
-          </p>
         </div>
-        <div className="fr-col-4">
+      </section>
+      <section className="pr-eligibilite_action">
+        <div class="fr-pb-8w fr-pt-2w">
+          <Button onClick={() => {modal.open()}}>
+          {trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}
+          </Button>
         </div>
-      </div>
+      </section>
       <modal.Component title={trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}>
           <div className="fr-grid-row">
             {("common" == panel) &&
