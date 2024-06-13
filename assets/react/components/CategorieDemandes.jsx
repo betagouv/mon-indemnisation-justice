@@ -10,50 +10,52 @@ import CategorieDemandeCard from './CategorieDemandeCard';
 
 const CategorieDemandes = function() {
   return (
-    <div className="fr-grid-row">
-        <div className="fr-col-12">
-          <h1>{trans(CATEGORIE_DEMANDE_TITLE)}</h1>
-          <p>{trans(CATEGORIE_DEMANDE_CHAPO)}</p>
-        </div>
-        <div className="fr-col-4">
-          <CategorieDemandeCard
-            title={trans(CATEGORIE_DEMANDE_BRIS_PORTE_TITLE)}
-            chapo={trans(CATEGORIE_DEMANDE_BRIS_PORTE_CHAPO)}
-            enabled={true}
-            href={Routing.generate('app_bris_porte_test_eligibilite')}
-          />
-        </div>
-        <div className="fr-col-4">
-          <CategorieDemandeCard
-            title={trans(CATEGORIE_DEMANDE_PERTE_LOYER_TITLE)}
-            chapo={trans(CATEGORIE_DEMANDE_PERTE_LOYER_CHAPO)}
-            enabled={false}
-          />
-        </div>
-        <div className="fr-col-4">
-          <CategorieDemandeCard
-            title={trans(CATEGORIE_DEMANDE_DYSFONCTIONNEMENT_JUSTICE_TITLE)}
-            chapo={trans(CATEGORIE_DEMANDE_DYSFONCTIONNEMENT_JUSTICE_CHAPO)}
-            enabled={false}
-          />
-        </div>
-        <div className="fr-col-6">
-          <CategorieDemandeCard
-            title={trans(CATEGORIE_DEMANDE_ACCIDENT_TITLE)}
-            chapo={trans(CATEGORIE_DEMANDE_ACCIDENT_CHAPO)}
-            enabled={false}
-            vertical={false}
-          />
-        </div>
-        <div className="fr-col-6">
-          <CategorieDemandeCard
-            title={trans(CATEGORIE_DEMANDE_SINISTRE_TITLE)}
-            chapo={trans(CATEGORIE_DEMANDE_SINISTRE_CHAPO)}
-            enabled={false}
-            vertical={false}
-          />
-        </div>
-    </div>
+    <section className="pr-requests">
+      <div className="fr-px-4w fr-pt-4w">
+        <h2>{trans(CATEGORIE_DEMANDE_TITLE)}</h2>
+        <p>{trans(CATEGORIE_DEMANDE_CHAPO)}</p>
+        <ul class="fr-grid-row fr-grid-row--gutters">
+          <li className="fr-col-4">
+            <CategorieDemandeCard
+              title={trans(CATEGORIE_DEMANDE_BRIS_PORTE_TITLE)}
+              chapo={trans(CATEGORIE_DEMANDE_BRIS_PORTE_CHAPO)}
+              enabled={true}
+              href={Routing.generate('app_bris_porte_test_eligibilite')}
+            />
+          </li>
+          <li className="fr-col-4">
+            <CategorieDemandeCard
+              title={trans(CATEGORIE_DEMANDE_PERTE_LOYER_TITLE)}
+              chapo={trans(CATEGORIE_DEMANDE_PERTE_LOYER_CHAPO)}
+              enabled={false}
+            />
+          </li>
+          <li className="fr-col-4">
+            <CategorieDemandeCard
+              title={trans(CATEGORIE_DEMANDE_DYSFONCTIONNEMENT_JUSTICE_TITLE)}
+              chapo={trans(CATEGORIE_DEMANDE_DYSFONCTIONNEMENT_JUSTICE_CHAPO)}
+              enabled={false}
+            />
+          </li>
+          <li className="fr-col-6">
+            <CategorieDemandeCard
+              title={trans(CATEGORIE_DEMANDE_ACCIDENT_TITLE)}
+              chapo={trans(CATEGORIE_DEMANDE_ACCIDENT_CHAPO)}
+              enabled={false}
+              vertical={false}
+            />
+          </li>
+          <li className="fr-col-6">
+            <CategorieDemandeCard
+              title={trans(CATEGORIE_DEMANDE_SINISTRE_TITLE)}
+              chapo={trans(CATEGORIE_DEMANDE_SINISTRE_CHAPO)}
+              enabled={false}
+              vertical={false}
+            />
+          </li>
+        </ul>
+      </div>
+    </section>
   );
 }
 

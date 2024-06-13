@@ -19,7 +19,7 @@ const Entete = ({user,version}) => {
     });
   else
   links.push({
-    iconId: 'fr-icon-git-repository-private-line',
+    iconId: 'fr-icon-user-fill',
     linkProps: { href: Routing.generate('app_login') },
     text: trans(LOGIN_TITLE)
   });

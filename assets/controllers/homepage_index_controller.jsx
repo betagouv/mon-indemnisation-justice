@@ -4,11 +4,12 @@ import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
 import Entete from '../react/components/Entete';
 import PiedDePage from '../react/components/PiedDePage';
-import QuiSommesNousHeader from '../react/components/QuiSommesNousHeader';
+import QuiSommesNousHeader from '../react/components/QuiSommesNous/QuiSommesNousHeader';
 import CategorieDemandes from '../react/components/CategorieDemandes';
 import FilAriane from '../react/components/FilAriane';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
+import '../styles/homepage.css';
 
 export default class extends Controller {
     static values = {
@@ -23,18 +24,18 @@ export default class extends Controller {
         <React.StrictMode>
           <>
             <Entete user={this.userValue} version={this.versionValue} />
-            <div className="fr-container">
-              <div className="fr-grid-row">
-                <div className="fr-col-7">
+            <main role="main">
+              <div className="pr-content fr-pb-6w">
+                <div className="pr-content_header">
                   <QuiSommesNousHeader />
                 </div>
-                <div className="fr-col-3">
-                </div>
-                <div className="fr-col-12">
-                  <CategorieDemandes />
+                <div className="fr-container">
+                  <div className="pr-content_body pr-mt-n6w ">
+                    <CategorieDemandes />
+                  </div>
                 </div>
               </div>
-            </div>
+            </main>
             <PiedDePage />
           </>
         </React.StrictMode>
