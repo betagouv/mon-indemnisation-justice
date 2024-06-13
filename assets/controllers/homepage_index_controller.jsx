@@ -6,6 +6,7 @@ import Entete from '../react/components/Entete';
 import PiedDePage from '../react/components/PiedDePage';
 import QuiSommesNousHeader from '../react/components/QuiSommesNous/QuiSommesNousHeader';
 import CategorieDemandes from '../react/components/CategorieDemandes';
+import ServiceNational from '../react/components/ServiceNational/ServiceNational';
 import FilAriane from '../react/components/FilAriane';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
@@ -32,6 +33,7 @@ export default class extends Controller {
                 <div className="fr-container">
                   <div className="pr-content_body pr-mt-n6w ">
                     <CategorieDemandes />
+                    <ServiceNational />
                   </div>
                 </div>
               </div>

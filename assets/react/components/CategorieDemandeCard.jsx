@@ -8,20 +8,29 @@ const CategorieDemandeCard = function({title,chapo,href='#',enabled=true,vertica
 
   const tagTitle = (true==enabled) ? title : <div style={{color:"gray"}}>{title}</div>;
   return (
-    <Card
-      background
-      border
-      start={(false === enabled) && <Badge as="span" noIcon severity="warning">{trans(CATEGORIE_DEMANDE_WAITING)}</Badge>}
-      desc={chapo}
-      enlargeLink={enabled}
-      imageAlt={title}
-      horizontal={!vertical}
-      imageUrl="https://www.systeme-de-design.gouv.fr/img/placeholder.16x9.png"
-      linkProps={{ href: href }}
-      size="medium"
-      title={tagTitle}
-      titleAs="h3"
-    />
+    <div className="fr-tile fr-enlarge-link" id="tile-6609">
+      <div className="fr-tile__body">
+        <div className="fr-tile__content">
+          <h3 className="fr-tile__title">
+            {enabled && <a href={href}>{tagTitle}</a>}
+            {!enabled && <a>{tagTitle}</a>}
+          </h3>
+          <div className="fr-tile__start">
+            {enabled &&
+            <p className="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">disponible</p>
+            }
+            {!enabled &&
+            <Badge as="span" noIcon severity="warning">{trans(CATEGORIE_DEMANDE_WAITING)}</Badge>
+            }
+          </div>
+          <p className="fr-tile__desc">{chapo}</p>
+        </div>
+      </div>
+      <div className="fr-tile__header">
+        <div className="fr-tile__pictogram">
+        </div>
+      </div>
+    </div>
   );
 }
 
