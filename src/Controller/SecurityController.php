@@ -106,8 +106,6 @@ class SecurityController extends AbstractController
                 $request->get('_password')
             )
         );
-        $user->setExpirationLink(null);
-        $user->setExpirationDatetime(null);
         $successMsg = $this->translator->trans('security.reset_password.success.password_reseted');
         $this->em->flush();
       }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Aws\S3\S3Client;
 use App\Entity\Document;
 use App\Entity\LiasseDocumentaire;
 use Doctrine\ORM\EntityManagerInterface;
@@ -9,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,7 +20,8 @@ class DocumentController extends AbstractController
 {
     public function __construct(
       private EntityManagerInterface $em,
-      private DownloadHandler $downloadHandler
+      private DownloadHandler $downloadHandler,
+      private S3Client $client
     )
     {
 
@@ -49,11 +52,27 @@ class DocumentController extends AbstractController
       ]);
     }
 
+    /**
+     * @author yanroussel
+     * @todo   Download à refaire proprement
+     */ 
     #[Route('/document/{id}/{filename}', name: 'app_document_download',methods: ['GET'],options: ['expose' => true])]
-    public function download(Request $request, ?Document $document): StreamedResponse
+    public function download(Request $request, ?Document $document): BinaryFileResponse
     {
+
+      //dd(get_class_methods($this->client));
+      $file = $this->client->getObject([
+          'Bucket' => 'se-precontentieux-dev',
+          'Key' => $document->getFilename(),
+      ]);
+      $body = $file->get('Body');
+      $body->rewind();
+      $tmpFilename = sys_get_temp_dir().'/'.$document->getFilename();
+      $tmpContent = $body->getContents();
+      file_put_contents($tmpFilename, $tmpContent);
+      return new BinaryFileResponse($tmpFilename);
       if($document->getFilename() === $request->get('filename'))
-        return $this->downloadHandler->downloadObject($document, $fileField = 'file');
+        return $this->downloadHandler->downloadObject(object: $document, field:'file');
       throw new NotFoundHttpException('Document non trouvé');
     }
 }

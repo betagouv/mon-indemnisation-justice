@@ -124,7 +124,7 @@ const Inscription = ({user,csrfToken}) => {
       </Button>
       <Br space={2} />
       <hr/>
-      <div className="fr-grid-row">
+      <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12">
           <h1>{trans(SECURITY_INSCRIPTION_TITLE)}</h1>
         </div>
@@ -138,16 +138,16 @@ const Inscription = ({user,csrfToken}) => {
         <div className="fr-col-12">
           <b>{trans(SECURITY_INSCRIPTION_DESCRIPTION)}</b>
         </div>
-        <div className="fr-col-4 fr-pr-md-1w">
+        <div className="fr-col-4">
           <Civilite civilite={civilite} setCivilite={setCivilite} defaultOptionText={" "} />
         </div>
         <div className="fr-col-8">
           <Input
             label={trans(USER_FIELD_PRENOMS)}
-            nativeInputProps={{name:'prenom1', placeholder: trans(USER_FIELD_PRENOMS), value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
+            nativeInputProps={{value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-6 fr-pr-md-1w">
+        <div className="fr-col-6">
         <Input
           label={trans(USER_FIELD_NOM)}
           nativeInputProps={{name:'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
@@ -167,7 +167,7 @@ const Inscription = ({user,csrfToken}) => {
             nativeInputProps={{name: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-5 fr-pr-md-1w">
+        <div className="fr-col-5">
           <PasswordInput
             label={trans(LOGIN_PASSWORD)}
             messages={manageMsgPassword(password,confirmPassword)}
