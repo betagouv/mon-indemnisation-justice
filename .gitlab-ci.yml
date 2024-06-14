@@ -22,7 +22,30 @@ variables:
   CI_PROJECT_IMAGE: ${APP_NAME}:${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
   BRANCH_NAME: ${CI_COMMIT_REF_SLUG}
   APP_ENV: "internet"
-
+  APP_SECRET: bafc23a0315b735289c499a886798934
+  BASE_URL: https://dev.precontentieux.app.cc.anje-justice.fr
+  CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+  DATABASE_PASSWORD: ${PSQL_PASSWORD_DEV}
+  DATABASE_NAME: ${PSQL_DB_DEV}
+  DATABASE_HOST: ${PSQL_HOST_DEV}
+  DATABASE_USER: ${PSQL_USERNAME_DEV}
+  DATABASE_PORT: ${PSQL_PORT_DEV}
+  DATABASE_TYPE: postgres
+  DATABASE_DRIVER: pdo_pgsql
+  EMAIL_FROM: nepasrepondre@justice.gouv.fr
+  EMAIL_FROM_LABEL: Precontentieux
+  MAILER_FROM: nepasrepondre@justice.gouv.fr
+  VERSION_LABEL: '0.0.1'
+  SCW_HOST: 'https://s3.fr-par.scw.cloud'
+  SCW_ACCESS_KEY: $S3_ACCESS_KEY_SECRET
+  SCW_REGION: fr-par
+  SCW_BUCKET: se-precontentieux-dev
+  SCW_SECRET_KEY: $S3_SECRET_KEY_SECRET
+  SCW_DEFAULT_ORGANIZATION_ID: 2e8f8f84-02bf-4b8f-8cec-f99918fbd746
+  SCW_DEFAULT_PROJECT_ID: 2e8f8f84-02bf-4b8f-8cec-f99918fbd746
+  # configuration dédiée à la section "mailer"
+  MAILER_DSN: 'smtp://null:null@null:25'
+  
 
 build:
   stage: 🔨build
@@ -35,14 +58,42 @@ build:
     - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
     - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
     - php -r "unlink('composer-setup.php');"
+    - echo "host db ${DATABASE_HOST}"
   script:
+    - echo "Set .env.${APP_ENV}"
+    - cp .env.$APP_ENV .env
+    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then
+        sed -i "s|__PSQL_HOST__|${PSQL_HOST}|g" .env.$APP_ENV;
+        sed -i "s|__PSQL_PORT__|${PSQL_PORT}|g" .env.$APP_ENV;
+        sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME}|g" .env.$APP_ENV;
+        sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD}|g" .env.$APP_ENV;
+        sed -i "s|__PSQL_DB__|${PSQL_DB}|g" .env.$APP_ENV;
+        sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV;
+        sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV;
+        sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV;
+        sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV;
+      else
+        sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV;
+        sed -i "s|__PSQL_PORT__|${PSQL_PORT_DEV}|g" .env.$APP_ENV;
+        sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME_DEV}|g" .env.$APP_ENV;
+        sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD_DEV}|g" .env.$APP_ENV;
+        sed -i "s|__PSQL_DB__|${PSQL_DB_DEV}|g" .env.$APP_ENV;
+        sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV;
+        sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV;
+        sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV;
+        sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV;
+      fi
     - echo "Install dependencies Symfony application with composer"
     - composer install --optimize-autoloader --apcu-autoloader
+    - echo "Update database"
+    - php bin/console d:s:u --force
     - echo "Install Npm & Assets"
     - npm install
     - npm run build
     - php bin/console a:i
+    - php bin/console a:a:charger
     - apt-get remove --purge nodejs && apt-get autoremove
+    #- COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
     - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
   artifacts:
     paths:
@@ -75,41 +126,6 @@ package:
       --dockerfile "${CI_PROJECT_DIR}/.docker/Dockerfile"
       --destination "${REGISTRY_URL}/${CI_PROJECT_IMAGE}"
 
-deploy-reviewapp:
-  stage: 🚀deploy
-  needs:
-    - job: package
-  extends: .template:clevercloud:deploy
-  variables:
-    APP_FQDN: "${CI_COMMIT_REF_SLUG}.precontentieux.app.cc.anje-justice.fr"
-    CC_DOCKER_EXPOSED_HTTP_PORT: 8080
-    CC_FORCE_HTTPS: 1
-    CLEVER_PGNAME: "postgresql_5c61b184-3c4e-4aed-8982-e73978bb435e"
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: "https://${CI_COMMIT_REF_SLUG}.precontentieux.app.cc.anje-justice.fr"
-  when: manual
-  except:
-    - recette
-    - master
-    - develop
-  before_script:
-    - echo "Set .env.${APP_ENV}"
-    - cp .env.$APP_ENV .env
-    - sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_PORT__|${PSQL_PORT_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_DB__|${PSQL_DB_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV
-  script:
-    - echo "Update database"
-    - php bin/console d:s:u --force
-    - php bin/console a:a:charger
-
 deploy-develop:
   stage: 🚀deploy
   needs:
@@ -125,22 +141,8 @@ deploy-develop:
     url: "https://dev.precontentieux.app.cc.anje-justice.fr"
   only:
     - develop
-  before_script:
-    - echo "Set .env.${APP_ENV}"
-    - cp .env.$APP_ENV .env
-    - sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_PORT__|${PSQL_PORT_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_DB__|${PSQL_DB_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV
   script:
-    - echo "Update database"
-    - php bin/console d:s:u --force
-    - php bin/console a:a:charger
+    - echo "host db ${DATABASE_HOST}"
 
 deploy-recette:
   stage: 🚀deploy
@@ -157,22 +159,6 @@ deploy-recette:
     url: "https://recette.precontentieux.app.cc.anje-justice.fr"
   only:
     - recette
-  before_script:
-    - echo "Set .env.${APP_ENV}"
-    - cp .env.$APP_ENV .env
-    - sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_PORT__|${PSQL_PORT_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_DB__|${PSQL_DB_DEV}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV
-  script:
-    - echo "Update database"
-    - php bin/console d:s:u --force
-    - php bin/console a:a:charger
 
 
 deploy-production:
@@ -195,22 +181,6 @@ deploy-production:
   when: manual
   only:
     - master
-  before_script:
-    - echo "Set .env.${APP_ENV}"
-    - cp .env.$APP_ENV .env
-    - sed -i "s|__PSQL_HOST__|${PSQL_HOST_PROD}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_PORT__|${PSQL_PORT_PROD}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME_PROD}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD_PROD}|g" .env.$APP_ENV
-    - sed -i "s|__PSQL_DB__|${PSQL_DB_PROD}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV
-    - sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV
-  script:
-    - echo "Update database"
-    - php bin/console d:s:u --force
-    - php bin/console a:a:charger
 
 destroy-app-clevercloud:
   stage: 🗑destroy
