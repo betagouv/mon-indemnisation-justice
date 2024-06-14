@@ -29,7 +29,7 @@ const FormulaireReceveur = function({personnePhysique}) {
   const [qualiteRequerant, setQualiteRequerant]=useState(personnePhysique.qualite??"");
   const [precisionRequerant, setPrecisionRequerant]=useState(personnePhysique.precision??"");
 
-  const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nom));
+  const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nomNaissance));
   const [statePrenom1, setStatePrenom1]=useState(getStateOnEmpty(personnePhysique.prenom1));
   const [recordActived, setRecordActived]=useState(false);
   const [loading, setLoading]=useState(false);
@@ -60,9 +60,9 @@ const FormulaireReceveur = function({personnePhysique}) {
   },[]);
 
   useEffect(() => {
-    setStateNom(getStateOnEmpty(nom));
+    setStateNom(getStateOnEmpty(nomNaissance));
     setStatePrenom1(getStateOnEmpty(prenom1));
-  },[nom,prenom1]);
+  },[nomNaissance,prenom1]);
 
   useEffect(() => {
     if(false === loading)
@@ -98,36 +98,12 @@ const FormulaireReceveur = function({personnePhysique}) {
 
   return (
     <>
-      <div className="fr-grid-row">
-        <div className="fr-col-12">
-          <h5>{trans(BRIS_PORTE_EDIT_DETAILS_REMISE)}</h5>
-        </div>
-        <div className="fr-col-2 fr-pr-md-1w">
+      <h3>{trans(BRIS_PORTE_EDIT_DETAILS_REMISE)}</h3>
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-3">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
-        <div className="fr-col-5 fr-pr-md-1w">
-          <Input
-            label={trans(USER_FIELD_NOM)}
-            state={stateNom}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-            nativeInputProps={{
-              value: nom,
-              onChange: ev => setNom(ev.target.value),
-              maxLength: 255
-            }}
-          />
-        </div>
-        <div className="fr-col-5">
-        <Input
-          label={trans(USER_FIELD_NOM_NAISSANCE)+" "+trans(GLOBAL_OPTIONAL)}
-          nativeInputProps={{
-            value: nomNaissance,
-            onChange: ev => setNomNaissance(ev.target.value),
-            maxLength: 255
-          }}
-        />
-        </div>
-        <div className="fr-col-12">
+        <div className="fr-col-9">
           <Input
             label={trans(USER_FIELD_PRENOMS)}
             state={statePrenom1}
@@ -140,9 +116,32 @@ const FormulaireReceveur = function({personnePhysique}) {
             }}
           />
         </div>
+        <div className="fr-col-6">
+          <Input
+            label={trans(USER_FIELD_NOM_NAISSANCE)}
+            state={stateNom}
+            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            nativeInputProps={{
+              value: nomNaissance,
+              onChange: ev => setNomNaissance(ev.target.value),
+              maxLength: 255
+            }}
+          />
+        </div>
+        <div className="fr-col-6">
+          <Input
+            label={trans(USER_FIELD_NOM)+" "+trans(GLOBAL_OPTIONAL)}
+            nativeInputProps={{
+              value: nom,
+              onChange: ev => setNom(ev.target.value),
+              maxLength: 255
+            }}
+          />
+        </div>
         <div className="fr-col-12">
           <Requerant
             qualiteText={"Qualité"}
+            precisionText={"Préciser sa qualité"}
             qualiteRequerant={qualiteRequerant}
             setQualiteRequerant={setQualiteRequerant}
             precisionRequerant={precisionRequerant}

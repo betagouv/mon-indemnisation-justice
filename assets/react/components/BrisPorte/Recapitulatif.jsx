@@ -42,46 +42,41 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
   },[]);
 
   return (
-    <div className="fr-grid-row">
+    <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
       <div className="fr-col-6">
-      {loading && lUser && lUser.isPersonneMorale &&
-        <div className="fr-grid-row">
-          <div className="fr-col-12">
-            <RecapitulatifPersonneMorale adresseUri={lUser.adresse} uri={lUser.personneMorale} />
-            <Br space={1}/>
-            <RecapitulatifRepresentantLegal uri={lUser.personnePhysique} />
-          </div>
-        </div>
-      }
-      {loading && lUser && !lUser.isPersonneMorale &&
-        <div className="fr-grid-row">
-          <div className="fr-col-12">
-            <RecapitulatifPersonnePhysique adresseUri={lUser.adresse} uri={lUser.personnePhysique} />
-            <Br space={1}/>
-          </div>
-        </div>
-      }
-      {!loading &&
+        {loading && lUser && lUser.isPersonneMorale &&
+        <section className="pr-form-section fr-p-4w">
+          <RecapitulatifPersonneMorale adresseUri={lUser.adresse} uri={lUser.personneMorale} />
+          <RecapitulatifRepresentantLegal uri={lUser.personnePhysique} />
+          <Button
+            onClick={gotoFirstSection}
+            priority="secondary"
+          >{trans(GLOBAL_REVERT)}</Button>
+        </section>
+        }
+        {loading && lUser && !lUser.isPersonneMorale &&
+        <section className="pr-form-section fr-p-4w">
+          <RecapitulatifPersonnePhysique adresseUri={lUser.adresse} uri={lUser.personnePhysique} />
+          <Button
+            onClick={gotoFirstSection}
+            priority="secondary"
+          >{trans(GLOBAL_REVERT)}</Button>
+        </section>
+        }
+        {!loading &&
         <Loading />
-      }
-      {loading &&
-        <Button
-          onClick={gotoFirstSection}
-          priority="secondary"
-        >{trans(GLOBAL_REVERT)}</Button>
-      }
+        }
       </div>
       <div className="fr-col-6">
-      {loading &&
-        <>
+        {loading &&
+        <section className="pr-form-section fr-p-4w">
           <RecapitulatifServiceEnqueteur uri={updatedBrisPorte.serviceEnqueteur}/>
-          <Br space={2}/>
           <Button
             onClick={gotoSecondSection}
             priority="secondary"
           >{trans(GLOBAL_REVERT)}</Button>
-        </>
-      }
+        </section>
+        }
       {!loading &&
         <Loading />
       }

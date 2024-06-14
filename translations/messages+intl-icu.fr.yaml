@@ -48,7 +48,7 @@ bris_porte:
     update_constitue: "Je déclare mon bris de porte"
     details:
       h5: "Informations sur le bris de porte"
-      remise: "Attestation d'informations remise à"
+      remise: "Attestation d'information remise à"
   create:
     title: "Déclarer un bris de porte"
   field:

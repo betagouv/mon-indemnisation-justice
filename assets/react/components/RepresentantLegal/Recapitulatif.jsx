@@ -35,11 +35,11 @@ const Recapitulatif = ({uri}) => {
   return (
     <>
     {loading &&
-      <>
-        <span>{trans(REPRESENTANT_LEGAL_SMALL_TITLE)}</span>
+      <p className="fr-mb-5w">
+        <label>{trans(REPRESENTANT_LEGAL_SMALL_TITLE)}</label>
         <Br/>
-        <b>{civilite} {representantLegal.prenom1} {representantLegal.nom}</b>
-      </>
+        <strong>{civilite} {representantLegal.prenom1} {representantLegal.nom}</strong>
+      </p>
     }
     {!loading &&
       <Loading />

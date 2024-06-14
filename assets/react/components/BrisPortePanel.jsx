@@ -40,7 +40,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   const gotoFirstSection= () => setStep(0);
   const gotoSecondSection= () => setStep(1);
   const gotoThirdSection= () => setStep(2);
-  const [step,setStep]=useState(0);
+  const [step,setStep]=useState(3);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
   const [isPersonneMorale,setIsPersonneMorale]=useState(user.isPersonneMorale);
@@ -66,136 +66,147 @@ const BrisPortePanel = function({id,user,brisPorte}) {
         title={title}
       />
     </section>
-
+    {(step<3) &&
     <p className="fr-my-4w">{trans(GLOBAL_INFORMATIONS_REQUIREMENT)}</p>
-        {(step===0) &&
-        <section className="pr-case_form fr-mb-4w">
-          <User user={user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
-          <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12">
-              <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
-            </div>
-          </div>
-        </section>
-        }
-        {(step===1) &&
-        <>
-          <div className="fr-col-12">
-            <BrisPorte brisPorte={brisPorte} />
-          </div>
-          <div className="fr-col-12">
-            <Br space={2}/>
-          </div>
-          <div className="fr-col-12">
-            <div className="fr-grid-row">
-              <div className="fr-col-12">
-                <ul className="fr-btns-group fr-btns-group--inline-sm">
-                  <li>
-                    <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
-                  </li>
-                  <li>
-                    <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </>
-        }
+    }
+    {(step===0) &&
+    <section className="pr-case_form fr-mb-4w">
+      <User user={user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+          <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+        </div>
+      </div>
+    </section>
+    }
+    {(step===1) &&
+    <>
+      <BrisPorte brisPorte={brisPorte} />
+      <div className="fr-col-12">
+        <ul className="fr-btns-group fr-btns-group--inline-sm">
+          <li>
+            <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+          </li>
+          <li>
+            <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+          </li>
+        </ul>
+      </div>
+    </>
+    }
         {(step===2) &&
         <>
-          <div className="fr-col-12">
-            <Document
-              liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-              label={trans(DOCUMENT_ATTESTATION_INFORMATION_TITLE)}
-              type={"attestation_information"}
-            />
-            <Br space={2} />
-          </div>
-          <div className="fr-col-12">
-            <Document
-              liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-              label={trans(DOCUMENT_PHOTO_BRIS_PORTE_TITLE)}
-              hint_text={trans(DOCUMENT_PHOTO_BRIS_PORTE_HINT)}
-              type={"photo_prejudice"}
-            />
-            <Br space={2} />
-          </div>
-          {!isPersonneMorale &&
-          <div className="fr-col-12">
-            <Document
-              liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
-              label={trans(DOCUMENT_PIECE_IDENTITE_TITLE)}
-              hint_text={trans(DOCUMENT_PIECE_IDENTITE_HINT)}
-              type={"carte_identite"}
-            />
-            <Br space={2} />
-          </div>
-          }
-          <div className="fr-col-12">
-            <Document
-              liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-              label={trans(DOCUMENT_FACTURE_TITLE)}
-              hint_text={trans(DOCUMENT_FACTURE_HINT)}
-              type={"preuve_paiement_facture"}
-            />
-            <Br space={2} />
-          </div>
-          {isPersonneMorale &&
-          <div className="fr-col-12">
-            <Document
-              liasseDocumentaireIri={user.personneMorale.liasseDocumentaire}
-              label={trans(DOCUMENT_RIB_PRO_TITLE)}
-              hint_text={trans(DOCUMENT_RIB_PRO_HINT)}
-              type={"rib"}
-            />
-            <Br space={2} />
-          </div>
-          }
-          {!isPersonneMorale &&
-          <div className="fr-col-12">
-            <Document
-              liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
-              label={trans(DOCUMENT_RIB_TITLE)}
-              hint_text={trans(DOCUMENT_RIB_HINT)}
-              type={"rib"}
-            />
-            <Br space={2} />
-          </div>
-          }
-          <div className="fr-col-12">
-            <Document
-              liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-              label={trans(DOCUMENT_TITRE_PROPRIETE_TITLE)}
-              hint_text={trans(DOCUMENT_TITRE_PROPRIETE_HINT)}
-              type={"titre_propriete"}
-            />
-            <Br space={2} />
-          </div>
-          <div className="fr-col-12">
-            <ul className="fr-btns-group fr-btns-group--inline-sm">
-              <li>
-                <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
-              </li>
-              <li>
-                <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
-              </li>
-            </ul>
+          <a name="pieces"></a>
+          <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
+            <div className="fr-col-12">
+              <section className="pr-form-section fr-p-4w">
+                <Document
+                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  label={trans(DOCUMENT_ATTESTATION_INFORMATION_TITLE)}
+                  type={"attestation_information"}
+                />
+              </section>
+            </div>
+            <div className="fr-col-12">
+              <section className="pr-form-section fr-p-4w">
+                <Document
+                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  label={trans(DOCUMENT_PHOTO_BRIS_PORTE_TITLE)}
+                  hint_text={trans(DOCUMENT_PHOTO_BRIS_PORTE_HINT)}
+                  type={"photo_prejudice"}
+                />
+              </section>
+            </div>
+            {!isPersonneMorale &&
+            <div className="fr-col-12">
+              <section className="pr-form-section fr-p-4w">
+                <Document
+                  liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
+                  label={trans(DOCUMENT_PIECE_IDENTITE_TITLE)}
+                  hint_text={trans(DOCUMENT_PIECE_IDENTITE_HINT)}
+                  type={"carte_identite"}
+                />
+              </section>
+            </div>
+            }
+            <div className="fr-col-12">
+              <section className="pr-form-section fr-p-4w">
+                <Document
+                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  label={trans(DOCUMENT_FACTURE_TITLE)}
+                  hint_text={trans(DOCUMENT_FACTURE_HINT)}
+                  type={"preuve_paiement_facture"}
+                />
+              </section>
+            </div>
+            {isPersonneMorale &&
+            <div className="fr-col-12">
+              <section className="pr-form-section fr-p-4w">
+                <Document
+                  liasseDocumentaireIri={user.personneMorale.liasseDocumentaire}
+                  label={trans(DOCUMENT_RIB_PRO_TITLE)}
+                  hint_text={trans(DOCUMENT_RIB_PRO_HINT)}
+                  type={"rib"}
+                />
+              </section>
+            </div>
+            }
+            {!isPersonneMorale &&
+            <div className="fr-col-12">
+              <section className="pr-form-section fr-p-4w">
+                <Document
+                  liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
+                  label={trans(DOCUMENT_RIB_TITLE)}
+                  hint_text={trans(DOCUMENT_RIB_HINT)}
+                  type={"rib"}
+                />
+              </section>
+            </div>
+            }
+            <div className="fr-col-12">
+              <section className="pr-form-section fr-p-4w">
+                <Document
+                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  label={trans(DOCUMENT_TITRE_PROPRIETE_TITLE)}
+                  hint_text={trans(DOCUMENT_TITRE_PROPRIETE_HINT)}
+                  type={"titre_propriete"}
+                />
+              </section>
+            </div>
+            {!isPersonneMorale &&
+            <div className="fr-col-12">
+              <section className="pr-form-section fr-p-4w">
+                <Document
+                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  label={"Contrat de location"}
+                  hint_text={""}
+                  type={"contrat_location"}
+                />
+              </section>
+            </div>
+            }
+            <div className="fr-col-12">
+              <ul className="fr-btns-group fr-btns-group--inline-sm">
+                <li>
+                  <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+                </li>
+                <li>
+                  <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+                </li>
+              </ul>
+            </div>
           </div>
         </>
         }
         {(step===3) &&
         <>
-          <div className="fr-col-12">
-            <RecapitulatifBrisPorte
-              brisPorte={brisPorte}
-              user={user}
-              gotoFirstSection={gotoFirstSection}
-              gotoSecondSection={gotoSecondSection}
-              gotoThirdSection={gotoThirdSection}
-            />
-            <Br space={2}/>
-          </div>
+          <RecapitulatifBrisPorte
+            brisPorte={brisPorte}
+            user={user}
+            gotoFirstSection={gotoFirstSection}
+            gotoSecondSection={gotoSecondSection}
+            gotoThirdSection={gotoThirdSection}
+          />
           <div className="fr-col-12">
             <ul className="fr-btns-group fr-btns-group--inline-sm">
               <li>

@@ -21,11 +21,10 @@ const Recapitulatif = ({uri}) => {
   return (
     <>
     {loading &&
-      <address>
-        {adresse.ligne1}
-        <Br/>
-        {adresse.codePostal} {adresse.localite}
-      </address>
+      <>
+        <dd>{adresse.ligne1}</dd>
+        <dd>{adresse.codePostal} {adresse.localite}</dd>
+      </>
     }
     {!loading &&
       <Loading />

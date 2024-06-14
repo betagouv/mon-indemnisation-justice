@@ -37,21 +37,18 @@ const Recapitulatif = ({uri,adresseUri}) => {
   },[]);
 
   return (
-    <div className="fr-grid-row">
-    {loading &&
-      <>
-        <div className="fr-col-12">
-          <h2>{trans(USER_H5)}</h2>
-          <Br/>
-          <b>{civilite} {personnePhysique.prenom1} {personnePhysique.nom}</b>
-          <RecapitulatifAdresse uri={adresseUri} />
-        </div>
-      </>
-    }
-    {!loading &&
-      <Loading />
-    }
-    </div>
+    <>
+      <h3>{trans(USER_H5)}</h3>
+      {loading &&
+      <dl className="fr-mb-2w">
+        <strong>{civilite} {personnePhysique.prenom1} {personnePhysique.nom}</strong>
+        <RecapitulatifAdresse uri={adresseUri} />
+      </dl>
+      }
+      {!loading &&
+        <Loading />
+      }
+    </>
   );
 }
 

@@ -3,7 +3,7 @@ import { Uploader } from '../Uploader';
 import { trans, GLOBAL_WAITING
 } from '../../../translator';
 
-export const Document = ({liasseDocumentaireIri,type,label,hint_text=null,readonly=false}) => {
+export const Document = ({liasseDocumentaireIri,type,label,hint_text="",readonly=false}) => {
   const [loading,setLoading]=useState(false);
   const [documents,setDocuments]=useState([]);
   const [selectedFile,setSelectedFile]=useState(null);
@@ -62,18 +62,19 @@ export const Document = ({liasseDocumentaireIri,type,label,hint_text=null,readon
         }
         </div>
         <div className="fr-col-12">
-          <div className="fr-grid-row">
-          {documents.map((item) =>
-            <div key={item.id} className="fr-col-4">
+        {documents.map((item) =>
+            <>
               <a
+                key={item.id}
+                className="fr-link"
                 target="_blank"
                 href={Routing.generate('app_document_download',{id:item.id, filename: item.filename})}
               >
               {item.originalFilename}
-              </a>
-            </div>)
-          }
-          </div>
+              </a>&nbsp;|&nbsp;
+            </>
+          )
+        }
         </div>
       </>
       }

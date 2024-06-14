@@ -19,26 +19,21 @@ const Recapitulatif = ({uri,adresseUri}) => {
   const [loading,setLoading]=useState(false);
   const [personneMorale,setPersonneMorale]=useState({});
   return (
-    <div className="fr-grid-row">
-    {loading &&
+    <>
+      <h3>{trans(PERSONNE_MORALE_TITLE)}</h3>
+      {loading &&
       <>
-        <div className="fr-col-12">
-          <h2>{trans(PERSONNE_MORALE_TITLE)}</h2>
-        </div>
-        <div className="fr-col-12">
-          <b>{personneMorale.raisonSociale}</b>
-          <Br space={1}/>
-          <div>
-            {trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)} : {personneMorale.sirenSiret}
-            <RecapitulatifAdresse uri={adresseUri} />
-          </div>
-        </div>
+        <dl className="fr-mb-2w">
+          <strong>{personneMorale.raisonSociale}</strong>
+          <dd>{trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)} : {personneMorale.sirenSiret}</dd>
+          <RecapitulatifAdresse uri={adresseUri} />
+        </dl>
       </>
     }
     {!loading &&
       <Loading />
     }
-    </div>
+    </>
   );
 }
 

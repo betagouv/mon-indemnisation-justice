@@ -25,28 +25,25 @@ const Recapitulatif = ({uri}) => {
 
   return (
     <>
-    {loading &&
+      <h3>{trans(BRIS_PORTE_SERVICE_ENQUETEUR_SECTION)}</h3>
+      {loading &&
       <>
-        <h2>{trans(BRIS_PORTE_SERVICE_ENQUETEUR_SECTION)}</h2>
-        <Br/>
-        <b>{serviceEnqueteur.nom}</b>
-        <Br/>
-        {serviceEnqueteur.telephone}
-        <Br/>
-        {serviceEnqueteur.courriel}
-        <Br space={2}/>
-        {trans(BRIS_PORTE_FIELD_NUMERO_PV)} : <b>{serviceEnqueteur.numeroPV}</b>
-        <Br/>
-        {trans(SERVICE_ENQUETEUR_FIELD_JURIDICTION)} : <b>{serviceEnqueteur.juridiction}</b>
-        <Br/>
-        {trans(BRIS_PORTE_FIELD_NUMERO_PARQUET)} : <b>{serviceEnqueteur.numeroParquet}</b>
-        <Br/>
-        {trans(SERVICE_ENQUETEUR_FIELD_MAGISTRAT)} : <b>{serviceEnqueteur.magistrat}</b>
+        <dl className="fr-mb-2w">
+          <dt><strong>{serviceEnqueteur.nom}</strong></dt>
+          <dd>{serviceEnqueteur.telephone}</dd>
+          <dd>{serviceEnqueteur.courriel}</dd>
+        </dl>
+        <dl className="fr-mb-2w">
+          <dd>{trans(BRIS_PORTE_FIELD_NUMERO_PV)} : <strong>{serviceEnqueteur.numeroPV}</strong></dd>
+          <dd>{trans(SERVICE_ENQUETEUR_FIELD_JURIDICTION)} : <strong>{serviceEnqueteur.juridiction}</strong></dd>
+          <dd>{trans(BRIS_PORTE_FIELD_NUMERO_PARQUET)} : <strong>{serviceEnqueteur.numeroParquet}</strong></dd>
+          <dd>{trans(SERVICE_ENQUETEUR_FIELD_MAGISTRAT)} : <strong>{serviceEnqueteur.magistrat}</strong></dd>
+        </dl>
       </>
-    }
-    {!loading &&
-      <Loading />
-    }
+      }
+      {!loading &&
+        <Loading />
+      }
     </>
   );
 }
