@@ -154,7 +154,7 @@ deploy-develop:
   only:
     - develop
   script:
-    - npm run build
+    #- npm run build
     - php bin/console d:s:u --force
     - php bin/console a:i
     - php bin/console a:a:charger
