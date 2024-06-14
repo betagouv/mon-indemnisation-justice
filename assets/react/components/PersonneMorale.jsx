@@ -50,35 +50,35 @@ const PersonneMorale = ({personneMorale}) => {
     },KEY_UP_TIMER_DELAY);
   },[sirenSiret, raisonSociale]);
   return (
-    <div className="fr-grid-row">
-      <div className="fr-col-12">
-        <h5>{trans(PERSONNE_MORALE_TITLE)}</h5>
+    <>
+      <h3>{trans(PERSONNE_MORALE_TITLE)}</h3>
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-6 fr-pr-md-1w">
+          <Input
+            label={trans(PERSONNE_MORALE_FIELD_RAISON_SOCIALE)}
+            state={stateRaisonSociale}
+            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            nativeInputProps={{
+              value: raisonSociale,
+              onChange: ev => setRaisonSociale(ev.target.value),
+              maxLength: 255
+            }}
+          />
+        </div>
+        <div className="fr-col-6">
+          <Input
+            label={trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)}
+            state={stateSirenSiret}
+            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            nativeInputProps={{
+              value: sirenSiret,
+              onChange: ev => setSirenSiret(castNumber(ev.target.value)),
+              maxLength: 255
+            }}
+          />
+        </div>
       </div>
-      <div className="fr-col-6 fr-pr-md-1w">
-        <Input
-          label={trans(PERSONNE_MORALE_FIELD_RAISON_SOCIALE)}
-          state={stateRaisonSociale}
-          stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-          nativeInputProps={{
-            value: raisonSociale,
-            onChange: ev => setRaisonSociale(ev.target.value),
-            maxLength: 255
-          }}
-        />
-      </div>
-      <div className="fr-col-6">
-        <Input
-          label={trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)}
-          state={stateSirenSiret}
-          stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-          nativeInputProps={{
-            value: sirenSiret,
-            onChange: ev => setSirenSiret(castNumber(ev.target.value)),
-            maxLength: 255
-          }}
-        />
-      </div>
-    </div>
+    </>
   );
 }
 

@@ -35,36 +35,43 @@ const User = function({user,id,toggleIsPersonneMorale}) {
 
   const _isPersonneMorale=isPersonneMorale;
   return (
-      <div className="fr-grid-row">
-        <div className="fr-col-12">
-          <RadioButtons
-            orientation="horizontal"
-            legend={trans(USER_FIELD_IS_PERSONNE_MORALE)}
-            options={[
-              {
-                label: trans(GLOBAL_YES),
-                nativeInputProps: {
-                  checked: isPersonneMorale,
-                  onChange: ()=> {setIsPersonneMorale(true);toggleIsPersonneMorale()}
+      <>
+        <div className="fr-grid-row">
+          <div className="fr-col-12">
+            <div className="pr-case_bris-de-porte_is-personne-morale fr-px-2w fr-pt-4w">
+              <RadioButtons
+                orientation="horizontal"
+                legend={trans(USER_FIELD_IS_PERSONNE_MORALE)}
+                options={[
+                  {
+                    label: trans(GLOBAL_YES),
+                    nativeInputProps: {
+                      checked: isPersonneMorale,
+                      onChange: ()=> {setIsPersonneMorale(true);toggleIsPersonneMorale()}
 
-                }
-              },
-              {
-                label: trans(GLOBAL_NO),
-                nativeInputProps: {
-                  checked: !isPersonneMorale,
-                  onChange: ()=> {setIsPersonneMorale(false);toggleIsPersonneMorale()}
+                    }
+                  },
+                  {
+                    label: trans(GLOBAL_NO),
+                    nativeInputProps: {
+                      checked: !isPersonneMorale,
+                      onChange: ()=> {setIsPersonneMorale(false);toggleIsPersonneMorale()}
 
-                }
-              }
-            ]}
-          />
+                    }
+                  }
+                ]}
+              />
+            </div>
+          </div>
         </div>
+        <a name="identite"></a>
         { _isPersonneMorale &&
           <>
-            <div className="fr-col-12">
-              <PersonneMorale personneMorale={user.personneMorale} />
-            </div>
+            <div id="pr-bris-de-porte_personne-morale">
+              <div className="fr-grid-row fr-grid-row--gutters">
+                <div className="fr-col-12">
+                  <section className="pr-form-section fr-p-4w">
+                    <PersonneMorale personneMorale={user.personneMorale} />
             <div className="fr-col-12">
               <Adresse adresse={user.adresse} />
             </div>
@@ -73,6 +80,10 @@ const User = function({user,id,toggleIsPersonneMorale}) {
             </div>
             <div className="fr-col-12">
               <RepresentantLegal personnePhysique={user.personnePhysique} />
+            </div>
+            </section>
+            </div>
+            </div>
             </div>
           </>
         }
@@ -86,7 +97,7 @@ const User = function({user,id,toggleIsPersonneMorale}) {
             </div>
           </>
         }
-      </div>
+      </>
   );
 }
 

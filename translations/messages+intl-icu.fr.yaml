@@ -118,7 +118,7 @@ document:
 global:
   revert: "Corriger la saisie"
   waiting: "Chargement en cours ..."
-  informations_requirement: "Sauf mention contraire, tous les champs sont requis"
+  informations_requirement: "Sauf mention contraire, tous les champs sont obligatoires"
   field_required: "Le(s) champ(s) doivent être renseigné(s) pour poursuivre : "
   yes: "Oui"
   no: "Non"
@@ -249,10 +249,10 @@ sinistre:
     statut: "Statut du dossier"
     date_dernier_statut: "Date du dernier statut"
 user:
-  section: "Données personnelles"
+  section: "Données personnelles du justiciable"
   h5: "Votre identité"
   field:
-    is_personne_morale: "Ma demande d'indemnisation concerne une personne morale"
+    is_personne_morale: "Ma demande d'indemnisation concerne une personne morale (société, entreprise, association, fondation etc.)"
     nom_naissance: "Nom de naissance"
     nom: "Nom d'usage"
     prenoms: "Prénom(s)"

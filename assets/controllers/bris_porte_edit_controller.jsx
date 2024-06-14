@@ -9,6 +9,8 @@ import PiedDePage from '../react/components/PiedDePage';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
 import {trans,BRIS_PORTE_EDIT_TITLE} from '../translator';
+import '../styles/case.css';
+
 export default class extends Controller {
     static values = {
       userId: Number,
@@ -25,17 +27,9 @@ export default class extends Controller {
           <>
             <Entete user={this.userValue} version={this.versionValue} />
             <div className="fr-container">
-              <div className="fr-grid-row">
-                <div className="fr-col-12">
-                  <FilAriane breadcrumb={this.breadcrumbValue}/>
-                </div>
-                <div className="fr-col-12">
-                  <h1>{trans(BRIS_PORTE_EDIT_TITLE)}</h1>
-                </div>
-                <div className="fr-col-12">
-                  <BrisPortePanel id={this.userIdValue} user={this.userValue} brisPorte={this.brisPorteValue}/>
-                </div>
-              </div>
+              <FilAriane breadcrumb={this.breadcrumbValue}/>
+              <h1>{trans(BRIS_PORTE_EDIT_TITLE)}</h1>
+              <BrisPortePanel id={this.userIdValue} user={this.userValue} brisPorte={this.brisPorteValue}/>
             </div>
             <PiedDePage />
           </>

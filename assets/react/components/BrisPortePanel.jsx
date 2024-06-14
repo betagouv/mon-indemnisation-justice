@@ -57,29 +57,27 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   },[step]);
 
   return (
-    <div className="fr-grid-row">
-      <div className="fr-col-12">
-        <Stepper
-          currentStep={getCurrentStep()}
-          nextTitle={nextTitle}
-          stepCount={sections.length}
-          title={title}
-        />
+    <>
+    <section className="pr-case_stepper">
+      <Stepper
+        currentStep={getCurrentStep()}
+        nextTitle={nextTitle}
+        stepCount={sections.length}
+        title={title}
+      />
+    </section>
+
+    <p className="fr-my-4w">{trans(GLOBAL_INFORMATIONS_REQUIREMENT)}</p>
         {(step===0) &&
-        <>
-          <div className="fr-col-12">
-          {trans(GLOBAL_INFORMATIONS_REQUIREMENT)}
-          </div>
-          <div className="fr-col-12">
+          <section className="pr-case_form fr-mb-4w">
             <User user={user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
-          </div>
           <div className="fr-col-12">
             <Br space={2}/>
           </div>
           <div className="fr-col-12">
             <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
           </div>
-        </>
+        </section>
         }
         {(step===1) &&
         <>
@@ -217,11 +215,11 @@ const BrisPortePanel = function({id,user,brisPorte}) {
           </div>
         </>
         }
-      </div>
       <div className="fr-col-12">
         <Br space={2}/>
       </div>
-    </div>
+
+  </>
   );
 }
 
