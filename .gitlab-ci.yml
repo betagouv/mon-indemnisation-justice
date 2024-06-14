@@ -22,6 +22,29 @@ variables:
   CI_PROJECT_IMAGE: ${APP_NAME}:${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
   BRANCH_NAME: ${CI_COMMIT_REF_SLUG}
   APP_ENV: "internet"
+  APP_SECRET: bafc23a0315b735289c499a886798934
+  BASE_URL: https://dev.precontentieux.app.cc.anje-justice.fr
+  CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+  DATABASE_PASSWORD: ${PSQL_PASSWORD_DEV}
+  DATABASE_NAME: ${PSQL_DB_DEV}
+  DATABASE_HOST: ${PSQL_HOST_DEV}
+  DATABASE_USER: ${PSQL_USERNAME_DEV}
+  DATABASE_PORT: '${PSQL_PORT_DEV}'
+  DATABASE_TYPE: postgres
+  DATABASE_DRIVER: pdo_pgsql
+  EMAIL_FROM: nepasrepondre@justice.gouv.fr
+  EMAIL_FROM_LABEL: Precontentieux
+  MAILER_FROM: nepasrepondre@justice.gouv.fr
+  VERSION_LABEL: '0.0.1'
+  SCW_HOST: 'https://s3.fr-par.scw.cloud'
+  SCW_ACCESS_KEY: $S3_ACCESS_KEY_SECRET
+  SCW_REGION: fr-par
+  SCW_BUCKET: se-precontentieux-dev
+  SCW_SECRET_KEY: $S3_SECRET_KEY_SECRET
+  SCW_DEFAULT_ORGANIZATION_ID: 2e8f8f84-02bf-4b8f-8cec-f99918fbd746
+  SCW_DEFAULT_PROJECT_ID: 2e8f8f84-02bf-4b8f-8cec-f99918fbd746
+  # configuration dédiée à la section "mailer"
+  MAILER_DSN: 'smtp://null:null@null:25'
 
 
 build:
