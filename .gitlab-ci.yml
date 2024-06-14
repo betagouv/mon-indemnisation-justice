@@ -76,7 +76,7 @@ build:
     #- php bin/console d:s:u --force
     - echo "Install Npm & Assets"
     - npm install
-    - npm run build
+    #- npm run build
     #- php bin/console a:i
     #- php bin/console a:a:charger
     - apt-get remove --purge nodejs && apt-get autoremove
@@ -155,6 +155,7 @@ deploy-develop:
   only:
     - develop
   script:
+    - npm run build
     - php bin/console d:s:u --force
     - php bin/console a:i
     - php bin/console a:a:charger
