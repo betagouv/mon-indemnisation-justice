@@ -29,7 +29,7 @@ const PersonnePhysique = function({personnePhysique}) {
   const [dateNaissance, setDateNaissance]=useState(castDate(personnePhysique.dateNaissance));
   const [communeNaissance, setCommuneNaissance]=useState(personnePhysique.communeNaissance??"");
 
-  const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nom));
+  const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nomNaissance));
   const [statePrenom1, setStatePrenom1]=useState(getStateOnEmpty(personnePhysique.prenom1));
   const [recordActived, setRecordActived]=useState(false);
 
@@ -52,9 +52,9 @@ const PersonnePhysique = function({personnePhysique}) {
     return test;
   }
   useEffect(() => {
-    setStateNom(getStateOnEmpty(nom));
+    setStateNom(getStateOnEmpty(nomNaissance));
     setStatePrenom1(getStateOnEmpty(prenom1));
-  },[nom,nomNaissance]);
+  },[prenom1,nomNaissance]);
 
   useEffect(() => {
 
@@ -84,36 +84,12 @@ const PersonnePhysique = function({personnePhysique}) {
 
   return (
     <>
-      <div className="fr-grid-row">
-        <div className="fr-col-12">
-          <h5>{trans(USER_H5)}</h5>
-        </div>
-        <div className="fr-col-2 fr-pr-md-1w">
+      <h3>{trans(USER_H5)}</h3>
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-3">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
-        <div className="fr-col-5 fr-pr-md-1w">
-          <Input
-            label={trans(USER_FIELD_NOM)}
-            state={stateNom}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-            nativeInputProps={{
-              value: nom,
-              onChange: ev => setNom(ev.target.value),
-              maxLength: 255
-            }}
-          />
-        </div>
-        <div className="fr-col-5">
-        <Input
-          label={trans(USER_FIELD_NOM_NAISSANCE)+" "+trans(GLOBAL_OPTIONAL)}
-          nativeInputProps={{
-            value: nomNaissance,
-            onChange: ev => setNomNaissance(ev.target.value),
-            maxLength: 255
-          }}
-        />
-        </div>
-        <div className="fr-col-12">
+        <div className="fr-col-9">
           <Input
             label={trans(USER_FIELD_PRENOMS)}
             state={statePrenom1}
@@ -126,7 +102,29 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-2 fr-pr-md-1w">
+        <div className="fr-col-6">
+          <Input
+            label={trans(USER_FIELD_NOM_NAISSANCE)}
+            state={stateNom}
+            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            nativeInputProps={{
+              value: nomNaissance,
+              onChange: ev => setNomNaissance(ev.target.value),
+              maxLength: 255
+            }}
+          />
+        </div>
+        <div className="fr-col-6">
+          <Input
+            label={trans(USER_FIELD_NOM)+" "+trans(GLOBAL_OPTIONAL)}
+            nativeInputProps={{
+              value: nom,
+              onChange: ev => setNom(ev.target.value),
+              maxLength: 255
+            }}
+          />
+        </div>
+        <div className="fr-col-3">
           <Input
             label={trans(USER_FIELD_DATE_NAISSANCE)}
             nativeInputProps={{
@@ -136,7 +134,7 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-5">
+        <div className="fr-col-9">
           <Input
             label={trans(USER_FIELD_LIEU_NAISSANCE)}
             nativeInputProps={{
@@ -146,9 +144,7 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-5">
-        </div>
-        <div className="fr-col-7">
+        <div className="fr-col-6">
           <SecuriteSociale
             codeSS={codeSS}
             numeroSS={numeroSS}

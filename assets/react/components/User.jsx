@@ -72,29 +72,30 @@ const User = function({user,id,toggleIsPersonneMorale}) {
                 <div className="fr-col-12">
                   <section className="pr-form-section fr-p-4w">
                     <PersonneMorale personneMorale={user.personneMorale} />
-            <div className="fr-col-12">
-              <Adresse adresse={user.adresse} />
-            </div>
-            <div className="fr-col-12">
-              <Br space={2}/>
-            </div>
-            <div className="fr-col-12">
-              <RepresentantLegal personnePhysique={user.personnePhysique} />
-            </div>
-            </section>
-            </div>
+                    <Adresse adresse={user.adresse} />
+                  </section>
+                </div>
+                <div className="fr-col-12">
+                  <section className="pr-form-section fr-p-4w">
+                    <RepresentantLegal personnePhysique={user.personnePhysique} />
+                  </section>
+                </div>
             </div>
             </div>
           </>
         }
         { !_isPersonneMorale &&
           <>
-            <div className="fr-col-12">
-              <PersonnePhysique isPersonneMorale={isPersonneMorale} personnePhysique={user.personnePhysique} />
+          <div id="pr-bris-de-porte_personne-physique">
+            <div className="fr-grid-row fr-grid-row--gutters">
+              <div className="fr-col-12">
+                <section className="pr-form-section fr-p-4w">
+                  <PersonnePhysique isPersonneMorale={isPersonneMorale} personnePhysique={user.personnePhysique} />
+                  <Adresse adresse={user.adresse} />
+                </section>
+              </div>
             </div>
-            <div className="fr-col-12">
-              <Adresse adresse={user.adresse} />
-            </div>
+          </div>
           </>
         }
       </>

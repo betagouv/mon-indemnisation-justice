@@ -100,6 +100,10 @@ class PersonnePhysique
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
 
+    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $email = null;
+
     public function __construct()
     {
       $this->liasseDocumentaire=new LiasseDocumentaire();
@@ -326,6 +330,18 @@ class PersonnePhysique
     public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static
     {
         $this->liasseDocumentaire = $liasseDocumentaire;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
 
         return $this;
     }

@@ -56,7 +56,7 @@ const Adresse = ({adresse,optionalLigne1Texte=null}) => {
   const ligne1HintText = (optionalLigne1Texte!==null) ? "" : trans(ADRESSE_FIELD_LIGNE1_DESCRIPTION);
 
   return (
-    <div className="fr-grid-row">
+    <div className="fr-grid-row fr-grid-row--gutters">
       <div className="fr-col-12">
         <Input
           label={ligne1Text}
@@ -69,7 +69,7 @@ const Adresse = ({adresse,optionalLigne1Texte=null}) => {
           }}
         />
       </div>
-      <div className="fr-col-2 fr-pr-md-1w">
+      <div className="fr-col-2">
         <Input
           label={trans(ADRESSE_FIELD_CODE_POSTAL)}
           nativeInputProps={{

@@ -53,7 +53,7 @@ const PersonneMorale = ({personneMorale}) => {
     <>
       <h3>{trans(PERSONNE_MORALE_TITLE)}</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-6 fr-pr-md-1w">
+        <div className="fr-col-6">
           <Input
             label={trans(PERSONNE_MORALE_FIELD_RAISON_SOCIALE)}
             state={stateRaisonSociale}

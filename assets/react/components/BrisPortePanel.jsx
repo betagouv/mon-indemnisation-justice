@@ -69,13 +69,12 @@ const BrisPortePanel = function({id,user,brisPorte}) {
 
     <p className="fr-my-4w">{trans(GLOBAL_INFORMATIONS_REQUIREMENT)}</p>
         {(step===0) &&
-          <section className="pr-case_form fr-mb-4w">
-            <User user={user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
-          <div className="fr-col-12">
-            <Br space={2}/>
-          </div>
-          <div className="fr-col-12">
-            <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+        <section className="pr-case_form fr-mb-4w">
+          <User user={user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12">
+              <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+            </div>
           </div>
         </section>
         }
