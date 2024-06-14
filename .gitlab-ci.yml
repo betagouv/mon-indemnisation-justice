@@ -60,17 +60,29 @@ build:
     - php -r "unlink('composer-setup.php');"
     - echo "host db ${DATABASE_HOST}"
   script:
-    #- echo "Set .env.${APP_ENV}"
-    #- cp .env.$APP_ENV .env
-    #- sed -i "s|__PSQL_HOST__|${PSQL_HOST}|g" .env.$APP_ENV
-    #- sed -i "s|__PSQL_PORT__|${PSQL_PORT}|g" .env.$APP_ENV
-    #- sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME}|g" .env.$APP_ENV
-    #- sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD}|g" .env.$APP_ENV
-    #- sed -i "s|__PSQL_DB__|${PSQL_DB}|g" .env.$APP_ENV
-    #- sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV
-    #- sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV
-    #- sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV
-    #- sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV
+    - echo "Set .env.${APP_ENV}"
+    - cp .env.$APP_ENV .env
+    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then
+        sed -i "s|__PSQL_HOST__|${PSQL_HOST}|g" .env.$APP_ENV
+        sed -i "s|__PSQL_PORT__|${PSQL_PORT}|g" .env.$APP_ENV
+        sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME}|g" .env.$APP_ENV
+        sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD}|g" .env.$APP_ENV
+        sed -i "s|__PSQL_DB__|${PSQL_DB}|g" .env.$APP_ENV
+        sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV
+        sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV
+        sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV
+        sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV
+      else
+        sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV
+        sed -i "s|__PSQL_PORT__|${PSQL_PORT_DEV}|g" .env.$APP_ENV
+        sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME_DEV}|g" .env.$APP_ENV
+        sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD_DEV}|g" .env.$APP_ENV
+        sed -i "s|__PSQL_DB__|${PSQL_DB_DEV}|g" .env.$APP_ENV
+        sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV
+        sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV
+        sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV
+        sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV
+      fi
     - echo "Install dependencies Symfony application with composer"
     - composer install --optimize-autoloader --apcu-autoloader
     - echo "Update database"
@@ -83,15 +95,6 @@ build:
     - apt-get remove --purge nodejs && apt-get autoremove
     #- COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
     - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /master/
-      variables:
-        DATABASE_PASSWORD: ${PSQL_PASSWORD}
-        DATABASE_NAME: ${PSQL_DB}
-        DATABASE_HOST: ${PSQL_HOST}
-        DATABASE_USER: ${PSQL_USERNAME}
-        DATABASE_PORT: ${PSQL_PORT}
-        BASE_URL: https://precontentieux.app.cc.anje-justice.fr
   artifacts:
     paths:
       - vendor/
