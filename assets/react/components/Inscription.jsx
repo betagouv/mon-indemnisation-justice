@@ -61,7 +61,7 @@ const Inscription = ({user,csrfToken}) => {
   const [waiting, setWaiting]=useState(false);
   const textCgu = <>
     <div>{trans(SECURITY_INSCRIPTION_CGU_PREFIX)}</div>
-    <a href={Routing.generate('app_cgu')} target="_blank">{trans(SECURITY_INSCRIPTION_CGU_CONTENT)}</a>
+    <a className="fr-link" href={Routing.generate('app_cgu')} target="_blank">{trans(SECURITY_INSCRIPTION_CGU_CONTENT)}</a>
   </>;
   const checkValidity = () => {
     const test =
@@ -70,7 +70,7 @@ const Inscription = ({user,csrfToken}) => {
       check_numbers(password,NUMBERS_IN_PASSWORD) &&
       !check_empty(civilite) &&
       !check_empty(prenom1) &&
-      !check_empty(nom) &&
+      !check_empty(nomNaissance) &&
       !check_empty(email) &&
       check_email(email) &&
       check_equal(password,confirmPassword) &&
@@ -86,7 +86,7 @@ const Inscription = ({user,csrfToken}) => {
   },[]);
   useEffect(() => {
     setSubmittable(checkValidity());
-  },[civilite, prenom1, nom, email, password, confirmPassword, cguAccepted, emailFree, waiting]);
+  },[civilite, prenom1, nomNaissance, email, password, confirmPassword, cguAccepted, emailFree, waiting]);
 
   useEffect(() => {check_email_exists();},[email]);
 
@@ -114,93 +114,95 @@ const Inscription = ({user,csrfToken}) => {
   }
 
   return (
-    <form method="POST" action={Routing.generate('app_inscription')} onSubmit={handleSubmit}>
-      <Hidden name="_csrf_token" value={csrfToken} />
-      <Hidden name="type" value={"BRI"} />
-      <Hidden name="civilite" value={cast_number(civilite)} />
-      <h5>{trans(SECURITY_INSCRIPTION_ACCOUNT_ALLREADY_EXIST)}</h5>
-      <Button linkProps={{ href: Routing.generate('app_login') }} priority="secondary">
-      {trans(SECURITY_INSCRIPTION_CONNECT_SPACE_BTN)}
-      </Button>
-      <Br space={2} />
-      <hr/>
-      <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12">
-          <h1>{trans(SECURITY_INSCRIPTION_TITLE)}</h1>
+    <section className="pr-form-subscribe">
+      <form method="POST" action={Routing.generate('app_inscription')} onSubmit={handleSubmit}>
+        <Hidden name="_csrf_token" value={csrfToken} />
+        <Hidden name="type" value={"BRI"} />
+        <Hidden name="civilite" value={cast_number(civilite)} />
+        <div className="fr-grid-row">
+          <div className="pr-form-subscribe_had-account fr-col-12">
+            <div className="fr-p-4w">
+              <h2 className="fr-text--sm">{trans(SECURITY_INSCRIPTION_ACCOUNT_ALLREADY_EXIST)}</h2>
+              <Button linkProps={{ href: Routing.generate('app_login') }} priority="secondary">
+              {trans(SECURITY_INSCRIPTION_CONNECT_SPACE_BTN)}
+              </Button>
+            </div>
+          </div>
+          <div className="fr-col-12">
+            <div className="fr-p-4w">
+              <h2>{trans(SECURITY_INSCRIPTION_TITLE)}</h2>
+              <Alert
+                description=<p>{trans(SECURITY_INSCRIPTION_CHAPO)}</p>
+                severity="info"
+                small
+              />
+              <p className="fr-my-4w">{trans(SECURITY_INSCRIPTION_DESCRIPTION)}</p>
+              <div className="fr-grid-row fr-grid-row--gutters">
+                <div className="fr-col-4">
+                  <Civilite civilite={civilite} setCivilite={setCivilite} defaultOptionText={" "} />
+                </div>
+                <div className="fr-col-8">
+                  <Input
+                    label={trans(USER_FIELD_PRENOMS)}
+                    nativeInputProps={{value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
+                  />
+                </div>
+                <div className="fr-col-6">
+                  <Input
+                    label={trans(USER_FIELD_NOM_NAISSANCE)}
+                    nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
+                  />
+                </div>
+                <div className="fr-col-6">
+                <Input
+                  label={trans(USER_FIELD_NOM)+" "+trans(GLOBAL_OPTIONAL)}
+                  nativeInputProps={{name:'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
+                />
+                </div>
+
+                <div className="fr-col-12">
+                  <Input
+                    label={trans(LOGIN_EMAIL)}
+                    state={state_error_if_false(check_empty(email)||(check_email(email)&&emailFree))}
+                    stateRelatedMessage={getErrorEmail(email)}
+                    nativeInputProps={{name: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
+                  />
+                </div>
+                <div className="fr-col-5">
+                  <PasswordInput
+                    label={trans(LOGIN_PASSWORD)}
+                    messages={manageMsgPassword(password,confirmPassword)}
+                    nativeInputProps={{name: 'password', value: password, onChange: ev => setPassword(ev.target.value)}}
+                  />
+                </div>
+                <div className="fr-col-7">
+                  <PasswordInput
+                    label={trans(LOGIN_CONFIRM_PASSWORD)}
+                    nativeInputProps={{value: confirmPassword, onChange: ev => setConfirmPassword(ev.target.value)}}
+                  />
+                </div>
+                <div className="fr-col-12">
+                  <Checkbox
+                    options={[
+                      {
+                        label: textCgu,
+                        nativeInputProps: {
+                          value: true,
+                          onChange: ev => toggleCguAccepted()
+                        }
+                      }
+                    ]}
+                  />
+                </div>
+                <div className="fr-col-12">
+                  <Submit disabled={!submittable} label={trans(SECURITY_INSCRIPTION_SUBMIT)} />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="fr-col-12">
-          <Alert
-            description={trans(SECURITY_INSCRIPTION_CHAPO)}
-            severity="info"
-            small
-          />
-        </div>
-        <div className="fr-col-12">
-          <b>{trans(SECURITY_INSCRIPTION_DESCRIPTION)}</b>
-        </div>
-        <div className="fr-col-4">
-          <Civilite civilite={civilite} setCivilite={setCivilite} defaultOptionText={" "} />
-        </div>
-        <div className="fr-col-8">
-          <Input
-            label={trans(USER_FIELD_PRENOMS)}
-            nativeInputProps={{value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-6">
-        <Input
-          label={trans(USER_FIELD_NOM)}
-          nativeInputProps={{name:'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
-        />
-        </div>
-        <div className="fr-col-6">
-          <Input
-            label={trans(USER_FIELD_NOM_NAISSANCE)+" "+trans(GLOBAL_OPTIONAL)}
-            nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-12">
-          <Input
-            label={trans(LOGIN_EMAIL)}
-            state={state_error_if_false(check_empty(email)||(check_email(email)&&emailFree))}
-            stateRelatedMessage={getErrorEmail(email)}
-            nativeInputProps={{name: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-5">
-          <PasswordInput
-            label={trans(LOGIN_PASSWORD)}
-            messages={manageMsgPassword(password,confirmPassword)}
-            nativeInputProps={{name: 'password', value: password, onChange: ev => setPassword(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-7">
-          <PasswordInput
-            label={trans(LOGIN_CONFIRM_PASSWORD)}
-            nativeInputProps={{value: confirmPassword, onChange: ev => setConfirmPassword(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-12">
-          <Checkbox
-            options={[
-              {
-                label: textCgu,
-                nativeInputProps: {
-                  value: true,
-                  onChange: ev => toggleCguAccepted()
-                }
-              }
-            ]}
-          />
-        </div>
-        <div className="fr-col-12">
-          <Submit disabled={!submittable} label={trans(SECURITY_INSCRIPTION_SUBMIT)} />
-        </div>
-        <div className="fr-col-12">
-          <Br space={2}/>
-        </div>
-      </div>
-    </form>
+      </form>
+    </section>
   );
 }
 
