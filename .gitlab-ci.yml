@@ -45,6 +45,7 @@ variables:
   SCW_DEFAULT_PROJECT_ID: 2e8f8f84-02bf-4b8f-8cec-f99918fbd746
   # configuration dédiée à la section "mailer"
   MAILER_DSN: 'smtp://null:null@null:25'
+  
 
 build:
   stage: 🔨build
@@ -82,6 +83,15 @@ build:
     - apt-get remove --purge nodejs && apt-get autoremove
     #- COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
     - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /master/
+      variables:
+        DATABASE_PASSWORD: ${PSQL_PASSWORD}
+        DATABASE_NAME: ${PSQL_DB}
+        DATABASE_HOST: ${PSQL_HOST}
+        DATABASE_USER: ${PSQL_USERNAME}
+        DATABASE_PORT: ${PSQL_PORT}
+        BASE_URL: https://precontentieux.app.cc.anje-justice.fr
   artifacts:
     paths:
       - vendor/
