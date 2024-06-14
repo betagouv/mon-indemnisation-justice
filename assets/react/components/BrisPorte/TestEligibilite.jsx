@@ -45,8 +45,31 @@ const TestEligibilite = function() {
   const [numeroPV, setNumeroPV]=useState("");
   const [numeroParquet, setNumeroParquet]=useState("");
   const [panel, setPanel]=useState("common");
+  const [buttons, setButtons]=useState([
+    {
+      onClick: () => handleTestEligibilite(dateOperationPJ,numeroPV,numeroParquet,isErreurPorte),
+      doClosesModal: false,
+      children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_BTN)
+    }
+  ]);
 
-  function handleTestEligibilite() {
+  useEffect(() => setButtons([
+    {
+      onClick: () => handleTestEligibilite(dateOperationPJ,numeroPV,numeroParquet,isErreurPorte),
+      doClosesModal: false,
+      children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_BTN)
+    }
+  ]),[dateOperationPJ,numeroPV,numeroParquet,isErreurPorte]);
+
+  const resetButtons = () => setButtons([{
+    onClick: () => handleTestEligibilite(dateOperationPJ,numeroPV,numeroParquet,isErreurPorte),
+    doClosesModal: false,
+    children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_BTN)
+  }]);
+
+  function handleTestEligibilite(dateOperationPJ,numeroPV,numeroParquet) {
+    event.preventDefault();
+    event.stopPropagation();
     if(!dateOperationPJ) {
       alert(trans(GLOBAL_FIELD_REQUIRED)+trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ));
       return;
@@ -55,15 +78,37 @@ const TestEligibilite = function() {
       alert(trans(GLOBAL_FIELD_REQUIRED)+trans(BRIS_PORTE_FIELD_NUMERO_PV)+trans(GLOBAL_AND_OR)+trans(BRIS_PORTE_FIELD_NUMERO_PARQUET));
       return;
     }
-    if(false === isErreurPorte)
+    if(false === isErreurPorte) {
+      setButtons([
+        {
+            type: "submit",
+            priority: 'secondary',
+            doClosesModal: false,
+            children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ERROR_CONTINUE_BTN)
+        },
+        {
+            onClick: () => handleStop(),
+            children: trans(GLOBAL_BTN_STOP)
+        }
+      ]);
       setPanel("alert");
-    else
+    }
+    else {
+      setButtons([
+        {
+            type: "submit",
+            doClosesModal: false,
+            children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_SUCCESS_CONTINUE_BTN)
+        }
+      ])
       setPanel("success");
+    }
   }
 
   function handleStop() {
     modal.close();
     setPanel("common");
+    resetButtons();
   }
 
   const handleContinue = (event) => {
@@ -78,27 +123,31 @@ const TestEligibilite = function() {
       <Hidden name="numeroPV" value={numeroPV} />
       <Hidden name="numeroParquet" value={numeroParquet} />
       <Hidden name="isErreurPorte" value={isErreurPorte} />
-      <section class="pr-eligibilite_conditions">
-        <div class="fr-pt-8w">
+      <section className="pr-eligibilite_conditions">
+        <div className="fr-pt-8w">
           <h2>{trans(BRIS_PORTE_TEST_ELIGIBILITE_H2)}</h2>
           {parse(trans(BRIS_PORTE_TEST_ELIGIBILITE_DESCRIPTION))}
         </div>
       </section>
       <section className="pr-eligibilite_action">
-        <div class="fr-pb-8w fr-pt-2w">
+        <div className="fr-pb-8w fr-pt-2w">
           <Button onClick={() => {modal.open()}}>
           {trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}
           </Button>
         </div>
       </section>
-      <modal.Component title={trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}>
+      <modal.Component
+        title={trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}
+        buttons={buttons}
+      >
           <div className="fr-grid-row">
             {("common" == panel) &&
             <>
-              <div className="fr-col-12">
-              <p>{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_CHAPO)}</p>
+              <div className="fr-callout">
+                <h2 className="fr-callout__title">Comment remplir ce formulaire ?</h2>
+                <p className="fr-callout__text">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_CHAPO)}</p>
               </div>
-              <div className="fr-col-6">
+              <div className="fr-col-md-6 fr-col-12 fr-col-md-offset-6">
                 <Input
                   label={trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}
                   nativeInputProps={{
@@ -108,33 +157,34 @@ const TestEligibilite = function() {
                   }}
                 />
               </div>
-              <div className="fr-col-6">
+              <div className="fr-col-12">
+                <div className="fr-input-group">
+                  <label className="fr-label" htmlFor="eligibilite-bris-de-porte_date-operation">Numéros de dossier
+                    <span className="fr-hint-text">Vous devez compléter au moins un champ</span>
+                  </label>
+                </div>
+                <div className="pr-eligibilite_form-group fr-my-1w">
+                  <div className="fr-p-2w">
+                    <Input
+                      label={trans(BRIS_PORTE_FIELD_NUMERO_PV)}
+                      nativeInputProps={{
+                        value: numeroPV,
+                        onChange: ev=>setNumeroPV(ev.target.value),
+                        maxLength: 255
+                      }}
+                    />
+                    <Input
+                      label={trans(BRIS_PORTE_FIELD_NUMERO_PARQUET)}
+                      nativeInputProps={{
+                        value: numeroParquet,
+                        onChange: ev=>setNumeroParquet(ev.target.value),
+                        maxLength: 255
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="fr-col-6">
-                <Input
-                  label={trans(BRIS_PORTE_FIELD_NUMERO_PV)}
-                  nativeInputProps={{
-                    value: numeroPV,
-                    onChange: ev=>setNumeroPV(ev.target.value),
-                    maxLength: 255
-                  }}
-                />
-              </div>
-              <div className="fr-col-6">
-              </div>
-              <div className="fr-col-6">
-                <Input
-                  label={trans(BRIS_PORTE_FIELD_NUMERO_PARQUET)}
-                  nativeInputProps={{
-                    value: numeroParquet,
-                    onChange: ev=>setNumeroParquet(ev.target.value),
-                    maxLength: 255
-                  }}
-                />
-              </div>
-              <div className="fr-col-6">
-              </div>
-              <div className="fr-col-6">
+              <div className="fr-col-12">
                 <RadioButtons
                   legend={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE)}
                   orientation='horizontal'
@@ -156,15 +206,6 @@ const TestEligibilite = function() {
                     ]}
                 />
               </div>
-              <div className="fr-col-6">
-              </div>
-              <div className="fr-col-4">
-              </div>
-              <div className="fr-col-8">
-                <Button onClick={handleTestEligibilite}>
-                {trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_BTN)}
-                </Button>
-              </div>
             </>
             }
             {("alert" == panel) &&
@@ -176,23 +217,6 @@ const TestEligibilite = function() {
                 title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_TITLE)}
               />
               <p>{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO)}</p>
-              <div className="fr-col-12">
-                <ul className="fr-btns-group fr-btns-group--inline-lg">
-                  <li>
-                    <Submit
-                      label={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ERROR_CONTINUE_BTN)}
-                      type="secondary"
-                    />
-
-
-                  </li>
-                  <li>
-                    <Button onClick={handleStop}>
-                    {trans(GLOBAL_BTN_STOP)}
-                    </Button>
-                  </li>
-                </ul>
-              </div>
             </>
             }
             {("success" == panel) &&
@@ -204,15 +228,6 @@ const TestEligibilite = function() {
                 title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_TITLE)}
               />
               <p>{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO)}</p>
-              <div className="fr-col-12">
-                <ul className="fr-btns-group fr-btns-group--inline-lg">
-                  <li>
-                    <Submit
-                      label={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_SUCCESS_CONTINUE_BTN)}
-                    />
-                  </li>
-                </ul>
-              </div>
             </>
             }
           </div>
