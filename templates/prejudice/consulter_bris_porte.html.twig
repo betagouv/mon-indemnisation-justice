@@ -1,0 +1,13 @@
+{% extends 'base_react.html.twig' %}
+
+{% block title %}{{'bris_porte.view.title'|trans}}{% endblock %}
+
+{% block body %}
+  {% set user = app.user %}
+  <div {{ stimulus_controller('bris_porte_view',{
+    user: user|serialize('json',{groups: 'user:read'}),
+    brisPorte: brisPorte|serialize('json',{groups: 'prejudice:read'}),
+    breadcrumb: breadcrumb|serialize('json'),
+    version: {label: 'beta'}
+  }) }}></div>
+{% endblock %}

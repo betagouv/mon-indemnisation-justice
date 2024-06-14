@@ -23,5 +23,14 @@ services:
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous 
+    # please note that last definitions always *replace* previous
     Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
+    Aws\S3\S3Client:
+        arguments:
+            - version: 'latest'
+              region: '%env(resolve:SCW_REGION)%'
+              endpoint: '%env(resolve:SCW_HOST)%'
+              use_path_style_endpoint: true
+              credentials:
+                  key: '%env(resolve:SCW_ACCESS_KEY)%'
+                  secret: '%env(resolve:SCW_SECRET_KEY)%'

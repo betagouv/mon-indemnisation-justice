@@ -2,6 +2,10 @@
 
 namespace App\Twig;
 
+use App\Entity\PersonnePhysique;
+use App\Entity\PersonneMorale;
+use App\Entity\LiasseDocumentaire;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Form\Form;
@@ -95,6 +99,32 @@ class AppRuntime implements RuntimeExtensionInterface
       $tmp = str_replace($key,$value, $tmp);
     return $tmp;
   }
+
+  public function emptyUser(): User {
+
+    $liasseDocumentaire = new LiasseDocumentaire();
+    $reflectionClass = new \ReflectionClass(LiasseDocumentaire::class);
+    $reflectionClass->getProperty('id')->setValue($liasseDocumentaire,0);
+
+    $personnePhysique = new PersonnePhysique();
+    $reflectionClass = new \ReflectionClass(PersonnePhysique::class);
+    $reflectionClass->getProperty('id')->setValue($personnePhysique,0);
+    $personnePhysique->setLiasseDocumentaire($liasseDocumentaire);
+
+    $personneMorale = new PersonneMorale();
+    $reflectionClass = new \ReflectionClass(PersonneMorale::class);
+    $reflectionClass->getProperty('id')->setValue($personneMorale,0);
+    $personneMorale->setLiasseDocumentaire($liasseDocumentaire);
+
+    $user = new User();
+    $reflectionClass = new \ReflectionClass(User::class);
+    $reflectionClass->getProperty('id')->setValue($user,0);
+    $reflectionClass->getProperty('adresse')->setValue($user,null);
+    $reflectionClass->getProperty('personnePhysique')->setValue($user,$personnePhysique);
+    $reflectionClass->getProperty('personneMorale')->setValue($user,$personneMorale);
+    return $user;
+  }
+
   public function setEnvironment(Environment $env): self {
     $this->_env = $env;
 

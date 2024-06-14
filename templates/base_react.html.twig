@@ -3,8 +3,16 @@
   lang="{{ app.request.locale|split('_')[0] }}"
 >
     <head>
+
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="author" content="Yannick ROUSSEL">
+        <meta name="author" content="Stéphane TRAN">
+        <meta name="keywords" content="Précontentieux, Justice, Etat, Indemnisation, Startup d'état, Atelier numérique de la Justice, Incubateur">
+        <meta name="description" content="Startup d'état Précontentieux">
+        <meta name="theme-color" content="#000091">
+        <title>{% block title %}Précontentieux - Ministère de la Justice{% endblock %}</title>
         <!-- ZONE DSFR -->
         <link rel="apple-touch-icon" href="/dsfr/favicon/apple-touch-icon.png" />
         <link rel="icon" href="/dsfr/favicon/favicon.svg" type="image/svg+xml" />

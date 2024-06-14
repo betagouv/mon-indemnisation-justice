@@ -1,0 +1,16 @@
+.udraw-terms-conditions {
+  height: 25rem;
+  width: 100%;
+  background-image: url('../images/illustration/udraw_terms-conditions.svg');
+  background-repeat: no-repeat;
+  background-size: 70%;
+  background-position: center;
+}
+
+.pr-eligibilite_form-group { background-color: var(--pr-color-grey--light-secondary); }
+
+.pr-body_header {
+  margin-top: -1rem;
+  padding-top: 2rem;
+  background-color: var(--pr-color-grey--light-secondary);
+}

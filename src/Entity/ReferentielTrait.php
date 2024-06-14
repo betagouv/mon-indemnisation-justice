@@ -7,16 +7,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 trait ReferentielTrait
 {
-    #[ORM\Column(length: 50)]
-    #[Groups(["read"])]
+    #[ORM\Column(length: 50, unique: true)]
     private ?string $code = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Groups(["read"])]
     private ?string $mnemo = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["read"])]
     private ?string $libelle = null;
 
     public string $libelleLong;

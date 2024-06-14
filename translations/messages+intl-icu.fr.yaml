@@ -1,37 +1,189 @@
+admin:
+  homepage:
+    title: "Administration des utilisateurs"
 adresse:
   field:
-    ligne1: "Adresse"
+    ligne1: "Adresse complète"
+    ligne1_bris_porte: "Adresse complète du logement concerné par le bris de porte"
+    ligne1_description: "Adresse où seront envoyé les courriers"
     code_postal: "Code postal"
     localite: "Ville"
 bris_porte:
+  service_enqueteur:
+    section: "Service enquêteur"
+  pj:
+    section: "Documents à joindre obligatoirement à votre demande"
+  test_eligibilite:
+    modal:
+      chapo: "Munissez-vous de l'attestation d'informations qui vous a été remise par
+      le service enquêteur et saisissez les informations qui y sont renseignées dans
+      le formulaire ci-dessous"
+      btn: "Vérifier mon éligibilité à l'indemnisation"
+      eligible_chapo: "Le résultat indiqué ci-dessus découle des éléments saisis et est communiqué à titre informatif."
+      eligible_description: "Effectuer votre demande amiable d'indemnisation en cliquant sur le bouton ci-dessous."
+      eligible_title: "Vous êtes éligible à l'indemnisation"
+      no_eligible_chapo: "Le résultat indiqué ci-dessus découle des éléments saisis et est communiqué à titre informatif."
+      no_eligible_description: "Les informations saisies ne vous permettent pas d'obtenir une indemnisation"
+      no_eligible_title: "Vous n'êtes pas éligible à l'indemnisation"
+      error_continue_btn: "Effectuer ma demande d'indemnisation"
+      success_continue_btn: "Accéder au formulaire de demande d'indemnisation"
+    title: "Tester mon éligibilité : Bris de porte"
+    h1: "Bris de porte"
+    h2: "Quelles sont les conditions à remplir pour être indemnisé(e) ?"
+    description: "
+    <ul>
+      <li>Vous ne devez pas être concerné(e) par l'opération de police judiciaire</li>
+    </ul>
+    <b>ET</b>
+    <ul>
+      <li>L'opération de police judiciaire doit avoir été réalisée par erreur à votre domicile</li>
+    </ul>
+    "
+    btn: "Tester mon éligibilité à l'indemnisation"
+    chapo: "Je souhaite effectuer une demande pour un bris de portes ou autres dégâts matériels causés dans le cadre d'une opération de police judiciaire (perquisition judiciaire, interpellation d'un individu, ...)"
+  view:
+    title: "Consulter un bris de porte"
+  edit:
+    title: "Déclarer un bris de porte"
+    update_constitue: "Je déclare mon bris de porte"
+    details:
+      h5: "Informations sur le bris de porte"
+      remise: "Attestation d'informations remise à"
   create:
     title: "Déclarer un bris de porte"
+  field:
+    numero_pv: "Numéro de Procès-verbal"
+    numero_parquet: "Numéro de parquet ou d'instruction"
+    date_operation_pj: "Date de l'opération de police judiciaire"
+    is_porte_blindee: "S'agit-il d'une porte blindée ?"
+    is_erreur_porte: "S'agit-il d'une erreur des services de police ?"
+    is_erreur_porte_hint_text: "Se référer aux mentions figurant sur l'attestation d'informations"
+    identite_personne_recherchee: "Si NON, préciser l'identité de la personne recherchée"
+    prefix_remise_attestation: "Attestation remise à : "
+    nom_remise_attestation: "NOM"
+    prenom_remise_attestation: "PRENOM"
+    qualite_representant: "J'effectue ma demande en qualité de"
+    qualite_remise_attestation: "En qualité de "
+    precision_representant: "Préciser votre qualité"
   section: "Informations relative au bris de porte"
+categorie_demande:
+  title: "Catégories de demandes"
+  chapo: "Vous avez la possibilité d'effectuer un test d'éligibilité suivi d'une demande amiable d'indemnisation en sélectionnant l'une des catégories suivantes."
+  waiting: "Disponible prochainement"
+  bris_porte:
+    title: "Bris de porte"
+    chapo: "Ou autres dégâts matériels causés dans le cadre d'une opération de police judiciaire"
+  perte_loyer:
+    title: "Perte de loyers"
+    chapo: "En raison du placement sous scellés d'un bien immobilier pour les besoins d'une enquête judiciaire"
+  dysfonctionnement_justice:
+    title: "Dysfonctionnements du service public de la justice"
+    chapo: "Délai de procédure déraisonnable devant les juridictions de l'ordre judiciaire, non restitution des scellés, mise en fourrière injustifiée, ..."
+  accident:
+    title: "Accident impliquant un véhicule de la Direction des services judiciaires"
+    chapo: ""
+  sinistre:
+    title: "Sinistre causé par un bâtiment judiciaire"
+    chapo: ""
+cgu:
+  title: "Conditions générales d'utilisation"
+  content: "
+  <h1>Conditions générales d'utilisation</h1>
+  <span>...</span>
+  "
+document:
+  piece_identite:
+    title: "Copie de ma pièce d'identité recto-verso"
+    hint: " "
+  titre_propriete:
+    title: "Titre de propriété"
+    hint: " "
+  attestation_information:
+    title: "Attestation d'informations complétée par les force de l'ordre"
+    hint: " "
+  rib_pro:
+    title: "Relevé d'identité bancaire de ma société"
+    hint: " "
+  rib:
+    title: "Mon relevé d'identité bancaire"
+    hint: " "
+  photo_bris_porte:
+    title: "Photos de la porte endommagée"
+    hint: "Seuls les frais de remise en état à l'identique de la porte endommagée seront indemnisés"
+  facture:
+    title: "Facture acquittée et copie du relevé de compte bancaire attestant du paiement"
+    hint: " "
+  default: "Ajouter des fichiers"
+  hint_text: "Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf."
 global:
+  revert: "Corriger la saisie"
+  waiting: "Chargement en cours ..."
+  informations_requirement: "Sauf mention contraire, tous les champs sont obligatoires"
+  field_required: "Le(s) champ(s) doivent être renseigné(s) pour poursuivre : "
+  yes: "Oui"
+  no: "Non"
+  and_or: " et/ou "
+  optional: "(facultatif)"
+  select_option: "Sélectionnez une option"
+  step:
+    next: "Valider et passer à l'étape suivante"
+    previous: "Revenir à l'étape précédente"
+  btn:
+    view: "Consulter"
+    update: "Modifier"
+    stop: "Abandonner"
   display: "Afficher"
   actions: "Actions"
   error_empty_field: "Le champs est obligatoire"
 header:
+  brand: "Ministère<br/>de la justice"
+  title: "Ministère de la justice"
   name: Précontentieux
   service: baseline - précisions sur l‘organisation
 homepage:
-  title: "Accueil - Précontentieux - Ministère de la justice"
+  title: "Précontentieux"
+  qui_sommes_nous:
+    title: "Qui sommes nous ?"
+    chapo: "
+    <p>Situé au sein de la Direction des Services Judiciaires (DSJ), le <b>pôle précontentieux</b>
+    a pour mission de <b>traiter les demandes amiables d'indemnisation</b> formulées par les usagers
+    ou les tiers du fait des préjudices causés :<br/>
+      <ul>
+        <li>Soit par le <b>fonctionnement du service public de la justice judiciaire</b></li>
+        <li>Soit par un <b>accident impliquant un véhicule de la Direction des Services Judiciaires</b> (DSJ) du ministère de la justice</li>
+        <li>Soit par un <b>bâtiment judiciaire</b></li>
+      </ul>
+    </p>
+    "
 login:
-  title: Se connecter
+  title: Se connecter à mon espace
+  btn: "Je me connecte à mon espace"
+  h1: "Me connecter à mon espace"
   comment: "Connexion à Précontentieux"
-  create_account: "Créer un compte"
-  details: "Sauf mention contraire, tous les champs sont obligatoires."
-  email: "Adresse mail"
-  email_example: "Format attendu : nom@domaine.fr"
-  forgotten_password: "Mot de passe oublié ?"
-  password: "Mot de passe"
+  confirm_password: "Confirmer mot de passe"
   connect: "Connexion"
+  create_account: "Créer un compte"
+  content: "Pour effectuer ou suivre une demande d'indemnisation, se connecter à son espace personnel"
+  details: "Sauf mention contraire, tous les champs sont obligatoires."
+  email: "Adresse courriel"
+  email_example: "Format attendu : nom@domaine.fr"
+  forgotten_password: "J'ai oublié mon mot de passe"
+  password: "Mot de passe"
   error:
     title: "Erreur de connexion"
   no_account_title: "Vous n’avez pas de compte ?"
 logout:
   title: Se déconnecter
+verification:
+  section: "Vérification et soumission de ma demande"
 register:
+  email:
+    title: "Précontentieux : finalisation de l'activation de votre compte pour l'application %name%"
+    confirm_prefix: "Bonjour %nom_complet%,<br/>Nous prenons acte de votre ouverture de compte à l'application %name%. Pour finaliser l'activation de votre compte, veuillez cliquez sur le lien suivant : "
+    confirm_postfix: "Vous pouvez accéder directement à l'application via ce lien : "
+    confirm_btn: "lien de confirmation"
+    expired_at: "Ce lien expire dans "
+    thanks: "Cordialement"
   title: "Créer un compte"
   terms: "J'accepte les termes d'utilisation"
   error:
@@ -43,23 +195,90 @@ resend_password:
   title: "Mot de passe oublié"
   submit: "Envoyer un nouveau mot de passe"
   update_done: "Votre mot de passe a été mis à jour. Veuillez consulter votre messagerie afin de vous connecter."
+security:
+  reset_password:
+    description: "Saisissez votre email ici, vous recevrez à cette adresse un courriel pour réinitialiser votre mot de passe"
+    title: "Mettre à jour mon mot de passe"
+    submit: "Revervoir un courriel pour mettre à jour votre mot de passe"
+    email:
+      title: "%name% : Réinitialisation de votre mot de passe"
+      link: "Je réinitialise mon mot de passe"
+      content: "Vous avez demandé à réinitialiser votre mot de passe. Veuillez trouver ci-après le lien à suivre pour effectuer cette action :"
+    error:
+      failed: "Le lien n'est pas valide ou expiré. Veuillez renouveller une nouvelle tentative de réinitialisation de votre mot de passe"
+    success:
+      password_reseted: "Le mot de passe a été mis à jour avec succès !"
+      password_reseted_description: "Vous pouvez vous connecter dès maintenant sur l'application avec votre nouveau mot de passe"
+      title: "Un courriel a été envoyé à votre messagerie"
+      description: "Vous avez reçu un courriel dans votre messagerie. Suivez les instructions contenues dans le courriel afin de finaliser votre réinitialisation"
+  success:
+    title: "Confirmation de la création de votre espace personnel"
+    content: "
+    <h1>Finaliser la création de votre compte</h1>
+    <p>Pour finaliser la création de votre compte, nous vous invitons sur le
+    lien qui vous a été envoyé à l'adresse email renseignée : <b>%email%</b></p>
+    <p>Une fois votre compte créé, vous pourrez accéder à votre espace personnel pour effectuer votre demande d'indemnisation.</p>
+    "
+    btn: "J'ai finalisé la création de mon compte, je souhaite me connecter à mon espace personnel"
+  inscription:
+    title: "Créer un compte"
+    description: "Sauf mention contraire, tous les champs sont obligatoires"
+    chapo: "L'accès au formulaire de demande d'indemnisation nécessite la création d'un compte"
+    account_allready_exist: "Vous possédez déjà un compte ?"
+    connect_space_btn: "Se connecter à mon espace"
+    cgu_prefix: "Je certifie avoir lu et accepté les "
+    cgu_content: "Conditions générales d'utilisation"
+    submit: "Valider mon inscription et poursuivre ma demande"
+    message:
+      email_allready_exist: "Cette adresse est déjà utilisée, nous vous invitons à réinitialiser votre mot de passe si vous l'avez perdu"
+      invalid_length_password: "Votre mot de passe doit contenir au moins %length% caractères"
+      invalid_number_password: "Votre mot de passe doit contenir au moins %length% chiffres"
+      same_password: "Votre mot de passe doit être identique au mot de passe de confirmation"
+service_enqueteur:
+  field:
+    nom: "Nom du service"
+    telephone: "Téléphone"
+    email: "Courriel"
+    numero_pv: "Numéro de procès-verbal"
+    juridiction: "Juridiction"
+    magistrat: "Nom du magistrat"
+    numero_parquet: "Numéro de parquet ou d'instruction"
 sinistre:
-  declare_bris_porte:
-    title: "Déclarer un bris de porte"
   field:
     date_declaration: "Date de déclaration"
     statut: "Statut du dossier"
     date_dernier_statut: "Date du dernier statut"
 user:
-  section: "Données personnelles"
+  section: "Données personnelles du justiciable"
+  h5: "Votre identité"
   field:
+    email_pro: "Courriel professionel"
+    telephone_pro: "Numéro de téléphone professionel"
+    is_personne_morale: "Ma demande d'indemnisation concerne une personne morale (société, entreprise, association, fondation etc.)"
     nom_naissance: "Nom de naissance"
-    nom: "Nom"
+    nom: "Nom d'usage"
     prenoms: "Prénom(s)"
-    date_naissance: "Né(e) le"
-    lieu_naissance: "à"
+    date_naissance: "Date de naissance"
+    lieu_naissance: "Ville de naissance"
     pays_naissance: "Pays"
     prenom1: "Premier prénom"
     prenom2: "Deuxième prénom"
     prenom3: "Troisième prénom"
     civilite: "Civilité"
+    role: "Rôle"
+    active: "Compte activé"
+personne:
+  field:
+    numero_securite_sociale: "Numéro de sécurité sociale"
+    code_securite_sociale: "Clé"
+personne_morale:
+  title: "Identité de la société"
+  field:
+    siren_siret: "SIREN / SIRET"
+    raison_sociale: "Raison sociale"
+representant_legal:
+  title: "Identité du représentant légal"
+  small_title: "Représenté.e par"
+prejudice:
+  field:
+    reference: "Référence"

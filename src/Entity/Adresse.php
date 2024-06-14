@@ -23,37 +23,37 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 class Adresse
 {
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne1 = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne2 = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne3 = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lieuDit = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $localite = null;
 
-    #[Groups('user:read')]
+    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $pays = null;
 

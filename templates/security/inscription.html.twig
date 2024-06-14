@@ -1,0 +1,15 @@
+{% extends 'base_react.html.twig' %}
+
+{% block title %}{{'security.inscription.title'|trans}}{% endblock %}
+
+
+{% block body %}
+  {% set csrf_token = csrf_token('authenticate') %}
+  {% set user = app.user is not null ? app.user : empty_user() %}
+  <div {{ stimulus_controller('security_inscription',{
+    user: user|serialize('json',{groups: 'user:read'}),
+    breadcrumb: breadcrumb|serialize('json'),
+    csrfToken: csrf_token,
+    version: version|serialize('json')
+  }) }}></div>
+{% endblock %}

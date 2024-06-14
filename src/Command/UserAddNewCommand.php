@@ -93,7 +93,7 @@ class UserAddNewCommand extends Command
         $password = null;
         /** @var Validator $validator */
         $validator = $this->getValidator();
-        $isAdmin = true;
+        //$isAdmin = true;
         if(null !== $account) {
           $io->error("Echec à l'ajout. Le compte $username existe déjà");
           return Command::FAILURE;
@@ -131,13 +131,20 @@ class UserAddNewCommand extends Command
         $account->setPassword("FAKE_PASSWORD");
         $account->setDateChangementMDP(null);
 
-        if (true === $isAdmin) {
-          $io->text(' > <info>Rôle</info>: '.User::ROLE_ADMIN_FONC);
-          $account->addRole(User::ROLE_ADMIN_FONC);
-        }
+        $tab = [
+          User::ROLE_REDACTEUR_PRECONTENTIEUX => 'Rédacteur',
+          User::ROLE_CHEF_PRECONTENTIEUX => 'Chef de pôle',
+          User::ROLE_ADMIN_FONC => 'Administrateur fonctionnel'
+        ];
+        $role = $io->choice('Rôle', $tab);
+        $io->text(' > <info>Rôle</info>: '.$role);
+        $account->addRole($role);
 
         $account->setPassword(
-            $passwordHasher->hashPassword($account, $password)
+            $passwordHasher->hashPassword(
+              $account,
+              $password
+            )
         );
 
 

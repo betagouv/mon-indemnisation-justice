@@ -2,7 +2,9 @@
 
 namespace App\Command;
 
+use App\Entity\Categorie;
 use App\Entity\Civilite;
+use App\Entity\QualiteRequerant;
 
 use Doctrine\ORM\EntityManagerInterface;
 use FOPG\Component\UtilsBundle\Command\AbstractCommand;
@@ -54,7 +56,9 @@ class ChargerLesReferentielsDepuisLesBackupsCommand extends AbstractCommand
         $this->logTitle("Lancement de la lecture des référentiels en sauvegarde");
         $refFolder = realpath(__DIR__.'/../../docs/referentiel');
         $referentiels = [
-          Civilite::class
+          Categorie::class,
+          Civilite::class,
+          QualiteRequerant::class,
         ];
 
         foreach($referentiels as $referentiel) {

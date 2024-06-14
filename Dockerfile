@@ -4,7 +4,7 @@ FROM php:8.1-apache
 ENV http_proxy "http://rie-proxy.justice.gouv.fr:8080"
 ENV https_proxy "http://rie-proxy.justice.gouv.fr:8080"
 ENV ftp_proxy "http://rie-proxy.justice.gouv.fr:8080"
-ENV no_proxy ".intranet.justice.gouv.fr,localhost,127.0.0.1,mistral_api_cassiopee"
+ENV no_proxy ".intranet.justice.gouv.fr,localhost,127.0.0.1,precontentieux_minio"
 
 ARG APT_ARGS="-qy"
 
