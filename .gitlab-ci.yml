@@ -49,15 +49,6 @@ variables:
 build:
   stage: 🔨build
   image: "registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu"
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /master/
-      variables:
-        DATABASE_PASSWORD: ${PSQL_PASSWORD}
-        DATABASE_NAME: ${PSQL_DB}
-        DATABASE_HOST: ${PSQL_HOST}
-        DATABASE_USER: ${PSQL_USERNAME}
-        DATABASE_PORT: ${PSQL_PORT}
-        BASE_URL: https://precontentieux.app.cc.anje-justice.fr
   before_script:
     - apt-get update
     - apt-get install -y zip unzip
