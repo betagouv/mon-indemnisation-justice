@@ -79,7 +79,6 @@ build:
     #- npm run build
     #- php bin/console a:i
     #- php bin/console a:a:charger
-    - apt-get remove --purge nodejs && apt-get autoremove
     - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
   artifacts:
     paths:
@@ -159,6 +158,7 @@ deploy-develop:
     - php bin/console d:s:u --force
     - php bin/console a:i
     - php bin/console a:a:charger
+    - apt-get remove --purge nodejs && apt-get autoremove
 
 deploy-recette:
   stage: 🚀deploy
