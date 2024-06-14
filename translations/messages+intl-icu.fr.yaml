@@ -165,7 +165,7 @@ login:
   create_account: "Créer un compte"
   content: "Pour effectuer ou suivre une demande d'indemnisation, se connecter à son espace personnel"
   details: "Sauf mention contraire, tous les champs sont obligatoires."
-  email: "Adresse mail"
+  email: "Adresse courriel"
   email_example: "Format attendu : nom@domaine.fr"
   forgotten_password: "J'ai oublié mon mot de passe"
   password: "Mot de passe"
