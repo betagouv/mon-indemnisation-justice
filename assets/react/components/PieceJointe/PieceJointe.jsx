@@ -1,5 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import { Uploader } from '../Uploader';
+import { Br,Loading } from '../../utils/fundamental';
 import { trans, GLOBAL_WAITING
 } from '../../../translator';
 
@@ -79,9 +80,7 @@ export const Document = ({liasseDocumentaireIri,type,label,hint_text="",readonly
       </>
       }
       {!loading &&
-      <>
-      {trans(GLOBAL_WAITING)}
-      </>
+      <Loading/>
       }
     </>
   );

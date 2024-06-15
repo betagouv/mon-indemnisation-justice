@@ -5,6 +5,7 @@ adresse:
   field:
     ligne1: "Adresse complète"
     ligne1_bris_porte: "Adresse complète du logement concerné par le bris de porte"
+    ligne1_bris_porte_recap: "À l'adresse suivante"
     ligne1_description: "Adresse où seront envoyé les courriers"
     code_postal: "Code postal"
     localite: "Ville"
@@ -56,7 +57,9 @@ bris_porte:
     numero_parquet: "Numéro de parquet ou d'instruction"
     date_operation_pj: "Date de l'opération de police judiciaire"
     is_porte_blindee: "S'agit-il d'une porte blindée ?"
+    is_porte_blindee_small: "Porte blindée"
     is_erreur_porte: "S'agit-il d'une erreur des services de police ?"
+    is_erreur_porte_small: "Erreur de porte"
     is_erreur_porte_hint_text: "Se référer aux mentions figurant sur l'attestation d'informations"
     identite_personne_recherchee: "Si NON, préciser l'identité de la personne recherchée"
     prefix_remise_attestation: "Attestation remise à : "
@@ -116,6 +119,7 @@ document:
   default: "Ajouter des fichiers"
   hint_text: "Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf."
 global:
+  unknown: "Non renseigné"
   revert: "Corriger la saisie"
   waiting: "Chargement en cours ..."
   informations_requirement: "Sauf mention contraire, tous les champs sont obligatoires"

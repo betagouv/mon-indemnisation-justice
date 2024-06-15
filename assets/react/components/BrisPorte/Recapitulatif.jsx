@@ -3,18 +3,78 @@ import {default as RecapitulatifPersonneMorale} from '../PersonneMorale/Recapitu
 import {default as RecapitulatifPersonnePhysique} from '../PersonnePhysique/Recapitulatif';
 import {default as RecapitulatifRepresentantLegal} from '../RepresentantLegal/Recapitulatif';
 import {default as RecapitulatifServiceEnqueteur} from '../ServiceEnqueteur/Recapitulatif';
-import {default as RecapitulatifQualite} from '../QualiteRequerant/Recapitulatif';
 import {default as RecapitulatifReceveurAttestation} from '../ReceveurAttestation/Recapitulatif';
 import {default as RecapitulatifDocument} from '../Document/Recapitulatif';
 import { Br,Loading } from '../../utils/fundamental';
 import { normalizeDate } from '../../utils/cast';
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import {trans,GLOBAL_REVERT,CATEGORIE_DEMANDE_BRIS_PORTE_TITLE,
+  ADRESSE_FIELD_LIGNE1_BRIS_PORTE_RECAP,BRIS_PORTE_FIELD_IS_PORTE_BLINDEE_SMALL,
   BRIS_PORTE_FIELD_DATE_OPERATION_PJ, ADRESSE_FIELD_LIGNE1_BRIS_PORTE,
-  BRIS_PORTE_FIELD_IS_PORTE_BLINDEE,BRIS_PORTE_FIELD_IS_ERREUR_PORTE,
-  GLOBAL_YES, GLOBAL_NO,BRIS_PORTE_FIELD_PREFIX_REMISE_ATTESTATION,
-  BRIS_PORTE_FIELD_QUALITE_REMISE_ATTESTATION,BRIS_PORTE_PJ_SECTION
+  BRIS_PORTE_FIELD_IS_ERREUR_PORTE_SMALL,
+  GLOBAL_YES, GLOBAL_NO,GLOBAL_UNKNOWN, BRIS_PORTE_FIELD_PREFIX_REMISE_ATTESTATION,
+  BRIS_PORTE_FIELD_QUALITE_REMISE_ATTESTATION,BRIS_PORTE_PJ_SECTION,
+  BRIS_PORTE_FIELD_QUALITE_REPRESENTANT
 } from '../../../translator';
+
+const SpecificRecapitulatif = ({brisPorte}) => {
+
+  const [nomRemisA,setNomRemisA]=useState("");
+  const [qualiteRequerant,setQualiteRequerant]=useState("");
+  const [loading,setLoading]=useState(false);
+
+  useEffect(() => {
+
+    if(true===loading)
+      return;
+
+    Promise
+      .all([brisPorte.qualiteRequerant]
+        .map((u) => (u) ? fetch(u).then((response) => response.json()) : null)
+      )
+      .then(([qr]) => {
+        setQualiteRequerant(trans(GLOBAL_UNKNOWN));
+        if(qr) {
+          let tmp=qr.libelle+((brisPorte.precisionRequerant)?" - "+brisPorte.precisionRequerant:"");
+          setQualiteRequerant(tmp);
+        }
+        setLoading(true);
+      })
+      .catch(() => {})
+    ;
+  },[brisPorte]);
+
+  return (
+    <>
+      <h3>{trans(CATEGORIE_DEMANDE_BRIS_PORTE_TITLE)}</h3>
+      {loading &&
+      <>
+        <div className="fr-mb-2w">
+          <label>{trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}</label> : <strong>{normalizeDate(brisPorte.dateOperationPJ)}</strong>
+        </div>
+        <label>{trans(ADRESSE_FIELD_LIGNE1_BRIS_PORTE_RECAP)} :</label>
+        <dl className="fr-mb-2w">
+          <address>
+            <dd>{brisPorte.adresse.ligne1}</dd>
+            <dd>{brisPorte.adresse.codePostal} {brisPorte.adresse.localite}</dd>
+          </address>
+        </dl>
+        <dl className="fr-mb-2w">
+          <dd>{trans(BRIS_PORTE_FIELD_IS_PORTE_BLINDEE_SMALL)} : <strong>{brisPorte.isPorteBlindee?trans(GLOBAL_YES):trans(GLOBAL_NO)}</strong></dd>
+          <dd>{trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE_SMALL)} : <strong>{brisPorte.isErreurPorte?trans(GLOBAL_YES):trans(GLOBAL_NO)}</strong></dd>
+        </dl>
+        <div className="fr-mb-2w">
+          <label>{trans(BRIS_PORTE_FIELD_QUALITE_REPRESENTANT)} : <strong>{qualiteRequerant}</strong></label>
+        </div>
+        <RecapitulatifReceveurAttestation receveurAttestation={brisPorte.receveurAttestation} />
+      </>
+      }
+      {!loading &&
+      <Loading/>
+      }
+    </>
+  );
+}
 
 const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoThirdSection}) => {
 
@@ -44,96 +104,83 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
       <div className="fr-col-6">
-        {loading && lUser && lUser.isPersonneMorale &&
         <section className="pr-form-section fr-p-4w">
-          <RecapitulatifPersonneMorale adresseUri={lUser.adresse} uri={lUser.personneMorale} />
-          <RecapitulatifRepresentantLegal uri={lUser.personnePhysique} />
-          <Button
-            onClick={gotoFirstSection}
-            priority="secondary"
-          >{trans(GLOBAL_REVERT)}</Button>
-        </section>
+        {loading && lUser && lUser.isPersonneMorale &&
+          <>
+            <RecapitulatifPersonneMorale adresseUri={lUser.adresse} uri={lUser.personneMorale} />
+            <RecapitulatifRepresentantLegal uri={lUser.personnePhysique} />
+            <Button
+              onClick={gotoFirstSection}
+              priority="secondary"
+            >{trans(GLOBAL_REVERT)}</Button>
+          </>
         }
         {loading && lUser && !lUser.isPersonneMorale &&
-        <section className="pr-form-section fr-p-4w">
-          <RecapitulatifPersonnePhysique adresseUri={lUser.adresse} uri={lUser.personnePhysique} />
-          <Button
-            onClick={gotoFirstSection}
-            priority="secondary"
-          >{trans(GLOBAL_REVERT)}</Button>
-        </section>
+          <>
+            <RecapitulatifPersonnePhysique adresseUri={lUser.adresse} uri={lUser.personnePhysique} />
+            <Button
+              onClick={gotoFirstSection}
+              priority="secondary"
+            >{trans(GLOBAL_REVERT)}</Button>
+          </>
         }
         {!loading &&
-        <Loading />
+          <Loading />
         }
+        </section>
       </div>
       <div className="fr-col-6">
-        {loading &&
         <section className="pr-form-section fr-p-4w">
-          <RecapitulatifServiceEnqueteur uri={updatedBrisPorte.serviceEnqueteur}/>
-          <Button
-            onClick={gotoSecondSection}
-            priority="secondary"
-          >{trans(GLOBAL_REVERT)}</Button>
-        </section>
+        {loading &&
+          <>
+            <RecapitulatifServiceEnqueteur uri={updatedBrisPorte.serviceEnqueteur}/>
+            <Button
+              onClick={gotoSecondSection}
+              priority="secondary"
+            >{trans(GLOBAL_REVERT)}</Button>
+          </>
         }
-      {!loading &&
-        <Loading />
-      }
+        {!loading &&
+          <Loading />
+        }
+        </section>
       </div>
       <div className="fr-col-12">
-      {loading &&
-        <>
-          <h2>{trans(CATEGORIE_DEMANDE_BRIS_PORTE_TITLE)}</h2>
-          {trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)} : <b>{normalizeDate(updatedBrisPorte.dateOperationPJ)}</b>
-          <Br space={2}/>
-          {trans(ADRESSE_FIELD_LIGNE1_BRIS_PORTE)} :
-          <Br/>
-          <address>
-            <b>
-              {updatedBrisPorte.adresse.ligne1}
-              <Br/>
-              {updatedBrisPorte.adresse.codePostal} {updatedBrisPorte.adresse.localite}
-            </b>
-          </address>
-          <Br/>
-          {trans(BRIS_PORTE_FIELD_IS_PORTE_BLINDEE)} : <b>{updatedBrisPorte.isPorteBlindee?trans(GLOBAL_YES):trans(GLOBAL_NO)}</b>
-          <Br/>
-          {trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE)} : <b>{updatedBrisPorte.isErreurPorte?trans(GLOBAL_YES):trans(GLOBAL_NO)}</b>
-          <Br space={2}/>
-          <RecapitulatifQualite uri={updatedBrisPorte.qualiteRequerant} precision={updatedBrisPorte.precisionRequerant}/>
-          <Br space={2}/>
-          <RecapitulatifReceveurAttestation receveurAttestation={updatedBrisPorte.receveurAttestation} />
-          <Br space={2}/>
-          <Button
-            onClick={gotoSecondSection}
-            priority="secondary"
-          >{trans(GLOBAL_REVERT)}</Button>
-        </>
-      }
-      {!loading &&
-        <Loading />
-      }
+        <section className="pr-form-section fr-p-4w">
+        {loading &&
+          <>
+            <SpecificRecapitulatif brisPorte={updatedBrisPorte} />
+            <Button
+              onClick={gotoSecondSection}
+              priority="secondary"
+            >{trans(GLOBAL_REVERT)}</Button>
+          </>
+        }
+        {!loading &&
+          <Loading />
+        }
+        </section>
       </div>
       <div className="fr-col-12">
-      {loading &&
-        <>
-          <h2>{trans(BRIS_PORTE_PJ_SECTION)}</h2>
-          <RecapitulatifDocument
-            isPersonneMorale={lUser.isPersonneMorale}
-            personneMoraleUri={personneMoraleUri}
-            personnePhysiqueUri={personnePhysiqueUri}
-            prejudiceUri={brisPorteUri}
-          />
-          <Button
-            onClick={gotoThirdSection}
-            priority="secondary"
-          >{trans(GLOBAL_REVERT)}</Button>
-        </>
-      }
-      {!loading &&
-        <Loading />
-      }
+        <section className="pr-form-section fr-p-4w">
+        {loading &&
+          <>
+            <RecapitulatifDocument
+              isPersonneMorale={lUser.isPersonneMorale}
+              personneMoraleUri={personneMoraleUri}
+              personnePhysiqueUri={personnePhysiqueUri}
+              prejudiceUri={brisPorteUri}
+            />
+            <Button
+              onClick={gotoThirdSection}
+              priority="secondary"
+            >{trans(GLOBAL_REVERT)}</Button>
+          </>
+        }
+        {!loading &&
+          <Loading />
+        }
+        </section>
       </div>
     </div>
   );
