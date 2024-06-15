@@ -64,16 +64,15 @@ export const Document = ({liasseDocumentaireIri,type,label,hint_text="",readonly
         </div>
         <div className="fr-col-12">
         {documents.map((item) =>
-            <>
+            <div key={item.id}>
               <a
-                key={item.id}
                 className="fr-link"
                 target="_blank"
                 href={Routing.generate('app_document_download',{id:item.id, filename: item.filename})}
               >
               {item.originalFilename}
               </a>&nbsp;|&nbsp;
-            </>
+            </div>
           )
         }
         </div>

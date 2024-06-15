@@ -43,9 +43,6 @@ const Recapitulatif = ({
           setPersonneMorale(_pm);
           setPersonnePhysique(_pp);
           setType(_pr["@type"]);
-          console.log(_pr);
-          console.log(_pm);
-          console.log(_pp);
           setLoading(true);
         })
         .catch(() => {})

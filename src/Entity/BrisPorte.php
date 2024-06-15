@@ -12,12 +12,17 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use App\Controller\Prejudice\BrisPorte\GetOptimized;
 #[ApiResource(
   operations:[
     new Get(
       normalizationContext: ['groups' => ['prejudice:read']],
       name: '_api_bris_porte_get'
+    ),
+    new Get(
+        name: '_api_bris_porte_get_optimized',
+        uriTemplate: '/bris-de-porte/{id}/optimise',
+        controller: GetOptimized::class
     ),
     new GetCollection(),
     new Patch(
