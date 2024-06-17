@@ -56,11 +56,6 @@ build:
         sed -i "s|__S3_ACCESS_KEY__|${S3_ACCESS_KEY}|g" .env.$APP_ENV;
         sed -i "s|__S3_BUCKET__|${S3_BUCKET_DEV}|g" .env.$APP_ENV;
         sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
-        echo "Update database";
-        php bin/console d:s:u --force;
-        
-        
-        
         
       else
         sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV;
@@ -76,6 +71,8 @@ build:
         sed -i "s|__S3_ACCESS_KEY__|${S3_ACCESS_KEY}|g" .env.$APP_ENV;
         sed -i "s|__S3_BUCKET__|${S3_BUCKET_PROD}|g" .env.$APP_ENV;
         sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
+        echo "Update database";
+        php bin/console d:s:u --force;
       fi
     - echo "Install dependencies Symfony application with composer"
     - composer install --optimize-autoloader --apcu-autoloader
