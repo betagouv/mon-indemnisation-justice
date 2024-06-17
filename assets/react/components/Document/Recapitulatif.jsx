@@ -8,6 +8,7 @@ import {trans,
   DOCUMENT_PIECE_IDENTITE_TITLE,
   DOCUMENT_PIECE_IDENTITE_HINT,
   DOCUMENT_FACTURE_TITLE,
+  BRIS_PORTE_PJ_SECTION,
   DOCUMENT_FACTURE_HINT,
   DOCUMENT_RIB_PRO_TITLE,
   DOCUMENT_RIB_PRO_HINT,
@@ -42,9 +43,6 @@ const Recapitulatif = ({
           setPersonneMorale(_pm);
           setPersonnePhysique(_pp);
           setType(_pr["@type"]);
-          console.log(_pr);
-          console.log(_pm);
-          console.log(_pp);
           setLoading(true);
         })
         .catch(() => {})
@@ -53,96 +51,76 @@ const Recapitulatif = ({
 
   return (
     <>
-    {loading &&
+      <h3>{trans(BRIS_PORTE_PJ_SECTION)}</h3>
+      {loading &&
       <>
         {(type===TYPE_BRIS_PORTE) &&
-        <div className="fr-col-12">
-          <Document
-            readonly={true}
-            liasseDocumentaireIri={prejudice.liasseDocumentaire}
-            label={trans(DOCUMENT_ATTESTATION_INFORMATION_TITLE)}
-            type={"attestation_information"}
-          />
-          <Br space={2} />
-        </div>
+        <Document
+          readonly={true}
+          liasseDocumentaireIri={prejudice.liasseDocumentaire}
+          label={trans(DOCUMENT_ATTESTATION_INFORMATION_TITLE)}
+          type={"attestation_information"}
+        />
         }
         {(type===TYPE_BRIS_PORTE) &&
-        <div className="fr-col-12">
-          <Document
-            readonly={true}
-            liasseDocumentaireIri={prejudice.liasseDocumentaire}
-            label={trans(DOCUMENT_PHOTO_BRIS_PORTE_TITLE)}
-            hint_text={trans(DOCUMENT_PHOTO_BRIS_PORTE_HINT)}
-            type={"photo_prejudice"}
-          />
-          <Br space={2} />
-        </div>
+        <Document
+          readonly={true}
+          liasseDocumentaireIri={prejudice.liasseDocumentaire}
+          label={trans(DOCUMENT_PHOTO_BRIS_PORTE_TITLE)}
+          hint_text={trans(DOCUMENT_PHOTO_BRIS_PORTE_HINT)}
+          type={"photo_prejudice"}
+        />
         }
         {!isPersonneMorale &&
-        <div className="fr-col-12">
-          <Document
-            readonly={true}
-            liasseDocumentaireIri={personnePhysique.liasseDocumentaire}
-            label={trans(DOCUMENT_PIECE_IDENTITE_TITLE)}
-            hint_text={trans(DOCUMENT_PIECE_IDENTITE_HINT)}
-            type={"carte_identite"}
-          />
-          <Br space={2} />
-        </div>
+        <Document
+          readonly={true}
+          liasseDocumentaireIri={personnePhysique.liasseDocumentaire}
+          label={trans(DOCUMENT_PIECE_IDENTITE_TITLE)}
+          hint_text={trans(DOCUMENT_PIECE_IDENTITE_HINT)}
+          type={"carte_identite"}
+        />
         }
         {(type===TYPE_BRIS_PORTE) &&
-        <div className="fr-col-12">
-          <Document
-            readonly={true}
-            liasseDocumentaireIri={prejudice.liasseDocumentaire}
-            label={trans(DOCUMENT_FACTURE_TITLE)}
-            hint_text={trans(DOCUMENT_FACTURE_HINT)}
-            type={"preuve_paiement_facture"}
-          />
-          <Br space={2} />
-        </div>
+        <Document
+          readonly={true}
+          liasseDocumentaireIri={prejudice.liasseDocumentaire}
+          label={trans(DOCUMENT_FACTURE_TITLE)}
+          hint_text={trans(DOCUMENT_FACTURE_HINT)}
+          type={"preuve_paiement_facture"}
+        />
         }
         {isPersonneMorale &&
-        <div className="fr-col-12">
-          <Document
-            readonly={true}
-            liasseDocumentaireIri={personneMorale.liasseDocumentaire}
-            label={trans(DOCUMENT_RIB_PRO_TITLE)}
-            hint_text={trans(DOCUMENT_RIB_PRO_HINT)}
-            type={"rib"}
-          />
-          <Br space={2} />
-        </div>
+        <Document
+          readonly={true}
+          liasseDocumentaireIri={personneMorale.liasseDocumentaire}
+          label={trans(DOCUMENT_RIB_PRO_TITLE)}
+          hint_text={trans(DOCUMENT_RIB_PRO_HINT)}
+          type={"rib"}
+        />
         }
         {!isPersonneMorale &&
-        <div className="fr-col-12">
-          <Document
-            readonly={true}
-            liasseDocumentaireIri={personnePhysique.liasseDocumentaire}
-            label={trans(DOCUMENT_RIB_TITLE)}
-            hint_text={trans(DOCUMENT_RIB_HINT)}
-            type={"rib"}
-          />
-          <Br space={2} />
-        </div>
+        <Document
+          readonly={true}
+          liasseDocumentaireIri={personnePhysique.liasseDocumentaire}
+          label={trans(DOCUMENT_RIB_TITLE)}
+          hint_text={trans(DOCUMENT_RIB_HINT)}
+          type={"rib"}
+        />
         }
         {(type===TYPE_BRIS_PORTE) &&
-        <div className="fr-col-12">
-          <Document
-            readonly={true}
-            liasseDocumentaireIri={prejudice.liasseDocumentaire}
-            label={trans(DOCUMENT_TITRE_PROPRIETE_TITLE)}
-            hint_text={trans(DOCUMENT_TITRE_PROPRIETE_HINT)}
-            type={"titre_propriete"}
-          />
-          <Br space={2} />
-        </div>
+        <Document
+          readonly={true}
+          liasseDocumentaireIri={prejudice.liasseDocumentaire}
+          label={trans(DOCUMENT_TITRE_PROPRIETE_TITLE)}
+          hint_text={trans(DOCUMENT_TITRE_PROPRIETE_HINT)}
+          type={"titre_propriete"}
+        />
         }
       </>
-    }
-    {!loading &&
+      }
+      {!loading &&
       <Loading />
-    }
+      }
     </>
   );
 }

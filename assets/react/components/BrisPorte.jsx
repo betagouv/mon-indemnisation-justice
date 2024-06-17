@@ -69,7 +69,7 @@ const BrisPorte = ({brisPorte}) => {
       nomRemiseAttestation: nomRemiseAttestation, prenomRemiseAttestation: prenomRemiseAttestation,
       qualiteRequerant: formatUrl(qualiteRequerant), precisionRequerant: precisionRequerant
     };
-    
+
     clearTimeout(keyUpTimer.current);
     keyUpTimer.current = setTimeout(() => {
       fetch(url, {
@@ -88,96 +88,79 @@ const BrisPorte = ({brisPorte}) => {
   ]);
 
   return (
-    <div className="fr-grid-row">
+    <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
       <div className="fr-col-12">
-        <h5>{trans(BRIS_PORTE_EDIT_DETAILS_H5)}</h5>
-      </div>
-      <div className="fr-col-4">
-        <Input
-          label={trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}
-          nativeInputProps={{
-            type: 'date',value: dateOperationPJ, onChange: ev=>setDateOperationPJ(ev.target.value)
-          }}
-        />
-      </div>
-      <div className="fr-col-8">
-      </div>
-      <div className="fr-col-12">
-        <Adresse
-          adresse={brisPorte.adresse}
-          optionalLigne1Texte={trans(ADRESSE_FIELD_LIGNE1_BRIS_PORTE)}
-        />
-      </div>
-      <div className="fr-col-12">
-        <RadioButtons
-          legend={trans(BRIS_PORTE_FIELD_IS_PORTE_BLINDEE)}
-          orientation='horizontal'
-          options={[
-                {
-                    label: trans(GLOBAL_YES),
-                    nativeInputProps: {
-                        checked: (isPorteBlindee === true),
-                        onChange: ()=> setIsPorteBlindee(true)
-                    }
-                },
-                {
-                    label: trans(GLOBAL_NO),
-                    nativeInputProps: {
-                        checked: (isPorteBlindee !== true),
-                        onChange: ()=> setIsPorteBlindee(false)
-                    }
-                },
-            ]}
-        />
-      </div>
-      <div className="fr-col-12">
-        <RadioButtons
-          hintText={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE_HINT_TEXT)}
-          legend={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE)}
-          orientation='horizontal'
-          options={[
-                {
-                    label: trans(GLOBAL_YES),
-                    nativeInputProps: {
-                        checked: (isErreurPorte === true),
-                        onChange: ()=> setIsErreurPorte(true)
-                    }
-                },
-                {
-                    label: trans(GLOBAL_NO),
-                    nativeInputProps: {
-                        checked: (isErreurPorte !== true),
-                        onChange: ()=> setIsErreurPorte(false)
-                    }
-                },
-            ]}
-        />
-      </div>
-      {!isErreurPorte &&
-      <div className="fr-col-12">
-        <Input
-          label={trans(BRIS_PORTE_FIELD_IDENTITE_PERSONNE_RECHERCHEE)}
-          nativeInputProps={{
-            value: identitePersonneRecherchee,
-            onChange: ev=>setIdentitePersonneRecherchee(ev.target.value),
-            maxLength: 255
-          }}
-        />
-      </div>
-      }
-      <div className="fr-col-12">
-        <Requerant
-          qualiteRequerant={qualiteRequerant}
-          setQualiteRequerant={setQualiteRequerant}
-          precisionRequerant={precisionRequerant}
-          setPrecisionRequerant={setPrecisionRequerant}
-        />
+        <a name="bris-de-porte"></a>
+        <section className="pr-form-section fr-p-4w">
+          <h3>{trans(BRIS_PORTE_EDIT_DETAILS_H5)}</h3>
+          <div className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-4">
+              <Input
+                label={trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}
+                nativeInputProps={{type: 'date',value: dateOperationPJ, onChange: ev=>setDateOperationPJ(ev.target.value)}}
+              />
+            </div>
+            <div className="fr-col-offset-8"></div>
+            <div className="fr-col-12">
+              <Adresse
+                adresse={brisPorte.adresse}
+                optionalLigne1Texte={trans(ADRESSE_FIELD_LIGNE1_BRIS_PORTE)}
+              />
+            </div>
+            <div className="fr-col-12">
+              <RadioButtons
+                legend={trans(BRIS_PORTE_FIELD_IS_PORTE_BLINDEE)}
+                orientation='horizontal'
+                options={[
+                  {label: trans(GLOBAL_YES),nativeInputProps: {checked: (isPorteBlindee === true),onChange: ()=> setIsPorteBlindee(true)}},
+                  {label: trans(GLOBAL_NO),nativeInputProps: {checked: (isPorteBlindee !== true),onChange: ()=> setIsPorteBlindee(false)}},
+                ]}
+              />
+            </div>
+            <div className="fr-col-12">
+              <RadioButtons
+                hintText={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE_HINT_TEXT)}
+                legend={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE)}
+                orientation='horizontal'
+                options={[
+                  {label: trans(GLOBAL_YES),nativeInputProps: {checked: (isErreurPorte === true),onChange: ()=> setIsErreurPorte(true)}},
+                  {label: trans(GLOBAL_NO),nativeInputProps: {checked: (isErreurPorte !== true),onChange: ()=> setIsErreurPorte(false)}},
+                ]}
+              />
+            </div>
+            {!isErreurPorte &&
+            <div className="fr-col-12">
+              <Input
+                label={trans(BRIS_PORTE_FIELD_IDENTITE_PERSONNE_RECHERCHEE)}
+                nativeInputProps={{
+                  value: identitePersonneRecherchee,
+                  onChange: ev=>setIdentitePersonneRecherchee(ev.target.value),
+                  maxLength: 255
+                }}
+              />
+            </div>
+            }
+            <div className="fr-col-12">
+              <Requerant
+                qualiteRequerant={qualiteRequerant}
+                setQualiteRequerant={setQualiteRequerant}
+                precisionRequerant={precisionRequerant}
+                setPrecisionRequerant={setPrecisionRequerant}
+              />
+            </div>
+          </div>
+        </section>
       </div>
       <div className="fr-col-12">
-        <FormulaireReceveur personnePhysique={brisPorte.receveurAttestation}/>
+        <section className="pr-form-section fr-p-4w">
+          <FormulaireReceveur personnePhysique={brisPorte.receveurAttestation}/>
+        </section>
       </div>
+      <a name="service-enqueteur"></a>
       <div className="fr-col-12">
-        <FormulaireSimple serviceEnqueteurIri={brisPorte.serviceEnqueteur}/>
+        <section className="pr-form-section fr-p-4w">
+          <FormulaireSimple serviceEnqueteurIri={brisPorte.serviceEnqueteur}/>
+        </section>
       </div>
     </div>
   );

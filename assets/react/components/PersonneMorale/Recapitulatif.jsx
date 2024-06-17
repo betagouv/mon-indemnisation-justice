@@ -3,42 +3,16 @@ import { Br,Loading } from '../../utils/fundamental';
 import {trans, PERSONNE_MORALE_TITLE,
 PERSONNE_MORALE_FIELD_SIREN_SIRET} from '../../../translator';
 import {default as RecapitulatifAdresse} from '../Adresse/Recapitulatif';
-const Recapitulatif = ({uri,adresseUri}) => {
-
-  useEffect(() => {
-    if(true===loading)
-      return;
-    fetch(uri)
-      .then((response) => response.json())
-      .then((data) => {
-        setPersonneMorale(data);
-        setLoading(true);
-      })
-  },[]);
-
-  const [loading,setLoading]=useState(false);
-  const [personneMorale,setPersonneMorale]=useState({});
+const Recapitulatif = ({adresse,personneMorale}) => {
   return (
-    <div className="fr-grid-row">
-    {loading &&
-      <>
-        <div className="fr-col-12">
-          <h2>{trans(PERSONNE_MORALE_TITLE)}</h2>
-        </div>
-        <div className="fr-col-12">
-          <b>{personneMorale.raisonSociale}</b>
-          <Br space={1}/>
-          <div>
-            {trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)} : {personneMorale.sirenSiret}
-            <RecapitulatifAdresse uri={adresseUri} />
-          </div>
-        </div>
-      </>
-    }
-    {!loading &&
-      <Loading />
-    }
-    </div>
+    <>
+      <h3>{trans(PERSONNE_MORALE_TITLE)}</h3>
+      <dl className="fr-mb-2w">
+        <strong>{personneMorale.raisonSociale}</strong>
+        <dd>{trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)} : {personneMorale.sirenSiret}</dd>
+        <RecapitulatifAdresse adresse={adresse} />
+      </dl>
+    </>
   );
 }
 

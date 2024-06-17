@@ -65,62 +65,62 @@ const FormulaireSimple = ({serviceEnqueteurIri}) => {
   },[]);
 
   return (
-    <div className="fr-grid-row">
-      <div className="fr-col-12">
-        <h5>{trans(BRIS_PORTE_SERVICE_ENQUETEUR_SECTION)}</h5>
-      </div>
-      {loading &&
-      <>
+    <>
+      <h3>{trans(BRIS_PORTE_SERVICE_ENQUETEUR_SECTION)}</h3>
+      <div className="fr-grid-row fr-grid-row--gutters">
+        {loading &&
+        <>
+          <div className="fr-col-12">
+            <Input
+              label={trans(SERVICE_ENQUETEUR_FIELD_NOM)}
+              nativeInputProps={{value: nom, onChange: ev=>setNom(ev.target.value)}}
+            />
+          </div>
+          <div className="fr-col-6">
+            <Input
+              label={trans(SERVICE_ENQUETEUR_FIELD_TELEPHONE)}
+              nativeInputProps={{value: telephone, onChange: ev=>setTelephone(ev.target.value)}}
+            />
+          </div>
+          <div className="fr-col-6">
+            <Input
+              label={trans(SERVICE_ENQUETEUR_FIELD_EMAIL)}
+              nativeInputProps={{value: courriel, onChange: ev=>setCourriel(ev.target.value)}}
+            />
+          </div>
+          <div className="fr-col-6">
+            <Input
+              label={trans(SERVICE_ENQUETEUR_FIELD_NUMERO_PV)}
+              nativeInputProps={{value: numeroPV, onChange: ev=>setNumeroPV(ev.target.value)}}
+            />
+          </div>
+          <div className="fr-col-6">
+            <Input
+              label={trans(SERVICE_ENQUETEUR_FIELD_JURIDICTION)}
+              nativeInputProps={{value: juridiction, onChange: ev=>setJuridiction(ev.target.value)}}
+            />
+          </div>
+          <div className="fr-col-6">
+            <Input
+              label={trans(SERVICE_ENQUETEUR_FIELD_MAGISTRAT)}
+              nativeInputProps={{value: magistrat, onChange: ev=>setMagistrat(ev.target.value)}}
+            />
+          </div>
+          <div className="fr-col-6">
+            <Input
+              label={trans(SERVICE_ENQUETEUR_FIELD_NUMERO_PARQUET)}
+              nativeInputProps={{value: numeroParquet, onChange: ev=>setNumeroParquet(ev.target.value)}}
+            />
+          </div>
+        </>
+        }
+        {!loading &&
         <div className="fr-col-12">
-          <Input
-            label={trans(SERVICE_ENQUETEUR_FIELD_NOM)}
-            nativeInputProps={{value: nom, onChange: ev=>setNom(ev.target.value)}}
-          />
+          <h5>{trans(GLOBAL_WAITING)}</h5>
         </div>
-        <div className="fr-col-6 fr-pr-md-1w">
-          <Input
-            label={trans(SERVICE_ENQUETEUR_FIELD_TELEPHONE)}
-            nativeInputProps={{value: telephone, onChange: ev=>setTelephone(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-6">
-          <Input
-            label={trans(SERVICE_ENQUETEUR_FIELD_EMAIL)}
-            nativeInputProps={{value: courriel, onChange: ev=>setCourriel(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-6 fr-pr-md-1w">
-          <Input
-            label={trans(SERVICE_ENQUETEUR_FIELD_NUMERO_PV)}
-            nativeInputProps={{value: numeroPV, onChange: ev=>setNumeroPV(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-6">
-          <Input
-            label={trans(SERVICE_ENQUETEUR_FIELD_JURIDICTION)}
-            nativeInputProps={{value: juridiction, onChange: ev=>setJuridiction(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-6 fr-pr-md-1w">
-          <Input
-            label={trans(SERVICE_ENQUETEUR_FIELD_MAGISTRAT)}
-            nativeInputProps={{value: magistrat, onChange: ev=>setMagistrat(ev.target.value)}}
-          />
-        </div>
-        <div className="fr-col-6">
-          <Input
-            label={trans(SERVICE_ENQUETEUR_FIELD_NUMERO_PARQUET)}
-            nativeInputProps={{value: numeroParquet, onChange: ev=>setNumeroParquet(ev.target.value)}}
-          />
-        </div>
-      </>
-      }
-      {!loading &&
-      <div className="fr-col-12">
-        <h5>{trans(GLOBAL_WAITING)}</h5>
+        }
       </div>
-      }
-    </div>
+    </>
   );
 }
 

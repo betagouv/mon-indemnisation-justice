@@ -1,4 +1,11 @@
 .pr-case_bris-de-porte_is-personne-morale { background-color: var(--pr-color-grey--light); }
-.pr-form-section { 
+.pr-form-section {
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+dl, dl dt, dl dd { padding: 0; margin: 0; }
+.pr-case-bris-de-porte_step-4_pieces-jointes ul li,
+.pr-case-bris-de-porte_step-4_pieces-jointes ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }

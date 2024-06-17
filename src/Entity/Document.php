@@ -29,6 +29,7 @@ class Document
     const TYPE_PREUVE_PAIEMENT_FACTURE="preuve_paiement_facture";
     const TYPE_RIB = "rib";
     const TYPE_TITRE_PROPRIETE="titre_propriete";
+    const TYPE_CONTRAT_LOCATION="contrat_location";
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
