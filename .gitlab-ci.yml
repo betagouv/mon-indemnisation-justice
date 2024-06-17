@@ -57,9 +57,6 @@ build:
         sed -i "s|__S3_BUCKET__|${S3_BUCKET_DEV}|g" .env.$APP_ENV;
         sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
         
-        
-        
-        
       else
         sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV;
         sed -i "s|__PSQL_PORT__|${PSQL_PORT_DEV}|g" .env.$APP_ENV;
@@ -77,8 +74,10 @@ build:
       fi
     - echo "Install dependencies Symfony application with composer"
     - composer install --optimize-autoloader --apcu-autoloader
-    - echo "Update database"
-    - php bin/console d:s:u --force
+    - if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
+        echo "Update database";
+        php bin/console d:s:u --force;
+      fi
     - echo "Install Npm & Assets"
     - npm install
     - npm run build
