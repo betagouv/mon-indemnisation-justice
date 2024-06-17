@@ -71,11 +71,13 @@ build:
         sed -i "s|__S3_ACCESS_KEY__|${S3_ACCESS_KEY}|g" .env.$APP_ENV;
         sed -i "s|__S3_BUCKET__|${S3_BUCKET_PROD}|g" .env.$APP_ENV;
         sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
-        echo "Update database";
-        php bin/console d:s:u --force;
       fi
     - echo "Install dependencies Symfony application with composer"
     - composer install --optimize-autoloader --apcu-autoloader
+    - if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
+        echo "Update database";
+        php bin/console d:s:u --force;
+      fi
     - echo "Install Npm & Assets"
     - npm install
     - npm run build
