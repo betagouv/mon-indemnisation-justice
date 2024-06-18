@@ -130,8 +130,6 @@ deploy-develop:
     url: "https://dev.precontentieux.app.cc.anje-justice.fr"
   only:
     - develop
-  script:
-    - echo "host db ${DATABASE_HOST}"
 
 deploy-recette:
   stage: 🚀deploy
