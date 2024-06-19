@@ -179,7 +179,6 @@ login:
   email: "Adresse courriel"
   email_example: "Format attendu : nom@domaine.fr"
   forgotten_password: "J'ai oublié mon mot de passe"
-  forgotten_password_title: "Je réinitialise mon mot de passe"
   password: "Mot de passe"
   error:
     title: "Erreur de connexion"
