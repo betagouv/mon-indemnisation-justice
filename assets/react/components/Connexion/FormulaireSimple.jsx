@@ -64,60 +64,47 @@ const FormulaireSimple = ({errorMessage,csrfToken,lastUsername}) => {
         <Hidden name="_username" value={email} />
         <Hidden name="_password" value={password} />
         <Hidden name="_csrf_token" value={csrfToken} />
-        <div className="fr-grid-row">
-          <div className="fr-col-12">
             <div className="fr-p-4w">
               <h2>{trans(LOGIN_H1)}</h2>
-              <p className="fr-my-4w">{trans(LOGIN_CONTENT)}</p>
-              <p className="fr-my-4w">{trans(GLOBAL_INFORMATIONS_REQUIREMENT)}</p>
-              {errorMessage &&
-              <div className="fr-grid-row fr-grid-row--gutters">
-                <div className="fr-col-12">
+              <p>{trans(LOGIN_CONTENT)}</p>
+              <p>{trans(GLOBAL_INFORMATIONS_REQUIREMENT)}</p>
+              <div className="fr-grid-row">
+                {errorMessage &&
+                <div className="fr-col-12 fr-mb-2w">
                   <Alert
                     description={errorMessage}
                     onClose={function noRefCheck(){}}
                     severity="error"
-                    title={trans(LOGIN_ERROR_TITLE)}
+                    small
                   />
                 </div>
-              </div>
-              }
-              <div className="fr-grid-row fr-grid-row--gutters">
-                <div className="fr-col-12">
+                }
+                <div className="fr-col-12 fr-mb-2w">
                   <Input
                     label={trans(LOGIN_EMAIL)}
-                    nativeInputProps={{placeholder: trans(LOGIN_EMAIL_EXAMPLE), value: email, onChange: ev => setEmail(ev.target.value)}}
+                    hintText={trans(LOGIN_EMAIL_EXAMPLE)}
+                    nativeInputProps={{type: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
                   />
                 </div>
-              </div>
-              <div className="fr-grid-row fr-grid-row--gutters">
-                <div className="fr-col-12">
+                <div className="fr-col-12 fr-mb-1w">
                   <PasswordInput
                     label={trans(LOGIN_PASSWORD)}
                     nativeInputProps={{value: password, onChange: ev => setPassword(ev.target.value)}}
                   />
                 </div>
-              </div>
-              <div className="fr-grid-row fr-grid-row--gutters">
-                <div className="fr-col-12">
-                  <div className="fr-my-2w">
-                    <div className="fr-input-group">
-                      <a className="fr-link" href="#" onClick={() => {modal.open()}}>{trans(LOGIN_FORGOTTEN_PASSWORD)}</a>
-                    </div>
+                <div className="fr-col-12  fr-mb-3w">
+                  <div className="fr-input-group">
+                    <a className="fr-link" href="#" onClick={() => {modal.open()}}>{trans(LOGIN_FORGOTTEN_PASSWORD)}</a>
                   </div>
                 </div>
-              </div>
-              <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
                   <Submit label={trans(LOGIN_BTN)} />
                 </div>
               </div>
             </div>
-          </div>
-        </div>
         <modal.Component title={trans(LOGIN_FORGOTTEN_PASSWORD)}>
           {!modalEmailSent &&
-          <div className="fr-grid-row">
+          <div className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-12">
               <Alert
                 small
