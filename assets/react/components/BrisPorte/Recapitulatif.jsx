@@ -43,7 +43,7 @@ const SpecificRecapitulatif = ({brisPorte}) => {
   );
 }
 
-const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoThirdSection}) => {
+const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=null,gotoThirdSection=null}) => {
 
   const personneMoraleUri = Routing.generate('_api_personne_morale_get',{id: user.personneMorale.id});
   const personnePhysiqueUri = Routing.generate('_api_personne_physique_get',{id: user.personnePhysique.id});
@@ -55,7 +55,7 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
   const [blob,setBlob]=useState({});
 
   var locked = useRef(false);
-  
+
   useEffect(() => {
 
     if(locked.current === true)
@@ -82,19 +82,23 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
           <>
             <RecapitulatifPersonneMorale adresse={blob.user.adresse} personneMorale={blob.user.personneMorale}/>
             <RecapitulatifRepresentantLegal personnePhysique={blob.user.personnePhysique} />
+            {gotoFirstSection &&
             <Button
               onClick={gotoFirstSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {loading && !blob.user.isPersonneMorale &&
           <>
             <RecapitulatifPersonnePhysique adresse={blob.user.adresse} personnePhysique={blob.user.personnePhysique} />
+            {gotoFirstSection &&
             <Button
               onClick={gotoFirstSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {!loading &&
@@ -107,10 +111,12 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
         {loading &&
           <>
             <RecapitulatifServiceEnqueteur serviceEnqueteur={blob.brisPorte.serviceEnqueteur}/>
+            {gotoSecondSection &&
             <Button
               onClick={gotoSecondSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {!loading &&
@@ -123,10 +129,12 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
         {loading &&
           <>
             <SpecificRecapitulatif brisPorte={blob.brisPorte} />
+            {gotoSecondSection &&
             <Button
               onClick={gotoSecondSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {!loading &&
@@ -144,10 +152,12 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
               personnePhysiqueLiasseDocumentaireUri={Routing.generate('_api_liasse_documentaire_get',{id:blob.user.personnePhysique.liasseDocumentaire.id})}
               prejudiceUri={brisPorteUri}
             />
+            {gotoThirdSection &&
             <Button
               onClick={gotoThirdSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {!loading &&

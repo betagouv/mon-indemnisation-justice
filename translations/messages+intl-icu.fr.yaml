@@ -42,6 +42,8 @@ bris_porte:
     "
     btn: "Tester mon éligibilité à l'indemnisation"
     chapo: "Je souhaite effectuer une demande pour un bris de portes ou autres dégâts matériels causés dans le cadre d'une opération de police judiciaire (perquisition judiciaire, interpellation d'un individu, ...)"
+  accept_or_reject:
+    title: "Traitement du bris de porte %reference%"
   view:
     title: "Consulter un bris de porte"
   edit:

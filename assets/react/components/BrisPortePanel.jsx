@@ -72,8 +72,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
     {(step===0) &&
     <section className="pr-case_form fr-mb-4w">
       <User user={user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
-      <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12">
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-12">
           <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
         </div>
       </div>
