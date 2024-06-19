@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
+#[ORM\Index(name: "document_liasse_documentaire_id_type_idx", columns: ["liasse_documentaire_id","type"])]
 #[ApiResource(
   operations:[
     new Get(name: '_api_document_get'),

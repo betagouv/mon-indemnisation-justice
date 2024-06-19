@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import { Br,Loading } from '../../utils/fundamental';
 import { Document } from '../PieceJointe/PieceJointe';
 import {trans,
@@ -31,9 +31,15 @@ const Recapitulatif = ({
   const [personnePhysique,setPersonnePhysique]=useState({});
   const [prejudice,setPrejudice]=useState({});
   const [type,setType]=useState("");
+
+  var locked = useRef(false);
+
   useEffect(() => {
-    if(true===loading)
+
+    if(locked.current === true)
       return;
+    locked.current=true;
+
     Promise
       .all([personneMoraleUri,personnePhysiqueUri,prejudiceUri]
         .map((u) => fetch(u).then((response) => response.json()))
