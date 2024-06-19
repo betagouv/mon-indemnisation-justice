@@ -6,6 +6,7 @@ import {default as RecapitulatifBrisPorte} from '../react/components/BrisPorte/R
 import Entete from '../react/components/Entete';
 import FilAriane from '../react/components/FilAriane';
 import BrisPortePanelView from '../react/components/BrisPortePanelView';
+import {default as FormulaireSimplifie} from '../react/components/Prejudice/Traitement/FormulaireSimplifie';
 import PiedDePage from '../react/components/PiedDePage';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
@@ -15,7 +16,8 @@ export default class extends Controller {
       user: Object,
       version: Object,
       breadcrumb: Object,
-      brisPorte: Object
+      brisPorte: Object,
+      prejudice: Object
     }
     connect() {
       const container = this.element;
@@ -35,6 +37,9 @@ export default class extends Controller {
                   />
                 </div>
                 <div className="fr-col-6">
+                  <FormulaireSimplifie
+                    prejudice={this.prejudiceValue}
+                  />
                 </div>
               </div>
             </div>

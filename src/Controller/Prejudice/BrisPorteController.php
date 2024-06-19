@@ -84,6 +84,7 @@ class BrisPorteController extends AbstractController
           'breadcrumb' => $breadcrumb,
           'brisPorte' => $brisPorte,
           'version' => $this->version,
+          'prejudice' => $brisPorte,
       ]);
     }
 

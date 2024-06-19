@@ -58,6 +58,14 @@ abstract class Prejudice implements PrejudiceInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
 
+    #[Groups('prejudice:write')]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $note = null;
+
+    #[Groups('prejudice:write')]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $propositionIndemnisation = null;
+
     public function __construct()
     {
       $this->dateDeclaration = new \DateTime();
@@ -166,6 +174,30 @@ abstract class Prejudice implements PrejudiceInterface
     public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static
     {
         $this->liasseDocumentaire = $liasseDocumentaire;
+
+        return $this;
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): static
+    {
+        $this->note = $note;
+
+        return $this;
+    }
+
+    public function getPropositionIndemnisation(): ?string
+    {
+        return $this->propositionIndemnisation;
+    }
+
+    public function setPropositionIndemnisation(?string $propositionIndemnisation): static
+    {
+        $this->propositionIndemnisation = $propositionIndemnisation;
 
         return $this;
     }

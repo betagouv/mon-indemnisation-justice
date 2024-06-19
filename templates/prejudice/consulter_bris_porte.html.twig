@@ -7,6 +7,7 @@
   <div {{ stimulus_controller('bris_porte_view',{
     user: user|serialize('json',{groups: 'user:read'}),
     brisPorte: brisPorte|serialize('json',{groups: 'prejudice:read'}),
+    prejudice: brisPorte|serialize('json',{groups: 'prejudice:write'}),
     breadcrumb: breadcrumb|serialize('json'),
     version: version|serialize('json')
   }) }}></div>
