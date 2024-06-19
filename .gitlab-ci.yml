@@ -22,8 +22,6 @@ variables:
   CI_PROJECT_IMAGE: ${APP_NAME}:${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
   BRANCH_NAME: ${CI_COMMIT_REF_SLUG}
   APP_ENV: "internet"
-  BASE_URL_DEV: https://dev.precontentieux.app.cc.anje-justice.fr
-  BASE_URL_PROD: https://precontentieux.app.cc.anje-justice.fr
   SCW_BUCKET_DEV: se-precontentieux-dev
   
 
@@ -41,7 +39,6 @@ build:
     - echo "host db ${DATABASE_HOST}"
   script:
     - echo "Set .env.${APP_ENV}"
-    - cp .env.$APP_ENV .env
     - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then
         sed -i "s|__PSQL_HOST__|${PSQL_HOST}|g" .env.$APP_ENV;
         sed -i "s|__PSQL_PORT__|${PSQL_PORT}|g" .env.$APP_ENV;
@@ -54,11 +51,8 @@ build:
         sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV;
         sed -i "s|__APP_BASE_URL__|${BASE_URL_PROD}|g" .env.$APP_ENV;
         sed -i "s|__S3_ACCESS_KEY__|${S3_ACCESS_KEY}|g" .env.$APP_ENV;
-        sed -i "s|__S3_BUCKET__|${S3_BUCKET_DEV}|g" .env.$APP_ENV;
+        sed -i "s|__S3_BUCKET__|${S3_BUCKET}|g" .env.$APP_ENV;
         sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
-        
-        
-        
         
       else
         sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV;
@@ -72,13 +66,16 @@ build:
         sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV;
         sed -i "s|__APP_BASE_URL__|${BASE_URL_DEV}|g" .env.$APP_ENV;
         sed -i "s|__S3_ACCESS_KEY__|${S3_ACCESS_KEY}|g" .env.$APP_ENV;
-        sed -i "s|__S3_BUCKET__|${S3_BUCKET_PROD}|g" .env.$APP_ENV;
+        sed -i "s|__S3_BUCKET__|${S3_BUCKET_DEV}|g" .env.$APP_ENV;
         sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
       fi
+    - cp .env.$APP_ENV .env
     - echo "Install dependencies Symfony application with composer"
     - composer install --optimize-autoloader --apcu-autoloader
-    - echo "Update database"
-    - php bin/console d:s:u --force
+    - if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
+        echo "Update database";
+        php bin/console d:s:u --force;
+      fi
     - echo "Install Npm & Assets"
     - npm install
     - npm run build
@@ -133,8 +130,6 @@ deploy-develop:
     url: "https://dev.precontentieux.app.cc.anje-justice.fr"
   only:
     - develop
-  script:
-    - echo "host db ${DATABASE_HOST}"
 
 deploy-recette:
   stage: 🚀deploy
