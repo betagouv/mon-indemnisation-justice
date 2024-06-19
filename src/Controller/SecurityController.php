@@ -66,7 +66,7 @@ class SecurityController extends AbstractController
             'url' => Env::get('BASE_URL'),
             'nomComplet' => $user->getNomComplet(),
           ])
-          ->send('app_reset_password', $user)
+          ->send(pathname: 'app_reset_password',user: $user)
         ;
         $sent=true;
       }
@@ -261,7 +261,7 @@ class SecurityController extends AbstractController
                 'nomComplet' => $user->getNomComplet(),
                 'urlTracking' => $urlTracking,
             ])
-            ->send('app_verify_email', $user)
+            ->send(pathname: 'app_verify_email',user: $user)
           ;
 
           $this->em->getRepository(Tracking::class)->add($user,Tracking::EVENT_SEND_EMAIL_CREATE_ACCOUNT);
