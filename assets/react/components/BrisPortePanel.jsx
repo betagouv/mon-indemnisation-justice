@@ -40,7 +40,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   const gotoFirstSection= () => setStep(0);
   const gotoSecondSection= () => setStep(1);
   const gotoThirdSection= () => setStep(2);
-  const [step,setStep]=useState(3);
+  const [step,setStep]=useState(0);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
   const [isPersonneMorale,setIsPersonneMorale]=useState(user.isPersonneMorale);
