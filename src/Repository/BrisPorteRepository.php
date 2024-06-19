@@ -149,7 +149,7 @@ class BrisPorteRepository extends ServiceEntityRepository
             $key = !is_int($index) ? $index : $field;
             $data['user']['personneMorale'][$key] = $tmp[0][$field];
           }
-          $data['user']['personneMorale']['liasse_documentaire']['id']=$tmp[0]['pm_liasse_documentaire_id'];
+          $data['user']['personneMorale']['liasseDocumentaire']['id']=$tmp[0]['pm_liasse_documentaire_id'];
           $ppFields=[
             "civilite" => "civilite_libelle",
             "prenom1",
@@ -159,7 +159,7 @@ class BrisPorteRepository extends ServiceEntityRepository
             $key = !is_int($index) ? $index : $field;
             $data['user']['personnePhysique'][$key] = $tmp[0][$field];
           }
-          $data['user']['personnePhysique']['liasse_documentaire']['id']=$tmp[0]['pp_liasse_documentaire_id'];
+          $data['user']['personnePhysique']['liasseDocumentaire']['id']=$tmp[0]['pp_liasse_documentaire_id'];
           $raFields=[
             "civilite" => "ra_civilite_libelle",
             "prenom1" => "ra_prenom1",

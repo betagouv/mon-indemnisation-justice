@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import {default as RecapitulatifPersonneMorale} from '../PersonneMorale/Recapitulatif';
 import {default as RecapitulatifPersonnePhysique} from '../PersonnePhysique/Recapitulatif';
 import {default as RecapitulatifRepresentantLegal} from '../RepresentantLegal/Recapitulatif';
@@ -53,9 +53,15 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
   const userUri = Routing.generate('_api_user_get',{id:user.pId});
   const [loading,setLoading]=useState(false);
   const [blob,setBlob]=useState({});
+
+  var locked = useRef(false);
+  
   useEffect(() => {
-    if(true === loading)
+
+    if(locked.current === true)
       return;
+    locked.current = true;
+
     Promise
       .all([brisPorteUriOptimizedUri]
         .map((u) => fetch(u).then((response) => response.json()))
@@ -134,8 +140,8 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
           <>
             <RecapitulatifDocument
               isPersonneMorale={blob.user.isPersonneMorale}
-              personneMoraleUri={personneMoraleUri}
-              personnePhysiqueUri={personnePhysiqueUri}
+              personneMoraleLiasseDocumentaireUri={Routing.generate('_api_liasse_documentaire_get',{id:blob.user.personneMorale.liasseDocumentaire.id})}
+              personnePhysiqueLiasseDocumentaireUri={Routing.generate('_api_liasse_documentaire_get',{id:blob.user.personnePhysique.liasseDocumentaire.id})}
               prejudiceUri={brisPorteUri}
             />
             <Button

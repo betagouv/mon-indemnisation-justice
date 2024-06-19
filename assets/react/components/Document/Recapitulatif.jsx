@@ -19,16 +19,13 @@ import {trans,
 } from '../../../translator';
 const Recapitulatif = ({
   isPersonneMorale,
-  personneMoraleUri,
-  personnePhysiqueUri,
+  personneMoraleLiasseDocumentaireUri,
+  personnePhysiqueLiasseDocumentaireUri,
   prejudiceUri
 }) => {
-
   const TYPE_BRIS_PORTE="BrisPorte";
 
   const [loading,setLoading]=useState(false);
-  const [personneMorale,setPersonneMorale]=useState({});
-  const [personnePhysique,setPersonnePhysique]=useState({});
   const [prejudice,setPrejudice]=useState({});
   const [type,setType]=useState("");
 
@@ -41,13 +38,11 @@ const Recapitulatif = ({
     locked.current=true;
 
     Promise
-      .all([personneMoraleUri,personnePhysiqueUri,prejudiceUri]
+      .all([prejudiceUri]
         .map((u) => fetch(u).then((response) => response.json()))
       )
-      .then(([_pm,_pp,_pr]) => {
+      .then(([_pr]) => {
           setPrejudice(_pr);
-          setPersonneMorale(_pm);
-          setPersonnePhysique(_pp);
           setType(_pr["@type"]);
           setLoading(true);
         })
@@ -80,7 +75,7 @@ const Recapitulatif = ({
         {!isPersonneMorale &&
         <Document
           readonly={true}
-          liasseDocumentaireIri={personnePhysique.liasseDocumentaire}
+          liasseDocumentaireIri={personnePhysiqueLiasseDocumentaireUri}
           label={trans(DOCUMENT_PIECE_IDENTITE_TITLE)}
           hint_text={trans(DOCUMENT_PIECE_IDENTITE_HINT)}
           type={"carte_identite"}
@@ -98,7 +93,7 @@ const Recapitulatif = ({
         {isPersonneMorale &&
         <Document
           readonly={true}
-          liasseDocumentaireIri={personneMorale.liasseDocumentaire}
+          liasseDocumentaireIri={personneMoraleLiasseDocumentaireUri}
           label={trans(DOCUMENT_RIB_PRO_TITLE)}
           hint_text={trans(DOCUMENT_RIB_PRO_HINT)}
           type={"rib"}
@@ -107,7 +102,7 @@ const Recapitulatif = ({
         {!isPersonneMorale &&
         <Document
           readonly={true}
-          liasseDocumentaireIri={personnePhysique.liasseDocumentaire}
+          liasseDocumentaireIri={personnePhysiqueLiasseDocumentaireUri}
           label={trans(DOCUMENT_RIB_TITLE)}
           hint_text={trans(DOCUMENT_RIB_HINT)}
           type={"rib"}
