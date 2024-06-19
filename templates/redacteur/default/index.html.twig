@@ -6,8 +6,8 @@
   {% set user = app.user %}
   <div {{ stimulus_controller('prejudice_redacteur_list',{
     user: user|serialize('json',{groups: 'user:read'}),
-    breadcrumb: breadcrumb|serialize('json'),
     prejudices: prejudices|serialize('json',{groups: 'prejudice:read'}),
-    version: {label: 'beta'}
+    breadcrumb: breadcrumb|serialize('json'),
+    version: version
   }) }}></div>
 {% endblock %}

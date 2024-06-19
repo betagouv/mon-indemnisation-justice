@@ -9,5 +9,5 @@ interface MailerInterface
     public function to(string $emailTo): static;
     public function subject(string $subject): static;
     public function htmlTemplate(string $htmlTemplate, array $params=[]): static;
-    public function send(UserInterface $user, ?string $pathname=null): static;
+    public function send(?UserInterface $user=null, ?string $pathname=null): static;
 }

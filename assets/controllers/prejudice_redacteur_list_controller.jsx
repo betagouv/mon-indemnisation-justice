@@ -20,19 +20,21 @@ export default class extends Controller {
       const root = ReactDOMClient.createRoot(container);
       root.render(
         <React.StrictMode>
-          <div className="fr-container">
-            <div className="fr-grid-row">
-              <div className="fr-col-12">
-                <Entete user={this.userValue} version={this.versionValue} />
-              </div>
-              <div className="fr-col-12">
-                <FilAriane breadcrumb={this.breadcrumbValue}/>
-              </div>
-              <div className="fr-col-12">
-                <Prejudices items={this.prejudicesValue} />
+          <>
+            <Entete user={this.userValue} version={this.versionValue} />
+            <div className="fr-container">
+              <div className="fr-grid-row">
+                <div className="fr-col-12">
+                </div>
+                <div className="fr-col-12">
+                  <FilAriane breadcrumb={this.breadcrumbValue}/>
+                </div>
+                <div className="fr-col-12">
+                  <Prejudices items={this.prejudicesValue} />
+                </div>
               </div>
             </div>
-          </div>
+          </>
         </React.StrictMode>
       )
     }

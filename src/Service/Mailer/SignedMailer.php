@@ -48,7 +48,7 @@ class SignedMailer implements MailerInterface {
       return $this;
   }
 
-  public function send(UserInterface $user, ?string $pathname=null): static
+  public function send(?UserInterface $user=null, ?string $pathname=null): static
   {
     $signatureComponents = $this->verifyEmailHelper->generateSignature(
         $pathname,

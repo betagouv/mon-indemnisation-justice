@@ -46,7 +46,7 @@ class BasicMailer implements MailerInterface {
       return $this;
   }
 
-  public function send(UserInterface $user,?string $pathname=null): static
+  public function send(?UserInterface $user=null,?string $pathname=null): static
   {
     $this->mailer->send($this->email);
     return $this;
