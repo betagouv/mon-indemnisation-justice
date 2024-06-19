@@ -47,6 +47,13 @@ bris_porte:
   edit:
     title: "Déclarer un bris de porte"
     update_constitue: "Je déclare mon bris de porte"
+    email:
+      title: "Précontentieux : Votre déclaration de bris de porte a bien été pris en compte"
+      content: "
+      <b>Référence du dossier à rappeler : %reference%</b>
+      <p>Vous avez déclaré un bris de porte ce jour. Nos services mettent tout en oeuvre afin de revenir vers vous dans les meilleurs délais.</p>
+      <p>L'équipe PRECONTENTIEUX</p>
+      "
     details:
       h5: "Informations sur le bris de porte"
       remise: "Attestation d'information remise à"

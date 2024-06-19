@@ -7,9 +7,11 @@ use App\Entity\Categorie;
 use App\Entity\Statut;
 use App\Entity\User;
 use App\Repository\StatutRepository;
+use App\Service\Mailer\BasicMailer;
 use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
 use Doctrine\ORM\EntityManagerInterface;
+use FOPG\Component\UtilsBundle\Env\Env;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted(
   new Expression(
@@ -29,10 +32,10 @@ class BrisPorteController extends AbstractController
     public function __construct(
       private Version $version,
       private Breadcrumb $breadcrumb,
-      private StatutRepository $statutRepository
+      private StatutRepository $statutRepository,
+      private TranslatorInterface $translator
     )
     {
-
     }
 
     #[Route('/ajouter-un-bris-de-porte', name: 'app_bris_porte_add', methods: ['POST', 'GET'], options: ['expose' => true])]
@@ -95,13 +98,27 @@ class BrisPorteController extends AbstractController
     }
 
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', methods: ['GET'], options: ['expose' => true])]
-    public function redirection(BrisPorte $brisPorte): RedirectResponse
+    public function redirection(BrisPorte $brisPorte, BasicMailer $mailer): RedirectResponse
     {
+      $user = $this->getUser();
       $statut = new Statut();
       $statut->setCode(Statut::CODE_CONSTITUE);
       $statut->setPrejudice($brisPorte);
       $statut->setEmetteur($this->getUser());
       $this->statutRepository->add($statut,true);
-      return $this->redirectToRoute('app_requerant_homepage');
+
+      $mailer
+         ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+         ->to($user->getEmail())
+         ->subject($this->translator->trans('bris_porte.edit.email.title'))
+         ->htmlTemplate('requerant/email/confirmation_passage_etat_constitue.html.twig',[
+           'mail' => $user->getEmail(),
+           'url' => Env::get('BASE_URL'),
+           'nomComplet' => $user->getNomComplet(),
+           'reference' => $brisPorte->getReference(),
+         ])
+         ->send(user: $user)
+       ;
+       return $this->redirectToRoute('app_requerant_homepage');
     }
 }
