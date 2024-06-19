@@ -69,7 +69,7 @@ class BrisPorteController extends AbstractController
       return $this->redirectToRoute('app_bris_porte_edit',['id' => $brisPorte->getId()]);
     }
 
-    #[IsGranted('view', subject: 'brisPorte')]
+    #[IsGranted('prejudice_valid_or_reject', subject: 'brisPorte')]
     #[Route('/consulter-un-bris-de-porte/{id}', name: 'app_bris_porte_view', methods: ['GET'], options: ['expose' => true])]
     public function view(BrisPorte $brisPorte): Response
     {
