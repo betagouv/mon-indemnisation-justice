@@ -140,71 +140,74 @@ const TestEligibilite = function() {
         title={trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}
         buttons={buttons}
       >
-          <div className="fr-grid-row">
             {("common" == panel) &&
+
             <>
               <div className="fr-callout">
                 <h2 className="fr-callout__title">Comment remplir ce formulaire ?</h2>
                 <p className="fr-callout__text">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_CHAPO)}</p>
               </div>
-              <div className="fr-col-md-6 fr-col-12 fr-col-md-offset-6">
-                <Input
-                  label={trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}
-                  nativeInputProps={{
-                    type: 'date',
-                    value: dateOperationPJ,
-                    onChange: ev=>setDateOperationPJ(ev.target.value)
-                  }}
-                />
-              </div>
-              <div className="fr-col-12">
-                <div className="fr-input-group">
-                  <label className="fr-label" htmlFor="eligibilite-bris-de-porte_date-operation">Numéros de dossier
-                    <span className="fr-hint-text">Vous devez compléter au moins un champ</span>
-                  </label>
+              
+              <div className="fr-grid-row fr-grid-row--gutters">
+                <div className="fr-col-md-7 fr-col-12 fr-col-md-offset-5">
+                  <Input
+                    label={trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}
+                    nativeInputProps={{
+                      type: 'date',
+                      value: dateOperationPJ,
+                      onChange: ev=>setDateOperationPJ(ev.target.value)
+                    }}
+                  />
                 </div>
-                <div className="pr-eligibilite_form-group fr-my-1w">
-                  <div className="fr-p-2w">
-                    <Input
-                      label={trans(BRIS_PORTE_FIELD_NUMERO_PV)}
-                      nativeInputProps={{
-                        value: numeroPV,
-                        onChange: ev=>setNumeroPV(ev.target.value),
-                        maxLength: 255
-                      }}
-                    />
-                    <Input
-                      label={trans(BRIS_PORTE_FIELD_NUMERO_PARQUET)}
-                      nativeInputProps={{
-                        value: numeroParquet,
-                        onChange: ev=>setNumeroParquet(ev.target.value),
-                        maxLength: 255
-                      }}
-                    />
+                <div className="fr-col-12">
+                  <div className="fr-input-group">
+                    <label className="fr-label" htmlFor="eligibilite-bris-de-porte_date-operation">Numéros de dossier
+                      <span className="fr-hint-text">Vous devez compléter au moins un champ</span>
+                    </label>
+                  </div>
+                  <div className="pr-eligibilite_form-group">
+                    <div className="fr-p-2w">
+                      <Input
+                        label={trans(BRIS_PORTE_FIELD_NUMERO_PV)}
+                        nativeInputProps={{
+                          value: numeroPV,
+                          onChange: ev=>setNumeroPV(ev.target.value),
+                          maxLength: 255
+                        }}
+                      />
+                      <Input
+                        label={trans(BRIS_PORTE_FIELD_NUMERO_PARQUET)}
+                        nativeInputProps={{
+                          value: numeroParquet,
+                          onChange: ev=>setNumeroParquet(ev.target.value),
+                          maxLength: 255
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="fr-col-12">
-                <RadioButtons
-                  legend={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE)}
-                  orientation='horizontal'
-                  options={[
-                        {
-                            label: trans(GLOBAL_YES),
-                            nativeInputProps: {
-                                checked: (isErreurPorte === true),
-                                onChange: ()=> setIsErreurPorte(true)
-                            }
-                        },
-                        {
-                            label: trans(GLOBAL_NO),
-                            nativeInputProps: {
-                                checked: (isErreurPorte !== true),
-                                onChange: ()=> setIsErreurPorte(false)
-                            }
-                        },
-                    ]}
-                />
+                <div className="fr-col-12">
+                  <RadioButtons
+                    legend={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE)}
+                    orientation='horizontal'
+                    options={[
+                          {
+                              label: trans(GLOBAL_YES),
+                              nativeInputProps: {
+                                  checked: (isErreurPorte === true),
+                                  onChange: ()=> setIsErreurPorte(true)
+                              }
+                          },
+                          {
+                              label: trans(GLOBAL_NO),
+                              nativeInputProps: {
+                                  checked: (isErreurPorte !== true),
+                                  onChange: ()=> setIsErreurPorte(false)
+                              }
+                          },
+                      ]}
+                  />
+                </div>
               </div>
             </>
             }
@@ -216,7 +219,7 @@ const TestEligibilite = function() {
                 severity="error"
                 title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_TITLE)}
               />
-              <p>{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO)}</p>
+              <p class="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO)}</p>
             </>
             }
             {("success" == panel) &&
@@ -227,10 +230,9 @@ const TestEligibilite = function() {
                 severity="success"
                 title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_TITLE)}
               />
-              <p>{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO)}</p>
+              <p class="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO)}</p>
             </>
             }
-          </div>
       </modal.Component>
     </form>
   );
