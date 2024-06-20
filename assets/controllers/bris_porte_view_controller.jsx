@@ -29,7 +29,7 @@ export default class extends Controller {
             <div className="fr-container">
               <FilAriane breadcrumb={this.breadcrumbValue}/>
               <h1>{trans(BRIS_PORTE_ACCEPT_OR_REJECT_TITLE).replace("%reference%",this.brisPorteValue.reference)}</h1>
-              <div className="fr-grid-row">
+              <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
                 <div className="fr-col-6">
                   <RecapitulatifBrisPorte
                     brisPorte={this.brisPorteValue}
@@ -37,9 +37,11 @@ export default class extends Controller {
                   />
                 </div>
                 <div className="fr-col-6">
-                  <FormulaireSimplifie
-                    prejudice={this.prejudiceValue}
-                  />
+                  <section className="pr-form-section fr-p-4w">
+                    <FormulaireSimplifie
+                      prejudice={this.prejudiceValue}
+                    />
+                  </section>
                 </div>
               </div>
             </div>

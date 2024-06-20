@@ -1,23 +1,45 @@
 import React,{useState,useEffect} from 'react';
-import { EditorState } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { Br,Wysiwyg } from '../../../utils/fundamental';
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
 const FormulaireSimplifie = ({prejudice}) => {
 
-  useEffect(() => setLoading(true),[]);
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
-  const [loading, setLoading] = useState(false);
+  const [indemniteProposee,setIndemniteProposee]=useState("0.00");
+  const [note,setNote]=useState(prejudice.note);
+  useEffect(() => {
+    const form = {note: note,indemniteProposee: indemniteProposee};
+    console.log(form);
+  },[note,indemniteProposee]);
 
   return (
     <div className="fr-grid-row">
       <div className="fr-col-12">
-        {loading &&
-        <Editor
-          editorState={editorState}
-          onChange={setEditorState}
+        <Wysiwyg label='Note' value={note} setValue={setNote}/>
+      </div>
+      <div className="fr-col-12">
+        <Input
+          label={"Indemnité proposée"}
+          iconId="fr-icon-money-euro-box-line"
+          nativeInputProps={{
+            value: indemniteProposee,
+            onChange: ev => setIndemniteProposee(ev.target.value),
+            maxLength: 11
+          }}
         />
-        }
+      </div>
+      <div className="fr-col-12">
+        <Br/>
+      </div>
+      <div className="fr-col-12">
+        <ul className="fr-btns-group fr-btns-group--inline-sm">
+          <li>
+            <Button onClick={() => {}}>Rejet</Button>
+          </li>
+          <li>
+            <Button onClick={() => {}}>Proposer l'indemnisation</Button>
+          </li>
+        </ul>
       </div>
     </div>
   );
