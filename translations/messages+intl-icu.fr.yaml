@@ -295,3 +295,8 @@ representant_legal:
 prejudice:
   field:
     reference: "Référence"
+    note: "Note sur le dossier (masquée aux requérants)"
+    proposition_indemnisation: "Proposition d'indemnisation (€)"
+  action:
+    rejet: "Rejeter le dossier"
+    valide: "Faire une proposition d'indemnisation"

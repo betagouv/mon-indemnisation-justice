@@ -26,7 +26,7 @@ class DefaultController extends AbstractController
 
     }
 
-    #[Route('/accueil', name: 'app_redacteur_homepage')]
+    #[Route('/accueil', name: 'app_redacteur_homepage', options: ['expose' => true])]
     public function index(): Response
     {
         $em         = $this->em;
