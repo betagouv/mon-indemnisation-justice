@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
 use App\Contracts\PrejudiceInterface;
@@ -14,6 +13,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+  operations:[
+    new Patch(normalizationContext: ['groups' => ['prejudice:write']],name: '_api_prejudice_patch'),
+  ]
+)]
 #[ORM\Entity(repositoryClass: PrejudiceRepository::class)]
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
@@ -66,6 +70,9 @@ abstract class Prejudice implements PrejudiceInterface
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $propositionIndemnisation = null;
 
+    #[Groups('prejudice:write')]
+    private ?int $pid = null;
+
     public function __construct()
     {
       $this->dateDeclaration = new \DateTime();
@@ -73,6 +80,11 @@ abstract class Prejudice implements PrejudiceInterface
       $this->liasseDocumentaire = new LiasseDocumentaire();
     }
 
+    public function getPid(): ?int
+    {
+      return $this->getId();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

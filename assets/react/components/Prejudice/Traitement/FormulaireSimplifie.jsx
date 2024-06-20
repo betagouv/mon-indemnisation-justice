@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useRef,useState,useEffect} from 'react';
 import { Br,Wysiwyg } from '../../../utils/fundamental';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -7,9 +7,31 @@ const FormulaireSimplifie = ({prejudice}) => {
 
   const [indemniteProposee,setIndemniteProposee]=useState("0.00");
   const [note,setNote]=useState(prejudice.note);
+  const [loading,setLoading]=useState(false);
+
+  var keyUpTimer = useRef(null);
+  const KEY_UP_TIMER_DELAY = 1000;
+
+  useEffect(() => setLoading(true),[]);
   useEffect(() => {
-    const form = {note: note,indemniteProposee: indemniteProposee};
-    console.log(form);
+    if(false === loading)
+      return;
+    const url =Routing.generate('_api_prejudice_patch',{id:prejudice.pid});
+    const data = {note: note,indemniteProposee: indemniteProposee};
+
+    clearTimeout(keyUpTimer.current);
+    keyUpTimer.current = setTimeout(() => {
+      fetch(url, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/merge-patch+json'},
+        body: JSON.stringify(data)
+      })
+        .then((response) => response.json())
+        .then((data) => {})
+        .catch(() => {})
+      ;
+    },KEY_UP_TIMER_DELAY);
+
   },[note,indemniteProposee]);
 
   return (
