@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {trans, GLOBAL_WAITING } from '../../translator';
-import { ContentState, convertToRaw, convertFromRaw } from 'draft-js';
+import { ContentState, EditorState, convertToRaw, convertFromRaw,convertFromHTML } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import { stateToHTML } from 'draft-js-export-html';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
@@ -13,19 +13,22 @@ export const Br = ({space=1}) => {
 }
 
 export const Wysiwyg = ({label,value,setValue}) => {
+  const _value = value ? value : "<p></p>";
+  const contentDataState = ContentState.createFromBlockArray(convertFromHTML(_value));
+  const editorDataState = EditorState.createWithContent(contentDataState);
+  const [editorState,setEditorState]=useState(editorDataState);
 
-  const _contentState = ContentState.createFromText(value);
-  const raw = convertToRaw(_contentState);
-  const [contentState,setContentState]=useState(raw);
   useEffect(() => {
-    setValue(stateToHTML(convertFromRaw(contentState)));
-  },[contentState]);
+    const content = editorState.getCurrentContent();
+    setValue(stateToHTML(content));
+  },[editorState]);
+
   return (
     <>
       <label className="fr-label">{label}</label>
       <Editor
-        defaultContentState={contentState}
-        onContentStateChange={setContentState}
+        editorState={editorState}
+        onEditorStateChange={setEditorState}
         wrapperClassName="wrapper-class"
         editorClassName="editor-class"
         toolbarClassName="toolbar-class"
