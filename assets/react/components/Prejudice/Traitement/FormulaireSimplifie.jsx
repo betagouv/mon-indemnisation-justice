@@ -15,7 +15,7 @@ const modal = createModal({
     isOpenedByDefault: false
 });
 
-const FormulaireSimplifie = ({prejudice}) => {
+const FormulaireSimplifie = ({prejudice,dimension}) => {
 
   const isOpen = useIsModalOpen(modal);
   const [propositionIndemnisation,setPropositionIndemnisation]=useState(prejudice.propositionIndemnisation);
@@ -25,7 +25,12 @@ const FormulaireSimplifie = ({prejudice}) => {
   const [modalType,setModalType]=useState("");
   const [callback,setCallback]=useState(() => () => {});
   const urlHomepage = Routing.generate('app_redacteur_homepage');
-
+  const TARE_HEIGHT = 300;
+  $(document).ready(() => {
+    $(".editor-class")
+      .css("height",dimension.height-TARE_HEIGHT)
+    ;
+  });
   const handleRejet = () => {
     const url = Routing.generate('app_redacteur_update_statut_to_rejet',{id: prejudice.pid});
     setModalTitle(trans(PREJUDICE_ACTION_REJET));

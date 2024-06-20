@@ -12,29 +12,35 @@ import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
 import {trans,BRIS_PORTE_VIEW_TITLE,BRIS_PORTE_ACCEPT_OR_REJECT_TITLE} from '../translator';
 
-var memoryNavigator={width: 0};
-
+var memoryNavigator={width: 0,height: 0};
+const TARE_HEIGHT = 0;
+const REDUCE_WINDOWS_HEIGHT = 250;
 const initEditor = () => {
   const i = document.querySelector(".freeze-section");
-  memoryNavigator = {width: i.offsetWidth};
+  memoryNavigator = {
+    width: i.offsetWidth,
+    height: $(window).height()-REDUCE_WINDOWS_HEIGHT
+  };
 }
 
 const resizeEditor = () => {
-  const TARE_HEIGHT = 0;
-  const REDUCE_WINDOWS_HEIGHT = 250;
   const scrolltop = $(window).scrollTop();
-  let height = $(window).height()-REDUCE_WINDOWS_HEIGHT;
+  let height = memoryNavigator.height;
+  if(!height)
+    return;
   if (scrolltop > height+TARE_HEIGHT) {
     $(".freeze-section")
       .css('position', 'fixed')
       .css('width', memoryNavigator.width)
       .css('top',0)
       .css('z-index',1000)
+      .css('background-color', 'white')
     ;
   }
   else
     $(".freeze-section").css('position', 'static');
 }
+
 export default class extends Controller {
     static values = {
       user: Object,
@@ -49,7 +55,6 @@ export default class extends Controller {
       const root = ReactDOMClient.createRoot(container);
       const height = $(window).height();
       const styles = { freeze_panel: { height: height } };
-
       $(window).scroll(function () {resizeEditor();});
       $(document).ready(() => {initEditor();});
       root.render(
@@ -70,6 +75,7 @@ export default class extends Controller {
                   <section className="pr-form-section fr-p-4w freeze-section" style={styles.freeze_panel}>
                     <FormulaireSimplifie
                       prejudice={this.prejudiceValue}
+                      dimension={{height: height}}
                     />
                   </section>
                 </div>
