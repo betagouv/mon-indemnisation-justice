@@ -55,8 +55,8 @@ export default class extends Controller {
       const root = ReactDOMClient.createRoot(container);
       const height = $(window).height();
       const styles = { freeze_panel: { height: height } };
-      $(window).scroll(function () {resizeEditor();});
-      $(document).ready(() => {initEditor();});
+      $(window).scroll(() => resizeEditor());
+      $(document).ready(() => initEditor());
       root.render(
         <React.StrictMode>
           <>
