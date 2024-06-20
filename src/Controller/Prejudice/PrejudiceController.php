@@ -11,6 +11,7 @@ use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -39,5 +40,23 @@ class PrejudiceController extends AbstractController
           'breadcrumb' => $breadcrumb,
           'version' => $this->version,
       ]);
+    }
+
+    #[IsGranted(new Expression('is_granted("'.User::ROLE_CHEF_PRECONTENTIEUX.'") or is_granted("'.User::ROLE_REDACTEUR_PRECONTENTIEUX.'")'))]
+    #[Route('/passage-a-l-etat-rejete/{id}', name: 'app_redacteur_update_statut_to_rejet', methods: ['GET'], options: ['expose' => true])]
+    public function checkRejet(BrisPorte $brisPorte): JsonResponse
+    {
+      $user = $this->getUser();
+      $this->statutRepository->addEvent($brisPorte, $user, Statut::CODE_REJETE);
+      return new JsonResponse(['success' => true]);
+    }
+
+    #[IsGranted(new Expression('is_granted("'.User::ROLE_CHEF_PRECONTENTIEUX.'") or is_granted("'.User::ROLE_REDACTEUR_PRECONTENTIEUX.'")'))]
+    #[Route('/passage-a-l-etat-valide/{id}', name: 'app_redacteur_update_statut_to_valide', methods: ['GET'], options: ['expose' => true])]
+    public function checkValide(BrisPorte $brisPorte): JsonResponse
+    {
+      $user = $this->getUser();
+      $this->statutRepository->addEvent($brisPorte, $user, Statut::CODE_VALIDE);
+      return new JsonResponse(['success' => true]);
     }
 }

@@ -107,11 +107,7 @@ class BrisPorteController extends AbstractController
     public function redirection(BrisPorte $brisPorte, BasicMailer $mailer): RedirectResponse
     {
       $user = $this->getUser();
-      $statut = new Statut();
-      $statut->setCode(Statut::CODE_CONSTITUE);
-      $statut->setPrejudice($brisPorte);
-      $statut->setEmetteur($this->getUser());
-      $this->statutRepository->add($statut,true);
+      $this->statutRepository->addEvent($brisPorte, $user, Statut::CODE_CONSTITUE);
 
       $mailer
          ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))

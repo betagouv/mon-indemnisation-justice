@@ -2,13 +2,17 @@ import React,{useRef,useState,useEffect} from 'react';
 import { Br,Wysiwyg } from '../../../utils/fundamental';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { castDecimal } from '../../../utils/cast';
 
 const FormulaireSimplifie = ({prejudice}) => {
 
-  const [indemniteProposee,setIndemniteProposee]=useState("0.00");
+  const [propositionIndemnisation,setPropositionIndemnisation]=useState(prejudice.propositionIndemnisation);
   const [note,setNote]=useState(prejudice.note);
   const [loading,setLoading]=useState(false);
 
+  const handleRejet = () => { alert('rejet'); }
+  const handleValide = () => { alert('valide'); }
+  
   var keyUpTimer = useRef(null);
   const KEY_UP_TIMER_DELAY = 1000;
 
@@ -17,7 +21,7 @@ const FormulaireSimplifie = ({prejudice}) => {
     if(false === loading)
       return;
     const url =Routing.generate('_api_prejudice_patch',{id:prejudice.pid});
-    const data = {note: note,indemniteProposee: indemniteProposee};
+    const data = {note: note,propositionIndemnisation: propositionIndemnisation};
 
     clearTimeout(keyUpTimer.current);
     keyUpTimer.current = setTimeout(() => {
@@ -32,7 +36,7 @@ const FormulaireSimplifie = ({prejudice}) => {
       ;
     },KEY_UP_TIMER_DELAY);
 
-  },[note,indemniteProposee]);
+  },[note,propositionIndemnisation]);
 
   return (
     <div className="fr-grid-row">
@@ -44,8 +48,8 @@ const FormulaireSimplifie = ({prejudice}) => {
           label={"Indemnité proposée"}
           iconId="fr-icon-money-euro-box-line"
           nativeInputProps={{
-            value: indemniteProposee,
-            onChange: ev => setIndemniteProposee(ev.target.value),
+            value: propositionIndemnisation,
+            onChange: ev => setPropositionIndemnisation(castDecimal(ev.target.value)),
             maxLength: 11
           }}
         />
@@ -56,10 +60,10 @@ const FormulaireSimplifie = ({prejudice}) => {
       <div className="fr-col-12">
         <ul className="fr-btns-group fr-btns-group--inline-sm">
           <li>
-            <Button onClick={() => {}}>Rejet</Button>
+            <Button onClick={handleRejet}>Rejet</Button>
           </li>
           <li>
-            <Button onClick={() => {}}>Proposer l'indemnisation</Button>
+            <Button onClick={handleValide}>Proposer l'indemnisation</Button>
           </li>
         </ul>
       </div>
