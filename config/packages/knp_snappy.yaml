@@ -1,0 +1,10 @@
+# config/packages/knp_snappy.yaml
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     /bin/wkhtmltopdf
+        options:    []
+    image:
+        enabled:    true
+        binary:     /bin/wkhtmltoimage
+        options:    []

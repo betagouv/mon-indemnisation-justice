@@ -220,6 +220,25 @@ class BrisPorte extends Prejudice
         return $this;
     }
 
+    public function getAdressePlaintext(): string
+    {
+        $adresse = $this->getAdresse();
+        if(null !== $adresse)
+          return (string)$adresse;
+        return "";
+    }
+    public function getQualitePlaintext(): string
+    {
+        $qr = $this->getQualiteRequerant();
+        if(null !== $qr) {
+          $tab = [$qr->getLibelle()];
+          if($this->getPrecisionRequerant())
+            $tab[]=$this->getPrecisionRequerant();
+          return implode(" - ",$tab);
+        }
+        return "";
+    }
+
     public function getQualiteRequerant(): ?QualiteRequerant
     {
         return $this->qualiteRequerant;

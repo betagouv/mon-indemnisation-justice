@@ -144,7 +144,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     {
       return $this->getId();
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;
@@ -162,6 +162,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this;
     }
 
+    public function getPersonnePhysiquePlaintext(): string
+    {
+        return (string)$this->getPersonnePhysique();
+    }
+    
     public function getPlaintextRole(): string
     {
         if($this->hasRole(self::ROLE_CHEF_PRECONTENTIEUX))

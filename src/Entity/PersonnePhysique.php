@@ -109,6 +109,15 @@ class PersonnePhysique
       $this->liasseDocumentaire=new LiasseDocumentaire();
     }
 
+    public function __toString()
+    {
+      return implode(" ",[
+       $this->getCivilite() ? $this->getCivilite()->getLibelle() : '',
+       ucfirst(strtolower($this->getPrenom1())),
+       strtoupper($this->getNomNaissance())
+     ]);
+    }
+
     public function getId(): ?int
     {
         return $this->id;

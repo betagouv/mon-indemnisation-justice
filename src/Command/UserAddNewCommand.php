@@ -71,7 +71,9 @@ class UserAddNewCommand extends Command
     {
         $this
             ->setDescription('Création d\'un nouveau compte')
-            ->addArgument('username', InputArgument::REQUIRED, 'Nom d\'utilisateur')
+            ->addArgument('username', InputArgument::REQUIRED, 'Nom technique d\'utilisateur')
+            ->addArgument('prenom', InputArgument::REQUIRED, 'Prénom d\'utilisateur')
+            ->addArgument('nom', InputArgument::REQUIRED, 'Nom d\'utilisateur')
         ;
     }
 
@@ -85,6 +87,10 @@ class UserAddNewCommand extends Command
         $io = new SymfonyStyle($input, $output);
         /** @var string $username */
         $username = mb_strtolower($input->getArgument('username'));
+        /** @var string $prenom */
+        $prenom = mb_strtolower($input->getArgument('prenom'));
+        /** @var string $nom */
+        $nom = mb_strtolower($input->getArgument('nom'));
         /** @var UserRepository $ar */
         $ar = $this->getAccountRepository();
         $io->text(' > <info>Nom d\'utilisateur</info>: '.$username);
@@ -131,7 +137,9 @@ class UserAddNewCommand extends Command
         $account->setEmail($email);
         $account->setPassword("FAKE_PASSWORD");
         $account->setDateChangementMDP(null);
-
+        $account->setIsVerified(true);
+        $account->getPersonnePhysique()->setNom($nom);
+        $account->getPersonnePhysique()->setPrenom1($prenom);
         $tab = [
           User::ROLE_REDACTEUR_PRECONTENTIEUX => 'Rédacteur',
           User::ROLE_CHEF_PRECONTENTIEUX => 'Chef de pôle',

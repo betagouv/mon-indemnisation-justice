@@ -1,0 +1,13 @@
+{% extends 'base_react.html.twig' %}
+
+{% block title %}{{'admin.homepage.title'|trans}}{% endblock %}
+
+{% block body %}
+  {% set user = app.user %}
+  <div {{ stimulus_controller('prejudice_redacteur_list',{
+    user: user|serialize('json',{groups: 'user:read'}),
+    prejudices: prejudices|serialize('json',{groups: 'prejudice:read'}),
+    breadcrumb: breadcrumb|serialize('json'),
+    version: version
+  }) }}></div>
+{% endblock %}

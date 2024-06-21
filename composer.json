@@ -14,6 +14,7 @@
         "doctrine/orm": "^3.1",
         "friend-of-pastry-garden/utils-bundle": "^1.0",
         "friendsofsymfony/jsrouting-bundle": "^3.5",
+        "knplabs/knp-snappy-bundle": "^1.10",
         "league/flysystem-aws-s3-v3": "^3.28",
         "league/flysystem-bundle": "^3.3",
         "martin-georgiev/postgresql-for-doctrine": "^2.5",
