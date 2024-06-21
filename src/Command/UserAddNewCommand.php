@@ -138,7 +138,7 @@ class UserAddNewCommand extends Command
         $account->setPassword("FAKE_PASSWORD");
         $account->setDateChangementMDP(null);
         $account->setIsVerified(true);
-        $account->getPersonnePhysique()->setNom($nom);
+        $account->getPersonnePhysique()->setNomNaissance($nom);
         $account->getPersonnePhysique()->setPrenom1($prenom);
         $tab = [
           User::ROLE_REDACTEUR_PRECONTENTIEUX => 'Rédacteur',

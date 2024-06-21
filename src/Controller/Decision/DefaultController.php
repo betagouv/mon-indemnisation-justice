@@ -90,4 +90,37 @@ class DefaultController extends AbstractController
       );
 
     }
+
+    #[IsGranted('view', subject: 'brisPorte')]
+    #[Route('/decision-sur-bris-de-porte/acceptation-decision/{id}.pdf', name: 'app_decision_bri_acceptation_decision_print')]
+    public function printAcceptationDecisionBRI(BrisPorte $brisPorte, Pdf $pdf): Response
+    {
+      $user = $this->getUser();
+
+      $header = $this->render('decision/header.html.twig', [
+        'user'=> $user,
+        'base_dir'  => $this->getParameter('kernel.project_dir').'/public',
+      ]);
+
+      $template = $this->render('decision/acceptation/BRI/content.html.twig',[
+        'prejudice'   => $brisPorte,
+        'user' => $user,
+        'base_dir'  => $this->getParameter('kernel.project_dir').'/public',
+      ]);
+      return new Response(
+        $pdf->getOutputFromHtml($template->getContent(),[
+          'page-size' => 'A4',
+          'header-html' => $header->getContent(),
+          'margin-top' => '10mm',
+          'margin-bottom' => '20mm',
+          'encoding' => 'utf-8',
+        ]),
+        200,
+        [
+          'Content-Type' => 'application/pdf',
+          'Content-Disposition' => 'inline; filename="'.$brisPorte->getId().'.pdf"',
+        ]
+      );
+
+    }
 }
