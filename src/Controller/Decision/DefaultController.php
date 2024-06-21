@@ -8,13 +8,23 @@ use Knp\Snappy\Pdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Clegginabox\PDFMerger\PDFMerger;
+use Doctrine\ORM\EntityManagerInterface;
 
 class DefaultController extends AbstractController
 {
+    public function __construct(
+      private EntityManagerInterface $em,
+      private Pdf $pdf
+    ) {
+
+    }
+
     #[IsGranted('view', subject: 'brisPorte')]
     #[Route('/decision-sur-bris-de-porte/rejet/{id}.pdf', name: 'app_decision_bri_rejet_print')]
-    public function printRefusBRI(BrisPorte $brisPorte, Pdf $pdf): Response
+    public function printRefusBRI(BrisPorte $brisPorte): Response
     {
+      $pdf = $this->pdf;
       $user = $this->getUser();
       $footer = $this->render('decision/footer.html.twig', [
         'user'=> $user,
@@ -52,9 +62,46 @@ class DefaultController extends AbstractController
     }
 
     #[IsGranted('view', subject: 'brisPorte')]
-    #[Route('/decision-sur-bris-de-porte/proposition-indemnisation/{id}.pdf', name: 'app_decision_bri_rejet_print')]
-    public function printPropositionBRI(BrisPorte $brisPorte, Pdf $pdf): Response
+    #[Route('/decision-sur-bris-de-porte/proposition-indemnisation/{id}.pdf', name: 'app_decision_bri_proposition_indemnisation_compilee_print')]
+    public function printPropositionCompileeBRI(BrisPorte $brisPorte): Response
     {
+      $pdf = $this->pdf;
+      /** @var string $generatedPdf */
+      $generatedPdf     = tempnam(sys_get_temp_dir(), 'TMP_');
+      @unlink($generatedPdf);
+
+      /** @var PDFMerger $pm */
+      $pm = new PDFMerger();
+      /** proposition d'acceptation */
+      $firstDoc= $this->printPropositionBRI(brisPorte: $brisPorte);
+      $generatedFirstDoc= tempnam(sys_get_temp_dir(), 'TMP_');
+      file_put_contents($generatedFirstDoc, $firstDoc->getContent());
+      $pm->addPDF($generatedFirstDoc,'all');
+      /** \proposition d'acceptation */
+      /** formulaire d'acceptation */
+      $secondDoc= $this->printAcceptationDecisionBRI(brisPorte: $brisPorte);
+      $generatedSecondDoc= tempnam(sys_get_temp_dir(), 'TMP_');
+      file_put_contents($generatedSecondDoc, $secondDoc->getContent());
+      $pm->addPDF($generatedSecondDoc,'all');
+      /** \formulaire d'acceptation */
+      $pm->merge('file', $generatedPdf);
+      $content = file_get_contents($generatedPdf);
+      @unlink($generatedFirstDoc);
+      @unlink($generatedSecondDoc);
+      return new Response(
+        $content,
+        200,
+        [
+          'Content-Type' => 'application/pdf',
+          'Content-Disposition' => 'inline; filename="'.$brisPorte->getId().'.pdf"',
+        ]
+      );
+
+    }
+
+    private function printPropositionBRI(BrisPorte $brisPorte): Response
+    {
+      $pdf = $this->pdf;
       $user = $this->getUser();
       $footer = $this->render('decision/footer.html.twig', [
         'user'=> $user,
@@ -71,7 +118,6 @@ class DefaultController extends AbstractController
         'user' => $user,
         'base_dir'  => $this->getParameter('kernel.project_dir').'/public',
       ]);
-      $pdf->setOption('footer-center', 'Page [page]');
       return new Response(
         $pdf->getOutputFromHtml($template->getContent(),[
           'page-size' => 'A4',
@@ -91,10 +137,9 @@ class DefaultController extends AbstractController
 
     }
 
-    #[IsGranted('view', subject: 'brisPorte')]
-    #[Route('/decision-sur-bris-de-porte/acceptation-decision/{id}.pdf', name: 'app_decision_bri_acceptation_decision_print')]
-    public function printAcceptationDecisionBRI(BrisPorte $brisPorte, Pdf $pdf): Response
+    private function printAcceptationDecisionBRI(BrisPorte $brisPorte): Response
     {
+      $pdf = $this->pdf;
       $user = $this->getUser();
 
       $header = $this->render('decision/header.html.twig', [
