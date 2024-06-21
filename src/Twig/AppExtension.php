@@ -12,6 +12,7 @@ class AppExtension extends AbstractExtension
   public function getFilters(): array {
     return [
       new TwigFilter('translate', [AppRuntime::class,'translate']),
+      new TwigFilter('spellout', [AppRuntime::class,'spellout']),
     ];
   }
 

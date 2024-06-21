@@ -1,0 +1,71 @@
+{% extends 'base_pdf.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+{% endblock %}
+
+{% block body %}
+{% set requerant = prejudice.requerant %}
+{% set personnePhysique = requerant.personnePhysique %}
+{% set personneMorale = requerant.personneMorale %}
+<div class="text-md">
+  <img src="{{base_dir ~ '/build/images/entete-mj.png' }}">
+  <p class="text-right">
+  Paris, le {{"now"|date("d/m/Y")}}
+  </p>
+  <p class="text-blue text-bold">
+    DIRECTION DES SERVICES JUDICIAIRES<br/>
+    SOUS-DIRECTION DES FINANCES,<br/>
+    DE L'IMMOBILIER ET DE LA PERFORMANCE<br/>
+    <br/>
+    BUREAU DES FRAIS DE JUSTICE<br/>
+    ET DE L'OPTIMISATION DE LA DEPENSE (FIP4)
+  </p>
+  <table>
+    <tr>
+      <th class="text-underline text-left">Référence à rappeler</th><td> : </td><td>{{prejudice.reference}}<td/>
+    </tr>
+    <tr>
+      <th class="text-underline text-left">Affaire suivie par</th><td> : </td><td>{{prejudice.lastStatut.emetteur.username}}<td/>
+    </tr>
+  </table>
+  <p>
+    {{personnePhysique.civilite.libelle}},
+  </p>
+
+  <p>
+  J’ai bien reçu votre requête du {{prejudice.dateDeclaration|date('d/m/Y')}} par laquelle vous sollicitez,
+  {% if(requerant.isPersonneMorale) %}pour le compte de {{personneMorale.raisonSociale}}{% else %}en qualité de {{prejudice.qualitePlaintext}}{% endif %}, l’indemnisation du préjudice subi en raison de la
+  détérioration de la porte d’entrée de votre logement sis {{prejudice.adressePlaintext}}, lors
+  d'une opération de police judiciaire du {{prejudice.dateOperationPJ|date('d/m/Y')}}.
+  </p>
+  <p>
+  Il résulte de l’examen de votre dossier, qu’il appartient au ministère de la Justice de prendre en charge
+  les frais de remise en état à l’identique de la porte endommagée, au titre de la responsabilité sans faute
+  de l'État pour rupture d'égalité devant les charges publiques, dans la mesure où vous êtes tiers à l'opération
+  de police judiciaire.
+  </p>
+  <p>
+  En conséquence, je propose de vous allouer une indemnité de {{prejudice.propositionIndemnisation|spellout}} ({{prejudice.propositionIndemnisation|number_format(2,',','')}} EUR).
+  Cette proposition tient compte de la facture transmise.
+  </p>
+  <p>
+  Je vous saurai gré de bien vouloir m’indiquer si cette proposition recueille votre assentiment et, dans l’affirmative, me renvoyer la déclaration d’acceptation dûment renseignée et signée.
+  </p>
+  <p>
+  Enfin, je vous précise qu’en cas de désaccord, vous pouvez engager une action contentieuse en assignant l’agent judiciaire de l’État devant le tribunal judiciaire territorialement compétent.
+  S’agissant d’une procédure avec représentation obligatoire, il vous appartient de vous rapprocher des services d’un avocat.
+  </p>
+  <p>
+  Je vous prie de croire, {{personnePhysique.civilite.libelle}}, à l’assurance de ma considération distinguée.
+  </p>
+  <p>
+  {{user.personnePhysiquePlaintext}},<br/>
+  {{user.email}}
+  </p>
+</div>
+{% endblock %}

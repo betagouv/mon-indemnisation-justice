@@ -100,6 +100,26 @@ class AppRuntime implements RuntimeExtensionInterface
     return $tmp;
   }
 
+  private static function findPatternSpelloutByLocale(string $locale): string
+  {
+    $pattern = "$1 units and $2 cts";
+    switch($locale) {
+      case 'fr':
+        $pattern= "$1 euros et $2 centimes";
+    }
+    return $pattern;
+  }
+
+  public function spellout(float $amount, string $locale="fr"): string {
+    $t = new \NumberFormatter($locale, \NumberFormatter::SPELLOUT);
+    $pattern = self::findPatternSpelloutByLocale($locale);
+    $numberParsing = explode(".",number_format(round($amount,2,PHP_ROUND_HALF_DOWN),2,".",""));
+    $_1= $t->format($numberParsing[0]);
+    $_2= $t->format($numberParsing[1]);
+    $output = str_replace(["$1","$2"],[$_1,$_2], $pattern);
+    return $output;
+  }
+
   public function emptyUser(): User {
 
     $liasseDocumentaire = new LiasseDocumentaire();
