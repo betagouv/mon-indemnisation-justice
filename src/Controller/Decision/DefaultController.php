@@ -1,8 +1,10 @@
 <?php
 namespace App\Controller\Decision;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\BrisPorte;
+use App\Entity\Statut;
 use App\Contracts\PrejudiceInterface;
 use Knp\Snappy\Pdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,12 +19,9 @@ class DefaultController extends AbstractController
       private EntityManagerInterface $em,
       private Pdf $pdf
     ) {
-
     }
 
-    #[IsGranted('view', subject: 'brisPorte')]
-    #[Route('/decision-sur-bris-de-porte/rejet/{id}.pdf', name: 'app_decision_bri_rejet_print')]
-    public function printRefusBRI(BrisPorte $brisPorte): Response
+    private function printRefusBRI(BrisPorte $brisPorte): Response
     {
       $pdf = $this->pdf;
       $user = $this->getUser();
@@ -58,12 +57,24 @@ class DefaultController extends AbstractController
           'Content-Disposition' => 'inline; filename="'.$brisPorte->getId().'.pdf"',
         ]
       );
-
     }
 
     #[IsGranted('view', subject: 'brisPorte')]
-    #[Route('/decision-sur-bris-de-porte/proposition-indemnisation/{id}.pdf', name: 'app_decision_bri_proposition_indemnisation_compilee_print')]
-    public function printPropositionCompileeBRI(BrisPorte $brisPorte): Response
+    #[Route('/decision-sur-bris-de-porte/{id}.pdf', name: 'app_decision_bri_print')]
+    public function printDecisionBRI(BrisPorte $brisPorte): Response
+    {
+      $lastStatut = $brisPorte->getLastStatut();
+      switch($lastStatut->getCode()) {
+        case Statut::CODE_VALIDE:
+          return $this->printPropositionCompileeBRI($brisPorte);
+        case Statut::CODE_REJETE:
+          return $this->printRefusBRI($brisPorte);
+        default:
+      }
+      throw new NotFoundHttpException('Document non trouvé');
+    }
+
+    private function printPropositionCompileeBRI(BrisPorte $brisPorte): Response
     {
       $pdf = $this->pdf;
       /** @var string $generatedPdf */
@@ -96,7 +107,6 @@ class DefaultController extends AbstractController
           'Content-Disposition' => 'inline; filename="'.$brisPorte->getId().'.pdf"',
         ]
       );
-
     }
 
     private function printPropositionBRI(BrisPorte $brisPorte): Response
@@ -166,6 +176,5 @@ class DefaultController extends AbstractController
           'Content-Disposition' => 'inline; filename="'.$brisPorte->getId().'.pdf"',
         ]
       );
-
     }
 }
