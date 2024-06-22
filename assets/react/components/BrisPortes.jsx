@@ -81,6 +81,7 @@ const BrisPortes = function({items}) {
       </div>
       <div className="fr-col-9">
       </div>
+      {/*
       <div className="fr-col-3">
         <Button
         linkProps={{
@@ -89,6 +90,7 @@ const BrisPortes = function({items}) {
         >{trans(BRIS_PORTE_CREATE_TITLE)}
         </Button>
       </div>
+      */}
     </div>
   );
 }

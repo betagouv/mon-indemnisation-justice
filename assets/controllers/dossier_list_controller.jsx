@@ -2,6 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import ReactDOM from 'react-dom';
 import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
+import PiedDePage from '../react/components/PiedDePage';
 import BrisPortes from '../react/components/BrisPortes';
 import Entete from '../react/components/Entete';
 import FilAriane from '../react/components/FilAriane';
@@ -20,19 +21,14 @@ export default class extends Controller {
       const root = ReactDOMClient.createRoot(container);
       root.render(
         <React.StrictMode>
-          <div className="fr-container">
-            <div className="fr-grid-row">
-              <div className="fr-col-12">
-                <Entete user={this.userValue} version={this.versionValue} />
-              </div>
-              <div className="fr-col-12">
-                <FilAriane breadcrumb={this.breadcrumbValue}/>
-              </div>
-              <div className="fr-col-12">
-                <BrisPortes items={this.brisPortesValue} />
-              </div>
+          <>
+            <Entete user={this.userValue} version={this.versionValue} />
+            <div className="fr-container">
+              <FilAriane breadcrumb={this.breadcrumbValue}/>
+              <BrisPortes items={this.brisPortesValue} />
             </div>
-          </div>
+            <PiedDePage />
+          </>
         </React.StrictMode>
       )
     }
