@@ -7,6 +7,7 @@ import Entete from '../react/components/Entete';
 import FilAriane from '../react/components/FilAriane';
 import BrisPortePanelView from '../react/components/BrisPortePanelView';
 import {default as FormulaireSimplifie} from '../react/components/Prejudice/Traitement/FormulaireSimplifie';
+import {default as Signature} from '../react/components/Prejudice/Traitement/Signature';
 import PiedDePage from '../react/components/PiedDePage';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
@@ -15,12 +16,16 @@ import {trans,BRIS_PORTE_VIEW_TITLE,BRIS_PORTE_ACCEPT_OR_REJECT_TITLE} from '../
 var memoryNavigator={width: 0,height: 0};
 const TARE_HEIGHT = 0;
 const REDUCE_WINDOWS_HEIGHT = 250;
+const ROLE_CHEF_PRECONTENTIEUX = 'ROLE_CHEF_PRECONTENTIEUX';
+const ROLE_REDACTEUR_PRECONTENTIEUX = 'ROLE_REDACTEUR_PRECONTENTIEUX';
+
 const initEditor = () => {
   const i = document.querySelector(".freeze-section");
-  memoryNavigator = {
-    width: i.offsetWidth,
-    height: $(window).height()-REDUCE_WINDOWS_HEIGHT
-  };
+  if(i)
+    memoryNavigator = {
+      width: i.offsetWidth,
+      height: $(window).height()-REDUCE_WINDOWS_HEIGHT
+    };
 }
 
 const resizeEditor = () => {
@@ -72,12 +77,22 @@ export default class extends Controller {
                   />
                 </div>
                 <div className="fr-col-6">
+                  {(this.userValue.plaintextRole === ROLE_REDACTEUR_PRECONTENTIEUX) &&
                   <section className="pr-form-section fr-p-4w freeze-section" style={styles.freeze_panel}>
                     <FormulaireSimplifie
                       prejudice={this.prejudiceValue}
                       dimension={{height: height}}
                     />
                   </section>
+                  }
+                  {(this.userValue.plaintextRole === ROLE_CHEF_PRECONTENTIEUX) &&
+                  <section className="pr-form-section fr-p-4w">
+                    <Signature
+                      prejudice={this.prejudiceValue}
+                      dimension={{height: height}}
+                    />
+                  </section>
+                  }
                 </div>
               </div>
             </div>

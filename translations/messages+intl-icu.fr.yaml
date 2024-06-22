@@ -56,6 +56,12 @@ bris_porte:
       <p>Vous avez déclaré un bris de porte ce jour. Nos services mettent tout en oeuvre afin de revenir vers vous dans les meilleurs délais.</p>
       <p>L'équipe PRECONTENTIEUX</p>
       "
+      title_sign: "Précontentieux : Une décision a été prise concernant votre déclaration de bris de porte"
+      content_sign: "
+      <b>Référence du dossier à rappeler : %reference%</b>
+      <p>Le traitement consécutif à votre bris de porte a effectué. Veuillez vous connecter sur le site afin de consulter la décision</p>
+      <p>L'équipe PRECONTENTIEUX</p>
+      "
     details:
       h5: "Informations sur le bris de porte"
       remise: "Attestation d'information remise à"
@@ -297,6 +303,10 @@ prejudice:
     reference: "Référence"
     note: "Note sur le dossier (masquée aux requérants)"
     proposition_indemnisation: "Proposition d'indemnisation (€)"
+    document_signed: "Document signé"
+    document_to_sign: "Document à signer"
+    submit: "Transmettre la décision signée au requérant"
+    document_to_sign_hintext: "Cliquer ici pour télécharger la pièce à signer"
   action:
     rejet: "Rejeter le dossier"
     valide: "Faire une proposition d'indemnisation"

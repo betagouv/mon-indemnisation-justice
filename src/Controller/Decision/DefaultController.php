@@ -60,7 +60,7 @@ class DefaultController extends AbstractController
     }
 
     #[IsGranted('view', subject: 'brisPorte')]
-    #[Route('/decision-sur-bris-de-porte/{id}.pdf', name: 'app_decision_bri_print')]
+    #[Route('/decision-sur-bris-de-porte/{id}.pdf', name: 'app_decision_bri_print',options: ['expose' => true])]
     public function printDecisionBRI(BrisPorte $brisPorte): Response
     {
       $lastStatut = $brisPorte->getLastStatut();

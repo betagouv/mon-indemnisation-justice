@@ -12,7 +12,7 @@ export const Br = ({space=1}) => {
   return (rows);
 }
 
-export const Wysiwyg = ({label,value,setValue}) => {
+export const Wysiwyg = ({label,value,setValue,readOnly=false}) => {
   const _value = value ? value : "<p></p>";
   const contentDataState = ContentState.createFromBlockArray(convertFromHTML(_value));
   const editorDataState = EditorState.createWithContent(contentDataState);
@@ -27,6 +27,7 @@ export const Wysiwyg = ({label,value,setValue}) => {
     <>
       <label className="fr-label">{label}</label>
       <Editor
+        readOnly={readOnly}
         editorState={editorState}
         onEditorStateChange={setEditorState}
         wrapperClassName="wrapper-class"

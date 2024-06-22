@@ -73,6 +73,9 @@ abstract class Prejudice implements PrejudiceInterface
     #[Groups('prejudice:write')]
     private ?int $pid = null;
 
+    #[Groups('prejudice:write')]
+    private ?LiasseDocumentaire $pLiasseDocumentaire=null;
+
     public function __construct()
     {
       $this->dateDeclaration = new \DateTime();
@@ -84,7 +87,12 @@ abstract class Prejudice implements PrejudiceInterface
     {
       return $this->getId();
     }
-    
+
+    public function getPLiasseDocumentaire(): ?LiasseDocumentaire
+    {
+      return $this->getLiasseDocumentaire();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

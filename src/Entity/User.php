@@ -116,7 +116,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[Groups(['user:read','prejudice:read','user:write'])]
     public readonly ?int $pId;
 
-    #[Groups('user:read')]
+    #[Groups('user:read','user:write')]
     private $plaintextRole;
 
     #[Groups('user:read')]
@@ -166,7 +166,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     {
         return (string)$this->getPersonnePhysique();
     }
-    
+
     public function getPlaintextRole(): string
     {
         if($this->hasRole(self::ROLE_CHEF_PRECONTENTIEUX))

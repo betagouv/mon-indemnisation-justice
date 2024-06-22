@@ -31,6 +31,7 @@ class Document
     const TYPE_RIB = "rib";
     const TYPE_TITRE_PROPRIETE="titre_propriete";
     const TYPE_CONTRAT_LOCATION="contrat_location";
+    const TYPE_SIGNATURE_DECISION="signature_decision";
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
