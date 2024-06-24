@@ -6,6 +6,7 @@ use Aws\S3\S3Client;
 use App\Entity\Document;
 use App\Entity\LiasseDocumentaire;
 use Doctrine\ORM\EntityManagerInterface;
+use FOPG\Component\UtilsBundle\Env\Env;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -55,14 +56,12 @@ class DocumentController extends AbstractController
     /**
      * @author yanroussel
      * @todo   Download à refaire proprement
-     */ 
+     */
     #[Route('/document/{id}/{filename}', name: 'app_document_download',methods: ['GET'],options: ['expose' => true])]
     public function download(Request $request, ?Document $document): BinaryFileResponse
     {
-
-      //dd(get_class_methods($this->client));
       $file = $this->client->getObject([
-          'Bucket' => 'se-precontentieux-dev',
+          'Bucket' => Env::get('SCW_BUCKET'),
           'Key' => $document->getFilename(),
       ]);
       $body = $file->get('Body');
