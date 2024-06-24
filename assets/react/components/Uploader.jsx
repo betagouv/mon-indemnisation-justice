@@ -6,13 +6,14 @@ import { trans, DOCUMENT_DEFAULT, DOCUMENT_HINT_TEXT
 } from '../../translator';
 
 export const Uploader = ({liasseDocumentaireIri,type,selectedFile,setSelectedFile,label=null,hint_text=null}) => {
-  const MAX_SIZE=2048*1000;
+  const MAX_SIZE=2048*1000*8;
   const [errMsg,setErrMsg]=useState("");
 
   const handleFileInput = (ev) => {
+    setErrMsg("");
     const file = ev.target.files[0];
     if (file.size > MAX_SIZE) {
-      setErrMsg("Taille de fichier supérieure à 2Mo");
+      setErrMsg("Taille de fichier supérieure à 16Mo");
       return;
     }
 

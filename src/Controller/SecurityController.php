@@ -211,12 +211,28 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('app_login');
     }
 
+    private function buildSession(Request $request): bool {
+      $session = $request->getSession();
+      $fields = self::get_fields($request);
+      if(true === self::has_fields($request)) {
+        if($fields['type'] === 'BRI') { }
+        else {
+          $session->set("test_eligibilite",null);
+          return false;
+        }
+        $session->set("test_eligibilite",$fields);
+        return true;
+      }
+    }
+
     #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
     public function inscription(Request $request): Response
     {
         $user = $this->getUser();
-        if(null !== $user)
+        if(null !== $user) {
+          $this->buildSession($request);
           return $this->redirect('/redirect');
+        }
 
         $breadcrumb = $this->breadcrumb;
         $breadcrumb->add('homepage.title','app_homepage');
