@@ -1,6 +1,7 @@
 <?php
 namespace App\Service\Mailer;
 
+use App\Contracts\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,7 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
-class SignedMailer {
+class SignedMailer implements MailerInterface {
   private ?TemplatedEmail $email = null;
   public function __construct(
     private VerifyEmailHelperInterface $verifyEmailHelper,
@@ -47,7 +48,7 @@ class SignedMailer {
       return $this;
   }
 
-  public function send($pathname, UserInterface $user): static
+  public function send(?UserInterface $user=null, ?string $pathname=null): static
   {
     $signatureComponents = $this->verifyEmailHelper->generateSignature(
         $pathname,

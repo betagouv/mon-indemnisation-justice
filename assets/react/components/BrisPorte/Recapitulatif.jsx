@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import {default as RecapitulatifPersonneMorale} from '../PersonneMorale/Recapitulatif';
 import {default as RecapitulatifPersonnePhysique} from '../PersonnePhysique/Recapitulatif';
 import {default as RecapitulatifRepresentantLegal} from '../RepresentantLegal/Recapitulatif';
@@ -43,7 +43,7 @@ const SpecificRecapitulatif = ({brisPorte}) => {
   );
 }
 
-const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoThirdSection}) => {
+const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=null,gotoThirdSection=null}) => {
 
   const personneMoraleUri = Routing.generate('_api_personne_morale_get',{id: user.personneMorale.id});
   const personnePhysiqueUri = Routing.generate('_api_personne_physique_get',{id: user.personnePhysique.id});
@@ -53,9 +53,15 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
   const userUri = Routing.generate('_api_user_get',{id:user.pId});
   const [loading,setLoading]=useState(false);
   const [blob,setBlob]=useState({});
+
+  var locked = useRef(false);
+
   useEffect(() => {
-    if(true === loading)
+
+    if(locked.current === true)
       return;
+    locked.current = true;
+
     Promise
       .all([brisPorteUriOptimizedUri]
         .map((u) => fetch(u).then((response) => response.json()))
@@ -76,19 +82,23 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
           <>
             <RecapitulatifPersonneMorale adresse={blob.user.adresse} personneMorale={blob.user.personneMorale}/>
             <RecapitulatifRepresentantLegal personnePhysique={blob.user.personnePhysique} />
+            {gotoFirstSection &&
             <Button
               onClick={gotoFirstSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {loading && !blob.user.isPersonneMorale &&
           <>
             <RecapitulatifPersonnePhysique adresse={blob.user.adresse} personnePhysique={blob.user.personnePhysique} />
+            {gotoFirstSection &&
             <Button
               onClick={gotoFirstSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {!loading &&
@@ -101,10 +111,12 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
         {loading &&
           <>
             <RecapitulatifServiceEnqueteur serviceEnqueteur={blob.brisPorte.serviceEnqueteur}/>
+            {gotoSecondSection &&
             <Button
               onClick={gotoSecondSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {!loading &&
@@ -117,10 +129,12 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
         {loading &&
           <>
             <SpecificRecapitulatif brisPorte={blob.brisPorte} />
+            {gotoSecondSection &&
             <Button
               onClick={gotoSecondSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {!loading &&
@@ -134,14 +148,16 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection,gotoSecondSection,gotoTh
           <>
             <RecapitulatifDocument
               isPersonneMorale={blob.user.isPersonneMorale}
-              personneMoraleUri={personneMoraleUri}
-              personnePhysiqueUri={personnePhysiqueUri}
+              personneMoraleLiasseDocumentaireUri={Routing.generate('_api_liasse_documentaire_get',{id:blob.user.personneMorale.liasseDocumentaire.id})}
+              personnePhysiqueLiasseDocumentaireUri={Routing.generate('_api_liasse_documentaire_get',{id:blob.user.personnePhysique.liasseDocumentaire.id})}
               prejudiceUri={brisPorteUri}
             />
+            {gotoThirdSection &&
             <Button
               onClick={gotoThirdSection}
               priority="secondary"
             >{trans(GLOBAL_REVERT)}</Button>
+            }
           </>
         }
         {!loading &&

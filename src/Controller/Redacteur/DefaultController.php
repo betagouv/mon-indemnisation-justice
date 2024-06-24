@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Service\Breadcrumb\Breadcrumb;
+use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
 
 #[IsGranted(User::ROLE_REDACTEUR_PRECONTENTIEUX)]
@@ -18,13 +19,14 @@ class DefaultController extends AbstractController
 {
     public function __construct(
       private Breadcrumb $breadcrumb,
+      private Version $version,
       private EntityManagerInterface $em
     )
     {
 
     }
 
-    #[Route('/accueil', name: 'app_redacteur_homepage')]
+    #[Route('/accueil', name: 'app_redacteur_homepage', options: ['expose' => true])]
     public function index(): Response
     {
         $em         = $this->em;
@@ -40,7 +42,8 @@ class DefaultController extends AbstractController
         ;
         return $this->render('redacteur/default/index.html.twig', [
             'breadcrumb' => $breadcrumb,
-            'prejudices' => $prejudices
+            'prejudices' => $prejudices,
+            'version' => $this->version,
         ]);
     }
 }

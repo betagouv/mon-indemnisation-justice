@@ -8,6 +8,12 @@ export const castNumber = (input) => {
   return "";
 }
 
+export const castDecimal = (input) => {
+  if(input)
+    return input.replace(/[,]/ig, ".").replace(/[^\d.]/ig, "");
+  return "";
+}
+
 export const castDate = (input) => {
   if(input)
     return format(input,"yyyy-MM-dd");

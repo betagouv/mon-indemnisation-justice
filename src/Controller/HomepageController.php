@@ -22,6 +22,8 @@ class HomepageController extends AbstractController
         return $this->redirectToRoute('app_admin_homepage');
       if($user->hasRole(User::ROLE_REDACTEUR_PRECONTENTIEUX))
         return $this->redirectToRoute('app_redacteur_homepage');
+      if($user->hasRole(User::ROLE_CHEF_PRECONTENTIEUX))
+        return $this->redirectToRoute('app_chef_precontentieux_homepage');
       return $this->redirectToRoute('app_homepage');
     }
 

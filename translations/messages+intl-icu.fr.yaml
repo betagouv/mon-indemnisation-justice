@@ -42,11 +42,26 @@ bris_porte:
     "
     btn: "Tester mon éligibilité à l'indemnisation"
     chapo: "Je souhaite effectuer une demande pour un bris de portes ou autres dégâts matériels causés dans le cadre d'une opération de police judiciaire (perquisition judiciaire, interpellation d'un individu, ...)"
+  accept_or_reject:
+    title: "Traitement du bris de porte %reference%"
   view:
     title: "Consulter un bris de porte"
   edit:
     title: "Déclarer un bris de porte"
     update_constitue: "Je déclare mon bris de porte"
+    email:
+      title: "Précontentieux : Votre déclaration de bris de porte a bien été pris en compte"
+      content: "
+      <b>Référence du dossier à rappeler : %reference%</b>
+      <p>Vous avez déclaré un bris de porte ce jour. Nos services mettent tout en oeuvre afin de revenir vers vous dans les meilleurs délais.</p>
+      <p>L'équipe PRECONTENTIEUX</p>
+      "
+      title_sign: "Précontentieux : Une décision a été prise concernant votre déclaration de bris de porte"
+      content_sign: "
+      <b>Référence du dossier à rappeler : %reference%</b>
+      <p>Le traitement consécutif à votre bris de porte a effectué. Veuillez vous connecter sur le site afin de consulter la décision</p>
+      <p>L'équipe PRECONTENTIEUX</p>
+      "
     details:
       h5: "Informations sur le bris de porte"
       remise: "Attestation d'information remise à"
@@ -286,3 +301,12 @@ representant_legal:
 prejudice:
   field:
     reference: "Référence"
+    note: "Note sur le dossier (masquée aux requérants)"
+    proposition_indemnisation: "Proposition d'indemnisation (€)"
+    document_signed: "Document signé"
+    document_to_sign: "Document à signer"
+    submit: "Transmettre la décision signée au requérant"
+    document_to_sign_hintext: "Cliquer ici pour télécharger la pièce à signer"
+  action:
+    rejet: "Rejeter le dossier"
+    valide: "Faire une proposition d'indemnisation"

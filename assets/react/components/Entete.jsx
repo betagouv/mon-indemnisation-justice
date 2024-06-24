@@ -7,6 +7,10 @@ import parse from 'html-react-parser';
 const Entete = ({user,version}) => {
 
   const getName = () => {
+    if(user.plaintextRole == "ROLE_REDACTEUR_PRECONTENTIEUX")
+      return user.username+" (rédacteur)";
+    if(user.plaintextRole == "ROLE_CHEF_PRECONTENTIEUX")
+      return user.username+" (chef)";
     return user.personnePhysique.prenom1+" "+user.personnePhysique.nom.toUpperCase();
   }
 

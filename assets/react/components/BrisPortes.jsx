@@ -2,6 +2,7 @@ import React, {useState,useEffect} from 'react';
 import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Document } from './PieceJointe/PieceJointe';
 import { format } from "date-fns";
 import {
   trans,
@@ -16,6 +17,9 @@ import {
 } from '../../translator';
 const BrisPortes = function({items}) {
 
+  const CODE_STATUT_EN_COURS_DE_CONSTITUTION='EN_COURS_DE_CONSTITUTION';
+  const CODE_STATUT_SIGNATURE_VALIDEE = "SIGNATURE_VALIDEE";
+  const CODE_STATUT_SIGNATURE_REJETEE = "SIGNATURE_REJETEE";
   const [isLoading, setIsLoading]=useState(false);
 
   const [data,setData] = useState([]);
@@ -36,17 +40,29 @@ const BrisPortes = function({items}) {
       const dateDeclaration = Date.parse(item.dateDeclaration);
       const lastStatut = item.lastStatut.libelle;
       const dateLastStatut = Date.parse(item.lastStatut.date);
+      let btn = <></>;
+      if(item.lastStatut.code === CODE_STATUT_EN_COURS_DE_CONSTITUTION)
+        btn =
+        <Button
+          linkProps={{
+            href: Routing.generate('app_bris_porte_edit',{id: item.id})
+          }}
+        >{trans(GLOBAL_BTN_UPDATE)}
+        </Button>;
+      if((item.lastStatut.code === CODE_STATUT_SIGNATURE_REJETEE)||(item.lastStatut.code===CODE_STATUT_SIGNATURE_VALIDEE))
+        btn =
+        <Document
+          readonly={true}
+          liasseDocumentaireIri={item.liasseDocumentaire}
+          label={"Consulter la décision"}
+          type={"signature_decision"}
+        />
       tmp[tmp.length]=[
         item.reference,
         //format(dateDeclaration,"dd/MM/yy"),
         lastStatut,
         format(dateLastStatut,"dd/MM/yy HH:mm"),
-        <Button
-        linkProps={{
-          href: Routing.generate('app_bris_porte_edit',{id: item.id})
-        }}
-        >{trans(GLOBAL_BTN_UPDATE)}
-        </Button>
+        btn
       ];
     });
     setData(tmp);
@@ -65,6 +81,7 @@ const BrisPortes = function({items}) {
       </div>
       <div className="fr-col-9">
       </div>
+      {/*
       <div className="fr-col-3">
         <Button
         linkProps={{
@@ -73,6 +90,7 @@ const BrisPortes = function({items}) {
         >{trans(BRIS_PORTE_CREATE_TITLE)}
         </Button>
       </div>
+      */}
     </div>
   );
 }

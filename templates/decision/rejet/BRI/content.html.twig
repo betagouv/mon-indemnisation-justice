@@ -1,0 +1,82 @@
+{% extends 'base_pdf.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+{% endblock %}
+
+{% block body %}
+{% set requerant = prejudice.requerant %}
+{% set personnePhysique = requerant.personnePhysique %}
+{% set personneMorale = requerant.personneMorale %}
+<div class="text-md">
+  <img src="{{base_dir ~ '/build/images/entete-mj.png' }}">
+  <p class="text-right">
+  Paris, le {{"now"|date("d/m/Y")}}
+  </p>
+  <p class="text-blue text-bold">
+    DIRECTION DES SERVICES JUDICIAIRES<br/>
+    SOUS-DIRECTION DES FINANCES,<br/>
+    DE L'IMMOBILIER ET DE LA PERFORMANCE<br/>
+    <br/>
+    BUREAU DES FRAIS DE JUSTICE<br/>
+    ET DE L'OPTIMISATION DE LA DEPENSE (FIP4)
+  </p>
+  <table>
+    <tr>
+      <th class="text-underline text-left">Référence à rappeler</th><td> : </td><td>{{prejudice.reference}}<td/>
+    </tr>
+    <tr>
+      <th class="text-underline text-left">Affaire suivie par</th><td> : </td><td>{{prejudice.lastStatut.emetteur.username}}<td/>
+    </tr>
+  </table>
+  <p>
+    {{personnePhysique.civilite.libelle}},
+  </p>
+  <p>
+  J’ai bien reçu votre requête du {{prejudice.dateDeclaration|date('d/m/Y')}} par laquelle vous sollicitez, en
+  qualité de {{prejudice.qualitePlaintext}}, l’indemnisation du préjudice subi en raison de la
+  détérioration de la porte d’entrée de votre logement sis {{prejudice.adressePlaintext}}, lors
+  d'une opération de police judiciaire du {{prejudice.dateOperationPJ|date('d/m/Y')}}.
+  </p>
+  <p>
+  Selon les dispositions de l'article L 141-1 du code de l'organisation judiciaire,
+  la responsabilité de l'Etat en raison des dommages survenus à l'occasion de
+  l'exécution d'une opération de police judiciaire n'est engagée qu'en cas de
+  faute lourde des agents de la force publique.
+  </p>
+  <p>
+  Toutefois, la responsabilité de l’Etat résultant d'une opération de police judiciaire
+  peut être engagée sans faute, sur le fondement de la rupture d’égalité devant les
+  charges publiques, notamment en cas d’erreur des services de police.
+  </p>
+  <p>
+  Or, il ressort de l'instruction de votre requête et des informations transmises par les
+  autorités compétentes que l’intervention des forces de l’ordre à votre domicile ne
+  résulte pas d’une erreur des services de police.
+  </p>
+  <p>
+  En conséquence, j'ai le regret de vous informer qu'il ne peut être réservé une suite
+  favorable à votre demande.
+  </p>
+  <p>
+  Je vous précise qu’en cas de désaccord, vous pouvez engager une action contentieuse en
+  assignant l’agent judiciaire de l’Etat devant le tribunal judiciaire territorialement
+  compétent.
+  </p>
+  <p>
+  S’agissant d’une procédure avec représentation obligatoire, il vous appartient de vous
+  rapprocher des services d’un avocat.
+  </p>
+  <p>
+  Je vous prie de croire, {{personnePhysique.civilite.libelle}}, à l’assurance de ma considération distinguée.
+  </p>
+  <p>
+  {{user.personnePhysiquePlaintext}},<br/>
+  {{user.email}}
+  </p>
+</div>
+{% endblock %}

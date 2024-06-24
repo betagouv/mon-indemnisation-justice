@@ -63,6 +63,11 @@ class Adresse
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'adresse')]
     private Collection $brisPortes;
 
+    public function __toString()
+    {
+        return $this->getLigne1()." - ".$this->getCodePostal()." ".$this->getLocalite();
+    }
+    
     public function __construct()
     {
         $this->brisPortes = new ArrayCollection();

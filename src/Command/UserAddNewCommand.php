@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\User;
+use App\Service\Mailer\BasicMailer;
 use App\Service\PasswordGenerator;
 use App\Utils\Validator\Validator;
 use App\Repository\UserRepository;
@@ -24,12 +25,12 @@ use Symfony\Component\Mailer\Transport\TransportInterface;
 )]
 class UserAddNewCommand extends Command
 {
-    use EmailTraitCommand;
-
     /** @var EntityManagerInterface */
     private $_em;
     /** @var UserPasswordHasherInterface */
     private $_passwordHasher;
+    /** @var BasicMailer $mailer */
+    private $mailer;
 
     public function getEntityManager(): ?EntityManagerInterface {
       return $this->_em;
@@ -44,12 +45,12 @@ class UserAddNewCommand extends Command
       EntityManagerInterface $em,
       UserPasswordHasherInterface $passwordHasher,
       Validator $validator,
-      TransportInterface $mailer
+      BasicMailer $mailer
     ) {
         $this->_validator = $validator;
         $this->_passwordHasher = $passwordHasher;
         $this->_em = $em;
-        $this->setMailer($mailer);
+        $this->mailer = $mailer;
         parent::__construct();
     }
 
@@ -70,7 +71,9 @@ class UserAddNewCommand extends Command
     {
         $this
             ->setDescription('Création d\'un nouveau compte')
-            ->addArgument('username', InputArgument::REQUIRED, 'Nom d\'utilisateur')
+            ->addArgument('username', InputArgument::REQUIRED, 'Nom technique d\'utilisateur')
+            ->addArgument('prenom', InputArgument::REQUIRED, 'Prénom d\'utilisateur')
+            ->addArgument('nom', InputArgument::REQUIRED, 'Nom d\'utilisateur')
         ;
     }
 
@@ -84,6 +87,10 @@ class UserAddNewCommand extends Command
         $io = new SymfonyStyle($input, $output);
         /** @var string $username */
         $username = mb_strtolower($input->getArgument('username'));
+        /** @var string $prenom */
+        $prenom = mb_strtolower($input->getArgument('prenom'));
+        /** @var string $nom */
+        $nom = mb_strtolower($input->getArgument('nom'));
         /** @var UserRepository $ar */
         $ar = $this->getAccountRepository();
         $io->text(' > <info>Nom d\'utilisateur</info>: '.$username);
@@ -130,7 +137,9 @@ class UserAddNewCommand extends Command
         $account->setEmail($email);
         $account->setPassword("FAKE_PASSWORD");
         $account->setDateChangementMDP(null);
-
+        $account->setIsVerified(true);
+        $account->getPersonnePhysique()->setNomNaissance($nom);
+        $account->getPersonnePhysique()->setPrenom1($prenom);
         $tab = [
           User::ROLE_REDACTEUR_PRECONTENTIEUX => 'Rédacteur',
           User::ROLE_CHEF_PRECONTENTIEUX => 'Chef de pôle',
@@ -147,39 +156,21 @@ class UserAddNewCommand extends Command
             )
         );
 
-
         $ar->add($account, true);
 
-        $html = str_replace([
-          "{{username}}",
-          "{{password}}"
-        ],[
-          $account->getUsername(),
-          $password
-        ],"
-        <div>
-        <p>Bonjour,<br>
-        PRECONTENTIEUX vous a inscrit comme administrateur fonctionnel de l'application. Vous aurez la charge
-        de l'administration des utilisateurs habilités à utiliser PRECONTENTIEUX.</p>
-        <p>Vos accès: <br>
-          <table>
-            <tr>
-              <th>Nom d'utilisateur</th><td>{{username}}</td>
-            </tr>
-            <tr>
-              <th>Mot de passe</th><td>{{password}}</td>
-            </tr>
-          </table>
-        </p>
-        </div>
-        ");
-
         # envoi de l'email à l'administrateur fonctionnel
-        $this->send(
-          to: $account->getEmail(),
-          subject: 'Création de votre compte administrateur fonctionnel pour PRECONTENTIEUX',
-          html: $html
-        );
+        $this
+          ->mailer
+          ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+          ->to($account->getEmail())
+          ->subject('Création de votre compte pour PRECONTENTIEUX')
+          ->htmlTemplate('admin/email/ajout_utilisateur.html.twig',[
+            'url' => Env::get('BASE_URL'),
+            'username' => $account->getUsername(),
+            'password' => $password,
+          ])
+          ->send()
+        ;
 
         $io->success("Le compte $username a été ajouté avec succès !");
         return Command::SUCCESS;

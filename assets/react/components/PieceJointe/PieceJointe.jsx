@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import { Uploader } from '../Uploader';
 import { Br,Loading } from '../../utils/fundamental';
 import { trans, GLOBAL_WAITING
@@ -10,6 +10,9 @@ export const Document = ({liasseDocumentaireIri,type,label,hint_text="",readonly
   const [selectedFile,setSelectedFile]=useState(null);
   const [reload, setReload]=useState(false);
   const toggleReload = () => setReload(!reload);
+
+  var locked = useRef(false);
+
   useEffect(() => {
     if(!selectedFile)
       return;
@@ -25,8 +28,11 @@ export const Document = ({liasseDocumentaireIri,type,label,hint_text="",readonly
   },[reload]);
 
   useEffect(() => {
-    if(true===loading)
+
+    if(locked.current === true)
       return;
+    locked.current=true;
+
     const url = Routing.generate('_api_document_get_collection',{
       liasseDocumentaire: liasseDocumentaireIri,
       type: type

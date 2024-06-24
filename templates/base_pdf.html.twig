@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}{% endblock %}</title>
+    {% block stylesheets %}
+    {% for path in encore_entry_css_files('app') %}
+    <link rel="stylesheet" href="{{ base_dir ~ path }}">
+    {% endfor %}
+    <style type="text/css">
+      table { border-collapse: collapse; }
+      .fr-img {
+        border: 1px solid gray;
+      }
+      .alert {
+        position: relative;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        border-radius: .25rem;
+      }
+      .alert-primary { color: #155724; background-color: #007bff; border-color: #c3e6cb; }
+      .alert-secondary { color: #383d41; background-color: #e2e3e5; border-color: #d6d8db; }
+      .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+      .br { content: ' '; display: block; padding-top: 10px; }
+      .fr-col-1 { float:left;width:8%; }
+      .fr-col-2 { float:left;width:16%; }
+      .fr-col-3 { float:left;width:25%; }
+      .fr-col-4 { float:left;width:33%; }
+      .fr-col-5 { float:left;width:41%; }
+      .fr-col-6 { float:left;width:50%; }
+      .fr-col-7 { float:left;width:58%; }
+      .fr-col-8 { float:left;width:66%; }
+      .fr-col-9 { float:left;width:75%; }
+      .fr-col-12 { float:left;width:100%; }
+      .h1 { font-size: 36px; font-weight: bold; }
+      .h2 { font-size: 24px; font-weight: bold; }
+      .content { content: ' '; display: block; padding-top: 200px; }
+      .hr { padding: 5px; border-bottom: 1px solid #383d41 !important; }
+      .line-bottom { border-bottom: 1px solid #dee2e6; }
+      .page { overflow: hidden; page-break-after: always; }
+      .table { width: 100%; max-width: 100%; margin-bottom: 1rem; background-color: transparent; }
+      .text-center { text-align: center !important; }
+      .text-left { text-align: left !important; }
+      .text-md { font-size: 16px; }
+      .text-sm { font-size: 12px; }
+      .text-bg { font-size: 20px; }
+      .text-underline { text-decoration: underline; }
+      .text-bold { font-weight: bold; }
+      .text-right { text-align: right !important; }
+      .text-blue { color: blue; }
+      .table td, .table th { padding: .75rem; vertical-align: top; }
+      .table-bordered td,.table-bordered th { border-right: 1px solid #dee2e6; border-top: 1px solid #dee2e6; }
+      .table-bordered tbody td:first-child, .table-bordered thead th:first-child { border-left: 1px solid #dee2e6; }
+      .table-bordered thead tr { border-bottom: 2px solid #dee2e6; }
+      .table-bordered tr { border-top: 1px solid #dee2e6; }
+      .table-bordered tbody tr:nth-child(even) {background: #F5F5F5; }
+      .text-danger { color: #dc3545 !important; }
+      .well { background-color: #ccc; border-radius: 10px;padding: 5px; }
+    </style>
+    {% endblock %}
+  </head>
+  <body>
+  {% block body %}{% endblock %}
+  {% block javascripts %}
+    {% for path in encore_entry_js_files('app') %}
+    <script src="{{ base_dir ~ path }}"></script>
+    {% endfor %}
+  {% endblock %}
+  </body>
+</html>

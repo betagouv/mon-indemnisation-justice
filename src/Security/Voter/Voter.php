@@ -1,7 +1,9 @@
 <?php
 namespace App\Security\Voter;
 
+use App\Contracts\VoterInterface;
 use App\Entity\User;
+use Symfony\Component\Security\Core\User\UserInterface;
 use App\Contracts\PrejudiceInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter as SfVoter;
@@ -11,6 +13,9 @@ class Voter extends SfVoter
 {
   const EDIT = 'edit';
   const VIEW = 'view';
+  const PREJUDICE_VALID_OR_REJECT = 'prejudice_valid_or_reject';
+
+  use PrejudiceTrait;
 
   public function __construct(
     private TranslatorInterface $translator
@@ -21,37 +26,32 @@ class Voter extends SfVoter
 
   protected function supports(string $attribute, mixed $subject): bool
   {
-      if (!in_array($attribute, [self::VIEW, self::EDIT]))
-          return false;
-      return true;
+      return in_array($attribute, [
+        VoterInterface::PREJUDICE_VIEW,
+        VoterInterface::PREJUDICE_EDIT,
+        VoterInterface::PREJUDICE_VALID_OR_REJECT
+      ]);
   }
 
   protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
   {
       $user = $token->getUser();
 
-      if(!$user instanceof User)
+      if(!$user instanceof UserInterface)
         return false;
 
-      if($subject instanceof PrejudiceInterface)
+      if(true === $this->isPrejudice(subject: $subject))
       {
         if(
-          (
-            $user->hasRole(User::ROLE_REQUERANT) &&
-            ($subject->getRequerant() === $user)
-          )
-          ||
-          $user->hasRole(User::ROLE_REDACTEUR_PRECONTENTIEUX)
-          ||
-          $user->hasRole(User::ROLE_CHEF_PRECONTENTIEUX)
-          )
-        {
+          $this->canView(attribute:$attribute,subject:$subject,user:$user) ||
+          $this->canEdit(attribute:$attribute,subject:$subject,user:$user) ||
+          $this->canValidOrReject(attribute:$attribute,subject:$subject,user:$user)
+        )
           return true;
-        }
         else
           throw new \LogicException($this->translator->trans('Not privileged to request the resource.',domain: 'security'));
       }
-      
+
       return true;
   }
 }

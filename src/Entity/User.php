@@ -116,7 +116,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[Groups(['user:read','prejudice:read','user:write'])]
     public readonly ?int $pId;
 
-    #[Groups('user:read')]
+    #[Groups('user:read','user:write')]
     private $plaintextRole;
 
     #[Groups('user:read')]
@@ -144,7 +144,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     {
       return $this->getId();
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;
@@ -160,6 +160,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         $this->email = $email;
 
         return $this;
+    }
+
+    public function getPersonnePhysiquePlaintext(): string
+    {
+        return (string)$this->getPersonnePhysique();
     }
 
     public function getPlaintextRole(): string
