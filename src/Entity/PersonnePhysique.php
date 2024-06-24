@@ -304,7 +304,13 @@ class PersonnePhysique
     public function getNomComplet(): ?string
     {
         $civilite = $this->getCivilite() ? $this->getCivilite()->getLibelle() : null;
-        return implode(" ",[$civilite,$this->getPrenom1(),$this->getNom()]);
+        $nomNaissance = $this->getNomNaissance();
+        $nom = $this->getNom();
+        if($nomNaissance && $nom)
+          $nom = $nom.' né.e '.$nomNaissance;
+        elseif($nomNaissance)
+          $nom = $nomNaissance;
+        return implode(" ",[$civilite,$this->getPrenom1(),$nom]);
     }
 
     public function getQualite(): ?QualiteRequerant

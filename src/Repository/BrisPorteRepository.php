@@ -55,7 +55,11 @@ class BrisPorteRepository extends ServiceEntityRepository
           a.localite,
           c.libelle AS civilite_libelle,
           pp.prenom1,
-          pp.nom,
+          CASE
+            WHEN LENGTH(pp.nom_naissance)>0 AND LENGTH(pp.nom) > 0 THEN pp.nom || ' né.e ' || pp.nom_naissance
+            WHEN LENGTH(pp.nom_naissance)>0 THEN pp.nom_naissance
+            ELSE pp.nom
+          END nom,
           pp.liasse_documentaire_id pp_liasse_documentaire_id,
           ra.prenom1 ra_prenom1,
           ra.nom ra_nom,
