@@ -219,7 +219,7 @@ const TestEligibilite = function() {
                 severity="error"
                 title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_TITLE)}
               />
-              <p class="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO)}</p>
+              <p className="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO)}</p>
             </>
             }
             {("success" == panel) &&
@@ -230,7 +230,7 @@ const TestEligibilite = function() {
                 severity="success"
                 title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_TITLE)}
               />
-              <p class="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO)}</p>
+              <p className="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO)}</p>
             </>
             }
       </modal.Component>
