@@ -162,18 +162,17 @@ header:
 homepage:
   title: "Précontentieux"
   qui_sommes_nous:
-    title: "Qui sommes nous ?"
-    chapo: "
-    <p>Situé au sein de la Direction des Services Judiciaires (DSJ), le <b>pôle précontentieux</b>
-    a pour mission de <b>traiter les demandes amiables d'indemnisation</b> formulées par les usagers
-    ou les tiers du fait des préjudices causés :<br/>
+    title: "Quelle est la mission du pôle précontentieux ?"
+    chapo: "<p>Situé au sein de la Direction des services judiciaires (DSJ), le <b>pôle précontentieux</b>
+    a pour mission de <b>traiter les demandes amiables d’indemnisation</b> formulées par les usagers
+    ou les tiers en réparation des préjudices causés :<br/>
       <ul>
         <li>Soit par le <b>fonctionnement du service public de la justice judiciaire</b></li>
-        <li>Soit par un <b>accident impliquant un véhicule de la Direction des Services Judiciaires</b> (DSJ) du ministère de la justice</li>
-        <li>Soit par un <b>bâtiment judiciaire</b></li>
+        <li>Soit par un <b>accident impliquant un véhicule de la Direction des Services Judiciaires</b> (DSJ) du ministère de la Justice.</li>
       </ul>
     </p>
-    "
+    <p>Il traite également les demandes amiables d’indemnisation formulées par les usagers ou les
+    tiers en réparation de <b>sinistres survenus au sein d’un bâtiment judiciaire.</b></p>"
 login:
   title: Se connecter à mon espace
   btn: "Je me connecte à mon espace"

@@ -13,7 +13,7 @@ const ServiceNational = () => {
               </div>
               <div className="fr-col-7">
                 <div className="pr-service-national-text fr-ml-6w">
-                  <h3>Service national</h3>
+                  <h3>Pôle national</h3>
                   <p>
                     Nous répondons aux demandes des justiciables de l'ensemble
                     du territoire national.
