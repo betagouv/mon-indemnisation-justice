@@ -144,7 +144,7 @@ const Inscription = ({user,csrfToken}) => {
                 <div className="fr-col-8">
                   <Input
                     label={trans(USER_FIELD_PRENOMS)}
-                    nativeInputProps={{value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
+                    nativeInputProps={{name: 'prenom1', value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
                   />
                 </div>
                 <div className="fr-col-6">

@@ -131,7 +131,12 @@ const TestEligibilite = function() {
       </section>
       <section className="pr-eligibilite_action">
         <div className="fr-pb-8w fr-pt-2w">
-          <Button onClick={() => {modal.open()}}>
+          <Button onClick={() => {
+            modal.open();
+            setPanel("common");
+            resetButtons();
+            event.preventDefault();
+          }}>
           {trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}
           </Button>
         </div>
