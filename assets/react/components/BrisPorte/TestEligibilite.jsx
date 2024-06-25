@@ -131,7 +131,12 @@ const TestEligibilite = function() {
       </section>
       <section className="pr-eligibilite_action">
         <div className="fr-pb-8w fr-pt-2w">
-          <Button onClick={() => {modal.open()}}>
+          <Button onClick={() => {
+            modal.open();
+            setPanel("common");
+            resetButtons();
+            event.preventDefault();
+          }}>
           {trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}
           </Button>
         </div>
@@ -219,7 +224,7 @@ const TestEligibilite = function() {
                 severity="error"
                 title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_TITLE)}
               />
-              <p class="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO)}</p>
+              <p className="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO)}</p>
             </>
             }
             {("success" == panel) &&
@@ -230,7 +235,7 @@ const TestEligibilite = function() {
                 severity="success"
                 title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_TITLE)}
               />
-              <p class="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO)}</p>
+              <p className="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO)}</p>
             </>
             }
       </modal.Component>

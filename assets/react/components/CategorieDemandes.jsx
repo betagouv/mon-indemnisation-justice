@@ -14,7 +14,7 @@ const CategorieDemandes = function() {
       <div className="fr-px-4w fr-pt-4w">
         <h2>{trans(CATEGORIE_DEMANDE_TITLE)}</h2>
         <p>{trans(CATEGORIE_DEMANDE_CHAPO)}</p>
-        <ul class="fr-grid-row fr-grid-row--gutters">
+        <ul className="fr-grid-row fr-grid-row--gutters">
           <li className="fr-col-4">
             <CategorieDemandeCard
               title={trans(CATEGORIE_DEMANDE_BRIS_PORTE_TITLE)}
