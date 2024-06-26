@@ -29,6 +29,10 @@ class DefaultController extends AbstractController
     #[Route('/accueil', name: 'app_redacteur_homepage', options: ['expose' => true])]
     public function index(): Response
     {
+        $user       = $this->getUser();
+        if($user->hasRole(User::ROLE_CHEF_PRECONTENTIEUX))
+          return $this->redirectToRoute('app_chef_precontentieux_homepage');
+
         $em         = $this->em;
         $breadcrumb = $this->breadcrumb;
         $breadcrumb->add('homepage.title','app_homepage');
