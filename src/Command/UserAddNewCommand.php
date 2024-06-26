@@ -173,6 +173,7 @@ class UserAddNewCommand extends Command
         ;
 
         $io->success("Le compte $username a été ajouté avec succès !");
+        $io->success("mot de passe : $password (à supprimer après l'expérimentation)");
         return Command::SUCCESS;
     }
 }
