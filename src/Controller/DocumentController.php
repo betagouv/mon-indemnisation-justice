@@ -8,10 +8,11 @@ use App\Entity\LiasseDocumentaire;
 use Doctrine\ORM\EntityManagerInterface;
 use FOPG\Component\UtilsBundle\Env\Env;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -66,10 +67,17 @@ class DocumentController extends AbstractController
       ]);
       $body = $file->get('Body');
       $body->rewind();
+
       $tmpFilename = sys_get_temp_dir().'/'.$document->getFilename();
       $tmpContent = $body->getContents();
       file_put_contents($tmpFilename, $tmpContent);
-      return new BinaryFileResponse($tmpFilename);
+      $response = new BinaryFileResponse($tmpFilename);
+      $response->setContentDisposition(
+        ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+        $document->getOriginalFilename()
+      );
+      return $response;
+
       if($document->getFilename() === $request->get('filename'))
         return $this->downloadHandler->downloadObject(object: $document, field:'file');
       throw new NotFoundHttpException('Document non trouvé');
