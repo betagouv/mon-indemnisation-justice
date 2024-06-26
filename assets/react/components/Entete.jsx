@@ -15,18 +15,24 @@ const Entete = ({user,version}) => {
   }
 
   const links = [];
-  if(user && user.personnePhysique && user.personnePhysique.id)
+  if(user && user.personnePhysique && user.personnePhysique.id) {
     links.push({
       iconId: 'fr-icon-user-fill',
       linkProps: { href: '#' },
       text: getName()
     });
+    links.push({
+      iconId: 'fr-icon-logout-box-r-fill',
+      linkProps: { href: Routing.generate('app_logout') },
+      text: "Déconnexion"
+    });
+  }
   else
-  links.push({
-    iconId: 'fr-icon-user-fill',
-    linkProps: { href: Routing.generate('app_login') },
-    text: trans(LOGIN_TITLE)
-  });
+    links.push({
+      iconId: 'fr-icon-user-fill',
+      linkProps: { href: Routing.generate('app_login') },
+      text: trans(LOGIN_TITLE)
+    });
   return (
     <Header
       brandTop={parse(trans(HEADER_BRAND))}
