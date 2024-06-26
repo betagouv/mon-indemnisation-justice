@@ -52,7 +52,7 @@ bris_porte:
     email:
       title: "Précontentieux : Votre déclaration de bris de porte a bien été pris en compte"
       content: "
-      <p>{{nomComplet}}</p>
+      <p>%nomComplet%</p>
       <p>Vous avez déclaré un bris de porte ce jour. Nos services mettent tout en œuvre afin de revenir vers vous dans les meilleurs délais.</p>
       <p>Nous tenons à vous préciser que le pôle Précontentieux est un pôle national qui reçoit beaucoup de demandes d'indemnisation
       quotidiennement et traite différentes catégories de dossiers.<br/>
