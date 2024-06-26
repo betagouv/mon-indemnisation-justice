@@ -2,6 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import ReactDOM from 'react-dom';
 import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
+import { Br } from '../react/utils/fundamental';
 import Entete from '../react/components/Entete';
 import PiedDePage from '../react/components/PiedDePage';
 import InscriptionSuccess from '../react/components/InscriptionSuccess';
@@ -24,14 +25,9 @@ export default class extends Controller {
           <>
             <Entete user={this.userValue} version={this.versionValue} />
             <div className="fr-container">
-              <div className="fr-grid-row">
-                <div className="fr-col-12">
-                  <FilAriane breadcrumb={this.breadcrumbValue}/>
-                </div>
-                <div className="fr-col-12">
-                  <InscriptionSuccess user={this.userValue}/>
-                </div>
-              </div>
+              <FilAriane breadcrumb={this.breadcrumbValue}/>
+              <InscriptionSuccess user={this.userValue}/>
+              <Br space={2}/>
             </div>
             <PiedDePage />
           </>
