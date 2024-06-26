@@ -71,7 +71,10 @@ bris_porte:
       content_sign: "
       <b>Référence du dossier à rappeler : %reference%</b>
       <p>Le traitement consécutif à votre bris de porte a effectué. Veuillez vous connecter sur le site afin de consulter la décision</p>
-      <p>L'équipe PRECONTENTIEUX</p>
+      <p>
+      Cordialement,<br/>
+      L'équipe PRECONTENTIEUX
+      </p>
       "
     details:
       h5: "Informations sur le bris de porte"
