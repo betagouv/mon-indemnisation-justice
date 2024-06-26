@@ -101,7 +101,7 @@ bris_porte:
 categorie_demande:
   title: "Catégories de demandes"
   chapo: "Vous avez la possibilité d'effectuer un test d'éligibilité suivi d'une demande amiable d'indemnisation en sélectionnant l'une des catégories suivantes."
-  waiting: "Disponible prochainement"
+  waiting: "Non disponible"
   bris_porte:
     title: "Bris de porte"
     chapo: "Ou autres dégâts matériels causés dans le cadre d'une opération de police judiciaire"
