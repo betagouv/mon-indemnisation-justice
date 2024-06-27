@@ -1,4 +1,4 @@
-FROM anj/anj-php:8.2-apache-pgsql
+FROM anj/anj-php:8.2-apache-pgsql-apcu-wkhtmltopdf
 
 COPY php.ini "$PHP_INI_DIR/php.ini"
 
