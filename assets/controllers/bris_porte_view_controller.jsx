@@ -33,6 +33,7 @@ const resizeEditor = () => {
   let height = memoryNavigator.height;
   if(!height)
     return;
+  $(".freeze-section").css('overflow-y', 'scroll');
   if (scrolltop > height+TARE_HEIGHT) {
     $(".freeze-section")
       .css('position', 'fixed')
@@ -43,7 +44,9 @@ const resizeEditor = () => {
     ;
   }
   else
-    $(".freeze-section").css('position', 'static');
+    $(".freeze-section")
+      .css('position', 'static')
+    ;
 }
 
 export default class extends Controller {
