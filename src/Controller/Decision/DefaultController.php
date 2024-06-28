@@ -8,6 +8,7 @@ use App\Entity\Statut;
 use App\Contracts\PrejudiceInterface;
 use Knp\Snappy\Pdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Clegginabox\PDFMerger\PDFMerger;
@@ -59,6 +60,20 @@ class DefaultController extends AbstractController
       );
     }
 
+    #[IsGranted('edit', subject: 'brisPorte')]
+    #[Route('/decision-sur-bris-de-porte/previsionnel/{type}/{id}.pdf', name: 'app_decision_bri_previsionnel_print',options: ['expose' => true])]
+    public function printPrevisionnelDecisionBRI(BrisPorte $brisPorte, Request $request): Response
+    {
+      $type = $request->get('type');
+      switch($type) {
+        case Statut::CODE_VALIDE:
+          return $this->printPropositionCompileeBRI($brisPorte);
+        case Statut::CODE_REJETE:
+          return $this->printRefusBRI($brisPorte);
+        default:
+      }
+      throw new NotFoundHttpException('Document non trouvé');
+    }
     #[IsGranted('view', subject: 'brisPorte')]
     #[Route('/decision-sur-bris-de-porte/{id}.pdf', name: 'app_decision_bri_print',options: ['expose' => true])]
     public function printDecisionBRI(BrisPorte $brisPorte): Response

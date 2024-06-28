@@ -1,5 +1,5 @@
 import React,{useRef,useState,useEffect} from 'react';
-import { Br } from '../../../utils/fundamental';
+import { Br, Wysiwyg } from '../../../utils/fundamental';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import parse from 'html-react-parser';
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -45,11 +45,12 @@ const Signature = ({prejudice,dimension}) => {
   return (
     <div className="fr-grid-row">
       <div className="fr-col-12">
-        <div className="fr-input-group fr-input-group--disabled">
-          <label className="fr-label">{trans(PREJUDICE_FIELD_NOTE)}</label>
-          <div className="fr-input" style={{color: 'var(--text-disabled-grey)',
-    boxShadow: 'inset 0 -2px 0 0 var(--border-disabled-gr)'}}>{parse(prejudice.note)}</div>
-        </div>
+        <Wysiwyg
+          label={trans(PREJUDICE_FIELD_NOTE)}
+          value={prejudice.note}
+          setValue={()=>{}}
+          readOnly={true}
+        />
       </div>
       <div className="fr-col-12">
         <Input

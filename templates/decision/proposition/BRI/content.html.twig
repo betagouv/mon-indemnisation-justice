@@ -53,6 +53,9 @@
   En conséquence, je propose de vous allouer une indemnité de {{prejudice.propositionIndemnisation|spellout}} ({{prejudice.propositionIndemnisation|number_format(2,',','')}} EUR).
   Cette proposition tient compte de la facture transmise.
   </p>
+  {% if prejudice.motivationProposition|length > 15 %}
+  {{prejudice.motivationProposition|raw}}
+  {% endif %}
   <p>
   Je vous saurai gré de bien vouloir m’indiquer si cette proposition recueille votre assentiment et, dans l’affirmative, me renvoyer la déclaration d’acceptation dûment renseignée et signée.
   </p>

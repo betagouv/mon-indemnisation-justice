@@ -6,7 +6,9 @@ import { castDecimal } from '../../../utils/cast';
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import {trans, PREJUDICE_FIELD_NOTE, PREJUDICE_FIELD_PROPOSITION_INDEMNISATION,
-  PREJUDICE_ACTION_REJET,PREJUDICE_ACTION_VALIDE, GLOBAL_YES, GLOBAL_NO
+  PREJUDICE_ACTION_REJET,PREJUDICE_ACTION_VALIDE, GLOBAL_YES, GLOBAL_NO,
+  PREJUDICE_FIELD_DOCUMENT_TO_SIGN,
+  PREJUDICE_FIELD_DOCUMENT_TO_SIGN_HINTEXT
 } from "../../../../translator";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
@@ -19,6 +21,7 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
 
   const isOpen = useIsModalOpen(modal);
   const [propositionIndemnisation,setPropositionIndemnisation]=useState(prejudice.propositionIndemnisation);
+  const [motivationProposition,setMotivationProposition]=useState(prejudice.motivationProposition);
   const [note,setNote]=useState(prejudice.note);
   const [loading,setLoading]=useState(false);
   const [modalTitle,setModalTitle]=useState("");
@@ -66,7 +69,11 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
     if(false === loading)
       return;
     const url =Routing.generate('_api_prejudice_patch',{id:prejudice.pid});
-    const data = {note: note,propositionIndemnisation: propositionIndemnisation};
+    const data = {
+      note: note,
+      propositionIndemnisation: propositionIndemnisation,
+      motivationProposition: motivationProposition
+    };
 
     clearTimeout(keyUpTimer.current);
     keyUpTimer.current = setTimeout(() => {
@@ -81,12 +88,15 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
       ;
     },KEY_UP_TIMER_DELAY);
 
-  },[note,propositionIndemnisation]);
+  },[note,propositionIndemnisation,motivationProposition]);
 
   return (
     <div className="fr-grid-row">
       <div className="fr-col-12">
         <Wysiwyg label={trans(PREJUDICE_FIELD_NOTE)} value={note} setValue={setNote}/>
+      </div>
+      <div className="fr-col-12">
+        <Wysiwyg label={"Motivation de la proposition"} value={motivationProposition} setValue={setMotivationProposition}/>
       </div>
       <div className="fr-col-12">
         <Input
@@ -99,6 +109,18 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
           }}
         />
       </div>
+      <div className="fr-col-12">
+        <label className="fr-label">{trans(PREJUDICE_FIELD_DOCUMENT_TO_SIGN)}</label>
+        <ul>
+          <li>
+            <a className="fr-link" href={Routing.generate('app_decision_bri_previsionnel_print',{type:'VALIDE',id: prejudice.pid})} target="_blank">{"Prévisionnel de la proposition d'indemnisation"}</a>
+          </li>
+          <li>
+            <a className="fr-link" href={Routing.generate('app_decision_bri_previsionnel_print',{type:'REJETE',id: prejudice.pid})} target="_blank">{"Prévisionnel du rejet"}</a>
+          </li>
+        </ul>
+      </div>
+
       <div className="fr-col-12">
         <Br/>
       </div>

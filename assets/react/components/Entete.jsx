@@ -1,5 +1,8 @@
 import React,{useState} from 'react';
-import { trans, HEADER_BRAND, HEADER_TITLE, HOMEPAGE_TITLE, LOGIN_TITLE } from '../../translator';
+import { trans, LOGIN_PERSONAL_ACCESS, LOGIN_PROFESSIONAL_ACCESS,
+    HEADER_BRAND, HEADER_TITLE, HOMEPAGE_TITLE, LOGIN_TITLE,
+    HOMEPAGE_ALTERNATIVE_TITLE, PREJUDICE_TITLE, REQUERANT_HOMEPAGE_TITLE
+} from '../../translator';
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import parse from 'html-react-parser';
@@ -14,6 +17,11 @@ const Entete = ({user,version}) => {
     return user.personnePhysique.prenom1+" "+user.personnePhysique.nom.toUpperCase();
   }
 
+  const link_add_prejudice = {linkProps: {href: Routing.generate('app_category'),target: '_self'},text: trans(PREJUDICE_TITLE)};
+  const link_qui_sommes_nous = {linkProps: {href: Routing.generate('app_qui_sommes_nous'),target: '_self'},text: trans(HOMEPAGE_ALTERNATIVE_TITLE)};
+  const link_consult_prejudice = {linkProps: {href: Routing.generate('app_redirect'),target: '_self'},text: trans(REQUERANT_HOMEPAGE_TITLE)};
+
+  const navbar = [];
   const links = [];
   if(user && user.personnePhysique && user.personnePhysique.id) {
     links.push({
@@ -26,18 +34,31 @@ const Entete = ({user,version}) => {
       linkProps: { href: Routing.generate('app_logout') },
       text: "Déconnexion"
     });
+    if(!user.plaintextRole)
+      navbar.push(link_add_prejudice);
+    navbar.push(link_consult_prejudice);
   }
-  else
+  else {
+    navbar.push(link_add_prejudice);
+    navbar.push(link_qui_sommes_nous);
+
     links.push({
-      iconId: 'fr-icon-user-fill',
+      iconId: 'fr-icon-account-line',
       linkProps: { href: Routing.generate('app_login') },
-      text: trans(LOGIN_TITLE)
+      text: trans(LOGIN_PERSONAL_ACCESS)
     });
+    links.push({
+      iconId: 'fr-icon-lock-line',
+      linkProps: { href: Routing.generate('app_login') },
+      text: trans(LOGIN_PROFESSIONAL_ACCESS)
+    });
+  }
+
   return (
     <Header
       brandTop={parse(trans(HEADER_BRAND))}
       homeLinkProps={{
-        href: '/',
+        href: Routing.generate('app_category'),
         title: trans(HEADER_TITLE)
       }}
       serviceTitle={
@@ -46,6 +67,7 @@ const Entete = ({user,version}) => {
         </>
       }
       quickAccessItems={links}
+      navigation={navbar}
     />
   );
 }
