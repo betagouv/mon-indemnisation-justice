@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import { trans, HEADER_BRAND, HEADER_TITLE, HOMEPAGE_TITLE, LOGIN_TITLE } from '../../translator';
+import { trans, LOGIN_PERSONAL_ACCESS, LOGIN_PROFESSIONAL_ACCESS, HEADER_BRAND, HEADER_TITLE, HOMEPAGE_TITLE, LOGIN_TITLE } from '../../translator';
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import parse from 'html-react-parser';
@@ -29,9 +29,14 @@ const Entete = ({user,version}) => {
   }
   else
     links.push({
-      iconId: 'fr-icon-user-fill',
+      iconId: 'fr-icon-account-line',
       linkProps: { href: Routing.generate('app_login') },
-      text: trans(LOGIN_TITLE)
+      text: trans(LOGIN_PERSONAL_ACCESS)
+    });
+    links.push({
+      iconId: 'fr-icon-lock-line',
+      linkProps: { href: Routing.generate('app_login') },
+      text: trans(LOGIN_PROFESSIONAL_ACCESS)
     });
   return (
     <Header

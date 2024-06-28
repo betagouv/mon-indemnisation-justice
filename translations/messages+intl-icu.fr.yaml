@@ -189,6 +189,8 @@ homepage:
     tiers en réparation de <b>sinistres survenus au sein d’un bâtiment judiciaire.</b></p>"
 login:
   title: Se connecter à mon espace
+  personal_access: "Mon Espace Personnel"
+  professional_access: "Espace agents"
   btn: "Je me connecte à mon espace"
   h1: "Me connecter à mon espace"
   comment: "Connexion à Précontentieux"
