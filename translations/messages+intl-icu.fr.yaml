@@ -6,7 +6,7 @@ adresse:
     ligne1: "Adresse complète"
     ligne1_bris_porte: "Adresse complète du logement concerné par le bris de porte"
     ligne1_bris_porte_recap: "À l'adresse suivante"
-    ligne1_description: "Adresse où seront envoyé les courriers"
+    ligne1_description: "Adresse où seront envoyés les courriers"
     code_postal: "Code postal"
     localite: "Ville"
 bris_porte:
@@ -41,7 +41,7 @@ bris_porte:
     </ul>
     "
     btn: "Tester mon éligibilité à l'indemnisation"
-    chapo: "Je souhaite effectuer une demande pour un bris de portes ou autres dégâts matériels causés dans le cadre d'une opération de police judiciaire (perquisition judiciaire, interpellation d'un individu, ...)"
+    chapo: "Je souhaite effectuer une demande d’indemnisation pour un bris de portes ou autres dégâts matériels causés dans le cadre d'une opération de police judiciaire (perquisition judiciaire, interpellation d'un individu, ...)"
   accept_or_reject:
     title: "Traitement du bris de porte %reference%"
   view:
@@ -82,7 +82,7 @@ bris_porte:
   create:
     title: "Déclarer un bris de porte"
   field:
-    numero_pv: "Numéro de Procès-verbal"
+    numero_pv: "Numéro de procès-verbal"
     numero_parquet: "Numéro de parquet ou d'instruction"
     date_operation_pj: "Date de l'opération de police judiciaire"
     is_porte_blindee: "S'agit-il d'une porte blindée ?"
@@ -97,7 +97,7 @@ bris_porte:
     qualite_representant: "J'effectue ma demande en qualité de"
     qualite_remise_attestation: "En qualité de "
     precision_representant: "Préciser votre qualité"
-  section: "Informations relative au bris de porte"
+  section: "Informations relatives au bris de porte"
 categorie_demande:
   title: "Catégories de demandes"
   chapo: "Vous avez la possibilité d'effectuer un test d'éligibilité suivi d'une demande amiable d'indemnisation en sélectionnant l'une des catégories suivantes."
@@ -115,7 +115,7 @@ categorie_demande:
     title: "Accident impliquant un véhicule de la Direction des services judiciaires"
     chapo: ""
   sinistre:
-    title: "Sinistre causé par un bâtiment judiciaire"
+    title: "Sinistre survenu au sein d’un bâtiment judiciaire"
     chapo: ""
 cgu:
   title: "Conditions générales d'utilisation"
@@ -131,7 +131,7 @@ document:
     title: "Titre de propriété"
     hint: " "
   attestation_information:
-    title: "Attestation d'informations complétée par les force de l'ordre"
+    title: "Attestation d'informations complétée par les forces de l'ordre"
     hint: " "
   rib_pro:
     title: "Relevé d'identité bancaire de ma société"
@@ -156,7 +156,7 @@ global:
   yes: "Oui"
   no: "Non"
   and_or: " et/ou "
-  optional: "(facultatif)"
+  optional: ""
   select_option: "Sélectionnez une option"
   step:
     next: "Valider et passer à l'étape suivante"
@@ -250,7 +250,7 @@ security:
     title: "Confirmation de la création de votre espace personnel"
     content: "
     <h1>Finaliser la création de votre compte</h1>
-    <p>Pour finaliser la création de votre compte, nous vous invitons sur le
+    <p>Pour finaliser la création de votre compte, nous vous invitons à cliquer sur le
     lien qui vous a été envoyé à l'adresse email renseignée : <b>%email%</b></p>
     <p>Une fois votre compte créé, vous pourrez accéder à votre espace personnel pour effectuer votre demande d'indemnisation.</p>
     "
@@ -304,7 +304,7 @@ user:
     active: "Compte activé"
 personne:
   field:
-    numero_securite_sociale: "Numéro de sécurité sociale"
+    numero_securite_sociale: "Les 10 premiers chiffres de votre numéro de sécurité sociale"
     code_securite_sociale: "Clé"
 personne_morale:
   title: "Identité de la société"
