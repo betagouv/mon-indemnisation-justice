@@ -31,8 +31,8 @@ class DefaultController extends AbstractController
     {
         $em         = $this->em;
         $breadcrumb = $this->breadcrumb;
-        $breadcrumb->add('homepage.title','app_homepage');
-        $breadcrumb->add('requerant.homepage.title',null);
+        //$breadcrumb->add('homepage.title','app_homepage');
+        //$breadcrumb->add('requerant.homepage.title',null);
         $statuts = $em->getRepository(Statut::class)->findBy(['code' => [
           Statut::CODE_VALIDE, Statut::CODE_REJETE
         ]]);

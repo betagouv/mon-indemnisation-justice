@@ -74,7 +74,7 @@ class BrisPorteController extends AbstractController
     public function view(BrisPorte $brisPorte): Response
     {
       $breadcrumb = $this->breadcrumb;
-      $breadcrumb->add('homepage.title','app_homepage');
+      //$breadcrumb->add('homepage.title','app_homepage');
       $breadcrumb->add('requerant.homepage.title','app_redacteur_homepage');
       $breadcrumb->add(
         str_replace("%reference%",$brisPorte->getReference(),$this->translator->trans('bris_porte.accept_or_reject.title'))

@@ -2,6 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import ReactDOM from 'react-dom';
 import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
+import { Br } from '../react/utils/fundamental';
 import Entete from '../react/components/Entete';
 import PiedDePage from '../react/components/PiedDePage';
 import QuiSommesNousHeader from '../react/components/QuiSommesNous/QuiSommesNousHeader';
@@ -11,6 +12,7 @@ import FilAriane from '../react/components/FilAriane';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
 import '../styles/homepage.css';
+import {trans,PREJUDICE_SUBTITLE} from '../translator';
 
 export default class extends Controller {
     static values = {
@@ -27,16 +29,17 @@ export default class extends Controller {
             <Entete user={this.userValue} version={this.versionValue} />
             <main role="main">
               <div className="pr-content fr-pb-6w">
-                <div className="pr-content_header">
-                  <QuiSommesNousHeader />
-                </div>
-                {/*<div className="fr-container">
+                <Br space={2}/>
+                <center>
+                  <h2>{trans(PREJUDICE_SUBTITLE)}</h2>
+                </center>
+                <Br space={3}/>
+                <div className="fr-container">
                   <div className="pr-content_body pr-mt-n6w ">
                     <CategorieDemandes />
-                    <ServiceNational />
+                    <Br space={2}/>
                   </div>
                 </div>
-                */}
               </div>
             </main>
             <PiedDePage />

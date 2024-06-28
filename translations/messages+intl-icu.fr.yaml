@@ -175,6 +175,7 @@ header:
   service: baseline - précisions sur l‘organisation
 homepage:
   title: "Précontentieux"
+  alternative_title: "Qui sommes-nous ?"
   qui_sommes_nous:
     title: "Quelle est la mission du pôle précontentieux ?"
     chapo: "<p>Situé au sein de la Direction des services judiciaires (DSJ), le <b>pôle précontentieux</b>
@@ -314,6 +315,8 @@ representant_legal:
   title: "Identité du représentant légal"
   small_title: "Représenté.e par"
 prejudice:
+  title: "Déclarer un préjudice"
+  subtitle: "Nous vous aidons dans votre déclaration de préjudice"
   field:
     reference: "Référence"
     note: "Note sur le dossier (masquée aux requérants)"

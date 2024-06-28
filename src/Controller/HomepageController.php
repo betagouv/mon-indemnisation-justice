@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class HomepageController extends AbstractController
 {
-    #[Route('/redirect', name: 'app_redirect')]
+    #[Route('/redirect', name: 'app_redirect', options: ['expose' => true])]
     public function redirection(): RedirectResponse
     {
       $user = $this->getUser();
@@ -27,7 +27,21 @@ class HomepageController extends AbstractController
       return $this->redirectToRoute('app_homepage');
     }
 
-    #[Route('/', name: 'app_homepage')]
+    #[Route('/', name: 'app_homepage',options: ['expose' => true])]
+    #[Route('/declarer-un-prejudice', name: 'app_category', options: ['expose' => true])]
+    public function category(Breadcrumb $breadcrumb, Version $version): Response
+    {
+      $breadcrumb->add("prejudice.title", null);
+      $user = $this->getUser();
+      if($user && $user->hasRole(User::ROLE_REQUERANT))
+        $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
+      return $this->render('homepage/category.html.twig', [
+          'breadcrumb' => $breadcrumb,
+          'version' => $version,
+      ]);
+    }
+
+    #[Route('/qui-sommes-nous', name: 'app_qui_sommes_nous',options: ['expose' => true])]
     public function index(Breadcrumb $breadcrumb, Version $version): Response
     {
         $breadcrumb->add("homepage.title", null);
