@@ -1,4 +1,4 @@
-FROM registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu
+FROM registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu-wkhtmltopdf
 
 COPY .docker/config/php.ini "$PHP_INI_DIR/php.ini"
 
