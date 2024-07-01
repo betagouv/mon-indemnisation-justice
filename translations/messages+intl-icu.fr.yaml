@@ -52,7 +52,6 @@ bris_porte:
     email:
       title: "Précontentieux : Votre déclaration de bris de porte a bien été pris en compte"
       content: "
-      <p>%nomComplet%</p>
       <p>Vous avez déclaré un bris de porte ce jour. Nos services mettent tout en œuvre afin de revenir vers vous dans les meilleurs délais.</p>
       <p>Nous tenons à vous préciser que le pôle Précontentieux est un pôle national qui reçoit beaucoup de demandes d'indemnisation
       quotidiennement et traite différentes catégories de dossiers.<br/>
@@ -171,10 +170,10 @@ global:
 header:
   brand: "Ministère<br/>de la justice"
   title: "Ministère de la justice"
-  name: Précontentieux
+  name: "Mon Indemnisation Justice"
   service: baseline - précisions sur l‘organisation
 homepage:
-  title: "Précontentieux"
+  title: "Mon Indemnisation Justice"
   alternative_title: "Qui sommes-nous ?"
   qui_sommes_nous:
     title: "Quelle est la mission du pôle précontentieux ?"
@@ -190,7 +189,7 @@ homepage:
     tiers en réparation de <b>sinistres survenus au sein d’un bâtiment judiciaire.</b></p>"
 login:
   title: Se connecter à mon espace
-  personal_access: "Mon Espace Personnel"
+  personal_access: "Se connecter"
   professional_access: "Espace agents"
   btn: "Je me connecte à mon espace"
   h1: "Me connecter à mon espace"
@@ -218,7 +217,7 @@ register:
     confirm_postfix: "Vous pouvez accéder directement à l'application via ce lien : "
     confirm_btn: "lien de confirmation"
     expired_at: "Ce lien expire dans "
-    thanks: "Cordialement"
+    thanks: "Cordialement,<br/>L'équipe PRECONTENTIEUX"
   title: "Créer un compte"
   terms: "J'accepte les termes d'utilisation"
   error:
@@ -316,7 +315,7 @@ representant_legal:
   small_title: "Représenté.e par"
 prejudice:
   title: "Déclarer un préjudice"
-  subtitle: "Nous vous aidons dans votre déclaration de préjudice"
+  subtitle: "Nous vous aidons dans votre demande d'indemnisation"
   field:
     reference: "Référence"
     note: "Note sur le dossier (masquée aux requérants)"

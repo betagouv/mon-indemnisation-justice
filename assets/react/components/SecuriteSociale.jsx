@@ -13,7 +13,7 @@ const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters">
-      <div className="fr-col-9">
+      <div className="fr-col-12">
         <Input
           label={trans(PERSONNE_FIELD_NUMERO_SECURITE_SOCIALE)}
           nativeInputProps={{
@@ -23,6 +23,7 @@ const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
           }}
         />
       </div>
+      {/*
       <div className="fr-col-3">
         <Input
           label={trans(PERSONNE_FIELD_CODE_SECURITE_SOCIALE)}
@@ -33,6 +34,7 @@ const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
           }}
         />
       </div>
+      */}
     </div>
   );
 }

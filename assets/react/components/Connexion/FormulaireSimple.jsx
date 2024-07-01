@@ -27,7 +27,7 @@ const modal = createModal({
     isOpenedByDefault: false
 });
 
-const FormulaireSimple = ({errorMessage,csrfToken,lastUsername}) => {
+const FormulaireSimple = ({errorMessage,csrfToken,lastUsername,customH1=null,customContent=null}) => {
 
   const isOpen = useIsModalOpen(modal);
   const [email, setEmail]=useState(lastUsername);
@@ -58,6 +58,8 @@ const FormulaireSimple = ({errorMessage,csrfToken,lastUsername}) => {
     setLoading(true);
   },[]);
 
+  const _customH1 = customH1 ? customH1 : trans(LOGIN_H1);
+  const _customContent = customContent ? customContent : trans(LOGIN_CONTENT);
   return (
     <section className="pr-form-subscribe">
       <form method="POST" onSubmit={handleSubmit}>
@@ -65,8 +67,8 @@ const FormulaireSimple = ({errorMessage,csrfToken,lastUsername}) => {
         <Hidden name="_password" value={password} />
         <Hidden name="_csrf_token" value={csrfToken} />
             <div className="fr-p-4w">
-              <h2>{trans(LOGIN_H1)}</h2>
-              <p>{trans(LOGIN_CONTENT)}</p>
+              <h2>{_customH1}</h2>
+              <p>{_customContent}</p>
               <p>{trans(GLOBAL_INFORMATIONS_REQUIREMENT)}</p>
               <div className="fr-grid-row">
                 {errorMessage &&
