@@ -7,7 +7,7 @@ import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import parse from 'html-react-parser';
 
-const Entete = ({user,version}) => {
+const Entete = ({user,version,withNavbar=true}) => {
 
   const getName = () => {
     if(user.plaintextRole == "ROLE_REDACTEUR_PRECONTENTIEUX")
@@ -49,10 +49,12 @@ const Entete = ({user,version}) => {
     });
     links.push({
       iconId: 'fr-icon-lock-line',
-      linkProps: { href: Routing.generate('app_login') },
+      linkProps: { href: Routing.generate('app_login')+'?isAgent=1' },
       text: trans(LOGIN_PROFESSIONAL_ACCESS)
     });
   }
+
+  const _navbar = (true===withNavbar) ? navbar : [];
 
   return (
     <Header
@@ -67,7 +69,7 @@ const Entete = ({user,version}) => {
         </>
       }
       quickAccessItems={links}
-      navigation={navbar}
+      navigation={_navbar}
     />
   );
 }

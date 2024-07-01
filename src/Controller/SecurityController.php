@@ -118,7 +118,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'], options: ['expose' => true])]
-    public function login(): Response
+    public function login(Request $request): Response
     {
         $error = $this->authenticationUtils->getLastAuthenticationError();
         $lastUsername = $this->authenticationUtils->getLastUsername();
@@ -126,6 +126,8 @@ class SecurityController extends AbstractController
         $breadcrumb->add('homepage.title','app_homepage');
         $breadcrumb->add('login.title');
         $user = $this->getUser();
+        $isAgent = ($request->get('isAgent')=='1');
+  
         $errorMessage="";
         if($error && $error->getMessage())
           $errorMessage = $this->translator->trans($error->getMessage(),[],'security');
@@ -137,6 +139,7 @@ class SecurityController extends AbstractController
           'error_message' => $errorMessage,
           'breadcrumb' => $breadcrumb,
           'version' => $this->version,
+          'is_agent' => $isAgent,
         ]);
     }
 
