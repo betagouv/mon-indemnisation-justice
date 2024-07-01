@@ -165,7 +165,7 @@ deploy-production:
     S3_SECRET_KEY: $S3_SECRET_KEY_SECRET
   environment:
     name: prod/$CI_COMMIT_REF_SLUG
-    url: "https://precontentieux.app.cc.anje-justice.fr"
+    url: "https://mon-indemnisation.anje-justice.fr"
   when: manual
   only:
     - master
