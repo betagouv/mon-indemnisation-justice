@@ -7,6 +7,7 @@ use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -51,6 +52,22 @@ class HomepageController extends AbstractController
         return $this->render('homepage/index.html.twig', [
             'breadcrumb' => $breadcrumb,
             'version' => $version,
+        ]);
+    }
+
+    #[Route('/suivi-de-mon-dossier', name: 'app_suivi_mon_dossier',options: ['expose' => true])]
+    public function suiviDossier(Breadcrumb $breadcrumb, Version $version, Request $request): Response
+    {
+        /** @var string $raccourci */
+        $raccourci = $request->get('raccourci')??"";
+        $breadcrumb->add("homepage.title", null);
+        $user = $this->getUser();
+        if($user && $user->hasRole(User::ROLE_REQUERANT))
+          $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
+        return $this->render('homepage/suivi_dossier.html.twig', [
+            'breadcrumb' => $breadcrumb,
+            'version' => $version,
+            'raccourci' => $raccourci,
         ]);
     }
 
