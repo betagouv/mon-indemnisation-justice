@@ -80,6 +80,9 @@ abstract class Prejudice implements PrejudiceInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $motivationProposition = null;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $raccourci = null;
+
     public function __construct()
     {
       $this->dateDeclaration = new \DateTime();
@@ -234,6 +237,18 @@ abstract class Prejudice implements PrejudiceInterface
     public function setMotivationProposition(?string $motivationProposition): static
     {
         $this->motivationProposition = $motivationProposition;
+
+        return $this;
+    }
+
+    public function getRaccourci(): ?string
+    {
+        return $this->raccourci;
+    }
+
+    public function setRaccourci(?string $raccourci): static
+    {
+        $this->raccourci = $raccourci;
 
         return $this;
     }
