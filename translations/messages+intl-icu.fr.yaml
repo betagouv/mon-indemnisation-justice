@@ -62,6 +62,9 @@ bris_porte:
         <strong>Référence du dossier à rappeler dans toutes vos correspondances : %reference%</strong>
       </p>
       <p>
+        <strong>Numéro de suivi pour suivre l'avancement de votre dossier : %raccourci%</strong>
+      </p>
+      <p>
       Cordialement,<br/>
       L'équipe PRECONTENTIEUX
       </p>
@@ -283,6 +286,10 @@ sinistre:
     date_declaration: "Date de déclaration"
     statut: "Statut du dossier"
     date_dernier_statut: "Date du dernier statut"
+statut:
+  field:
+    libelle: "Statut"
+    date: "Date"
 user:
   section: "Données personnelles du justiciable"
   h5: "Votre identité"
@@ -318,6 +325,7 @@ prejudice:
   title: "Déclarer un préjudice"
   subtitle: "Nous vous aidons dans votre demande d'indemnisation"
   field:
+    raccourci: "Code suivi"
     reference: "Référence"
     note: "Note sur le dossier (masquée aux requérants)"
     proposition_indemnisation: "Proposition d'indemnisation (€)"

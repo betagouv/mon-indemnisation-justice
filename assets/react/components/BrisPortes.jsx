@@ -6,7 +6,7 @@ import { Document } from './PieceJointe/PieceJointe';
 import { format } from "date-fns";
 import {
   trans,
-  PREJUDICE_FIELD_REFERENCE,
+  PREJUDICE_FIELD_REFERENCE,PREJUDICE_FIELD_RACCOURCI,
   BRIS_PORTE_CREATE_TITLE,
   REQUERANT_HOMEPAGE_TITLE,
   SINISTRE_FIELD_DATE_DECLARATION,
@@ -29,6 +29,7 @@ const BrisPortes = function({items}) {
     //trans(SINISTRE_FIELD_DATE_DECLARATION),
     trans(SINISTRE_FIELD_STATUT),
     trans(SINISTRE_FIELD_DATE_DERNIER_STATUT),
+    trans(PREJUDICE_FIELD_RACCOURCI),
     trans(GLOBAL_ACTIONS)
   ];
 
@@ -62,6 +63,7 @@ const BrisPortes = function({items}) {
         //format(dateDeclaration,"dd/MM/yy"),
         lastStatut,
         format(dateLastStatut,"dd/MM/yy HH:mm"),
+        item.raccourci,
         btn
       ];
     });

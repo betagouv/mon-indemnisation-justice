@@ -35,8 +35,10 @@ const Entete = ({user,version,withNavbar=true}) => {
       linkProps: { href: Routing.generate('app_logout') },
       text: "Déconnexion"
     });
-    if(!user.plaintextRole)
+    if(!user.plaintextRole) {
       navbar.push(link_add_prejudice);
+      navbar.push(link_suivi_dossier);
+    }
     navbar.push(link_consult_prejudice);
   }
   else {

@@ -44,9 +44,10 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
   const [isPersonneMorale,setIsPersonneMorale]=useState(user.isPersonneMorale);
-  function incrementStep() { setStep(step+1); }
-  function decrementStep() { setStep(step-1); }
+  function incrementStep() { setStep(step+1);gotoStepper(); }
+  function decrementStep() { setStep(step-1);gotoStepper(); }
   function getCurrentStep() { return step+1; }
+  function gotoStepper() { $("#pr-case_stepper").focus(); }
 
   const toggleIsPersonneMorale = () => setIsPersonneMorale(!isPersonneMorale);
 
@@ -58,7 +59,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
 
   return (
     <>
-    <section className="pr-case_stepper">
+    <section tabIndex="0" className="pr-case_stepper" id="pr-case_stepper">
       <Stepper
         currentStep={getCurrentStep()}
         nextTitle={nextTitle}
