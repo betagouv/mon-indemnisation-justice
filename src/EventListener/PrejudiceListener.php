@@ -35,6 +35,17 @@ class PrejudiceListener
         ];
 
         $entity->setReference(implode("/",$reference));
+
+        /**
+         * @author yanroussel
+         *         Ajout d'un numéro de suivi
+         */
+        $raccourci = $entityManager
+          ->getRepository(Prejudice::class)
+          ->generate_raccourci()
+        ;
+        $entity->setRaccourci($raccourci);
+
         $entityManager->flush();
     }
 }

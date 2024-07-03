@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import { trans, LOGIN_PERSONAL_ACCESS, LOGIN_PROFESSIONAL_ACCESS,
-    HEADER_BRAND, HEADER_TITLE, HOMEPAGE_TITLE, LOGIN_TITLE,
+    HEADER_BRAND, HEADER_TITLE, HOMEPAGE_TITLE, LOGIN_TITLE,HOMEPAGE_SUIVI_DOSSIER,
     HOMEPAGE_ALTERNATIVE_TITLE, PREJUDICE_TITLE, REQUERANT_HOMEPAGE_TITLE
 } from '../../translator';
 import { Header } from "@codegouvfr/react-dsfr/Header";
@@ -19,6 +19,7 @@ const Entete = ({user,version,withNavbar=true}) => {
 
   const link_add_prejudice = {linkProps: {href: Routing.generate('app_category'),target: '_self'},text: trans(PREJUDICE_TITLE)};
   const link_qui_sommes_nous = {linkProps: {href: Routing.generate('app_qui_sommes_nous'),target: '_self'},text: trans(HOMEPAGE_ALTERNATIVE_TITLE)};
+  const link_suivi_dossier = {linkProps: {href: Routing.generate('app_suivi_mon_dossier'),target: '_self'},text: trans(HOMEPAGE_SUIVI_DOSSIER)};
   const link_consult_prejudice = {linkProps: {href: Routing.generate('app_redirect'),target: '_self'},text: trans(REQUERANT_HOMEPAGE_TITLE)};
 
   const navbar = [];
@@ -34,12 +35,15 @@ const Entete = ({user,version,withNavbar=true}) => {
       linkProps: { href: Routing.generate('app_logout') },
       text: "Déconnexion"
     });
-    if(!user.plaintextRole)
+    if(!user.plaintextRole) {
       navbar.push(link_add_prejudice);
+      navbar.push(link_suivi_dossier);
+    }
     navbar.push(link_consult_prejudice);
   }
   else {
     navbar.push(link_add_prejudice);
+    navbar.push(link_suivi_dossier);
     navbar.push(link_qui_sommes_nous);
 
     links.push({

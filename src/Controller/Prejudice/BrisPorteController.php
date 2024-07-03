@@ -118,6 +118,7 @@ class BrisPorteController extends AbstractController
            'url' => Env::get('BASE_URL'),
            'nomComplet' => $user->getNomComplet(),
            'reference' => $brisPorte->getReference(),
+           'raccourci' => $brisPorte->getRaccourci(),
          ])
          ->send(user: $user)
        ;
