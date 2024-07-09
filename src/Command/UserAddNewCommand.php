@@ -21,7 +21,7 @@ use Symfony\Component\Mailer\Transport\TransportInterface;
 
 #[AsCommand(
     name: 'app:admin:ajout',
-    description: 'Création d\'un administrateur fonctionnel',
+    description: 'Création d\'un compte agent',
 )]
 class UserAddNewCommand extends Command
 {

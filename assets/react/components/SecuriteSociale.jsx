@@ -19,7 +19,7 @@ const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
           nativeInputProps={{
             value: numeroSS,
             onChange: ev => setNumeroSS(castNumber(ev.target.value)),
-            maxLength: 13
+            maxLength: 10
           }}
         />
       </div>
