@@ -44,8 +44,25 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
   const [isPersonneMorale,setIsPersonneMorale]=useState(user.isPersonneMorale);
+  const [_brisPorte,setBrisPorte]=useState(brisPorte);
+  const [_user,setUser]=useState(user);
   function incrementStep() { setStep(step+1);gotoStepper(); }
-  function decrementStep() { setStep(step-1);gotoStepper(); }
+  function decrementStep() {
+    const userUri = Routing.generate('_api_user_get',{id:user.pId});
+    const prejudiceUri = Routing.generate('_api_bris_porte_get',{id:brisPorte.id});
+    Promise
+      .all([userUri,prejudiceUri]
+        .map((u) => fetch(u).then((response) => response.json()))
+      )
+      .then(([u_d,bp_d]) => {
+        setUser(u_d);
+        setBrisPorte(bp_d);
+        setStep(step-1);
+        gotoStepper();
+      })
+      .catch(() => {})
+    ;
+  }
   function getCurrentStep() { return step+1; }
   function gotoStepper() { $("#pr-case_stepper").focus(); }
 
@@ -72,7 +89,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
     }
     {(step===0) &&
     <section className="pr-case_form fr-mb-4w">
-      <User user={user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
+      <User user={_user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12">
           <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
@@ -82,7 +99,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
     }
     {(step===1) &&
     <>
-      <BrisPorte brisPorte={brisPorte} />
+      <BrisPorte brisPorte={_brisPorte} />
       <div className="fr-col-12">
         <ul className="fr-btns-group fr-btns-group--inline-sm">
           <li>
@@ -202,8 +219,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
         {(step===3) &&
         <>
           <RecapitulatifBrisPorte
-            brisPorte={brisPorte}
-            user={user}
+            brisPorte={_brisPorte}
+            user={_user}
             gotoFirstSection={gotoFirstSection}
             gotoSecondSection={gotoSecondSection}
             gotoThirdSection={gotoThirdSection}

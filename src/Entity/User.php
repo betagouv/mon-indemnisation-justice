@@ -25,7 +25,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
       name: '_api_user_get_collection'
     ),
     new Get(
-      name: '_api_user_get'
+      name: '_api_user_get',
+      normalizationContext: ["groups" => ["user:write"]]
     ),
     new Patch(
       name: '_api_user_patch'
