@@ -28,12 +28,14 @@ export default class extends Controller {
           <>
             <Entete user={this.userValue} version={this.versionValue} />
             <main role="main">
-              <div className="pr-content fr-pb-6w">
-                <Br space={2}/>
-                <center>
-                  <h2>{trans(PREJUDICE_SUBTITLE)}</h2>
-                </center>
-                <Br space={3}/>
+              <div className=".pr-content_header pr-content fr-pb-6w">
+                <section className="pr-whoami">
+                  <div className="fr-container">
+                    <div className="fr-pt-6w fr-pb-12w">
+                      <h1>{trans(PREJUDICE_SUBTITLE)}</h1>
+                    </div>
+                  </div>
+                </section>
                 <div className="fr-container">
                   <div className="pr-content_body pr-mt-n6w ">
                     <CategorieDemandes />
