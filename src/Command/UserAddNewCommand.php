@@ -79,12 +79,24 @@ class UserAddNewCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $env = Env::get('APP_ENV');
+        /** @var array $tos Liste des receveurs du mail de création */
+        $tos = [];
+        /**
+         * @author yanroussel
+         *        En environnement de dev, l'envoi des informations de connexion
+         *        pour les comptes agents seront redirigés vers un compte structurel
+         */
+        if($env === 'dev' && Env::get('DEFAULT_EMAIL_RECEIVER'))
+          $tos[]=Env::get('DEFAULT_EMAIL_RECEIVER');
+
         /** @var EntityManagerInterface $em */
         $em = $this->getEntityManager();
         /** @var UserPasswordHasherInterface $passwordHasher */
         $passwordHasher = $this->getPasswordHasher();
         /** @var SymfonyStyle $io */
         $io = new SymfonyStyle($input, $output);
+
         /** @var string $username */
         $username = mb_strtolower($input->getArgument('username'));
         /** @var string $prenom */
@@ -159,21 +171,26 @@ class UserAddNewCommand extends Command
         $ar->add($account, true);
 
         # envoi de l'email à l'administrateur fonctionnel
+        $tos[]=$account->getEmail();
         $this
           ->mailer
           ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
-          ->to($account->getEmail())
           ->subject('Création de votre compte pour PRECONTENTIEUX')
           ->htmlTemplate('admin/email/ajout_utilisateur.html.twig',[
             'url' => Env::get('BASE_URL'),
             'username' => $account->getUsername(),
+            'target_email' => $account->getEmail(),
             'password' => $password,
           ])
-          ->send()
         ;
+        foreach($tos as $to)
+          $this->mailer->to($to);
+        $this->mailer->send();
 
-        $io->success("Le compte $username a été ajouté avec succès !");
-        $io->success("mot de passe : $password (à supprimer après l'expérimentation)");
+        $io->success("Le compte $username a été ajouté avec succès. Les informations de connexion ont été envoyé à ".implode(" et ",$tos)." !");
+
+        if(Env::get('APP_ENV') === 'dev')
+          $io->note('(email:'.$account->getEmail().',password:'.$password.')');
         return Command::SUCCESS;
     }
 }
