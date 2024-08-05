@@ -1,5 +1,3 @@
-version: '3'
-
 services:
 ###> doctrine/doctrine-bundle ###
   database:
@@ -17,3 +15,22 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 ###< symfony/mailer ###
+
+  app:
+    build:
+      dockerfile: .docker/Dockerfile
+      context: .
+    environment:
+      APP_ENV: "${APP_ENV:-dev}"
+    ports:
+      - "8080:8080"
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /var/www/html
+          ignore:
+            - vendor/
+        - action: rebuild
+          path: compose.lock
+
