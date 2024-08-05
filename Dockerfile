@@ -1,10 +1,10 @@
 FROM php:8.1-apache
 
 # A n'activer que dans un environnement local sous proxy
-ENV http_proxy "http://rie-proxy.justice.gouv.fr:8080"
-ENV https_proxy "http://rie-proxy.justice.gouv.fr:8080"
-ENV ftp_proxy "http://rie-proxy.justice.gouv.fr:8080"
-ENV no_proxy ".intranet.justice.gouv.fr,localhost,127.0.0.1,precontentieux_minio"
+#ENV http_proxy "${HTTP_PROXY:-http://rie-proxy.justice.gouv.fr:8080}"
+#ENV https_proxy "${HTTPS_PROXY:-http://rie-proxy.justice.gouv.fr:8080}"
+#ENV ftp_proxy "${FTP_PROXY:-http://rie-proxy.justice.gouv.fr:8080}"
+#ENV no_proxy "${NO_PROXY:-.intranet.justice.gouv.fr,localhost,127.0.0.1,precontentieux_minio}"
 
 ARG APT_ARGS="-qy"
 
@@ -12,6 +12,7 @@ ARG APT_ARGS="-qy"
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN apt-get update -y && \
     apt-get install zip unzip
+ENV COMPOSER_ALLOW_SUPERUSER=1
 # --- installation de composer /
 
 # --- installation de symfony
@@ -116,9 +117,22 @@ RUN \
 apt-get update && \
 apt-get install libldap2-dev libldap-common -y && \
 rm -rf /var/lib/apt/lists/* && \
-docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
+docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/ && \
 docker-php-ext-install ldap
 ###< ldap ###
 
-EXPOSE 80
+
 WORKDIR /var/www/html
+
+ADD . /var/www/html
+
+ARG APP_ENV
+ENV APP_ENV ${APP_ENV:-prod}
+
+RUN composer install
+
+RUN yarn install
+RUN yarn dev
+
+EXPOSE 8080
+

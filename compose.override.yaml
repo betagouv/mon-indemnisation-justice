@@ -18,12 +18,17 @@ services:
 
   app:
     build:
-      dockerfile: .docker/Dockerfile
+      dockerfile: ./Dockerfile
       context: .
+      args:
+        - APP_ENV=dev
     environment:
-      APP_ENV: "${APP_ENV:-dev}"
+      APP_ENV: dev
+    depends_on:
+      - mailer
+      - database
     ports:
-      - "8080:8080"
+      - "8080:80"
     develop:
       watch:
         - action: sync
@@ -32,5 +37,5 @@ services:
           ignore:
             - vendor/
         - action: rebuild
-          path: compose.lock
+          path: composer.lock
 

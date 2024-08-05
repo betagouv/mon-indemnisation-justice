@@ -19,16 +19,4 @@ ADD . /var/www/html
 
 RUN chmod 777 -R /var/www/html/public
 
-RUN composer install
-
-# Install node (18) & yarn
-
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-RUN apt install -y nodejs
-
-RUN npm install -g yarn
-
-RUN yarn install
-RUN yarn dev
-
 EXPOSE 8080 80 443
