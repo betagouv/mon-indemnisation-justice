@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.2-apache
 
 # A n'activer que dans un environnement local sous proxy
 #ENV http_proxy "${HTTP_PROXY:-http://rie-proxy.justice.gouv.fr:8080}"

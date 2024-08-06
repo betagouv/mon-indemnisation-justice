@@ -1,0 +1,4 @@
+nelmio_cors:
+    defaults:
+        # White list XHR calls for Web Debug Toolbar
+        allow_headers: [ 'Content-Type', 'Authorization', 'X-Requested-With' ]
