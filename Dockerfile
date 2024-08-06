@@ -71,8 +71,8 @@ RUN npm install --global yarn
 
 RUN apt autoremove -y
 
-COPY .docker/config/php.ini "$PHP_INI_DIR/php.ini"
-COPY .docker/config/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY .docker/apache/config/php.ini "$PHP_INI_DIR/php.ini"
+COPY .docker/apache/config/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 RUN a2ensite 000-default.conf && \
     sed -i "s|Listen 80|Listen 8080|g" /etc/apache2/ports.conf && \

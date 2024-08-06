@@ -1,12 +1,12 @@
 services:
 ###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
+  postgres:
+    image: postgres:16-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_DB: ${POSTGRES_DB:-precondev}
       # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-precondev}
+      POSTGRES_USER: ${POSTGRES_USER:-precondev}
     volumes:
       - database_data:/var/lib/postgresql/data:rw
     ports:
@@ -14,7 +14,7 @@ services:
     ###< doctrine/doctrine-bundle ###
 
   ###> symfony/mailer ###
-  mailer:
+  mailpit:
     image: axllent/mailpit
     ports:
       - "1025"
@@ -24,7 +24,7 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
   ###< symfony/mailer ###
 
-  app:
+  symfony:
     build:
       dockerfile: ./Dockerfile
       context: .
@@ -33,8 +33,8 @@ services:
     environment:
       APP_ENV: dev
     depends_on:
-      - mailer
-      - database
+      - postgres
+      - mailpit
     ports:
       - "8080:8080"
     develop:

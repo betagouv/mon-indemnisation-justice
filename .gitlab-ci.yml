@@ -113,7 +113,7 @@ package:
     - >-
       /kaniko/executor
       --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/.docker/Dockerfile"
+      --dockerfile "${CI_PROJECT_DIR}/.docker/apache/Dockerfile"
       --destination "${REGISTRY_URL}/${CI_PROJECT_IMAGE}"
 
 deploy-develop:
