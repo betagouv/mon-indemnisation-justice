@@ -25,4 +25,4 @@ yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 
 /public/dsfr/
-compose.override-*.yaml
+compose.override.yaml
