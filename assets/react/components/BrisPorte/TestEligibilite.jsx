@@ -125,8 +125,15 @@ const TestEligibilite = function() {
       <Hidden name="isErreurPorte" value={isErreurPorte} />
       <section className="pr-eligibilite_conditions">
         <div className="fr-pt-8w">
-          <h2>{trans(BRIS_PORTE_TEST_ELIGIBILITE_H2)}</h2>
-          {parse(trans(BRIS_PORTE_TEST_ELIGIBILITE_DESCRIPTION))}
+          <h2>Quelles sont les conditions à remplir pour être indemnisé(e) ?</h2>
+          <ul>
+            <li>Vous ne devez pas être concerné(e) par l'opération de police judiciaire</li>
+          </ul>
+          <b>ET</b>
+          <ul>
+            <li>L'opération de police judiciaire doit avoir été réalisée par erreur à votre domicile
+            </li>
+          </ul>
         </div>
       </section>
       <section className="pr-eligibilite_action">

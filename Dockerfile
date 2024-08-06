@@ -108,10 +108,11 @@ ADD . /var/www/html
 ARG APP_ENV
 ENV APP_ENV ${APP_ENV:-prod}
 
-RUN composer install
+RUN --mount=type=cache,target=/root/.cache/composer/ composer install
 
-RUN yarn install
-RUN yarn dev
+ENV YARN_CACHE_FOLDER=/root/.yarn
+RUN --mount=type=cache,target=/root/.yarn yarn install
+RUN --mount=type=cache,target=/root/.yarn yarn dev
 
 EXPOSE 8080
 
