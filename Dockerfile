@@ -9,6 +9,7 @@ FROM php:8.2-apache
 ARG APT_ARGS="-qy"
 
 # --- installation de composer
+# TODO use multi-stage instead https://medium.com/@othillo/adding-composer-to-php-docker-images-using-multi-stage-builds-2a10967ae6c1
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN apt-get update -y && \
     apt-get install zip unzip
@@ -50,23 +51,9 @@ RUN apt-get install -y vim
 # --- divers /
 
 # --- installation de npm & yarn
-ENV NODE_VERSION=18.16.1
-RUN apt install -y curl
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
-ENV NVM_DIR=/root/.nvm
-RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
-RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
-ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
-RUN node --version
-RUN npm --version
-RUN npm install --global yarn
-# --- installation de npm & yarn /
-# --- installation de yarn
-#RUN apt-get update && apt-get install -y gnupg && \
-#    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-#    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-#    apt-get install -y yarn
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+RUN npm update -g
 # --- installation de yarn /
 
 RUN apt autoremove -y
@@ -103,15 +90,6 @@ RUN apt-get update && \
 RUN docker-php-ext-install sysvsem && \
     service apache2 restart
 # --- semaphore /
-
-###> storage right ###
-RUN mkdir /data && \
-    chown -R www-data:www-data /data
-###< storage right ###
-
-###> share right ###
-RUN mkdir /share
-###< share right ###
 
 ###> ldap ###
 RUN \

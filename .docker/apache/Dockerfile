@@ -1,6 +1,6 @@
 FROM registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu-wkhtmltopdf
 
-COPY .docker/config/php.ini "$PHP_INI_DIR/php.ini"
+COPY .docker/apache/config/php.ini "$PHP_INI_DIR/php.ini"
 
 RUN rm /etc/apache2/sites-available/000-default.conf && rm /etc/apache2/sites-enabled/000-default.conf
 COPY .docker/apache/config/000-default.conf /etc/apache2/sites-available/000-default.conf
