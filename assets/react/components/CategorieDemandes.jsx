@@ -15,7 +15,7 @@ const CategorieDemandes = function() {
         <h2>{trans(CATEGORIE_DEMANDE_TITLE)}</h2>
         <p>{trans(CATEGORIE_DEMANDE_CHAPO)}</p>
         <ul className="fr-grid-row fr-grid-row--gutters">
-          <li className="fr-col-4">
+          <li className="fr-col-12 fr-col-lg-4">
             <CategorieDemandeCard
               title={trans(CATEGORIE_DEMANDE_BRIS_PORTE_TITLE)}
               chapo={trans(CATEGORIE_DEMANDE_BRIS_PORTE_CHAPO)}
@@ -23,21 +23,21 @@ const CategorieDemandes = function() {
               href={Routing.generate('app_bris_porte_test_eligibilite')}
             />
           </li>
-          <li className="fr-col-4">
+          <li className="fr-col-12 fr-col-lg-4">
             <CategorieDemandeCard
               title={trans(CATEGORIE_DEMANDE_PERTE_LOYER_TITLE)}
               chapo={trans(CATEGORIE_DEMANDE_PERTE_LOYER_CHAPO)}
               enabled={false}
             />
           </li>
-          <li className="fr-col-4">
+          <li className="fr-col-12 fr-col-lg-4">
             <CategorieDemandeCard
               title={trans(CATEGORIE_DEMANDE_DYSFONCTIONNEMENT_JUSTICE_TITLE)}
               chapo={trans(CATEGORIE_DEMANDE_DYSFONCTIONNEMENT_JUSTICE_CHAPO)}
               enabled={false}
             />
           </li>
-          <li className="fr-col-6">
+          <li className="fr-col-12 fr-col-lg-6">
             <CategorieDemandeCard
               title={trans(CATEGORIE_DEMANDE_ACCIDENT_TITLE)}
               chapo={trans(CATEGORIE_DEMANDE_ACCIDENT_CHAPO)}
@@ -45,7 +45,7 @@ const CategorieDemandes = function() {
               vertical={false}
             />
           </li>
-          <li className="fr-col-6">
+          <li className="fr-col-12 fr-col-lg-6">
             <CategorieDemandeCard
               title={trans(CATEGORIE_DEMANDE_SINISTRE_TITLE)}
               chapo={trans(CATEGORIE_DEMANDE_SINISTRE_CHAPO)}

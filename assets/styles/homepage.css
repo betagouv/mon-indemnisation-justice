@@ -1,6 +1,6 @@
 .pr-content {
   position: relative;
-  background-color: var(--pr-color-grey--light-secondary);
+  background-color: var(--background-alt-grey);
   z-index: 0; }
 .pr-content_header .pr-whoami {
   position: relative;
@@ -37,14 +37,14 @@
 }
 
 .pr-content_body {
-  border: 1px solid var(--pr-color-grey--dark);
-  background-color: var(--pr-bg-color-white);
+  border: 1px solid var(--pr-color-grey);
+  background-color: var(--background-default-grey);
 }
 .pr-content_body .pr-requests > ul,  .pr-content_body .pr-requests > ul > li { margin: 0; padding: 0; }
 .pr-content_body .pr-requests ul li { list-style: none; }
 .pr-content_body .pr-requests ul li .fr-tile { box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;  }
 
-.pr-service-national_body { background-color: var(--pr-color-grey--light); }
+.pr-service-national_body { background-color: var(--pr-color-grey); }
 .pr-service-national-text { color: var(--pr-bg-color-blue-royal); }
 .pr-service-national-text h3 { color: var(--pr-bg-color-blue-royal); }
 .pr-service-national-illu_france {
