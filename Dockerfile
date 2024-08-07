@@ -1,13 +1,5 @@
 FROM php:8.2-apache
 
-# A n'activer que dans un environnement local sous proxy
-#ENV http_proxy "${HTTP_PROXY:-http://rie-proxy.justice.gouv.fr:8080}"
-#ENV https_proxy "${HTTPS_PROXY:-http://rie-proxy.justice.gouv.fr:8080}"
-#ENV ftp_proxy "${FTP_PROXY:-http://rie-proxy.justice.gouv.fr:8080}"
-#ENV no_proxy "${NO_PROXY:-.intranet.justice.gouv.fr,localhost,127.0.0.1,precontentieux_minio}"
-
-ARG APT_ARGS="-qy"
-
 # --- installation de composer
 # TODO use multi-stage instead https://medium.com/@othillo/adding-composer-to-php-docker-images-using-multi-stage-builds-2a10967ae6c1
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -19,7 +11,7 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 # --- installation de symfony
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install ${APT_ARGS} wget git && \
+    apt-get install -y wget git && \
     wget https://get.symfony.com/cli/installer -O - | bash && \
     mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 # --- installation de symfony /
@@ -83,7 +75,7 @@ RUN chmod +x /bin/wkhtmltopdf && \
 
 # --- pdftk
 RUN apt-get update && \
-    apt install ${APT_ARGS} pdftk
+    apt install -y pdftk
 # --- pdftk /
 
 # --- semaphore
@@ -96,8 +88,7 @@ RUN \
 apt-get update && \
 apt-get install libldap2-dev libldap-common -y && \
 rm -rf /var/lib/apt/lists/* && \
-docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/ && \
-docker-php-ext-install ldap
+docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/ && docker-php-ext-install ldap
 ###< ldap ###
 
 
