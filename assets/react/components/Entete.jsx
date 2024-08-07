@@ -14,7 +14,7 @@ const Entete = ({user,version,withNavbar=true}) => {
       return user.username+" (rédacteur)";
     if(user.plaintextRole == "ROLE_CHEF_PRECONTENTIEUX")
       return user.username+" (chef)";
-    return user.personnePhysique.prenom1+" "+user.personnePhysique.nom.toUpperCase();
+    return `${user.personnePhysique.prenom1 || ''} ${user.personnePhysique.nom?.toUpperCase() || ''}`;
   }
 
   const link_add_prejudice = {linkProps: {href: Routing.generate('app_category'),target: '_self'},text: trans(PREJUDICE_TITLE)};
