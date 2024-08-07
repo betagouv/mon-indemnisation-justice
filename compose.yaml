@@ -1,19 +1,16 @@
 services:
-###> doctrine/doctrine-bundle ###
   postgres:
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-precondev}
-      # You should definitely change the password in production
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-precondev}
       POSTGRES_USER: ${POSTGRES_USER:-precondev}
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
+      - ./.docker/postgres/data:/var/lib/postgresql/data:rw
     ports:
-      - "5432"
-    ###< doctrine/doctrine-bundle ###
+      - "5432:5432"
 
-  ###> symfony/mailer ###
+  # Mailpit: email SMTP + web UI to see trapped emails
   mailpit:
     image: axllent/mailpit
     ports:
@@ -22,14 +19,15 @@ services:
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
-  ###< symfony/mailer ###
 
+  # The Symfony app
   symfony: &app
+    platform: linux/amd64
     hostname: symfony
     stdin_open: true
     tty: true
     build:
-      dockerfile: ./Dockerfile
+      dockerfile: ./.docker/apache/Dockerfile
       context: .
       args:
         - APP_ENV=dev
@@ -54,6 +52,7 @@ services:
         - action: rebuild
           path: composer.lock
 
+  # Encore & webpack dev-server for HMR in local development
   encore:
     <<: *app
     hostname: encore
@@ -71,6 +70,3 @@ services:
           path: yarn.lock
     ports:
       - "8081:8081"
-
-volumes:
-  database_data:

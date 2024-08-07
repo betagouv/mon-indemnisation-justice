@@ -110,10 +110,13 @@ package:
     - mkdir -p /kaniko/.docker
     - echo "$REGISTRY_AUTH" | base64 -d > /kaniko/.docker/config.json
     - ls -lsa /kaniko/.docker/config.json
+    # Kaniko documentation https://github.com/GoogleContainerTools/kaniko?tab=readme-ov-file#additional-flags
     - >-
       /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/.docker/apache/Dockerfile"
+      --build-arg APP_ENV=prod
+      --target base
       --destination "${REGISTRY_URL}/${CI_PROJECT_IMAGE}"
 
 deploy-develop:

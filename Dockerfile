@@ -31,9 +31,9 @@ RUN apt-get update -y && \
 RUN apt-get update -y && \
     apt-get install -y zlib1g-dev libicu-dev g++
 
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install intl
+RUN docker-php-ext-configure intl && docker-php-ext-install intl
 RUN docker-php-ext-install calendar && docker-php-ext-configure calendar
+RUN docker-php-ext-install gd && docker-php-ext-configure gd
 # --- configuration de php /
 
 # --- extension postgres
