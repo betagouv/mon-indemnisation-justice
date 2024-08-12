@@ -27,16 +27,37 @@ build:
   variables:
     APP_ENV: test
     DATABASE_URL: pgsql://precontest:precontest@postgres:5432/precontest?serverVersion=15
+    COMPOSER_ALLOW_SUPERUSER: 1
     POSTGRES_DB: precontest
     POSTGRES_PASSWORD: precontest
     POSTGRES_USER: precontest
   services:
     - postgres:15-alpine
   image:
-    name: composer:lts
+    name: php:8.2
+  before_script:
+    # Install git, postgres and zip library, the php image doesn't have installed
+    - apt update -yqq
+    - apt-get install -y zlib1g-dev libicu-dev g++ libpq-dev libzip-dev zip libldap2-dev libldap-common libfreetype6-dev libjpeg62-turbo-dev libpng-dev
+    - docker-php-ext-install zip
+    - docker-php-ext-install intl
+    - docker-php-ext-install calendar
+    - docker-php-ext-install gd
+    - docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
+    - docker-php-ext-install pdo pdo_pgsql pgsql
+    - docker-php-ext-install sysvsem
+    - docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/
+    - docker-php-ext-install ldap
+    # Install database driver and zip
+    - docker-php-ext-install pdo_mysql pdo_pgsql zip
+    # Install composer
+    - curl -sS https://getcomposer.org/installer | php
+    # Install all project dependencies
+    - php composer.phar install
+
   script:
     - echo "Building"
-    - composer install
+    - bin/console cache:clear
     - bin/phpunit
   artifacts:
     paths:
@@ -48,7 +69,6 @@ build:
   cache:
     paths:
       - vendor/
-      - public/
 
 deploy:
   stage: "🚀 deploy"
