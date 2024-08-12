@@ -2,8 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Categorie;
 use App\Entity\Civilite;
 use App\Entity\PersonnePhysique;
+use App\Entity\QualiteRequerant;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -23,12 +25,62 @@ class AppFixtures extends Fixture
     {
         $faker = FakerFactory::create('fr_FR');
 
+        // Provisionnement des qualités de requérant:
+        $donneesQualiteRequerant = [
+            [
+                'code' => "1",
+                'mnemo' => "PRO",
+                'libelle' => "Propriétaire",
+            ],
+            [
+                'code' => "2",
+                'mnemo' => "LOC",
+                'libelle' => "Locataire",
+            ],
+            [
+                'code' => "3",
+                'mnemo' => "HEB",
+                'libelle' => "Hébergeant",
+            ],
+            [
+                'code' => "4",
+                'mnemo' => "AUT",
+                'libelle' => "Autre",
+            ]
+        ];
+
+        foreach ($donneesQualiteRequerant as $donneeQualiteRequerant) {
+            $manager->persist(
+                (new QualiteRequerant())
+                ->setCode($donneeQualiteRequerant['code'])
+                ->setMnemo($donneeQualiteRequerant['mnemo'])
+                ->setLibelle($donneeQualiteRequerant['libelle'])
+            );
+        }
+
+        // Provisionnement des cétegories:
+        $donneesCategorie = [
+            [
+                'code' => "1",
+                'mnemo' => "BRI",
+                'libelle' => "Bris de porte",
+            ],
+        ];
+
+        foreach ($donneesCategorie as $donneeCategorie) {
+            $manager->persist(
+                (new Categorie())
+                ->setCode($donneeCategorie['code'])
+                ->setMnemo($donneeCategorie['mnemo'])
+                ->setLibelle($donneeCategorie['libelle'])
+            );
+        }
+
+
         // Créations des civilités :
         $mademoiselle = (new Civilite())->setLibelle("Madamoiselle")->setCode('mlle');
         $madame = (new Civilite())->setLibelle("Madame")->setCode('mme');
         $monsieur = (new Civilite())->setLibelle("Monsieur")->setCode('mr');
-
-        $civilites = [$mademoiselle, $madame, $monsieur];
 
         $manager->persist($mademoiselle);
         $manager->persist($madame);
