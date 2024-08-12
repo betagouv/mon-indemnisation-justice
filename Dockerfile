@@ -51,17 +51,21 @@ ADD . /var/www/html
 
 WORKDIR /var/www/html
 
+# Why is that necessary ?
 RUN chmod 777 -R /var/www/html/public
 
+# /root/.cache/composer ?
+COPY ./.docker/apache/cache/composer /root/composer
 ARG APP_ENV
 ENV APP_ENV ${APP_ENV:-prod}
 ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_HOME=/root/.composer
+RUN composer install
 
-RUN --mount=type=cache,target=/root/.cache/composer/ composer install
-
+COPY ./.docker/apache/cache/yarn /root/.yarn
 ENV YARN_CACHE_FOLDER=/root/.yarn
-RUN --mount=type=cache,target=/root/.yarn yarn install
-RUN --mount=type=cache,target=/root/.yarn yarn dev
+RUN yarn install --frozen-lockfile
+RUN yarn dev
 
 EXPOSE 8080 80 443
 
