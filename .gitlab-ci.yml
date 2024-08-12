@@ -28,63 +28,6 @@ variables:
 build:
   stage: 🔨build
   image: "registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu"
-  before_script:
-    - apt-get update
-    - apt-get install -y zip unzip
-    - curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&\
-    - apt-get install -y nodejs
-    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-    - php -r "unlink('composer-setup.php');"
-    - echo "host db ${DATABASE_HOST}"
-  script:
-    - echo "Set .env.${APP_ENV}"
-    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then
-        sed -i "s|__PSQL_HOST__|${PSQL_HOST}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_PORT__|${PSQL_PORT}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_DB__|${PSQL_DB}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV;
-        sed -i "s|__APP_BASE_URL__|${BASE_URL_PROD}|g" .env.$APP_ENV;
-        sed -i "s|__S3_ACCESS_KEY__|${S3_ACCESS_KEY}|g" .env.$APP_ENV;
-        sed -i "s|__S3_BUCKET__|${S3_BUCKET}|g" .env.$APP_ENV;
-        sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
-        sed -i "s|__APP_ADMIN_PASSWORD__|${APP_ADMIN_PASSWORD}|g" .env.$APP_ENV;
-        
-      else
-        sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_PORT__|${PSQL_PORT_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_DB__|${PSQL_DB_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV;
-        sed -i "s|__APP_BASE_URL__|${BASE_URL_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__S3_ACCESS_KEY__|${S3_ACCESS_KEY}|g" .env.$APP_ENV;
-        sed -i "s|__S3_BUCKET__|${S3_BUCKET_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
-      fi
-    - cp .env.$APP_ENV .env
-    - echo "Install dependencies Symfony application with composer"
-    - composer install --optimize-autoloader --apcu-autoloader
-    - if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
-        echo "Update database";
-        php bin/console d:s:u --force;
-      fi
-    - echo "Install Npm & Assets"
-    - npm install
-    - npm run build
-    - php bin/console a:i
-    - php bin/console a:a:charger
-    - apt-get remove --purge nodejs && apt-get autoremove
-    #- COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
-    - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
   artifacts:
     paths:
       - vendor/
@@ -168,7 +111,7 @@ deploy-production:
     S3_SECRET_KEY: $S3_SECRET_KEY_SECRET
   environment:
     name: prod/$CI_COMMIT_REF_SLUG
-    url: "https://mon-indemnisation.anje-justice.fr"
+    url: "https://precontentieux.app.cc.anje-justice.fr"
   when: manual
   only:
     - master
