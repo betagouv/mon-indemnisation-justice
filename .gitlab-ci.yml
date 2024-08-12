@@ -28,6 +28,8 @@ variables:
 build:
   stage: 🔨build
   image: "registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu"
+  script:
+    - echo "Building"
   artifacts:
     paths:
       - vendor/

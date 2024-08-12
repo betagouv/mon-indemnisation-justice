@@ -58,6 +58,8 @@ RUN chmod 777 -R /var/www/html/public
 COPY ./.docker/apache/cache/composer /root/composer
 ARG APP_ENV
 ENV APP_ENV ${APP_ENV:-prod}
+ARG DATABASE_URL
+ENV DATABASE_URL ${DATABASE_URL:-}
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_HOME=/root/.composer
 RUN composer install
