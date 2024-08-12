@@ -29,7 +29,7 @@ services:
     stdin_open: true
     tty: true
     build:
-      dockerfile: ./.docker/apache/Dockerfile
+      dockerfile: ./Dockerfile
       context: .
       args:
         - APP_ENV=dev
