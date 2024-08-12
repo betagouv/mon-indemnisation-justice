@@ -10,7 +10,6 @@ use App\Service\Mailer\SignedMailer;
 use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
-use FOPG\Component\UtilsBundle\Env\Env;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,13 +50,13 @@ class SecurityController extends AbstractController
         $appName = $this->translator->trans('header.name');
 
         $this->mailer
-          ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+          ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
           ->to($user->getEmail())
           ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('security.reset_password.email.title')))
           ->htmlTemplate('security/send_link_for_new_password.html.twig',[
             'name' => $appName,
             'mail' => $user->getEmail(),
-            'url' => Env::get('BASE_URL'),
+            'url' => getenv('BASE_URL'),
             'nomComplet' => $user->getNomComplet(),
           ])
           ->send(pathname: 'app_reset_password',user: $user)
@@ -265,12 +264,12 @@ class SecurityController extends AbstractController
           $appName = $this->translator->trans('header.name');
 
           $this->mailer
-            ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+            ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
             ->to($user->getEmail())
             ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('register.email.title')))
             ->htmlTemplate('registration/confirmation_email.html.twig',[
                 'mail' => $user->getEmail(),
-                'url' => Env::get('BASE_URL'),
+                'url' => getenv('BASE_URL'),
                 'nomComplet' => $user->getNomComplet(),
                 'urlTracking' => $urlTracking,
             ])

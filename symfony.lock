@@ -52,9 +52,6 @@
             "migrations/.gitignore"
         ]
     },
-    "friend-of-pastry-garden/utils-bundle": {
-        "version": "1.0.7"
-    },
     "friendsofsymfony/jsrouting-bundle": {
         "version": "3.5",
         "recipe": {
