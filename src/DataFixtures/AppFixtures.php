@@ -78,7 +78,7 @@ class AppFixtures extends Fixture
 
 
         // Créations des civilités :
-        $mademoiselle = (new Civilite())->setLibelle("Madamoiselle")->setCode('mlle');
+        $mademoiselle = (new Civilite())->setLibelle("Mademoiselle")->setCode('mlle');
         $madame = (new Civilite())->setLibelle("Madame")->setCode('mme');
         $monsieur = (new Civilite())->setLibelle("Monsieur")->setCode('mr');
 
