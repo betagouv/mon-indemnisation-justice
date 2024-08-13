@@ -59,7 +59,9 @@ build:
     - job: build
   script:
     - echo "Deploying"
-    - clever deploy ${CC_APP_ID}
+    - echo ${CC_APP_ID}
+    - clever link ${CC_APP_ID}
+    - clever deploy --force
 
 deploy-develop:
   extends: .base-deploy
