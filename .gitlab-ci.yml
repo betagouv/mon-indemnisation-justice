@@ -50,24 +50,16 @@ build:
     paths:
       - vendor/
 
-.base-deploy:
+deploy-develop:
   stage: "🚀 deploy"
   image:
     name: clevercloud/clever-tools:latest
   needs:
     - job: build
   script:
-    - echo "Package"
-    - echo $FOO
-    - echo $CC_APP_ID
-    - echo APP ID ${CC_APP_ID}
-    - clever link "${CC_APP_ID}"
+    - echo "Deploying to dev app"
+    - echo APP ID ${CC_APP_DEV_ID}
+    - clever link ${CC_APP_DEV_ID}
     - clever deploy
-
-deploy-develop:
-  extends: .base-deploy
-  variables:
-    CC_APP_ID: ${CC_APP_DEV_ID}
-    FOO: "bar"
   only:
     - develop
