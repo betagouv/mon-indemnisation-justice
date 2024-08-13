@@ -1,26 +1,7 @@
-
-
-workflow:
-  rules:
-    - if: $CI_COMMIT_REF_NAME == "develop"
-      variables:
-        CC_APP_ID: ${CC_APP_DEV_ID}
-    - when: always
-
-
 stages:
   - "🔨 build"
   - "🚀 deploy"
 
-
-variables:
-  GIT_DEPTH: 0
-  APP_NAME: "se-precontentieux-webapp-$CI_COMMIT_REF_SLUG"
-  CI_PROJECT_IMAGE: ${APP_NAME}:${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
-  BRANCH_NAME: ${CI_COMMIT_REF_SLUG}
-  APP_ENV: "internet"
-  SCW_BUCKET_DEV: se-precontentieux-dev
-  
 
 build:
   stage: "🔨 build"
@@ -36,9 +17,10 @@ build:
   image:
     name: php:8.2
   before_script:
-    # Install git, postgres and zip library, the php image doesn't have installed
+    # Install required system packages
     - apt update -yqq
     - apt-get install -y zlib1g-dev libicu-dev g++ libpq-dev libzip-dev zip libldap2-dev libldap-common libfreetype6-dev libjpeg62-turbo-dev libpng-dev
+    # Install PHP extensions
     - docker-php-ext-install zip
     - docker-php-ext-install intl
     - docker-php-ext-install calendar
@@ -48,12 +30,10 @@ build:
     - docker-php-ext-install sysvsem
     - docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/
     - docker-php-ext-install ldap
-    # Install database driver and zip
-    - docker-php-ext-install pdo_mysql pdo_pgsql zip
     # Install composer
     - curl -sS https://getcomposer.org/installer | php
     # Install all project dependencies
-    - php composer.phar install
+    - php composer.phar install --no-interaction
 
   script:
     - echo "Building"
@@ -70,18 +50,24 @@ build:
     paths:
       - vendor/
 
-deploy:
+.base-deploy:
   stage: "🚀 deploy"
   image:
     name: clevercloud/clever-tools:latest
   needs:
-    - job : build
-      artifacts: true
-
+    - job: build
   script:
     - echo "Package"
+    - echo $FOO
+    - echo $CC_APP_ID
     - echo APP ID ${CC_APP_ID}
     - clever link "${CC_APP_ID}"
     - clever deploy
+
+deploy-develop:
+  extends: .base-deploy
+  variables:
+    CC_APP_ID: ${CC_APP_DEV_ID}
+    FOO: "bar"
   only:
     - develop
