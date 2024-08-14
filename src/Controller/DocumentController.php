@@ -21,7 +21,8 @@ class DocumentController extends AbstractController
     public function __construct(
       private EntityManagerInterface $em,
       private DownloadHandler $downloadHandler,
-      private S3Client $client
+      private S3Client $client,
+        protected readonly string $bucket
     )
     {
 
@@ -60,7 +61,7 @@ class DocumentController extends AbstractController
     public function download(Request $request, ?Document $document): BinaryFileResponse
     {
       $file = $this->client->getObject([
-          'Bucket' => getenv('SCW_BUCKET'),
+          'Bucket' => $this->bucket,
           'Key' => $document->getFilename(),
       ]);
       $body = $file->get('Body');

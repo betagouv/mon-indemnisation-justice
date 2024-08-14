@@ -26,7 +26,10 @@ class PrejudiceController extends AbstractController
       private TranslatorInterface $translator,
       private Version $version,
       private Breadcrumb $breadcrumb,
-      private StatutRepository $statutRepository
+      private StatutRepository $statutRepository,
+        protected readonly string $emailFrom,
+        protected readonly string $emailFromLabel,
+        protected readonly string $baseUrl,
     )
     {
 
@@ -74,12 +77,12 @@ class PrejudiceController extends AbstractController
       );
 
       $mailer
-         ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
+         ->from($this->emailFrom, $this->emailFromLabel)
          ->to($requerant->getEmail())
          ->subject($this->translator->trans('bris_porte.edit.email.title_sign'))
          ->htmlTemplate('requerant/email/confirmation_passage_etat_signe.html.twig',[
            'mail' => $requerant->getEmail(),
-           'url' => getenv('BASE_URL'),
+           'url' => $this->baseUrl,
            'nomComplet' => $requerant->getNomComplet(),
            'reference' => $brisPorte->getReference(),
            'urlTracking' => $urlTracking

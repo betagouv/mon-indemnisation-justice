@@ -22,6 +22,28 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\Controller\SecurityController:
+        $emailFrom: '%env(EMAIL_FROM)%'
+        $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
+        $baseUrl: '%env(BASE_URL)%'
+
+    App\Controller\Prejudice\BrisPorteController:
+        $emailFrom: '%env(EMAIL_FROM)%'
+        $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
+        $baseUrl: '%env(BASE_URL)%'
+
+    App\Controller\Prejudice\PrejudiceController:
+        $emailFrom: '%env(EMAIL_FROM)%'
+        $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
+        $baseUrl: '%env(BASE_URL)%'
+
+    App\Controller\DocumentController:
+        $bucket: '%env(SCW_BUCKET)%'
+
+    App\Service\Mailer\Mailer:
+        $mailerFrom: '%env(MAILER_FROM)%'
+
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous
     Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'

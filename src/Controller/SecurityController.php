@@ -30,7 +30,10 @@ class SecurityController extends AbstractController
       private AuthenticationUtils $authenticationUtils,
       private Version $version,
       private SignedMailer $mailer,
-      private EntityManagerInterface $em
+      private EntityManagerInterface $em,
+        protected readonly string $emailFrom,
+        protected readonly string $emailFromLabel,
+        protected readonly string $baseUrl
     ) {
 
     }
@@ -50,13 +53,13 @@ class SecurityController extends AbstractController
         $appName = $this->translator->trans('header.name');
 
         $this->mailer
-          ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
+          ->from($this->emailFrom, $this->emailFromLabel)
           ->to($user->getEmail())
           ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('security.reset_password.email.title')))
           ->htmlTemplate('security/send_link_for_new_password.html.twig',[
             'name' => $appName,
             'mail' => $user->getEmail(),
-            'url' => getenv('BASE_URL'),
+            'url' => $this->baseUrl,
             'nomComplet' => $user->getNomComplet(),
           ])
           ->send(pathname: 'app_reset_password',user: $user)
@@ -264,12 +267,12 @@ class SecurityController extends AbstractController
           $appName = $this->translator->trans('header.name');
 
           $this->mailer
-            ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
+            ->from($this->emailFrom, $this->emailFromLabel)
             ->to($user->getEmail())
             ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('register.email.title')))
             ->htmlTemplate('registration/confirmation_email.html.twig',[
                 'mail' => $user->getEmail(),
-                'url' => getenv('BASE_URL'),
+                'url' => $this->baseUrl,
                 'nomComplet' => $user->getNomComplet(),
                 'urlTracking' => $urlTracking,
             ])
@@ -290,8 +293,8 @@ class SecurityController extends AbstractController
          * Le formulaire a bien été identifié
          *
          */
-        elseif(true === self::has_fields($request)) {
-          if($fields['type'] === 'BRI') { }
+        else if(true === self::has_fields($request)) {
+          if ($fields['type'] === 'BRI') { }
           else {
             $session->set("test_eligibilite",null);
             return $this->redirect('/');

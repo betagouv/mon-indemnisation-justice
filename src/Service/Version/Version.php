@@ -6,11 +6,7 @@ class Version {
   private ?string $_branch=null;
 
   function __construct() {
-    $path = realpath(__DIR__.'/../../../.git');
-    if($path)
-      $this->_branch = str_replace("\n","",preg_replace("/^(.*)\/([^\/]+)$/","$2",file_get_contents($path.'/HEAD')));
-    if(getenv('WITH_VERSION'))
-      $this->_branch = "";
+    $this->_branch = $_ENV['COMMIT_ID'] ?? null;
   }
 
   public function getBranch(): ?string { return $this->_branch; }

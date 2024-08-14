@@ -31,7 +31,10 @@ class BrisPorteController extends AbstractController
       private Version $version,
       private Breadcrumb $breadcrumb,
       private StatutRepository $statutRepository,
-      private TranslatorInterface $translator
+      private TranslatorInterface $translator,
+        protected readonly string $emailFrom,
+        protected readonly string $emailFromLabel,
+        protected readonly string $baseUrl,
     )
     {
     }
@@ -108,12 +111,12 @@ class BrisPorteController extends AbstractController
       $this->statutRepository->addEvent($brisPorte, $user, Statut::CODE_CONSTITUE);
 
       $mailer
-         ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
+         ->from($this->emailFrom, $this->emailFromLabel)
          ->to($user->getEmail())
          ->subject($this->translator->trans('bris_porte.edit.email.title'))
          ->htmlTemplate('requerant/email/confirmation_passage_etat_constitue.html.twig',[
            'mail' => $user->getEmail(),
-           'url' => getenv('BASE_URL'),
+           'url' => $this->baseUrl,
            'nomComplet' => $user->getNomComplet(),
            'reference' => $brisPorte->getReference(),
            'raccourci' => $brisPorte->getRaccourci(),
