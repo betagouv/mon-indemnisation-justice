@@ -49,27 +49,24 @@ build:
     paths:
       - vendor/
 
-.base-deploy:
+deploy-develop:
   stage: "🚀 deploy"
   image:
     name: clevercloud/clever-tools:latest
-  needs:
-    - job: build
   script:
     - echo "Deploying"
-    - clever link ${CC_APP_ID}
-    - clever deploy --force
-
-deploy-develop:
-  extends: .base-deploy
-  variables:
-    CC_APP_ID: $CC_APP_DEV_ID
+    - clever link $CC_APP_DEV_ID
+    - clever deploy --alias precontentieux-dev --force
   only:
     - develop
 
 deploy-prod:
-  extends: .base-deploy
-  variables:
-    CC_APP_ID: $CC_APP_PROD_ID
+  stage: "🚀 deploy"
+  image:
+    name: clevercloud/clever-tools:latest
+  script:
+    - echo "Deploying"
+    - clever link $CC_APP_PROD_ID
+    - clever deploy --alias precontentieux-prod --force
   only:
     - master
