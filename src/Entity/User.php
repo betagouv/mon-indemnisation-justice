@@ -47,7 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
 
     #[Groups(['user:read','prejudice:read'])]
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 

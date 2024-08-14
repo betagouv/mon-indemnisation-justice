@@ -26,7 +26,7 @@ abstract class Prejudice implements PrejudiceInterface
 {
     #[Groups('prejudice:read','prejudice:write')]
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     public ?int $id = null;
 
