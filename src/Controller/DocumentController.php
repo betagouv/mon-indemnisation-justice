@@ -6,14 +6,12 @@ use Aws\S3\S3Client;
 use App\Entity\Document;
 use App\Entity\LiasseDocumentaire;
 use Doctrine\ORM\EntityManagerInterface;
-use FOPG\Component\UtilsBundle\Env\Env;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Vich\UploaderBundle\Handler\DownloadHandler;
@@ -62,7 +60,7 @@ class DocumentController extends AbstractController
     public function download(Request $request, ?Document $document): BinaryFileResponse
     {
       $file = $this->client->getObject([
-          'Bucket' => Env::get('SCW_BUCKET'),
+          'Bucket' => getenv('SCW_BUCKET'),
           'Key' => $document->getFilename(),
       ]);
       $body = $file->get('Body');

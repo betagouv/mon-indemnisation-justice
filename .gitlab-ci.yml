@@ -1,90 +1,44 @@
-include:
-  - project: anje/template-ci/symfony
-    ref: main
-    file:
-      - 'package.yml'
-      - 'build.yml'
-  - project: anje/template-ci/clevercloud
-    ref: main
-    file:
-      - 'deploy.yml'
-      - 'destroy.yml'
-
 stages:
-  - 🔨build
-  - 📦package
-  - 🚀deploy
-  - 🗑destroy
+  - "🔨 build"
+  - "🚀 deploy"
 
-variables:
-  GIT_DEPTH: 0
-  APP_NAME: "se-precontentieux-webapp-$CI_COMMIT_REF_SLUG"
-  CI_PROJECT_IMAGE: ${APP_NAME}:${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
-  BRANCH_NAME: ${CI_COMMIT_REF_SLUG}
-  APP_ENV: "internet"
-  SCW_BUCKET_DEV: se-precontentieux-dev
-  
 
 build:
-  stage: 🔨build
-  image: "registry.anje-justice.fr/anje/anj-php:8.2-apache-pgsql-apcu"
+  stage: "🔨 build"
+  variables:
+    APP_ENV: test
+    DATABASE_URL: pgsql://precontest:precontest@postgres:5432/precontest?serverVersion=15
+    COMPOSER_ALLOW_SUPERUSER: 1
+    POSTGRES_DB: precontest
+    POSTGRES_PASSWORD: precontest
+    POSTGRES_USER: precontest
+  services:
+    - postgres:15-alpine
+  image:
+    name: php:8.2
   before_script:
-    - apt-get update
-    - apt-get install -y zip unzip
-    - curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&\
-    - apt-get install -y nodejs
-    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-    - php -r "unlink('composer-setup.php');"
-    - echo "host db ${DATABASE_HOST}"
+    # Install required system packages
+    - apt update -yqq
+    - apt-get install -y zlib1g-dev libicu-dev g++ libpq-dev libzip-dev zip libldap2-dev libldap-common libfreetype6-dev libjpeg62-turbo-dev libpng-dev
+    # Install PHP extensions
+    - docker-php-ext-install zip
+    - docker-php-ext-install intl
+    - docker-php-ext-install calendar
+    - docker-php-ext-install gd
+    - docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
+    - docker-php-ext-install pdo pdo_pgsql pgsql
+    - docker-php-ext-install sysvsem
+    - docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/
+    - docker-php-ext-install ldap
+    # Install composer
+    - curl -sS https://getcomposer.org/installer | php
+    # Install all project dependencies
+    - php composer.phar install --no-interaction
+
   script:
-    - echo "Set .env.${APP_ENV}"
-    - if [ "$CI_COMMIT_REF_NAME" == "master" ]; then
-        sed -i "s|__PSQL_HOST__|${PSQL_HOST}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_PORT__|${PSQL_PORT}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_DB__|${PSQL_DB}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV;
-        sed -i "s|__APP_BASE_URL__|${BASE_URL_PROD}|g" .env.$APP_ENV;
-        sed -i "s|__S3_ACCESS_KEY__|${S3_ACCESS_KEY}|g" .env.$APP_ENV;
-        sed -i "s|__S3_BUCKET__|${S3_BUCKET}|g" .env.$APP_ENV;
-        sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
-        sed -i "s|__APP_ADMIN_PASSWORD__|${APP_ADMIN_PASSWORD}|g" .env.$APP_ENV;
-        
-      else
-        sed -i "s|__PSQL_HOST__|${PSQL_HOST_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_PORT__|${PSQL_PORT_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_USERNAME__|${PSQL_USERNAME_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_PASSWORD__|${PSQL_PASSWORD_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__PSQL_DB__|${PSQL_DB_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_HOST__|${SMTP_HOST}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_PORT__|${SMTP_PORT}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_USERNAME__|${SMTP_USERNAME}|g" .env.$APP_ENV;
-        sed -i "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" .env.$APP_ENV;
-        sed -i "s|__APP_BASE_URL__|${BASE_URL_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__S3_ACCESS_KEY__|${S3_ACCESS_KEY}|g" .env.$APP_ENV;
-        sed -i "s|__S3_BUCKET__|${S3_BUCKET_DEV}|g" .env.$APP_ENV;
-        sed -i "s|__S3_SECRET_KEY__|${S3_SECRET_KEY}|g" .env.$APP_ENV;
-      fi
-    - cp .env.$APP_ENV .env
-    - echo "Install dependencies Symfony application with composer"
-    - composer install --optimize-autoloader --apcu-autoloader
-    - if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
-        echo "Update database";
-        php bin/console d:s:u --force;
-      fi
-    - echo "Install Npm & Assets"
-    - npm install
-    - npm run build
-    - php bin/console a:i
-    - php bin/console a:a:charger
-    - apt-get remove --purge nodejs && apt-get autoremove
-    #- COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
-    - COMPOSER_ALLOW_SUPERUSER=1 composer dump-env $APP_ENV
+    - echo "Building"
+    - bin/console cache:clear
+    - bin/phpunit
   artifacts:
     paths:
       - vendor/
@@ -95,81 +49,22 @@ build:
   cache:
     paths:
       - vendor/
-      - public/
 
-package:
-  stage: 📦package
-  needs:
-    - job : build
-      artifacts: true
+
+.base-deploy:
+  stage: "🚀 deploy"
   image:
-    name: "gcr.io/kaniko-project/executor:v1.9.0-debug"
-    entrypoint: [ '' ]
+    name: clevercloud/clever-tools:latest
+  needs:
+    - job: build
   script:
-    - echo "Package to Docker image Spring boot application"
-    - mkdir -p /kaniko/.docker
-    - echo "$REGISTRY_AUTH" | base64 -d > /kaniko/.docker/config.json
-    - ls -lsa /kaniko/.docker/config.json
-    - >-
-      /kaniko/executor
-      --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/.docker/Dockerfile"
-      --destination "${REGISTRY_URL}/${CI_PROJECT_IMAGE}"
+    - echo "Deploying"
+    - clever link ${CC_APP_ID}
+    - clever deploy --force
 
 deploy-develop:
-  stage: 🚀deploy
-  needs:
-    - job: package
-  extends: .template:clevercloud:deploy
+  extends: .base-deploy
   variables:
-    APP_FQDN: "dev.precontentieux.app.cc.anje-justice.fr"
-    CC_DOCKER_EXPOSED_HTTP_PORT: 8080
-    CC_FORCE_HTTPS: 1
-    CLEVER_PGNAME: "postgresql_9c6a16f6-acc0-4152-8bc4-29f21ef185d1"
-  environment:
-    name: dev/$CI_COMMIT_REF_SLUG
-    url: "https://dev.precontentieux.app.cc.anje-justice.fr"
+    CC_APP_ID: $CC_APP_DEV_ID
   only:
     - develop
-
-deploy-recette:
-  stage: 🚀deploy
-  needs:
-    - job: package
-  extends: .template:clevercloud:deploy
-  variables:
-    APP_FQDN: "recette.precontentieux.app.cc.anje-justice.fr"
-    CC_DOCKER_EXPOSED_HTTP_PORT: 8080
-    CC_FORCE_HTTPS: 1
-    CLEVER_PGNAME: "postgresql_9c6a16f6-acc0-4152-8bc4-29f21ef185d1"
-  environment:
-    name: recette/$CI_COMMIT_REF_SLUG
-    url: "https://recette.precontentieux.app.cc.anje-justice.fr"
-  only:
-    - recette
-
-
-deploy-production:
-  stage: 🚀deploy
-  needs:
-    - job: package
-  extends: .template:clevercloud:deploy
-  variables:
-    APP_FQDN: "precontentieux.app.cc.anje-justice.fr"
-    CC_DOCKER_EXPOSED_HTTP_PORT: 8080
-    CC_FORCE_HTTPS: 1
-    CLEVER_PGNAME: "postgresql_9c6a16f6-acc0-4152-8bc4-29f21ef185d1"
-    S3_ENDPOINT: "https://s3.fr-par.scw.cloud"
-    S3_BUCKET: "se-precontentieux-prod"
-    S3_ACCESS_KEY: $S3_ACCESS_KEY_SECRET
-    S3_SECRET_KEY: $S3_SECRET_KEY_SECRET
-  environment:
-    name: prod/$CI_COMMIT_REF_SLUG
-    url: "https://mon-indemnisation.anje-justice.fr"
-  when: manual
-  only:
-    - master
-
-destroy-app-clevercloud:
-  stage: 🗑destroy
-  extends: .template:clevercloud:destroy

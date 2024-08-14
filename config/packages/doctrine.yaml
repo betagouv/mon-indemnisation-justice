@@ -15,7 +15,7 @@ doctrine:
     orm:
         dql:
             string_functions:
-# alternative implementation of ALL() and ANY() where subquery is not required, useful for arrays
+                # alternative implementation of ALL() and ANY() where subquery is not required, useful for arrays
                 ALL_OF: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\All
                 ANY_OF: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\Any
                 # operators for working with array and json(b) data

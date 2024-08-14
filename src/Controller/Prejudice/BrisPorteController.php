@@ -3,7 +3,6 @@
 namespace App\Controller\Prejudice;
 
 use App\Entity\BrisPorte;
-use App\Entity\Categorie;
 use App\Entity\Statut;
 use App\Entity\User;
 use App\Repository\StatutRepository;
@@ -11,7 +10,6 @@ use App\Service\Mailer\BasicMailer;
 use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
 use Doctrine\ORM\EntityManagerInterface;
-use FOPG\Component\UtilsBundle\Env\Env;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -110,12 +108,12 @@ class BrisPorteController extends AbstractController
       $this->statutRepository->addEvent($brisPorte, $user, Statut::CODE_CONSTITUE);
 
       $mailer
-         ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+         ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
          ->to($user->getEmail())
          ->subject($this->translator->trans('bris_porte.edit.email.title'))
          ->htmlTemplate('requerant/email/confirmation_passage_etat_constitue.html.twig',[
            'mail' => $user->getEmail(),
-           'url' => Env::get('BASE_URL'),
+           'url' => getenv('BASE_URL'),
            'nomComplet' => $user->getNomComplet(),
            'reference' => $brisPorte->getReference(),
            'raccourci' => $brisPorte->getRaccourci(),

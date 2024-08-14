@@ -1,0 +1,11 @@
+services:
+  nginx:
+    hostname: nginx
+    stdin_open: true
+    tty: true
+    build:
+      dockerfile: .docker/nginx/Dockerfile
+      context: .
+    ports:
+      - "80:80"
+      - "443:443"

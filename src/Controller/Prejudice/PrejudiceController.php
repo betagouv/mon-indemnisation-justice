@@ -3,17 +3,13 @@
 namespace App\Controller\Prejudice;
 
 use App\Entity\BrisPorte;
-use App\Entity\Categorie;
 use App\Entity\Statut;
 use App\Entity\User;
 use App\Repository\StatutRepository;
 use App\Service\Version\Version;
 use App\Service\Breadcrumb\Breadcrumb;
-use Doctrine\ORM\EntityManagerInterface;
-use FOPG\Component\UtilsBundle\Env\Env;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Service\Mailer\BasicMailer;
@@ -78,12 +74,12 @@ class PrejudiceController extends AbstractController
       );
 
       $mailer
-         ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+         ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
          ->to($requerant->getEmail())
          ->subject($this->translator->trans('bris_porte.edit.email.title_sign'))
          ->htmlTemplate('requerant/email/confirmation_passage_etat_signe.html.twig',[
            'mail' => $requerant->getEmail(),
-           'url' => Env::get('BASE_URL'),
+           'url' => getenv('BASE_URL'),
            'nomComplet' => $requerant->getNomComplet(),
            'reference' => $brisPorte->getReference(),
            'urlTracking' => $urlTracking

@@ -7,19 +7,13 @@ use App\Entity\Civilite;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\Mailer\SignedMailer;
-use App\Security\EmailVerifier;
 use App\Service\Breadcrumb\Breadcrumb;
-use App\Service\Mailer\Mailer;
 use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
-use FOPG\Component\UtilsBundle\Env\Env;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -36,8 +30,7 @@ class SecurityController extends AbstractController
       private AuthenticationUtils $authenticationUtils,
       private Version $version,
       private SignedMailer $mailer,
-      private EntityManagerInterface $em,
-      private EmailVerifier $emailVerifier
+      private EntityManagerInterface $em
     ) {
 
     }
@@ -57,13 +50,13 @@ class SecurityController extends AbstractController
         $appName = $this->translator->trans('header.name');
 
         $this->mailer
-          ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+          ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
           ->to($user->getEmail())
           ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('security.reset_password.email.title')))
           ->htmlTemplate('security/send_link_for_new_password.html.twig',[
             'name' => $appName,
             'mail' => $user->getEmail(),
-            'url' => Env::get('BASE_URL'),
+            'url' => getenv('BASE_URL'),
             'nomComplet' => $user->getNomComplet(),
           ])
           ->send(pathname: 'app_reset_password',user: $user)
@@ -271,12 +264,12 @@ class SecurityController extends AbstractController
           $appName = $this->translator->trans('header.name');
 
           $this->mailer
-            ->from(Env::get('EMAIL_FROM'), Env::get('EMAIL_FROM_LABEL'))
+            ->from(getenv('EMAIL_FROM'), getenv('EMAIL_FROM_LABEL'))
             ->to($user->getEmail())
             ->subject(str_replace(["%name%"],[$appName],$this->translator->trans('register.email.title')))
             ->htmlTemplate('registration/confirmation_email.html.twig',[
                 'mail' => $user->getEmail(),
-                'url' => Env::get('BASE_URL'),
+                'url' => getenv('BASE_URL'),
                 'nomComplet' => $user->getNomComplet(),
                 'urlTracking' => $urlTracking,
             ])

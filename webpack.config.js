@@ -32,6 +32,41 @@ Encore
     // but, you probably want this, unless you're building a single-page app
     .enableSingleRuntimeChunk()
 
+    .configureDevServerOptions(options => {
+        // Webpack dev server configuration https://webpack.js.org/configuration/dev-server/
+        return {
+            server: 'http',
+            allowedHosts: 'all',
+            //liveReload: true,
+            compress: false,
+            host: '0.0.0.0',
+            port: 8081,
+            client: {
+                overlay: true,
+                reconnect: true,
+                webSocketURL: 'ws://localhost:8081/ws',
+            },
+            static: {
+                watch: false
+            },
+            watchFiles: {
+                paths: ['src/**/*.php', 'templates/**/*'],
+            },
+            proxy: {
+                path: '**',
+                target: 'http://localhost:8081',
+                secure: false,
+                changeOrigin: true,
+            },
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+                "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+              }
+        }
+
+    })
+
     /*
      * FEATURE CONFIG
      *
