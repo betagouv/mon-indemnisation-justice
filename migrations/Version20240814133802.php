@@ -14,7 +14,7 @@ final class Version20240814133802 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Auto increment entity ids on insert';
     }
 
     public function up(Schema $schema): void
