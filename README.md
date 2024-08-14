@@ -39,3 +39,7 @@ grâce aux _data fixtures_:
 # Depuis le conteneur du service `symfony`:
 bin/console doctrine:fixture:load --purge-with-truncate --no-interaction
 ```
+
+## Resturer un dump
+
+_à documenter_ plus tard

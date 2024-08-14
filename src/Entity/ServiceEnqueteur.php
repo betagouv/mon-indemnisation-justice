@@ -19,7 +19,7 @@ class ServiceEnqueteur
 {
     #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 

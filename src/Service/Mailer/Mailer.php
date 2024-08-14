@@ -9,7 +9,10 @@ class Mailer
 {
   private ?TransportInterface $_transport=null;
 
-  public function __construct(TransportInterface $transport) {
+  public function __construct(
+      TransportInterface $transport,
+      protected readonly string $mailerFrom
+  ) {
     $this->_transport=$transport;
   }
 
@@ -17,7 +20,7 @@ class Mailer
 
   public  function sendTo(User $user,string $subject, string $html): self {
     $email = new Email();
-    $email->from(getenv('MAILER_FROM'));
+    $email->from($this->mailerFrom);
     $email->to($user->getEmail());
     $email->subject($subject);
     $email->html($html);

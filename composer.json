@@ -106,6 +106,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.6",
+        "friendsofphp/php-cs-fixer": "^3.62",
         "fzaninotto/faker": "^1.5",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "6.4.*",

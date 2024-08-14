@@ -2,7 +2,6 @@ stages:
   - "🔨 build"
   - "🚀 deploy"
 
-
 build:
   stage: "🔨 build"
   variables:
@@ -50,7 +49,6 @@ build:
     paths:
       - vendor/
 
-
 .base-deploy:
   stage: "🚀 deploy"
   image:
@@ -68,3 +66,10 @@ deploy-develop:
     CC_APP_ID: $CC_APP_DEV_ID
   only:
     - develop
+
+deploy-prod:
+  extends: .base-deploy
+  variables:
+    CC_APP_ID: $CC_APP_PROD_ID
+  only:
+    - master
