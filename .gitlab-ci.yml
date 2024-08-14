@@ -59,7 +59,6 @@ build:
     - job: build
   script:
     - echo "Deploying"
-    - echo ${CC_APP_ID}
     - clever link ${CC_APP_ID}
     - clever deploy --force
 
