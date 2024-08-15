@@ -32,10 +32,11 @@ services:
       dockerfile: ./Dockerfile
       context: .
       args:
-        - APP_ENV=dev
+        - APP_ENV=${APP_ENV:-dev}
+        - COMPOSER_OPTS=${COMPOSER_OPTS:-}
         - DATABASE_URL=pgsql://precondev:precondev@postgres:5432/precondev?serverVersion=15
     environment:
-      - APP_ENV=dev
+      - APP_ENV=${APP_ENV:-dev}
       - DATABASE_URL=pgsql://precondev:precondev@postgres:5432/precondev?serverVersion=15
     depends_on:
       - postgres
