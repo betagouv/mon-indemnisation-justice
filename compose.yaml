@@ -32,11 +32,16 @@ services:
       dockerfile: ./Dockerfile
       context: .
       args:
-        - APP_ENV=dev
+        - APP_ENV=${APP_ENV:-dev}
+        - APP_DEBUG=${APP_DEBUG:-1}
+        - COMPOSER_OPTS=${COMPOSER_OPTS:-}
         - DATABASE_URL=pgsql://precondev:precondev@postgres:5432/precondev?serverVersion=15
     environment:
-      - APP_ENV=dev
+      - APP_ENV=${APP_ENV:-dev}
+      - APP_DEBUG=${APP_DEBUG:-1}
       - DATABASE_URL=pgsql://precondev:precondev@postgres:5432/precondev?serverVersion=15
+    env_file:
+      - .env.dev
     depends_on:
       - postgres
       - mailpit
