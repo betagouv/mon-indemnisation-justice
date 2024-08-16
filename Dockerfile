@@ -58,6 +58,8 @@ RUN chmod 777 -R /var/www/html/public
 COPY ./.docker/apache/cache/composer /root/composer
 ARG APP_ENV
 ENV APP_ENV ${APP_ENV:-prod}
+ARG SENTRY_DSN
+ENV SENTRY_DSN ${SENTRY_DSN:-prod}
 ARG COMPOSER_OPTS
 ENV COMPOSER_OPTS ${COMPOSER_OPTS:-}
 ARG DATABASE_URL
