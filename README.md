@@ -40,6 +40,6 @@ grâce aux _data fixtures_:
 bin/console doctrine:fixture:load --purge-with-truncate --no-interaction
 ```
 
-## Resturer un dump
+## Restaurer un dump
 
 _à documenter_ plus tard

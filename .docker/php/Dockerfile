@@ -47,6 +47,8 @@ ADD . /app
 
 WORKDIR /app
 
+RUN touch .env
+
 ARG APP_ENV
 ENV APP_ENV ${APP_ENV:-dev}
 ARG APP_DEBUG
