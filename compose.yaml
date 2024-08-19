@@ -12,6 +12,20 @@ services:
     ports:
       - "5432:5432"
 
+  nginx:
+    hostname: nginx
+    stdin_open: true
+    tty: true
+    build:
+      dockerfile: .docker/nginx/Dockerfile
+      context: .
+    volumes:
+      # Ce partage, via un volume, est requis afin que Nginx puisse servir les fichiers statiques seul
+      - ./public:/app/public
+    ports:
+      - "80:80"
+      - "443:443"
+
   # Mailpit: email SMTP + web UI to see trapped emails
   mailpit:
     image: axllent/mailpit
@@ -24,17 +38,15 @@ services:
 
   # The Symfony app
   symfony: &app
-    platform: linux/amd64
     hostname: symfony
     stdin_open: true
     tty: true
     build:
-      dockerfile: ./Dockerfile
+      dockerfile: .docker/php/Dockerfile
       context: .
       args:
         - APP_ENV=${APP_ENV:-dev}
         - APP_DEBUG=${APP_DEBUG:-1}
-        - COMPOSER_OPTS=${COMPOSER_OPTS:-}
         - DATABASE_URL=pgsql://precondev:precondev@postgres:5432/precondev?serverVersion=15
     environment:
       - APP_ENV=${APP_ENV:-dev}
@@ -46,14 +58,15 @@ services:
       - postgres
       - mailpit
     volumes:
-      - ./public:/var/www/html/public
+      # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
+      - ./public/build:/app/public/build
     ports:
-      - "8080:8080"
+      - "9000:9000"
     develop:
       watch:
         - action: sync
           path: .
-          target: /var/www/html
+          target: /app
           ignore:
             - vendor/
             - public/build/
@@ -67,12 +80,13 @@ services:
     hostname: encore
     command: yarn dev-server --port 8081
     volumes:
-      - ./public:/var/www/html/public
+      # Ce partage, via un volume, est requis afin de transmettre à Symfony les manifestes produits par `encore`
+      - ./public/build:/app/public/build
     develop:
       watch:
         - action: sync
           path: assets
-          target: /var/www/html/assets
+          target: /app
           ignore:
             - node_modules/
         - action: rebuild
