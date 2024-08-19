@@ -79,10 +79,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     private $isVerified = false;
 
     #[Groups('user:read')]
-    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant')]
-    private Collection $brisPortes;
-
-    #[Groups('user:read')]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $mnemo = null;
 
@@ -136,7 +132,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         $this->personnePhysique = new PersonnePhysique();
         $this->isPersonneMorale = false;
         $this->adresse = new Adresse();
-        $this->brisPortes = new ArrayCollection();
         $this->active = true;
         $this->trackings = new ArrayCollection();
     }
@@ -301,35 +296,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this;
     }
 
-    /**
-     * @return Collection<int, BrisPorte>
-     */
-    public function getBrisPortes(): Collection
-    {
-        return $this->brisPortes;
-    }
 
-    public function addBrisPorte(BrisPorte $brisPorte): static
-    {
-        if (!$this->brisPortes->contains($brisPorte)) {
-            $this->brisPortes->add($brisPorte);
-            $brisPorte->setRequerant($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBrisPorte(BrisPorte $brisPorte): static
-    {
-        if ($this->brisPortes->removeElement($brisPorte)) {
-            // set the owning side to null (unless already changed)
-            if ($brisPorte->getRequerant() === $this) {
-                $brisPorte->setRequerant(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getMnemo(): ?string
     {

@@ -16,19 +16,23 @@ RUN apt-get update -y && \
     apt-get install -y vim wget git
 
 # PHP extensions
-#RUN apt-get install -y zlib1g-dev  g++   libfreetype6-dev libjpeg62-turbo-dev
 RUN apt-get install -y libzip-dev zip && docker-php-ext-install zip
 RUN apt-get install -y libicu-dev && docker-php-ext-install intl
 RUN docker-php-ext-install calendar
 RUN apt-get install -y libpng-dev && docker-php-ext-install gd
 RUN apt-get install -y libpq-dev && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && docker-php-ext-install pdo pdo_pgsql pgsql
-#RUN docker-php-ext-install sysvsem
 RUN apt-get install -y libldap2-dev libldap-common && docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/ && docker-php-ext-install ldap
 
 # Node
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get install -y nodejs
 RUN npm update -g
+
+# WKhtmltopdf
+
+RUN apt-get install -y openssl build-essential libssl-dev libxrender-dev git-core libx11-dev libxext-dev libfontconfig1-dev libfreetype6-dev fontconfig libjpeg62-turbo xfonts-75dpi  xfonts-base
+RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb -O /tmp/wkhtml2pdf.deb && dpkg -i /tmp/wkhtml2pdf.deb && rm -f /tmp/wkhtml2pdf.deb
+
 
 # Chromium
 
@@ -68,6 +72,3 @@ RUN --mount=type=cache,target=/root/.yarn yarn dev
 
 # Surcharge de la commande Docker pour jouer les migrations avant de démarrer le serveur
 CMD bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && php-fpm
-
-
-

@@ -33,7 +33,6 @@ build:
     - curl -sS https://getcomposer.org/installer | php
     # Install all project dependencies
     - php composer.phar install --no-interaction
-
   script:
     - echo "Building"
     - bin/console cache:clear

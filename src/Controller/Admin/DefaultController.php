@@ -18,9 +18,7 @@ class DefaultController extends AbstractController
       private Breadcrumb $breadcrumb,
       private EntityManagerInterface $em
     )
-    {
-
-    }
+    {}
 
     #[Route('/accueil', name: 'app_admin_homepage')]
     public function index(): Response

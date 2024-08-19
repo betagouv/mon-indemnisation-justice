@@ -211,20 +211,16 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('app_login');
     }
 
-    private function buildSession(Request $request): bool
+    private function buildSession(Request $request): void
     {
         $session = $request->getSession();
         $fields = self::get_fields($request);
         if (true === self::has_fields($request)) {
-            if ('BRI' === $fields['type']) {
-            } else {
+            if ('BRI' !== $fields['type']) {
                 $session->set('test_eligibilite', null);
-
-                return false;
+            } else {
+                $session->set('test_eligibilite', $fields);
             }
-            $session->set('test_eligibilite', $fields);
-
-            return true;
         }
     }
 
