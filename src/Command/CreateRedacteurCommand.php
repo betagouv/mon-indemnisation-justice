@@ -16,7 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-#[AsCommand(name: 'precontentieux:create_redacteur', description: 'Créer un rédacteur')]
+#[AsCommand(name: 'precontentieux:creer-agent', description: 'Créer un agent')]
 class CreateRedacteurCommand extends Command
 {
     public function __construct(
@@ -72,4 +72,9 @@ class CreateRedacteurCommand extends Command
 
         return Command::SUCCESS;
     }
+
+    protected static function generatePassword($length = 10) {
+        return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', (int) ceil($length/strlen($x)) )),1,$length);
+    }
+
 }
