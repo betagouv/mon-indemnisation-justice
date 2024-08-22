@@ -35,6 +35,7 @@ class CreateRedacteurCommand extends Command
             ->addArgument('email', InputArgument::REQUIRED)
             ->addArgument('password', InputArgument::REQUIRED)
             ->addArgument('civilite', InputArgument::OPTIONAL, '', 'mme')
+            ->addOption('isChef', 'c', InputOption::VALUE_NONE)
             ->addOption('isAdmin', 'a', InputOption::VALUE_NONE)
         ;
     }
@@ -54,7 +55,9 @@ class CreateRedacteurCommand extends Command
                 )
             )
             ->setEmail($input->getArgument('email'))
-            ->addRole($input->getOption('isAdmin') ? User::ROLE_CHEF_PRECONTENTIEUX : User::ROLE_REDACTEUR_PRECONTENTIEUX)
+            ->addRole(
+                $input->getOption('isAdmin') ? User::ROLE_ADMIN_FONC :
+                ($input->getOption('isChef') ? User::ROLE_CHEF_PRECONTENTIEUX : User::ROLE_REDACTEUR_PRECONTENTIEUX))
             ->setIsVerified(true)
             ->setActive(true)
             ->setPersonnePhysique(

@@ -1,23 +1,12 @@
-import React, {useState,useEffect} from 'react';
-import axios from 'axios';
-import PropTypes from 'prop-types';
+import React from 'react';
 import ReadOnlyInput from '../ReadOnlyInput';
-import { getStateOnEmpty } from '../../utils/check_state';
 import SecuriteSocialeView from '../SecuriteSociale/View';
-import { fr } from "@codegouvfr/react-dsfr";
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Select } from "@codegouvfr/react-dsfr/Select";
-import { normalizeDate,formatUrl,formatDate } from '../../utils/cast';
+import { normalizeDate } from '../../utils/cast';
 import { trans,
-  BRIS_PORTE_SECTION,USER_SECTION,
   USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
   USER_FIELD_PRENOMS,USER_FIELD_DATE_NAISSANCE,
-  USER_FIELD_LIEU_NAISSANCE,USER_FIELD_PAYS_NAISSANCE,
-  GLOBAL_ERROR_EMPTY_FIELD, LOGIN_EMAIL, USER_FIELD_PRENOM1,
-   USER_FIELD_PRENOM2, USER_FIELD_PRENOM3, USER_FIELD_CIVILITE
+  USER_FIELD_LIEU_NAISSANCE, USER_FIELD_CIVILITE
 } from '../../../translator';
-import { Input } from "@codegouvfr/react-dsfr/Input";
 
 const RepresentantLegalView = function({personnePhysique}) {
 

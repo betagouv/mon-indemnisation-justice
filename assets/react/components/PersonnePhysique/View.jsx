@@ -1,18 +1,11 @@
-import React, {useState,useEffect} from 'react';
-import axios from 'axios';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
-import { getStateOnEmpty } from '../../utils/check_state';
 import SecuriteSociale from '../SecuriteSociale';
-import { fr } from "@codegouvfr/react-dsfr";
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Select } from "@codegouvfr/react-dsfr/Select";
 import { trans,
-  BRIS_PORTE_SECTION,USER_SECTION,
   USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
   USER_FIELD_PRENOMS,USER_FIELD_DATE_NAISSANCE,
-  USER_FIELD_LIEU_NAISSANCE,USER_FIELD_PAYS_NAISSANCE,
-  GLOBAL_ERROR_EMPTY_FIELD, LOGIN_EMAIL, USER_FIELD_PRENOM1,
+  USER_FIELD_LIEU_NAISSANCE,
+  GLOBAL_ERROR_EMPTY_FIELD, USER_FIELD_PRENOM1,
    USER_FIELD_PRENOM2, USER_FIELD_PRENOM3
 } from '../../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -61,7 +54,7 @@ const PersonnePhysiqueView = function({personnePhysique}) {
         </div>
         <div className="fr-col-3">
           <Input
-            label={trans(LOGIN_EMAIL)}
+            label="Adresse courriel"
             nativeInputProps={{value: personnePhysique.email}}
             disabled
           />

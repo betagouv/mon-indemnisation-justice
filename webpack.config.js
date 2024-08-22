@@ -52,12 +52,14 @@ Encore
             watchFiles: {
                 paths: ['src/**/*.php', 'templates/**/*'],
             },
+            /*
             proxy: {
                 path: '**',
                 target: 'http://localhost:8081',
                 secure: false,
                 changeOrigin: true,
             },
+            */
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",

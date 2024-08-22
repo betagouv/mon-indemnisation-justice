@@ -6,8 +6,6 @@ import { check_empty, check_email, state_error_if_false,
   check_min_length, check_numbers, check_equal } from '../../utils/check_state';
 import { trans,
   SECURITY_RESET_PASSWORD_TITLE,
-  LOGIN_BTN,
-  LOGIN_EMAIL,
   SECURITY_INSCRIPTION_MESSAGE_SAME_PASSWORD,
   SECURITY_INSCRIPTION_MESSAGE_INVALID_NUMBER_PASSWORD,
   SECURITY_INSCRIPTION_MESSAGE_INVALID_LENGTH_PASSWORD,

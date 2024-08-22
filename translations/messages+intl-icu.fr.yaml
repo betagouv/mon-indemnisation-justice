@@ -1,6 +1,4 @@
-admin:
-  homepage:
-    title: "Administration des utilisateurs"
+
 adresse:
   field:
     ligne1: "Adresse complète"
@@ -203,7 +201,6 @@ login:
   create_account: "Créer un compte"
   content: "Pour effectuer ou suivre une demande d'indemnisation, se connecter à son espace personnel"
   details: "Sauf mention contraire, tous les champs sont obligatoires."
-  email: "Adresse courriel"
   email_example: "Format attendu : nom@domaine.fr"
   forgotten_password: "J'ai oublié mon mot de passe"
   password: "Mot de passe"
@@ -307,8 +304,6 @@ user:
     prenom2: "Deuxième prénom"
     prenom3: "Troisième prénom"
     civilite: "Civilité"
-    role: "Rôle"
-    active: "Compte activé"
 personne:
   field:
     numero_securite_sociale: "Les 10 premiers chiffres de votre numéro de sécurité sociale"
