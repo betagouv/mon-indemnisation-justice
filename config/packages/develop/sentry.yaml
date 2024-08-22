@@ -4,3 +4,4 @@ sentry:
         ignore_exceptions:
             - 'Symfony\Component\ErrorHandler\Error\FatalError'
             - 'Symfony\Component\Debug\Exception\FatalErrorException'
+        send-default-pii: true
