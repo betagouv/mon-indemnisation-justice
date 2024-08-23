@@ -16,7 +16,7 @@
 <div class="text-md">
   <center class="text-bold">DÉCLARATION D’ACCEPTATION</center>
   <p>
-  Je soussignée,{% if requerant.isPersonneMorale %}{{personneMorale.raisonSociale}}, représentée par {{requerant.personnePhysiquePlaintext}}{% else %}{{requerant.personnePhysiquePlaintext}}{% endif %}
+  Je soussignée,{% if requerant.isPersonneMorale %}{{personneMorale.raisonSociale}}, représentée par {{ requerant }}{% else %}{{ requerant }}{% endif %}
   déclare accepter l’indemnité de {{prejudice.propositionIndemnisation|spellout}} ({{prejudice.propositionIndemnisation|number_format(2,',','')}} EUR) qui
   m’est proposée par le garde des sceaux, ministre de la Justice, en réparation du préjudice subi en
   raison de la détérioration de la porte d’entrée du logement m’appartenant sis {{prejudice.adressePlaintext}}.
