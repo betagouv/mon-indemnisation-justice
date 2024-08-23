@@ -1,5 +1,7 @@
 {% extends 'base_pdf.html.twig' %}
 
+{% set indemnite = prejudice.propositionIndemnisation ?? '0.' %}
+
 {% block stylesheets %}
   {{ parent() }}
 {% endblock %}
@@ -17,7 +19,7 @@
   <center class="text-bold">DÉCLARATION D’ACCEPTATION</center>
   <p>
   Je soussignée,{% if requerant.isPersonneMorale %}{{personneMorale.raisonSociale}}, représentée par {{ requerant }}{% else %}{{ requerant }}{% endif %}
-  déclare accepter l’indemnité de {{prejudice.propositionIndemnisation|spellout}} ({{prejudice.propositionIndemnisation|number_format(2,',','')}} EUR) qui
+  déclare accepter l’indemnité de {{ indemnite|spellout }} ({{ indemnite|number_format(2,',','') }} EUR) qui
   m’est proposée par le garde des sceaux, ministre de la Justice, en réparation du préjudice subi en
   raison de la détérioration de la porte d’entrée du logement m’appartenant sis {{prejudice.adressePlaintext}}.
   </p>
