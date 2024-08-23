@@ -15,23 +15,24 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DefaultController extends AbstractController
 {
     public function __construct(
-      private Breadcrumb $breadcrumb,
-      private EntityManagerInterface $em
-    )
-    {}
+        private Breadcrumb $breadcrumb,
+        private EntityManagerInterface $em
+    ) {
+    }
 
     #[Route('/accueil', name: 'app_admin_homepage')]
     public function index(): Response
     {
         $users = $this->em->getRepository(User::class)->findByRoles([
-          User::ROLE_CHEF_PRECONTENTIEUX,
-          User::ROLE_REDACTEUR_PRECONTENTIEUX
+            User::ROLE_CHEF_PRECONTENTIEUX,
+            User::ROLE_REDACTEUR_PRECONTENTIEUX,
         ]);
 
         $breadcrumb = $this->breadcrumb;
+
         return $this->render('admin/default/index.html.twig', [
             'breadcrumb' => $breadcrumb,
-            'users' => $users
+            'users' => $users,
         ]);
     }
 }

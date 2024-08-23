@@ -42,41 +42,34 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function findAdminFoncs(): array
     {
-      $usernames = $this->findAdminUsernames();
-      return $this->findBy(['username' => $usernames]);
+        $usernames = $this->findAdminUsernames();
+
+        return $this->findBy(['username' => $usernames]);
     }
 
     public function findAdminUsernames(): array
     {
-      $output = [];
-      $users = $this->findAll();
-      foreach($users as $user) {
-        if(true === $user->isAdminFonc())
-          $output[]=$user->getUsername();
-      }
-      return $output;
+        $output = [];
+        $users = $this->findAll();
+        foreach ($users as $user) {
+            if (true === $user->isAdminFonc()) {
+                $output[] = $user->getUsername();
+            }
+        }
+
+        return $output;
     }
 
     public function findByRoles(array $roles): array
     {
-      $dql = "
-      SELECT u
-      FROM App\Entity\User u
-      WHERE CONTAINS(TO_JSONB(u.roles), :role0) = TRUE
-      OR CONTAINS(TO_JSONB(u.roles), :role1) = TRUE
-      OR CONTAINS(TO_JSONB(u.roles), :role2) = TRUE
-      ";
+        $qb = $this
+            ->createQueryBuilder('u');
 
-      $role0 = '["'.($roles[0]??'NONE').'"]';
-      $role1 = '["'.($roles[1]??'NONE').'"]';
-      $role2 = '["'.($roles[2]??'NONE').'"]';
+        foreach ($roles as $index => $role) {
+            $qb->orWhere("u.roles LIKE :role$index");
+            $qb->setParameter("role$index", "%$role%");
+        }
 
-      $query  = $this->getEntityManager()
-        ->createQuery($dql)
-        ->setParameter('role0', $role0)
-        ->setParameter('role1', $role1)
-        ->setParameter('role2', $role2)
-      ;
-      return $query->getResult();
+        return $qb->getQuery()->getResult();
     }
 }
