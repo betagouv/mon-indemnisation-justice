@@ -1,19 +1,14 @@
 import React, {useState,useEffect,useRef} from 'react';
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import Civilite from './Civilite';
 import { getStateOnEmpty } from '../utils/check_state';
 import SecuriteSociale from './SecuriteSociale';
-import { fr } from "@codegouvfr/react-dsfr";
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Select } from "@codegouvfr/react-dsfr/Select";
 import { trans,
-  BRIS_PORTE_SECTION,USER_SECTION,USER_H5, GLOBAL_OPTIONAL,
+  USER_H5, GLOBAL_OPTIONAL,
   USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
   USER_FIELD_PRENOMS,USER_FIELD_DATE_NAISSANCE,
-  USER_FIELD_LIEU_NAISSANCE,USER_FIELD_PAYS_NAISSANCE,
-  GLOBAL_ERROR_EMPTY_FIELD, LOGIN_EMAIL, USER_FIELD_PRENOM1
+  USER_FIELD_LIEU_NAISSANCE,
+  GLOBAL_ERROR_EMPTY_FIELD,
 } from '../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { castDate } from '../utils/cast';

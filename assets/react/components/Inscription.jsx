@@ -1,7 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import {trans,
-  LOGIN_EMAIL,
   LOGIN_PASSWORD,
   LOGIN_CONFIRM_PASSWORD,
   USER_FIELD_NOM_NAISSANCE,
@@ -162,7 +161,7 @@ const Inscription = ({user,csrfToken}) => {
 
                 <div className="fr-col-12">
                   <Input
-                    label={trans(LOGIN_EMAIL)}
+                    label="Adresse courriel"
                     state={state_error_if_false(check_empty(email)||(check_email(email)&&emailFree))}
                     stateRelatedMessage={getErrorEmail(email)}
                     nativeInputProps={{name: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}

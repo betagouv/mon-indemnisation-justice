@@ -16,7 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-#[AsCommand(name: 'precontentieux:create_redacteur', description: 'Créer un rédacteur')]
+#[AsCommand(name: 'precontentieux:creer-agent', description: 'Créer un agent')]
 class CreateRedacteurCommand extends Command
 {
     public function __construct(
@@ -35,6 +35,7 @@ class CreateRedacteurCommand extends Command
             ->addArgument('email', InputArgument::REQUIRED)
             ->addArgument('password', InputArgument::REQUIRED)
             ->addArgument('civilite', InputArgument::OPTIONAL, '', 'mme')
+            ->addOption('isChef', 'c', InputOption::VALUE_NONE)
             ->addOption('isAdmin', 'a', InputOption::VALUE_NONE)
         ;
     }
@@ -54,7 +55,9 @@ class CreateRedacteurCommand extends Command
                 )
             )
             ->setEmail($input->getArgument('email'))
-            ->addRole($input->getOption('isAdmin') ? User::ROLE_CHEF_PRECONTENTIEUX : User::ROLE_REDACTEUR_PRECONTENTIEUX)
+            ->addRole(
+                $input->getOption('isAdmin') ? User::ROLE_ADMIN_FONC :
+                ($input->getOption('isChef') ? User::ROLE_CHEF_PRECONTENTIEUX : User::ROLE_REDACTEUR_PRECONTENTIEUX))
             ->setIsVerified(true)
             ->setActive(true)
             ->setPersonnePhysique(
@@ -72,4 +75,9 @@ class CreateRedacteurCommand extends Command
 
         return Command::SUCCESS;
     }
+
+    protected static function generatePassword($length = 10) {
+        return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', (int) ceil($length/strlen($x)) )),1,$length);
+    }
+
 }

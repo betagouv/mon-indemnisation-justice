@@ -8,7 +8,6 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { trans,
   LOGIN_BTN,
-  LOGIN_EMAIL,
   GLOBAL_INFORMATIONS_REQUIREMENT,
   SECURITY_RESET_PASSWORD_SUCCESS_TITLE,
   SECURITY_RESET_PASSWORD_SUCCESS_DESCRIPTION,
@@ -16,7 +15,6 @@ import { trans,
   LOGIN_EMAIL_EXAMPLE,
   LOGIN_PASSWORD,
   LOGIN_CONTENT,
-  LOGIN_ERROR_TITLE,
   LOGIN_FORGOTTEN_PASSWORD,
   LOGIN_H1,
   SECURITY_RESET_PASSWORD_DESCRIPTION
@@ -83,7 +81,7 @@ const FormulaireSimple = ({errorMessage,csrfToken,lastUsername,customH1=null,cus
                 }
                 <div className="fr-col-12 fr-mb-2w">
                   <Input
-                    label={trans(LOGIN_EMAIL)}
+                    label="Adresse courriel"
                     hintText={trans(LOGIN_EMAIL_EXAMPLE)}
                     nativeInputProps={{type: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
                   />
@@ -117,7 +115,7 @@ const FormulaireSimple = ({errorMessage,csrfToken,lastUsername,customH1=null,cus
             </div>
             <div className="fr-col-12">
               <Input
-                label={trans(LOGIN_EMAIL)}
+                label="Adresse courriel"
                 nativeInputProps={{placeholder: trans(LOGIN_EMAIL_EXAMPLE), value: email, onChange: ev => setEmail(ev.target.value)}}
               />
               <Br space={1}/>

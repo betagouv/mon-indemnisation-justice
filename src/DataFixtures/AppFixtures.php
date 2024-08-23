@@ -9,171 +9,94 @@ use App\Entity\QualiteRequerant;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory as FakerFactory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
     public function __construct(
         protected readonly UserPasswordHasherInterface $hasher
-    )
-    {
+    ) {
     }
-
 
     public function load(ObjectManager $manager): void
     {
-        $faker = FakerFactory::create('fr_FR');
-
         // Provisionnement des qualités de requérant:
-        $donneesQualiteRequerant = [
-            [
-                'code' => "1",
-                'mnemo' => "PRO",
-                'libelle' => "Propriétaire",
-            ],
-            [
-                'code' => "2",
-                'mnemo' => "LOC",
-                'libelle' => "Locataire",
-            ],
-            [
-                'code' => "3",
-                'mnemo' => "HEB",
-                'libelle' => "Hébergeant",
-            ],
-            [
-                'code' => "4",
-                'mnemo' => "AUT",
-                'libelle' => "Autre",
-            ]
+        $donneesQualiteRequrant = [
+            ['code' => '1', 'mnemo' => 'PRO', 'libelle' => 'Propriétaire'],
+            ['code' => '2', 'mnemo' => 'LOC', 'libelle' => 'Locataire'],
+            ['code' => '3', 'mnemo' => 'HEB', 'libelle' => 'Hébergeant'],
+            ['code' => '4', 'mnemo' => 'AUT', 'libelle' => 'Autre'],
         ];
 
-        foreach ($donneesQualiteRequerant as $donneeQualiteRequerant) {
-            $manager->persist(
-                (new QualiteRequerant())
-                ->setCode($donneeQualiteRequerant['code'])
-                ->setMnemo($donneeQualiteRequerant['mnemo'])
-                ->setLibelle($donneeQualiteRequerant['libelle'])
-            );
+        $qualiteRequerants = [];
+
+        foreach ($donneesQualiteRequrant as $donneeQualiteRequrant) {
+            $qualiteRequerants[$donneeQualiteRequrant['mnemo']] = (new QualiteRequerant())
+                    ->setCode($donneeQualiteRequrant['code'])
+                    ->setMnemo($donneeQualiteRequrant['mnemo'])
+                    ->setLibelle($donneeQualiteRequrant['libelle']);
+            $manager->persist($qualiteRequerants[$donneeQualiteRequrant['mnemo']]);
         }
 
-        // Provisionnement des cétegories:
-        $donneesCategorie = [
-            [
-                'code' => "1",
-                'mnemo' => "BRI",
-                'libelle' => "Bris de porte",
-            ],
+        // Provisionnement des civilités:
+        $donneesCivilite = [
+            ['code' => '1', 'mnemo' => 'M', 'libelle' => 'Monsieur'],
+            ['code' => '2', 'mnemo' => 'MME', 'libelle' => 'Madame'],
         ];
+
+        $civilites = [];
+
+        foreach ($donneesCivilite as $donneeCivilite) {
+            $civilites[$donneeCivilite['mnemo']] = (new Civilite())
+                    ->setCode($donneeCivilite['code'])
+                    ->setMnemo($donneeCivilite['mnemo'])
+                    ->setLibelle($donneeCivilite['libelle']);
+            $manager->persist($civilites[$donneeCivilite['mnemo']]);
+        }
+
+        // Provisionnement des catégories:
+        $donneesCategorie = [
+            ['code' => '1', 'mnemo' => 'BRI', 'libelle' => 'Bris de porte'],
+        ];
+
+        $categories = [];
 
         foreach ($donneesCategorie as $donneeCategorie) {
-            $manager->persist(
-                (new Categorie())
-                ->setCode($donneeCategorie['code'])
-                ->setMnemo($donneeCategorie['mnemo'])
-                ->setLibelle($donneeCategorie['libelle'])
-            );
+            $categories[$donneeCategorie['mnemo']] = (new Categorie())
+                    ->setCode($donneeCategorie['code'])
+                    ->setMnemo($donneeCategorie['mnemo'])
+                    ->setLibelle($donneeCategorie['libelle']);
+            $manager->persist($categories[$donneeCategorie['mnemo']]);
         }
 
+        // Provisionnement des agents :
+        $donneesAgent = [
+            ['nom' => 'Le Texier', 'prenom' => 'Alexandra', 'email' => 'alexandra.le-texier@justice.gouv.fr', 'civilite' => 'MME', 'admin' => false],
+        ];
 
-        // Créations des civilités :
-        $mademoiselle = (new Civilite())->setLibelle("Mademoiselle")->setCode('mlle');
-        $madame = (new Civilite())->setLibelle("Madame")->setCode('mme');
-        $monsieur = (new Civilite())->setLibelle("Monsieur")->setCode('mr');
-
-        $manager->persist($mademoiselle);
-        $manager->persist($madame);
-        $manager->persist($monsieur);
-
-        // Super admin
-
-        $superAdmin = (new User())
-            ->setUsername('super-admin')
-            ->setEmail('super-admin@precontentieux.anje-justice.dev')
-            ->addRole('ROLE_CHEF_PRECONTENTIEUX')
+        foreach ($donneesAgent as $donneeAgent) {
+            $agent = (new User())
+            ->setUsername(self::slugify(sprintf('%s.%s', $donneeAgent['prenom'], $donneeAgent['nom'])))
+            ->setEmail($donneeAgent['email'])
+            ->addRole($donneeAgent['admin'] ? User::ROLE_CHEF_PRECONTENTIEUX : User::ROLE_REDACTEUR_PRECONTENTIEUX)
             ->setIsVerified(true)
             ->setActive(true)
             ->setPersonnePhysique(
                 (new PersonnePhysique())
-                    ->setCivilite($madame)
+                    ->setCivilite($civilites[$donneeAgent['civilite']])
+                    ->setPrenom1($donneeAgent['prenom'])
+                    ->setNom($donneeAgent['nom'])
             );
+            $agent->setPassword($this->hasher->hashPassword($agent, 'P4ssword'));
 
-        $superAdmin
-            ->setPassword($this->hasher->hashPassword($superAdmin, 'admin'))
-            ->setDateChangementMDP(new \DateTime());
-
-        $manager->persist($superAdmin);
-
-        // Agents
-        $agent1 = (new User())
-            ->setUsername('agent1')
-            ->setEmail('agent1@precontentieux.anje-justice.dev')
-            ->addRole('ROLE_REDACTEUR_PRECONTENTIEUX')
-            ->setIsVerified(true)
-            ->setActive(true)
-            ->setPersonnePhysique(
-                (new PersonnePhysique())
-                    ->setCivilite($mademoiselle)
-                    ->setPrenom1($faker->firstNameFemale)
-                    ->setNom($faker->name)
-            );
-        $agent1
-            ->setPassword($this->hasher->hashPassword($agent1, 'agent'))
-            ->setDateChangementMDP(new \DateTime());
-        $manager->persist($agent1);
-
-        $agent2 = (new User())
-            ->setUsername('agent2')
-            ->setEmail('agent2@precontentieux.anje-justice.dev')
-            ->addRole('ROLE_REDACTEUR_PRECONTENTIEUX')
-            ->setIsVerified(true)
-            ->setActive(true)
-            ->setPersonnePhysique(
-                (new PersonnePhysique())
-                    ->setCivilite($mademoiselle)
-                    ->setPrenom1($faker->firstNameFemale)
-                    ->setNom($faker->name)
-            );
-        $agent2
-            ->setPassword($this->hasher->hashPassword($agent2, 'agent'))
-            ->setDateChangementMDP(new \DateTime());
-        $manager->persist($agent2);
-
-        $agent3 = (new User())
-            ->setUsername('agent3')
-            ->setEmail('agent3@precontentieux.anje-justice.dev')
-            ->addRole('ROLE_REDACTEUR_PRECONTENTIEUX')
-            ->setIsVerified(false)
-            ->setActive(true)
-            ->setPersonnePhysique(
-                (new PersonnePhysique())
-                    ->setCivilite($monsieur)
-                ->setPrenom1($faker->firstNameMale)
-                    ->setNom($faker->name)
-            );
-        $agent3
-            ->setPassword($this->hasher->hashPassword($agent3, 'agent'))
-            ->setDateChangementMDP(new \DateTime());
-        $manager->persist($agent3);
-
-        $agent4 = (new User())
-            ->setUsername('agent1')
-            ->setEmail('agent4@precontentieux.anje-justice.dev')
-            ->addRole('ROLE_REDACTEUR_PRECONTENTIEUX')
-            ->setIsVerified(true)
-            ->setActive(true)
-            ->setPersonnePhysique(
-                (new PersonnePhysique())
-                    ->setCivilite($madame)
-                    ->setPrenom1($faker->firstNameFemale)
-                    ->setNom($faker->name)
-            );
-        $agent4
-            ->setPassword($this->hasher->hashPassword($agent4, 'agent'))
-            ->setDateChangementMDP(new \DateTime());
-        $manager->persist($agent4);
+            $manager->persist($agent);
+        }
 
         $manager->flush();
+    }
+
+    protected static function slugify(string $text): string
+    {
+        return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $text)));
     }
 }
