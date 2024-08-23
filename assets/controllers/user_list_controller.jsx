@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import ReactDOM from 'react-dom';
+
 import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
 import Entete from '../react/components/Entete';

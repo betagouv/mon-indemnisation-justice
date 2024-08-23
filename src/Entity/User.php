@@ -20,18 +20,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
-  operations:[
-    new GetCollection(
-      name: '_api_user_get_collection'
-    ),
-    new Get(
-      name: '_api_user_get',
-      normalizationContext: ["groups" => ["user:write"]]
-    ),
-    new Patch(
-      name: '_api_user_patch'
-      #,security: "is_granted('ROLE_REQUERANT')"
-  )]
+    operations: [
+        new GetCollection(
+            name: '_api_user_get_collection'
+        ),
+        new Get(
+            name: '_api_user_get',
+            normalizationContext: ['groups' => ['user:write']]
+        ),
+        new Patch(
+            name: '_api_user_patch'
+            // ,security: "is_granted('ROLE_REQUERANT')"
+        )]
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -39,19 +39,28 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityInterface
 {
-    const ROLE_ADMIN_FONC = 'ROLE_ADMIN_FONC';
-    const ROLE_USER = 'ROLE_USER';
-    const ROLE_REQUERANT = 'ROLE_REQUERANT';
-    const ROLE_REDACTEUR_PRECONTENTIEUX = 'ROLE_REDACTEUR_PRECONTENTIEUX';
-    const ROLE_CHEF_PRECONTENTIEUX = 'ROLE_CHEF_PRECONTENTIEUX';
+    // Ce rôle va sauter
+    public const ROLE_USER = 'ROLE_USER';
 
-    #[Groups(['user:read','prejudice:read'])]
+    // Le rôle ROLE_REQUERANT est celui donné au porteur d'une requête d'indemnisation
+    public const ROLE_REQUERANT = 'ROLE_REQUERANT';
+    // Le role ROLE_REDACTEUR_PRECONTENTIEUX est donné au rédacteur du pôle précontentieux
+    public const ROLE_REDACTEUR_PRECONTENTIEUX = 'ROLE_REDACTEUR_PRECONTENTIEUX';
+
+    // Le rôle ROLE_ADMIN_FONC peut ajouter ou activer / désactiver un compte rédacteur
+    public const ROLE_ADMIN_FONC = 'ROLE_ADMIN_FONC';
+
+    // Le rôle ROLE_CHEF_PRECONTENTIEUX est donné à la cheffe du pôle précontentieux : elle valide la décision prise sur
+    // un dossier d'indemnisation et signe la lettre qui l'officialise
+    public const ROLE_CHEF_PRECONTENTIEUX = 'ROLE_CHEF_PRECONTENTIEUX';
+
+    #[Groups(['user:read', 'prejudice:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read', 'prejudice:read'])]
     #[ORM\Column(length: 180)]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?string $email = null;
@@ -59,8 +68,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column]
-    private array $roles = [];
+    #[ORM\Column(type: 'simple_array')]
+    protected array $roles = [];
 
     /**
      * @var string The hashed password
@@ -68,7 +77,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\Column]
     private ?string $password = null;
 
-    #[Groups(['user:read','prejudice:read'])]
+    #[Groups(['user:read', 'prejudice:read'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $username = null;
 
@@ -94,26 +103,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $grade = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\Column(options: ['default' => false])]
     private ?bool $isPersonneMorale = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Adresse $adresse = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonnePhysique $personnePhysique = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     public readonly ?int $pId;
 
-    #[Groups('user:read','user:write')]
+    #[Groups('user:read', 'user:write')]
     private $plaintextRole;
 
     #[Groups('user:read')]
@@ -138,7 +147,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
 
     public function getPId(): ?int
     {
-      return $this->getId();
+        return $this->getId();
     }
 
     public function getId(): ?int
@@ -158,19 +167,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this;
     }
 
-    public function getPersonnePhysiquePlaintext(): string
-    {
-        return (string)$this->getPersonnePhysique();
-    }
-
-    public function getPlaintextRole(): string
-    {
-        if($this->hasRole(self::ROLE_CHEF_PRECONTENTIEUX))
-          return self::ROLE_CHEF_PRECONTENTIEUX;
-        if($this->hasRole(self::ROLE_REDACTEUR_PRECONTENTIEUX))
-          return self::ROLE_REDACTEUR_PRECONTENTIEUX;
-        return '';
-    }
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->getRoles());
@@ -179,23 +175,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     public function addRole(string $role): self
     {
         $roles = $this->getRoles();
-        if(
-          !in_array($role, $roles)
-          &&
-          in_array($role, [
-            self::ROLE_USER,
-            self::ROLE_REDACTEUR_PRECONTENTIEUX,
-            self::ROLE_CHEF_PRECONTENTIEUX,
-            self::ROLE_ADMIN_FONC,
-            self::ROLE_REQUERANT,
-          ])
+        if (
+            !in_array($role, $roles)
+            && in_array($role, [
+                self::ROLE_USER,
+                self::ROLE_REDACTEUR_PRECONTENTIEUX,
+                self::ROLE_CHEF_PRECONTENTIEUX,
+                self::ROLE_ADMIN_FONC,
+                self::ROLE_REQUERANT,
+            ])
         ) {
-          $roles[]=$role;
-          $this->setRoles($roles);
+            $roles[] = $role;
+            $this->setRoles($roles);
         }
 
         return $this;
     }
+
     /**
      * A visual identifier that represents this user.
      *
@@ -209,6 +205,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     public function isAdminFonc(): bool
     {
         $roles = $this->getRoles();
+
         return in_array(self::ROLE_ADMIN_FONC, $roles);
     }
 
@@ -296,8 +293,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this;
     }
 
-
-
     public function getMnemo(): ?string
     {
         return $this->mnemo;
@@ -353,9 +348,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
 
     public function setIsPersonneMorale(bool $isPersonneMorale): static
     {
-      $this->isPersonneMorale = $isPersonneMorale;
+        $this->isPersonneMorale = $isPersonneMorale;
 
-      return $this;
+        return $this;
     }
 
     public function isPersonneMorale(): ?bool
@@ -394,7 +389,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
 
     public function setPersonneMorale(?PersonneMorale $personneMorale): static
     {
-        $this->personneMorale= $personneMorale;
+        $this->personneMorale = $personneMorale;
 
         return $this;
     }
@@ -404,7 +399,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this->isActive();
     }
 
-    public function isActive():bool
+    public function isActive(): bool
     {
         return $this->active;
     }
@@ -419,6 +414,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
     public function getNomComplet(): ?string
     {
         $personnePhysique = $this->getPersonnePhysique();
+
         return $personnePhysique ? $personnePhysique->getNomComplet() : null;
     }
 
