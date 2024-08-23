@@ -13,7 +13,7 @@
 {% set personnePhysique = requerant.personnePhysique %}
 {% set personneMorale = requerant.personneMorale %}
 <div class="text-md">
-  <img src="{{base_dir ~ '/build/images/entete-mj.png' }}">
+  <img src="{{ asset('images/entete-mj.png') }}">
   <p class="text-right">
   Paris, le {{"now"|date("d/m/Y")}}
   </p>
@@ -67,8 +67,8 @@
   Je vous prie de croire, {{personnePhysique.civilite.libelle}}, à l’assurance de ma considération distinguée.
   </p>
   <p>
-  {{user.personnePhysiquePlaintext}},<br/>
-  {{user.email}}
+  {{ user }},<br/>
+  {{ user.email }}
   </p>
 </div>
 {% endblock %}

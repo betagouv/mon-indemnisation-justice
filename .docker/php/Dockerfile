@@ -31,8 +31,10 @@ RUN npm update -g
 # WKhtmltopdf
 
 RUN apt-get install -y openssl build-essential libssl-dev libxrender-dev git-core libx11-dev libxext-dev libfontconfig1-dev libfreetype6-dev fontconfig libjpeg62-turbo xfonts-75dpi  xfonts-base
-RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb -O /tmp/wkhtml2pdf.deb && dpkg -i /tmp/wkhtml2pdf.deb && rm -f /tmp/wkhtml2pdf.deb
-
+RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb -O /tmp/wkhtml2pdf.deb \
+    && dpkg -i /tmp/wkhtml2pdf.deb \
+    && ln -sn /usr/local/bin/wkhtmltopdf /bin/wkhtmltopdf \
+    && rm -f /tmp/wkhtml2pdf.deb
 
 # Chromium
 

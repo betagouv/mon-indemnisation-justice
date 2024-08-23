@@ -24,7 +24,6 @@ class DefaultController extends AbstractController
 
     private function printRefusBRI(BrisPorte $brisPorte): Response
     {
-      $pdf = $this->pdf;
       $user = $this->getUser();
       $footer = $this->render('decision/footer.html.twig', [
         'user'=> $user,
@@ -41,9 +40,9 @@ class DefaultController extends AbstractController
         'user' => $user,
         'base_dir'  => $this->getParameter('kernel.project_dir').'/public',
       ]);
-      $pdf->setOption('footer-center', 'Page [page]');
+      ;
       return new Response(
-        $pdf->getOutputFromHtml($template->getContent(),[
+        $this->pdf->getOutputFromHtml($template->getContent(),[
           'page-size' => 'A4',
           'footer-html' => $footer->getContent(),
           'header-html' => $header->getContent(),
@@ -51,6 +50,7 @@ class DefaultController extends AbstractController
           'margin-bottom' => '20mm',
           'footer-center' => '',
           'encoding' => 'utf-8',
+          'enable-local-file-access' => true,
         ]),
         200,
         [
@@ -91,7 +91,6 @@ class DefaultController extends AbstractController
 
     private function printPropositionCompileeBRI(BrisPorte $brisPorte): Response
     {
-      $pdf = $this->pdf;
       /** @var string $generatedPdf */
       $generatedPdf     = tempnam(sys_get_temp_dir(), 'TMP_');
       @unlink($generatedPdf);
@@ -126,7 +125,6 @@ class DefaultController extends AbstractController
 
     private function printPropositionBRI(BrisPorte $brisPorte): Response
     {
-      $pdf = $this->pdf;
       $user = $this->getUser();
       $footer = $this->render('decision/footer.html.twig', [
         'user'=> $user,
@@ -143,8 +141,9 @@ class DefaultController extends AbstractController
         'user' => $user,
         'base_dir'  => $this->getParameter('kernel.project_dir').'/public',
       ]);
+
       return new Response(
-        $pdf->getOutputFromHtml($template->getContent(),[
+        $this->pdf->getOutputFromHtml($template->getContent(),[
           'page-size' => 'A4',
           'footer-html' => $footer->getContent(),
           'header-html' => $header->getContent(),
@@ -152,6 +151,7 @@ class DefaultController extends AbstractController
           'margin-bottom' => '20mm',
           'footer-center' => '',
           'encoding' => 'utf-8',
+          'enable-local-file-access'=> true
         ]),
         200,
         [

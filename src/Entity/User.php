@@ -167,6 +167,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
         return $this;
     }
 
+    public function getPlaintextRole(): string
+    {
+        if($this->hasRole(self::ROLE_CHEF_PRECONTENTIEUX))
+          return self::ROLE_CHEF_PRECONTENTIEUX;
+        if($this->hasRole(self::ROLE_REDACTEUR_PRECONTENTIEUX))
+          return self::ROLE_REDACTEUR_PRECONTENTIEUX;
+        return '';
+    }
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->getRoles());
@@ -447,4 +455,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EntityI
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->getPersonnePhysique()->__toString();
+    }
+
+
 }
