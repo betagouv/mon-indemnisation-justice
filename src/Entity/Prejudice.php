@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\GetCollection;
+use DateTimeInterface;
 use App\Contracts\PrejudiceInterface;
 use App\Repository\PrejudiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -46,7 +46,7 @@ abstract class Prejudice implements PrejudiceInterface
 
     #[Groups('prejudice:read','prejudice:write')]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateDeclaration = null;
+    protected ?DateTimeInterface $dateDeclaration = null;
 
     #[Groups('prejudice:read')]
     protected $discriminator;
