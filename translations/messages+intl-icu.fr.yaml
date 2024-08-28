@@ -192,7 +192,6 @@ homepage:
 login:
   title: Se connecter à mon espace
   personal_access: "Se connecter"
-  professional_access: "Espace agents"
   btn: "Je me connecte à mon espace"
   h1: "Me connecter à mon espace"
   comment: "Connexion à Précontentieux"

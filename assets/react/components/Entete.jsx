@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
-import { trans, LOGIN_PERSONAL_ACCESS, LOGIN_PROFESSIONAL_ACCESS,
-    HEADER_BRAND, HEADER_TITLE, HOMEPAGE_TITLE, LOGIN_TITLE,HOMEPAGE_SUIVI_DOSSIER,
+import { trans, LOGIN_PERSONAL_ACCESS,
+    HEADER_BRAND, HEADER_TITLE, HOMEPAGE_TITLE, HOMEPAGE_SUIVI_DOSSIER,
     HOMEPAGE_ALTERNATIVE_TITLE, PREJUDICE_TITLE, REQUERANT_HOMEPAGE_TITLE
 } from '../../translator';
 import { Header } from "@codegouvfr/react-dsfr/Header";
@@ -47,15 +47,16 @@ const Entete = ({user,version,withNavbar=true}) => {
     navbar.push(link_qui_sommes_nous);
 
     links.push({
+      iconId: 'fr-icon-government-line',
+      linkProps: { href: Routing.generate('app_agent_securite_connexion') },
+      text: "Agent"
+    });
+    links.push({
       iconId: 'fr-icon-account-line',
       linkProps: { href: Routing.generate('app_login') },
       text: trans(LOGIN_PERSONAL_ACCESS)
     });
-    links.push({
-      iconId: 'fr-icon-lock-line',
-      linkProps: { href: Routing.generate('app_login')+'?isAgent=1' },
-      text: trans(LOGIN_PROFESSIONAL_ACCESS)
-    });
+
   }
 
   const _navbar = (true===withNavbar) ? navbar : [];

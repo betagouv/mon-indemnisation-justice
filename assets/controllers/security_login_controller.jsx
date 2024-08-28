@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import ReactDOM from 'react-dom';
+
 import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
 import { Br } from '../react/utils/fundamental';
@@ -8,7 +8,6 @@ import PiedDePage from '../react/components/PiedDePage';
 import FormulaireSimple from '../react/components/Connexion/FormulaireSimple';
 import FilAriane from '../react/components/FilAriane';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
-import {trans,LOGIN_PROFESSIONAL_ACCESS} from '../translator';
 
 import '../styles/authentification.css';
 
@@ -57,7 +56,7 @@ export default class extends Controller {
                           errorMessage={this.errorMessageValue}
                           csrfToken={this.csrfTokenValue}
                           lastUsername={this.lastUsernameValue}
-                          customH1={trans(LOGIN_PROFESSIONAL_ACCESS)}
+                          customH1="Agent"
                           customContent=" "
                         />
                       </div>

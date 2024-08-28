@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Civilite;
-use App\Entity\Tracking;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\Breadcrumb\Breadcrumb;
@@ -256,11 +255,7 @@ class SecurityController extends AbstractController
             $this->em->persist($user);
             $this->em->flush();
 
-            $urlTracking = $this->urlGenerator->generate(
-                'app_tracking',
-                ['id' => $user->getId(), 'md5' => md5($user->getEmail())],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
+
             /**
              * Envoi du mail de confirmation.
              */
@@ -274,11 +269,8 @@ class SecurityController extends AbstractController
                     'mail' => $user->getEmail(),
                     'url' => $this->baseUrl,
                     'nomComplet' => $user->getNomComplet(),
-                    'urlTracking' => $urlTracking,
                 ])
                 ->send(pathname: 'app_verify_email', user: $user);
-
-            $this->em->getRepository(Tracking::class)->add($user, Tracking::EVENT_SEND_EMAIL_CREATE_ACCOUNT);
 
             $breadcrumb->add('security.success.title', null);
 

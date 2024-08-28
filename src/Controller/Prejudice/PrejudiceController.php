@@ -68,12 +68,6 @@ class PrejudiceController extends AbstractController
         $lastStatut = $brisPorte->getLastStatut();
         /** @var UserInterface $requerant */
         $requerant = $brisPorte->getRequerant();
-        /** @var string $urlTracking */
-        $urlTracking = $this->urlGenerator->generate(
-            'app_tracking',
-            ['id' => $requerant->getId(), 'md5' => md5($requerant->getEmail())],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
 
         $mailer
            ->from($this->emailFrom, $this->emailFromLabel)
@@ -84,7 +78,6 @@ class PrejudiceController extends AbstractController
                'url' => $this->baseUrl,
                'nomComplet' => $requerant->getNomComplet(),
                'reference' => $brisPorte->getReference(),
-               'urlTracking' => $urlTracking,
            ])
            ->send(user: $requerant)
         ;

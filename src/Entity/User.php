@@ -128,12 +128,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(options: ['default' => true])]
     private bool $active = true;
 
-    /**
-     * @var Collection<int, Tracking>
-     */
-    #[ORM\OneToMany(targetEntity: Tracking::class, mappedBy: 'account')]
-    private Collection $trackings;
-
     public function __construct()
     {
         $this->personneMorale = new PersonneMorale();
@@ -141,7 +135,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->isPersonneMorale = false;
         $this->adresse = new Adresse();
         $this->active = true;
-        $this->trackings = new ArrayCollection();
     }
 
     public function getPId(): ?int
@@ -423,36 +416,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $personnePhysique = $this->getPersonnePhysique();
 
         return $personnePhysique ? $personnePhysique->getNomComplet() : null;
-    }
-
-    /**
-     * @return Collection<int, Tracking>
-     */
-    public function getTrackings(): Collection
-    {
-        return $this->trackings;
-    }
-
-    public function addTracking(Tracking $tracking): static
-    {
-        if (!$this->trackings->contains($tracking)) {
-            $this->trackings->add($tracking);
-            $tracking->setAccount($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTracking(Tracking $tracking): static
-    {
-        if ($this->trackings->removeElement($tracking)) {
-            // set the owning side to null (unless already changed)
-            if ($tracking->getAccount() === $this) {
-                $tracking->setAccount(null);
-            }
-        }
-
-        return $this;
     }
 
     public function __toString(): string

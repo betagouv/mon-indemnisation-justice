@@ -9,6 +9,10 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+        agent_provider:
+            entity:
+                class: App\Entity\Agent
+                property: email
     role_hierarchy:
         ROLE_ADMIN_FONC: [ROLE_USER]
         ROLE_CHEF_PRECONTENTIEUX: [ROLE_REDACTEUR_PRECONTENTIEUX]
@@ -19,7 +23,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            user_checker: App\Security\UserChecker
+            user_checker: App\Security\RequerantChecker
             lazy: true
             provider: app_user_provider
             form_login:
@@ -31,12 +35,19 @@ security:
                 path: app_logout
                 # where to redirect after logout
                 target: app_homepage
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+            switch_user: true
+        agent:
+            user_checker: App\Security\AgentChecker
+            lazy: true
+            provider: agent_provider
+            form_login:
+                login_path: app_agent_securite_connexion
+                check_path: app_agent_securite_connexion
+                enable_csrf: true
+                default_target_path: app_agent_accueil
+            logout:
+                path: app_agent_securite_deconnexion
+                target: app_agent_connexion
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
