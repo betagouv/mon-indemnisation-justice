@@ -1,1 +1,33 @@
 {% extends 'base.html.twig' %}
+
+{% block main %}
+    <h1>Connexion à l'espace agent</h1>
+
+    <div class="fr-grid-row">
+        <div class="fr-col-lg-6" style="display: flex; flex-direction:column;justify-content:center;">
+            <p>
+                Cet espace est réservé aux agents du Ministère de la Justice.
+            </p>
+        </div>
+
+        <div class="fr-col-lg-6">
+            <form action="{{ path('app_agent_securite_connexion') }}" method="post">
+                <div class="fr-input-group">
+                    <label class="fr-label" for="username">
+                        Adresse courriel:
+                        <span class="fr-hint-text">L'adresse doit être de type @justice.gouv.fr</span>
+                    </label>
+                    <input class="fr-input" type="text" id="username" name="_username" value="{{ last_username }}" required>
+                </div>
+
+                <div class="fr-input-group">
+                    <label class="fr-label"  for="password">Mot de passe:</label>
+                    <input class="fr-input" type="password" id="password" name="_password" required>
+                </div>
+
+                <button class="fr-btn" type="submit">Connexion</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock main %}

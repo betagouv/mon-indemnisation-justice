@@ -2,7 +2,7 @@
 <html lang="fr" data-fr-scheme="system">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Précontentieux justice{% endblock %}</title>
+        <title>{% block title %}Mon indemnisation justice{% if title is defined %} - {{ title }}{% endif %}{% endblock %}</title>
 
         <link rel="apple-touch-icon" href="{{ asset('dsfr/favicon/apple-touch-icon.png') }}"/>
         <link rel="icon" href="{{ asset('dsfr/favicon/favicon.svg') }}" type="image/svg+xml"/>
@@ -12,11 +12,12 @@
         <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
     </head>
     <body>
-    <div style="display: flex; flex-direction: column;">
         {% include('_header.html.twig') %}
-        <main role="main" style="grow:10;">
-            
-
+        <main role="main">
+            <div class="fr-container fr-container--fluid fr-my-2w">
+                {% block main %}
+                {% endblock main %}
+            </div>
         </main>
 
         {% include('_footer.html.twig') %}

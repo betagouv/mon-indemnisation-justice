@@ -36,6 +36,7 @@ class SecuriteController extends AbstractController
         }
 
         return $this->render('agent/connexion.html.twig', [
+            'title' => "Connexion à l'espace agent",
             'last_username' => $lastUsername,
             'error_message' => $errorMessage,
         ]);
