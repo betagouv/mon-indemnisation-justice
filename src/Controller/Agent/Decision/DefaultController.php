@@ -1,18 +1,17 @@
 <?php
-namespace App\Controller\Decision;
+namespace App\Controller\Agent\Decision;
 
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\BrisPorte;
 use App\Entity\Statut;
-use App\Contracts\PrejudiceInterface;
+use Clegginabox\PDFMerger\PDFMerger;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Snappy\Pdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Clegginabox\PDFMerger\PDFMerger;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DefaultController extends AbstractController
 {

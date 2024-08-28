@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Controller\ChefPrecontentieux;
+namespace App\Controller\Agent\ChefPrecontentieux;
 
 use App\Entity\Prejudice;
-use App\Entity\User;
 use App\Entity\Statut;
+use App\Entity\User;
+use App\Service\Breadcrumb\Breadcrumb;
+use App\Service\Version\Version;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Service\Breadcrumb\Breadcrumb;
-use App\Service\Version\Version;
-use Doctrine\ORM\EntityManagerInterface;
 
 #[IsGranted(User::ROLE_CHEF_PRECONTENTIEUX)]
 #[Route('/chef-precontentieux')]

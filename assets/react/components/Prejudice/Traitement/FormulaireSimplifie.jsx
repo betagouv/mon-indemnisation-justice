@@ -27,7 +27,7 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
   const [modalTitle,setModalTitle]=useState("");
   const [modalType,setModalType]=useState("");
   const [callback,setCallback]=useState(() => () => {});
-  const urlHomepage = Routing.generate('app_redacteur_homepage');
+  const urlHomepage = Routing.generate('app_agent_redacteur_accueil');
   const TARE_HEIGHT = 300;
   $(document).ready(() => {
     $(".editor-class")

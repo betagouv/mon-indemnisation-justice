@@ -14,14 +14,27 @@ security:
                 class: App\Entity\Agent
                 property: email
     role_hierarchy:
-        ROLE_ADMIN_FONC: [ROLE_USER]
-        ROLE_CHEF_PRECONTENTIEUX: [ROLE_REDACTEUR_PRECONTENTIEUX]
-        ROLE_REDACTEUR_PRECONTENTIEUX: [ROLE_USER]
+        ROLE_AGENT_GESTION_PERSONNEL: [ROLE_USER]
+        ROLE_AGENT_REDACTEUR: [ROLE_USER]
+        ROLE_AGENT_VALIDATEUR: [ROLE_USER]
         ROLE_REQUERANT: [ROLE_USER]
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        agent:
+            pattern: ^/agent/
+            user_checker: App\Security\AgentChecker
+            lazy: true
+            provider: agent_provider
+            form_login:
+                login_path: app_agent_securite_connexion
+                check_path: app_agent_securite_connexion
+                enable_csrf: true
+                default_target_path: app_agent_redacteur_accueil
+            logout:
+                path: app_agent_securite_deconnexion
+                target: app_agent_securite_connexion
         main:
             user_checker: App\Security\RequerantChecker
             lazy: true
@@ -36,23 +49,12 @@ security:
                 # where to redirect after logout
                 target: app_homepage
             switch_user: true
-        agent:
-            user_checker: App\Security\AgentChecker
-            lazy: true
-            provider: agent_provider
-            form_login:
-                login_path: app_agent_securite_connexion
-                check_path: app_agent_securite_connexion
-                enable_csrf: true
-                default_target_path: app_agent_accueil
-            logout:
-                path: app_agent_securite_deconnexion
-                target: app_agent_connexion
+
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-      - { path: ^/administration, roles: ROLE_ADMIN_FONC }
+      - { path: ^/agent/!(connexion), roles: ROLE_AGENT_REDACTEUR }
       - { path: ^/(requerant|sinistre), roles: ROLE_REQUERANT }
 
 when@test:

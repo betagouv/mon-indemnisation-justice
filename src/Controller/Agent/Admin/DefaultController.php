@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Agent\Admin;
 
 use App\Entity\User;
 use App\Service\Breadcrumb\Breadcrumb;

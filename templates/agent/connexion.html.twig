@@ -1,17 +1,31 @@
-{% extends 'base.html.twig' %}
+{% extends 'agent/base.html.twig' %}
+
+{% block header %}
+    {% include('_header.html.twig') %}
+{% endblock header %}
+
+{% block menu %}{% endblock menu %}
 
 {% block main %}
     <h1>Connexion à l'espace agent</h1>
 
+    {% if has_error %}
+        <div class="fr-alert fr-alert--error">
+            <h3 class="fr-alert__title">Connexion refusée : les identifiants sont invalides.</h3>
+        </div>
+    {% endif %}
+
     <div class="fr-grid-row">
-        <div class="fr-col-lg-6" style="display: flex; flex-direction:column;justify-content:center;">
+        <div class="fr-col-12 fr-col-lg-6" style="display: flex; flex-direction:column;justify-content:center;">
             <p>
                 Cet espace est réservé aux agents du Ministère de la Justice.
             </p>
         </div>
 
-        <div class="fr-col-lg-6">
+        <div class="fr-col-12 fr-col-lg-6 fr-container--fluid">
             <form action="{{ path('app_agent_securite_connexion') }}" method="post">
+                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
                 <div class="fr-input-group">
                     <label class="fr-label" for="username">
                         Adresse courriel:
@@ -21,7 +35,7 @@
                 </div>
 
                 <div class="fr-input-group">
-                    <label class="fr-label"  for="password">Mot de passe:</label>
+                    <label class="fr-label" for="password">Mot de passe:</label>
                     <input class="fr-input" type="password" id="password" name="_password" required>
                 </div>
 

@@ -29,7 +29,7 @@ class HomepageController extends AbstractController
       if($user->hasRole(User::ROLE_ADMIN_FONC))
         return $this->redirectToRoute('app_admin_homepage');
       if($user->hasRole(User::ROLE_REDACTEUR_PRECONTENTIEUX))
-        return $this->redirectToRoute('app_redacteur_homepage');
+        return $this->redirectToRoute('app_agent_redacteur_accueil');
       if($user->hasRole(User::ROLE_CHEF_PRECONTENTIEUX))
         return $this->redirectToRoute('app_chef_precontentieux_homepage');
       return $this->redirectToRoute('app_homepage');
