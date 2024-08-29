@@ -1,13 +1,6 @@
 {% extends 'base_react.html.twig' %}
 
-{% block title %}{{'homepage.title'|trans}}{% endblock %}
-
-
-{% block body %}
+{% block main %}
   {% set user = app.user is not null ? app.user : empty_user() %}
-  <div {{ stimulus_controller('homepage_index',{
-    user: user|serialize('json',{groups: 'user:read'}),
-    breadcrumb: breadcrumb|serialize('json'),
-    version: version|serialize('json')
-  }) }}></div>
+  <div {{ stimulus_controller('homepage_index',{}) }}></div>
 {% endblock %}

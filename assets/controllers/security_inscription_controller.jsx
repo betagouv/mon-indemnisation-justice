@@ -24,10 +24,9 @@ export default class extends Controller {
       root.render(
         <React.StrictMode>
           <>
-            <Entete user={this.userValue} version={this.versionValue} />
             <div className="pr-authentification">
               <div className="fr-container">
-                <FilAriane breadcrumb={this.breadcrumbValue}/>
+
                 <div className="fr-grid-row fr-mb-6w">
                   <section className="pr-keyboard-hands fr-col-6">
                     <div className="pic-keyboard-hands"></div>
@@ -38,7 +37,6 @@ export default class extends Controller {
                 </div>
               </div>
             </div>
-            <PiedDePage />
           </>
         </React.StrictMode>
       )

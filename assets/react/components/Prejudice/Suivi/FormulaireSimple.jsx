@@ -1,8 +1,6 @@
-import React,{useState,useEffect} from 'react';
-import { Hidden, Submit, Br } from '../../../utils/fundamental';
-import { trans, GLOBAL_BTN_VIEW,
-  PREJUDICE_FIELD_RACCOURCI
-} from '../../../../translator';
+import React,{useState,} from 'react';
+import { Hidden, Submit } from '../../../utils/fundamental';
+
 import { Input } from "@codegouvfr/react-dsfr/Input";
 
 const FormulaireSimple = ({csrfToken,raccourci="",errorMessage=""}) => {
@@ -23,14 +21,14 @@ const FormulaireSimple = ({csrfToken,raccourci="",errorMessage=""}) => {
         <div className="fr-col-4">&nbsp;</div>
         <div className="fr-col-4">
           <Input
-            label={trans(PREJUDICE_FIELD_RACCOURCI)}
+            label="Code suivi"
             nativeInputProps={{
               name:"raccourci",
               value: _raccourci,
               onChange: ev => setRaccourci(ev.target.value),
-              maxlength: RACCOURCI_LENGTH
+              maxLength: RACCOURCI_LENGTH
             }}
-            addon={<Submit label={trans(GLOBAL_BTN_VIEW)} />}
+            addon={<Submit label={"Consulter"} />}
           />
         </div>
         <div className="fr-col-4">&nbsp;</div>

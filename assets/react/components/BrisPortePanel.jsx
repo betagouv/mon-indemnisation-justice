@@ -1,11 +1,10 @@
 import React, {useState,useEffect} from 'react';
-import { fr } from "@codegouvfr/react-dsfr";
-import { Table } from "@codegouvfr/react-dsfr/Table";
+
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
 import {default as RecapitulatifBrisPorte} from './BrisPorte/Recapitulatif';
 import { Br } from "../utils/fundamental";
-import { trans, BRIS_PORTE_SECTION,USER_SECTION,
+import { trans, USER_SECTION,
   DOCUMENT_ATTESTATION_INFORMATION_TITLE,
   DOCUMENT_PHOTO_BRIS_PORTE_TITLE,
   DOCUMENT_FACTURE_TITLE,
@@ -33,7 +32,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
 
   const sections = [
     trans(USER_SECTION),
-    trans(BRIS_PORTE_SECTION),
+    "Informations relatives au bris de porte",
     trans(BRIS_PORTE_PJ_SECTION),
     trans(VERIFICATION_SECTION)
   ];

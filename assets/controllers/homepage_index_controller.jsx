@@ -24,22 +24,7 @@ export default class extends Controller {
       root.render(
         <React.StrictMode>
           <>
-            <Entete user={this.userValue} version={this.versionValue} />
-            <main role="main">
-              <div className="pr-content fr-pb-6w">
-                <div className="pr-content_header">
-                  <QuiSommesNousHeader />
-                </div>
-                {/*<div className="fr-container">
-                  <div className="pr-content_body pr-mt-n6w ">
-                    <CategorieDemandes />
-                    <ServiceNational />
-                  </div>
-                </div>
-                */}
-              </div>
-            </main>
-            <PiedDePage />
+            <QuiSommesNousHeader />
           </>
         </React.StrictMode>
       )

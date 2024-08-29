@@ -268,7 +268,7 @@ class SecurityController extends AbstractController
                 ->htmlTemplate('registration/confirmation_email.html.twig', [
                     'mail' => $user->getEmail(),
                     'url' => $this->baseUrl,
-                    'nomComplet' => $user->getNomComplet(),
+                    'nom_complet' => $user->getNomComplet(),
                 ])
                 ->send(pathname: 'app_verify_email', user: $user);
 

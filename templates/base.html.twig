@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="theme-color" content="#000091"><!-- Défini la couleur de thème du navigateur (Safari/Android) -->
+        <meta name="theme-color" content="#000091">
 
         <link rel="apple-touch-icon" href="{{ asset('dsfr/favicon/apple-touch-icon.png') }}"/>
         <link rel="icon" href="{{ asset('dsfr/favicon/favicon.svg') }}" type="image/svg+xml"/>
@@ -19,13 +19,89 @@
     </head>
     <body>
         <header role="banner" class="fr-header">
-            {% block header %}
-                {% include('_header.html.twig') %}
-            {% endblock header %}
-            {% block menu %}
-                {% include('_menu.html.twig') %}
-            {% endblock menu %}
+            <div class="fr-header__body">
+                <div class="fr-container">
+                    <div class="fr-header__body-row">
+                        <div class="fr-header__brand fr-enlarge-link">
+                            <div class="fr-header__brand-top">
+                                <div class="fr-header__logo">
+                                    <p class="fr-logo">Ministère<br>justice</p>
+                                </div>
+                                {#  Menu mobile #}
+                                <div class="fr-header__navbar">
+                                    <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499" id="button-500" title="Menu">
+                                        Menu
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="fr-header__service">
+                                <a href="{{ path('app_homepage') }}" title="Mon Indemnisation Justice"></a>
+                                <p class="fr-header__service-title">Mon Indemnisation Justice</p>
+                                {% block header_extra %}
+                                {% endblock header_extra %}
+                            </div>
+                        </div>
+                        <div class="fr-header__tools">
+                            <div class="fr-header__tools-links">
+                                {% block header_menu %}
+                                    <ul class="fr-btns-group">
+                                        <li>
+                                            <a class="fr-btn fr-icon-government-line" href="{{ path('app_agent_securite_connexion') }}">Agent</a>
+                                        </li>
+                                        <li>
+                                            <a class="fr-btn fr-icon-lock-line" href="{{ path('app_login') }}">Se connecter</a>
+                                        </li>
+                                    </ul>
+                                {% endblock header_menu %}
+                            </div>
+                            <div class="fr-header__search fr-modal" id="modal-474">
+                                <div class="fr-container fr-container-lg--fluid">
+                                    <button class="fr-btn--close fr-btn" aria-controls="modal-474" title="Fermer">Fermer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {#  Version mobile #}
+                <div class="fr-header__menu fr-modal" id="modal-499" aria-labelledby="button-500">
+                    <div class="fr-container">
+                        <button class="fr-btn--close fr-btn" aria-controls="modal-499" title="Fermer">
+                            Fermer
+                        </button>
+                        <div class="fr-header__menu-links">
+                            {{ block('header_menu') }}
+                        </div>
+
+                        {% block navigation_menu %}
+                            <nav id="fr-header-main-navigation fr-container" class="fr-nav" role="navigation" aria-label="Menu principal" data-fr-js-navigation="true">
+                                <ul class="fr-nav__list">
+                                    <li class="fr-nav__item" data-fr-js-navigation-item="true">
+                                        <a href="{{ path('app_category') }}" class="fr-nav__link">Déclarer un préjudice</a>
+                                    </li>
+                                    <li class="fr-nav__item" data-fr-js-navigation-item="true">
+                                        <a href="{{ path('app_suivi_mon_dossier') }}" class="fr-nav__link">Suivre mon dossier</a>
+                                    </li>
+                                    <li class="fr-nav__item" data-fr-js-navigation-item="true">
+                                        <a href="{{ path('app_qui_sommes_nous') }}" class="fr-nav__link">Qui sommes-nous ?</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        {% endblock navigation_menu %}
+                    </div>
+                </div>
+            </div>
         </header>
+
+        {# Fil d'ariane
+
+            <div className="pr-body_header">
+              <section className="pr-breadcrumb">
+                <div className="fr-container">
+                  <FilAriane breadcrumb={this.breadcrumbValue}/>
+                </div>
+              </section>
+        #}
 
         <main role="main">
             <div class="fr-container fr-container--fluid fr-my-2w fr-px-3w">
@@ -38,20 +114,13 @@
 
         {% block javascripts %}
             <script>
-                // Options disponibles à l'initialisation du DSFR
                 window.dsfr = {
                     verbose: {% if app.debug %}true{% else %}false{% endif %},
-                    mode: 'manual'
+                    production: {% if app.environment == 'prod' %}true{% else %}false{% endif %},
                 };
-                // Rustine pour palier à l'automatisation du thème DSFR:
-                if (!localStorage.getItem('scheme')) {
-                    localStorage.setItem('scheme', 'system');
-                }
-
-                document.getElementsByTagName('html').item(0)?.setAttribute('data-fr-theme', localStorage.getItem('scheme'));
             </script>
-            <script type="module" href="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
-            <script type="text/javascript" nomodule href="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
+            <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
+            <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
         {% endblock %}
 
     </body>

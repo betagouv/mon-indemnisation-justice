@@ -23,13 +23,10 @@ export default class extends Controller {
       root.render(
         <React.StrictMode>
           <>
-            <Entete user={this.userValue} version={this.versionValue} />
             <div className="fr-container">
-              <FilAriane breadcrumb={this.breadcrumbValue}/>
               <InscriptionSuccess user={this.userValue}/>
               <Br space={2}/>
             </div>
-            <PiedDePage />
           </>
         </React.StrictMode>
       )

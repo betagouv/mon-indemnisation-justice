@@ -39,13 +39,7 @@ class HomepageController extends AbstractController
     #[Route('/declarer-un-prejudice', name: 'app_category', options: ['expose' => true])]
     public function category(Breadcrumb $breadcrumb, Version $version): Response
     {
-      $breadcrumb->add("prejudice.title", null);
-      $user = $this->getUser();
-      if($user && $user->hasRole(User::ROLE_REQUERANT))
-        $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
       return $this->render('homepage/category.html.twig', [
-          'breadcrumb' => $breadcrumb,
-          'version' => $version,
       ]);
     }
 
