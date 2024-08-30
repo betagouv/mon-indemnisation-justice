@@ -38,26 +38,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    public function findAdminFoncs(): array
-    {
-        $usernames = $this->findAdminUsernames();
-
-        return $this->findBy(['username' => $usernames]);
-    }
-
-    public function findAdminUsernames(): array
-    {
-        $output = [];
-        $users = $this->findAll();
-        foreach ($users as $user) {
-            if (true === $user->isAdminFonc()) {
-                $output[] = $user->getUsername();
-            }
-        }
-
-        return $output;
-    }
-
     public function findByRoles(array $roles): array
     {
         $qb = $this

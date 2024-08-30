@@ -32,6 +32,7 @@ class DefaultController extends AbstractController
         $statuts = $em->getRepository(Statut::class)->findBy(['code' => [
           Statut::CODE_CONSTITUE
           ]]);
+
         $prejudices = $em
           ->getRepository(Prejudice::class)
           ->findByStatuts($statuts,[],0,10)

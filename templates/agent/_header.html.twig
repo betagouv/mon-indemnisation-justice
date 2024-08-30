@@ -17,7 +17,12 @@
                     <div class="fr-header__service">
                         <a href="{{ path('app_homepage') }}" title="Mon Indemnisation Justice"></a>
                         <p class="fr-header__service-title">Mon Indemnisation Justice</p>
-                        <p class="fr-badge fr-badge--info fr-badge--no-icon">Espace agent</p>
+                        <div>
+                            {% if app.environment != 'prod' %}
+                            <p class="fr-badge fr-badge--warning fr-badge--no-icon">Plateforme test</p>
+                            {% endif %}
+                            <p class="fr-badge fr-badge--info fr-badge--no-icon">Espace agent</p>
+                        </div>
                     </div>
                 </div>
                 <div class="fr-header__tools">
@@ -60,9 +65,21 @@
                 {# Menu principal #}
                 <nav id="fr-header-main-navigation fr-container" class="fr-nav" role="navigation" aria-label="Menu principal" data-fr-js-navigation="true">
                     <ul class="fr-nav__list">
-                        <li class="fr-nav__item" data-fr-js-navigation-item="true">
+                        <li class="fr-nav__item">
                             <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Mes dossiers</a>
                         </li>
+
+                        {% if is_granted('ROLE_AGENT_VALIDATEUR') %}
+                            <li class="fr-nav__item">
+                                <a href="{{ url('app_chef_precontentieux_homepage') }}" class="fr-nav__link">Dossiers à valider</a>
+                            </li>
+                        {% endif %}
+
+                        {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}
+                            <li class="fr-nav__item">
+                                <a href="{{ url('app_admin_homepage') }}" class="fr-nav__link">Gestion des agents</a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </nav>
             </div>

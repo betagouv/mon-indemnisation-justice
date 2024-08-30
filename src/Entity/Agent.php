@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use DateTimeInterface;
 use App\Repository\AgentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,14 +15,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['email'], message: 'Cet adresse courriel est déjà attribuée à un agent')]
 class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    // Le role ROLE_REDACTEUR_PRECONTENTIEUX est donné au rédacteur du pôle précontentieux
-    public const ROLE_AGENT_REDACTEUR = 'ROLE_REDACTEUR_PRECONTENTIEUX';
-    // Le rôle ROLE_ADMIN_FONC peut ajouter ou activer / désactiver un compte rédacteur
-    public const ROLE_AGENT_GESTION_PERSONNEL = 'ROLE_ADMIN_FONC';
+    // Le role ROLE_AGENT_REDACTEUR est donné au rédacteur du pôle précontentieux
+    public const ROLE_AGENT_REDACTEUR = 'ROLE_AGENT_REDACTEUR';
+    // Le rôle ROLE_AGENT_GESTION_PERSONNEL peut ajouter ou activer / désactiver un compte rédacteur
+    public const ROLE_AGENT_GESTION_PERSONNEL = 'ROLE_AGENT_GESTION_PERSONNEL';
 
-    // Le rôle ROLE_CHEF_PRECONTENTIEUX est donné à la cheffe du pôle précontentieux : elle valide la décision prise sur
-    // un dossier d'indemnisation et signe la lettre qui l'officialise
-    public const ROLE_AGENT_VALIDATEUR = 'ROLE_CHEF_PRECONTENTIEUX';
+    // Le rôle ROLE_AGENT_VALIDATEUR est donné à la cheffe du pôle précontentieux : elle valide la décision prise sur
+    // un dossier d'indemnisation et signe la lettre qui l'officialise.
+    public const ROLE_AGENT_VALIDATEUR = 'ROLE_AGENT_VALIDATEUR';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -48,13 +47,14 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     private string $motDePasse;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?DateTimeInterface $dateChangementMDP = null;
+    private ?\DateTimeInterface $dateChangementMDP = null;
 
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
     private bool $estActif = true;
 
     public function __construct()
-    {}
+    {
+    }
 
     public function getId(): ?int
     {
@@ -75,13 +75,16 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPlaintextRole(): string
     {
-        if($this->hasRole(self::ROLE_AGENT_VALIDATEUR))
-          return self::ROLE_AGENT_VALIDATEUR;
-        if($this->hasRole(self::ROLE_AGENT_REDACTEUR))
-          return self::ROLE_AGENT_REDACTEUR;
+        if ($this->hasRole(self::ROLE_AGENT_VALIDATEUR)) {
+            return self::ROLE_AGENT_VALIDATEUR;
+        }
+        if ($this->hasRole(self::ROLE_AGENT_REDACTEUR)) {
+            return self::ROLE_AGENT_REDACTEUR;
+        }
 
         return '';
     }
+
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->getRoles());
@@ -192,12 +195,12 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function getDateChangementMDP(): ?DateTimeInterface
+    public function getDateChangementMDP(): ?\DateTimeInterface
     {
         return $this->dateChangementMDP;
     }
 
-    public function setDateChangementMDP(?DateTimeInterface $dateChangementMDP): self
+    public function setDateChangementMDP(?\DateTimeInterface $dateChangementMDP): self
     {
         $this->dateChangementMDP = $dateChangementMDP;
 

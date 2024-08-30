@@ -10,7 +10,6 @@ use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Mailer\BasicMailer;
 use App\Service\Version\Version;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -46,7 +45,7 @@ class PrejudiceController extends AbstractController
         ]);
     }
 
-    #[IsGranted(new Expression('is_granted("'.User::ROLE_CHEF_PRECONTENTIEUX.'") or is_granted("'.User::ROLE_REDACTEUR_PRECONTENTIEUX.'")'))]
+    #[IsGranted(User::ROLE_REQUERANT)]
     #[Route('/passage-a-l-etat-rejete/{id}', name: 'app_redacteur_update_statut_to_rejet', methods: ['GET'], options: ['expose' => true])]
     public function checkRejet(BrisPorte $brisPorte): JsonResponse
     {
@@ -56,7 +55,7 @@ class PrejudiceController extends AbstractController
         return new JsonResponse(['success' => true]);
     }
 
-    #[IsGranted(User::ROLE_CHEF_PRECONTENTIEUX)]
+    #[IsGranted(User::ROLE_REQUERANT)]
     #[Route('/passage-a-l-etat-signe/{id}', name: 'app_redacteur_update_statut_to_sign', methods: ['GET'], options: ['expose' => true])]
     public function checkSign(BrisPorte $brisPorte): JsonResponse
     {
@@ -96,7 +95,7 @@ class PrejudiceController extends AbstractController
         return new JsonResponse(['success' => false]);
     }
 
-    #[IsGranted(new Expression('is_granted("'.User::ROLE_CHEF_PRECONTENTIEUX.'") or is_granted("'.User::ROLE_REDACTEUR_PRECONTENTIEUX.'")'))]
+    #[IsGranted(User::ROLE_REQUERANT)]
     #[Route('/passage-a-l-etat-valide/{id}', name: 'app_redacteur_update_statut_to_valide', methods: ['GET'], options: ['expose' => true])]
     public function checkValide(BrisPorte $brisPorte): JsonResponse
     {

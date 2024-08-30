@@ -17,6 +17,11 @@
                     <div class="fr-header__service">
                         <a href="{{ path('app_homepage') }}" title="Mon Indemnisation Justice"></a>
                         <p class="fr-header__service-title">Mon Indemnisation Justice</p>
+                        {% if app.environment != 'prod' %}
+                        <div>
+                            <p class="fr-badge fr-badge--warning fr-badge--no-icon">Plateforme de test</p>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="fr-header__tools">

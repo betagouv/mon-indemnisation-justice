@@ -2,9 +2,9 @@
 
 namespace App\Controller\Agent\ChefPrecontentieux;
 
+use App\Entity\Agent;
 use App\Entity\Prejudice;
 use App\Entity\Statut;
-use App\Entity\User;
 use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(User::ROLE_CHEF_PRECONTENTIEUX)]
-#[Route('/chef-precontentieux')]
+#[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
+#[Route('/agent/validation')]
 class DefaultController extends AbstractController
 {
     public function __construct(
@@ -22,9 +22,7 @@ class DefaultController extends AbstractController
       private Version $version,
       private EntityManagerInterface $em
     )
-    {
-
-    }
+    {}
 
     #[Route('/accueil', name: 'app_chef_precontentieux_homepage', options: ['expose' => true])]
     public function index(): Response

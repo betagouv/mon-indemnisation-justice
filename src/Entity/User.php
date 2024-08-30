@@ -9,8 +9,6 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -43,15 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     // Le rôle ROLE_REQUERANT est celui donné au porteur d'une requête d'indemnisation
     public const ROLE_REQUERANT = 'ROLE_REQUERANT';
-    // Le role ROLE_REDACTEUR_PRECONTENTIEUX est donné au rédacteur du pôle précontentieux
-    public const ROLE_REDACTEUR_PRECONTENTIEUX = 'ROLE_REDACTEUR_PRECONTENTIEUX';
 
-    // Le rôle ROLE_ADMIN_FONC peut ajouter ou activer / désactiver un compte rédacteur
-    public const ROLE_ADMIN_FONC = 'ROLE_ADMIN_FONC';
-
-    // Le rôle ROLE_CHEF_PRECONTENTIEUX est donné à la cheffe du pôle précontentieux : elle valide la décision prise sur
-    // un dossier d'indemnisation et signe la lettre qui l'officialise
-    public const ROLE_CHEF_PRECONTENTIEUX = 'ROLE_CHEF_PRECONTENTIEUX';
 
     #[Groups(['user:read', 'prejudice:read'])]
     #[ORM\Id]
@@ -68,7 +58,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column(type: 'simple_array')]
-    protected array $roles = [];
+    protected array $roles = [self::ROLE_REQUERANT];
 
     /**
      * @var string The hashed password
@@ -161,10 +151,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPlaintextRole(): string
     {
-        if($this->hasRole(self::ROLE_CHEF_PRECONTENTIEUX))
-          return self::ROLE_CHEF_PRECONTENTIEUX;
-        if($this->hasRole(self::ROLE_REDACTEUR_PRECONTENTIEUX))
-          return self::ROLE_REDACTEUR_PRECONTENTIEUX;
         return '';
     }
     public function hasRole(string $role): bool
@@ -174,19 +160,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addRole(string $role): self
     {
-        $roles = $this->getRoles();
-        if (
-            !in_array($role, $roles)
-            && in_array($role, [
-                self::ROLE_USER,
-                self::ROLE_REDACTEUR_PRECONTENTIEUX,
-                self::ROLE_CHEF_PRECONTENTIEUX,
-                self::ROLE_ADMIN_FONC,
-                self::ROLE_REQUERANT,
-            ])
+        if ($role === self::ROLE_REQUERANT
+            && !in_array($role, $this->roles)
         ) {
-            $roles[] = $role;
-            $this->setRoles($roles);
+            $this->roles[] = $role;
         }
 
         return $this;
@@ -200,13 +177,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
-    }
-
-    public function isAdminFonc(): bool
-    {
-        $roles = $this->getRoles();
-
-        return in_array(self::ROLE_ADMIN_FONC, $roles);
     }
 
     /**

@@ -45,7 +45,7 @@ const Prejudices = function({items}) {
     <div className="fr-grid-row">
       <div className="fr-col-12">
         <Table
-          caption="Mes dossiers"
+          caption="Dossiers à valider"
           data={data}
           headers={headers}
           fixed

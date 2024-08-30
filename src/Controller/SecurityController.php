@@ -98,7 +98,7 @@ class SecurityController extends AbstractController
                     $request->get('_password')
                 )
             );
-            $successMsg = $this->translator->trans('security.reset_password.success.password_reseted');
+            $successMsg = 'Le mot de passe a été mis à jour avec succès !';
             $this->em->flush();
         }
 
@@ -254,7 +254,6 @@ class SecurityController extends AbstractController
             $this->handleUserRequest($request, $user);
             $this->em->persist($user);
             $this->em->flush();
-
 
             /**
              * Envoi du mail de confirmation.

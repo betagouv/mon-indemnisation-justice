@@ -11,7 +11,6 @@ use App\Service\Mailer\BasicMailer;
 use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,11 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[IsGranted(
-    new Expression(
-        'is_granted("'.User::ROLE_REQUERANT.'") or is_granted("'.User::ROLE_REDACTEUR_PRECONTENTIEUX.'")'
-    )
-)]
+#[IsGranted(User::ROLE_REQUERANT)]
 #[Route('/bris-de-porte')]
 class BrisPorteController extends AbstractController
 {
