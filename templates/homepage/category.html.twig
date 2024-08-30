@@ -1,16 +1,5 @@
 {% extends 'base_react.html.twig' %}
 
 {% block main %}
-  <section class="pr-whoami">
-    <div class="fr-container">
-      <div class="fr-pt-6w fr-pb-12w">
-        <h1>Nous vous aidons dans votre demande d'indemnisation</h1>
-      </div>
-    </div>
-  </section>
-
-  <div class="fr-container">
-    <div class="pr-content_body pr-mt-n6w " {{ stimulus_controller('category_index',{}) }}>
-    </div>
-  </div>
+  <div {{ stimulus_controller('category_index',{}) }}></div>
 {% endblock %}
