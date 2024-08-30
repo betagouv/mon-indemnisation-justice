@@ -2,7 +2,7 @@
 
 namespace App\Security;
 
-use App\Entity\User;
+use App\Entity\Requerant;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -11,7 +11,7 @@ class RequerantChecker implements UserCheckerInterface
 {
     public function checkPreAuth(UserInterface $user): void
     {
-        if ($user instanceof User && !$user->isVerified()) {
+        if ($user instanceof Requerant && !$user->estVerifieCourriel()) {
             throw new CustomUserMessageAuthenticationException('Ce compte n\'est pas vérifié.');
         }
     }

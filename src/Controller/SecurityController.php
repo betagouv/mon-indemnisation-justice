@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Civilite;
-use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Entity\Requerant;
+use App\Repository\RequerantRepository;
 use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Mailer\SignedMailer;
 use App\Service\Version\Version;
@@ -41,9 +41,9 @@ class SecurityController extends AbstractController
     {
         $content = json_decode($request->getContent(), true);
         $email = $content['email'] ?? null;
-        $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
+        $user = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $email]);
         $sent = false;
-        if ($user && $user->hasRole(User::ROLE_REQUERANT)) {
+        if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
             /**
              * Envoi du mail de confirmation.
              */
@@ -67,11 +67,11 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/je-mets-a-jour-mon-mot-de-passe', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
-    public function reset_password(Request $request, UserRepository $ur): Response
+    public function reset_password(Request $request, RequerantRepository $ur): Response
     {
         /** @var ?int $id */
         $id = $request->query->get('id', null);
-        /** @var ?User $user */
+        /** @var ?Requerant $user */
         $user = $ur->find($id);
         if (
             (null === $user)
@@ -171,7 +171,7 @@ class SecurityController extends AbstractController
         return $fields;
     }
 
-    private function handleUserRequest(Request $request, User $user): void
+    private function handleUserRequest(Request $request, Requerant $user): void
     {
         /** @var ?int $civiliteId */
         $civiliteId = $request->get('civilite', null);
@@ -189,21 +189,21 @@ class SecurityController extends AbstractController
             )
         );
         $user->getPersonnePhysique()->setCivilite($civilite);
-        $user->addRole(User::ROLE_REQUERANT);
+        $user->addRole(Requerant::ROLE_REQUERANT);
     }
 
     #[Route('/validation-du-compte-requerant', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $ur): Response
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, RequerantRepository $ur): Response
     {
         /** @var ?int $id */
         $id = $request->query->get('id', null);
-        /** @var ?User $user */
+        /** @var ?Requerant $user */
         $user = $ur->find($id);
         if (
             (null !== $user)
             && (true === $this->mailer->check($request, $user))
         ) {
-            $user->setIsVerified(true);
+            $user->setVerifieCourriel();
             $this->em->flush();
         }
 
@@ -250,7 +250,7 @@ class SecurityController extends AbstractController
             /**
              * Création du nouveau compte.
              */
-            $user = new User();
+            $user = new Requerant();
             $this->handleUserRequest($request, $user);
             $this->em->persist($user);
             $this->em->flush();

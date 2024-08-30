@@ -5,9 +5,9 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+        app_requerant_provider:
             entity:
-                class: App\Entity\User
+                class: App\Entity\Requerant
                 property: email
         agent_provider:
             entity:
@@ -35,10 +35,10 @@ security:
             logout:
                 path: app_agent_securite_deconnexion
                 target: app_agent_securite_connexion
-        main:
+        requerant:
             user_checker: App\Security\RequerantChecker
             lazy: true
-            provider: app_user_provider
+            provider: app_requerant_provider
             form_login:
                 login_path: app_login
                 check_path: app_login

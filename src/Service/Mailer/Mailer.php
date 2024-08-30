@@ -1,7 +1,7 @@
 <?php
 namespace App\Service\Mailer;
 
-use App\Entity\User;
+use App\Entity\Requerant;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
 
@@ -18,7 +18,7 @@ class Mailer
 
   public function getTransport(): ?TransportInterface { return $this->_transport; }
 
-  public  function sendTo(User $user,string $subject, string $html): self {
+  public  function sendTo(Requerant $user, string $subject, string $html): self {
     $email = new Email();
     $email->from($this->mailerFrom);
     $email->to($user->getEmail());

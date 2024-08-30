@@ -48,7 +48,7 @@ class Statut
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
-    private ?User $requerant = null;
+    private ?Requerant $requerant = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
@@ -125,14 +125,14 @@ class Statut
         return $this;
     }
 
-    public function getEmetteur(): User | Agent
+    public function getEmetteur(): Requerant | Agent
     {
         return $this->requerant ?? $this->agent;
     }
 
-    public function setEmetteur(User | Agent $emetteur): static
+    public function setEmetteur(Requerant | Agent $emetteur): static
     {
-        if ($emetteur instanceof User) {
+        if ($emetteur instanceof Requerant) {
             return $this->setRequerant($emetteur);
         }
 
@@ -144,7 +144,7 @@ class Statut
     }
 
 
-    public function setRequerant(User $requerant): self
+    public function setRequerant(Requerant $requerant): self
     {
         $this->requerant = $requerant;
         $this->agent = null;

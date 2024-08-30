@@ -6,7 +6,7 @@ use App\Entity\Agent;
 use App\Entity\LiasseDocumentaire;
 use App\Entity\PersonneMorale;
 use App\Entity\PersonnePhysique;
-use App\Entity\User;
+use App\Entity\Requerant;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -14,7 +14,7 @@ class AppRuntime implements RuntimeExtensionInterface
 {
     public function estRequerant(?UserInterface $user = null): bool
     {
-        return $user instanceof User;
+        return $user instanceof Requerant;
     }
 
     public function estAgent(?UserInterface $user = null): bool
@@ -33,7 +33,7 @@ class AppRuntime implements RuntimeExtensionInterface
         return $output;
     }
 
-    public function emptyUser(): User
+    public function emptyUser(): Requerant
     {
         $liasseDocumentaire = new LiasseDocumentaire();
         $reflectionClass = new \ReflectionClass(LiasseDocumentaire::class);
@@ -49,8 +49,8 @@ class AppRuntime implements RuntimeExtensionInterface
         $reflectionClass->getProperty('id')->setValue($personneMorale, 0);
         $personneMorale->setLiasseDocumentaire($liasseDocumentaire);
 
-        $user = new User();
-        $reflectionClass = new \ReflectionClass(User::class);
+        $user = new Requerant();
+        $reflectionClass = new \ReflectionClass(Requerant::class);
         $reflectionClass->getProperty('id')->setValue($user, 0);
         $reflectionClass->getProperty('adresse')->setValue($user, null);
         $reflectionClass->getProperty('personnePhysique')->setValue($user, $personnePhysique);

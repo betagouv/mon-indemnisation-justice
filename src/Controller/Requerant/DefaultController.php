@@ -3,7 +3,7 @@
 namespace App\Controller\Requerant;
 
 use App\Entity\BrisPorte;
-use App\Entity\User;
+use App\Entity\Requerant;
 use App\Service\Breadcrumb\Breadcrumb;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(User::ROLE_REQUERANT)]
+#[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant')]
 class DefaultController extends AbstractController
 {

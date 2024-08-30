@@ -33,7 +33,7 @@ abstract class Prejudice implements PrejudiceInterface
     #[Groups('prejudice:read')]
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    protected ?User $requerant = null;
+    protected ?Requerant $requerant = null;
 
     #[Groups('prejudice:read')]
     protected $lastStatut;
@@ -123,12 +123,12 @@ abstract class Prejudice implements PrejudiceInterface
         return $this;
     }
 
-    public function getRequerant(): ?User
+    public function getRequerant(): ?Requerant
     {
         return $this->requerant;
     }
 
-    public function setRequerant(?User $requerant): static
+    public function setRequerant(?Requerant $requerant): static
     {
         $this->requerant = $requerant;
 

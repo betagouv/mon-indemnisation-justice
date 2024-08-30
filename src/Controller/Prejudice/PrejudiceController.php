@@ -4,7 +4,7 @@ namespace App\Controller\Prejudice;
 
 use App\Entity\BrisPorte;
 use App\Entity\Statut;
-use App\Entity\User;
+use App\Entity\Requerant;
 use App\Repository\StatutRepository;
 use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Mailer\BasicMailer;
@@ -45,7 +45,7 @@ class PrejudiceController extends AbstractController
         ]);
     }
 
-    #[IsGranted(User::ROLE_REQUERANT)]
+    #[IsGranted(Requerant::ROLE_REQUERANT)]
     #[Route('/passage-a-l-etat-rejete/{id}', name: 'app_redacteur_update_statut_to_rejet', methods: ['GET'], options: ['expose' => true])]
     public function checkRejet(BrisPorte $brisPorte): JsonResponse
     {
@@ -55,7 +55,7 @@ class PrejudiceController extends AbstractController
         return new JsonResponse(['success' => true]);
     }
 
-    #[IsGranted(User::ROLE_REQUERANT)]
+    #[IsGranted(Requerant::ROLE_REQUERANT)]
     #[Route('/passage-a-l-etat-signe/{id}', name: 'app_redacteur_update_statut_to_sign', methods: ['GET'], options: ['expose' => true])]
     public function checkSign(BrisPorte $brisPorte): JsonResponse
     {
@@ -95,7 +95,7 @@ class PrejudiceController extends AbstractController
         return new JsonResponse(['success' => false]);
     }
 
-    #[IsGranted(User::ROLE_REQUERANT)]
+    #[IsGranted(Requerant::ROLE_REQUERANT)]
     #[Route('/passage-a-l-etat-valide/{id}', name: 'app_redacteur_update_statut_to_valide', methods: ['GET'], options: ['expose' => true])]
     public function checkValide(BrisPorte $brisPorte): JsonResponse
     {

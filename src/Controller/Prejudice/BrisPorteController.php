@@ -4,7 +4,7 @@ namespace App\Controller\Prejudice;
 
 use App\Entity\BrisPorte;
 use App\Entity\Statut;
-use App\Entity\User;
+use App\Entity\Requerant;
 use App\Repository\StatutRepository;
 use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Mailer\BasicMailer;
@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[IsGranted(User::ROLE_REQUERANT)]
+#[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/bris-de-porte')]
 class BrisPorteController extends AbstractController
 {

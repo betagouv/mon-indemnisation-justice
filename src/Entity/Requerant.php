@@ -8,7 +8,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
-use App\Repository\UserRepository;
+use App\Repository\RequerantRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -30,15 +30,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
             // ,security: "is_granted('ROLE_REQUERANT')"
         )]
 )]
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
+#[ORM\Entity(repositoryClass: RequerantRepository::class)]
+#[ORM\Table(name: 'requerants')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    // Ce rôle va sauter
-    public const ROLE_USER = 'ROLE_USER';
-
     // Le rôle ROLE_REQUERANT est celui donné au porteur d'une requête d'indemnisation
     public const ROLE_REQUERANT = 'ROLE_REQUERANT';
 
@@ -66,15 +63,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[Groups(['user:read', 'prejudice:read'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $username = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateChangementMDP = null;
 
     #[ORM\Column(type: 'boolean')]
-    private $isVerified = false;
+    private $estVerifieCourriel = false;
 
     #[Groups('user:read')]
     #[ORM\Column(length: 255, nullable: true)]
@@ -108,23 +101,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale = null;
 
-    #[Groups(['user:read', 'prejudice:read', 'user:write'])]
-    public readonly ?int $pId;
-
-    #[Groups('user:read', 'user:write')]
-    private $plaintextRole;
-
-    #[Groups('user:read')]
-    #[ORM\Column(options: ['default' => true])]
-    private bool $active = true;
-
     public function __construct()
     {
         $this->personneMorale = new PersonneMorale();
         $this->personnePhysique = new PersonnePhysique();
         $this->isPersonneMorale = false;
         $this->adresse = new Adresse();
-        $this->active = true;
     }
 
     public function getPId(): ?int
@@ -232,13 +214,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->username;
     }
 
-    public function setUsername(?string $username): static
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
     public function getDateChangementMDP(): ?\DateTimeInterface
     {
         return $this->dateChangementMDP;
@@ -251,93 +226,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isVerified(): bool
+    public function estVerifieCourriel(): bool
     {
-        return $this->isVerified;
+        return $this->estVerifieCourriel;
     }
 
-    public function setIsVerified(bool $isVerified): static
+    public function setVerifieCourriel(): static
     {
-        $this->isVerified = $isVerified;
-
-        return $this;
-    }
-
-    public function getMnemo(): ?string
-    {
-        return $this->mnemo;
-    }
-
-    public function setMnemo(?string $mnemo): static
-    {
-        $this->mnemo = $mnemo;
-
-        return $this;
-    }
-
-    public function getFonction(): ?string
-    {
-        return $this->fonction;
-    }
-
-    public function setFonction(?string $fonction): static
-    {
-        $this->fonction = $fonction;
-
-        return $this;
-    }
-
-    public function getTitre(): ?string
-    {
-        return $this->titre;
-    }
-
-    public function setTitre(?string $titre): static
-    {
-        $this->titre = $titre;
-
-        return $this;
-    }
-
-    public function getGrade(): ?string
-    {
-        return $this->grade;
-    }
-
-    public function setGrade(?string $grade): static
-    {
-        $this->grade = $grade;
-
-        return $this;
-    }
-
-    public function getIsPersonneMorale(): ?bool
-    {
-        return $this->isPersonneMorale;
-    }
-
-    public function setIsPersonneMorale(bool $isPersonneMorale): static
-    {
-        $this->isPersonneMorale = $isPersonneMorale;
+        $this->estVerifieCourriel = true;
 
         return $this;
     }
 
     public function isPersonneMorale(): ?bool
     {
-        return $this->getIsPersonneMorale();
-    }
-
-    public function getAdresse(): ?Adresse
-    {
-        return $this->adresse;
-    }
-
-    public function setAdresse(?Adresse $adresse): static
-    {
-        $this->adresse = $adresse;
-
-        return $this;
+        return $this->personneMorale !== null;
     }
 
     public function getPersonnePhysique(): ?PersonnePhysique
@@ -345,47 +248,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->personnePhysique;
     }
 
-    public function setPersonnePhysique(?PersonnePhysique $personnePhysique): static
-    {
-        $this->personnePhysique = $personnePhysique;
-
-        return $this;
-    }
 
     public function getPersonneMorale(): ?PersonneMorale
     {
         return $this->personneMorale;
     }
 
-    public function setPersonneMorale(?PersonneMorale $personneMorale): static
-    {
-        $this->personneMorale = $personneMorale;
-
-        return $this;
-    }
-
-    public function getActive(): bool
-    {
-        return $this->isActive();
-    }
-
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): static
-    {
-        $this->active = $active;
-
-        return $this;
-    }
-
     public function getNomComplet(): ?string
     {
-        $personnePhysique = $this->getPersonnePhysique();
-
-        return $personnePhysique ? $personnePhysique->getNomComplet() : null;
+        return $this->getPersonnePhysique()?->getNomComplet() ?? null;
     }
 
     public function __toString(): string

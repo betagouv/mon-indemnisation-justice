@@ -4,11 +4,11 @@ namespace App\Repository;
 use App\Contracts\PrejudiceInterface;
 use App\Entity\Categorie;
 use App\Entity\Statut;
-use App\Entity\User;
+use App\Entity\Requerant;
 
 trait PrejudiceRepositoryTrait {
 
-  public function newInstance(User $user): PrejudiceInterface
+  public function newInstance(Requerant $user): PrejudiceInterface
   {
     /** @var string $classname */
     $classname = $this->getEntityName();

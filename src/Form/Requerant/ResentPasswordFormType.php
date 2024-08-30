@@ -2,7 +2,7 @@
 
 namespace App\Form\Requerant;
 
-use App\Entity\User;
+use App\Entity\Requerant;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

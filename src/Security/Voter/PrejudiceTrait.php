@@ -2,7 +2,7 @@
 namespace App\Security\Voter;
 
 use App\Entity\Agent;
-use App\Entity\User;
+use App\Entity\Requerant;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Contracts\PrejudiceInterface;
 use App\Contracts\VoterInterface;
@@ -29,7 +29,7 @@ trait PrejudiceTrait {
     return
       ($attribute === VoterInterface::PREJUDICE_VIEW) &&
       (
-        ($user->hasRole(User::ROLE_REQUERANT) && ($subject->getRequerant() === $user))
+        ($user->hasRole(Requerant::ROLE_REQUERANT) && ($subject->getRequerant() === $user))
         ||
         $user->hasRole(Agent::ROLE_AGENT_REDACTEUR)
         ||
@@ -43,7 +43,7 @@ trait PrejudiceTrait {
     return
       ($attribute === VoterInterface::PREJUDICE_EDIT) &&
       (
-        ($user->hasRole(User::ROLE_REQUERANT) && ($subject->getRequerant() === $user))
+        ($user->hasRole(Requerant::ROLE_REQUERANT) && ($subject->getRequerant() === $user))
         ||
         $user->hasRole(Agent::ROLE_AGENT_REDACTEUR)
         ||

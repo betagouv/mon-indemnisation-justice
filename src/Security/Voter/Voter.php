@@ -2,7 +2,7 @@
 namespace App\Security\Voter;
 
 use App\Contracts\VoterInterface;
-use App\Entity\User;
+use App\Entity\Requerant;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Contracts\PrejudiceInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;

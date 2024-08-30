@@ -29,7 +29,7 @@ class PersonneMorale
     private ?int $id = null;
 
     #[ORM\OneToOne(mappedBy: 'personneMorale', cascade: ['persist', 'remove'])]
-    private ?User $compte = null;
+    private ?Requerant $compte = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -52,57 +52,6 @@ class PersonneMorale
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getRaisonSociale(): ?string
-    {
-        return $this->raisonSociale;
-    }
-
-    public function setRaisonSociale(?string $raisonSociale): static
-    {
-        $this->raisonSociale = $raisonSociale;
-
-        return $this;
-    }
-
-    public function getCompte(): ?User
-    {
-        return $this->compte;
-    }
-
-    public function setCompte(?User $compte): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($compte === null && $this->compte !== null) {
-            $this->compte->setPersonneMorale(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($compte !== null && $compte->getPersonneMorale() !== $this) {
-            $compte->setPersonneMorale($this);
-        }
-
-        $this->compte = $compte;
-
-        return $this;
-    }
-
-    public function getSirenSiret(): ?string
-    {
-        return $this->sirenSiret;
-    }
-
-    public function setSirenSiret(?string $sirenSiret): static
-    {
-        $this->sirenSiret = $sirenSiret;
-
-        return $this;
-    }
-
-    public function getLiasseDocumentaire(): ?LiasseDocumentaire
-    {
-        return $this->liasseDocumentaire;
     }
 
     public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Prejudice;
-use App\Entity\User;
+use App\Entity\Requerant;
 use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,7 +39,7 @@ class HomepageController extends AbstractController
     {
         $breadcrumb->add('homepage.title', null);
         $user = $this->getUser();
-        if ($user && $user->hasRole(User::ROLE_REQUERANT)) {
+        if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
             $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
         }
 
@@ -56,7 +56,7 @@ class HomepageController extends AbstractController
         $raccourci = $request->get('raccourci') ?? '';
         $breadcrumb->add('homepage.title', null);
         $user = $this->getUser();
-        if ($user && $user->hasRole(User::ROLE_REQUERANT)) {
+        if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
             $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
         }
 
