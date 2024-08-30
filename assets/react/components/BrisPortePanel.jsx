@@ -4,26 +4,6 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
 import {default as RecapitulatifBrisPorte} from './BrisPorte/Recapitulatif';
 import { Br } from "../utils/fundamental";
-import { trans, USER_SECTION,
-  DOCUMENT_ATTESTATION_INFORMATION_TITLE,
-  DOCUMENT_PHOTO_BRIS_PORTE_TITLE,
-  DOCUMENT_FACTURE_TITLE,
-  DOCUMENT_RIB_PRO_TITLE,
-  DOCUMENT_RIB_PRO_HINT,
-  DOCUMENT_RIB_HINT,
-  DOCUMENT_RIB_TITLE,
-  DOCUMENT_PIECE_IDENTITE_TITLE,
-  DOCUMENT_PIECE_IDENTITE_HINT,
-  DOCUMENT_FACTURE_HINT,
-  DOCUMENT_TITRE_PROPRIETE_TITLE,
-  DOCUMENT_TITRE_PROPRIETE_HINT,
-  DOCUMENT_PHOTO_BRIS_PORTE_HINT,
-  GLOBAL_STEP_NEXT,GLOBAL_STEP_PREVIOUS,
-  BRIS_PORTE_EDIT_UPDATE_CONSTITUE,
-  GLOBAL_INFORMATIONS_REQUIREMENT,
-  VERIFICATION_SECTION,
-  BRIS_PORTE_PJ_SECTION
-} from '../../translator';
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import BrisPorte from './BrisPorte';
 import User from './User';
@@ -31,10 +11,10 @@ import User from './User';
 const BrisPortePanel = function({id,user,brisPorte}) {
 
   const sections = [
-    trans(USER_SECTION),
+    "Données personnelles du justiciable",
     "Informations relatives au bris de porte",
-    trans(BRIS_PORTE_PJ_SECTION),
-    trans(VERIFICATION_SECTION)
+    "Documents à joindre obligatoirement à votre demande",
+    "Vérification et soumission de ma demande"
   ];
   const gotoFirstSection= () => gotoSection(0);
   const gotoSecondSection= () => gotoSection(1);
@@ -99,14 +79,14 @@ const BrisPortePanel = function({id,user,brisPorte}) {
       />
     </section>
     {(step<3) &&
-    <p className="fr-my-4w">{trans(GLOBAL_INFORMATIONS_REQUIREMENT)}</p>
+    <p className="fr-my-4w">Sauf mention contraire, tous les champs sont obligatoires</p>
     }
     {(step===0) &&
     <section className="pr-case_form fr-mb-4w">
       <User user={_user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12">
-          <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+          <Button onClick={incrementStep}>Valider et passer à l'étape suivante</Button>
         </div>
       </div>
     </section>
@@ -117,10 +97,10 @@ const BrisPortePanel = function({id,user,brisPorte}) {
       <div className="fr-col-12">
         <ul className="fr-btns-group fr-btns-group--inline-sm">
           <li>
-            <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+            <Button onClick={incrementStep}>Valider et passer à l'étape suivante</Button>
           </li>
           <li>
-            <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+            <Button onClick={decrementStep} priority="secondary">Revenir à l'étape précédente</Button>
           </li>
         </ul>
       </div>
@@ -134,7 +114,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-                  label={trans(DOCUMENT_ATTESTATION_INFORMATION_TITLE)}
+                  label="Attestation d'informations complétée par les forces de l'ordre"
                   type={"attestation_information"}
                 />
               </section>
@@ -143,8 +123,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-                  label={trans(DOCUMENT_PHOTO_BRIS_PORTE_TITLE)}
-                  hint_text={trans(DOCUMENT_PHOTO_BRIS_PORTE_HINT)}
+                  label="Photos de la porte endommagée"
+                  hint_text="Seuls les frais de remise en état à l'identique de la porte endommagée seront indemnisés"
                   type={"photo_prejudice"}
                 />
               </section>
@@ -154,8 +134,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
-                  label={trans(DOCUMENT_PIECE_IDENTITE_TITLE)}
-                  hint_text={trans(DOCUMENT_PIECE_IDENTITE_HINT)}
+                  label="Copie de ma pièce d'identité recto-verso"
+                  hint_text=" "
                   type={"carte_identite"}
                 />
               </section>
@@ -165,8 +145,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-                  label={trans(DOCUMENT_FACTURE_TITLE)}
-                  hint_text={trans(DOCUMENT_FACTURE_HINT)}
+                  label="Facture acquittée et copie du relevé de compte bancaire attestant du paiement"
+                  hint_text=" "
                   type={"preuve_paiement_facture"}
                 />
               </section>
@@ -176,8 +156,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={user.personneMorale.liasseDocumentaire}
-                  label={trans(DOCUMENT_RIB_PRO_TITLE)}
-                  hint_text={trans(DOCUMENT_RIB_PRO_HINT)}
+                  label="Relevé d'identité bancaire de ma société"
+                  hint_text=" "
                   type={"rib"}
                 />
               </section>
@@ -188,8 +168,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
-                  label={trans(DOCUMENT_RIB_TITLE)}
-                  hint_text={trans(DOCUMENT_RIB_HINT)}
+                  label="Mon relevé d'identité bancaire"
+                  hint_text=" "
                   type={"rib"}
                 />
               </section>
@@ -199,8 +179,8 @@ const BrisPortePanel = function({id,user,brisPorte}) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-                  label={trans(DOCUMENT_TITRE_PROPRIETE_TITLE)}
-                  hint_text={trans(DOCUMENT_TITRE_PROPRIETE_HINT)}
+                  label="Titre de propriété"
+                  hint_text=" "
                   type={"titre_propriete"}
                 />
               </section>
@@ -220,10 +200,10 @@ const BrisPortePanel = function({id,user,brisPorte}) {
             <div className="fr-col-12">
               <ul className="fr-btns-group fr-btns-group--inline-sm">
                 <li>
-                  <Button onClick={incrementStep}>{trans(GLOBAL_STEP_NEXT)}</Button>
+                  <Button onClick={incrementStep}>Valider et passer à l'étape suivante</Button>
                 </li>
                 <li>
-                  <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+                  <Button onClick={decrementStep} priority="secondary">Revenir à l'étape précédente</Button>
                 </li>
               </ul>
             </div>
@@ -247,11 +227,11 @@ const BrisPortePanel = function({id,user,brisPorte}) {
                     href: Routing.generate('app_requerant_update_statut_to_constitue',{id:brisPorte.id})
                   }}
                 >
-                {trans(BRIS_PORTE_EDIT_UPDATE_CONSTITUE)}
+                Je déclare mon bris de porte
                 </Button>
               </li>
               <li>
-                <Button onClick={decrementStep} priority="secondary">{trans(GLOBAL_STEP_PREVIOUS)}</Button>
+                <Button onClick={decrementStep} priority="secondary">Revenir à l'étape précédente</Button>
               </li>
             </ul>
           </div>

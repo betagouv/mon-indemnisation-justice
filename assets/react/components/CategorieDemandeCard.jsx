@@ -1,8 +1,5 @@
 import React from 'react';
-import { Card } from "@codegouvfr/react-dsfr/Card";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import { trans, CATEGORIE_DEMANDE_WAITING
-} from '../../translator';
 
 const CategorieDemandeCard = function({title,chapo,href='#',enabled=true,vertical=true}) {
 
@@ -20,7 +17,7 @@ const CategorieDemandeCard = function({title,chapo,href='#',enabled=true,vertica
             <Badge as="span" noIcon severity="success">{"disponible"}</Badge>
             }
             {!enabled &&
-            <Badge as="span" noIcon severity="warning">{trans(CATEGORIE_DEMANDE_WAITING)}</Badge>
+            <Badge as="span" noIcon severity="warning">Non disponible</Badge>
             }
           </div>
           <p className="fr-tile__desc">{chapo}</p>

@@ -15,12 +15,16 @@ export default class extends Controller {
       const root = ReactDOMClient.createRoot(container);
       root.render(
         <React.StrictMode>
-          <>
-            <div className="fr-col-12">
-              <Prejudices items={this.prejudicesValue} />
-            </div>
-          </>
+            <>
+                <div className="fr-container">
+                    <div className="fr-grid-row">
+                        <div className="fr-col-12">
+                            <Prejudices items={this.prejudicesValue}/>
+                        </div>
+                    </div>
+                </div>
+            </>
         </React.StrictMode>
-      )
-    }
+    )
+   }
 }

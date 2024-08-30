@@ -233,7 +233,7 @@ security:
   reset_password:
     description: "Saisissez votre email ici, vous recevrez à cette adresse un courriel pour réinitialiser votre mot de passe"
     title: "Mettre à jour mon mot de passe"
-    submit: "Revervoir un courriel pour mettre à jour votre mot de passe"
+    submit: "Recevoir un courriel pour mettre à jour votre mot de passe"
     email:
       title: "%name% : Réinitialisation de votre mot de passe"
       link: "Je réinitialise mon mot de passe"

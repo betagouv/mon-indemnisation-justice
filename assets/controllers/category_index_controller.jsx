@@ -19,10 +19,21 @@ export default class extends Controller {
       const root = ReactDOMClient.createRoot(container);
       root.render(
         <React.StrictMode>
-          <>
-            <CategorieDemandes />
-            <Br space={2}/>
-          </>
+            <>
+            <section className="pr-whoami">
+                <div className="fr-container">
+                    <div className="fr-pt-6w fr-pb-12w">
+                        <h1>Nous vous aidons dans votre demande d'indemnisation</h1>
+                    </div>
+                </div>
+            </section>
+            <div className="fr-container">
+                <div className="pr-content_body pr-mt-n6w ">
+                    <CategorieDemandes/>
+                    <Br space={2}/>
+                </div>
+            </div>
+            </>
         </React.StrictMode>
       )
     }

@@ -1,20 +1,8 @@
 import React, {useState,useEffect} from 'react';
-import { fr } from "@codegouvfr/react-dsfr";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
 import { format } from "date-fns";
-import {
-  trans,
-  PREJUDICE_FIELD_REFERENCE,PREJUDICE_FIELD_RACCOURCI,
-  BRIS_PORTE_CREATE_TITLE,
-  REQUERANT_HOMEPAGE_TITLE,
-  SINISTRE_FIELD_DATE_DECLARATION,
-  SINISTRE_FIELD_STATUT,
-  SINISTRE_FIELD_DATE_DERNIER_STATUT,
-  GLOBAL_ACTIONS,
-  GLOBAL_BTN_UPDATE
-} from '../../translator';
 const BrisPortes = function({items}) {
 
   const CODE_STATUT_EN_COURS_DE_CONSTITUTION='EN_COURS_DE_CONSTITUTION';
@@ -25,12 +13,11 @@ const BrisPortes = function({items}) {
   const [data,setData] = useState([]);
 
   const headers = [
-    trans(PREJUDICE_FIELD_REFERENCE),
-    //trans(SINISTRE_FIELD_DATE_DECLARATION),
-    trans(SINISTRE_FIELD_STATUT),
-    trans(SINISTRE_FIELD_DATE_DERNIER_STATUT),
-    trans(PREJUDICE_FIELD_RACCOURCI),
-    trans(GLOBAL_ACTIONS)
+    "Référence",
+    "Statut du dossier",
+    "Date du dernier statut",
+    "Code suivi",
+    "Actions",
   ];
 
   useEffect(() => {
@@ -48,7 +35,7 @@ const BrisPortes = function({items}) {
           linkProps={{
             href: Routing.generate('app_bris_porte_edit',{id: item.id})
           }}
-        >{trans(GLOBAL_BTN_UPDATE)}
+        >Modifier
         </Button>;
       if((item.lastStatut.code === CODE_STATUT_SIGNATURE_REJETEE)||(item.lastStatut.code===CODE_STATUT_SIGNATURE_VALIDEE))
         btn =
@@ -75,7 +62,7 @@ const BrisPortes = function({items}) {
     <div className="fr-grid-row">
       <div className="fr-col-12">
         <Table
-          caption={trans(REQUERANT_HOMEPAGE_TITLE)}
+          caption="Mes dossiers"
           data={data}
           headers={headers}
           fixed
@@ -83,16 +70,7 @@ const BrisPortes = function({items}) {
       </div>
       <div className="fr-col-9">
       </div>
-      {/*
-      <div className="fr-col-3">
-        <Button
-        linkProps={{
-          href: Routing.generate('app_bris_porte_add')
-        }}
-        >{trans(BRIS_PORTE_CREATE_TITLE)}
-        </Button>
-      </div>
-      */}
+      {}
     </div>
   );
 }

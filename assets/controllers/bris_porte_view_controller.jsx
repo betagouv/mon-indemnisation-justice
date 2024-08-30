@@ -4,7 +4,6 @@ import React from 'react';
 import {default as RecapitulatifBrisPorte} from '../react/components/BrisPorte/Recapitulatif';
 import {default as FormulaireSimplifie} from '../react/components/Prejudice/Traitement/FormulaireSimplifie';
 import {default as Signature} from '../react/components/Prejudice/Traitement/Signature';
-import PiedDePage from '../react/components/PiedDePage';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
 

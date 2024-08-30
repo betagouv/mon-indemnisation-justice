@@ -1,7 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
-import PiedDePage from '../react/components/PiedDePage';
 import TestEligibilite from '../react/components/BrisPorte/TestEligibilite';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 startReactDsfr({ defaultColorScheme: "system" });
