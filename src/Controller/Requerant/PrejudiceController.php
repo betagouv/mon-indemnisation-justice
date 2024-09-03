@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Controller\Prejudice;
+namespace App\Controller\Requerant;
 
+use App\Controller\Prejudice\UserInterface;
 use App\Entity\BrisPorte;
-use App\Entity\Statut;
 use App\Entity\Requerant;
+use App\Entity\Statut;
 use App\Repository\StatutRepository;
-use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Mailer\BasicMailer;
-use App\Service\Version\Version;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,14 +16,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+#[IsGranted(Requerant::ROLE_REQUERANT)]
+#[Route('/requerant')]
 class PrejudiceController extends AbstractController
 {
     public function __construct(
         private BasicMailer $mailer,
         private UrlGeneratorInterface $urlGenerator,
         private TranslatorInterface $translator,
-        private Version $version,
-        private Breadcrumb $breadcrumb,
         private StatutRepository $statutRepository,
         protected readonly string $emailFrom,
         protected readonly string $emailFromLabel,
@@ -35,14 +34,7 @@ class PrejudiceController extends AbstractController
     #[Route('/bris-de-porte/tester-mon-eligibilite', name: 'app_bris_porte_test_eligibilite', methods: ['POST', 'GET'], options: ['expose' => true])]
     public function testEligibilite(): Response
     {
-        $breadcrumb = $this->breadcrumb;
-        $breadcrumb->add('homepage.title', 'app_homepage');
-        $breadcrumb->add('bris_porte.test_eligibilite.title', null);
-
-        return $this->render('prejudice/bris_porte/test_eligibilite.html.twig', [
-            'breadcrumb' => $breadcrumb,
-            'version' => $this->version,
-        ]);
+        return $this->render('prejudice/bris_porte/test_eligibilite.html.twig');
     }
 
     #[IsGranted(Requerant::ROLE_REQUERANT)]

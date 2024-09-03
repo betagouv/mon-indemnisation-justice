@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Controller\Prejudice;
+namespace App\Controller\Requerant;
 
 use App\Entity\BrisPorte;
-use App\Entity\Statut;
 use App\Entity\Requerant;
+use App\Entity\Statut;
 use App\Repository\StatutRepository;
-use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Mailer\BasicMailer;
-use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,12 +17,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
-#[Route('/bris-de-porte')]
+#[Route('/requerant/bris-de-porte')]
 class BrisPorteController extends AbstractController
 {
     public function __construct(
-        private Version $version,
-        private Breadcrumb $breadcrumb,
         private StatutRepository $statutRepository,
         private TranslatorInterface $translator,
         protected readonly string $emailFrom,
@@ -69,17 +65,8 @@ class BrisPorteController extends AbstractController
     #[Route('/consulter-un-bris-de-porte/{id}', name: 'app_bris_porte_view', methods: ['GET'], options: ['expose' => true])]
     public function view(BrisPorte $brisPorte): Response
     {
-        $breadcrumb = $this->breadcrumb;
-        // $breadcrumb->add('homepage.title','app_homepage');
-        $breadcrumb->add('requerant.homepage.title', 'app_agent_redacteur_accueil');
-        $breadcrumb->add(
-            str_replace('%reference%', $brisPorte->getReference(), $this->translator->trans('bris_porte.accept_or_reject.title'))
-        );
-
         return $this->render('prejudice/consulter_bris_porte.html.twig', [
-            'breadcrumb' => $breadcrumb,
             'brisPorte' => $brisPorte,
-            'version' => $this->version,
             'prejudice' => $brisPorte,
         ]);
     }

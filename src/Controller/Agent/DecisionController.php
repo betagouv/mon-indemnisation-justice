@@ -1,6 +1,7 @@
 <?php
-namespace App\Controller\Agent\Decision;
+namespace App\Controller\Agent;
 
+use App\Entity\Agent;
 use App\Entity\BrisPorte;
 use App\Entity\Statut;
 use Clegginabox\PDFMerger\PDFMerger;
@@ -13,7 +14,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-class DefaultController extends AbstractController
+
+#[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
+#[Route('/agent/decision')]
+class DecisionController extends AbstractController
 {
     public function __construct(
       private EntityManagerInterface $em,
@@ -60,7 +64,7 @@ class DefaultController extends AbstractController
     }
 
     #[IsGranted('edit', subject: 'brisPorte')]
-    #[Route('/decision-sur-bris-de-porte/previsionnel/{type}/{id}.pdf', name: 'app_decision_bri_previsionnel_print',options: ['expose' => true])]
+    #[Route('/bris-de-porte/previsionnel/{type}/{id}.pdf', name: 'app_decision_bri_previsionnel_print',options: ['expose' => true])]
     public function printPrevisionnelDecisionBRI(BrisPorte $brisPorte, Request $request): Response
     {
       $type = $request->get('type');
@@ -74,7 +78,7 @@ class DefaultController extends AbstractController
       throw new NotFoundHttpException('Document non trouvé');
     }
     #[IsGranted('view', subject: 'brisPorte')]
-    #[Route('/decision-sur-bris-de-porte/{id}.pdf', name: 'app_decision_bri_print',options: ['expose' => true])]
+    #[Route('/bris-de-porte/{id}.pdf', name: 'app_decision_bri_print',options: ['expose' => true])]
     public function printDecisionBRI(BrisPorte $brisPorte): Response
     {
       $lastStatut = $brisPorte->getLastStatut();

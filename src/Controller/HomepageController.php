@@ -3,9 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Prejudice;
-use App\Entity\Requerant;
-use App\Service\Breadcrumb\Breadcrumb;
-use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,7 +17,7 @@ class HomepageController extends AbstractController
     ) {
     }
 
-    #[Route('/redirect', name: 'app_redirect', options: ['expose' => true])]
+    #[Route('/redirect', name: 'app_redirect')]
     public function redirection(): RedirectResponse
     {
         return $this->redirectToRoute('app_requerant_homepage');
@@ -28,37 +25,23 @@ class HomepageController extends AbstractController
 
     #[Route('/', name: 'app_homepage', options: ['expose' => true])]
     #[Route('/declarer-un-prejudice', name: 'app_category', options: ['expose' => true])]
-    public function category(Breadcrumb $breadcrumb, Version $version): Response
+    public function category(): Response
     {
         return $this->render('homepage/category.html.twig', [
         ]);
     }
 
     #[Route('/qui-sommes-nous', name: 'app_qui_sommes_nous', options: ['expose' => true])]
-    public function index(Breadcrumb $breadcrumb, Version $version): Response
+    public function index(): Response
     {
-        $breadcrumb->add('homepage.title', null);
-        $user = $this->getUser();
-        if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
-            $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
-        }
-
-        return $this->render('homepage/index.html.twig', [
-            'breadcrumb' => $breadcrumb,
-            'version' => $version,
-        ]);
+        return $this->render('homepage/index.html.twig');
     }
 
     #[Route('/suivi-de-mon-dossier', name: 'app_suivi_mon_dossier', options: ['expose' => true])]
-    public function suiviDossier(Breadcrumb $breadcrumb, Version $version, Request $request): Response
+    public function suiviDossier(Request $request): Response
     {
         /** @var string $raccourci */
         $raccourci = $request->get('raccourci') ?? '';
-        $breadcrumb->add('homepage.title', null);
-        $user = $this->getUser();
-        if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
-            $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
-        }
 
         $submittedToken = $request->getPayload()->get('_csrf_token');
         $statuts = [];
@@ -77,19 +60,14 @@ class HomepageController extends AbstractController
         }
 
         return $this->render('homepage/suivi_dossier.html.twig', [
-            'breadcrumb' => $breadcrumb,
-            'version' => $version,
             'raccourci' => $raccourci,
             'statuts' => $statuts,
         ]);
     }
 
     #[Route('/conditions-generales-d-utilisation', name: 'app_cgu', options: ['expose' => true])]
-    public function cgu(Breadcrumb $breadcrumb, Version $version): Response
+    public function cgu(): Response
     {
-        return $this->render('homepage/cgu.html.twig', [
-            'breadcrumb' => $breadcrumb,
-            'version' => $version,
-        ]);
+        return $this->render('homepage/cgu.html.twig');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Agent\Admin;
+namespace App\Controller\Agent;
 
 use App\Entity\Agent;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,14 +11,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(Agent::ROLE_AGENT_GESTION_PERSONNEL)]
 #[Route('/agent/gestion')]
-class DefaultController extends AbstractController
+class AdminController extends AbstractController
 {
     public function __construct(
         protected readonly EntityManagerInterface $em
     ) {
     }
 
-    #[Route('/accueil', name: 'app_admin_homepage')]
+    #[Route('/', name: 'app_admin_homepage')]
     public function index(): Response
     {
         $agents = $this->em->getRepository(Agent::class)->findByRoles([

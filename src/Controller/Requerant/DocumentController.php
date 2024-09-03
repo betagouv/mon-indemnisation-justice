@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Requerant;
 
-use Aws\S3\S3Client;
 use App\Entity\Document;
 use App\Entity\LiasseDocumentaire;
+use App\Entity\Requerant;
+use Aws\S3\S3Client;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -14,8 +15,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Vich\UploaderBundle\Handler\DownloadHandler;
 
+
+#[IsGranted(Requerant::ROLE_REQUERANT)]
+#[Route('/document')]
 class DocumentController extends AbstractController
 {
     public function __construct(
@@ -25,10 +30,9 @@ class DocumentController extends AbstractController
         protected readonly string $bucket
     )
     {
-
     }
 
-    #[Route('/document/{id}/{type}', name: 'app_document_upload',methods: ['POST'],options: ['expose' => true])]
+    #[Route('/{id}/{type}', name: 'app_document_upload',methods: ['POST'],options: ['expose' => true])]
     public function upload(LiasseDocumentaire $liasseDocumentaire, Request $request): JsonResponse
     {
       $files = $request->files->all();
@@ -57,7 +61,7 @@ class DocumentController extends AbstractController
      * @author yanroussel
      * @todo   Download à refaire proprement
      */
-    #[Route('/document/{id}/{filename}', name: 'app_document_download',methods: ['GET'],options: ['expose' => true])]
+    #[Route('/{id}/{filename}', name: 'app_document_download',methods: ['GET'],options: ['expose' => true])]
     public function download(Request $request, ?Document $document): BinaryFileResponse
     {
       $file = $this->client->getObject([

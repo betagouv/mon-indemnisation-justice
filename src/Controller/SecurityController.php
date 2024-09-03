@@ -5,9 +5,7 @@ namespace App\Controller;
 use App\Entity\Civilite;
 use App\Entity\Requerant;
 use App\Repository\RequerantRepository;
-use App\Service\Breadcrumb\Breadcrumb;
 use App\Service\Mailer\SignedMailer;
-use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,9 +23,7 @@ class SecurityController extends AbstractController
         protected UrlGeneratorInterface $urlGenerator,
         protected TranslatorInterface $translator,
         protected UserPasswordHasherInterface $userPasswordHasher,
-        protected Breadcrumb $breadcrumb,
         protected AuthenticationUtils $authenticationUtils,
-        protected Version $version,
         protected SignedMailer $mailer,
         protected EntityManagerInterface $em,
         protected readonly string $emailFrom,
@@ -80,10 +76,6 @@ class SecurityController extends AbstractController
             throw $this->createNotFoundException($this->translator->trans('security.reset_password.error.failed'));
         }
 
-        $breadcrumb = $this->breadcrumb;
-        $breadcrumb->add('homepage.title', 'app_homepage');
-        $breadcrumb->add('security.reset_password.title');
-
         $submittedToken = $request->getPayload()->get('_csrf_token');
         $successMsg = '';
         /*
@@ -105,8 +97,6 @@ class SecurityController extends AbstractController
         return $this->render('security/reset_password.html.twig', [
             'user' => $user,
             'successMsg' => $successMsg,
-            'breadcrumb' => $breadcrumb,
-            'version' => $this->version,
         ]);
     }
 
@@ -115,9 +105,6 @@ class SecurityController extends AbstractController
     {
         $error = $this->authenticationUtils->getLastAuthenticationError();
         $lastUsername = $this->authenticationUtils->getLastUsername();
-        $breadcrumb = $this->breadcrumb;
-        $breadcrumb->add('homepage.title', 'app_homepage');
-        $breadcrumb->add('login.title');
         $user = $this->getUser();
         $isAgent = ('1' == $request->get('isAgent'));
 
@@ -132,8 +119,6 @@ class SecurityController extends AbstractController
         return $this->render('security/connexion.html.twig', [
             'last_username' => $lastUsername,
             'error_message' => $errorMessage,
-            'breadcrumb' => $breadcrumb,
-            'version' => $this->version,
             'is_agent' => $isAgent,
         ]);
     }
@@ -233,14 +218,9 @@ class SecurityController extends AbstractController
             return $this->redirect('/redirect');
         }
 
-        $breadcrumb = $this->breadcrumb;
-        $breadcrumb->add('homepage.title', 'app_homepage');
         $session = $request->getSession();
         $submittedToken = $request->getPayload()->get('_csrf_token');
         $fields = self::get_fields($request);
-        if ('BRI' === $fields['type']) {
-            $breadcrumb->add('bris_porte.test_eligibilite.title', 'app_bris_porte_test_eligibilite');
-        }
 
         /*
          * Le formulaire a bien été soumis
@@ -271,12 +251,8 @@ class SecurityController extends AbstractController
                 ])
                 ->send(pathname: 'app_verify_email', user: $user);
 
-            $breadcrumb->add('security.success.title', null);
-
             return $this->render('security/success.html.twig', [
                 'user' => $user,
-                'breadcrumb' => $this->breadcrumb,
-                'version' => $this->version,
             ]);
         } /*
          * Le formulaire a bien été identifié
@@ -289,7 +265,6 @@ class SecurityController extends AbstractController
 
                 return $this->redirect('/');
             }
-            $breadcrumb->add('security.inscription.title', null);
             $session->set('test_eligibilite', $fields);
         }
 
@@ -299,8 +274,6 @@ class SecurityController extends AbstractController
         return $this->render('security/inscription.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
-            'breadcrumb' => $this->breadcrumb,
-            'version' => $this->version,
         ]);
     }
 }

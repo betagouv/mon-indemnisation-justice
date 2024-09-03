@@ -4,13 +4,13 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use App\Controller\Requerant\GetBrisPorteOptimized;
 use App\Repository\BrisPorteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Controller\Prejudice\BrisPorte\GetOptimized;
 
 #[ApiResource(
   operations:[
@@ -20,8 +20,8 @@ use App\Controller\Prejudice\BrisPorte\GetOptimized;
     ),
     new Get(
         name: '_api_bris_porte_get_optimized',
-        uriTemplate: '/bris-de-porte/{id}/optimise',
-        controller: GetOptimized::class
+        uriTemplate: '/requerant/bris-de-porte/{id}/optimise',
+        controller: GetBrisPorteOptimized::class
     ),
     new GetCollection(),
     new Patch(
