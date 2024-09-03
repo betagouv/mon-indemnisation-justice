@@ -100,6 +100,6 @@ class BrisPorteController extends AbstractController
            ->send(user: $user)
         ;
 
-        return $this->redirectToRoute('app_requerant_homepage');
+        return $this->redirectToRoute('requerant_home_index');
     }
 }

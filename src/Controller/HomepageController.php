@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Prejudice;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,13 +16,7 @@ class HomepageController extends AbstractController
     ) {
     }
 
-    #[Route('/redirect', name: 'app_redirect')]
-    public function redirection(): RedirectResponse
-    {
-        return $this->redirectToRoute('app_requerant_homepage');
-    }
-
-    #[Route('/', name: 'app_homepage', options: ['expose' => true])]
+    #[Route('/', name: 'app_homepage')]
     #[Route('/declarer-un-prejudice', name: 'app_category', options: ['expose' => true])]
     public function category(): Response
     {

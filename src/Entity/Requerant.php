@@ -259,6 +259,12 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->personnePhysique;
     }
 
+    public function setPersonnePhysique(?PersonnePhysique $personnePhysique): self
+    {
+        $this->personnePhysique = $personnePhysique;
+        return $this;
+    }
+
 
     public function getPersonneMorale(): ?PersonneMorale
     {

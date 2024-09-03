@@ -87,7 +87,7 @@ services:
       watch:
         - action: sync
           path: assets
-          target: /app
+          target: /app/assets
           ignore:
             - node_modules/
         - action: rebuild

@@ -20,7 +20,7 @@
         "dev-server": "encore dev-server",
         "dev": "encore dev",
         "watch": "encore dev --watch",
-        "build": "encore production --progress",
+        "build": "encore production",
         "postinstall": "copy-dsfr-to-public",
         "predev": "only-include-used-icons",
         "prebuild": "only-include-used-icons"

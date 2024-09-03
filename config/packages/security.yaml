@@ -43,11 +43,11 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: app_requerant_homepage
+                default_target_path: requerant_home_index
             logout:
                 path: app_logout
                 # where to redirect after logout
-                target: app_homepage
+                target: requerant_home_index
             switch_user: true
 
 

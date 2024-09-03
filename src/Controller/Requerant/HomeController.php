@@ -13,13 +13,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant')]
-class HomeRequerantController extends AbstractController
+class HomeController extends AbstractController
 {
     public function __construct(
       private EntityManagerInterface $em
     ) { }
 
-    #[Route('/accueil', name: 'app_requerant_homepage')]
+    #[Route('/', name: 'requerant_home_index')]
     public function index(Request $request): Response
     {
         $session = $request->getSession();

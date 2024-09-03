@@ -11,6 +11,13 @@ build:
     POSTGRES_DB: precontest
     POSTGRES_PASSWORD: precontest
     POSTGRES_USER: precontest
+    BASE_URL: precontentieux.test
+    MAILER_FROM: ne-pas-repondre@precontentieux.test
+    MAILER_DSN: smtp://mailpit:1025
+    CORS_ALLOW_ORIGIN: "*"
+    EMAIL_FROM: ne-pas-repondre@precontentieux.test
+    EMAIL_FROM_LABEL: "Précontentieux (test)"
+    SYMFONY_DEPRECATIONS_HELPER: disabled
   services:
     - postgres:15-alpine
   image:
@@ -33,9 +40,17 @@ build:
     - curl -sS https://getcomposer.org/installer | php
     # Install all project dependencies
     - php composer.phar install --no-interaction
+    # Install node
+    - curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+    - apt-get install -y nodejs
+    - npm update -g
+    # Install npm dependencies
+    - yarn install
   script:
     - echo "Building"
     - bin/console cache:clear
+    - bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
+    - yarn build
     - bin/phpunit
   artifacts:
     paths:
