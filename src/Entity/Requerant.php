@@ -19,14 +19,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new GetCollection(
-            name: '_api_user_get_collection'
+            name: '_api_requerant_get_collection'
         ),
         new Get(
-            name: '_api_user_get',
+            name: '_api_requerant_get',
             normalizationContext: ['groups' => ['user:write']]
         ),
         new Patch(
-            name: '_api_user_patch'
+            name: '_api_requerant_patch'
             // ,security: "is_granted('ROLE_REQUERANT')"
         )]
 )]
@@ -235,6 +235,17 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->estVerifieCourriel = true;
 
+        return $this;
+    }
+
+    public function getAdresse(): ?Adresse
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?Adresse $adresse): Requerant
+    {
+        $this->adresse = $adresse;
         return $this;
     }
 

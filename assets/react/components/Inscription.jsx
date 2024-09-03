@@ -19,7 +19,7 @@ const Inscription = ({user,csrfToken}) => {
     setWaiting(true);
     if(!check_email(email))
       return false;
-    fetch(Routing.generate('_api_user_get_collection',{email: email}))
+    fetch(Routing.generate('_api_requerant_get_collection',{email: email}))
       .then((response) => response.json())
       .then((data) => {setEmailFree(data["hydra:totalItems"]==0);setWaiting(false);})
     ;

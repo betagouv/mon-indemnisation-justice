@@ -1,19 +1,13 @@
 import React, {useState,useEffect,useRef} from 'react';
-import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import { trans, ADRESSE_FIELD_LIGNE1,
-  ADRESSE_FIELD_CODE_POSTAL,
-  ADRESSE_FIELD_LOCALITE,
-  ADRESSE_FIELD_LIGNE1_DESCRIPTION
-} from '../../translator';
 
-const Adresse = ({adresse,optionalLigne1Texte=null}) => {
+const Adresse = ({adresse ,optionalLigne1Texte=null}) => {
 
-  const [ligne1,setLigne1]=useState(adresse.ligne1??"");
-  const [ligne2,setLigne2]=useState(adresse.ligne2??"");
-  const [ligne3,setLigne3]=useState(adresse.ligne3??"");
-  const [codePostal,setCodePostal]=useState(adresse.codePostal??"");
-  const [localite,setLocalite]=useState(adresse.localite??"");
+  const [ligne1,setLigne1]=useState(adresse.ligne1 ?? "");
+  const [ligne2,setLigne2]=useState(adresse.ligne2 ?? "");
+  const [ligne3,setLigne3]=useState(adresse.ligne3 ?? "");
+  const [codePostal,setCodePostal]=useState(adresse.codePostal ?? "");
+  const [localite,setLocalite]=useState(adresse?.localite ?? "");
   const [recordActived, setRecordActived]=useState(false);
 
   var keyUpTimer = useRef(null);
@@ -35,7 +29,7 @@ const Adresse = ({adresse,optionalLigne1Texte=null}) => {
   useEffect(() => {
     if(false === mustBeRecorded())
       return;
-    const url =Routing.generate('_api_adresse_patch',{id:adresse.id});
+    const url =Routing.generate('_api_adresse_patch',{id: adresse.id});
     const data = { ligne1: ligne1, ligne2: ligne2, ligne3: ligne3,
       codePostal:codePostal, localite: localite };
     clearTimeout(keyUpTimer.current);
@@ -52,8 +46,8 @@ const Adresse = ({adresse,optionalLigne1Texte=null}) => {
     },KEY_UP_TIMER_DELAY);
   },[ligne1,ligne2,ligne3,codePostal,localite]);
 
-  const ligne1Text = (optionalLigne1Texte!==null) ? optionalLigne1Texte : trans(ADRESSE_FIELD_LIGNE1);
-  const ligne1HintText = (optionalLigne1Texte!==null) ? "" : trans(ADRESSE_FIELD_LIGNE1_DESCRIPTION);
+  const ligne1Text = (optionalLigne1Texte!==null) ? optionalLigne1Texte : "Adresse complète";
+  const ligne1HintText = (optionalLigne1Texte!==null) ? "" : "Adresse où seront envoyés les courriers";
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters">
@@ -71,7 +65,7 @@ const Adresse = ({adresse,optionalLigne1Texte=null}) => {
       </div>
       <div className="fr-col-2">
         <Input
-          label={trans(ADRESSE_FIELD_CODE_POSTAL)}
+          label="Code postal"
           nativeInputProps={{
             name: 'codePostal',
             value: codePostal,
@@ -82,7 +76,7 @@ const Adresse = ({adresse,optionalLigne1Texte=null}) => {
       </div>
       <div className="fr-col-10">
         <Input
-          label={trans(ADRESSE_FIELD_LOCALITE)}
+          label="Ville"
           nativeInputProps={{
             name: 'localite',
             value: localite,

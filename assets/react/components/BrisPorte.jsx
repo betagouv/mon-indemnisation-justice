@@ -1,17 +1,5 @@
 import React,{useState,useEffect,useRef} from 'react';
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import { trans, BRIS_PORTE_FIELD_DATE_OPERATION_PJ,
-    BRIS_PORTE_FIELD_IS_PORTE_BLINDEE, BRIS_PORTE_FIELD_IS_ERREUR_PORTE,
-    BRIS_PORTE_FIELD_IDENTITE_PERSONNE_RECHERCHEE,
-    BRIS_PORTE_FIELD_IS_ERREUR_PORTE_HINT_TEXT,
-    BRIS_PORTE_FIELD_PREFIX_REMISE_ATTESTATION,
-    ADRESSE_FIELD_LIGNE1_BRIS_PORTE,
-    BRIS_PORTE_EDIT_DETAILS_REMISE,
-    BRIS_PORTE_FIELD_NOM_REMISE_ATTESTATION,
-    BRIS_PORTE_FIELD_PRENOM_REMISE_ATTESTATION,
-    BRIS_PORTE_EDIT_DETAILS_H5,
-    GLOBAL_YES, GLOBAL_NO
-} from '../../translator';
 import Requerant from './Requerant';
 import FormulaireReceveur from './PersonnePhysique/FormulaireReceveur';
 import Adresse from './Adresse';
@@ -92,11 +80,11 @@ const BrisPorte = ({brisPorte}) => {
       <div className="fr-col-12">
         <a name="bris-de-porte"></a>
         <section className="pr-form-section fr-p-4w">
-          <h3>{trans(BRIS_PORTE_EDIT_DETAILS_H5)}</h3>
+          <h3>Informations sur le bris de porte</h3>
           <div className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-4">
               <Input
-                label={trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}
+                label="Date de l'opération de police judiciaire"
                 nativeInputProps={{type: 'date',value: dateOperationPJ, onChange: ev=>setDateOperationPJ(ev.target.value)}}
               />
             </div>
@@ -104,34 +92,34 @@ const BrisPorte = ({brisPorte}) => {
             <div className="fr-col-12">
               <Adresse
                 adresse={brisPorte.adresse}
-                optionalLigne1Texte={trans(ADRESSE_FIELD_LIGNE1_BRIS_PORTE)}
+                optionalLigne1Texte="Adresse complète du logement concerné par le bris de porte"
               />
             </div>
             <div className="fr-col-12">
               <RadioButtons
-                legend={trans(BRIS_PORTE_FIELD_IS_PORTE_BLINDEE)}
+                legend="S'agit-il d'une porte blindée ?"
                 orientation='horizontal'
                 options={[
-                  {label: trans(GLOBAL_YES),nativeInputProps: {checked: (isPorteBlindee === true),onChange: ()=> setIsPorteBlindee(true)}},
-                  {label: trans(GLOBAL_NO),nativeInputProps: {checked: (isPorteBlindee !== true),onChange: ()=> setIsPorteBlindee(false)}},
+                  {label: "Oui",nativeInputProps: {checked: (isPorteBlindee === true),onChange: ()=> setIsPorteBlindee(true)}},
+                  {label: "Non",nativeInputProps: {checked: (isPorteBlindee !== true),onChange: ()=> setIsPorteBlindee(false)}},
                 ]}
               />
             </div>
             <div className="fr-col-12">
               <RadioButtons
-                hintText={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE_HINT_TEXT)}
-                legend={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE)}
+                hintText="Se référer aux mentions figurant sur l'attestation d'informations"
+                legend="S'agit-il d'une erreur des services de police ?"
                 orientation='horizontal'
                 options={[
-                  {label: trans(GLOBAL_YES),nativeInputProps: {checked: (isErreurPorte === true),onChange: ()=> setIsErreurPorte(true)}},
-                  {label: trans(GLOBAL_NO),nativeInputProps: {checked: (isErreurPorte !== true),onChange: ()=> setIsErreurPorte(false)}},
+                  {label: "Oui",nativeInputProps: {checked: (isErreurPorte === true),onChange: ()=> setIsErreurPorte(true)}},
+                  {label: "Non",nativeInputProps: {checked: (isErreurPorte !== true),onChange: ()=> setIsErreurPorte(false)}},
                 ]}
               />
             </div>
             {!isErreurPorte &&
             <div className="fr-col-12">
               <Input
-                label={trans(BRIS_PORTE_FIELD_IDENTITE_PERSONNE_RECHERCHEE)}
+                label="Si NON, préciser l'identité de la personne recherchée"
                 nativeInputProps={{
                   value: identitePersonneRecherchee,
                   onChange: ev=>setIdentitePersonneRecherchee(ev.target.value),

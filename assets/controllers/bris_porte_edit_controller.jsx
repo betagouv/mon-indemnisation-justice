@@ -11,13 +11,12 @@ export default class extends Controller {
     static values = {
       userId: Number,
       user: Object,
-      version: Object,
-      breadcrumb: Object,
       brisPorte: Object
     }
     connect() {
       const container = this.element;
       const root = ReactDOMClient.createRoot(container);
+
       root.render(
         <React.StrictMode>
           <>

@@ -12,7 +12,7 @@ const Users = function ({items}) {
             if (item.id === id)
                 copyData[index]['active'] = !item.active;
 
-            const url = Routing.generate('_api_user_patch', {id: item.id});
+            const url = Routing.generate('_api_requerant_patch', {id: item.id});
             const data = {active: copyData[index]['active']};
 
             fetch(url, {

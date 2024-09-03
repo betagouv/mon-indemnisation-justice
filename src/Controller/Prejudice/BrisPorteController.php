@@ -88,13 +88,7 @@ class BrisPorteController extends AbstractController
     #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', methods: ['GET'], options: ['expose' => true])]
     public function edit(BrisPorte $brisPorte): Response
     {
-        $breadcrumb = $this->breadcrumb;
-        $breadcrumb->add('homepage.title', 'app_homepage');
-        $breadcrumb->add('requerant.homepage.title', 'app_requerant_homepage');
-        $breadcrumb->add('bris_porte.edit.title', null);
-
         return $this->render('prejudice/declare_bris_porte.html.twig', [
-            'breadcrumb' => $breadcrumb,
             'brisPorte' => $brisPorte,
         ]);
     }

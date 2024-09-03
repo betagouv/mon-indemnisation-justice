@@ -8,8 +8,7 @@ import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import BrisPorte from './BrisPorte';
 import User from './User';
 
-const BrisPortePanel = function({id,user,brisPorte}) {
-
+const BrisPortePanel = function({id, user, brisPorte}) {
   const sections = [
     "Données personnelles du justiciable",
     "Informations relatives au bris de porte",
@@ -20,7 +19,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   const gotoSecondSection= () => gotoSection(1);
   const gotoThirdSection= () => gotoSection(2);
   const gotoSection = (index) => {
-    const userUri = Routing.generate('_api_user_get',{id:user.pId});
+    const userUri = Routing.generate('_api_requerant_get',{id:user.pId});
     const prejudiceUri = Routing.generate('_api_bris_porte_get',{id:brisPorte.id});
     Promise
       .all([userUri,prejudiceUri]
@@ -42,7 +41,7 @@ const BrisPortePanel = function({id,user,brisPorte}) {
   const [_user,setUser]=useState(user);
   function incrementStep() { setStep(step+1);gotoStepper(); }
   function decrementStep() {
-    const userUri = Routing.generate('_api_user_get',{id:user.pId});
+    const userUri = Routing.generate('_api_requerant_get',{id:user.pId});
     const prejudiceUri = Routing.generate('_api_bris_porte_get',{id:brisPorte.id});
     Promise
       .all([userUri,prejudiceUri]
