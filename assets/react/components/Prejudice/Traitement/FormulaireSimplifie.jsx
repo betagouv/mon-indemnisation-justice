@@ -19,15 +19,14 @@ const modal = createModal({
 
 const FormulaireSimplifie = ({prejudice,dimension}) => {
 
-  const isOpen = useIsModalOpen(modal);
-  const [propositionIndemnisation,setPropositionIndemnisation]=useState(prejudice.propositionIndemnisation);
+  const [propositionIndemnisation,setPropositionIndemnisation]=useState(prejudice.propositionIndemnisation ?? 0.);
   const [motivationProposition,setMotivationProposition]=useState(prejudice.motivationProposition);
   const [note,setNote]=useState(prejudice.note);
   const [loading,setLoading]=useState(false);
   const [modalTitle,setModalTitle]=useState("");
   const [modalType,setModalType]=useState("");
   const [callback,setCallback]=useState(() => () => {});
-  const urlHomepage = Routing.generate('app_redacteur_homepage');
+  const urlHomepage = Routing.generate('app_agent_redacteur_accueil');
   const TARE_HEIGHT = 300;
   $(document).ready(() => {
     $(".editor-class")

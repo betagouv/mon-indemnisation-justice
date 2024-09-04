@@ -1,7 +1,4 @@
-import React,{useState,useEffect} from 'react';
-import { Br,Loading } from '../../utils/fundamental';
-import {trans, PERSONNE_MORALE_TITLE,
-PERSONNE_MORALE_FIELD_SIREN_SIRET} from '../../../translator';
+import React from 'react';
 
 const Recapitulatif = ({adresse}) => {
   return (

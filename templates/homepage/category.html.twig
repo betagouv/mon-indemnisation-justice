@@ -1,13 +1,5 @@
 {% extends 'base_react.html.twig' %}
 
-{% block title %}{{'prejudice.title'|trans}}{% endblock %}
-
-
-{% block body %}
-  {% set user = app.user is not null ? app.user : empty_user() %}
-  <div {{ stimulus_controller('category_index',{
-    user: user|serialize('json',{groups: 'user:read'}),
-    breadcrumb: breadcrumb|serialize('json'),
-    version: version|serialize('json')
-  }) }}></div>
+{% block main %}
+  <div {{ stimulus_controller('category_index',{}) }}></div>
 {% endblock %}

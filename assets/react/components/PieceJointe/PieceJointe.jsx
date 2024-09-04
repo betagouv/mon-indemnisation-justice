@@ -1,8 +1,6 @@
 import React,{useState,useEffect,useRef} from 'react';
 import { Uploader } from '../Uploader';
-import { Br,Loading } from '../../utils/fundamental';
-import { trans, GLOBAL_WAITING
-} from '../../../translator';
+import { Loading } from '../../utils/fundamental';
 
 export const Document = ({liasseDocumentaireIri,type,label,hint_text="",readonly=false}) => {
   const [loading,setLoading]=useState(false);

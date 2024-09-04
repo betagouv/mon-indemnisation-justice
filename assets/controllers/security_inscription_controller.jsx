@@ -1,10 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
-import ReactDOM from 'react-dom';
 import * as ReactDOMClient from 'react-dom/client';
 import React from 'react';
-import Entete from '../react/components/Entete';
-import PiedDePage from '../react/components/PiedDePage';
-import FilAriane from '../react/components/FilAriane';
 import Inscription from '../react/components/Inscription';
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import '../styles/authentification.css';
@@ -24,10 +20,9 @@ export default class extends Controller {
       root.render(
         <React.StrictMode>
           <>
-            <Entete user={this.userValue} version={this.versionValue} />
             <div className="pr-authentification">
               <div className="fr-container">
-                <FilAriane breadcrumb={this.breadcrumbValue}/>
+
                 <div className="fr-grid-row fr-mb-6w">
                   <section className="pr-keyboard-hands fr-col-6">
                     <div className="pic-keyboard-hands"></div>
@@ -38,7 +33,6 @@ export default class extends Controller {
                 </div>
               </div>
             </div>
-            <PiedDePage />
           </>
         </React.StrictMode>
       )

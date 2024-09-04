@@ -1,16 +1,12 @@
 {% extends 'base_react.html.twig' %}
 
-{% block title %}{{'login.title'|trans}}{% endblock %}
+{% set title = 'Se connecter à mon espace' %}
 
-
-{% block body %}
+{% block main %}
   {% set csrf_token = csrf_token('authenticate') %}
   <div {{ stimulus_controller('security_login',{
     lastUsername: last_username,
     errorMessage: error_message,
     csrfToken: csrf_token,
-    isAgent: is_agent,
-    breadcrumb: breadcrumb|serialize('json'),
-    version: version|serialize('json')
   }) }}></div>
 {% endblock %}

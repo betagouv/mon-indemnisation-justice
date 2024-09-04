@@ -1,7 +1,8 @@
 <?php
 namespace App\Security\Voter;
 
-use App\Entity\User;
+use App\Entity\Agent;
+use App\Entity\Requerant;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Contracts\PrejudiceInterface;
 use App\Contracts\VoterInterface;
@@ -17,9 +18,9 @@ trait PrejudiceTrait {
     return
     ($attribute === VoterInterface::PREJUDICE_VALID_OR_REJECT) &&
     (
-      $user->hasRole(User::ROLE_REDACTEUR_PRECONTENTIEUX)
+      $user->hasRole(Agent::ROLE_AGENT_REDACTEUR)
       ||
-      $user->hasRole(User::ROLE_CHEF_PRECONTENTIEUX)
+      $user->hasRole(Agent::ROLE_AGENT_VALIDATEUR)
     );
   }
 
@@ -28,11 +29,11 @@ trait PrejudiceTrait {
     return
       ($attribute === VoterInterface::PREJUDICE_VIEW) &&
       (
-        ($user->hasRole(User::ROLE_REQUERANT) && ($subject->getRequerant() === $user))
+        ($user->hasRole(Requerant::ROLE_REQUERANT) && ($subject->getRequerant() === $user))
         ||
-        $user->hasRole(User::ROLE_REDACTEUR_PRECONTENTIEUX)
+        $user->hasRole(Agent::ROLE_AGENT_REDACTEUR)
         ||
-        $user->hasRole(User::ROLE_CHEF_PRECONTENTIEUX)
+        $user->hasRole(Agent::ROLE_AGENT_VALIDATEUR)
       )
     ;
   }
@@ -42,11 +43,11 @@ trait PrejudiceTrait {
     return
       ($attribute === VoterInterface::PREJUDICE_EDIT) &&
       (
-        ($user->hasRole(User::ROLE_REQUERANT) && ($subject->getRequerant() === $user))
+        ($user->hasRole(Requerant::ROLE_REQUERANT) && ($subject->getRequerant() === $user))
         ||
-        $user->hasRole(User::ROLE_REDACTEUR_PRECONTENTIEUX)
+        $user->hasRole(Agent::ROLE_AGENT_REDACTEUR)
         ||
-        $user->hasRole(User::ROLE_CHEF_PRECONTENTIEUX)
+        $user->hasRole(Agent::ROLE_AGENT_VALIDATEUR)
       )
     ;
   }

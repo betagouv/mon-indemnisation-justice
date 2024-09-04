@@ -18,8 +18,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class StatutRepository extends ServiceEntityRepository
 {
-    use CommonActionTrait;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Statut::class);
@@ -27,11 +25,14 @@ class StatutRepository extends ServiceEntityRepository
 
     public function addEvent(PrejudiceInterface $prejudice, UserInterface $user, string $code): static
     {
-        $statut = new Statut();
-        $statut->setCode($code);
-        $statut->setPrejudice($prejudice);
-        $statut->setEmetteur($user);
-        $this->add($statut,true);
+        $statut = (new Statut())
+            ->setCode($code)
+            ->setPrejudice($prejudice)
+            ->setEmetteur($user);
+
+        $this->getEntityManager()->persist($statut);
+        $this->getEntityManager()->flush();
+
         return $this;
     }
 }

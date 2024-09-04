@@ -1,12 +1,11 @@
-import React,{useState,useEffect} from 'react';
-import { Br,Loading } from '../../utils/fundamental';
-import {trans, REPRESENTANT_LEGAL_SMALL_TITLE} from '../../../translator';
+import React from 'react';
+import { Br } from '../../utils/fundamental';
 
 const Recapitulatif = ({personnePhysique}) => {
   return (
     <>
       <p className="fr-mb-5w">
-        <label>{trans(REPRESENTANT_LEGAL_SMALL_TITLE)}</label>
+        <label>Représenté.e par</label>
         <Br/>
         <strong>{personnePhysique.civilite} {personnePhysique.prenom1} {personnePhysique.nom}</strong>
       </p>

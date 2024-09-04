@@ -5,26 +5,18 @@ import {default as RecapitulatifRepresentantLegal} from '../RepresentantLegal/Re
 import {default as RecapitulatifServiceEnqueteur} from '../ServiceEnqueteur/Recapitulatif';
 import {default as RecapitulatifReceveurAttestation} from '../ReceveurAttestation/Recapitulatif';
 import {default as RecapitulatifDocument} from '../Document/Recapitulatif';
-import { Br,Loading } from '../../utils/fundamental';
+import { Loading } from '../../utils/fundamental';
 import { normalizeDate } from '../../utils/cast';
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import {trans,GLOBAL_REVERT,CATEGORIE_DEMANDE_BRIS_PORTE_TITLE,
-  ADRESSE_FIELD_LIGNE1_BRIS_PORTE_RECAP,BRIS_PORTE_FIELD_IS_PORTE_BLINDEE_SMALL,
-  BRIS_PORTE_FIELD_DATE_OPERATION_PJ, ADRESSE_FIELD_LIGNE1_BRIS_PORTE,
-  BRIS_PORTE_FIELD_IS_ERREUR_PORTE_SMALL,
-  GLOBAL_YES, GLOBAL_NO,GLOBAL_UNKNOWN, BRIS_PORTE_FIELD_PREFIX_REMISE_ATTESTATION,
-  BRIS_PORTE_FIELD_QUALITE_REMISE_ATTESTATION,BRIS_PORTE_PJ_SECTION,
-  BRIS_PORTE_FIELD_QUALITE_REPRESENTANT
-} from '../../../translator';
 
 const SpecificRecapitulatif = ({brisPorte}) => {
   return (
     <>
-      <h3>{trans(CATEGORIE_DEMANDE_BRIS_PORTE_TITLE)}</h3>
+      <h3>Bris de porte</h3>
       <div className="fr-mb-2w">
-        <label>{trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}</label> : <strong>{normalizeDate(brisPorte.dateOperationPJ)}</strong>
+        <label>Date de l'opération de police judiciaire</label> : <strong>{normalizeDate(brisPorte.dateOperationPJ)}</strong>
       </div>
-      <label>{trans(ADRESSE_FIELD_LIGNE1_BRIS_PORTE_RECAP)} :</label>
+      <label>À l'adresse suivante :</label>
       <dl className="fr-mb-2w">
         <address>
           <dd>{brisPorte.adresse.ligne1}</dd>
@@ -32,11 +24,11 @@ const SpecificRecapitulatif = ({brisPorte}) => {
         </address>
       </dl>
         <dl className="fr-mb-2w">
-          <dd>{trans(BRIS_PORTE_FIELD_IS_PORTE_BLINDEE_SMALL)} : <strong>{brisPorte.isPorteBlindee?trans(GLOBAL_YES):trans(GLOBAL_NO)}</strong></dd>
-          <dd>{trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE_SMALL)} : <strong>{brisPorte.isErreurPorte?trans(GLOBAL_YES):trans(GLOBAL_NO)}</strong></dd>
+          <dd>Porte blindée : <strong>{brisPorte.isPorteBlindee? 'Oui' : 'Non'}</strong></dd>
+          <dd>Erreur de porte : <strong>{brisPorte.isErreurPorte? 'Oui' : 'Non'}</strong></dd>
         </dl>
         <div className="fr-mb-2w">
-          <label>{trans(BRIS_PORTE_FIELD_QUALITE_REPRESENTANT)} : <strong>{brisPorte.qualiteRequerant}</strong></label>
+          <label>J'effectue ma demande en qualité de : <strong>{brisPorte.qualiteRequerant}</strong></label>
         </div>
         <RecapitulatifReceveurAttestation receveurAttestation={brisPorte.receveurAttestation} />
     </>
@@ -44,15 +36,11 @@ const SpecificRecapitulatif = ({brisPorte}) => {
 }
 
 const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=null,gotoThirdSection=null}) => {
-
-  const personneMoraleUri = Routing.generate('_api_personne_morale_get',{id: user.personneMorale.id});
-  const personnePhysiqueUri = Routing.generate('_api_personne_physique_get',{id: user.personnePhysique.id});
   const brisPorteUri = Routing.generate('_api_bris_porte_get',{id: brisPorte.id});
   const brisPorteUriOptimizedUri = Routing.generate('_api_bris_porte_get_optimized',{id: brisPorte.id});
 
-  const userUri = Routing.generate('_api_user_get',{id:user.pId});
   const [loading,setLoading]=useState(false);
-  const [blob,setBlob]=useState({});
+  const [blob,setBlob]=useState({user});
 
   var locked = useRef(false);
 
@@ -86,7 +74,7 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=n
             <Button
               onClick={gotoFirstSection}
               priority="secondary"
-            >{trans(GLOBAL_REVERT)}</Button>
+            >Corriger la saisie</Button>
             }
           </>
         }
@@ -97,7 +85,7 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=n
             <Button
               onClick={gotoFirstSection}
               priority="secondary"
-            >{trans(GLOBAL_REVERT)}</Button>
+            >Corriger la saisie</Button>
             }
           </>
         }
@@ -115,7 +103,7 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=n
             <Button
               onClick={gotoSecondSection}
               priority="secondary"
-            >{trans(GLOBAL_REVERT)}</Button>
+            >Corriger la saisie</Button>
             }
           </>
         }
@@ -133,7 +121,7 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=n
             <Button
               onClick={gotoSecondSection}
               priority="secondary"
-            >{trans(GLOBAL_REVERT)}</Button>
+            >Corriger la saisie</Button>
             }
           </>
         }
@@ -156,7 +144,7 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=n
             <Button
               onClick={gotoThirdSection}
               priority="secondary"
-            >{trans(GLOBAL_REVERT)}</Button>
+            >Corriger la saisie</Button>
             }
           </>
         }

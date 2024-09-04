@@ -3,12 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Civilite;
-use App\Entity\Tracking;
-use App\Entity\User;
-use App\Repository\UserRepository;
-use App\Service\Breadcrumb\Breadcrumb;
+use App\Entity\Requerant;
+use App\Repository\RequerantRepository;
 use App\Service\Mailer\SignedMailer;
-use App\Service\Version\Version;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,9 +23,7 @@ class SecurityController extends AbstractController
         protected UrlGeneratorInterface $urlGenerator,
         protected TranslatorInterface $translator,
         protected UserPasswordHasherInterface $userPasswordHasher,
-        protected Breadcrumb $breadcrumb,
         protected AuthenticationUtils $authenticationUtils,
-        protected Version $version,
         protected SignedMailer $mailer,
         protected EntityManagerInterface $em,
         protected readonly string $emailFrom,
@@ -42,9 +37,9 @@ class SecurityController extends AbstractController
     {
         $content = json_decode($request->getContent(), true);
         $email = $content['email'] ?? null;
-        $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
+        $user = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $email]);
         $sent = false;
-        if ($user && $user->hasRole(User::ROLE_REQUERANT)) {
+        if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
             /**
              * Envoi du mail de confirmation.
              */
@@ -68,11 +63,11 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/je-mets-a-jour-mon-mot-de-passe', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
-    public function reset_password(Request $request, UserRepository $ur): Response
+    public function reset_password(Request $request, RequerantRepository $ur): Response
     {
         /** @var ?int $id */
         $id = $request->query->get('id', null);
-        /** @var ?User $user */
+        /** @var ?Requerant $user */
         $user = $ur->find($id);
         if (
             (null === $user)
@@ -80,10 +75,6 @@ class SecurityController extends AbstractController
         ) {
             throw $this->createNotFoundException($this->translator->trans('security.reset_password.error.failed'));
         }
-
-        $breadcrumb = $this->breadcrumb;
-        $breadcrumb->add('homepage.title', 'app_homepage');
-        $breadcrumb->add('security.reset_password.title');
 
         $submittedToken = $request->getPayload()->get('_csrf_token');
         $successMsg = '';
@@ -99,15 +90,13 @@ class SecurityController extends AbstractController
                     $request->get('_password')
                 )
             );
-            $successMsg = $this->translator->trans('security.reset_password.success.password_reseted');
+            $successMsg = 'Le mot de passe a été mis à jour avec succès !';
             $this->em->flush();
         }
 
         return $this->render('security/reset_password.html.twig', [
             'user' => $user,
             'successMsg' => $successMsg,
-            'breadcrumb' => $breadcrumb,
-            'version' => $this->version,
         ]);
     }
 
@@ -116,9 +105,6 @@ class SecurityController extends AbstractController
     {
         $error = $this->authenticationUtils->getLastAuthenticationError();
         $lastUsername = $this->authenticationUtils->getLastUsername();
-        $breadcrumb = $this->breadcrumb;
-        $breadcrumb->add('homepage.title', 'app_homepage');
-        $breadcrumb->add('login.title');
         $user = $this->getUser();
         $isAgent = ('1' == $request->get('isAgent'));
 
@@ -133,13 +119,11 @@ class SecurityController extends AbstractController
         return $this->render('security/connexion.html.twig', [
             'last_username' => $lastUsername,
             'error_message' => $errorMessage,
-            'breadcrumb' => $breadcrumb,
-            'version' => $this->version,
             'is_agent' => $isAgent,
         ]);
     }
 
-    #[Route(path: '/deconnexion', name: 'app_logout', options: ['expose' => true])]
+    #[Route(path: '/deconnexion', name: 'app_logout')]
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
@@ -172,7 +156,7 @@ class SecurityController extends AbstractController
         return $fields;
     }
 
-    private function handleUserRequest(Request $request, User $user): void
+    private function handleUserRequest(Request $request, Requerant $user): void
     {
         /** @var ?int $civiliteId */
         $civiliteId = $request->get('civilite', null);
@@ -190,21 +174,21 @@ class SecurityController extends AbstractController
             )
         );
         $user->getPersonnePhysique()->setCivilite($civilite);
-        $user->addRole(User::ROLE_REQUERANT);
+        $user->addRole(Requerant::ROLE_REQUERANT);
     }
 
     #[Route('/validation-du-compte-requerant', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $ur): Response
+    public function verifyUserEmail(Request $request, TranslatorInterface $translator, RequerantRepository $ur): Response
     {
         /** @var ?int $id */
         $id = $request->query->get('id', null);
-        /** @var ?User $user */
+        /** @var ?Requerant $user */
         $user = $ur->find($id);
         if (
             (null !== $user)
             && (true === $this->mailer->check($request, $user))
         ) {
-            $user->setIsVerified(true);
+            $user->setVerifieCourriel();
             $this->em->flush();
         }
 
@@ -234,14 +218,9 @@ class SecurityController extends AbstractController
             return $this->redirect('/redirect');
         }
 
-        $breadcrumb = $this->breadcrumb;
-        $breadcrumb->add('homepage.title', 'app_homepage');
         $session = $request->getSession();
         $submittedToken = $request->getPayload()->get('_csrf_token');
         $fields = self::get_fields($request);
-        if ('BRI' === $fields['type']) {
-            $breadcrumb->add('bris_porte.test_eligibilite.title', 'app_bris_porte_test_eligibilite');
-        }
 
         /*
          * Le formulaire a bien été soumis
@@ -251,16 +230,11 @@ class SecurityController extends AbstractController
             /**
              * Création du nouveau compte.
              */
-            $user = new User();
+            $user = new Requerant();
             $this->handleUserRequest($request, $user);
             $this->em->persist($user);
             $this->em->flush();
 
-            $urlTracking = $this->urlGenerator->generate(
-                'app_tracking',
-                ['id' => $user->getId(), 'md5' => md5($user->getEmail())],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
             /**
              * Envoi du mail de confirmation.
              */
@@ -273,19 +247,12 @@ class SecurityController extends AbstractController
                 ->htmlTemplate('registration/confirmation_email.html.twig', [
                     'mail' => $user->getEmail(),
                     'url' => $this->baseUrl,
-                    'nomComplet' => $user->getNomComplet(),
-                    'urlTracking' => $urlTracking,
+                    'nom_complet' => $user->getNomComplet(),
                 ])
                 ->send(pathname: 'app_verify_email', user: $user);
 
-            $this->em->getRepository(Tracking::class)->add($user, Tracking::EVENT_SEND_EMAIL_CREATE_ACCOUNT);
-
-            $breadcrumb->add('security.success.title', null);
-
             return $this->render('security/success.html.twig', [
                 'user' => $user,
-                'breadcrumb' => $this->breadcrumb,
-                'version' => $this->version,
             ]);
         } /*
          * Le formulaire a bien été identifié
@@ -298,7 +265,6 @@ class SecurityController extends AbstractController
 
                 return $this->redirect('/');
             }
-            $breadcrumb->add('security.inscription.title', null);
             $session->set('test_eligibilite', $fields);
         }
 
@@ -308,8 +274,6 @@ class SecurityController extends AbstractController
         return $this->render('security/inscription.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
-            'breadcrumb' => $this->breadcrumb,
-            'version' => $this->version,
         ]);
     }
 }

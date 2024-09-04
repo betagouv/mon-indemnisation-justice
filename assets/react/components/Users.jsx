@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {ToggleSwitch} from "@codegouvfr/react-dsfr/ToggleSwitch";
-import {Button} from "@codegouvfr/react-dsfr/Button";
 
 const Users = function ({items}) {
 
@@ -13,7 +12,7 @@ const Users = function ({items}) {
             if (item.id === id)
                 copyData[index]['active'] = !item.active;
 
-            const url = Routing.generate('_api_user_patch', {id: item.id});
+            const url = Routing.generate('_api_requerant_patch', {id: item.id});
             const data = {active: copyData[index]['active']};
 
             fetch(url, {
@@ -56,7 +55,7 @@ const Users = function ({items}) {
                                     {data.map((item) => (
                                         <tr key={item.id}>
                                             <td className="fr-col-6">{item.email}</td>
-                                            <td className="fr-col-5">{item.plaintextRole}</td>
+                                            <td className="fr-col-5">{item.roles}</td>
                                             <td className="fr-col-1">
                                                 <ToggleSwitch
                                                     checked={item.active}

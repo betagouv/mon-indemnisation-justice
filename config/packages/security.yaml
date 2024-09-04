@@ -5,43 +5,56 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+        app_requerant_provider:
             entity:
-                class: App\Entity\User
+                class: App\Entity\Requerant
+                property: email
+        agent_provider:
+            entity:
+                class: App\Entity\Agent
                 property: email
     role_hierarchy:
-        ROLE_ADMIN_FONC: [ROLE_USER]
-        ROLE_CHEF_PRECONTENTIEUX: [ROLE_REDACTEUR_PRECONTENTIEUX]
-        ROLE_REDACTEUR_PRECONTENTIEUX: [ROLE_USER]
+        ROLE_AGENT_GESTION_PERSONNEL: [ROLE_USER]
+        ROLE_AGENT_REDACTEUR: [ROLE_USER]
+        ROLE_AGENT_VALIDATEUR: [ROLE_USER]
         ROLE_REQUERANT: [ROLE_USER]
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            user_checker: App\Security\UserChecker
+        agent:
+            pattern: ^/agent/
+            user_checker: App\Security\AgentChecker
             lazy: true
-            provider: app_user_provider
+            provider: agent_provider
+            form_login:
+                login_path: app_agent_securite_connexion
+                check_path: app_agent_securite_connexion
+                enable_csrf: true
+                default_target_path: app_agent_redacteur_accueil
+            logout:
+                path: app_agent_securite_deconnexion
+                target: app_agent_securite_connexion
+        requerant:
+            user_checker: App\Security\RequerantChecker
+            lazy: true
+            provider: app_requerant_provider
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: app_redirect
+                default_target_path: requerant_home_index
             logout:
                 path: app_logout
                 # where to redirect after logout
-                target: app_homepage
+                target: requerant_home_index
+            switch_user: true
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-      - { path: ^/administration, roles: ROLE_ADMIN_FONC }
+      - { path: ^/agent/!(connexion), roles: ROLE_AGENT_REDACTEUR }
       - { path: ^/(requerant|sinistre), roles: ROLE_REQUERANT }
 
 when@test:

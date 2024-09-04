@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Contracts\PrejudiceInterface;
 use App\Entity\BrisPorte;
 use App\Entity\Categorie;
+use App\Entity\Statut;
+use App\Entity\Requerant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,13 +20,34 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BrisPorteRepository extends ServiceEntityRepository
 {
-    use PrejudiceRepositoryTrait;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BrisPorte::class);
     }
 
+    public function newInstance(Requerant $user): PrejudiceInterface
+  {
+    /** @var string $classname */
+    $classname = $this->getEntityName();
+    /** @var EntityManagerInterface $em */
+    $em = $this->getEntityManager();
+    /** @var PrejudiceInterface $prejudice */
+    $prejudice = new $classname();
+    $prejudice->setRequerant($user);
+    $em->persist($prejudice);
+    $em->flush();
+
+    /** @var Statut $statut */
+    $statut = new Statut();
+    $statut->setEmetteur($user);
+    $statut->setPrejudice($prejudice);
+    $em->persist($statut);
+    $em->flush();
+
+    return $prejudice;
+  }
+
+    // TODO: défoncer ça
     public function get(BrisPorte $brisPorte): array
     {
         $brisPorteId = $brisPorte->getId();
@@ -45,8 +68,8 @@ class BrisPorteRepository extends ServiceEntityRepository
         	b.precision_requerant,
         	b.date_attestation_information,
         	b.numero_parquet,
-          u.id user_id,
-          u.is_personne_morale,
+          r.id as requerant_id,
+          r.is_personne_morale,
           pm.raison_sociale,
           pm.siren_siret,
           pm.liasse_documentaire_id pm_liasse_documentaire_id,
@@ -84,15 +107,15 @@ class BrisPorteRepository extends ServiceEntityRepository
           bad.localite bp_localite
       	FROM public.bris_porte b
         INNER JOIN public.prejudice p ON b.id=p.id
-        INNER JOIN public.user u ON u.id=p.requerant_id
+        INNER JOIN public.requerants r ON r.id=p.requerant_id
         LEFT JOIN public.adresse bad ON bad.id = b.adresse_id
         LEFT JOIN public.qualite_requerant qr ON qr.id = b.qualite_requerant_id
         LEFT JOIN public.service_enqueteur se ON se.id = b.service_enqueteur_id
         LEFT JOIN public.personne_physique ra ON ra.id = b.receveur_attestation_id
-        LEFT JOIN public.adresse a ON a.id = u.adresse_id
-      	LEFT JOIN public.personne_physique pp ON pp.id=u.personne_physique_id
+        LEFT JOIN public.adresse a ON a.id = r.adresse_id
+      	LEFT JOIN public.personne_physique pp ON pp.id = r.personne_physique_id
         LEFT JOIN public.civilite c ON c.id = pp.civilite_id
-      	LEFT JOIN public.personne_morale pm ON pm.id=u.personne_morale_id
+      	LEFT JOIN public.personne_morale pm ON pm.id = r.personne_morale_id
         LEFT JOIN public.civilite cra ON cra.id = ra.civilite_id
         LEFT JOIN public.qualite_requerant ppqr ON ppqr.id = ra.qualite_id
       	WHERE b.id = $brisPorteId

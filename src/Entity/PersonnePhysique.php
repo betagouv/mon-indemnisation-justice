@@ -40,7 +40,7 @@ class PersonnePhysique
     private ?string $codeSecuriteSociale = null;
 
     #[ORM\OneToOne(mappedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
-    private ?User $compte = null;
+    private ?Requerant $compte = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
     //#[ApiProperty(uriTemplate: '_api_civilite_get')]
@@ -121,52 +121,6 @@ class PersonnePhysique
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getNumeroSecuriteSociale(): ?string
-    {
-        return $this->numeroSecuriteSociale;
-    }
-
-    public function setNumeroSecuriteSociale(?string $numeroSecuriteSociale): static
-    {
-        $this->numeroSecuriteSociale = $numeroSecuriteSociale;
-
-        return $this;
-    }
-
-    public function getCodeSecuriteSociale(): ?string
-    {
-        return $this->codeSecuriteSociale;
-    }
-
-    public function setCodeSecuriteSociale(?string $codeSecuriteSociale): static
-    {
-        $this->codeSecuriteSociale = $codeSecuriteSociale;
-
-        return $this;
-    }
-
-    public function getCompte(): ?User
-    {
-        return $this->compte;
-    }
-
-    public function setCompte(?User $compte): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($compte === null && $this->compte !== null) {
-            $this->compte->setPersonnePhysique(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($compte !== null && $compte->getPersonnePhysique() !== $this) {
-            $compte->setPersonnePhysique($this);
-        }
-
-        $this->compte = $compte;
-
-        return $this;
     }
 
     public function getCivilite(): ?Civilite

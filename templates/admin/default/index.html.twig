@@ -2,12 +2,8 @@
 
 {% block title %}Administration des utilisateurs{% endblock %}
 
-{% block body %}
-  {% set user = app.user %}
-  <div {{ stimulus_controller('user_list',{
-    user: user|serialize('json',{groups: 'user:read'}),
-    breadcrumb: breadcrumb|serialize('json'),
-    version: {label: 'beta'},
-    users: users|serialize('json',{groups: 'user:read'})
+{% block main %}
+  <div {{ stimulus_controller('user_list', {
+    agents: agents|serialize('json')
   }) }}></div>
 {% endblock %}

@@ -1,26 +1,5 @@
 import React,{useState,useEffect} from 'react';
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import {trans,
-  LOGIN_PASSWORD,
-  LOGIN_CONFIRM_PASSWORD,
-  USER_FIELD_NOM_NAISSANCE,
-  USER_FIELD_PRENOMS,
-  USER_FIELD_NOM,
-  LOGIN_EMAIL_EXAMPLE,
-  SECURITY_INSCRIPTION_CGU_PREFIX,
-  SECURITY_INSCRIPTION_CGU_CONTENT,
-  SECURITY_INSCRIPTION_CHAPO,
-  SECURITY_INSCRIPTION_DESCRIPTION,
-  SECURITY_INSCRIPTION_MESSAGE_EMAIL_ALLREADY_EXIST,
-  SECURITY_INSCRIPTION_MESSAGE_INVALID_LENGTH_PASSWORD,
-  SECURITY_INSCRIPTION_MESSAGE_INVALID_NUMBER_PASSWORD,
-  SECURITY_INSCRIPTION_MESSAGE_SAME_PASSWORD,
-  SECURITY_INSCRIPTION_TITLE,
-  SECURITY_INSCRIPTION_SUBMIT,
-  SECURITY_INSCRIPTION_ACCOUNT_ALLREADY_EXIST,
-  SECURITY_INSCRIPTION_CONNECT_SPACE_BTN,
-  GLOBAL_OPTIONAL
-} from '../../translator';
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -40,7 +19,7 @@ const Inscription = ({user,csrfToken}) => {
     setWaiting(true);
     if(!check_email(email))
       return false;
-    fetch(Routing.generate('_api_user_get_collection',{email: email}))
+    fetch(Routing.generate('_api_requerant_get_collection',{email: email}))
       .then((response) => response.json())
       .then((data) => {setEmailFree(data["hydra:totalItems"]==0);setWaiting(false);})
     ;
@@ -59,8 +38,8 @@ const Inscription = ({user,csrfToken}) => {
   const toggleCguAccepted = () => setCguAccepted(!cguAccepted);
   const [waiting, setWaiting]=useState(false);
   const textCgu = <>
-    <div>{trans(SECURITY_INSCRIPTION_CGU_PREFIX)}</div>
-    <a className="fr-link" href={Routing.generate('app_cgu')} target="_blank">{trans(SECURITY_INSCRIPTION_CGU_CONTENT)}</a>
+    <div>Je certifie avoir lu et accepté les </div>
+    <a className="fr-link" href={Routing.generate('app_cgu')} target="_blank">Conditions générales d'utilisation</a>
   </>;
   const checkValidity = () => {
     const test =
@@ -96,19 +75,19 @@ const Inscription = ({user,csrfToken}) => {
   const manageMsgPassword = (pwd,cPwd) => {
     const messages=[];
     if(!check_empty(pwd) && !check_min_length(pwd,MIN_LENGTH_PASSWORD))
-      messages.push({message: trans(SECURITY_INSCRIPTION_MESSAGE_INVALID_LENGTH_PASSWORD).replace('%length%', MIN_LENGTH_PASSWORD),severity: 'error'});
+      messages.push({message: `Votre mot de passe doit contenir au moins ${MIN_LENGTH_PASSWORD} caractères`,severity: 'error'});
     if(!check_empty(pwd) && !check_numbers(pwd,NUMBERS_IN_PASSWORD))
-      messages.push({message: trans(SECURITY_INSCRIPTION_MESSAGE_INVALID_NUMBER_PASSWORD).replace('%length%', NUMBERS_IN_PASSWORD),severity: 'error'});
+      messages.push({message: `Votre mot de passe doit contenir au moins ${NUMBERS_IN_PASSWORD} chiffres`,severity: 'error'});
     if(cPwd && !check_equal(pwd,cPwd))
-      messages.push({message: trans(SECURITY_INSCRIPTION_MESSAGE_SAME_PASSWORD),severity: 'error'});
+      messages.push({message: "Votre mot de passe doit être identique au mot de passe de confirmation", severity: 'error'});
     return messages;
   }
 
   function getErrorEmail(mail) {
     if(!(check_empty(email)||check_email(email)))
-      return trans(LOGIN_EMAIL_EXAMPLE);
+      return "Format attendu : nom@domaine.fr";
     if(check_email(email) && !emailFree)
-      return trans(SECURITY_INSCRIPTION_MESSAGE_EMAIL_ALLREADY_EXIST);
+      return "Cette adresse est déjà utilisée, nous vous invitons à réinitialiser votre mot de passe si vous l'avez perdu"
     return "";
   }
 
@@ -121,40 +100,41 @@ const Inscription = ({user,csrfToken}) => {
         <div className="fr-grid-row">
           <div className="pr-form-subscribe_had-account fr-col-12">
             <div className="fr-p-4w">
-              <h2 className="fr-text--sm">{trans(SECURITY_INSCRIPTION_ACCOUNT_ALLREADY_EXIST)}</h2>
+              <h2 className="fr-text--sm">Vous possédez déjà un compte ?</h2>
               <Button linkProps={{ href: Routing.generate('app_login') }} priority="secondary">
-              {trans(SECURITY_INSCRIPTION_CONNECT_SPACE_BTN)}
+              Se connecter à mon espace
               </Button>
             </div>
           </div>
           <div className="fr-col-12">
             <div className="fr-p-4w">
-              <h2>{trans(SECURITY_INSCRIPTION_TITLE)}</h2>
+              <h2>Créer un compte</h2>
               <Alert
-                description=<p>{trans(SECURITY_INSCRIPTION_CHAPO)}</p>
+                title="Pourquoi ?"
+                description={<p>L'accès au formulaire de demande d'indemnisation recquiert la création d'un compte</p>}
                 severity="info"
                 small
               />
-              <p className="fr-my-4w">{trans(SECURITY_INSCRIPTION_DESCRIPTION)}</p>
+              <p className="fr-my-4w">Sauf mention contraire, tous les champs sont obligatoires</p>
               <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-4">
                   <Civilite civilite={civilite} setCivilite={setCivilite} defaultOptionText={" "} />
                 </div>
                 <div className="fr-col-8">
                   <Input
-                    label={trans(USER_FIELD_PRENOMS)}
+                    label="Prénom(s)"
                     nativeInputProps={{name: 'prenom1', value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
                   />
                 </div>
                 <div className="fr-col-6">
                   <Input
-                    label={trans(USER_FIELD_NOM_NAISSANCE)}
+                    label="Nom de naissance"
                     nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
                   />
                 </div>
                 <div className="fr-col-6">
                 <Input
-                  label={trans(USER_FIELD_NOM)+" "+trans(GLOBAL_OPTIONAL)}
+                  label="Nom d'usage"
                   nativeInputProps={{name:'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
                 />
                 </div>
@@ -169,14 +149,14 @@ const Inscription = ({user,csrfToken}) => {
                 </div>
                 <div className="fr-col-5">
                   <PasswordInput
-                    label={trans(LOGIN_PASSWORD)}
+                    label="Mot de passe"
                     messages={manageMsgPassword(password,confirmPassword)}
                     nativeInputProps={{name: 'password', value: password, onChange: ev => setPassword(ev.target.value)}}
                   />
                 </div>
                 <div className="fr-col-7">
                   <PasswordInput
-                    label={trans(LOGIN_CONFIRM_PASSWORD)}
+                    label="Confirmation du mot de passe"
                     nativeInputProps={{value: confirmPassword, onChange: ev => setConfirmPassword(ev.target.value)}}
                   />
                 </div>
@@ -194,7 +174,7 @@ const Inscription = ({user,csrfToken}) => {
                   />
                 </div>
                 <div className="fr-col-12">
-                  <Submit disabled={!submittable} label={trans(SECURITY_INSCRIPTION_SUBMIT)} />
+                  <Submit disabled={!submittable} label="Valider mon inscription et poursuivre ma demande" />
                 </div>
               </div>
             </div>

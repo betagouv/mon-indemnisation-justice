@@ -2,10 +2,9 @@
 
 namespace App\Entity;
 
+use DateTime;
 use ApiPlatform\Metadata\ApiResource;
-use App\Contracts\EntityInterface;
 use App\Contracts\PrejudiceInterface;
-use App\Entity\BrisPorte;
 use App\Repository\StatutRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,7 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StatutRepository::class)]
 #[ApiResource]
-class Statut implements EntityInterface
+class Statut
 {
     const CODE_EN_COURS_DE_CONSTITUTION = 'EN_COURS_DE_CONSTITUTION';
     const CODE_CONSTITUE                = 'CONSTITUE';
@@ -48,12 +47,16 @@ class Statut implements EntityInterface
     private ?\DateTimeInterface $date = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $emetteur = null;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Requerant $requerant = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Agent $agent = null;
 
     public function __construct()
     {
-      $this->date = new \DateTime();
+      $this->date = new DateTime();
       $this->code = self::CODE_EN_COURS_DE_CONSTITUTION;
     }
 
@@ -122,14 +125,37 @@ class Statut implements EntityInterface
         return $this;
     }
 
-    public function getEmetteur(): ?User
+    public function getEmetteur(): Requerant | Agent
     {
-        return $this->emetteur;
+        return $this->requerant ?? $this->agent;
     }
 
-    public function setEmetteur(?User $emetteur): static
+    public function setEmetteur(Requerant | Agent $emetteur): static
     {
-        $this->emetteur = $emetteur;
+        if ($emetteur instanceof Requerant) {
+            return $this->setRequerant($emetteur);
+        }
+
+        if ($emetteur instanceof Agent) {
+            return $this->setAgent($emetteur);
+        }
+
+        return $this;
+    }
+
+
+    public function setRequerant(Requerant $requerant): self
+    {
+        $this->requerant = $requerant;
+        $this->agent = null;
+
+        return $this;
+    }
+
+    public function setAgent(Agent $agent): self
+    {
+        $this->requerant = null;
+        $this->agent = $agent;
 
         return $this;
     }
