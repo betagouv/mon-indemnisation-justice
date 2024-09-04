@@ -13,7 +13,7 @@ const CategorieDemandes = function() {
               title="Bris de porte"
               chapo="Ou autres dégâts matériels causés dans le cadre d'une opération de police judiciaire"
               enabled={true}
-              href={Routing.generate('app_bris_porte_test_eligibilite')}
+              href={Routing.generate('home_test_eligibilite_bris_porte')}
             />
           </li>
           <li className="fr-col-12 fr-col-lg-4">

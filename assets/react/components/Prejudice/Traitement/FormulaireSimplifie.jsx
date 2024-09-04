@@ -19,8 +19,7 @@ const modal = createModal({
 
 const FormulaireSimplifie = ({prejudice,dimension}) => {
 
-  const isOpen = useIsModalOpen(modal);
-  const [propositionIndemnisation,setPropositionIndemnisation]=useState(prejudice.propositionIndemnisation);
+  const [propositionIndemnisation,setPropositionIndemnisation]=useState(prejudice.propositionIndemnisation ?? 0.);
   const [motivationProposition,setMotivationProposition]=useState(prejudice.motivationProposition);
   const [note,setNote]=useState(prejudice.note);
   const [loading,setLoading]=useState(false);

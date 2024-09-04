@@ -11,8 +11,6 @@ startReactDsfr({ defaultColorScheme: "system" });
 var memoryNavigator={width: 0,height: 0};
 const TARE_HEIGHT = 0;
 const REDUCE_WINDOWS_HEIGHT = 250;
-const ROLE_CHEF_PRECONTENTIEUX = 'ROLE_CHEF_PRECONTENTIEUX';
-const ROLE_REDACTEUR_PRECONTENTIEUX = 'ROLE_REDACTEUR_PRECONTENTIEUX';
 
 const initEditor = () => {
   const i = document.querySelector(".freeze-section");
@@ -47,8 +45,6 @@ const resizeEditor = () => {
 export default class extends Controller {
     static values = {
       user: Object,
-      version: Object,
-      breadcrumb: Object,
       brisPorte: Object,
       prejudice: Object
     }
@@ -73,7 +69,7 @@ export default class extends Controller {
                   />
                 </div>
                 <div className="fr-col-6">
-                  {(this.userValue.plaintextRole === ROLE_REDACTEUR_PRECONTENTIEUX) &&
+                  {false &&
                   <section className="pr-form-section fr-p-4w freeze-section" style={styles.freeze_panel}>
                     <FormulaireSimplifie
                       prejudice={this.prejudiceValue}
@@ -81,7 +77,7 @@ export default class extends Controller {
                     />
                   </section>
                   }
-                  {(this.userValue.plaintextRole === ROLE_CHEF_PRECONTENTIEUX) &&
+                  {false &&
                   <section className="pr-form-section fr-p-4w">
                     <Signature
                       prejudice={this.prejudiceValue}

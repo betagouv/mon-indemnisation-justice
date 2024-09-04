@@ -54,6 +54,23 @@ class PersonneMorale
         return $this->id;
     }
 
+    public function getCompte(): ?Requerant
+    {
+        return $this->compte;
+    }
+
+    public function getSirenSiret(): ?string
+    {
+        return $this->sirenSiret;
+    }
+
+    public function getRaisonSociale(): ?string
+    {
+        return $this->raisonSociale;
+    }
+
+
+
     public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static
     {
         $this->liasseDocumentaire = $liasseDocumentaire;

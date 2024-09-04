@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class HomepageController extends AbstractController
+class HomeController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em
@@ -62,5 +62,11 @@ class HomepageController extends AbstractController
     public function cgu(): Response
     {
         return $this->render('homepage/cgu.html.twig');
+    }
+
+    #[Route('/bris-de-porte/tester-mon-eligibilite', name: 'home_test_eligibilite_bris_porte', methods: ['POST', 'GET'], options: ['expose' => true])]
+    public function testEligibiliteBrisDePorte(): Response
+    {
+        return $this->render('prejudice/bris_porte/test_eligibilite.html.twig');
     }
 }

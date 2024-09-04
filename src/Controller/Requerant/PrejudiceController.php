@@ -31,12 +31,6 @@ class PrejudiceController extends AbstractController
     ) {
     }
 
-    #[Route('/bris-de-porte/tester-mon-eligibilite', name: 'app_bris_porte_test_eligibilite', methods: ['POST', 'GET'], options: ['expose' => true])]
-    public function testEligibilite(): Response
-    {
-        return $this->render('prejudice/bris_porte/test_eligibilite.html.twig');
-    }
-
     #[IsGranted(Requerant::ROLE_REQUERANT)]
     #[Route('/passage-a-l-etat-rejete/{id}', name: 'app_redacteur_update_statut_to_rejet', methods: ['GET'], options: ['expose' => true])]
     public function checkRejet(BrisPorte $brisPorte): JsonResponse

@@ -251,7 +251,8 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isPersonneMorale(): ?bool
     {
-        return $this->personneMorale !== null;
+
+        return $this->personneMorale?->getSirenSiret() !== null;
     }
 
     public function getPersonnePhysique(): ?PersonnePhysique

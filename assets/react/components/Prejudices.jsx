@@ -26,7 +26,7 @@ const Prejudices = function({items}) {
       const dateLastStatut = Date.parse(item.lastStatut.date);
       let href = null;
       if(item.discriminator === 'BrisPorte')
-        href = Routing.generate('app_bris_porte_view',{id: item.id});
+        href = Routing.generate('agent_bris_porte_consulter',{id: item.id});
       tmp[tmp.length]=[
         item.reference,
         lastStatut,
