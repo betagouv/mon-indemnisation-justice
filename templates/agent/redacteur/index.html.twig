@@ -1,0 +1,141 @@
+{% extends'agent/base.html.twig' %}
+
+{% block title %}Mes dossiers{% endblock title %}
+
+{% block main %}
+
+    <div class="fr-container">
+        <h3>Dossiers</h3>
+
+        <div class="fr-tabs">
+            <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
+                <li role="presentation">
+                    <span class="fr-tabs__tab" aria-selected="true">Suivis</span>
+                </li>
+                <li role="presentation">
+                    <a href="#" class="fr-tabs__tab">Nouveaux</a>
+                </li>
+                <li role="presentation">
+                    <a href="#" class="fr-tabs__tab">Terminés</a>
+                </li>
+            </ul>
+
+        </div>
+
+        <div class="fr-container">
+            <div class="fr-col-12 fr-col-md-4 fr-py-3w">
+                <div class="fr-search-bar" id="pr-search-dossiers" role="search">
+                    <label class="fr-label" for="pr-search-dossiers-nouveaux">
+                        Recherche
+                    </label>
+                    <input class="fr-input" placeholder="Rechercher dans le tableau" type="search"
+                           id="pr-search-dossiers-nouveaux" name="pr-search-dossiers-nouveaux">
+                    <button class="fr-btn" title="Rechercher dans le tableau">
+                        Rechercher
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Tableau -->
+            <div class="fr-col-12 fr-b">
+                <div class="fr-table" id="prec-tableau-dossiers-nouveauxs_container">
+                    <div class="fr-table__wrapper">
+                        <div class="fr-table__container">
+                            <div class="fr-table__content">
+                                <table id="prec-tableau-dossiers-nouveaux">
+                                    <caption class="fr-hidden">
+                                        Liste de mes dossiers nouveaux
+                                    </caption>
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">
+                                            Référence
+                                        </th>
+                                        <th scope="col">
+                                            Nom / Prénom
+                                        </th>
+                                        <th scope="col">
+                                            Qualité
+                                        </th>
+                                        <th scope="col">
+                                            Déposé le
+                                        </th>
+                                        <th scope="col">
+                                            <span class="fr-hidden">Action</span>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for prejudice in prejudices %}
+                                        <tr id="prec-tableau-dossiers-nouveaux_ligne--<?= $i; ?>"
+                                            data-row-key="<?= $i; ?>">
+                                            <td>
+                                                {{ prejudice.reference }}
+                                            </td>
+                                            <td>
+                                                {{ prejudice.requerant.personnePhysique.prenom1 }} {{ prejudice.requerant.personnePhysique.nom }}
+                                            </td>
+                                            <td>
+                                                {{ prejudice.qualiteRequerant.libelleCourt }}
+                                            </td>
+                                            <td>
+                                                {{ prejudice.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM YYYY") }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ url('agent_bris_porte_consulter', {'id': prejudice.id}) }}" class="fr-btn fr-btn--sm fr-btn--icon fr-icon-eye-line">Accéder
+                                                    au dossier</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- / Fin tableau -->
+                <!-- Pagination -->
+                <nav role="navigation" class="fr-pagination" aria-label="Pagination">
+                    <ul class="fr-pagination__list">
+                        <li>
+                            <a class="fr-pagination__link fr-pagination__link--first" aria-disabled="true"
+                               role="link">
+                                Première page
+                            </a>
+                        </li>
+                        <li>
+                            <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label"
+                               aria-disabled="true" role="link">
+                                Page précédente
+                            </a>
+                        </li>
+                        <?php for ($i = 0; $i <= 4; $i++): ?>
+                        <li>
+                            <a class="fr-pagination__link" aria-current="page" title="Page <?= $i; ?>">
+                                <?= $i; ?>
+                            </a>
+                        </li>
+                        <?php endfor; ?>
+
+                        <li>
+                            <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label"
+                               href="#">
+                                Page suivante
+                            </a>
+                        </li>
+                        <li>
+                            <a class="fr-pagination__link fr-pagination__link--last" href="#">
+                                Dernière page
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- / Fin pagination -->
+
+            </div>
+        </div>
+
+
+    </div>
+{% endblock main %}
