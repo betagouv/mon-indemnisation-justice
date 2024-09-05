@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-#[AsCommand(name: 'precontentieux:creer-agent', description: 'Créer un agent')]
+#[AsCommand(name: 'precontentieux:agent:creer', description: 'Créer un agent')]
 class CreateAgentCommand extends Command
 {
     public function __construct(
