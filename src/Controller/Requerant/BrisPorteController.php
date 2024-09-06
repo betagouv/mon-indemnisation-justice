@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant/bris-de-porte')]
@@ -22,7 +21,6 @@ class BrisPorteController extends AbstractController
 {
     public function __construct(
         private StatutRepository $statutRepository,
-        private TranslatorInterface $translator,
         protected readonly string $emailFrom,
         protected readonly string $emailFromLabel,
         protected readonly string $baseUrl,
@@ -89,7 +87,7 @@ class BrisPorteController extends AbstractController
         $mailer
            ->from($this->emailFrom, $this->emailFromLabel)
            ->to($user->getEmail())
-           ->subject($this->translator->trans('bris_porte.edit.email.title'))
+           ->subject("Précontentieux : Votre déclaration de bris de porte a bien été pris en compte")
            ->htmlTemplate('requerant/email/confirmation_passage_etat_constitue.html.twig', [
                'mail' => $user->getEmail(),
                'url' => $this->baseUrl,

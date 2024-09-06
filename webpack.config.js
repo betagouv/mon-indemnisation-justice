@@ -34,39 +34,29 @@ Encore
 
     .configureDevServerOptions(options => {
         // Webpack dev server configuration https://webpack.js.org/configuration/dev-server/
-        return {
-            server: 'http',
-            allowedHosts: 'all',
-            //liveReload: true,
-            compress: false,
-            host: '0.0.0.0',
-            port: 8081,
-            client: {
+        options.server = 'http';
+        options.allowedHosts = 'all';
+        options.liveReload = true;
+        options.hot = true;
+        options.compress = false;
+        options.host = '0.0.0.0';
+        options.port = 8081;
+        options.headers = {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+            "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+        };
+        options.client = {
                 overlay: true,
                 reconnect: true,
                 webSocketURL: 'ws://localhost:8081/ws',
-            },
-            static: {
-                watch: false
-            },
-            watchFiles: {
-                paths: ['src/**/*.php', 'templates/**/*'],
-            },
-            /*
-            proxy: {
-                path: '**',
-                target: 'http://localhost:8081',
-                secure: false,
-                changeOrigin: true,
-            },
-            */
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-                "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
-              }
-        }
-
+        };
+        options.static = {
+            watch: false
+        };
+        options.watchFiles = {
+            paths: ['src/**/*.php', 'templates/**/*'],
+        };
     })
 
     /*
@@ -112,8 +102,4 @@ Encore
     ])
 ;
 
-const FosRouting = require('fos-router/webpack/FosRouting');
-Encore
-  .addPlugin(new FosRouting())
-;
 module.exports = Encore.getWebpackConfig();

@@ -9,14 +9,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/agent')]
 class SecurityAgentController extends AbstractController
 {
     public function __construct(
         protected readonly AuthenticationUtils $authenticationUtils,
-        protected readonly TranslatorInterface $translator,
+
     ) {
     }
 

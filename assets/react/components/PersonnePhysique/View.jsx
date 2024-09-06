@@ -1,13 +1,6 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import SecuriteSociale from '../SecuriteSociale';
-import { trans,
-  USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
-  USER_FIELD_PRENOMS,USER_FIELD_DATE_NAISSANCE,
-  USER_FIELD_LIEU_NAISSANCE,
-  GLOBAL_ERROR_EMPTY_FIELD, USER_FIELD_PRENOM1,
-   USER_FIELD_PRENOM2, USER_FIELD_PRENOM3
-} from '../../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { castDate } from '../../utils/cast';
 
@@ -37,8 +30,8 @@ const PersonnePhysiqueView = function({personnePhysique}) {
         </div>
         <div className="fr-col-3">
           <Input
-            label={trans(USER_FIELD_NOM)}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            label="Nom d'usage"
+            stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{name: 'nom', value: nom, onChange: ev => setNom(ev.target.value)}}
           />
         </div>
@@ -46,7 +39,7 @@ const PersonnePhysiqueView = function({personnePhysique}) {
         </div>
         <div className="fr-col-3">
         <Input
-          label={trans(USER_FIELD_NOM_NAISSANCE)}
+          label="Nom de naissance"
           nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
         />
         </div>
@@ -63,9 +56,9 @@ const PersonnePhysiqueView = function({personnePhysique}) {
       <div className="fr-grid-row">
         <div className="fr-col-3">
           <Input
-            label={trans(USER_FIELD_PRENOMS)}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
-            nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM1), name: 'prenom1', value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
+            label="Prénom(s)"
+            stateRelatedMessage="Le champs est obligatoire"
+            nativeInputProps={{placeholder: "Premier prénom", name: 'prenom1', value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
           />
         </div>
         <div className="fr-col-1">
@@ -73,7 +66,7 @@ const PersonnePhysiqueView = function({personnePhysique}) {
         <div className="fr-col-3">
           <Input
             label="&nbsp;"
-            nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM2), name: 'prenom2', value: prenom2, onChange: ev => setPrenom2(ev.target.value)}}
+            nativeInputProps={{placeholder: "Deuxième prénom", name: 'prenom2', value: prenom2, onChange: ev => setPrenom2(ev.target.value)}}
           />
         </div>
         <div className="fr-col-1">
@@ -81,7 +74,7 @@ const PersonnePhysiqueView = function({personnePhysique}) {
         <div className="fr-col-3">
           <Input
             label="&nbsp;"
-            nativeInputProps={{placeholder: trans(USER_FIELD_PRENOM3), name: 'prenom3', value: prenom3, onChange: ev => setPrenom3(ev.target.value)}}
+            nativeInputProps={{placeholder: "Troisième prénom", name: 'prenom3', value: prenom3, onChange: ev => setPrenom3(ev.target.value)}}
           />
         </div>
         <div className="fr-col-1">
@@ -90,7 +83,7 @@ const PersonnePhysiqueView = function({personnePhysique}) {
       <div className="fr-grid-row">
         <div className="fr-col-3">
           <Input
-            label={trans(USER_FIELD_DATE_NAISSANCE)}
+            label="Date de naissance"
             nativeInputProps={{
               type: 'date',value: dateNaissance, onChange: ev=>setDateNaissance(ev.target.value)
             }}
@@ -100,7 +93,7 @@ const PersonnePhysiqueView = function({personnePhysique}) {
         </div>
         <div className="fr-col-3">
           <Input
-            label={trans(USER_FIELD_LIEU_NAISSANCE)}
+            label="Ville de naissance"
             nativeInputProps={{
               value: communeNaissance, onChange: ev => setCommuneNaissance(ev.target.value)
             }}

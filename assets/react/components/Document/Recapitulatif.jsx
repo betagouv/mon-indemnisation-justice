@@ -1,22 +1,7 @@
 import React,{useState,useEffect,useRef} from 'react';
-import { Br,Loading } from '../../utils/fundamental';
+import { Loading } from '../../utils/fundamental';
 import { Document } from '../PieceJointe/PieceJointe';
-import {trans,
-  DOCUMENT_ATTESTATION_INFORMATION_TITLE,
-  DOCUMENT_PHOTO_BRIS_PORTE_TITLE,
-  DOCUMENT_PHOTO_BRIS_PORTE_HINT,
-  DOCUMENT_PIECE_IDENTITE_TITLE,
-  DOCUMENT_PIECE_IDENTITE_HINT,
-  DOCUMENT_FACTURE_TITLE,
-  BRIS_PORTE_PJ_SECTION,
-  DOCUMENT_FACTURE_HINT,
-  DOCUMENT_RIB_PRO_TITLE,
-  DOCUMENT_RIB_PRO_HINT,
-  DOCUMENT_RIB_TITLE,
-  DOCUMENT_RIB_HINT,
-  DOCUMENT_TITRE_PROPRIETE_TITLE,
-  DOCUMENT_TITRE_PROPRIETE_HINT
-} from '../../../translator';
+
 const Recapitulatif = ({
   isPersonneMorale,
   personneMoraleLiasseDocumentaireUri,
@@ -52,14 +37,14 @@ const Recapitulatif = ({
 
   return (
     <>
-      <h3>{trans(BRIS_PORTE_PJ_SECTION)}</h3>
+      <h3>Documents à joindre obligatoirement à votre demande</h3>
       {loading &&
       <>
         {(type===TYPE_BRIS_PORTE) &&
         <Document
           readonly={true}
           liasseDocumentaireIri={prejudice.liasseDocumentaire}
-          label={trans(DOCUMENT_ATTESTATION_INFORMATION_TITLE)}
+          label="Attestation d'informations complétée par les forces de l'ordre"
           type={"attestation_information"}
         />
         }
@@ -67,8 +52,8 @@ const Recapitulatif = ({
         <Document
           readonly={true}
           liasseDocumentaireIri={prejudice.liasseDocumentaire}
-          label={trans(DOCUMENT_PHOTO_BRIS_PORTE_TITLE)}
-          hint_text={trans(DOCUMENT_PHOTO_BRIS_PORTE_HINT)}
+          label="Photos de la porte endommagée"
+          hint_text="Seuls les frais de remise en état à l'identique de la porte endommagée seront indemnisés"
           type={"photo_prejudice"}
         />
         }
@@ -76,8 +61,8 @@ const Recapitulatif = ({
         <Document
           readonly={true}
           liasseDocumentaireIri={personnePhysiqueLiasseDocumentaireUri}
-          label={trans(DOCUMENT_PIECE_IDENTITE_TITLE)}
-          hint_text={trans(DOCUMENT_PIECE_IDENTITE_HINT)}
+          label="Copie de ma pièce d'identité recto-verso"
+          hint_text=" "
           type={"carte_identite"}
         />
         }
@@ -85,8 +70,8 @@ const Recapitulatif = ({
         <Document
           readonly={true}
           liasseDocumentaireIri={prejudice.liasseDocumentaire}
-          label={trans(DOCUMENT_FACTURE_TITLE)}
-          hint_text={trans(DOCUMENT_FACTURE_HINT)}
+          label="Facture acquittée et copie du relevé de compte bancaire attestant du paiement"
+          hint_text=" "
           type={"preuve_paiement_facture"}
         />
         }
@@ -94,8 +79,8 @@ const Recapitulatif = ({
         <Document
           readonly={true}
           liasseDocumentaireIri={personneMoraleLiasseDocumentaireUri}
-          label={trans(DOCUMENT_RIB_PRO_TITLE)}
-          hint_text={trans(DOCUMENT_RIB_PRO_HINT)}
+          label="Relevé d'identité bancaire de ma société"
+          hint_text=" "
           type={"rib"}
         />
         }
@@ -103,8 +88,8 @@ const Recapitulatif = ({
         <Document
           readonly={true}
           liasseDocumentaireIri={personnePhysiqueLiasseDocumentaireUri}
-          label={trans(DOCUMENT_RIB_TITLE)}
-          hint_text={trans(DOCUMENT_RIB_HINT)}
+          label="Mon relevé d'identité bancaire"
+          hint_text=" "
           type={"rib"}
         />
         }
@@ -112,8 +97,8 @@ const Recapitulatif = ({
         <Document
           readonly={true}
           liasseDocumentaireIri={prejudice.liasseDocumentaire}
-          label={trans(DOCUMENT_TITRE_PROPRIETE_TITLE)}
-          hint_text={trans(DOCUMENT_TITRE_PROPRIETE_HINT)}
+          label="Titre de propriété"
+          hint_text=" "
           type={"titre_propriete"}
         />
         }

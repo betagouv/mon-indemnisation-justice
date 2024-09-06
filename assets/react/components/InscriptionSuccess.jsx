@@ -1,14 +1,19 @@
 import React from 'react';
-import {trans, SECURITY_SUCCESS_CONTENT,SECURITY_SUCCESS_BTN} from '../../translator';
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import parse from 'html-react-parser';
+
 
 const InscriptionSuccess = ({user}) => {
   return (
     <>
       <div className="fr-grid-row">
         <div className="fr-col-12">
-        {parse(trans(SECURITY_SUCCESS_CONTENT).replace('%email%',user.email))}
+            <h1>Finaliser la création de votre compte</h1>
+            <p>Pour finaliser la création de votre compte, nous vous invitons à cliquer sur le lien qui vous a été
+                envoyé à l'adresse email renseignée : <b>{ user.email }</b>
+            </p>
+            <p>Une fois votre compte créé, vous pourrez accéder à votre espace personnel pour effectuer votre demande
+                d'indemnisation.
+            </p>
         </div>
         <div className="fr-col-12">
           <Button
@@ -16,7 +21,7 @@ const InscriptionSuccess = ({user}) => {
               href: Routing.generate('app_login')
             }}
           >
-          {trans(SECURITY_SUCCESS_BTN)}
+          J'ai finalisé la création de mon compte, je souhaite me connecter à mon espace personnel
           </Button>
         </div>
       </div>

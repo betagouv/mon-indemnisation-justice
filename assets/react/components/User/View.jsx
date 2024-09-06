@@ -1,13 +1,8 @@
-import React, {useState,useEffect} from 'react';
-import axios from 'axios';
-import PropTypes from 'prop-types';
+import React from 'react';
 import AdresseView from '../Adresse/View';
 import PersonnePhysiqueView from '../PersonnePhysique/View';
 import PersonneMoraleView from '../PersonneMorale/View';
 import RepresentantLegalView from '../RepresentantLegal/View';
-import { fr } from "@codegouvfr/react-dsfr";
-import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
-import { trans, USER_FIELD_IS_PERSONNE_MORALE } from '../../../translator';
 
 const UserView = function({user}) {
 

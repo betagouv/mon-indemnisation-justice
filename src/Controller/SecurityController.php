@@ -15,13 +15,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
 {
     public function __construct(
         protected UrlGeneratorInterface $urlGenerator,
-        protected TranslatorInterface $translator,
         protected UserPasswordHasherInterface $userPasswordHasher,
         protected AuthenticationUtils $authenticationUtils,
         protected SignedMailer $mailer,
@@ -43,14 +41,13 @@ class SecurityController extends AbstractController
             /**
              * Envoi du mail de confirmation.
              */
-            $appName = $this->translator->trans('header.name');
 
             $this->mailer
                 ->from($this->emailFrom, $this->emailFromLabel)
                 ->to($user->getEmail())
-                ->subject(str_replace(['%name%'], [$appName], $this->translator->trans('security.reset_password.email.title')))
+                ->subject("Mon Indemnisation Justice: réinitialisation de votre mot de passe")
                 ->htmlTemplate('security/send_link_for_new_password.html.twig', [
-                    'name' => $appName,
+                    'name' => "Mon Indemnisation Justice",
                     'mail' => $user->getEmail(),
                     'url' => $this->baseUrl,
                     'nomComplet' => $user->getNomComplet(),
@@ -73,7 +70,7 @@ class SecurityController extends AbstractController
             (null === $user)
             || (false === $this->mailer->check($request, $user))
         ) {
-            throw $this->createNotFoundException($this->translator->trans('security.reset_password.error.failed'));
+            throw $this->createNotFoundException("Le lien n'est pas valide ou expiré. Veuillez renouveler une nouvelle tentative de réinitialisation de votre mot de passe");
         }
 
         $submittedToken = $request->getPayload()->get('_csrf_token');
@@ -110,7 +107,7 @@ class SecurityController extends AbstractController
 
         $errorMessage = '';
         if ($error && $error->getMessage()) {
-            $errorMessage = $this->translator->trans($error->getMessage(), [], 'security');
+            $errorMessage = "Identifiants invalides";
         }
         if (null !== $user) {
             return $this->redirect('/redirect');
@@ -178,7 +175,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/validation-du-compte-requerant', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator, RequerantRepository $ur): Response
+    public function verifyUserEmail(Request $request, RequerantRepository $ur): Response
     {
         /** @var ?int $id */
         $id = $request->query->get('id', null);
@@ -238,12 +235,10 @@ class SecurityController extends AbstractController
             /**
              * Envoi du mail de confirmation.
              */
-            $appName = $this->translator->trans('header.name');
-
             $this->mailer
                 ->from($this->emailFrom, $this->emailFromLabel)
                 ->to($user->getEmail())
-                ->subject(str_replace(['%name%'], [$appName], $this->translator->trans('register.email.title')))
+                ->subject("Précontentieux : finalisation de l'activation de votre compte pour l'application Mon Indemnisation Justice")
                 ->htmlTemplate('registration/confirmation_email.html.twig', [
                     'mail' => $user->getEmail(),
                     'url' => $this->baseUrl,
@@ -259,8 +254,7 @@ class SecurityController extends AbstractController
          *
          */
         elseif (true === self::has_fields($request)) {
-            if ('BRI' === $fields['type']) {
-            } else {
+            if ('BRI' !== $fields['type']) {
                 $session->set('test_eligibilite', null);
 
                 return $this->redirect('/');

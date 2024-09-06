@@ -1,17 +1,8 @@
 import React, {useState,useEffect} from 'react';
-import axios from 'axios';
-import PropTypes from 'prop-types';
 import Referentiel from './Referentiel';
-import { getStateOnEmpty,check_empty } from '../utils/check_state';
+import { check_empty } from '../utils/check_state';
 import { castNumber } from '../utils/cast';
-import { fr } from "@codegouvfr/react-dsfr";
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Select } from "@codegouvfr/react-dsfr/Select";
-import { trans,
-  BRIS_PORTE_FIELD_QUALITE_REPRESENTANT,
-  BRIS_PORTE_FIELD_PRECISION_REPRESENTANT
-} from '../../translator';
+
 import { Input } from "@codegouvfr/react-dsfr/Input";
 
 const Requerant = function({
@@ -32,8 +23,8 @@ const Requerant = function({
     setLoading(true);
   },[])
   const showPrecision = (qr) => (castNumber(qr) == CODE_QUALITE_REQUERANT_AUTRE);
-  const label = (null!==qualiteText) ? qualiteText : trans(BRIS_PORTE_FIELD_QUALITE_REPRESENTANT);
-  const label2 = !check_empty(precisionText) ? precisionText : trans(BRIS_PORTE_FIELD_PRECISION_REPRESENTANT);
+  const label = (null!==qualiteText) ? qualiteText : "J'effectue ma demande en qualité de";
+  const label2 = !check_empty(precisionText) ? precisionText : "Préciser votre qualité";
   return (
     <>
       <div className="fr-grid-row">

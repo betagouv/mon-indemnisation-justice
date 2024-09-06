@@ -17,7 +17,7 @@ const FormulaireSimple = ({csrfToken,raccourci="",errorMessage=""}) => {
   return (
     <form onSubmit={handleContinue} method="POST" name="form">
       <Hidden name="_csrf_token" value={csrfToken} />
-      <div class="fr-grid-row">
+      <div className="fr-grid-row">
         <div className="fr-col-4">&nbsp;</div>
         <div className="fr-col-4">
           <Input

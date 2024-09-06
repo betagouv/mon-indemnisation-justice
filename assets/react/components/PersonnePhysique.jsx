@@ -3,13 +3,6 @@ import PropTypes from 'prop-types';
 import Civilite from './Civilite';
 import { getStateOnEmpty } from '../utils/check_state';
 import SecuriteSociale from './SecuriteSociale';
-import { trans,
-  USER_H5, GLOBAL_OPTIONAL,
-  USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
-  USER_FIELD_PRENOMS,USER_FIELD_DATE_NAISSANCE,
-  USER_FIELD_LIEU_NAISSANCE,
-  GLOBAL_ERROR_EMPTY_FIELD,
-} from '../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { castDate } from '../utils/cast';
 
@@ -79,18 +72,18 @@ const PersonnePhysique = function({personnePhysique}) {
 
   return (
     <>
-      <h3>{trans(USER_H5)}</h3>
+      <h3>Votre identité</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-3">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
         <div className="fr-col-9">
           <Input
-            label={trans(USER_FIELD_PRENOMS)}
+            label="Prénom(s)"
             state={statePrenom1}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
-              placeholder: trans(USER_FIELD_PRENOMS),
+              placeholder: "Prénom(s)",
               value: prenom1,
               onChange: ev => setPrenom1(ev.target.value),
               maxLength: 255
@@ -99,9 +92,9 @@ const PersonnePhysique = function({personnePhysique}) {
         </div>
         <div className="fr-col-6">
           <Input
-            label={trans(USER_FIELD_NOM_NAISSANCE)}
+            label="Nom de naissance"
             state={stateNom}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
               value: nomNaissance,
               onChange: ev => setNomNaissance(ev.target.value),
@@ -111,7 +104,7 @@ const PersonnePhysique = function({personnePhysique}) {
         </div>
         <div className="fr-col-6">
           <Input
-            label={trans(USER_FIELD_NOM)+" "+trans(GLOBAL_OPTIONAL)}
+            label="Nom d'usage"
             nativeInputProps={{
               value: nom,
               onChange: ev => setNom(ev.target.value),
@@ -121,7 +114,7 @@ const PersonnePhysique = function({personnePhysique}) {
         </div>
         <div className="fr-col-3">
           <Input
-            label={trans(USER_FIELD_DATE_NAISSANCE)}
+            label="Date de naissance"
             nativeInputProps={{
               type: 'date',
               value: dateNaissance,
@@ -131,7 +124,7 @@ const PersonnePhysique = function({personnePhysique}) {
         </div>
         <div className="fr-col-9">
           <Input
-            label={trans(USER_FIELD_LIEU_NAISSANCE)}
+            label="Ville de naissance"
             nativeInputProps={{
               value: communeNaissance,
               onChange: ev => setCommuneNaissance(ev.target.value),

@@ -10,12 +10,9 @@ import '../styles/homepage.css';
 export default class extends Controller {
     static values = {
       user: Object,
-      version: Object,
-      breadcrumb: Object
     }
     connect() {
       const container = this.element;
-      console.log(container);
       const root = ReactDOMClient.createRoot(container);
       root.render(
         <React.StrictMode>

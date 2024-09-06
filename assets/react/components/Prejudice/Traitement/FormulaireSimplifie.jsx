@@ -4,12 +4,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { castDecimal } from '../../../utils/cast';
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
-import {trans, PREJUDICE_FIELD_NOTE, PREJUDICE_FIELD_PROPOSITION_INDEMNISATION,
-  PREJUDICE_ACTION_REJET,PREJUDICE_ACTION_VALIDE, GLOBAL_YES, GLOBAL_NO,
-  PREJUDICE_FIELD_DOCUMENT_TO_SIGN,
-  PREJUDICE_FIELD_DOCUMENT_TO_SIGN_HINTEXT
-} from "../../../../translator";
+
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 const modal = createModal({
@@ -35,7 +30,7 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
   });
   const handleRejet = () => {
     const url = Routing.generate('app_redacteur_update_statut_to_rejet',{id: prejudice.pid});
-    setModalTitle(trans(PREJUDICE_ACTION_REJET));
+    setModalTitle("Rejeter le dossier");
     setModalType("error");
     setCallback(() => () => {
       fetch(url)
@@ -48,7 +43,7 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
   }
   const handleValide = () => {
     const url = Routing.generate('app_redacteur_update_statut_to_valide',{id: prejudice.pid});
-    setModalTitle(trans(PREJUDICE_ACTION_VALIDE));
+    setModalTitle("Faire une proposition d'indemnisation");
     setModalType("success");
     setCallback(() => () => {
       fetch(url)
@@ -92,14 +87,14 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
   return (
     <div className="fr-grid-row">
       <div className="fr-col-12">
-        <Wysiwyg label={trans(PREJUDICE_FIELD_NOTE)} value={note} setValue={setNote}/>
+        <Wysiwyg label="Note sur le dossier (masquée aux requérants)" value={note} setValue={setNote}/>
       </div>
       <div className="fr-col-12">
         <Wysiwyg label={"Motivation de la proposition"} value={motivationProposition} setValue={setMotivationProposition}/>
       </div>
       <div className="fr-col-12">
         <Input
-          label={trans(PREJUDICE_FIELD_PROPOSITION_INDEMNISATION)}
+          label="Proposition d'indemnisation (€)"
           iconId="fr-icon-money-euro-box-line"
           nativeInputProps={{
             value: propositionIndemnisation,
@@ -109,7 +104,7 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
         />
       </div>
       <div className="fr-col-12">
-        <label className="fr-label">{trans(PREJUDICE_FIELD_DOCUMENT_TO_SIGN)}</label>
+        <label className="fr-label">Document à signer"</label>
         <ul>
           <li>
             <a className="fr-link" href={Routing.generate('app_decision_bri_previsionnel_print',{type:'VALIDE',id: prejudice.pid})} target="_blank">{"Prévisionnel de la proposition d'indemnisation"}</a>
@@ -126,17 +121,17 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
       <div className="fr-col-12">
         <ul className="fr-btns-group fr-btns-group--inline-sm">
           <li>
-            <Button onClick={handleRejet}>{trans(PREJUDICE_ACTION_REJET)}</Button>
+            <Button onClick={handleRejet}>Rejeter le dossier</Button>
           </li>
           <li>
-            <Button onClick={handleValide}>{trans(PREJUDICE_ACTION_VALIDE)}</Button>
+            <Button onClick={handleValide}>Faire une proposition d'indemnisation</Button>
           </li>
         </ul>
       </div>
       <modal.Component
         buttons={[
-          {onClick: ()=> {},children: trans(GLOBAL_NO)},
-          {children: trans(GLOBAL_YES),onClick: callback}
+          {onClick: ()=> {},children: "Non"},
+          {children: "Yes",onClick: callback}
         ]}
       >
         <Alert

@@ -2,7 +2,7 @@
 
 namespace App\Controller\Requerant;
 
-use App\Controller\Prejudice\UserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use App\Entity\BrisPorte;
 use App\Entity\Requerant;
 use App\Entity\Statut;
@@ -10,11 +10,8 @@ use App\Repository\StatutRepository;
 use App\Service\Mailer\BasicMailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant')]
@@ -22,8 +19,6 @@ class PrejudiceController extends AbstractController
 {
     public function __construct(
         private BasicMailer $mailer,
-        private UrlGeneratorInterface $urlGenerator,
-        private TranslatorInterface $translator,
         private StatutRepository $statutRepository,
         protected readonly string $emailFrom,
         protected readonly string $emailFromLabel,
@@ -57,7 +52,7 @@ class PrejudiceController extends AbstractController
         $mailer
            ->from($this->emailFrom, $this->emailFromLabel)
            ->to($requerant->getEmail())
-           ->subject($this->translator->trans('bris_porte.edit.email.title_sign'))
+           ->subject("Précontentieux : Une décision a été prise concernant votre déclaration de bris de porte")
            ->htmlTemplate('requerant/email/confirmation_passage_etat_signe.html.twig', [
                'mail' => $requerant->getEmail(),
                'url' => $this->baseUrl,

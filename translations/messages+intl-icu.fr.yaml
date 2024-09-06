@@ -290,7 +290,7 @@ user:
   section: "Données personnelles du justiciable"
   h5: "Votre identité"
   field:
-    email_pro: "Courriel professionel"
+    email_pro: "Courriel professionnel"
     telephone_pro: "Numéro de téléphone professionel"
     is_personne_morale: "Ma demande d'indemnisation concerne une personne morale (société, entreprise, association, fondation etc.)"
     nom_naissance: "Nom de naissance"

@@ -1,17 +1,12 @@
-import React,{useRef,useState,useEffect} from 'react';
+import React,{ useState } from 'react';
 import { Br, Wysiwyg } from '../../../utils/fundamental';
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import parse from 'html-react-parser';
+
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { castDecimal } from '../../../utils/cast';
 import { Document } from '../../PieceJointe/PieceJointe';
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
-import {trans, PREJUDICE_FIELD_NOTE, PREJUDICE_FIELD_PROPOSITION_INDEMNISATION,
-  PREJUDICE_ACTION_REJET,PREJUDICE_ACTION_VALIDE, GLOBAL_YES, GLOBAL_NO,
-  PREJUDICE_FIELD_DOCUMENT_TO_SIGN, PREJUDICE_FIELD_DOCUMENT_TO_SIGN_HINTEXT,
-  PREJUDICE_FIELD_DOCUMENT_SIGNED,PREJUDICE_FIELD_SUBMIT
-} from "../../../../translator";
+
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 const modal = createModal({
@@ -30,7 +25,7 @@ const Signature = ({prejudice,dimension}) => {
 
   const handleTransmission = () => {
     const url = Routing.generate('app_redacteur_update_statut_to_sign',{id: prejudice.pid});
-    setModalTitle(trans(PREJUDICE_FIELD_SUBMIT));
+    setModalTitle("Transmettre la décision signée au requérant");
     setModalType("success");
     setCallback(() => () => {
       fetch(url)
@@ -46,7 +41,7 @@ const Signature = ({prejudice,dimension}) => {
     <div className="fr-grid-row">
       <div className="fr-col-12">
         <Wysiwyg
-          label={trans(PREJUDICE_FIELD_NOTE)}
+          label="Note sur le dossier (masquée aux requérants)"
           value={prejudice.note}
           setValue={()=>{}}
           readOnly={true}
@@ -55,7 +50,7 @@ const Signature = ({prejudice,dimension}) => {
       <div className="fr-col-12">
         <Input
           disabled
-          label={trans(PREJUDICE_FIELD_PROPOSITION_INDEMNISATION)}
+          label="Proposition d'indemnisation (€)"
           iconId="fr-icon-money-euro-box-line"
           nativeInputProps={{value: prejudice.propositionIndemnisation}}
         />
@@ -64,17 +59,17 @@ const Signature = ({prejudice,dimension}) => {
         <Br/>
       </div>
       <div className="fr-col-12">
-        <label className="fr-label">{trans(PREJUDICE_FIELD_DOCUMENT_TO_SIGN)}</label>
+        <label className="fr-label">Document à signer</label>
         <ul>
           <li>
-            <a className="fr-link" href={Routing.generate('app_decision_bri_print',{id: prejudice.pid})} target="_blank">{trans(PREJUDICE_FIELD_DOCUMENT_TO_SIGN_HINTEXT)}</a>
+            <a className="fr-link" href={Routing.generate('app_decision_bri_print',{id: prejudice.pid})} target="_blank">Cliquer ici pour télécharger la pièce à signer</a>
           </li>
         </ul>
       </div>
       <div className="fr-col-12">
         <Document
           liasseDocumentaireIri={prejudice.pLiasseDocumentaire}
-          label={trans(PREJUDICE_FIELD_DOCUMENT_SIGNED)}
+          label="Document signé"
           type={"signature_decision"}
         />
         <Br/>
@@ -82,14 +77,14 @@ const Signature = ({prejudice,dimension}) => {
       <div className="fr-col-12">
         <ul className="fr-btns-group fr-btns-group--inline-sm">
           <li>
-            <Button onClick={handleTransmission}>{trans(PREJUDICE_FIELD_SUBMIT)}</Button>
+            <Button onClick={handleTransmission}>Transmettre la décision signée au requérant</Button>
           </li>
         </ul>
       </div>
       <modal.Component
         buttons={[
-          {onClick: ()=> {},children: trans(GLOBAL_NO)},
-          {children: trans(GLOBAL_YES),onClick: callback}
+          {onClick: ()=> {},children: "Non"},
+          {children: "Oui",onClick: callback}
         ]}
       >
         <Alert

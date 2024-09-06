@@ -1,10 +1,17 @@
 <html>
   <head>
-    <title>{{'bris_porte.edit.email.title_sign'|trans}}</title>
+    <title>Précontentieux : Une décision a été prise concernant votre déclaration de bris de porte</title>
   </head>
   <body>
-    <p>{{nomComplet}},<p>
-    <p>{{'bris_porte.edit.email.content_sign'|trans|replace({'%reference%':reference})|raw}}</p>
-    <a href="{{url}}">Je me connecte</a>
+    <p>{{ nomComplet }},<p>
+    <p>
+      <b>Référence du dossier à rappeler : {{ reference }}</b>
+      <p>Le traitement consécutif à votre bris de porte a été effectué. Veuillez vous connecter sur le site afin de consulter la décision</p>
+      <p>
+      Cordialement,<br/>
+      L'équipe PRECONTENTIEUX
+      </p>
+    </p>
+    <a href="{{ url }}">Je me connecte</a>
   </body>
 </html>

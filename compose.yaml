@@ -37,7 +37,7 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   # The Symfony app
-  symfony: &app
+  symfony:
     platform: linux/amd64
     hostname: symfony
     stdin_open: true
@@ -60,37 +60,17 @@ services:
       - mailpit
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
-      - ./public/build:/app/public/build
+      - .:/app
     ports:
       - "9000:9000"
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /app
-          ignore:
-            - vendor/
-            - public/build/
-            - assets/
-        - action: rebuild
-          path: composer.lock
 
-  # Encore & webpack dev-server for HMR in local development
+  # Encore dev server (frontend assets)
   encore:
-    <<: *app
+    image: node:18
     hostname: encore
-    command: yarn dev-server --port 8081
+    command: bash -c 'yarn install && yarn dev-server'
+    working_dir: /app
     volumes:
-      # Ce partage, via un volume, est requis afin de transmettre à Symfony les manifestes produits par `encore`
-      - ./public/build:/app/public/build
-    develop:
-      watch:
-        - action: sync
-          path: assets
-          target: /app/assets
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: yarn.lock
+      - .:/app
     ports:
       - "8081:8081"

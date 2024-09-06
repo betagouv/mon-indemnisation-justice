@@ -1,11 +1,5 @@
-import React, {useState,useEffect} from 'react';
-import { Select } from "@codegouvfr/react-dsfr/Select";
+import React from 'react';
 import ReadOnlyInput from '../ReadOnlyInput';
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { trans, ADRESSE_FIELD_LIGNE1,
-  ADRESSE_FIELD_CODE_POSTAL,
-  ADRESSE_FIELD_LOCALITE
-} from '../../../translator';
 
 const AdresseView = ({adresse}) => {
 
@@ -13,13 +7,13 @@ const AdresseView = ({adresse}) => {
     <div className="fr-grid-row">
       <div className="fr-col-12">
         <ReadOnlyInput
-          label={trans(ADRESSE_FIELD_LIGNE1)}
+          label="Adresse complète"
           value={adresse.ligne1}
         />
       </div>
       <div className="fr-col-3">
         <ReadOnlyInput
-          label={trans(ADRESSE_FIELD_CODE_POSTAL)}
+          label="Code postal"
           value={adresse.codePostal}
         />
       </div>
@@ -27,7 +21,7 @@ const AdresseView = ({adresse}) => {
       </div>
       <div className="fr-col-8">
         <ReadOnlyInput
-          label={trans(ADRESSE_FIELD_LOCALITE)}
+          label="Ville"
           value={adresse.localite}
         />
       </div>
