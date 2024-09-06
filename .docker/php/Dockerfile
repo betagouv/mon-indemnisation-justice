@@ -24,9 +24,9 @@ RUN apt-get install -y libpq-dev && docker-php-ext-configure pgsql -with-pgsql=/
 RUN apt-get install -y libldap2-dev libldap-common && docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/ && docker-php-ext-install ldap
 
 # Node
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-RUN apt-get install -y nodejs
-RUN npm update -g
+#RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+#RUN apt-get install -y nodejs
+#RUN npm update -g
 
 # WKhtmltopdf
 
@@ -48,12 +48,7 @@ RUN apt-get install -y libreoffice
 
 RUN apt autoremove -y
 
-# Copy files & install dependencies
-ADD . /app
-
 WORKDIR /app
-
-RUN touch .env
 
 ARG APP_ENV
 ENV APP_ENV ${APP_ENV:-dev}
@@ -62,15 +57,5 @@ ENV APP_DEBUG ${APP_DEBUG:-1}
 ARG DATABASE_URL
 ENV DATABASE_URL ${DATABASE_URL:-}
 
-# Installer les dépendances PHP via `composer`:
-ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV COMPOSER_HOME=/root/.composer
-RUN --mount=type=cache,target=/root/.composer composer install --no-interaction --optimize-autoloader
-
-# Installer les dépendances Node via `yarn`:
-ENV YARN_CACHE_FOLDER=/root/.yarn
-RUN --mount=type=cache,target=/root/.yarn yarn install --frozen-lockfile
-RUN --mount=type=cache,target=/root/.yarn yarn dev
-
 # Surcharge de la commande Docker pour jouer les migrations avant de démarrer le serveur
-CMD bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && php-fpm
+CMD composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && php-fpm
