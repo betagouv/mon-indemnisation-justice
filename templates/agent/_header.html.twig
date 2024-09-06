@@ -66,14 +66,16 @@
                 <nav id="fr-header-main-navigation fr-container" class="fr-nav" role="navigation" aria-label="Menu principal" data-fr-js-navigation="true">
                     <ul class="fr-nav__list">
                         <li class="fr-nav__item">
-                            <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Mes dossiers</a>
+                            <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Dossiers</a>
                         </li>
 
+                        {# Désactivé temporairement
                         {% if is_granted('ROLE_AGENT_VALIDATEUR') %}
                             <li class="fr-nav__item">
                                 <a href="{{ url('app_chef_precontentieux_homepage') }}" class="fr-nav__link">Dossiers à valider</a>
                             </li>
                         {% endif %}
+                         #}
 
                         {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}
                             <li class="fr-nav__item">

@@ -33,7 +33,7 @@ class RedacteurController extends AbstractController
           ->getRepository(Prejudice::class)
           ->findByStatuts($statuts,[],0,10)
         ;
-        return $this->render('agent/redacteur/default/index.html.twig', [
+        return $this->render('agent/redacteur/index.html.twig', [
             'prejudices' => $prejudices,
         ]);
     }
