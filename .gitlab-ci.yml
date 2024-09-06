@@ -83,4 +83,4 @@ deploy-prod:
     - clever link $CC_APP_PROD_ID
     - clever deploy --alias precontentieux-prod --force
   only:
-    - master
+    - prod
