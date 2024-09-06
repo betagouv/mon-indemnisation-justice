@@ -2,12 +2,9 @@
 namespace App\Security\Voter;
 
 use App\Contracts\VoterInterface;
-use App\Entity\Requerant;
 use Symfony\Component\Security\Core\User\UserInterface;
-use App\Contracts\PrejudiceInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter as SfVoter;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class Voter extends SfVoter
 {
@@ -16,13 +13,6 @@ class Voter extends SfVoter
   const PREJUDICE_VALID_OR_REJECT = 'prejudice_valid_or_reject';
 
   use PrejudiceTrait;
-
-  public function __construct(
-    private TranslatorInterface $translator
-  )
-  {
-
-  }
 
   protected function supports(string $attribute, mixed $subject): bool
   {
@@ -49,7 +39,7 @@ class Voter extends SfVoter
         )
           return true;
         else
-          throw new \LogicException($this->translator->trans('Not privileged to request the resource.',domain: 'security'));
+          throw new \LogicException("Privilèges insuffisants pour accéder à la ressource.");
       }
 
       return true;

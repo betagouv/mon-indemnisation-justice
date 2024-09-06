@@ -64,11 +64,13 @@ services:
     ports:
       - "9000:9000"
 
-  # Vite server (frontend assets)
-#  vite:
-#    hostname: vite
-#    command: yarn dev-server --port 8081
-#    volumes:
-#      - .:/app
-#    ports:
-#      - "8081:8081"
+  # Encore dev server (frontend assets)
+  encore:
+    image: node:18
+    hostname: encore
+    command: bash -c 'yarn install && yarn dev-server'
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8081:8081"
