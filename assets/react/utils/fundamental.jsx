@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
-import {trans, GLOBAL_WAITING } from '../../translator';
-import { ContentState, EditorState, convertToRaw, convertFromRaw,convertFromHTML } from 'draft-js';
+
+import { ContentState, EditorState ,convertFromHTML } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import { stateToHTML } from 'draft-js-export-html';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
@@ -54,6 +54,6 @@ export const Submit = ({label,type='primary',disabled=false}) => {
 
 export const Loading = () => {
   return (
-    <h5>{trans(GLOBAL_WAITING)}</h5>
+    <h5>Chargement en cours ...</h5>
   );
 }

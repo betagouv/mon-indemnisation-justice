@@ -1,11 +1,5 @@
-import React, {useState,useEffect} from 'react';
-import { Select } from "@codegouvfr/react-dsfr/Select";
+import React from 'react';
 import ReadOnlyInput from '../ReadOnlyInput';
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { castNumber } from '../../utils/cast';
-import { trans,
-  PERSONNE_FIELD_NUMERO_SECURITE_SOCIALE
-} from '../../../translator';
 
 const SecuriteSocialeView = ({codeSS, numeroSS}) => {
 
@@ -14,7 +8,7 @@ const SecuriteSocialeView = ({codeSS, numeroSS}) => {
     <div className="fr-grid-row">
       <div className="fr-col-9">
         <ReadOnlyInput
-          label={trans(PERSONNE_FIELD_NUMERO_SECURITE_SOCIALE)}
+          label="Les 10 premiers chiffres de votre numéro de sécurité sociale"
           value={numeroSS}
         />
       </div>

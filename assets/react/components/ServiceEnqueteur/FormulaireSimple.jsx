@@ -1,11 +1,6 @@
 import React,{useState,useEffect,useRef} from 'react';
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import { trans, BRIS_PORTE_SERVICE_ENQUETEUR_SECTION,
-  SERVICE_ENQUETEUR_FIELD_NOM, GLOBAL_WAITING,
-  SERVICE_ENQUETEUR_FIELD_TELEPHONE, SERVICE_ENQUETEUR_FIELD_EMAIL,
-  SERVICE_ENQUETEUR_FIELD_NUMERO_PV, SERVICE_ENQUETEUR_FIELD_JURIDICTION,
-  SERVICE_ENQUETEUR_FIELD_MAGISTRAT, SERVICE_ENQUETEUR_FIELD_NUMERO_PARQUET
-} from '../../../translator';
+
 import { castNumber } from '../../utils/cast';
 
 const FormulaireSimple = ({serviceEnqueteurIri}) => {
@@ -66,49 +61,49 @@ const FormulaireSimple = ({serviceEnqueteurIri}) => {
 
   return (
     <>
-      <h3>{trans(BRIS_PORTE_SERVICE_ENQUETEUR_SECTION)}</h3>
+      <h3>Service enquêteur</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
         {loading &&
         <>
           <div className="fr-col-12">
             <Input
-              label={trans(SERVICE_ENQUETEUR_FIELD_NOM)}
+              label="Nom du service"
               nativeInputProps={{value: nom, onChange: ev=>setNom(ev.target.value)}}
             />
           </div>
           <div className="fr-col-6">
             <Input
-              label={trans(SERVICE_ENQUETEUR_FIELD_TELEPHONE)}
+              label="Téléphone"
               nativeInputProps={{value: telephone, onChange: ev=>setTelephone(ev.target.value)}}
             />
           </div>
           <div className="fr-col-6">
             <Input
-              label={trans(SERVICE_ENQUETEUR_FIELD_EMAIL)}
+              label="Courriel"
               nativeInputProps={{value: courriel, onChange: ev=>setCourriel(ev.target.value)}}
             />
           </div>
           <div className="fr-col-6">
             <Input
-              label={trans(SERVICE_ENQUETEUR_FIELD_NUMERO_PV)}
+              label="Numéro de procès-verbal"
               nativeInputProps={{value: numeroPV, onChange: ev=>setNumeroPV(ev.target.value)}}
             />
           </div>
           <div className="fr-col-6">
             <Input
-              label={trans(SERVICE_ENQUETEUR_FIELD_JURIDICTION)}
+              label="Juridiction"
               nativeInputProps={{value: juridiction, onChange: ev=>setJuridiction(ev.target.value)}}
             />
           </div>
           <div className="fr-col-6">
             <Input
-              label={trans(SERVICE_ENQUETEUR_FIELD_MAGISTRAT)}
+              label="Nom du magistrat"
               nativeInputProps={{value: magistrat, onChange: ev=>setMagistrat(ev.target.value)}}
             />
           </div>
           <div className="fr-col-6">
             <Input
-              label={trans(SERVICE_ENQUETEUR_FIELD_NUMERO_PARQUET)}
+              label="Numéro de parquet ou d'instruction"
               nativeInputProps={{value: numeroParquet, onChange: ev=>setNumeroParquet(ev.target.value)}}
             />
           </div>
@@ -116,7 +111,7 @@ const FormulaireSimple = ({serviceEnqueteurIri}) => {
         }
         {!loading &&
         <div className="fr-col-12">
-          <h5>{trans(GLOBAL_WAITING)}</h5>
+          <h5>Chargement en cours ...</h5>
         </div>
         }
       </div>

@@ -2,11 +2,6 @@ import React from 'react';
 import ReadOnlyInput from '../ReadOnlyInput';
 import SecuriteSocialeView from '../SecuriteSociale/View';
 import { normalizeDate } from '../../utils/cast';
-import { trans,
-  USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
-  USER_FIELD_PRENOMS,USER_FIELD_DATE_NAISSANCE,
-  USER_FIELD_LIEU_NAISSANCE, USER_FIELD_CIVILITE
-} from '../../../translator';
 
 const RepresentantLegalView = function({personnePhysique}) {
 
@@ -18,7 +13,7 @@ const RepresentantLegalView = function({personnePhysique}) {
         </div>
         <div className="fr-col-3">
           <ReadOnlyInput
-            label={trans(USER_FIELD_CIVILITE)}
+            label="Civilité"
             value={personnePhysique.civilite.libelle}
           />
         </div>
@@ -26,7 +21,7 @@ const RepresentantLegalView = function({personnePhysique}) {
         </div>
         <div className="fr-col-3">
           <ReadOnlyInput
-            label={trans(USER_FIELD_NOM)}
+            label="Nom d'usage"
             value={personnePhysique.nom}
           />
         </div>
@@ -34,7 +29,7 @@ const RepresentantLegalView = function({personnePhysique}) {
         </div>
         <div className="fr-col-3">
         <ReadOnlyInput
-          label={trans(USER_FIELD_NOM_NAISSANCE)}
+          label="Nom de naissance"
           value={personnePhysique.nomNaissance}
         />
         </div>
@@ -42,7 +37,7 @@ const RepresentantLegalView = function({personnePhysique}) {
       <div className="fr-grid-row">
         <div className="fr-col-3">
           <ReadOnlyInput
-            label={trans(USER_FIELD_PRENOMS)}
+            label="Prénom(s)"
             value={personnePhysique.prenom1}
           />
         </div>
@@ -68,7 +63,7 @@ const RepresentantLegalView = function({personnePhysique}) {
       <div className="fr-grid-row">
         <div className="fr-col-3">
           <ReadOnlyInput
-            label={trans(USER_FIELD_DATE_NAISSANCE)}
+            label="Date de naissance"
             value={normalizeDate(personnePhysique.dateNaissance)}
           />
         </div>
@@ -76,7 +71,7 @@ const RepresentantLegalView = function({personnePhysique}) {
         </div>
         <div className="fr-col-3">
           <ReadOnlyInput
-            label={trans(USER_FIELD_LIEU_NAISSANCE)}
+            label="Ville de naissance"
             value={personnePhysique.communeNaissance}
           />
         </div>

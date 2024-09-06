@@ -3,14 +3,7 @@ import PropTypes from 'prop-types';
 import Civilite from '../Civilite';
 import { getStateOnEmpty } from '../../utils/check_state';
 import Requerant from '../Requerant';
-import { trans,
-  BRIS_PORTE_EDIT_DETAILS_REMISE,
-  GLOBAL_OPTIONAL,USER_FIELD_NOM,USER_FIELD_NOM_NAISSANCE,
-  USER_FIELD_PRENOMS,
-  GLOBAL_ERROR_EMPTY_FIELD,
-} from '../../../translator';
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import { castDate,generateUrl } from '../../utils/cast';
 
 const FormulaireReceveur = function({personnePhysique}) {
   const [numeroSS, setNumeroSS]=useState(personnePhysique.numeroSecuriteSociale??"");
@@ -91,18 +84,18 @@ const FormulaireReceveur = function({personnePhysique}) {
 
   return (
     <>
-      <h3>{trans(BRIS_PORTE_EDIT_DETAILS_REMISE)}</h3>
+      <h3>Attestation d'information remise à</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-3">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
         <div className="fr-col-9">
           <Input
-            label={trans(USER_FIELD_PRENOMS)}
+            label="Prénom(s)"
             state={statePrenom1}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
-              placeholder: trans(USER_FIELD_PRENOMS),
+              placeholder: "Prénom(s)",
               value: prenom1,
               onChange: ev => setPrenom1(ev.target.value),
               maxLength: 255
@@ -111,9 +104,9 @@ const FormulaireReceveur = function({personnePhysique}) {
         </div>
         <div className="fr-col-6">
           <Input
-            label={trans(USER_FIELD_NOM_NAISSANCE)}
+            label="Nom de naissance"
             state={stateNom}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
               value: nomNaissance,
               onChange: ev => setNomNaissance(ev.target.value),
@@ -123,7 +116,7 @@ const FormulaireReceveur = function({personnePhysique}) {
         </div>
         <div className="fr-col-6">
           <Input
-            label={trans(USER_FIELD_NOM)+" "+trans(GLOBAL_OPTIONAL)}
+            label={"Nom d'usage"}
             nativeInputProps={{
               value: nom,
               onChange: ev => setNom(ev.target.value),

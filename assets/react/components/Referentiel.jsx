@@ -1,6 +1,5 @@
 import React, {useState,useEffect} from 'react';
 import { Select } from "@codegouvfr/react-dsfr/Select";
-import { trans, USER_FIELD_CIVILITE } from '../../translator';
 import { castUrl } from '../utils/cast';
 const Referentiel = ({label,route,content,setContent}) => {
 

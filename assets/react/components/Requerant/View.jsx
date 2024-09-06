@@ -1,18 +1,5 @@
-import React, {useState,useEffect} from 'react';
-import axios from 'axios';
-import PropTypes from 'prop-types';
-import Referentiel from '../Referentiel';
+import React  from 'react';
 import ReadOnlyInput from '../ReadOnlyInput';
-import { getStateOnEmpty } from '../../utils/check_state';
-import { fr } from "@codegouvfr/react-dsfr";
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Select } from "@codegouvfr/react-dsfr/Select";
-import { trans,
-  BRIS_PORTE_FIELD_QUALITE_REPRESENTANT,
-  BRIS_PORTE_FIELD_PRECISION_REPRESENTANT
-} from '../../../translator';
-import { Input } from "@codegouvfr/react-dsfr/Input";
 
 const RequerantView = function({
   qualiteRequerant,
@@ -23,7 +10,7 @@ const RequerantView = function({
       <div className="fr-grid-row">
         <div className="fr-col-4">
           <ReadOnlyInput
-            label={trans(BRIS_PORTE_FIELD_QUALITE_REPRESENTANT)}
+            label="J'effectue ma demande en qualité de"
             value={qualiteRequerant.libelle}
           />
         </div>
@@ -31,7 +18,7 @@ const RequerantView = function({
         </div>
         <div className="fr-col-7">
           <ReadOnlyInput
-            label={trans(BRIS_PORTE_FIELD_PRECISION_REPRESENTANT)}
+            label="Préciser votre qualité"
             value={precisionRequerant}
           />
         </div>

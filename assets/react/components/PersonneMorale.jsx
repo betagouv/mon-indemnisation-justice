@@ -2,13 +2,6 @@ import React, { useState,useEffect,useRef } from 'react';
 import { getStateOnEmpty } from '../utils/check_state';
 import { castNumber } from '../utils/cast';
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import { fr } from "@codegouvfr/react-dsfr";
-import { trans,
-  PERSONNE_MORALE_TITLE,
-  PERSONNE_MORALE_FIELD_SIREN_SIRET,
-  PERSONNE_MORALE_FIELD_RAISON_SOCIALE,
-  GLOBAL_ERROR_EMPTY_FIELD
-} from '../../translator';
 
 const PersonneMorale = ({personneMorale}) => {
 
@@ -51,13 +44,13 @@ const PersonneMorale = ({personneMorale}) => {
   },[sirenSiret, raisonSociale]);
   return (
     <>
-      <h3>{trans(PERSONNE_MORALE_TITLE)}</h3>
+      <h3>Identité de la société</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-6">
           <Input
-            label={trans(PERSONNE_MORALE_FIELD_RAISON_SOCIALE)}
+            label="Raison sociale"
             state={stateRaisonSociale}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
               value: raisonSociale,
               onChange: ev => setRaisonSociale(ev.target.value),
@@ -67,9 +60,9 @@ const PersonneMorale = ({personneMorale}) => {
         </div>
         <div className="fr-col-6">
           <Input
-            label={trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)}
+            label="SIREN / SIRET"
             state={stateSirenSiret}
-            stateRelatedMessage={trans(GLOBAL_ERROR_EMPTY_FIELD)}
+            stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
               value: sirenSiret,
               onChange: ev => setSirenSiret(castNumber(ev.target.value)),

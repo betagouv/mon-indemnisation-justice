@@ -1,28 +1,4 @@
 import React,{useState,useEffect} from 'react';
-import {trans,
-  BRIS_PORTE_TEST_ELIGIBILITE_BTN,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ERROR_CONTINUE_BTN,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_SUCCESS_CONTINUE_BTN,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_BTN,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_CHAPO,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_DESCRIPTION,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_TITLE,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_DESCRIPTION,
-  BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_TITLE,
-  BRIS_PORTE_FIELD_DATE_OPERATION_PJ,
-  BRIS_PORTE_FIELD_IS_ERREUR_PORTE,
-  BRIS_PORTE_FIELD_NUMERO_PARQUET,
-  BRIS_PORTE_FIELD_NUMERO_PV,
-  GLOBAL_AND_OR,
-  GLOBAL_NO,
-  GLOBAL_YES,
-  GLOBAL_BTN_STOP,
-  GLOBAL_FIELD_REQUIRED
-} from '../../../translator';
-import parse from 'html-react-parser';
-import Submit from '../Submit';
 import Hidden from '../Hidden';
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -48,7 +24,7 @@ const TestEligibilite = function() {
     {
       onClick: () => handleTestEligibilite(dateOperationPJ,numeroPV,numeroParquet,isErreurPorte),
       doClosesModal: false,
-      children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_BTN)
+      children: "Vérifier mon éligibilité à l'indemnisation"
     }
   ]);
 
@@ -56,25 +32,25 @@ const TestEligibilite = function() {
     {
       onClick: () => handleTestEligibilite(dateOperationPJ,numeroPV,numeroParquet,isErreurPorte),
       doClosesModal: false,
-      children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_BTN)
+      children: "Vérifier mon éligibilité à l'indemnisation"
     }
   ]),[dateOperationPJ,numeroPV,numeroParquet,isErreurPorte]);
 
   const resetButtons = () => setButtons([{
     onClick: () => handleTestEligibilite(dateOperationPJ,numeroPV,numeroParquet,isErreurPorte),
     doClosesModal: false,
-    children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_BTN)
+    children: "Vérifier mon éligibilité à l'indemnisation"
   }]);
 
   function handleTestEligibilite(dateOperationPJ,numeroPV,numeroParquet) {
     event.preventDefault();
     event.stopPropagation();
     if(!dateOperationPJ) {
-      alert(trans(GLOBAL_FIELD_REQUIRED)+trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ));
+      alert("Le(s) champ(s) doivent être renseigné(s) pour poursuivre : Date de l'opération de police judiciaire");
       return;
     }
     if(!numeroPV && !numeroParquet) {
-      alert(trans(GLOBAL_FIELD_REQUIRED)+trans(BRIS_PORTE_FIELD_NUMERO_PV)+trans(GLOBAL_AND_OR)+trans(BRIS_PORTE_FIELD_NUMERO_PARQUET));
+      alert("Le(s) champ(s) doivent être renseigné(s) pour poursuivre : Numéro de procès-verbal et/ou Numéro de parquet ou d'instruction");
       return;
     }
     if(false === isErreurPorte) {
@@ -83,11 +59,11 @@ const TestEligibilite = function() {
             type: "submit",
             priority: 'secondary',
             doClosesModal: false,
-            children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ERROR_CONTINUE_BTN)
+            children: "Effectuer ma demande d'indemnisation"
         },
         {
             onClick: () => handleStop(),
-            children: trans(GLOBAL_BTN_STOP)
+            children: "Abandonner"
         }
       ]);
       setPanel("alert");
@@ -97,7 +73,7 @@ const TestEligibilite = function() {
         {
             type: "submit",
             doClosesModal: false,
-            children: trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_SUCCESS_CONTINUE_BTN)
+            children: "Accéder au formulaire de demande d'indemnisation"
         }
       ])
       setPanel("success");
@@ -143,12 +119,12 @@ const TestEligibilite = function() {
             resetButtons();
             event.preventDefault();
           }}>
-          {trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}
+          Tester mon éligibilité à l'indemnisation
           </Button>
         </div>
       </section>
       <modal.Component
-        title={trans(BRIS_PORTE_TEST_ELIGIBILITE_BTN)}
+        title="Tester mon éligibilité à l'indemnisation"
         buttons={buttons}
       >
             {("common" == panel) &&
@@ -156,13 +132,16 @@ const TestEligibilite = function() {
             <>
               <div className="fr-callout">
                 <h2 className="fr-callout__title">Comment remplir ce formulaire ?</h2>
-                <p className="fr-callout__text">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_CHAPO)}</p>
+                <p className="fr-callout__text">Munissez-vous de l'attestation d'informations qui vous a été remise par
+                  le service enquêteur et saisissez les informations qui y sont renseignées dans le formulaire
+                  ci-dessous
+                </p>
               </div>
               
               <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-md-7 fr-col-12 fr-col-md-offset-5">
                   <Input
-                    label={trans(BRIS_PORTE_FIELD_DATE_OPERATION_PJ)}
+                    label="Date de l'opération de police judiciaire"
                     nativeInputProps={{
                       type: 'date',
                       value: dateOperationPJ,
@@ -179,7 +158,7 @@ const TestEligibilite = function() {
                   <div className="pr-eligibilite_form-group">
                     <div className="fr-p-2w">
                       <Input
-                        label={trans(BRIS_PORTE_FIELD_NUMERO_PV)}
+                        label="Numéro de procès-verbal"
                         nativeInputProps={{
                           value: numeroPV,
                           onChange: ev=>setNumeroPV(ev.target.value),
@@ -187,7 +166,7 @@ const TestEligibilite = function() {
                         }}
                       />
                       <Input
-                        label={trans(BRIS_PORTE_FIELD_NUMERO_PARQUET)}
+                        label="Numéro de parquet ou d'instruction"
                         nativeInputProps={{
                           value: numeroParquet,
                           onChange: ev=>setNumeroParquet(ev.target.value),
@@ -199,18 +178,18 @@ const TestEligibilite = function() {
                 </div>
                 <div className="fr-col-12">
                   <RadioButtons
-                    legend={trans(BRIS_PORTE_FIELD_IS_ERREUR_PORTE)}
+                    legend="S'agit-il d'une erreur des services de police ?"
                     orientation='horizontal'
                     options={[
                           {
-                              label: trans(GLOBAL_YES),
+                              label: "Oui",
                               nativeInputProps: {
                                   checked: (isErreurPorte === true),
                                   onChange: ()=> setIsErreurPorte(true)
                               }
                           },
                           {
-                              label: trans(GLOBAL_NO),
+                              label: "Non",
                               nativeInputProps: {
                                   checked: (isErreurPorte !== true),
                                   onChange: ()=> setIsErreurPorte(false)
@@ -225,23 +204,23 @@ const TestEligibilite = function() {
             {("alert" == panel) &&
             <>
               <Alert
-                description={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_DESCRIPTION)}
+                description="Les informations saisies ne vous permettent pas d'obtenir une indemnisation"
                 onClose={function noRefCheck(){}}
                 severity="error"
-                title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_TITLE)}
+                title="Vous n'êtes pas éligible à l'indemnisation"
               />
-              <p className="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_NO_ELIGIBLE_CHAPO)}</p>
+              <p className="fr-mt-2w">Le résultat indiqué ci-dessus découle des éléments saisis et est communiqué à titre informatif.</p>
             </>
             }
             {("success" == panel) &&
             <>
               <Alert
-                description={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_DESCRIPTION)}
+                description="Effectuer votre demande amiable d'indemnisation en cliquant sur le bouton ci-dessous."
                 onClose={function noRefCheck(){}}
                 severity="success"
-                title={trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_TITLE)}
+                title= "Vous êtes éligible à l'indemnisation"
               />
-              <p className="fr-mt-2w">{trans(BRIS_PORTE_TEST_ELIGIBILITE_MODAL_ELIGIBLE_CHAPO)}</p>
+              <p className="fr-mt-2w">Le résultat indiqué ci-dessus découle des éléments saisis et est communiqué à titre informatif.</p>
             </>
             }
       </modal.Component>

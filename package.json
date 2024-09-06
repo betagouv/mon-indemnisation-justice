@@ -3,7 +3,6 @@
         "@babel/core": "^7.17.0",
         "@babel/preset-env": "^7.16.0",
         "@babel/preset-react": "^7.24.1",
-        "@symfony/ux-translator": "file:vendor/symfony/ux-translator/assets",
         "@symfony/webpack-encore": "^4.0.0",
         "core-js": "^3.23.0",
         "file-loader": "^6.0.0",

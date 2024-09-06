@@ -1,11 +1,5 @@
 import React from 'react';
 import ReadOnlyInput from '../ReadOnlyInput';
-import { fr } from "@codegouvfr/react-dsfr";
-import { trans,
-  PERSONNE_MORALE_FIELD_SIREN_SIRET,
-  PERSONNE_MORALE_FIELD_RAISON_SOCIALE,
-  GLOBAL_ERROR_EMPTY_FIELD
-} from '../../../translator';
 
 const PersonneMoraleView = ({personneMorale}) => {
 
@@ -16,7 +10,7 @@ const PersonneMoraleView = ({personneMorale}) => {
       </div>
       <div className="fr-col-5">
         <ReadOnlyInput
-          label={trans(PERSONNE_MORALE_FIELD_SIREN_SIRET)}
+          label="SIREN / SIRET"
           value={personneMorale.sirenSiret}
         />
       </div>
@@ -24,7 +18,7 @@ const PersonneMoraleView = ({personneMorale}) => {
       </div>
       <div className="fr-col-6">
         <ReadOnlyInput
-          label={trans(PERSONNE_MORALE_FIELD_RAISON_SOCIALE)}
+          label="Raison sociale"
           value={personneMorale.raisonSociale}
         />
       </div>
