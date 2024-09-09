@@ -100,6 +100,11 @@ class BrisPorte extends BasePrejudice
       parent::__construct();
     }
 
+    public function getType(): PrejudiceType
+    {
+        return PrejudiceType::BRIS_PORTE;
+    }
+
     public function getNumeroPV(): ?string
     {
         return $this->numeroPV;

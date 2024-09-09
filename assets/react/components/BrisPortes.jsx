@@ -17,7 +17,8 @@ const BrisPortes = function({items}) {
     "Statut du dossier",
     "Date du dernier statut",
     "Code suivi",
-    "Actions",
+    // Actions désactivées en attendant la refonte des statuts
+    //"Actions",
   ];
 
   useEffect(() => {
@@ -51,7 +52,8 @@ const BrisPortes = function({items}) {
         lastStatut,
         format(dateLastStatut,"dd/MM/yy HH:mm"),
         item.raccourci,
-        btn
+        // Actions désactivées en attendant la refonte des statuts
+        //btn
       ];
     });
     setData(tmp);

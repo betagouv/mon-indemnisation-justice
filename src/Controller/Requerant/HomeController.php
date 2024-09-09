@@ -19,7 +19,7 @@ class HomeController extends AbstractController
       private EntityManagerInterface $em
     ) { }
 
-    #[Route('/', name: 'requerant_home_index')]
+    #[Route('', name: 'requerant_home_index')]
     public function index(Request $request): Response
     {
         $session = $request->getSession();

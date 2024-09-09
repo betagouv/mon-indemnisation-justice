@@ -60,6 +60,8 @@ abstract class BasePrejudice implements PrejudiceInterface
     private ?LiasseDocumentaire $pLiasseDocumentaire=null;
     */
 
+    protected PrejudiceType $type = PrejudiceType::BRIS_PORTE;
+
     #[Groups('prejudice:write')]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $motivationProposition = null;
@@ -94,22 +96,7 @@ abstract class BasePrejudice implements PrejudiceInterface
         return $this->id;
     }
 
-    public function getDiscriminator(): ?string
-    {
-        return preg_replace("/^(.*)[#]([^#]+)$/i","$2",str_replace('\\','#',get_class($this)));
-    }
-
-    public function getDiscr(): ?string
-    {
-        return $this->discr;
-    }
-
-    public function setDiscr(?string $discr): self
-    {
-        $this->discr = $discr;
-
-        return $this;
-    }
+    public abstract function getType(): PrejudiceType;
 
     public function getRequerant(): ?Requerant
     {
@@ -123,6 +110,7 @@ abstract class BasePrejudice implements PrejudiceInterface
         return $this;
     }
 
+    #[Groups(['prejudice:read'])]
     public function getLastStatut(): Statut
     {
         return $this->statuts->last();
@@ -175,7 +163,7 @@ abstract class BasePrejudice implements PrejudiceInterface
         return $this->reference;
     }
 
-    public function setReference(?string $reference): static
+    public function setReference(string $reference): static
     {
         $this->reference = $reference;
 

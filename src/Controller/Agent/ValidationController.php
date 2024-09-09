@@ -3,7 +3,7 @@
 namespace App\Controller\Agent;
 
 use App\Entity\Agent;
-use App\Entity\BasePrejudice;
+use App\Entity\BrisPorte;
 use App\Entity\Statut;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,23 +16,24 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ValidationController extends AbstractController
 {
     public function __construct(
-      private EntityManagerInterface $em
-    )
-    {}
+        private EntityManagerInterface $em
+    ) {
+    }
 
     #[Route('/accueil', name: 'app_chef_precontentieux_homepage', options: ['expose' => true])]
     public function index(): Response
     {
         $statuts = $this->em->getRepository(Statut::class)->findBy(['code' => [
-          Statut::CODE_VALIDE, Statut::CODE_REJETE
+            Statut::CODE_VALIDE, Statut::CODE_REJETE,
         ]]);
 
-        $prejudices = $this->em
-          ->getRepository(BasePrejudice::class)
-          ->findByStatuts($statuts,[],0,10)
+        $brisPortes = $this->em
+          ->getRepository(BrisPorte::class)
+          ->findByStatuts($statuts, [], 0, 10)
         ;
+
         return $this->render('chef_precontentieux/default/index.html.twig', [
-            'prejudices' => $prejudices,
+            'prejudices' => $brisPortes,
         ]);
     }
 }

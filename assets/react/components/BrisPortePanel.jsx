@@ -19,7 +19,7 @@ const BrisPortePanel = function({id, user, brisPorte}) {
   const gotoSecondSection= () => gotoSection(1);
   const gotoThirdSection= () => gotoSection(2);
   const gotoSection = (index) => {
-    const userUri = Routing.generate('_api_requerant_get',{id:user.pId});
+    const userUri = Routing.generate('_api_requerant_get',{id:user.id});
     const prejudiceUri = Routing.generate('_api_bris_porte_get',{id:brisPorte.id});
     Promise
       .all([userUri,prejudiceUri]

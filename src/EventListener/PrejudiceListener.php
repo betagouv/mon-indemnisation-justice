@@ -1,51 +1,56 @@
 <?php
+
 namespace App\EventListener;
 
-use App\Contracts\PrejudiceInterface;
 use App\Entity\BasePrejudice;
-use Doctrine\ORM\Event\PostPersistEventArgs;
+use App\Entity\BrisPorte;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Events;
 
 #[AsDoctrineListener(event: Events::postPersist, priority: 500, connection: 'default')]
 class PrejudiceListener
 {
-    // the listener methods receive an argument which gives you access to
-    // both the entity object of the event and the entity manager itself
+    /**
+     * Crée.
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function postPersist(PostPersistEventArgs $args): void
     {
         $entity = $args->getObject();
-        /** @var array $interfaces */
-        $interfaces = class_implements($entity);
-        if (!in_array(PrejudiceInterface::class,$interfaces))
-            return;
+        if ($entity instanceof BasePrejudice) {
+            $entityManager = $args->getObjectManager();
+            $conn = $entityManager->getConnection();
 
-        $entityManager = $args->getObjectManager();
-        $conn = $entityManager->getConnection();
-        $sql = "
+            $sql = "
         SELECT count(*)+1 cpt
-        FROM public.prejudice p
+        FROM public.bris_porte p
         WHERE date_declaration = '".$entity->getDateDeclaration()->format('Y-m-d')."'";
-        $req = $conn->executeQuery($sql);
-        $cpt = $req->fetch()['cpt'];
-        $reference = [
-          array_search(get_class($entity),PrejudiceInterface::KEY_MAP),
-          $entity->getDateDeclaration()->format('Ymd'),
-          str_pad($cpt,3,"0",STR_PAD_LEFT)
-        ];
+            $req = $conn->executeQuery($sql);
 
-        $entity->setReference(implode("/",$reference));
+            $cpt = $req->fetchOne() ?? 1;
 
-        /**
-         * @author yanroussel
-         *         Ajout d'un numéro de suivi
-         */
-        $raccourci = $entityManager
-          ->getRepository(BasePrejudice::class)
-          ->generate_raccourci()
-        ;
-        $entity->setRaccourci($raccourci);
+            $entity->setReference(
+                sprintf(
+                    '%s/%s/%s',
+                    $entity->getType()->value,
+                    $entity->getDateDeclaration()->format('Ymd'),
+                    str_pad($cpt, 3, '0', STR_PAD_LEFT)
+                )
+            );
 
-        $entityManager->flush();
+            /**
+             * @author yanroussel
+             *         Ajout d'un numéro de suivi
+             */
+            $raccourci = $entityManager
+              ->getRepository(BrisPorte::class)
+              ->generateRaccourci()
+            ;
+            $entity->setRaccourci($raccourci);
+
+            $entityManager->flush();
+        }
     }
 }
