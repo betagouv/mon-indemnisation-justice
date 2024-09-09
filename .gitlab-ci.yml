@@ -51,14 +51,12 @@ build:
     - bin/console cache:clear
     - bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
     - yarn build
-    - bin/phpunit
+    - bin/phpunit --log-junit report.xml
   artifacts:
     paths:
-      - vendor/
-      - public/
-      - .env*
-      - composer.lock
-    expire_in: 05 min
+      - report.xml
+    reports:
+      junit: report.xml
   cache:
     paths:
       - vendor/

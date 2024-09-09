@@ -52,7 +52,7 @@ class HomeControllerTest extends WebTestCase
 
         $this->client->loginUser($requerant, 'requerant');
 
-        $this->client->request('GET', '/requerant/');
+        $this->client->request('GET', '/requerant');
 
         $this->assertResponseIsSuccessful();
     }
