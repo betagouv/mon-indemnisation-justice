@@ -2,7 +2,6 @@
 namespace App\Repository;
 
 use App\Contracts\PrejudiceInterface;
-use App\Entity\Categorie;
 use App\Entity\Statut;
 use App\Entity\Requerant;
 

@@ -2,29 +2,18 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Patch;
 use DateTimeInterface;
 use App\Contracts\PrejudiceInterface;
-use App\Repository\PrejudiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource(
-  operations:[
-    new Patch(normalizationContext: ['groups' => ['prejudice:write']],name: '_api_prejudice_patch'),
-  ]
-)]
-#[ORM\Entity(repositoryClass: PrejudiceRepository::class)]
-#[ORM\InheritanceType('JOINED')]
-#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
-#[ORM\DiscriminatorMap(PrejudiceInterface::DISCRIMINATOR_MAP)]
-abstract class Prejudice implements PrejudiceInterface
+#[ORM\MappedSuperclass]
+abstract class BasePrejudice implements PrejudiceInterface
 {
-    #[Groups('prejudice:read','prejudice:write')]
+    #[Groups('prejudice:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
@@ -35,23 +24,15 @@ abstract class Prejudice implements PrejudiceInterface
     #[ORM\JoinColumn(nullable: false)]
     protected ?Requerant $requerant = null;
 
-    #[Groups('prejudice:read')]
-    protected $lastStatut;
-
     /**
      * @var Collection<int, Statut>
      */
     #[ORM\OneToMany(targetEntity: Statut::class, mappedBy: 'prejudice')]
     protected Collection $statuts;
 
-    #[Groups('prejudice:read','prejudice:write')]
+    #[Groups('prejudice:read')]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     protected ?DateTimeInterface $dateDeclaration = null;
-
-    #[Groups('prejudice:read')]
-    protected $discriminator;
-
-    protected $discr;
 
     #[Groups('prejudice:read')]
     #[ORM\Column(length: 20, nullable: true)]
@@ -70,11 +51,14 @@ abstract class Prejudice implements PrejudiceInterface
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $propositionIndemnisation = null;
 
+    /*
+     * Vraiment utilisé ?
     #[Groups('prejudice:write')]
     private ?int $pid = null;
 
     #[Groups('prejudice:write')]
     private ?LiasseDocumentaire $pLiasseDocumentaire=null;
+    */
 
     #[Groups('prejudice:write')]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -82,6 +66,10 @@ abstract class Prejudice implements PrejudiceInterface
 
     #[Groups('prejudice:read')]
     #[ORM\Column(length: 20, nullable: true)]
+    /**
+     * Numéro de référence raccourci, pour la recherche en ligne (comparable au numéro de réservation chez une
+     * compagnie aérienne).
+     */
     private ?string $raccourci = null;
 
     public function __construct()

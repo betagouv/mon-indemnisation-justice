@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Contracts\PrejudiceInterface;
 use App\Entity\BrisPorte;
-use App\Entity\Categorie;
 use App\Entity\Statut;
 use App\Entity\Requerant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

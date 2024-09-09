@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Prejudice;
+use App\Entity\BasePrejudice;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,7 +41,7 @@ class HomeController extends AbstractController
         if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
             $prejudice = $this
               ->em
-              ->getRepository(Prejudice::class)
+              ->getRepository(BasePrejudice::class)
               ->findOneBy(['raccourci' => $raccourci])
             ;
             if (null !== $prejudice) {

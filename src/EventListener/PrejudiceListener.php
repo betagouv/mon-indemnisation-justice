@@ -2,7 +2,7 @@
 namespace App\EventListener;
 
 use App\Contracts\PrejudiceInterface;
-use App\Entity\Prejudice;
+use App\Entity\BasePrejudice;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Events;
@@ -41,7 +41,7 @@ class PrejudiceListener
          *         Ajout d'un numéro de suivi
          */
         $raccourci = $entityManager
-          ->getRepository(Prejudice::class)
+          ->getRepository(BasePrejudice::class)
           ->generate_raccourci()
         ;
         $entity->setRaccourci($raccourci);

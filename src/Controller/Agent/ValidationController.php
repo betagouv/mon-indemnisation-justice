@@ -3,7 +3,7 @@
 namespace App\Controller\Agent;
 
 use App\Entity\Agent;
-use App\Entity\Prejudice;
+use App\Entity\BasePrejudice;
 use App\Entity\Statut;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,7 +28,7 @@ class ValidationController extends AbstractController
         ]]);
 
         $prejudices = $this->em
-          ->getRepository(Prejudice::class)
+          ->getRepository(BasePrejudice::class)
           ->findByStatuts($statuts,[],0,10)
         ;
         return $this->render('chef_precontentieux/default/index.html.twig', [

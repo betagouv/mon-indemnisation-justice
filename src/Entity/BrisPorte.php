@@ -31,7 +31,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
   ]
 )]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
-class BrisPorte extends Prejudice
+#[ORM\Table(name: 'bris_porte')]
+class BrisPorte extends BasePrejudice
 {
     #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]

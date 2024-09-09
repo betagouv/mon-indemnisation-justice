@@ -62,7 +62,7 @@ const FormulaireSimplifie = ({prejudice,dimension}) => {
   useEffect(() => {
     if(false === loading)
       return;
-    const url =Routing.generate('_api_prejudice_patch',{id:prejudice.pid});
+    const url =Routing.generate('_api_bris_porte_patch',{id:prejudice.pid});
     const data = {
       note: note,
       propositionIndemnisation: propositionIndemnisation,
