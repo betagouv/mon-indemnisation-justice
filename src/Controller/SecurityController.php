@@ -153,27 +153,6 @@ class SecurityController extends AbstractController
         return $fields;
     }
 
-    private function handleUserRequest(Request $request, Requerant $user): void
-    {
-        /** @var ?int $civiliteId */
-        $civiliteId = $request->get('civilite', null);
-        /** @var ?Civilite $civilite */
-        $civilite = (null !== $civiliteId) ? $this->em->getRepository(Civilite::class)->find($civiliteId) : null;
-        $userPasswordHasher = $this->userPasswordHasher;
-        $user->setEmail($request->get('email'));
-        $user->getPersonnePhysique()->setPrenom1($request->get('prenom1'));
-        $user->getPersonnePhysique()->setNom($request->get('nom'));
-        $user->getPersonnePhysique()->setNomNaissance($request->get('nomNaissance'));
-        $user->setPassword(
-            $userPasswordHasher->hashPassword(
-                $user,
-                $request->get('password')
-            )
-        );
-        $user->getPersonnePhysique()->setCivilite($civilite);
-        $user->addRole(Requerant::ROLE_REQUERANT);
-    }
-
     #[Route('/validation-du-compte-requerant', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request, RequerantRepository $ur): Response
     {
@@ -192,44 +171,38 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('app_login');
     }
 
-    private function buildSession(Request $request): void
-    {
-        $session = $request->getSession();
-        $fields = self::get_fields($request);
-        if (true === self::has_fields($request)) {
-            if ('BRI' !== $fields['type']) {
-                $session->set('test_eligibilite', null);
-            } else {
-                $session->set('test_eligibilite', $fields);
-            }
-        }
-    }
-
     #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
     public function inscription(Request $request): Response
     {
         $user = $this->getUser();
-        if (null !== $user) {
-            $this->buildSession($request);
-
-            return $this->redirect('/redirect');
+        if (null !== $user && $user instanceof Requerant) {
+            return $this->redirectToRoute('requerant_home_index');
         }
 
-        $session = $request->getSession();
-        $submittedToken = $request->getPayload()->get('_csrf_token');
-        $fields = self::get_fields($request);
-
         /*
-         * Le formulaire a bien été soumis
+         * TODO: utiliser un **VRAI** formulaire Symfony
          *
+         * Le formulaire a bien été soumis
          */
-        if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
+        if ($this->isCsrfTokenValid('authenticate', $request->getPayload()->get('_csrf_token'))) {
             /**
              * Création du nouveau compte.
              */
-            $user = new Requerant();
-            $this->handleUserRequest($request, $user);
-            $this->em->persist($user);
+            $requerant = new Requerant();
+            $requerant->setEmail($request->get('email'));
+            $requerant->getPersonnePhysique()->setCivilite(Civilite::tryFrom($request->get('civilite')));
+            $requerant->getPersonnePhysique()->setPrenom1($request->get('prenom1'));
+            $requerant->getPersonnePhysique()->setNom($request->get('nom'));
+            $requerant->getPersonnePhysique()->setNomNaissance($request->get('nomNaissance'));
+            $requerant->setPassword(
+            $this->userPasswordHasher->hashPassword(
+                $requerant,
+                $request->get('password')
+                )
+            );
+            $requerant->addRole(Requerant::ROLE_REQUERANT);
+            $requerant->setTestEligibilite($request->getSession()->get('testEligibilite'));
+            $this->em->persist($requerant);
             $this->em->flush();
 
             /**
@@ -237,17 +210,17 @@ class SecurityController extends AbstractController
              */
             $this->mailer
                 ->from($this->emailFrom, $this->emailFromLabel)
-                ->to($user->getEmail())
+                ->to($requerant->getEmail())
                 ->subject("Précontentieux : finalisation de l'activation de votre compte pour l'application Mon Indemnisation Justice")
                 ->htmlTemplate('registration/confirmation_email.html.twig', [
-                    'mail' => $user->getEmail(),
+                    'mail' => $requerant->getEmail(),
                     'url' => $this->baseUrl,
-                    'nom_complet' => $user->getNomComplet(),
+                    'nom_complet' => $requerant->getNomComplet(),
                 ])
-                ->send(pathname: 'app_verify_email', user: $user);
+                ->send(pathname: 'app_verify_email', user: $requerant);
 
             return $this->render('security/success.html.twig', [
-                'user' => $user,
+                'user' => $requerant,
             ]);
         } /*
          * Le formulaire a bien été identifié

@@ -92,7 +92,7 @@ const TestEligibilite = function() {
   }
 
   return (
-    <form onSubmit={handleContinue} name="form" action={Routing.generate("app_inscription")} method="POST">
+    <form onSubmit={handleContinue} name="form" action={Routing.generate("home_test_eligibilite_bris_porte")} method="POST">
       <Hidden name="dateOperationPJ" value={dateOperationPJ} />
       <Hidden name="type" value="BRI" />
       <Hidden name="numeroPV" value={numeroPV} />

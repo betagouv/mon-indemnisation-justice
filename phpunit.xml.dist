@@ -13,7 +13,7 @@
         <ini name="error_reporting" value="-1" />
         <server name="KERNEL_CLASS" value="App\Kernel" />
         <server name="APP_ENV" value="test" force="true" />
-        <server name="DATABASE_URL" value="pgsql://precontest:precontest@postgres:5432/precontest?serverVersion=15&amp;charset=utf8" force="true" />
+        <server name="DATABASE_URL" value="pgsql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&amp;charset=utf8" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
         <server name="SYMFONY_PHPUNIT_VERSION" value="9.5" />

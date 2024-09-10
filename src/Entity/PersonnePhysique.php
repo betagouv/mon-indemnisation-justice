@@ -43,9 +43,8 @@ class PersonnePhysique
     private ?Requerant $compte = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
-    //#[ApiProperty(uriTemplate: '_api_civilite_get')]
-    #[ORM\ManyToOne]
-    private ?Civilite $civilite = null;
+    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
+    protected Civilite $civilite;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -112,7 +111,7 @@ class PersonnePhysique
     public function __toString()
     {
       return implode(" ",[
-       $this->getCivilite() ? $this->getCivilite()->getLibelle() : '',
+       $this->getCivilite()?->value,
        ucfirst(strtolower($this->getPrenom1())),
        strtoupper($this->getNomNaissance())
      ]);
@@ -123,14 +122,16 @@ class PersonnePhysique
         return $this->id;
     }
 
-    public function getCivilite(): ?Civilite
+    public function getCivilite(): Civilite
     {
         return $this->civilite;
     }
 
-    public function setCivilite(?Civilite $civilite): static
+    public function setCivilite(?Civilite $civilite): self
     {
-        $this->civilite = $civilite;
+        if (null !== $civilite) {
+            $this->civilite = $civilite;
+        }
 
         return $this;
     }
@@ -257,7 +258,7 @@ class PersonnePhysique
 
     public function getNomComplet(): ?string
     {
-        $civilite = $this->getCivilite() ? $this->getCivilite()->getLibelle() : null;
+        $civilite = $this->getCivilite()->value;
         $nomNaissance = $this->getNomNaissance();
         $nom = $this->getNom();
         if($nomNaissance && $nom)

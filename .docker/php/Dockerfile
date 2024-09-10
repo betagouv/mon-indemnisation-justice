@@ -58,4 +58,4 @@ ARG DATABASE_URL
 ENV DATABASE_URL ${DATABASE_URL:-}
 
 # Surcharge de la commande Docker pour jouer les migrations avant de démarrer le serveur
-CMD composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && php-fpm
+CMD composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --write-sql --no-interaction --all-or-nothing && php-fpm

@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Repository\RequerantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -69,25 +71,12 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $estVerifieCourriel = false;
 
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $mnemo = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $fonction = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $titre = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $grade = null;
-
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\Column(options: ['default' => false])]
     private ?bool $isPersonneMorale = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    protected ?array $testEligibilite = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
@@ -275,6 +264,26 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     public function getNomComplet(): ?string
     {
         return $this->getPersonnePhysique()?->getNomComplet() ?? null;
+    }
+
+    /**
+     * @return Collection<BrisPorte>
+     */
+    public function getBrisPortes(): array
+    {
+        //$this->brisPortes = $this->brisPortes ?? new ArrayCollection();
+        return $this->brisPortes->toArray();
+    }
+
+    public function getTestEligibilite(): ?array
+    {
+        return $this->testEligibilite;
+    }
+
+    public function setTestEligibilite(?array $testEligibilite): self
+    {
+        $this->testEligibilite = $testEligibilite;
+        return $this;
     }
 
     public function __toString(): string

@@ -96,7 +96,7 @@ const Inscription = ({user,csrfToken}) => {
       <form method="POST" action={Routing.generate('app_inscription')} onSubmit={handleSubmit}>
         <Hidden name="_csrf_token" value={csrfToken} />
         <Hidden name="type" value={"BRI"} />
-        <Hidden name="civilite" value={cast_number(civilite)} />
+        <Hidden name="civilite" value={civilite} />
         <div className="fr-grid-row">
           <div className="pr-form-subscribe_had-account fr-col-12">
             <div className="fr-p-4w">

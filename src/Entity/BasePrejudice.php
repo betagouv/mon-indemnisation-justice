@@ -20,9 +20,8 @@ abstract class BasePrejudice implements PrejudiceInterface
     public ?int $id = null;
 
     #[Groups('prejudice:read')]
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    protected ?Requerant $requerant = null;
+    #[ORM\ManyToOne(targetEntity: Requerant::class)]
+    protected Requerant $requerant;
 
     /**
      * @var Collection<int, Statut>

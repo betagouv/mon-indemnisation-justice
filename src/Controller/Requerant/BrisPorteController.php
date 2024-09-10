@@ -8,16 +8,14 @@ use App\Entity\Statut;
 use App\Repository\StatutRepository;
 use App\Service\Mailer\BasicMailer;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant/bris-de-porte')]
-class BrisPorteController extends AbstractController
+class BrisPorteController extends RequerantController
 {
     public function __construct(
         private StatutRepository $statutRepository,
@@ -28,33 +26,27 @@ class BrisPorteController extends AbstractController
     }
 
     #[Route('/ajouter-un-bris-de-porte', name: 'app_bris_porte_add', methods: ['POST', 'GET'], options: ['expose' => true])]
-    public function add(EntityManagerInterface $em, Request $request): Response
+    public function add(EntityManagerInterface $em): Response
     {
-        $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($this->getUser());
-        $session = $request->getSession();
-        /** @var array $testEligibilite */
-        $testEligibilite = $session->get('test_eligibilite', []);
-        /** @var ?string $type */
-        $type = $testEligibilite['type'] ?? null;
-        /** @var ?\DateTime $dateOperationPJ */
-        $dateOperationPJ = !empty($testEligibilite['dateOperationPJ']) ? new \DateTime($testEligibilite['dateOperationPJ']) : null;
-        /** @var ?string $numeroPV */
-        $numeroPV = $testEligibilite['numeroPV'] ?? null;
-        /** @var ?string $numeroParquet */
-        $numeroParquet = $testEligibilite['numeroParquet'] ?? null;
-        /** @var bool $isErreurPorte */
-        $isErreurPorte = $testEligibilite['isErreurPorte'] ? ('true' == $testEligibilite['isErreurPorte']) : false;
-        if ('BRI' === $type) {
-            $brisPorte->setDateOperationPJ($dateOperationPJ);
-            $brisPorte->setNumeroPV($numeroPV);
-            $brisPorte->setNumeroParquet($numeroParquet);
-            $brisPorte->setIsErreurPorte($isErreurPorte);
+        $requerant = $this->getRequerant();
+        $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($requerant);
+
+        if (null !== ($testEligibilite = $requerant->getTestEligibilite())) {
+            $brisPorte->setDateOperationPJ(isset($testEligibilite['dateOperationPJ']) ? \DateTimeImmutable::createFromFormat('Y-m-d', $testEligibilite['dateOperationPJ']) : null);
+            $brisPorte->setNumeroPV(@$testEligibilite['numeroPV']);
+            $brisPorte->setNumeroParquet(@$testEligibilite['numeroParquet']);
+            $brisPorte->setIsErreurPorte(@$testEligibilite['isErreurPorte']);
+
             $serviceEnqueteur = $brisPorte->getServiceEnqueteur();
-            $serviceEnqueteur->setNumeroPV($numeroPV);
-            $serviceEnqueteur->setNumeroParquet($numeroParquet);
-            $em->flush();
-            $session->remove('test_eligibilite');
+            $serviceEnqueteur->setNumeroPV($brisPorte->getNumeroPV());
+            $serviceEnqueteur->setNumeroParquet($brisPorte->getNumeroParquet());
+
+            $requerant->setTestEligibilite(null);
+            $em->persist($requerant);
         }
+
+        $em->persist($brisPorte);
+        $em->flush();
 
         return $this->redirectToRoute('app_bris_porte_edit', ['id' => $brisPorte->getId()]);
     }
@@ -87,7 +79,7 @@ class BrisPorteController extends AbstractController
         $mailer
            ->from($this->emailFrom, $this->emailFromLabel)
            ->to($user->getEmail())
-           ->subject("Précontentieux : Votre déclaration de bris de porte a bien été pris en compte")
+           ->subject('Précontentieux : Votre déclaration de bris de porte a bien été pris en compte')
            ->htmlTemplate('requerant/email/confirmation_passage_etat_constitue.html.twig', [
                'mail' => $user->getEmail(),
                'url' => $this->baseUrl,

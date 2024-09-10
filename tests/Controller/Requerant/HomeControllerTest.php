@@ -33,7 +33,7 @@ class HomeControllerTest extends WebTestCase
             ->setPersonnePhysique(
                 (new PersonnePhysique())
                 ->setEmail('requerant1@courriel.fr')
-                ->setCivilite($this->em->getRepository(Civilite::class)->findOneBy(['mnemo' => 'MME']))
+                ->setCivilite(Civilite::MME)
                 ->setPrenom1('Raquel')
                 ->setNom('Rante')
             )

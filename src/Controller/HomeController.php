@@ -64,9 +64,21 @@ class HomeController extends AbstractController
         return $this->render('homepage/cgu.html.twig');
     }
 
-    #[Route('/bris-de-porte/tester-mon-eligibilite', name: 'home_test_eligibilite_bris_porte', methods: ['POST', 'GET'], options: ['expose' => true])]
-    public function testEligibiliteBrisDePorte(): Response
+    #[Route('/bris-de-porte/tester-mon-eligibilite', name: 'home_test_eligibilite_bris_porte', options: ['expose' => true], methods: ['GET', 'POST'])]
+    public function testEligibiliteBrisDePorte(Request $request): Response
     {
+        // TODO gérer des données en POST, et stocker en session les infos du test d'éligibilité
+        if ($request->getMethod() === Request::METHOD_POST) {
+            // TODO manipuler un objet DTO plutôt
+            $request->getSession()->set('testEligibilite', [
+                'dateOperationPJ' => $request->request->get('dateOperationPJ'),
+                'numeroPV' => $request->request->get('numeroPV'),
+                'numeroParquet' => $request->request->get('numeroParquet'),
+                'isErreurPorte' => (bool) $request->request->get('isErreurPorte'),
+            ]);
+            return $this->redirectToRoute('app_inscription');
+        }
+
         return $this->render('prejudice/bris_porte/test_eligibilite.html.twig');
     }
 }

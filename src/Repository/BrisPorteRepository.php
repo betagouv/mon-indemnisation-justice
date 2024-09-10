@@ -91,7 +91,10 @@ SELECT
     a.ligne1,
     a.code_postal,
     a.localite,
-    c.libelle AS civilite_libelle,
+    CASE
+      WHEN pp.civilite = 'M' then 'Monsieur'
+      WHEN pp.civilite = 'MME' then 'Madame'
+    END AS civilite_libelle,
     pp.prenom1,
   CASE
     WHEN LENGTH(pp.nom_naissance)>0 AND LENGTH(pp.nom) > 0 THEN pp.nom || ' né.e ' || pp.nom_naissance
@@ -101,7 +104,10 @@ SELECT
   pp.liasse_documentaire_id pp_liasse_documentaire_id,
   ra.prenom1 ra_prenom1,
   ra.nom ra_nom,
-  cra.libelle ra_civilite_libelle,
+  CASE
+    WHEN ra.civilite = 'M' then 'Monsieur'
+    WHEN ra.civilite = 'MME' then 'Madame'
+  END ra_civilite_libelle,
   se.nom AS se_nom,
   se.numero_pv,
   se.telephone AS se_telephone,
@@ -128,9 +134,7 @@ FROM public.bris_porte b
         LEFT JOIN public.personne_physique ra ON ra.id = b.receveur_attestation_id
         LEFT JOIN public.adresse a ON a.id = r.adresse_id
       	LEFT JOIN public.personne_physique pp ON pp.id = r.personne_physique_id
-        LEFT JOIN public.civilite c ON c.id = pp.civilite_id
       	LEFT JOIN public.personne_morale pm ON pm.id = r.personne_morale_id
-        LEFT JOIN public.civilite cra ON cra.id = ra.civilite_id
         LEFT JOIN public.qualite_requerant ppqr ON ppqr.id = ra.qualite_id
       	WHERE b.id = $brisPorteId
         ";
@@ -236,6 +240,11 @@ FROM public.bris_porte b
         }
 
         return $data;
+    }
+
+    public function getForRequerant(Requerant $requerant): array
+    {
+        return $this->findBy(['requerant' => $requerant]);
     }
 
     public function findByStatuts(array $statuts = [], array $orderBy = [], int $offset = 0, int $limit = 10): array
