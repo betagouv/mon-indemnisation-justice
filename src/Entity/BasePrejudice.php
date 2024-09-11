@@ -21,6 +21,7 @@ abstract class BasePrejudice implements PrejudiceInterface
 
     #[Groups('prejudice:read')]
     #[ORM\ManyToOne(targetEntity: Requerant::class)]
+    #[ORM\JoinColumn(nullable: false)]
     protected Requerant $requerant;
 
     /**

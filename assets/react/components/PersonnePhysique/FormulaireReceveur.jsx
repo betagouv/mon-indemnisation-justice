@@ -12,7 +12,7 @@ const FormulaireReceveur = function({personnePhysique}) {
   const [nom, setNom]=useState(personnePhysique.nom??"");
   const [prenom1, setPrenom1]=useState(personnePhysique.prenom1??"");
   const [nomNaissance, setNomNaissance]=useState(personnePhysique.nomNaissance??"");
-  const [qualiteRequerant, setQualiteRequerant]=useState(personnePhysique.qualite??"");
+  const [qualiteRequerant, setQualiteRequerant]=useState(personnePhysique.qualiteRequerant??"");
   const [precisionRequerant, setPrecisionRequerant]=useState(personnePhysique.precision??"");
 
   const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nomNaissance));
@@ -31,7 +31,7 @@ const FormulaireReceveur = function({personnePhysique}) {
       (nom !== personnePhysique.nom) ||
       (prenom1 !== personnePhysique.prenom1) ||
       (nomNaissance !== personnePhysique.nomNaissance) ||
-      (qualiteRequerant !== personnePhysique.qualite) ||
+      (qualiteRequerant !== personnePhysique.qualiteRequerant) ||
       (precisionRequerant !== personnePhysique.precision) ||
       (true === recordActived)
     ;
@@ -63,7 +63,7 @@ const FormulaireReceveur = function({personnePhysique}) {
       numeroSecuriteSociale: numeroSS, precision: precisionRequerant
     };
     if(civilite) { data['civilite']=civilite }
-    if(qualiteRequerant) { data['qualite']=qualiteRequerant }
+    if(qualiteRequerant) { data['qualiteRequerant']=qualiteRequerant }
 
     clearTimeout(keyUpTimer.current);
     keyUpTimer.current = setTimeout(() => {

@@ -12,7 +12,7 @@ const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
           label="Les 10 premiers chiffres de votre numéro de sécurité sociale"
           nativeInputProps={{
             value: numeroSS,
-            onChange: ev => setNumeroSS(castNumber(ev.target.value)),
+            onChange: ev => setNumeroSS(ev.target.value),
             maxLength: 10
           }}
         />

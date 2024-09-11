@@ -18,7 +18,7 @@ const BrisPortes = function({items}) {
     "Date du dernier statut",
     "Code suivi",
     // Actions désactivées en attendant la refonte des statuts
-    //"Actions",
+    "Actions",
   ];
 
   useEffect(() => {
@@ -36,16 +36,18 @@ const BrisPortes = function({items}) {
           linkProps={{
             href: Routing.generate('app_bris_porte_edit',{id: item.id})
           }}
-        >Modifier
+          size="small"
+          iconId="fr-icon-ball-pen-line"
+        >Terminer
         </Button>;
-      if((item.lastStatut.code === CODE_STATUT_SIGNATURE_REJETEE)||(item.lastStatut.code===CODE_STATUT_SIGNATURE_VALIDEE))
+      /*if((item.lastStatut.code === CODE_STATUT_SIGNATURE_REJETEE)||(item.lastStatut.code===CODE_STATUT_SIGNATURE_VALIDEE))
         btn =
         <Document
           readonly={true}
           liasseDocumentaireIri={item.liasseDocumentaire}
           label={"Consulter la décision"}
           type={"signature_decision"}
-        />
+        />*/
       tmp[tmp.length]=[
         item.reference,
         //format(dateDeclaration,"dd/MM/yy"),
@@ -53,7 +55,7 @@ const BrisPortes = function({items}) {
         format(dateLastStatut,"dd/MM/yy HH:mm"),
         item.raccourci,
         // Actions désactivées en attendant la refonte des statuts
-        //btn
+        btn
       ];
     });
     setData(tmp);

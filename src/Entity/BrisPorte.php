@@ -67,8 +67,8 @@ class BrisPorte extends BasePrejudice
     private ?string $prenomRemiseAttestation = null;
 
     #[Groups(['prejudice:read','prejudice:write'])]
-    #[ORM\ManyToOne]
-    private ?QualiteRequerant $qualiteRequerant = null;
+    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
+    protected ?QualiteRequerant $qualiteRequerant = null;
 
     #[Groups(['prejudice:read','prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -227,33 +227,7 @@ class BrisPorte extends BasePrejudice
 
     public function getAdressePlaintext(): string
     {
-        $adresse = $this->getAdresse();
-        if(null !== $adresse)
-          return (string)$adresse;
-        return "";
-    }
-    public function getQualitePlaintext(): string
-    {
-        $qr = $this->getQualiteRequerant();
-        if(null !== $qr) {
-          $tab = [$qr->getLibelle()];
-          if($this->getPrecisionRequerant())
-            $tab[]=$this->getPrecisionRequerant();
-          return implode(" - ",$tab);
-        }
-        return "";
-    }
-
-    public function getQualiteRequerant(): ?QualiteRequerant
-    {
-        return $this->qualiteRequerant;
-    }
-
-    public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): static
-    {
-        $this->qualiteRequerant = $qualiteRequerant;
-
-        return $this;
+        return (string) $this->getAdresse();
     }
 
     public function getPrecisionRequerant(): ?string
@@ -289,6 +263,17 @@ class BrisPorte extends BasePrejudice
     {
         $this->numeroParquet = $numeroParquet;
 
+        return $this;
+    }
+
+    public function getQualiteRequerant(): ?QualiteRequerant
+    {
+        return $this->qualiteRequerant;
+    }
+
+    public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): BrisPorte
+    {
+        $this->qualiteRequerant = $qualiteRequerant;
         return $this;
     }
 

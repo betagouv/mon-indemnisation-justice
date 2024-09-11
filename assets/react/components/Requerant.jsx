@@ -4,6 +4,7 @@ import { check_empty } from '../utils/check_state';
 import { castNumber } from '../utils/cast';
 
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import QualiteRequerant from "../utils/QualiteRequerant";
 
 const Requerant = function({
   qualiteText=null,
@@ -14,7 +15,6 @@ const Requerant = function({
   setPrecisionRequerant
 }) {
 
-  const CODE_QUALITE_REQUERANT_AUTRE = '4';
   const [loading,setLoading]=useState(false);
 
   useEffect(() => {
@@ -22,7 +22,6 @@ const Requerant = function({
       return;
     setLoading(true);
   },[])
-  const showPrecision = (qr) => (castNumber(qr) == CODE_QUALITE_REQUERANT_AUTRE);
   const label = (null!==qualiteText) ? qualiteText : "J'effectue ma demande en qualité de";
   const label2 = !check_empty(precisionText) ? precisionText : "Préciser votre qualité";
   return (
@@ -31,13 +30,13 @@ const Requerant = function({
         <div className="fr-col-4 fr-pr-md-1w">
           <Referentiel
             label={label}
-            route={Routing.generate("_api_qualite_representant_get_collection")}
+            options={Object.entries(QualiteRequerant)}
             content={qualiteRequerant}
             setContent={setQualiteRequerant}
           />
         </div>
         <div className="fr-col-8">
-          {showPrecision(qualiteRequerant) &&
+          {qualiteRequerant == 'AUT' &&
           <Input
             label={label2}
             nativeInputProps={{

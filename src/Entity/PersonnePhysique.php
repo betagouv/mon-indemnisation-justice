@@ -44,7 +44,7 @@ class PersonnePhysique
 
     #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
-    protected Civilite $civilite;
+    protected ?Civilite $civilite = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -87,8 +87,8 @@ class PersonnePhysique
     private ?string $nomNaissance = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
-    #[ORM\ManyToOne]
-    private ?QualiteRequerant $qualite = null;
+    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
+    protected ?QualiteRequerant $qualiteRequerant = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -122,7 +122,7 @@ class PersonnePhysique
         return $this->id;
     }
 
-    public function getCivilite(): Civilite
+    public function getCivilite(): ?Civilite
     {
         return $this->civilite;
     }
@@ -133,6 +133,17 @@ class PersonnePhysique
             $this->civilite = $civilite;
         }
 
+        return $this;
+    }
+
+    public function getNumeroSecuriteSociale(): ?string
+    {
+        return $this->numeroSecuriteSociale;
+    }
+
+    public function setNumeroSecuriteSociale(?string $numeroSecuriteSociale): PersonnePhysique
+    {
+        $this->numeroSecuriteSociale = $numeroSecuriteSociale;
         return $this;
     }
 
@@ -268,14 +279,14 @@ class PersonnePhysique
         return implode(" ",[$civilite,$this->getPrenom1(),$nom]);
     }
 
-    public function getQualite(): ?QualiteRequerant
+    public function getQualiteRequerant(): ?QualiteRequerant
     {
-        return $this->qualite;
+        return $this->qualiteRequerant;
     }
 
-    public function setQualite(?QualiteRequerant $qualite): static
+    public function setQualiteRequerant(?QualiteRequerant $qualite): self
     {
-        $this->qualite = $qualite;
+        $this->qualiteRequerant = $qualite;
 
         return $this;
     }
