@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\BasePrejudice;
+use App\Entity\BrisPorte;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,19 +37,18 @@ class HomeController extends AbstractController
         /** @var string $raccourci */
         $raccourci = $request->get('raccourci') ?? '';
 
-        $submittedToken = $request->getPayload()->get('_csrf_token');
         $statuts = [];
-        if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
-            $prejudice = $this
+        if ($this->isCsrfTokenValid('authenticate', $request->getPayload()->get('_csrf_token'))) {
+            $brisPorte = $this
               ->em
-              ->getRepository(BasePrejudice::class)
+              ->getRepository(BrisPorte::class)
               ->findOneBy(['raccourci' => $raccourci])
             ;
-            if (null !== $prejudice) {
-                $tmp = $prejudice->getStatuts();
-                foreach ($tmp as $statut) {
-                    $statuts[] = [$statut->getDate()->format('d/m/Y H:i'), $statut->getLibelle()];
-                }
+            if (null !== $brisPorte) {
+                $statuts[] = [
+                    $brisPorte->getDateDeclaration()->format('d/m/Y H:i'),
+                    $brisPorte->getLastStatut()->getLibelle()
+                ];
             }
         }
 

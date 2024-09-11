@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Contracts\PrejudiceInterface;
 use App\Entity\BrisPorte;
 use App\Entity\Requerant;
-use App\Entity\Statut;
+use App\Entity\EtatBrisPorte;
 use App\Service\PasswordGenerator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -35,13 +35,6 @@ class BrisPorteRepository extends ServiceEntityRepository
         $prejudice = new $classname();
         $prejudice->setRequerant($user);
         $em->persist($prejudice);
-        $em->flush();
-
-        /** @var Statut $statut */
-        $statut = new Statut();
-        $statut->setEmetteur($user);
-        $statut->setPrejudice($prejudice);
-        $em->persist($statut);
         $em->flush();
 
         return $prejudice;
@@ -116,12 +109,17 @@ SELECT
   se.numero_parquet,
   se.magistrat,
   CASE
-    WHEN qr.libelle IS NOT NULL THEN qr.libelle ||' - '|| b.precision_requerant
+    WHEN b.qualite_requerant = 'PRO' THEN 'Propriétaire'
+    WHEN b.qualite_requerant = 'LOC' THEN 'Locataire'
+    WHEN b.qualite_requerant = 'HEB' THEN 'Hébergeant'
+    WHEN b.qualite_requerant = 'AUT' THEN 'Autre - '|| b.precision_requerant 
     ELSE 'non renseigné'
   END qualite_requerant,
   CASE
-    WHEN ppqr.libelle IS NOT NULL THEN ppqr.libelle ||' - '|| ra.precision
-    ELSE 'non renseigné'
+    WHEN ra.qualite_requerant = 'PRO' THEN 'Propriétaire'
+    WHEN ra.qualite_requerant = 'LOC' THEN 'Locataire'
+    WHEN ra.qualite_requerant = 'HEB' THEN 'Hébergeant'
+    WHEN ra.qualite_requerant = 'AUT' THEN 'Autre - '|| ra.precision
   END qualite_receveur_attestation,
   bad.ligne1 bp_ligne1,
   bad.code_postal bp_code_postal,
@@ -129,13 +127,11 @@ SELECT
 FROM public.bris_porte b
         INNER JOIN public.requerants r ON r.id = b.requerant_id
         LEFT JOIN public.adresse bad ON bad.id = b.adresse_id
-        LEFT JOIN public.qualite_requerant qr ON qr.id = b.qualite_requerant_id
         LEFT JOIN public.service_enqueteur se ON se.id = b.service_enqueteur_id
         LEFT JOIN public.personne_physique ra ON ra.id = b.receveur_attestation_id
         LEFT JOIN public.adresse a ON a.id = r.adresse_id
       	LEFT JOIN public.personne_physique pp ON pp.id = r.personne_physique_id
       	LEFT JOIN public.personne_morale pm ON pm.id = r.personne_morale_id
-        LEFT JOIN public.qualite_requerant ppqr ON ppqr.id = ra.qualite_id
       	WHERE b.id = $brisPorteId
         ";
         $stmt = $conn->query($sql);

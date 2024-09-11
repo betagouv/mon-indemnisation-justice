@@ -29,11 +29,6 @@ services:
         $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
         $baseUrl: '%env(BASE_URL)%'
 
-    App\Controller\Requerant\PrejudiceController:
-        $emailFrom: '%env(EMAIL_FROM)%'
-        $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
-        $baseUrl: '%env(BASE_URL)%'
-
     App\Controller\Requerant\DocumentController:
         $bucket: '%env(SCW_BUCKET)%'
 

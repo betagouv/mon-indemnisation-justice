@@ -4,8 +4,6 @@ namespace App\Controller\Requerant;
 
 use App\Entity\BrisPorte;
 use App\Entity\Requerant;
-use App\Entity\Statut;
-use App\Repository\StatutRepository;
 use App\Service\Mailer\BasicMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -18,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class BrisPorteController extends RequerantController
 {
     public function __construct(
-        private StatutRepository $statutRepository,
+        protected readonly EntityManagerInterface $entityManager,
         protected readonly string $emailFrom,
         protected readonly string $emailFromLabel,
         protected readonly string $baseUrl,
@@ -51,15 +49,7 @@ class BrisPorteController extends RequerantController
         return $this->redirectToRoute('app_bris_porte_edit', ['id' => $brisPorte->getId()]);
     }
 
-    #[IsGranted('prejudice_valid_or_reject', subject: 'brisPorte')]
-    #[Route('/consulter-un-bris-de-porte/{id}', name: 'app_bris_porte_view', methods: ['GET'], options: ['expose' => true])]
-    public function view(BrisPorte $brisPorte): Response
-    {
-        return $this->render('prejudice/consulter_bris_porte.html.twig', [
-            'brisPorte' => $brisPorte,
-            'prejudice' => $brisPorte,
-        ]);
-    }
+
 
     #[IsGranted('edit', subject: 'brisPorte')]
     #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', methods: ['GET'], options: ['expose' => true])]
@@ -73,8 +63,10 @@ class BrisPorteController extends RequerantController
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', methods: ['GET'], options: ['expose' => true])]
     public function redirection(BrisPorte $brisPorte, BasicMailer $mailer): RedirectResponse
     {
-        $user = $this->getUser();
-        $this->statutRepository->addEvent($brisPorte, $user, Statut::CODE_CONSTITUE);
+        $user = $this->getRequerant();
+        $brisPorte->setDeclare();
+        $this->entityManager->persist($brisPorte);
+        $this->entityManager->flush();
 
         $mailer
            ->from($this->emailFrom, $this->emailFromLabel)

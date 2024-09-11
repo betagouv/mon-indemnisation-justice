@@ -1,13 +1,9 @@
 import React, {useState,useEffect} from 'react';
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Document } from './PieceJointe/PieceJointe';
 import { format } from "date-fns";
 const BrisPortes = function({items}) {
 
-  const CODE_STATUT_EN_COURS_DE_CONSTITUTION='EN_COURS_DE_CONSTITUTION';
-  const CODE_STATUT_SIGNATURE_VALIDEE = "SIGNATURE_VALIDEE";
-  const CODE_STATUT_SIGNATURE_REJETEE = "SIGNATURE_REJETEE";
   const [isLoading, setIsLoading]=useState(false);
 
   const [data,setData] = useState([]);
@@ -27,10 +23,9 @@ const BrisPortes = function({items}) {
     let tmp=[];
     items.map((item) => {
       const dateDeclaration = Date.parse(item.dateDeclaration);
-      const lastStatut = item.lastStatut.libelle;
-      const dateLastStatut = Date.parse(item.lastStatut.date);
+      const lastStatut = `Demande d'indemnisation ${dateDeclaration ? "constituée" : "en cours de constitution"}`;
       let btn = <></>;
-      if(item.lastStatut.code === CODE_STATUT_EN_COURS_DE_CONSTITUTION)
+      if(!dateDeclaration)
         btn =
         <Button
           linkProps={{
@@ -52,7 +47,7 @@ const BrisPortes = function({items}) {
         item.reference,
         //format(dateDeclaration,"dd/MM/yy"),
         lastStatut,
-        format(dateLastStatut,"dd/MM/yy HH:mm"),
+        format(dateDeclaration,"dd/MM/yy HH:mm"),
         item.raccourci,
         // Actions désactivées en attendant la refonte des statuts
         btn

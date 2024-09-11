@@ -24,12 +24,6 @@ abstract class BasePrejudice implements PrejudiceInterface
     #[ORM\JoinColumn(nullable: false)]
     protected Requerant $requerant;
 
-    /**
-     * @var Collection<int, Statut>
-     */
-    #[ORM\OneToMany(targetEntity: Statut::class, mappedBy: 'prejudice')]
-    protected Collection $statuts;
-
     #[Groups('prejudice:read')]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     protected ?DateTimeInterface $dateDeclaration = null;
@@ -77,7 +71,6 @@ abstract class BasePrejudice implements PrejudiceInterface
     public function __construct()
     {
       $this->dateDeclaration = new \DateTime();
-      $this->statuts = new ArrayCollection();
       $this->liasseDocumentaire = new LiasseDocumentaire();
     }
 
@@ -111,39 +104,9 @@ abstract class BasePrejudice implements PrejudiceInterface
     }
 
     #[Groups(['prejudice:read'])]
-    public function getLastStatut(): Statut
+    public function getLastStatut(): BrisPorteStatut
     {
-        return $this->statuts->last();
-    }
-
-    /**
-     * @return Collection<int, Statut>
-     */
-    public function getStatuts(): Collection
-    {
-        return $this->statuts;
-    }
-
-    public function addStatut(Statut $statut): static
-    {
-        if (!$this->statuts->contains($statut)) {
-            $this->statuts->add($statut);
-            $statut->setBrisPorte($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStatut(Statut $statut): static
-    {
-        if ($this->statuts->removeElement($statut)) {
-            // set the owning side to null (unless already changed)
-            if ($statut->getBrisPorte() === $this) {
-                $statut->setBrisPorte(null);
-            }
-        }
-
-        return $this;
+        return null !== $this->dateDeclaration ? BrisPorteStatut::CONSTITUE : BrisPorteStatut::EN_COURS_DE_CONSTITUTION;
     }
 
     public function getDateDeclaration(): ?\DateTimeInterface
@@ -156,6 +119,11 @@ abstract class BasePrejudice implements PrejudiceInterface
         $this->dateDeclaration = $dateDeclaration;
 
         return $this;
+    }
+
+    public function setDeclare(): self
+    {
+        return $this->setDateDeclaration(new \DateTimeImmutable());
     }
 
     public function getReference(): ?string

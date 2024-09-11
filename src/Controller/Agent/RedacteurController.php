@@ -4,7 +4,7 @@ namespace App\Controller\Agent;
 
 use App\Entity\Agent;
 use App\Entity\BrisPorte;
-use App\Entity\Statut;
+use App\Entity\EtatBrisPorte;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,8 +24,8 @@ class RedacteurController extends AbstractController
     public function index(): Response
     {
         $em = $this->em;
-        $statuts = $em->getRepository(Statut::class)->findBy(['code' => [
-            Statut::CODE_CONSTITUE,
+        $statuts = $em->getRepository(EtatBrisPorte::class)->findBy(['code' => [
+            EtatBrisPorte::CODE_CONSTITUE,
         ]]);
 
         $brisPortes = $em

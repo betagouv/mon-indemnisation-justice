@@ -4,7 +4,7 @@ namespace App\Controller\Agent;
 
 use App\Entity\Agent;
 use App\Entity\BrisPorte;
-use App\Entity\Statut;
+use App\Entity\EtatBrisPorte;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,8 +23,8 @@ class ValidationController extends AbstractController
     #[Route('/accueil', name: 'app_chef_precontentieux_homepage', options: ['expose' => true])]
     public function index(): Response
     {
-        $statuts = $this->em->getRepository(Statut::class)->findBy(['code' => [
-            Statut::CODE_VALIDE, Statut::CODE_REJETE,
+        $statuts = $this->em->getRepository(EtatBrisPorte::class)->findBy(['code' => [
+            EtatBrisPorte::CODE_VALIDE, EtatBrisPorte::CODE_REJETE,
         ]]);
 
         $brisPortes = $this->em

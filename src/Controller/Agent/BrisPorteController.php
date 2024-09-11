@@ -20,9 +20,6 @@ class BrisPorteController extends AbstractController
     {
         return $this->render('agent/bris_porte/consulter_bris_porte.html.twig', [
             'brisPorte' => $brisPorte,
-            'prejudice' => $brisPorte,
-            'decisionActivee' => true,
-            'validationActivee' => in_array(Agent::ROLE_AGENT_VALIDATEUR, $this->getUser()->getRoles()),
         ]);
     }
 }
