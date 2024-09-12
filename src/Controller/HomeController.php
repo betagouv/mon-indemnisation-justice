@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\BasePrejudice;
 use App\Entity\BrisPorte;
+use App\Entity\Requerant;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,7 +47,7 @@ class HomeController extends AbstractController
             if (null !== $brisPorte) {
                 $statuts[] = [
                     $brisPorte->getDateDeclaration()->format('d/m/Y H:i'),
-                    $brisPorte->getLastStatut()->getLibelle()
+                    $brisPorte->getLastStatut()->getLibelle(),
                 ];
             }
         }
@@ -68,15 +68,27 @@ class HomeController extends AbstractController
     public function testEligibiliteBrisDePorte(Request $request): Response
     {
         // TODO gérer des données en POST, et stocker en session les infos du test d'éligibilité
-        if ($request->getMethod() === Request::METHOD_POST) {
+        if (Request::METHOD_POST === $request->getMethod()) {
             // TODO manipuler un objet DTO plutôt
-            $request->getSession()->set('testEligibilite', [
+            $testEligibilite = [
                 'dateOperationPJ' => $request->request->get('dateOperationPJ'),
                 'numeroPV' => $request->request->get('numeroPV'),
                 'numeroParquet' => $request->request->get('numeroParquet'),
                 'isErreurPorte' => (bool) $request->request->get('isErreurPorte'),
-            ]);
-            return $this->redirectToRoute('app_inscription');
+            ];
+
+            $requerant = $this->getUser();
+            if ($requerant instanceof Requerant) {
+                $requerant->setTestEligibilite($testEligibilite);
+                $this->em->persist($requerant);
+                $this->em->flush();
+
+                return $this->redirectToRoute('app_bris_porte_add');
+            } else {
+                $request->getSession()->set('testEligibilite', $testEligibilite);
+
+                return $this->redirectToRoute('app_inscription');
+            }
         }
 
         return $this->render('prejudice/bris_porte/test_eligibilite.html.twig');

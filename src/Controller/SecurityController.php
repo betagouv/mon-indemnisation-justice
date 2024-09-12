@@ -202,6 +202,7 @@ class SecurityController extends AbstractController
             );
             $requerant->addRole(Requerant::ROLE_REQUERANT);
             $requerant->setTestEligibilite($request->getSession()->get('testEligibilite'));
+            $request->getSession()->remove('testEligibilite');
             $this->em->persist($requerant);
             $this->em->flush();
 

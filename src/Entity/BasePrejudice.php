@@ -25,7 +25,11 @@ abstract class BasePrejudice implements PrejudiceInterface
     protected Requerant $requerant;
 
     #[Groups('prejudice:read')]
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
+    protected DateTimeInterface $dateCreation;
+
+    #[Groups('prejudice:read')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?DateTimeInterface $dateDeclaration = null;
 
     #[Groups('prejudice:read')]
@@ -70,7 +74,7 @@ abstract class BasePrejudice implements PrejudiceInterface
 
     public function __construct()
     {
-      $this->dateDeclaration = new \DateTime();
+      $this->dateCreation = new \DateTimeImmutable();
       $this->liasseDocumentaire = new LiasseDocumentaire();
     }
 
@@ -107,6 +111,17 @@ abstract class BasePrejudice implements PrejudiceInterface
     public function getLastStatut(): BrisPorteStatut
     {
         return null !== $this->dateDeclaration ? BrisPorteStatut::CONSTITUE : BrisPorteStatut::EN_COURS_DE_CONSTITUTION;
+    }
+
+    public function getDateCreation(): DateTimeInterface
+    {
+        return $this->dateCreation;
+    }
+
+    public function setDateCreation(DateTimeInterface $dateCreation): BasePrejudice
+    {
+        $this->dateCreation = $dateCreation;
+        return $this;
     }
 
     public function getDateDeclaration(): ?\DateTimeInterface

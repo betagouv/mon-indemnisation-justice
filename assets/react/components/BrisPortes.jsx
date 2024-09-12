@@ -22,6 +22,7 @@ const BrisPortes = function({items}) {
       return;
     let tmp=[];
     items.map((item) => {
+      const dateCreation = Date.parse(item.dateCreation);
       const dateDeclaration = Date.parse(item.dateDeclaration);
       const lastStatut = `Demande d'indemnisation ${dateDeclaration ? "constituée" : "en cours de constitution"}`;
       let btn = <></>;
@@ -47,7 +48,7 @@ const BrisPortes = function({items}) {
         item.reference,
         //format(dateDeclaration,"dd/MM/yy"),
         lastStatut,
-        format(dateDeclaration,"dd/MM/yy HH:mm"),
+        format(dateDeclaration || dateCreation,"dd/MM/yy HH:mm"),
         item.raccourci,
         // Actions désactivées en attendant la refonte des statuts
         btn
