@@ -6,11 +6,11 @@ build:
   stage: "🔨 build"
   variables:
     APP_ENV: test
-    DATABASE_URL: pgsql://precontest:precontest@postgres:5432/precontest?serverVersion=15
+    DATABASE_URL: pgsql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15
     COMPOSER_ALLOW_SUPERUSER: 1
     POSTGRES_DB: precontest
-    POSTGRES_PASSWORD: precontest
-    POSTGRES_USER: precontest
+    POSTGRES_PASSWORD: precontentieux
+    POSTGRES_USER: precontentieux
     BASE_URL: precontentieux.test
     MAILER_FROM: ne-pas-repondre@precontentieux.test
     MAILER_DSN: smtp://mailpit:1025
@@ -46,17 +46,27 @@ build:
     - npm update -g
     # Install npm dependencies
     - yarn install
+    # Firefox
+    - apt-get install -y firefox-esr
   script:
     - echo "Building"
     - bin/console cache:clear
     - bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
+    - bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
     - yarn build
-    - bin/phpunit --log-junit report.xml
+    # Run unit tests
+    - bin/phpunit -do-not-cache-result --log-junit report-unit.xml
+    # Run functional tests
+    - vendor/bin/bdi detect drivers
+    - bin/phpunit tests/Functional/**.php --log-junit report-functional.xml
   artifacts:
     paths:
-      - report.xml
+      - report-unit.xml
+      - report-functional.xml
     reports:
-      junit: report.xml
+      junit:
+        - report-unit.xml
+        - report-functional.xml
   cache:
     paths:
       - vendor/

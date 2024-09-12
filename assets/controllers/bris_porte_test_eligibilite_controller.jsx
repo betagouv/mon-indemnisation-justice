@@ -18,7 +18,7 @@ export default class extends Controller {
       root.render(
         <React.StrictMode>
           <>
-            <div className="pr-body_header">
+            <div id="react-app" className="pr-body_header">
               <section className="pr-eligibilite_header">
                 <div className="fr-container">
                   <div className="fr-pb-4w">

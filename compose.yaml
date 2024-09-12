@@ -51,10 +51,6 @@ services:
         - DATABASE_URL=pgsql://precontentieux:precontentieux@postgres:5432/precondev?serverVersion=15
     environment:
       - APP_ENV=${APP_ENV:-dev}
-      - APP_DEBUG=${APP_DEBUG:-1}
-      - DATABASE_URL=pgsql://precontentieux:precontentieux@postgres:5432/precondev?serverVersion=15
-    env_file:
-      - .env.dev
     depends_on:
       - postgres
       - mailpit

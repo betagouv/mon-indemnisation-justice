@@ -3,6 +3,7 @@
 
 use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use \Symfony\Component\Dotenv\Dotenv;
 
 if (!is_dir(dirname(__DIR__).'/vendor')) {
     throw new LogicException('Dependencies are missing. Try running "composer install".');
@@ -13,6 +14,9 @@ if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
 }
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+
+$dotenv = new Dotenv();
+$dotenv->loadEnv(__DIR__.'/../.env');
 
 return function (array $context) {
     $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
