@@ -9,7 +9,6 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Repository\RequerantRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -263,15 +262,6 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     public function getNomComplet(): ?string
     {
         return $this->getPersonnePhysique()?->getNomComplet() ?? null;
-    }
-
-    /**
-     * @return Collection<BrisPorte>
-     */
-    public function getBrisPortes(): array
-    {
-        //$this->brisPortes = $this->brisPortes ?? new ArrayCollection();
-        return $this->brisPortes->toArray();
     }
 
     public function getTestEligibilite(): ?array

@@ -101,7 +101,7 @@ class SecurityController extends AbstractController
     public function login(Request $request): Response
     {
         $error = $this->authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $this->authenticationUtils->getLastUsername();
+        $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
         $user = $this->getUser();
         $isAgent = ('1' == $request->get('isAgent'));
 
@@ -168,7 +168,7 @@ class SecurityController extends AbstractController
             $this->em->flush();
         }
 
-        return $this->redirectToRoute('app_login');
+        return $this->redirectToRoute('app_login', ['courriel' => $user->getEmail()]);
     }
 
     #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
@@ -177,6 +177,15 @@ class SecurityController extends AbstractController
         $user = $this->getUser();
         if (null !== $user && $user instanceof Requerant) {
             return $this->redirectToRoute('requerant_home_index');
+        }
+
+        if ($request->getMethod() === 'GET' && $request->getSession()->has('emailRequerantInscrit')) {
+            $email = $request->getSession()->get('emailRequerantInscrit');
+            $request->getSession()->remove('emailRequerantInscrit');
+
+            return $this->render('security/success.html.twig', [
+                'email' => $email,
+            ]);
         }
 
         /*
@@ -219,10 +228,10 @@ class SecurityController extends AbstractController
                     'nom_complet' => $requerant->getNomComplet(),
                 ])
                 ->send(pathname: 'app_verify_email', user: $requerant);
+            // Ajout d'un drapeau pour marquer la réussite de l'inscription:
+            $request->getSession()->set('emailRequerantInscrit', $requerant->getEmail());
 
-            return $this->render('security/success.html.twig', [
-                'user' => $requerant,
-            ]);
+            return $this->redirectToRoute('app_inscription');
         } /*
          * Le formulaire a bien été identifié
          *
