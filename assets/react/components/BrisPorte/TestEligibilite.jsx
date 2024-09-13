@@ -45,6 +45,13 @@ const TestEligibilite = function() {
   function handleTestEligibilite(dateOperationPJ,numeroPV,numeroParquet) {
     event.preventDefault();
     event.stopPropagation();
+
+    const form = event.target.closest('form');
+    if (form) {
+        console.log(Object.fromEntries(new FormData(form)));
+    }
+
+
     if(!dateOperationPJ) {
       alert("Le(s) champ(s) doivent être renseigné(s) pour poursuivre : Date de l'opération de police judiciaire");
       return;
@@ -93,11 +100,7 @@ const TestEligibilite = function() {
 
   return (
     <form onSubmit={handleContinue} name="form" action={Routing.generate("home_test_eligibilite_bris_porte")} method="POST">
-      <Hidden name="dateOperationPJ" value={dateOperationPJ} />
       <Hidden name="type" value="BRI" />
-      <Hidden name="numeroPV" value={numeroPV} />
-      <Hidden name="numeroParquet" value={numeroParquet} />
-      <Hidden name="isErreurPorte" value={isErreurPorte} />
       <section className="pr-eligibilite_conditions">
         <div className="fr-pt-8w">
           <h2>Quelles sont les conditions à remplir pour être indemnisé(e) ?</h2>
@@ -143,6 +146,7 @@ const TestEligibilite = function() {
                   <Input
                     label="Date de l'opération de police judiciaire"
                     nativeInputProps={{
+                      name: "dateOperationPJ",
                       type: 'date',
                       value: dateOperationPJ,
                       onChange: ev=>setDateOperationPJ(ev.target.value)
@@ -160,6 +164,7 @@ const TestEligibilite = function() {
                       <Input
                         label="Numéro de procès-verbal"
                         nativeInputProps={{
+                          name: "numeroPV",
                           value: numeroPV,
                           onChange: ev=>setNumeroPV(ev.target.value),
                           maxLength: 255
@@ -168,6 +173,7 @@ const TestEligibilite = function() {
                       <Input
                         label="Numéro de parquet ou d'instruction"
                         nativeInputProps={{
+                          name: "numeroParquet",
                           value: numeroParquet,
                           onChange: ev=>setNumeroParquet(ev.target.value),
                           maxLength: 255
@@ -180,17 +186,20 @@ const TestEligibilite = function() {
                   <RadioButtons
                     legend="S'agit-il d'une erreur des services de police ?"
                     orientation='horizontal'
+                    name="isErreurPorte"
                     options={[
                           {
                               label: "Oui",
                               nativeInputProps: {
+                                  value: true,
                                   checked: (isErreurPorte === true),
                                   onChange: ()=> setIsErreurPorte(true)
                               }
                           },
                           {
                               label: "Non",
-                              nativeInputProps: {
+                              nativeInputProps:{
+                                  value: false,
                                   checked: (isErreurPorte !== true),
                                   onChange: ()=> setIsErreurPorte(false)
                               }

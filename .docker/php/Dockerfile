@@ -27,9 +27,9 @@ RUN apt-get install -y libldap2-dev libldap-common && docker-php-ext-configure l
 RUN echo "memory_limit = -1" >> $PHP_INI_DIR/conf.d/php.ini
 
 # Node
-#RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-#RUN apt-get install -y nodejs
-#RUN npm update -g
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+RUN npm update -g
 
 # WKhtmltopdf
 

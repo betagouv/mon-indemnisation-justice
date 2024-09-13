@@ -18,6 +18,9 @@ build:
     EMAIL_FROM: ne-pas-repondre@precontentieux.test
     EMAIL_FROM_LABEL: "Précontentieux (test)"
     SYMFONY_DEPRECATIONS_HELPER: disabled
+    PANTHER_ERROR_SCREENSHOT_DIR: public
+    PANTHER_ERROR_SCREENSHOT_ATTACH: true
+    PANTHER_FIREFOX_ARGUMENTS: "-height=1500"
   services:
     - postgres:15-alpine
   image:
@@ -55,18 +58,13 @@ build:
     - bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
     - yarn build
     # Run unit tests
-    - bin/phpunit -do-not-cache-result --log-junit report-unit.xml
-    # Run functional tests
     - vendor/bin/bdi detect drivers
-    - bin/phpunit tests/Functional/**.php --log-junit report-functional.xml
+    - bin/phpunit -do-not-cache-result --log-junit test-result.xml
   artifacts:
     paths:
-      - report-unit.xml
-      - report-functional.xml
+      - test-result.xml
     reports:
-      junit:
-        - report-unit.xml
-        - report-functional.xml
+      junit: test-result.xml
   cache:
     paths:
       - vendor/
