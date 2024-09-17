@@ -48,10 +48,10 @@ class DepotBrisPorteTest extends PantherTestCase
         $client->clickLink('Bris de porte');
         //$this->assertResponseIsSuccessful();
 
-        $crawler = $client->waitForVisibility('div[id=react-app]', 3);
+        $crawler = $client->waitForVisibility('#page-content', 3);
         $client->takeScreenshot('var/screenshots/test-eligibilite.png');
 
-        $this->assertSelectorTextContains('#react-app h1', 'Bris de porte');
+        $this->assertSelectorTextContains('#page-content h1', 'Bris de porte');
         // Il ne doit pas y avoir de modales ouvertes
         $this->assertSelectorIsNotVisible('dialog');
 
@@ -123,14 +123,51 @@ class DepotBrisPorteTest extends PantherTestCase
         // Trouver le formulaire
         // Trouver l'input ou
 
-        $client->submitForm("Vérifier mon éligibilité à l'indemnisation", [
+        //$crawler->filter('input[name=dateOperationPJ]')->first()->sendKeys("04");
+        //$client->executeScript("document.querySelector('input[name=dateOperationPJ]').click()");
+        //$client->executeScript("document.querySelector('input[name=dateOperationPJ]').setAttribute('value', '04092024')");
+        //$client->executeScript("document.querySelector('input[name=numeroPV]').setAttribute('value', 'PV45')");
+        //$client->executeScript("document.querySelector('input[type=radio][name=isErreurPorte][value=true]').click()");
+
+        /*$crawler->filter("button")
+            ->reduce(function (Crawler $node, $i) : bool {
+                    return trim($node->text()) === "Vérifier mon éligibilité à l'indemnisation";
+            })
+            ->first()
+            ->click()
+        ;*/
+
+        $client->takeScreenshot('var/screenshots/formulaire.png');
+
+        $button = $crawler->selectButton("Vérifier mon éligibilité à l'indemnisation")->first();
+        $form = $button->form([
             "dateOperationPJ" => "2023-12-31",
             "numeroPV" => "PV44",
             "isErreurPorte" => "true"
         ]);
-        $client->takeScreenshot('var/screenshots/formulaire.png');
-        //$client->submitForm()
 
+        $client->takeScreenshot('var/screenshots/formulaire-apres.png');
 
+        $crawler = $client->submit($form);
+
+        //$crawler = $client->waitForVisibility('dialog#modale-test-eligibilite h3', 2);
+        $client->takeScreenshot('var/screenshots/formulaire-submit.png');
+
+        $this->assertNotNull(
+            $client
+                ->getCrawler()
+                ->filter('dialog h3.fr-alert__title')
+                ->reduce(function ($e) {
+                    return $e->isDisplayed() && "Vous êtes éligible à l'indemnisation";
+                })
+                ->first()
+        );
+
+        $button = $crawler->selectButton("Accéder au formulaire de demande d'indemnisation")->first();
+        $this->assertNotNull($button);
+
+        $button->click();
+
+        $client->takeScreenshot('var/screenshots/redirection.png');
     }
 }

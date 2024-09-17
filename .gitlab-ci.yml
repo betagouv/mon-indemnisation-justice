@@ -20,7 +20,7 @@ build:
     SYMFONY_DEPRECATIONS_HELPER: disabled
     PANTHER_ERROR_SCREENSHOT_DIR: public
     PANTHER_ERROR_SCREENSHOT_ATTACH: true
-    PANTHER_FIREFOX_ARGUMENTS: "-height=1500"
+    PANTHER_FIREFOX_ARGUMENTS: "-width=1200 -height=2000"
   services:
     - postgres:15-alpine
   image:
