@@ -22,7 +22,10 @@ build:
     PANTHER_ERROR_SCREENSHOT_ATTACH: true
     PANTHER_FIREFOX_ARGUMENTS: "-width=1200 -height=2000"
   services:
-    - postgres:15-alpine
+    - name: postgres:15-alpine
+      alias: postgres
+    - name: axllent/mailpit
+      alias: mailpit
   image:
     name: php:8.2
   before_script:

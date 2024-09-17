@@ -279,9 +279,7 @@
                     }
                 },
                 soumettre(event) {
-                    const form = event.target.closest('form');
-                    form.submit();
-
+                    event.target.closest('form')?.submit();
 
                 },
             };

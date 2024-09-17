@@ -2,11 +2,42 @@
 
 namespace App\Tests\Functional\Requerant;
 
+use App\Entity\Requerant;
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use Doctrine\ORM\EntityManagerInterface;
+
+use GuzzleHttp\Client as HttpClient;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Panther\DomCrawler\Crawler;
 use Symfony\Component\Panther\PantherTestCase;
 
 class DepotBrisPorteTest extends PantherTestCase
 {
+    protected EntityManagerInterface $em;
+    protected HttpClient $mailerClient;
+
+    protected function setUp(): void
+    {
+        // Supprimer les éventuels requérants de test déjà existants :
+        $this->em = self::getContainer()->get(EntityManagerInterface::class);
+
+        $requerant = $this->em
+            ->getRepository(Requerant::class)
+            ->findOneBy(['email' => 'rick.errant@truc.fr']);
+
+        if (null !== $requerant) {
+            $this->em->remove($requerant);
+            $this->em->flush();
+            // Obligatoire pour contourner le DoctrineTestBundle https://github.com/dmaicher/doctrine-test-bundle?tab=readme-ov-file#debugging
+            StaticDriver::commit();
+        }
+
+        // Vider les boîtes courriel :
+        // Doc API mailpit https://mailpit.axllent.org/docs/api-v1/view.html#delete-/api/v1/messages
+        $this->mailerClient = new HttpClient(['base_uri' => 'http://mailpit:8025']);
+        $this->mailerClient->delete('/api/v1/messages');
+    }
+
     public function testDepotDossierBrisPorte(): void
     {
         // your app is automatically started using the built-in web server
@@ -14,6 +45,7 @@ class DepotBrisPorteTest extends PantherTestCase
             [
                 'browser' => PantherTestCase::FIREFOX,
                 'env' => [
+                    'APP_ENV' => 'test',
                     'BASE_URL' => 'http://127.0.0.1:9080/',
                 ],
             ],
@@ -27,29 +59,17 @@ class DepotBrisPorteTest extends PantherTestCase
                 ],
             ]);
         $client->request('GET', '/');
-        //$this->assertResponseIsSuccessful();
-        //$client->takeScreenshot('var/screenshots/accueil.png');
+        $this->assertEquals(Response::HTTP_OK, $client->getInternalResponse()->getStatusCode());
 
-        $client->waitForVisibility('main', 3);
+        $client->waitForVisibility('main', 1);
+        $client->takeScreenshot('var/screenshots/001-page-accueil.png');
 
         $this->assertSelectorTextContains('main h1', "Nous vous aidons dans votre demande d'indemnisation");
-        /*
-        $link = $crawler
-            ->filter('a')
-            ->reduce(function (Crawler $node, $i): bool {
-                return trim($node->text()) === "Bris de porte";
-            })
-            ->first();
-        dump($link);
-
-        $this->assertNotNull($link);
-        */
-
         $client->clickLink('Bris de porte');
-        //$this->assertResponseIsSuccessful();
+        $this->assertEquals(Response::HTTP_OK, $client->getInternalResponse()->getStatusCode());
 
         $crawler = $client->waitForVisibility('#page-content', 3);
-        $client->takeScreenshot('var/screenshots/test-eligibilite.png');
+        $client->takeScreenshot('var/screenshots/002-test-eligibilite.png');
 
         $this->assertSelectorTextContains('#page-content h1', 'Bris de porte');
         // Il ne doit pas y avoir de modales ouvertes
@@ -65,93 +85,24 @@ class DepotBrisPorteTest extends PantherTestCase
         $button->click();
 
         // La modale doit apparaître
-        $crawler = $client->waitForVisibility('dialog');
+        $crawler = $client->waitForVisibility('dialog', 1);
 
-        /*
-        $form = $crawler->filter('dialog form')->first();
-
-        $this->assertNotNull($form);
-
-        $labels = $form->filter('label,legend');
-
-        $data = [
-            "Date de l'opération de police judiciaire" => "2023-12-31",
-            "Numéro de procès-verbal" => "PV44",
-            "S'agit-il d'une erreur des services de police ?" => "Oui"
-        ];
-
-        $fields = array_merge(
-            ...array_filter(
-                $labels->each(
-                    function(Crawler $label) use ($data) {
-                        if (isset($data[trim($label->text())])) {
-                            echo "Found label {$label->text()}\n";
-                            return [
-                                trim($label->text()), $label->closest('input,textarea,select')->first()];
-                        }
-                        return null;
-                    }
-                )
-            )
-        );
-
-        dump($fields);
-        */
-
-        /*
-        foreach ($fields as $field) {
-            if ($field->count() > 0) {
-                    if ($input->eq(0)->getTagName() !== 'input') {
-                        if ($input->eq(0)->getAttribute('type') !== 'radio') {
-                            $input->sendKeys($data[trim($label->text())]);
-                        } else {
-                            $input
-                                ->filter("label")
-                                ->reduce(function (Crawler $node, $i) use($data, $label): bool {
-                                    return trim($node->text()) === $data[trim($label->text())];
-                                })
-                                ->first()
-                                ?->click()
-                            ;
-                        }
-                    }
-                    dump($input->getAttribute('value'));
-                }
-        }
-        */
-
-        // Trouver le formulaire
-        // Trouver l'input ou
-
-        //$crawler->filter('input[name=dateOperationPJ]')->first()->sendKeys("04");
-        //$client->executeScript("document.querySelector('input[name=dateOperationPJ]').click()");
-        //$client->executeScript("document.querySelector('input[name=dateOperationPJ]').setAttribute('value', '04092024')");
-        //$client->executeScript("document.querySelector('input[name=numeroPV]').setAttribute('value', 'PV45')");
-        //$client->executeScript("document.querySelector('input[type=radio][name=isErreurPorte][value=true]').click()");
-
-        /*$crawler->filter("button")
-            ->reduce(function (Crawler $node, $i) : bool {
-                    return trim($node->text()) === "Vérifier mon éligibilité à l'indemnisation";
-            })
-            ->first()
-            ->click()
-        ;*/
-
-        $client->takeScreenshot('var/screenshots/formulaire.png');
+        $client->takeScreenshot('var/screenshots/003-modale-formulaire.png');
 
         $button = $crawler->selectButton("Vérifier mon éligibilité à l'indemnisation")->first();
+        $this->assertNotNull($button);
         $form = $button->form([
-            "dateOperationPJ" => "2023-12-31",
-            "numeroPV" => "PV44",
-            "isErreurPorte" => "true"
+            'dateOperationPJ' => '2023-12-31',
+            'numeroPV' => 'PV44',
+            'isErreurPorte' => 'true',
         ]);
 
-        $client->takeScreenshot('var/screenshots/formulaire-apres.png');
+        $client->takeScreenshot('var/screenshots/004-modale-formulaire-rempli.png');
 
-        $crawler = $client->submit($form);
+        $client->submit($form);
 
-        //$crawler = $client->waitForVisibility('dialog#modale-test-eligibilite h3', 2);
-        $client->takeScreenshot('var/screenshots/formulaire-submit.png');
+        // $crawler = $client->waitForVisibility('dialog#modale-test-eligibilite h3', 2);
+        $client->takeScreenshot('var/screenshots/005-modale-formulaire-soumis.png');
 
         $this->assertNotNull(
             $client
@@ -163,11 +114,42 @@ class DepotBrisPorteTest extends PantherTestCase
                 ->first()
         );
 
-        $button = $crawler->selectButton("Accéder au formulaire de demande d'indemnisation")->first();
+        $button = $client->getCrawler()->selectButton("Accéder au formulaire de demande d'indemnisation")->first();
         $this->assertNotNull($button);
-
         $button->click();
+        $this->assertEquals(Response::HTTP_OK, $client->getInternalResponse()->getStatusCode());
+        $client->waitForVisibility('main', 1);
 
-        $client->takeScreenshot('var/screenshots/redirection.png');
+        $client->takeScreenshot('var/screenshots/006-page-inscription.png');
+
+        $button = $client->getCrawler()->selectButton('Valider mon inscription et poursuivre ma demande')->first();
+        $form = $button->form([
+            'civilite' => 'M',
+            'prenom1' => 'Rick',
+            'nomNaissance' => 'Errant',
+            'email' => 'rick.errant@truc.fr',
+            'password' => 'P4ssword',
+            'confirm' => 'P4ssword',
+            'cgu' => 'true',
+        ]);
+
+        $client->takeScreenshot('var/screenshots/007-inscription-formulaire-rempli.png');
+        sleep(1);
+        $this->assertTrue($button->isEnabled());
+        $client->submit($form);
+
+        $client->waitForVisibility('main', 1);
+        $client->takeScreenshot('var/screenshots/008-inscription-formulaire-soumis.png');
+
+        $this->assertEquals(Response::HTTP_OK, $client->getInternalResponse()->getStatusCode());
+        $this->assertSelectorTextContains('main h1', 'Finaliser la création de votre compte');
+
+        // S'assurer que le requérant a bien reçu un email
+        $response = $this->mailerClient->get('/api/v1/search', [
+            'query' => [
+                'query' => 'to:rick.errant@truc.fr subject:"finalisation de l\'activation de votre compte pour l\'application"',
+            ]
+        ]);
+        $this->assertEquals(1, json_decode($response->getBody()->getContents(), true)["total"]);
     }
 }
