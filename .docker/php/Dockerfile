@@ -30,6 +30,7 @@ RUN echo "memory_limit = -1" >> $PHP_INI_DIR/conf.d/php.ini
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get install -y nodejs
 RUN npm update -g
+RUN npm install --force -g yarn
 
 # WKhtmltopdf
 
@@ -56,6 +57,3 @@ RUN apt-get install -y libreoffice
 RUN apt autoremove -y
 
 WORKDIR /app
-
-# Surcharge de la commande Docker pour jouer les migrations avant de démarrer le serveur
-CMD composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --write-sql --no-interaction --all-or-nothing && php-fpm
