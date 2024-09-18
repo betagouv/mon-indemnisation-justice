@@ -1,0 +1,41 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% block subject %}Mon indemnisation justice : votre déclaration de bris de porte a bien été pris en compte{% endblock subject %}
+
+{% block entete %}
+<b>Votre déclaration de bris de porte a bien été pris en compte</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+Bonjour {{ requerant.nomComplet }},
+<br/>
+<br/>
+Vous avez déclaré un bris de porte ce jour. Nos services mettent tout en œuvre afin de revenir vers vous dans les meilleurs délais.
+<br/>
+<br/>
+Nous tenons à vous préciser que le pôle Précontentieux est un pôle national qui reçoit beaucoup de demandes
+d'indemnisation quotidiennement et traite différentes catégories de dossiers.
+<br/>
+<br/>
+De plus, l'instruction des demandes nécessite le recueil d'informations auprès des forces de l'ordre ou des autorités
+judiciaires.
+<br/>
+Enfin, le règlement de l'indemnité est effectué par le bureau du budget dont les délais de traitement sont à prendre en compte.
+<br/>
+<br/>
+<ul>
+    <li>
+        <b>Référence du dossier à rappeler dans toutes vos correspondances : {{ brisPorte.reference }}</b>
+    </li>
+    <li>
+        <b>Numéro de suivi pour suivre l'avancement de votre dossier : {{ brisPorte.raccourci }}</b>
+    </li>
+</ul>
+<br/>
+<br/>
+Cordialement,<br/>
+L'équipe Mon Indemnisation Justice
+{% endblock contenu %}

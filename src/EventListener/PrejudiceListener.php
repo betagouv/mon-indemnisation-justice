@@ -19,7 +19,7 @@ class PrejudiceListener
     public function preUpdate(PreUpdateEventArgs $args): void
     {
         $entity = $args->getObject();
-        if ($entity instanceof BasePrejudice) {
+        if ($entity instanceof BrisPorte) {
 
             if (null !== $entity->getDateDeclaration() && null === $entity->getReference()) {
                 $entityManager = $args->getObjectManager();

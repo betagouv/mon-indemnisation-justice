@@ -65,23 +65,20 @@ class BrisPorteController extends RequerantController
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', methods: ['GET'], options: ['expose' => true])]
     public function redirection(BrisPorte $brisPorte, BasicMailer $mailer): RedirectResponse
     {
-        $user = $this->getRequerant();
+        $requerant = $this->getRequerant();
         $brisPorte->setDeclare();
         $this->entityManager->persist($brisPorte);
         $this->entityManager->flush();
 
         $mailer
            ->from($this->emailFrom, $this->emailFromLabel)
-           ->to($user->getEmail())
-           ->subject('Précontentieux : Votre déclaration de bris de porte a bien été pris en compte')
-           ->htmlTemplate('requerant/email/confirmation_passage_etat_constitue.html.twig', [
-               'mail' => $user->getEmail(),
-               'url' => $this->baseUrl,
-               'nomComplet' => $user->getNomComplet(),
-               'reference' => $brisPorte->getReference(),
-               'raccourci' => $brisPorte->getRaccourci(),
+           ->to($requerant->getEmail())
+           ->subject('Votre déclaration de bris de porte a bien été pris en compte')
+           ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
+               'brisPorte' => $brisPorte,
+               'requerant' => $requerant,
            ])
-           ->send(user: $user)
+           ->send(user: $requerant)
         ;
 
         return $this->redirectToRoute('requerant_home_index');
