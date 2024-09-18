@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Civilite;
 use App\Entity\Requerant;
 use App\Repository\RequerantRepository;
-use App\Service\Mailer\SignedMailer;
+use App\Service\Mailer\BasicMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,8 +22,9 @@ class SecurityController extends AbstractController
         protected UrlGeneratorInterface $urlGenerator,
         protected UserPasswordHasherInterface $userPasswordHasher,
         protected AuthenticationUtils $authenticationUtils,
-        protected SignedMailer $mailer,
+        protected BasicMailer $mailer,
         protected EntityManagerInterface $em,
+        protected readonly RequerantRepository $requerantRepository,
         protected readonly string $emailFrom,
         protected readonly string $emailFromLabel,
         protected readonly string $baseUrl
@@ -38,10 +39,7 @@ class SecurityController extends AbstractController
         $user = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $email]);
         $sent = false;
         if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
-            /**
-             * Envoi du mail de confirmation.
-             */
-
+            // Envoi du mail de confirmation.
             $this->mailer
                 ->from($this->emailFrom, $this->emailFromLabel)
                 ->to($user->getEmail())
@@ -153,22 +151,17 @@ class SecurityController extends AbstractController
         return $fields;
     }
 
-    #[Route('/validation-du-compte-requerant', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, RequerantRepository $ur): Response
+    #[Route('/validation-du-compte-requerant/{jeton}', name: 'app_verify_email')]
+    public function verifyUserEmail(Request $request, string $jeton): Response
     {
-        /** @var ?int $id */
-        $id = $request->query->get('id', null);
-        /** @var ?Requerant $user */
-        $user = $ur->find($id);
-        if (
-            (null !== $user)
-            && (true === $this->mailer->check($request, $user))
-        ) {
-            $user->setVerifieCourriel();
-            $this->em->flush();
+        $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
+        if (null === $requerant) {
+            return $this->redirectToRoute('app_login');
         }
+        $requerant->setVerifieCourriel();
+        $this->em->flush();
 
-        return $this->redirectToRoute('app_login', ['courriel' => $user->getEmail()]);
+        return $this->redirectToRoute('app_login', ['courriel' => $requerant->getEmail()]);
     }
 
     #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
@@ -210,6 +203,7 @@ class SecurityController extends AbstractController
                 )
             );
             $requerant->addRole(Requerant::ROLE_REQUERANT);
+            $requerant->genererJetonVerification();
             $requerant->setTestEligibilite($request->getSession()->get('testEligibilite'));
             $request->getSession()->remove('testEligibilite');
             $this->em->persist($requerant);
@@ -221,13 +215,11 @@ class SecurityController extends AbstractController
             $this->mailer
                 ->from($this->emailFrom, $this->emailFromLabel)
                 ->to($requerant->getEmail())
-                ->subject("Précontentieux : finalisation de l'activation de votre compte pour l'application Mon Indemnisation Justice")
-                ->htmlTemplate('registration/confirmation_email.html.twig', [
-                    'mail' => $requerant->getEmail(),
-                    'url' => $this->baseUrl,
-                    'nom_complet' => $requerant->getNomComplet(),
+                ->subject("Activation de votre compte sur l'application Mon indemnisation justice")
+                ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
+                    'requerant' => $requerant,
                 ])
-                ->send(pathname: 'app_verify_email', user: $requerant);
+                ->send($requerant);
             // Ajout d'un drapeau pour marquer la réussite de l'inscription:
             $request->getSession()->set('emailRequerantInscrit', $requerant->getEmail());
 
