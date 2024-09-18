@@ -25,8 +25,6 @@ class SecurityController extends AbstractController
         protected BasicMailer $mailer,
         protected EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
-        protected readonly string $emailFrom,
-        protected readonly string $emailFromLabel,
         protected readonly string $baseUrl
     ) {
     }
@@ -41,7 +39,6 @@ class SecurityController extends AbstractController
         if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
             // Envoi du mail de confirmation.
             $this->mailer
-                ->from($this->emailFrom, $this->emailFromLabel)
                 ->to($user->getEmail())
                 ->subject("Mon Indemnisation Justice: réinitialisation de votre mot de passe")
                 ->htmlTemplate('security/send_link_for_new_password.html.twig', [
@@ -213,7 +210,6 @@ class SecurityController extends AbstractController
              * Envoi du mail de confirmation.
              */
             $this->mailer
-                ->from($this->emailFrom, $this->emailFromLabel)
                 ->to($requerant->getEmail())
                 ->subject("Activation de votre compte sur l'application Mon indemnisation justice")
                 ->htmlTemplate('email/inscription_a_finaliser.html.twig', [

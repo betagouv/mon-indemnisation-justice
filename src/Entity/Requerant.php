@@ -85,7 +85,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Adresse $adresse = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'compte')]
     private ?PersonnePhysique $personnePhysique = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
