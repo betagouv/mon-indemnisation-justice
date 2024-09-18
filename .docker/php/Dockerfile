@@ -27,9 +27,10 @@ RUN apt-get install -y libldap2-dev libldap-common && docker-php-ext-configure l
 RUN echo "memory_limit = -1" >> $PHP_INI_DIR/conf.d/php.ini
 
 # Node
-#RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-#RUN apt-get install -y nodejs
-#RUN npm update -g
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+RUN npm update -g
+RUN npm install --force -g yarn
 
 # WKhtmltopdf
 
@@ -38,6 +39,10 @@ RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/w
     && dpkg -i /tmp/wkhtml2pdf.deb \
     && ln -sn /usr/local/bin/wkhtmltopdf /bin/wkhtmltopdf \
     && rm -f /tmp/wkhtml2pdf.deb
+
+# Firefox
+
+RUN apt-get install -y firefox-esr
 
 # Chromium
 
@@ -52,13 +57,3 @@ RUN apt-get install -y libreoffice
 RUN apt autoremove -y
 
 WORKDIR /app
-
-ARG APP_ENV
-ENV APP_ENV ${APP_ENV:-dev}
-ARG APP_DEBUG
-ENV APP_DEBUG ${APP_DEBUG:-1}
-ARG DATABASE_URL
-ENV DATABASE_URL ${DATABASE_URL:-}
-
-# Surcharge de la commande Docker pour jouer les migrations avant de démarrer le serveur
-CMD composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --write-sql --no-interaction --all-or-nothing && php-fpm

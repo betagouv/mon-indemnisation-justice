@@ -12,6 +12,7 @@ const Civilite = ({civilite,setCivilite, defaultOptionText=null}) => {
     <Select
       label="Civilité"
       nativeSelectProps={{
+          name: "civilite",
           onChange: event => setCivilite(event.target.value),
           value: civilite??""
       }}

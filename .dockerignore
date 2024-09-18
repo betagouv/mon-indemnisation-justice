@@ -6,3 +6,4 @@ docs/
 **/.gitignore
 .env.*
 **/.DS_Store
+drivers/

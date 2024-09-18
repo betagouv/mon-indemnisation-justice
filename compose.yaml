@@ -42,19 +42,15 @@ services:
     hostname: symfony
     stdin_open: true
     tty: true
-    build:
-      dockerfile: .docker/php/Dockerfile
-      context: .
-      args:
-        - APP_ENV=${APP_ENV:-dev}
-        - APP_DEBUG=${APP_DEBUG:-1}
-        - DATABASE_URL=pgsql://precontentieux:precontentieux@postgres:5432/precondev?serverVersion=15
+    # En attendant un accès à Harbor
+    image: pierrelemee/precontentieux-full:latest
+    command: bash -c 'composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && php-fpm'
     environment:
       - APP_ENV=${APP_ENV:-dev}
-      - APP_DEBUG=${APP_DEBUG:-1}
-      - DATABASE_URL=pgsql://precontentieux:precontentieux@postgres:5432/precondev?serverVersion=15
-    env_file:
-      - .env.dev
+      - SYMFONY_DEPRECATIONS_HELPER=disabled
+      - PANTHER_ERROR_SCREENSHOT_DIR=public/screenshots
+      - PANTHER_ERROR_SCREENSHOT_ATTACH=true
+      - PANTHER_FIREFOX_ARGUMENTS='-width=1200 -height=2000'
     depends_on:
       - postgres
       - mailpit
