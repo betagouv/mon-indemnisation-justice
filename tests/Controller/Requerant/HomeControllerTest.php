@@ -23,6 +23,15 @@ class HomeControllerTest extends WebTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
         $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
 
+        $requerant = $this->em
+            ->getRepository(Requerant::class)
+            ->findOneBy(['email' => 'raquel.randt@courriel.fr']);
+
+        if (null !== $requerant) {
+            $this->em->remove($requerant);
+            $this->em->flush();
+        }
+
         $requerant = (new Requerant())
             ->setAdresse(
                 (new Adresse())
@@ -32,12 +41,12 @@ class HomeControllerTest extends WebTestCase
             )
             ->setPersonnePhysique(
                 (new PersonnePhysique())
-                ->setEmail('requerant1@courriel.fr')
+                ->setEmail('raquel.randt@courriel.fr')
                 ->setCivilite(Civilite::MME)
                 ->setPrenom1('Raquel')
-                ->setNom('Rante')
+                ->setNom('Randt')
             )
-            ->setEmail('requerant1@courriel.fr')
+            ->setEmail('raquel.randt@courriel.fr')
             ->setRoles([Requerant::ROLE_REQUERANT])
         ;
         $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
@@ -48,7 +57,7 @@ class HomeControllerTest extends WebTestCase
 
     public function testIndex()
     {
-        $requerant = $this->em->getRepository(Requerant::class)->findOneBy(['email' => 'requerant1@courriel.fr']);
+        $requerant = $this->em->getRepository(Requerant::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
 
         $this->client->loginUser($requerant, 'requerant');
 

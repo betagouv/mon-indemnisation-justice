@@ -2,135 +2,107 @@
 
 namespace App\Tests\Functional\Requerant;
 
-use Symfony\Component\Panther\DomCrawler\Crawler;
+use App\Entity\Adresse;
+use App\Entity\Civilite;
+use App\Entity\PersonnePhysique;
+use App\Entity\Requerant;
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Client as HttpClient;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Panther\Client as PantherClient;
 use Symfony\Component\Panther\PantherTestCase;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DepotBrisPorteTest extends PantherTestCase
 {
-    public function testDepotDossierBrisPorte(): void
+    protected PantherClient $client;
+    protected EntityManagerInterface $em;
+    protected UserPasswordHasherInterface $passwordHasher;
+    protected HttpClient $mailerClient;
+
+    protected function setUp(): void
     {
         // your app is automatically started using the built-in web server
-        $client = static::createPantherClient(
+        $this->client = static::createPantherClient(
             [
                 'browser' => PantherTestCase::FIREFOX,
                 'env' => [
+                    'APP_ENV' => 'test',
                     'BASE_URL' => 'http://127.0.0.1:9080/',
                 ],
-            ],
-            [],
-            [
-                'capabilities' => [
-                    'goog:loggingPrefs' => [
-                        'browser' => 'ALL', // calls to console.* methods
-                        'performance' => 'ALL', // performance data
-                    ],
-                ],
-            ]);
-        $client->request('GET', '/');
-        //$this->assertResponseIsSuccessful();
-        //$client->takeScreenshot('var/screenshots/accueil.png');
-
-        $client->waitForVisibility('main', 3);
-
-        $this->assertSelectorTextContains('main h1', "Nous vous aidons dans votre demande d'indemnisation");
-        /*
-        $link = $crawler
-            ->filter('a')
-            ->reduce(function (Crawler $node, $i): bool {
-                return trim($node->text()) === "Bris de porte";
-            })
-            ->first();
-        dump($link);
-
-        $this->assertNotNull($link);
-        */
-
-        $client->clickLink('Bris de porte');
-        //$this->assertResponseIsSuccessful();
-
-        $crawler = $client->waitForVisibility('div[id=react-app]', 3);
-        $client->takeScreenshot('var/screenshots/test-eligibilite.png');
-
-        $this->assertSelectorTextContains('#react-app h1', 'Bris de porte');
-        // Il ne doit pas y avoir de modales ouvertes
-        $this->assertSelectorIsNotVisible('dialog');
-
-        $button = $crawler
-            ->filter('button')
-            ->reduce(function (Crawler $node, $i): bool {
-                return "Tester mon éligibilité à l'indemnisation" === trim($node->text());
-            })
-            ->first();
-        $this->assertNotNull($button);
-        $button->click();
-
-        // La modale doit apparaître
-        $crawler = $client->waitForVisibility('dialog');
-
-        /*
-        $form = $crawler->filter('dialog form')->first();
-
-        $this->assertNotNull($form);
-
-        $labels = $form->filter('label,legend');
-
-        $data = [
-            "Date de l'opération de police judiciaire" => "2023-12-31",
-            "Numéro de procès-verbal" => "PV44",
-            "S'agit-il d'une erreur des services de police ?" => "Oui"
-        ];
-
-        $fields = array_merge(
-            ...array_filter(
-                $labels->each(
-                    function(Crawler $label) use ($data) {
-                        if (isset($data[trim($label->text())])) {
-                            echo "Found label {$label->text()}\n";
-                            return [
-                                trim($label->text()), $label->closest('input,textarea,select')->first()];
-                        }
-                        return null;
-                    }
-                )
-            )
+            ]
         );
+        $this->client->getCookieJar()->clear();
 
-        dump($fields);
-        */
+        $this->em = self::getContainer()->get(EntityManagerInterface::class);
+        $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
 
-        /*
-        foreach ($fields as $field) {
-            if ($field->count() > 0) {
-                    if ($input->eq(0)->getTagName() !== 'input') {
-                        if ($input->eq(0)->getAttribute('type') !== 'radio') {
-                            $input->sendKeys($data[trim($label->text())]);
-                        } else {
-                            $input
-                                ->filter("label")
-                                ->reduce(function (Crawler $node, $i) use($data, $label): bool {
-                                    return trim($node->text()) === $data[trim($label->text())];
-                                })
-                                ->first()
-                                ?->click()
-                            ;
-                        }
-                    }
-                    dump($input->getAttribute('value'));
-                }
+        $requerant = $this->em
+            ->getRepository(Requerant::class)
+            ->findOneBy(['email' => 'raquel.randt@courriel.fr']);
+
+        if (null !== $requerant) {
+            $this->em->remove($requerant);
+            $this->em->flush();
         }
-        */
 
-        // Trouver le formulaire
-        // Trouver l'input ou
+        $requerant = (new Requerant())
+            ->setAdresse(
+                (new Adresse())
+                ->setLigne1('12 rue des Oliviers')
+                ->setLocalite('Nantes')
+                ->setCodePostal('44100')
+            )
+            ->setPersonnePhysique(
+                (new PersonnePhysique())
+                ->setEmail('raquel.randt@courriel.fr')
+                ->setCivilite(Civilite::MME)
+                ->setPrenom1('Raquel')
+                ->setNom('Randt')
+            )
+            ->setVerifieCourriel()
+            ->setTestEligibilite([
+                "dateOperationPJ" => "2023-12-31",
+                "numeroPV" => "PV44",
+                "numeroParquet" =>  "",
+                "isErreurPorte" => true
+            ])
+            ->setEmail('raquel.randt@courriel.fr')
+            ->setRoles([Requerant::ROLE_REQUERANT])
+        ;
+        $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
 
-        $client->submitForm("Vérifier mon éligibilité à l'indemnisation", [
-            "dateOperationPJ" => "2023-12-31",
-            "numeroPV" => "PV44",
-            "isErreurPorte" => "true"
+        $this->em->persist($requerant);
+        $this->em->flush();
+        // Obligatoire pour contourner le DoctrineTestBundle https://github.com/dmaicher/doctrine-test-bundle?tab=readme-ov-file#debugging
+        StaticDriver::commit();
+        StaticDriver::beginTransaction();
+    }
+
+    public function testDepotDossierBrisPorte(): void
+    {
+        $this->client->get('/connexion');
+        $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
+
+        $this->client->waitForVisibility('main', 1);
+        $this->client->takeScreenshot('public/screenshots/depot/001-page-connexion.png');
+        $this->assertSelectorTextContains('main h2', "Me connecter à mon espace");
+        $button = $this->client->getCrawler()->selectButton('Je me connecte à mon espace')->first();
+        $form = $button->form([
+            'email' => 'raquel.randt@courriel.fr',
+            'password' => 'P4ssword',
         ]);
-        $client->takeScreenshot('var/screenshots/formulaire.png');
-        //$client->submitForm()
 
+        $this->client->takeScreenshot('public/screenshots/depot/002-connexion-formulaire-rempli.png');
+        sleep(1);
+        $this->assertTrue($button->isEnabled());
+        $this->client->submit($form);
 
+        $this->client->waitForVisibility('main', 1);
+        $this->client->takeScreenshot('public/screenshots/depot/003-page-accueil-requerant.png');
+
+        $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
+        $this->assertSelectorTextContains('main h1', 'Déclarer un bris de porte');
     }
 }

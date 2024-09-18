@@ -232,17 +232,6 @@ class SecurityController extends AbstractController
             $request->getSession()->set('emailRequerantInscrit', $requerant->getEmail());
 
             return $this->redirectToRoute('app_inscription');
-        } /*
-         * Le formulaire a bien été identifié
-         *
-         */
-        elseif (true === self::has_fields($request)) {
-            if ('BRI' !== $fields['type']) {
-                $session->set('test_eligibilite', null);
-
-                return $this->redirect('/');
-            }
-            $session->set('test_eligibilite', $fields);
         }
 
         $error = $this->authenticationUtils->getLastAuthenticationError();

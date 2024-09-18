@@ -6,6 +6,7 @@ build:
   stage: "🔨 build"
   variables:
     APP_ENV: test
+    APP_SECRET: bafc23a0315b735289c499a886798934
     DATABASE_URL: pgsql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15
     COMPOSER_ALLOW_SUPERUSER: 1
     POSTGRES_DB: precontest
@@ -15,54 +16,34 @@ build:
     MAILER_FROM: ne-pas-repondre@precontentieux.test
     MAILER_DSN: smtp://mailpit:1025
     CORS_ALLOW_ORIGIN: "*"
-    EMAIL_FROM: ne-pas-repondre@precontentieux.test
+    EMAIL_FROM: ne-pas-repondre@precontentieux.anje-justice.test
     EMAIL_FROM_LABEL: "Précontentieux (test)"
     SYMFONY_DEPRECATIONS_HELPER: disabled
-    PANTHER_ERROR_SCREENSHOT_DIR: public
+    PANTHER_ERROR_SCREENSHOT_DIR: public/screenshots
     PANTHER_ERROR_SCREENSHOT_ATTACH: true
-    PANTHER_FIREFOX_ARGUMENTS: "-height=1500"
+    PANTHER_FIREFOX_ARGUMENTS: "-width=1200 -height=2000"
   services:
-    - postgres:15-alpine
+    - name: postgres:15-alpine
+      alias: postgres
+    - name: axllent/mailpit
+      alias: mailpit
   image:
-    name: php:8.2
-  before_script:
-    # Install required system packages
-    - apt update -yqq
-    - apt-get install -y zlib1g-dev libicu-dev g++ libpq-dev libzip-dev zip libldap2-dev libldap-common libfreetype6-dev libjpeg62-turbo-dev libpng-dev
-    # Install PHP extensions
-    - docker-php-ext-install zip
-    - docker-php-ext-install intl
-    - docker-php-ext-install calendar
-    - docker-php-ext-install gd
-    - docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
-    - docker-php-ext-install pdo pdo_pgsql pgsql
-    - docker-php-ext-install sysvsem
-    - docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/
-    - docker-php-ext-install ldap
-    # Install composer
-    - curl -sS https://getcomposer.org/installer | php
-    # Install all project dependencies
-    - php composer.phar install --no-interaction
-    # Install node
-    - curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-    - apt-get install -y nodejs
-    - npm update -g
-    # Install npm dependencies
-    - yarn install
-    # Firefox
-    - apt-get install -y firefox-esr
+    name: pierrelemee/precontentieux-full:latest
   script:
     - echo "Building"
+    - composer install --no-interaction --optimize-autoloader
     - bin/console cache:clear
     - bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
-    - bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
+    - yarn install --no-progress --non-interactive
     - yarn build
     # Run unit tests
     - vendor/bin/bdi detect drivers
-    - bin/phpunit -do-not-cache-result --log-junit test-result.xml
+    - bin/phpunit --log-junit test-result.xml
   artifacts:
+    when: always
     paths:
       - test-result.xml
+      - public/screenshots/**
     reports:
       junit: test-result.xml
   cache:

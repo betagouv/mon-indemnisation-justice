@@ -2,6 +2,17 @@
 
 {% set title = 'Créer un compte' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+      /** Hack: maintenir les input de type checkbox et radio "cliquables". */
+
+      input[type=radio],input[type=checkbox] {
+        z-index: 2;
+      }
+    </style>
+{% endblock %}
+
 {% block main %}
   {% set csrf_token = csrf_token('authenticate') %}
   {% set user = app.user is not null ? app.user : empty_user() %}

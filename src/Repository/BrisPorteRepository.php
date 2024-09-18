@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Contracts\PrejudiceInterface;
 use App\Entity\BrisPorte;
 use App\Entity\Requerant;
 use App\Entity\EtatBrisPorte;
@@ -25,19 +24,15 @@ class BrisPorteRepository extends ServiceEntityRepository
         parent::__construct($registry, BrisPorte::class);
     }
 
-    public function newInstance(Requerant $user): PrejudiceInterface
+    public function newInstance(Requerant $user): BrisPorte
     {
-        /** @var string $classname */
-        $classname = $this->getEntityName();
-        /** @var EntityManagerInterface $em */
-        $em = $this->getEntityManager();
-        /** @var PrejudiceInterface $prejudice */
-        $prejudice = new $classname();
-        $prejudice->setRequerant($user);
-        $em->persist($prejudice);
-        $em->flush();
+        $brisPorte = (new BrisPorte())
+            ->setRequerant($user);
 
-        return $prejudice;
+        $this->getEntityManager()->persist($brisPorte);
+        $this->getEntityManager()->flush();
+
+        return $brisPorte;
     }
 
     public function generateRaccourci(int $length = 8): string
