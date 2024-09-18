@@ -18,7 +18,7 @@ build:
     EMAIL_FROM: ne-pas-repondre@precontentieux.test
     EMAIL_FROM_LABEL: "Précontentieux (test)"
     SYMFONY_DEPRECATIONS_HELPER: disabled
-    PANTHER_ERROR_SCREENSHOT_DIR: public
+    PANTHER_ERROR_SCREENSHOT_DIR: public/screenshots
     PANTHER_ERROR_SCREENSHOT_ATTACH: true
     PANTHER_FIREFOX_ARGUMENTS: "-width=1200 -height=2000"
   services:
@@ -58,14 +58,18 @@ build:
     - echo "Building"
     - bin/console cache:clear
     - bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
-    - bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
     - yarn build
     # Run unit tests
     - vendor/bin/bdi detect drivers
-    - bin/phpunit -do-not-cache-result --log-junit test-result.xml
+    - bin/phpunit --log-junit test-result.xml
   artifacts:
     paths:
       - test-result.xml
+      - public/screenshots/*
+      - public/screenshots/*.png
+      - public/screenshots/depot/*
+      - public/screenshots/test-eligibilite/*
+      - public/screenshots/test-eligibilite/*.png
     reports:
       junit: test-result.xml
   cache:

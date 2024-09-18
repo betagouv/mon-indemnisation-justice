@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Repository\RequerantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -38,7 +40,6 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 {
     // Le rôle ROLE_REQUERANT est celui donné au porteur d'une requête d'indemnisation
     public const ROLE_REQUERANT = 'ROLE_REQUERANT';
-
 
     #[Groups(['user:read', 'prejudice:read'])]
     #[ORM\Id]
@@ -88,12 +89,16 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale = null;
 
+    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'])]
+    protected Collection $brisPorte;
+
     public function __construct()
     {
         $this->personneMorale = new PersonneMorale();
         $this->personnePhysique = new PersonnePhysique();
         $this->isPersonneMorale = false;
         $this->adresse = new Adresse();
+        $this->brisPorte = new ArrayCollection();
     }
 
     public function getPId(): ?int

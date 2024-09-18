@@ -2,154 +2,107 @@
 
 namespace App\Tests\Functional\Requerant;
 
+use App\Entity\Adresse;
+use App\Entity\Civilite;
+use App\Entity\PersonnePhysique;
 use App\Entity\Requerant;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
-
 use GuzzleHttp\Client as HttpClient;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Panther\DomCrawler\Crawler;
+use Symfony\Component\Panther\Client as PantherClient;
 use Symfony\Component\Panther\PantherTestCase;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DepotBrisPorteTest extends PantherTestCase
 {
+    protected PantherClient $client;
     protected EntityManagerInterface $em;
+    protected UserPasswordHasherInterface $passwordHasher;
     protected HttpClient $mailerClient;
 
     protected function setUp(): void
     {
-        // Supprimer les éventuels requérants de test déjà existants :
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
-
-        $requerant = $this->em
-            ->getRepository(Requerant::class)
-            ->findOneBy(['email' => 'rick.errant@truc.fr']);
-
-        if (null !== $requerant) {
-            $this->em->remove($requerant);
-            $this->em->flush();
-            // Obligatoire pour contourner le DoctrineTestBundle https://github.com/dmaicher/doctrine-test-bundle?tab=readme-ov-file#debugging
-            StaticDriver::commit();
-        }
-
-        // Vider les boîtes courriel :
-        // Doc API mailpit https://mailpit.axllent.org/docs/api-v1/view.html#delete-/api/v1/messages
-        $this->mailerClient = new HttpClient(['base_uri' => 'http://mailpit:8025']);
-        $this->mailerClient->delete('/api/v1/messages');
-    }
-
-    public function testDepotDossierBrisPorte(): void
-    {
         // your app is automatically started using the built-in web server
-        $client = static::createPantherClient(
+        $this->client = static::createPantherClient(
             [
                 'browser' => PantherTestCase::FIREFOX,
                 'env' => [
                     'APP_ENV' => 'test',
                     'BASE_URL' => 'http://127.0.0.1:9080/',
                 ],
-            ],
-            [],
-            [
-                'capabilities' => [
-                    'goog:loggingPrefs' => [
-                        'browser' => 'ALL', // calls to console.* methods
-                        'performance' => 'ALL', // performance data
-                    ],
-                ],
-            ]);
-        $client->request('GET', '/');
-        $this->assertEquals(Response::HTTP_OK, $client->getInternalResponse()->getStatusCode());
-
-        $client->waitForVisibility('main', 1);
-        $client->takeScreenshot('var/screenshots/001-page-accueil.png');
-
-        $this->assertSelectorTextContains('main h1', "Nous vous aidons dans votre demande d'indemnisation");
-        $client->clickLink('Bris de porte');
-        $this->assertEquals(Response::HTTP_OK, $client->getInternalResponse()->getStatusCode());
-
-        $crawler = $client->waitForVisibility('#page-content', 3);
-        $client->takeScreenshot('var/screenshots/002-test-eligibilite.png');
-
-        $this->assertSelectorTextContains('#page-content h1', 'Bris de porte');
-        // Il ne doit pas y avoir de modales ouvertes
-        $this->assertSelectorIsNotVisible('dialog');
-
-        $button = $crawler
-            ->filter('button')
-            ->reduce(function (Crawler $node, $i): bool {
-                return "Tester mon éligibilité à l'indemnisation" === trim($node->text());
-            })
-            ->first();
-        $this->assertNotNull($button);
-        $button->click();
-
-        // La modale doit apparaître
-        $crawler = $client->waitForVisibility('dialog', 1);
-
-        $client->takeScreenshot('var/screenshots/003-modale-formulaire.png');
-
-        $button = $crawler->selectButton("Vérifier mon éligibilité à l'indemnisation")->first();
-        $this->assertNotNull($button);
-        $form = $button->form([
-            'dateOperationPJ' => '2023-12-31',
-            'numeroPV' => 'PV44',
-            'isErreurPorte' => 'true',
-        ]);
-
-        $client->takeScreenshot('var/screenshots/004-modale-formulaire-rempli.png');
-
-        $client->submit($form);
-
-        // $crawler = $client->waitForVisibility('dialog#modale-test-eligibilite h3', 2);
-        $client->takeScreenshot('var/screenshots/005-modale-formulaire-soumis.png');
-
-        $this->assertNotNull(
-            $client
-                ->getCrawler()
-                ->filter('dialog h3.fr-alert__title')
-                ->reduce(function ($e) {
-                    return $e->isDisplayed() && "Vous êtes éligible à l'indemnisation";
-                })
-                ->first()
+            ]
         );
+        $this->client->getCookieJar()->clear();
 
-        $button = $client->getCrawler()->selectButton("Accéder au formulaire de demande d'indemnisation")->first();
-        $this->assertNotNull($button);
-        $button->click();
-        $this->assertEquals(Response::HTTP_OK, $client->getInternalResponse()->getStatusCode());
-        $client->waitForVisibility('main', 1);
+        $this->em = self::getContainer()->get(EntityManagerInterface::class);
+        $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
 
-        $client->takeScreenshot('var/screenshots/006-page-inscription.png');
+        $requerant = $this->em
+            ->getRepository(Requerant::class)
+            ->findOneBy(['email' => 'raquel.randt@courriel.fr']);
 
-        $button = $client->getCrawler()->selectButton('Valider mon inscription et poursuivre ma demande')->first();
+        if (null !== $requerant) {
+            $this->em->remove($requerant);
+            $this->em->flush();
+        }
+
+        $requerant = (new Requerant())
+            ->setAdresse(
+                (new Adresse())
+                ->setLigne1('12 rue des Oliviers')
+                ->setLocalite('Nantes')
+                ->setCodePostal('44100')
+            )
+            ->setPersonnePhysique(
+                (new PersonnePhysique())
+                ->setEmail('raquel.randt@courriel.fr')
+                ->setCivilite(Civilite::MME)
+                ->setPrenom1('Raquel')
+                ->setNom('Randt')
+            )
+            ->setVerifieCourriel()
+            ->setTestEligibilite([
+                "dateOperationPJ" => "2023-12-31",
+                "numeroPV" => "PV44",
+                "numeroParquet" =>  "",
+                "isErreurPorte" => true
+            ])
+            ->setEmail('raquel.randt@courriel.fr')
+            ->setRoles([Requerant::ROLE_REQUERANT])
+        ;
+        $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
+
+        $this->em->persist($requerant);
+        $this->em->flush();
+        // Obligatoire pour contourner le DoctrineTestBundle https://github.com/dmaicher/doctrine-test-bundle?tab=readme-ov-file#debugging
+        StaticDriver::commit();
+        StaticDriver::beginTransaction();
+    }
+
+    public function testDepotDossierBrisPorte(): void
+    {
+        $this->client->get('/connexion');
+        $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
+
+        $this->client->waitForVisibility('main', 1);
+        $this->client->takeScreenshot('public/screenshots/depot/001-page-connexion.png');
+        $this->assertSelectorTextContains('main h2', "Me connecter à mon espace");
+        $button = $this->client->getCrawler()->selectButton('Je me connecte à mon espace')->first();
         $form = $button->form([
-            'civilite' => 'M',
-            'prenom1' => 'Rick',
-            'nomNaissance' => 'Errant',
-            'email' => 'rick.errant@truc.fr',
+            'email' => 'raquel.randt@courriel.fr',
             'password' => 'P4ssword',
-            'confirm' => 'P4ssword',
-            'cgu' => 'true',
         ]);
 
-        $client->takeScreenshot('var/screenshots/007-inscription-formulaire-rempli.png');
+        $this->client->takeScreenshot('public/screenshots/depot/002-connexion-formulaire-rempli.png');
         sleep(1);
         $this->assertTrue($button->isEnabled());
-        $client->submit($form);
+        $this->client->submit($form);
 
-        $client->waitForVisibility('main', 1);
-        $client->takeScreenshot('var/screenshots/008-inscription-formulaire-soumis.png');
+        $this->client->waitForVisibility('main', 1);
+        $this->client->takeScreenshot('public/screenshots/depot/003-page-accueil-requerant.png');
 
-        $this->assertEquals(Response::HTTP_OK, $client->getInternalResponse()->getStatusCode());
-        $this->assertSelectorTextContains('main h1', 'Finaliser la création de votre compte');
-
-        // S'assurer que le requérant a bien reçu un email
-        $response = $this->mailerClient->get('/api/v1/search', [
-            'query' => [
-                'query' => 'to:rick.errant@truc.fr subject:"finalisation de l\'activation de votre compte pour l\'application"',
-            ]
-        ]);
-        $this->assertEquals(1, json_decode($response->getBody()->getContents(), true)["total"]);
+        $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
+        $this->assertSelectorTextContains('main h1', 'Déclarer un bris de porte');
     }
 }
