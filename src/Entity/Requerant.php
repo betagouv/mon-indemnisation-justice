@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Repository\RequerantRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -39,7 +41,6 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     // Le rôle ROLE_REQUERANT est celui donné au porteur d'une requête d'indemnisation
     public const ROLE_REQUERANT = 'ROLE_REQUERANT';
 
-
     #[Groups(['user:read', 'prejudice:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -66,40 +67,33 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateChangementMDP = null;
 
+    #[ORM\Column(type: 'string', length: 12, nullable: true)]
+    protected ?string $jetonVerification;
+
     #[ORM\Column(type: 'boolean')]
     private $estVerifieCourriel = false;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $mnemo = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $fonction = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $titre = null;
-
-    #[Groups('user:read')]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $grade = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\Column(options: ['default' => false])]
     private ?bool $isPersonneMorale = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    protected ?array $testEligibilite = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Adresse $adresse = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
-    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'compte')]
     private ?PersonnePhysique $personnePhysique = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale = null;
+
+    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'])]
+    protected Collection $brisPorte;
 
     public function __construct()
     {
@@ -107,6 +101,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         $this->personnePhysique = new PersonnePhysique();
         $this->isPersonneMorale = false;
         $this->adresse = new Adresse();
+        $this->brisPorte = new ArrayCollection();
     }
 
     public function getPId(): ?int
@@ -226,6 +221,23 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getJetonVerification(): ?string
+    {
+        return $this->jetonVerification;
+    }
+
+
+    public function genererJetonVerification(): void
+    {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $this->jetonVerification = '';
+
+        for ($i = 0; $i < 12; ++$i) {
+            $this->jetonVerification .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        }
+    }
+
+
     public function estVerifieCourriel(): bool
     {
         return $this->estVerifieCourriel;
@@ -233,6 +245,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setVerifieCourriel(): static
     {
+        $this->jetonVerification = null;
         $this->estVerifieCourriel = true;
 
         return $this;
@@ -275,6 +288,17 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     public function getNomComplet(): ?string
     {
         return $this->getPersonnePhysique()?->getNomComplet() ?? null;
+    }
+
+    public function getTestEligibilite(): ?array
+    {
+        return $this->testEligibilite;
+    }
+
+    public function setTestEligibilite(?array $testEligibilite): self
+    {
+        $this->testEligibilite = $testEligibilite;
+        return $this;
     }
 
     public function __toString(): string

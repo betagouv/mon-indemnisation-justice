@@ -4,10 +4,9 @@ import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { PasswordInput } from "@codegouvfr/react-dsfr/blocks/PasswordInput"
-import { Br, Submit, Hidden } from '../utils/fundamental';
+import { Submit, Hidden } from '../utils/fundamental';
 import { check_empty, check_email, state_error_if_false,
   check_min_length, check_numbers, check_equal } from '../utils/check_state';
-import { cast_number } from '../utils/cast';
 import Civilite from './Civilite';
 
 const Inscription = ({user,csrfToken}) => {
@@ -96,7 +95,6 @@ const Inscription = ({user,csrfToken}) => {
       <form method="POST" action={Routing.generate('app_inscription')} onSubmit={handleSubmit}>
         <Hidden name="_csrf_token" value={csrfToken} />
         <Hidden name="type" value={"BRI"} />
-        <Hidden name="civilite" value={cast_number(civilite)} />
         <div className="fr-grid-row">
           <div className="pr-form-subscribe_had-account fr-col-12">
             <div className="fr-p-4w">
@@ -157,7 +155,7 @@ const Inscription = ({user,csrfToken}) => {
                 <div className="fr-col-7">
                   <PasswordInput
                     label="Confirmation du mot de passe"
-                    nativeInputProps={{value: confirmPassword, onChange: ev => setConfirmPassword(ev.target.value)}}
+                    nativeInputProps={{name: 'confirm', value: confirmPassword, onChange: ev => setConfirmPassword(ev.target.value)}}
                   />
                 </div>
                 <div className="fr-col-12">
@@ -166,6 +164,7 @@ const Inscription = ({user,csrfToken}) => {
                       {
                         label: textCgu,
                         nativeInputProps: {
+                          name: "cgu",
                           value: true,
                           onChange: ev => toggleCguAccepted()
                         }

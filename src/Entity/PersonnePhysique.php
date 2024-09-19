@@ -43,9 +43,8 @@ class PersonnePhysique
     private ?Requerant $compte = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
-    //#[ApiProperty(uriTemplate: '_api_civilite_get')]
-    #[ORM\ManyToOne]
-    private ?Civilite $civilite = null;
+    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
+    protected ?Civilite $civilite = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -88,8 +87,8 @@ class PersonnePhysique
     private ?string $nomNaissance = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
-    #[ORM\ManyToOne]
-    private ?QualiteRequerant $qualite = null;
+    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
+    protected ?QualiteRequerant $qualiteRequerant = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -112,7 +111,7 @@ class PersonnePhysique
     public function __toString()
     {
       return implode(" ",[
-       $this->getCivilite() ? $this->getCivilite()->getLibelle() : '',
+       $this->getCivilite()?->value,
        ucfirst(strtolower($this->getPrenom1())),
        strtoupper($this->getNomNaissance())
      ]);
@@ -128,10 +127,23 @@ class PersonnePhysique
         return $this->civilite;
     }
 
-    public function setCivilite(?Civilite $civilite): static
+    public function setCivilite(?Civilite $civilite): self
     {
-        $this->civilite = $civilite;
+        if (null !== $civilite) {
+            $this->civilite = $civilite;
+        }
 
+        return $this;
+    }
+
+    public function getNumeroSecuriteSociale(): ?string
+    {
+        return $this->numeroSecuriteSociale;
+    }
+
+    public function setNumeroSecuriteSociale(?string $numeroSecuriteSociale): PersonnePhysique
+    {
+        $this->numeroSecuriteSociale = $numeroSecuriteSociale;
         return $this;
     }
 
@@ -257,7 +269,7 @@ class PersonnePhysique
 
     public function getNomComplet(): ?string
     {
-        $civilite = $this->getCivilite() ? $this->getCivilite()->getLibelle() : null;
+        $civilite = $this->getCivilite()->getLibelle();
         $nomNaissance = $this->getNomNaissance();
         $nom = $this->getNom();
         if($nomNaissance && $nom)
@@ -267,14 +279,14 @@ class PersonnePhysique
         return implode(" ",[$civilite,$this->getPrenom1(),$nom]);
     }
 
-    public function getQualite(): ?QualiteRequerant
+    public function getQualiteRequerant(): ?QualiteRequerant
     {
-        return $this->qualite;
+        return $this->qualiteRequerant;
     }
 
-    public function setQualite(?QualiteRequerant $qualite): static
+    public function setQualiteRequerant(?QualiteRequerant $qualite): self
     {
-        $this->qualite = $qualite;
+        $this->qualiteRequerant = $qualite;
 
         return $this;
     }

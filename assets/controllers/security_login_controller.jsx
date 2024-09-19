@@ -15,7 +15,6 @@ export default class extends Controller {
       lastUsername: String,
       version: Object,
       csrfToken: String,
-      breadcrumb: Object,
     }
     connect() {
       const container = this.element;

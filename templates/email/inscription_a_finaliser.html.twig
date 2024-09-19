@@ -1,0 +1,27 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% set activation_url = url('app_verify_email', {'jeton': requerant.jetonVerification }) %}
+
+{% block entete %}
+<b>Votre inscription : activez votre compte</b>
+{% endblock entete %}
+
+{% block contenu %}
+Bonjour {{ requerant.nomComplet }},
+<br/>
+<br/>
+Nous vous confirmons votre inscription sur l'application Mon Indemnisation Justice.
+<br/>
+Pour finaliser celle-ci, veuillez activer votre compte en cliquant sur le bouton ci-dessous, ou en vous rendant à
+l'adresse suivante : <a href="{{ activation_url }}" title="Validation de mon inscription">{{ activation_url }}</a>
+<br/>
+<br/>
+{{ email.bouton("Valider mon inscription", activation_url) }}
+<br/>
+<br/>
+Cordialement,<br/>
+L'équipe Mon Indemnisation Justice
+{% endblock contenu %}
+

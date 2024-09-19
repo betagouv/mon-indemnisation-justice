@@ -68,13 +68,13 @@ const FormulaireSimple = ({ errorMessage, csrfToken, lastUsername}) => {
                   <Input
                     label="Adresse courriel"
                     hintText="Format attendu : nom@domaine.fr"
-                    nativeInputProps={{type: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
+                    nativeInputProps={{type: 'email', name: 'email', value: email, onChange: ev => setEmail(ev.target.value)}}
                   />
                 </div>
                 <div className="fr-col-12 fr-mb-1w">
                   <PasswordInput
                     label="Mot de passe"
-                    nativeInputProps={{value: password, onChange: ev => setPassword(ev.target.value)}}
+                    nativeInputProps={{value: password, name: 'password', onChange: ev => setPassword(ev.target.value)}}
                   />
                 </div>
                 <div className="fr-col-12  fr-mb-3w">

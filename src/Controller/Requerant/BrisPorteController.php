@@ -2,72 +2,55 @@
 
 namespace App\Controller\Requerant;
 
+use App\Entity\Agent;
 use App\Entity\BrisPorte;
 use App\Entity\Requerant;
-use App\Entity\Statut;
-use App\Repository\StatutRepository;
+use App\Service\DocumentManager;
 use App\Service\Mailer\BasicMailer;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant/bris-de-porte')]
-class BrisPorteController extends AbstractController
+class BrisPorteController extends RequerantController
 {
     public function __construct(
-        private StatutRepository $statutRepository,
-        protected readonly string $emailFrom,
-        protected readonly string $emailFromLabel,
-        protected readonly string $baseUrl,
+        protected readonly EntityManagerInterface $entityManager,
     ) {
     }
 
     #[Route('/ajouter-un-bris-de-porte', name: 'app_bris_porte_add', methods: ['POST', 'GET'], options: ['expose' => true])]
-    public function add(EntityManagerInterface $em, Request $request): Response
+    public function add(EntityManagerInterface $em): Response
     {
-        $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($this->getUser());
-        $session = $request->getSession();
-        /** @var array $testEligibilite */
-        $testEligibilite = $session->get('test_eligibilite', []);
-        /** @var ?string $type */
-        $type = $testEligibilite['type'] ?? null;
-        /** @var ?\DateTime $dateOperationPJ */
-        $dateOperationPJ = !empty($testEligibilite['dateOperationPJ']) ? new \DateTime($testEligibilite['dateOperationPJ']) : null;
-        /** @var ?string $numeroPV */
-        $numeroPV = $testEligibilite['numeroPV'] ?? null;
-        /** @var ?string $numeroParquet */
-        $numeroParquet = $testEligibilite['numeroParquet'] ?? null;
-        /** @var bool $isErreurPorte */
-        $isErreurPorte = $testEligibilite['isErreurPorte'] ? ('true' == $testEligibilite['isErreurPorte']) : false;
-        if ('BRI' === $type) {
-            $brisPorte->setDateOperationPJ($dateOperationPJ);
-            $brisPorte->setNumeroPV($numeroPV);
-            $brisPorte->setNumeroParquet($numeroParquet);
-            $brisPorte->setIsErreurPorte($isErreurPorte);
+        $requerant = $this->getRequerant();
+        $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($requerant);
+
+        if (null !== ($testEligibilite = $requerant->getTestEligibilite()) && ($dateOperationPJ = \DateTimeImmutable::createFromFormat('Y-m-d', $testEligibilite['dateOperationPJ']))) {
+            if (isset($testEligibilite['dateOperationPJ'])) {
+                $brisPorte->setDateOperationPJ($dateOperationPJ);
+            }
+            $brisPorte->setNumeroPV(@$testEligibilite['numeroPV']);
+            $brisPorte->setNumeroParquet(@$testEligibilite['numeroParquet']);
+            $brisPorte->setIsErreurPorte(@$testEligibilite['isErreurPorte']);
+
             $serviceEnqueteur = $brisPorte->getServiceEnqueteur();
-            $serviceEnqueteur->setNumeroPV($numeroPV);
-            $serviceEnqueteur->setNumeroParquet($numeroParquet);
-            $em->flush();
-            $session->remove('test_eligibilite');
+            $serviceEnqueteur->setNumeroPV($brisPorte->getNumeroPV());
+            $serviceEnqueteur->setNumeroParquet($brisPorte->getNumeroParquet());
+
+            $requerant->setTestEligibilite(null);
+            $em->persist($requerant);
         }
+
+        $em->persist($brisPorte);
+        $em->flush();
 
         return $this->redirectToRoute('app_bris_porte_edit', ['id' => $brisPorte->getId()]);
     }
 
-    #[IsGranted('prejudice_valid_or_reject', subject: 'brisPorte')]
-    #[Route('/consulter-un-bris-de-porte/{id}', name: 'app_bris_porte_view', methods: ['GET'], options: ['expose' => true])]
-    public function view(BrisPorte $brisPorte): Response
-    {
-        return $this->render('prejudice/consulter_bris_porte.html.twig', [
-            'brisPorte' => $brisPorte,
-            'prejudice' => $brisPorte,
-        ]);
-    }
+
 
     #[IsGranted('edit', subject: 'brisPorte')]
     #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', methods: ['GET'], options: ['expose' => true])]
@@ -79,24 +62,40 @@ class BrisPorteController extends AbstractController
     }
 
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', methods: ['GET'], options: ['expose' => true])]
-    public function redirection(BrisPorte $brisPorte, BasicMailer $mailer): RedirectResponse
+    public function redirection(BrisPorte $brisPorte, BasicMailer $mailer, DocumentManager $documentManager): RedirectResponse
     {
-        $user = $this->getUser();
-        $this->statutRepository->addEvent($brisPorte, $user, Statut::CODE_CONSTITUE);
+        $requerant = $this->getRequerant();
+        $brisPorte->setDeclare();
+        $this->entityManager->persist($brisPorte);
+        $this->entityManager->flush();
 
         $mailer
-           ->from($this->emailFrom, $this->emailFromLabel)
-           ->to($user->getEmail())
-           ->subject("Précontentieux : Votre déclaration de bris de porte a bien été pris en compte")
-           ->htmlTemplate('requerant/email/confirmation_passage_etat_constitue.html.twig', [
-               'mail' => $user->getEmail(),
-               'url' => $this->baseUrl,
-               'nomComplet' => $user->getNomComplet(),
-               'reference' => $brisPorte->getReference(),
-               'raccourci' => $brisPorte->getRaccourci(),
+           ->to($requerant->getEmail())
+           ->subject('Votre déclaration de bris de porte a bien été pris en compte')
+           ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
+               'brisPorte' => $brisPorte,
+               'requerant' => $requerant,
            ])
-           ->send(user: $user)
+           ->send(user: $requerant)
         ;
+
+        foreach ($this->entityManager->getRepository(Agent::class)->getAllActiveAgents() as $agent) {
+            $mailer
+                ->to($agent->getEmail())
+                ->subject("Mon indemnisation justice: nouveau dossier d'indemnisation de bris de porte déposé")
+                ->htmlTemplate('email/agent_nouveau_dossier_constitue.html.twig', [
+                    'agent' => $agent,
+                    'brisPorte' => $brisPorte,
+                ]);
+            foreach ($brisPorte->getLiasseDocumentaire()->getDocuments() as $document) {
+                $mailer->addAttachment(
+                    $documentManager->getDocumentBody($document),
+                    $document
+                );
+            }
+
+            $mailer->send(user: $agent);
+        }
 
         return $this->redirectToRoute('requerant_home_index');
     }

@@ -2,10 +2,10 @@
 namespace App\Contracts;
 
 use App\Entity\BrisPorte;
-use App\Entity\Prejudice;
+use App\Entity\BasePrejudice;
 
 interface PrejudiceInterface {
-  const DISCRIMINATOR_MAP=['bris_porte' => BrisPorte::class, 'prejudice' => Prejudice::class];
-  const KEY_MAP=['BRI' => BrisPorte::class, 'PRE' => Prejudice::class];
+  const DISCRIMINATOR_MAP=['bris_porte' => BrisPorte::class, 'prejudice' => BasePrejudice::class];
+  const KEY_MAP=['BRI' => BrisPorte::class, 'PRE' => BasePrejudice::class];
 
 }

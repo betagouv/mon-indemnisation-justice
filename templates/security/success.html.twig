@@ -1,9 +1,19 @@
-{% extends 'base_react.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% set title = 'Confirmation de la création de votre espace personnel' %}
 
 {% block main %}
-  <div {{ stimulus_controller('security_success',{
-    user: user|serialize('json',{groups: 'user:read'}),
-  }) }}></div>
+<div class="fr-container">
+    <div class="fr-grid-row">
+        <div class="fr-col-12">
+            <h1>Finaliser la création de votre compte</h1>
+            <p>Pour finaliser la création de votre compte, nous vous invitons à cliquer sur le lien qui vous a été
+                envoyé à l'adresse email renseignée : <b>{{ email }}</b>
+            </p>
+            <p>Une fois votre compte créé, vous pourrez accéder à votre espace personnel pour effectuer votre demande
+                d'indemnisation.
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}

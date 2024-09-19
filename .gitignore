@@ -27,6 +27,7 @@ yarn-error.log
 ###< symfony/webpack-encore-bundle ###
 
 /public/dsfr/
+/public/screenshots/
 compose.override.yaml
 
 .docker/postgres/data
@@ -34,3 +35,4 @@ compose.override.yaml
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
+/drivers/

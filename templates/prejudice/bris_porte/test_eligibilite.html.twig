@@ -1,7 +1,288 @@
-{% extends 'base_react.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Bris de porte: tester mon éligibilité{% endblock %}
+{% block title %}Bris de porte : tester mon éligibilité{% endblock %}
+
+{% block stylesheets %}
+    <script src="{{ asset('build/alpinejs/cdn.js') }}" defer></script>
+    <style>
+        .udraw-terms-conditions {
+            height: 25rem;
+            width: 100%;
+            background-image: url('{{ asset("/images/undraw_terms-conditions.svg") }}');
+            background-repeat: no-repeat;
+            background-size: 70%;
+            background-position: center;
+        }
+
+        .pr-eligibilite_form-group {
+            background-color: var(--background-alt-grey);
+        }
+
+        .pr-body_header {
+            margin-top: -1rem;
+            padding-top: 2rem;
+            background-color: var(--background-alt-grey);
+        }
+
+        .fr-button-icon-spin:before {
+            animation-name: spin;
+              animation-duration: 1500ms;
+              animation-iteration-count: infinite;
+              animation-timing-function: linear;
+        }
+
+        input[type=radio] {
+            z-index: 2;
+        }
+
+        @keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+    </style>
+{% endblock stylesheets %}
+
+{% block modale %}
+    <dialog aria-labelledby="modale-test-eligibilite-title" id="modale-test-eligibilite" class="fr-modal" role="dialog"
+            data-fr-opened="true">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <form name="eligibilite-test-form" action="{{ url(app.current_route) }}" method="POST"
+                              x-data="eligibiliteTestForm()" @submit.prevent="soumettre">
+                            <div class="fr-modal__header">
+                                <button class="fr-btn--close fr-btn" aria-controls="modale-test-eligibilite">Fermer
+                                </button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <h1 id="fr-modal-title-foo-modal" class="fr-modal__title">Tester mon éligibilité à
+                                    l'indemnisation</h1>
+
+
+                                <div class="fr-callout" x-show="eligibilite === null">
+                                    <h2 class="fr-callout__title">Comment remplir ce formulaire ?</h2>
+                                    <p class="fr-callout__text">
+                                        Munissez-vous de l'attestation d'informations qui vous a été remise par le
+                                        service enquêteur et saisissez les informations qui y sont renseignées dans le
+                                        formulaire ci-dessous
+                                    </p>
+                                </div>
+
+                                <div class="fr-grid-row fr-grid-row--gutters" x-show="eligibilite === null">
+                                    <div class="fr-col-md-7 fr-col-12 fr-col-md-offset-5">
+                                        <div class="fr-input-group">
+                                            <label class="fr-label" for="date-operation-pj">
+                                                Date de l'opération de police judiciaire
+                                            </label>
+                                            <input class="fr-input" aria-describedby="text-input-date-messages"
+                                                   id="date-operation-pj" type="date" name="dateOperationPJ"
+                                                   x-model="testEligibilite.dateOperationPJ">
+                                            <div class="fr-messages-group fr-message--error "
+                                                 x-show="!!errors?.dateOperationPJ"
+                                                 x-text="errors?.dateOperationPJ"
+                                                 aria-live="assertive"></div>
+                                        </div>
+
+                                    </div>
+                                    <div class="fr-col-12">
+                                        <div class="fr-input-group">
+                                            <label class="fr-label"
+                                                   for="eligibilite-bris-de-porte_date-operation">Numéros de dossier
+                                                <span class="fr-hint-text">Vous devez compléter au moins un champ</span>
+                                            </label>
+                                        </div>
+                                        <div class="pr-eligibilite_form-group">
+                                            <div class="fr-p-2w">
+                                                <div class="fr-input-group" :class="{'fr-input-group--error': !!errors?.numeros}">
+                                                    <label class="fr-label" for="numero-pv">Numéro de
+                                                        procès-verbal</label>
+                                                    <input class="fr-input fr-input--error" type="text" id="numero-pv"
+                                                           name="numeroPV" x-model="testEligibilite.numeroPv">
+                                                </div>
+
+                                                <div class="fr-messages-group fr-message--error fr-my-2w" aria-live="assertive" x-show="!!errors?.numeros" x-text="errors?.numeros">
+                                                    Vous devez fournir un numéro de procès-verbal et/ou un numéro de
+                                                    parquet ou d'instruction.
+                                                </div>
+
+                                                <div class="fr-input-group" :class="{'fr-input-group--error': !!errors?.numeros}">
+                                                    <label class="fr-label" for="numero-parquet">Numéro de parquet ou
+                                                        d'instruction</label>
+                                                    <input class="fr-input fr-input--error" type="text"
+                                                           id="numero-parquet" name="numeroParquet"
+                                                           x-model="testEligibilite.numeroParquet">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12">
+                                        <fieldset class="fr-fieldset" id="is-erreur-porte" aria-labelledby="is-erreur-porte-legend">
+                                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="is-erreur-porte-legend">
+                                                S'agit-il d'une erreur des services de police ?
+                                            </legend>
+                                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                                <div class="fr-radio-group">
+                                                    <input type="radio" id="is-erreur-porte-oui" name="isErreurPorte" value="true" x-model.boolean="testEligibilite.isErreurPorte">
+                                                    <label class="fr-label" for="is-erreur-porte-oui">
+                                                        Oui
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                                <div class="fr-radio-group">
+                                                    <input type="radio" id="is-erreur-porte-non" name="isErreurPorte" value="false" x-model.boolean="testEligibilite.isErreurPorte">
+                                                    <label class="fr-label" for="is-erreur-porte-non">
+                                                        Non
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+
+
+                                <div class="fr-alert fr-alert--error" x-show="eligibilite === false">
+                                    <h3 class="fr-alert__title">Vous n'êtes pas éligible à l'indemnisation</h3>
+                                    <p>Les informations saisies ne vous permettent pas d'obtenir une indemnisation</p>
+                                </div>
+                                <p class="fr-mt-2w" x-show="eligibilite === false">Le résultat indiqué ci-dessus découle des éléments saisis
+                                    et est communiqué à titre informatif.</p>
+
+                                <div class="fr-alert fr-alert--success" x-show="eligibilite === true">
+                                    <h3 class="fr-alert__title">Vous êtes éligible à l'indemnisation</h3>
+                                    <p>Effectuer votre demande amiable d'indemnisation en cliquant sur le bouton
+                                        ci-dessous.</p>
+                                </div>
+                                <p class="fr-mt-2w" x-show="eligibilite === true">Le résultat indiqué ci-dessus découle des éléments saisis
+                                    et est communiqué à titre informatif.</p>
+                            </div>
+                            <div class="fr-modal__footer">
+                                <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+
+                                    <button
+                                        class="fr-btn"
+                                        aria-controls="modale-test-eligibilite"
+                                        data-fr-js-modal-button="true"
+                                        x-show="eligibilite === false"
+                                    >Abandonner
+                                    </button>
+                                    <button
+                                        class="fr-btn fr-btn--secondary"
+                                        type="submit"
+                                        x-show="eligibilite === false"
+                                    >Effectuer ma demande d'indemnisation
+                                    </button>
+
+                                    <button class="fr-btn" type="submit" x-show="eligibilite === true">
+                                        Accéder au formulaire de demande d'indemnisation
+                                    </button>
+
+                                    <button
+                                        class="fr-btn{# fr-icon-refresh-line fr-button-icon-spin #}"
+                                        @click="valider()"
+                                        type="button"
+                                        x-show="eligibilite === null"
+                                    >
+                                        Vérifier mon éligibilité à l'indemnisation
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+{% endblock modale %}
 
 {% block main %}
-  <div {{ stimulus_controller('bris_porte_test_eligibilite',{}) }}></div>
+    <div id="page-content">
+        <div class="pr-body_header">
+            <section class="pr-eligibilite_header">
+                <div class="fr-container">
+                    <div class="fr-pb-4w">
+                        <h1>Bris de porte</h1>
+                        <p>Je souhaite effectuer une demande d’indemnisation pour un bris de portes ou autres dégâts
+                            matériels causés dans le cadre d'une opération de police judiciaire (perquisition
+                            judiciaire,
+                            interpellation d'un individu, ...)</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="fr-container">
+            <div class="fr-grid-row">
+                <div class="fr-col-8">
+                    <section class="pr-eligibilite_conditions">
+                        <div class="fr-pt-8w">
+                            <h2>Quelles sont les conditions à remplir pour être indemnisé(e) ?</h2>
+                            <ul>
+                                <li>Vous ne devez pas être concerné(e) par l'opération de police judiciaire</li>
+                            </ul>
+                            <b>ET</b>
+                            <ul>
+                                <li>L'opération de police judiciaire doit avoir été réalisée par erreur à votre domicile
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section class="pr-eligibilite_action">
+                        <div class="fr-pb-8w fr-pt-2w">
+                            <button class="fr-btn" data-fr-opened="false" aria-controls="modale-test-eligibilite">Tester
+                                mon éligibilité à l'indemnisation
+                            </button>
+                        </div>
+                    </section>
+                </div>
+                <div class="fr-col-4">
+                    <div class="fr-py-2w">
+                        <div class="udraw-terms-conditions"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        function eligibiliteTestForm() {
+            return {
+                errors: {},
+                testEligibilite: {
+                    dateOperationPJ: null,
+                    numeroPv: "",
+                    numeroParquet: "",
+                    isErreurPorte: false
+                },
+                eligibilite: null,
+                valider() {
+                    this.errors = {};
+                    // Produire les erreurs dans errors
+                    if (this.testEligibilite.dateOperationPJ === null || !Date.parse(this.testEligibilite.dateOperationPJ)) {
+                        this.errors.dateOperationPJ = "La date de l'opération de police judiciaire doit être renseignée";
+                    }
+
+                    if (this.testEligibilite.numeroPv?.trim().length === 0 && this.testEligibilite.numeroParquet?.trim().length === 0) {
+                        this.errors.numeros = "Vous devez fournir un numéro de procès-verbal et/ou un numéro de parquet ou d'instruction.";
+                    }
+
+                    if (Object.keys(this.errors).length === 0) {
+                        this.eligibilite = this.testEligibilite.isErreurPorte;
+                    }
+                },
+                soumettre(event) {
+                    event.target.closest('form')?.submit();
+
+                },
+            };
+        };
+    </script>
+{% endblock javascripts %}

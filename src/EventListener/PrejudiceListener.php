@@ -1,51 +1,57 @@
 <?php
+
 namespace App\EventListener;
 
-use App\Contracts\PrejudiceInterface;
-use App\Entity\Prejudice;
-use Doctrine\ORM\Event\PostPersistEventArgs;
+use App\Entity\BasePrejudice;
+use App\Entity\BrisPorte;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 
-#[AsDoctrineListener(event: Events::postPersist, priority: 500, connection: 'default')]
+#[AsDoctrineListener(event: Events::preUpdate, priority: 500, connection: 'default')]
 class PrejudiceListener
 {
-    // the listener methods receive an argument which gives you access to
-    // both the entity object of the event and the entity manager itself
-    public function postPersist(PostPersistEventArgs $args): void
+    /**
+     * Crée.
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function preUpdate(PreUpdateEventArgs $args): void
     {
         $entity = $args->getObject();
-        /** @var array $interfaces */
-        $interfaces = class_implements($entity);
-        if (!in_array(PrejudiceInterface::class,$interfaces))
-            return;
+        if ($entity instanceof BrisPorte) {
 
-        $entityManager = $args->getObjectManager();
-        $conn = $entityManager->getConnection();
-        $sql = "
-        SELECT count(*)+1 cpt
-        FROM public.prejudice p
-        WHERE date_declaration = '".$entity->getDateDeclaration()->format('Y-m-d')."'";
-        $req = $conn->executeQuery($sql);
-        $cpt = $req->fetch()['cpt'];
-        $reference = [
-          array_search(get_class($entity),PrejudiceInterface::KEY_MAP),
-          $entity->getDateDeclaration()->format('Ymd'),
-          str_pad($cpt,3,"0",STR_PAD_LEFT)
-        ];
+            if (null !== $entity->getDateDeclaration() && null === $entity->getReference()) {
+                $entityManager = $args->getObjectManager();
+                $conn = $entityManager->getConnection();
 
-        $entity->setReference(implode("/",$reference));
+                $sql = "
+            SELECT count(*)+1 cpt
+            FROM public.bris_porte p
+            WHERE date_declaration = '".$entity->getDateDeclaration()->format('Y-m-d')."'";
+                $req = $conn->executeQuery($sql);
 
-        /**
-         * @author yanroussel
-         *         Ajout d'un numéro de suivi
-         */
-        $raccourci = $entityManager
-          ->getRepository(Prejudice::class)
-          ->generate_raccourci()
-        ;
-        $entity->setRaccourci($raccourci);
+                $cpt = $req->fetchOne() ?? 1;
 
-        $entityManager->flush();
+                $entity->setReference(
+                    sprintf(
+                        '%s/%s/%s',
+                        $entity->getType()->value,
+                        $entity->getDateDeclaration()->format('Ymd'),
+                        str_pad($cpt, 3, '0', STR_PAD_LEFT)
+                    )
+                );
+
+                /**
+                 * @author yanroussel
+                 *         Ajout d'un numéro de suivi
+                 */
+                $raccourci = $entityManager
+                  ->getRepository(BrisPorte::class)
+                  ->generateRaccourci()
+                ;
+                $entity->setRaccourci($raccourci);
+            }
+        }
     }
 }

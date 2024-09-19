@@ -20,25 +20,20 @@ services:
             - '../src/Kernel.php'
 
     App\Controller\SecurityController:
-        $emailFrom: '%env(EMAIL_FROM)%'
-        $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
-        $baseUrl: '%env(BASE_URL)%'
-
-    App\Controller\Requerant\BrisPorteController:
-        $emailFrom: '%env(EMAIL_FROM)%'
-        $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
-        $baseUrl: '%env(BASE_URL)%'
-
-    App\Controller\Requerant\PrejudiceController:
-        $emailFrom: '%env(EMAIL_FROM)%'
-        $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
         $baseUrl: '%env(BASE_URL)%'
 
     App\Controller\Requerant\DocumentController:
         $bucket: '%env(SCW_BUCKET)%'
 
+    App\Service\DocumentManager:
+        $bucket: '%env(SCW_BUCKET)%'
+
     App\Service\Mailer\Mailer:
         $mailerFrom: '%env(MAILER_FROM)%'
+
+    App\Service\Mailer\BasicMailer:
+        $emailFrom: '%env(EMAIL_FROM)%'
+        $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
 
 
     # add more service definitions when explicit configuration is needed

@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Civilite;
 use App\Entity\Requerant;
 use App\Repository\RequerantRepository;
-use App\Service\Mailer\SignedMailer;
+use App\Service\Mailer\BasicMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,10 +22,9 @@ class SecurityController extends AbstractController
         protected UrlGeneratorInterface $urlGenerator,
         protected UserPasswordHasherInterface $userPasswordHasher,
         protected AuthenticationUtils $authenticationUtils,
-        protected SignedMailer $mailer,
+        protected BasicMailer $mailer,
         protected EntityManagerInterface $em,
-        protected readonly string $emailFrom,
-        protected readonly string $emailFromLabel,
+        protected readonly RequerantRepository $requerantRepository,
         protected readonly string $baseUrl
     ) {
     }
@@ -38,12 +37,8 @@ class SecurityController extends AbstractController
         $user = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $email]);
         $sent = false;
         if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
-            /**
-             * Envoi du mail de confirmation.
-             */
-
+            // Envoi du mail de confirmation.
             $this->mailer
-                ->from($this->emailFrom, $this->emailFromLabel)
                 ->to($user->getEmail())
                 ->subject("Mon Indemnisation Justice: réinitialisation de votre mot de passe")
                 ->htmlTemplate('security/send_link_for_new_password.html.twig', [
@@ -101,7 +96,7 @@ class SecurityController extends AbstractController
     public function login(Request $request): Response
     {
         $error = $this->authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $this->authenticationUtils->getLastUsername();
+        $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
         $user = $this->getUser();
         $isAgent = ('1' == $request->get('isAgent'));
 
@@ -153,113 +148,78 @@ class SecurityController extends AbstractController
         return $fields;
     }
 
-    private function handleUserRequest(Request $request, Requerant $user): void
+    #[Route('/validation-du-compte-requerant/{jeton}', name: 'app_verify_email')]
+    public function verifyUserEmail(Request $request, string $jeton): Response
     {
-        /** @var ?int $civiliteId */
-        $civiliteId = $request->get('civilite', null);
-        /** @var ?Civilite $civilite */
-        $civilite = (null !== $civiliteId) ? $this->em->getRepository(Civilite::class)->find($civiliteId) : null;
-        $userPasswordHasher = $this->userPasswordHasher;
-        $user->setEmail($request->get('email'));
-        $user->getPersonnePhysique()->setPrenom1($request->get('prenom1'));
-        $user->getPersonnePhysique()->setNom($request->get('nom'));
-        $user->getPersonnePhysique()->setNomNaissance($request->get('nomNaissance'));
-        $user->setPassword(
-            $userPasswordHasher->hashPassword(
-                $user,
-                $request->get('password')
-            )
-        );
-        $user->getPersonnePhysique()->setCivilite($civilite);
-        $user->addRole(Requerant::ROLE_REQUERANT);
-    }
-
-    #[Route('/validation-du-compte-requerant', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, RequerantRepository $ur): Response
-    {
-        /** @var ?int $id */
-        $id = $request->query->get('id', null);
-        /** @var ?Requerant $user */
-        $user = $ur->find($id);
-        if (
-            (null !== $user)
-            && (true === $this->mailer->check($request, $user))
-        ) {
-            $user->setVerifieCourriel();
-            $this->em->flush();
+        $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
+        if (null === $requerant) {
+            return $this->redirectToRoute('app_login');
         }
+        $requerant->setVerifieCourriel();
+        $this->em->flush();
 
-        return $this->redirectToRoute('app_login');
-    }
-
-    private function buildSession(Request $request): void
-    {
-        $session = $request->getSession();
-        $fields = self::get_fields($request);
-        if (true === self::has_fields($request)) {
-            if ('BRI' !== $fields['type']) {
-                $session->set('test_eligibilite', null);
-            } else {
-                $session->set('test_eligibilite', $fields);
-            }
-        }
+        return $this->redirectToRoute('app_login', ['courriel' => $requerant->getEmail()]);
     }
 
     #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
     public function inscription(Request $request): Response
     {
         $user = $this->getUser();
-        if (null !== $user) {
-            $this->buildSession($request);
-
-            return $this->redirect('/redirect');
+        if (null !== $user && $user instanceof Requerant) {
+            return $this->redirectToRoute('requerant_home_index');
         }
 
-        $session = $request->getSession();
-        $submittedToken = $request->getPayload()->get('_csrf_token');
-        $fields = self::get_fields($request);
+        if ($request->getMethod() === 'GET' && $request->getSession()->has('emailRequerantInscrit')) {
+            $email = $request->getSession()->get('emailRequerantInscrit');
+            $request->getSession()->remove('emailRequerantInscrit');
+
+            return $this->render('security/success.html.twig', [
+                'email' => $email,
+            ]);
+        }
 
         /*
-         * Le formulaire a bien été soumis
+         * TODO: utiliser un **VRAI** formulaire Symfony
          *
+         * Le formulaire a bien été soumis
          */
-        if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
+        if ($this->isCsrfTokenValid('authenticate', $request->getPayload()->get('_csrf_token'))) {
             /**
              * Création du nouveau compte.
              */
-            $user = new Requerant();
-            $this->handleUserRequest($request, $user);
-            $this->em->persist($user);
+            $requerant = new Requerant();
+            $requerant->setEmail($request->get('email'));
+            $requerant->getPersonnePhysique()->setCivilite(Civilite::tryFrom($request->get('civilite')));
+            $requerant->getPersonnePhysique()->setPrenom1($request->get('prenom1'));
+            $requerant->getPersonnePhysique()->setNom($request->get('nom'));
+            $requerant->getPersonnePhysique()->setNomNaissance($request->get('nomNaissance'));
+            $requerant->setPassword(
+            $this->userPasswordHasher->hashPassword(
+                $requerant,
+                $request->get('password')
+                )
+            );
+            $requerant->addRole(Requerant::ROLE_REQUERANT);
+            $requerant->genererJetonVerification();
+            $requerant->setTestEligibilite($request->getSession()->get('testEligibilite'));
+            $request->getSession()->remove('testEligibilite');
+            $this->em->persist($requerant);
             $this->em->flush();
 
             /**
              * Envoi du mail de confirmation.
              */
             $this->mailer
-                ->from($this->emailFrom, $this->emailFromLabel)
-                ->to($user->getEmail())
-                ->subject("Précontentieux : finalisation de l'activation de votre compte pour l'application Mon Indemnisation Justice")
-                ->htmlTemplate('registration/confirmation_email.html.twig', [
-                    'mail' => $user->getEmail(),
-                    'url' => $this->baseUrl,
-                    'nom_complet' => $user->getNomComplet(),
+                ->to($requerant->getEmail())
+                ->subject("Activation de votre compte sur l'application Mon indemnisation justice")
+                ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
+                    'requerant' => $requerant,
                 ])
-                ->send(pathname: 'app_verify_email', user: $user);
+                ->send($requerant);
+            // Ajout d'un drapeau pour marquer la réussite de l'inscription:
+            $request->getSession()->set('emailRequerantInscrit', $requerant->getEmail());
 
-            return $this->render('security/success.html.twig', [
-                'user' => $user,
-            ]);
-        } /*
-         * Le formulaire a bien été identifié
-         *
-         */
-        elseif (true === self::has_fields($request)) {
-            if ('BRI' !== $fields['type']) {
-                $session->set('test_eligibilite', null);
-
-                return $this->redirect('/');
-            }
-            $session->set('test_eligibilite', $fields);
+            return $this->redirectToRoute('app_inscription');
         }
 
         $error = $this->authenticationUtils->getLastAuthenticationError();
