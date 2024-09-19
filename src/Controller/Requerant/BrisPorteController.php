@@ -2,8 +2,10 @@
 
 namespace App\Controller\Requerant;
 
+use App\Entity\Agent;
 use App\Entity\BrisPorte;
 use App\Entity\Requerant;
+use App\Service\DocumentManager;
 use App\Service\Mailer\BasicMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -17,9 +19,6 @@ class BrisPorteController extends RequerantController
 {
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
-        protected readonly string $emailFrom,
-        protected readonly string $emailFromLabel,
-        protected readonly string $baseUrl,
     ) {
     }
 
@@ -29,8 +28,10 @@ class BrisPorteController extends RequerantController
         $requerant = $this->getRequerant();
         $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($requerant);
 
-        if (null !== ($testEligibilite = $requerant->getTestEligibilite())) {
-            $brisPorte->setDateOperationPJ(isset($testEligibilite['dateOperationPJ']) ? \DateTimeImmutable::createFromFormat('Y-m-d', $testEligibilite['dateOperationPJ']) : null);
+        if (null !== ($testEligibilite = $requerant->getTestEligibilite()) && ($dateOperationPJ = \DateTimeImmutable::createFromFormat('Y-m-d', $testEligibilite['dateOperationPJ']))) {
+            if (isset($testEligibilite['dateOperationPJ'])) {
+                $brisPorte->setDateOperationPJ($dateOperationPJ);
+            }
             $brisPorte->setNumeroPV(@$testEligibilite['numeroPV']);
             $brisPorte->setNumeroParquet(@$testEligibilite['numeroParquet']);
             $brisPorte->setIsErreurPorte(@$testEligibilite['isErreurPorte']);
@@ -61,26 +62,40 @@ class BrisPorteController extends RequerantController
     }
 
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', methods: ['GET'], options: ['expose' => true])]
-    public function redirection(BrisPorte $brisPorte, BasicMailer $mailer): RedirectResponse
+    public function redirection(BrisPorte $brisPorte, BasicMailer $mailer, DocumentManager $documentManager): RedirectResponse
     {
-        $user = $this->getRequerant();
+        $requerant = $this->getRequerant();
         $brisPorte->setDeclare();
         $this->entityManager->persist($brisPorte);
         $this->entityManager->flush();
 
         $mailer
-           ->from($this->emailFrom, $this->emailFromLabel)
-           ->to($user->getEmail())
-           ->subject('Précontentieux : Votre déclaration de bris de porte a bien été pris en compte')
-           ->htmlTemplate('requerant/email/confirmation_passage_etat_constitue.html.twig', [
-               'mail' => $user->getEmail(),
-               'url' => $this->baseUrl,
-               'nomComplet' => $user->getNomComplet(),
-               'reference' => $brisPorte->getReference(),
-               'raccourci' => $brisPorte->getRaccourci(),
+           ->to($requerant->getEmail())
+           ->subject('Votre déclaration de bris de porte a bien été pris en compte')
+           ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
+               'brisPorte' => $brisPorte,
+               'requerant' => $requerant,
            ])
-           ->send(user: $user)
+           ->send(user: $requerant)
         ;
+
+        foreach ($this->entityManager->getRepository(Agent::class)->getAllActiveAgents() as $agent) {
+            $mailer
+                ->to($agent->getEmail())
+                ->subject("Mon indemnisation justice: nouveau dossier d'indemnisation de bris de porte déposé")
+                ->htmlTemplate('email/agent_nouveau_dossier_constitue.html.twig', [
+                    'agent' => $agent,
+                    'brisPorte' => $brisPorte,
+                ]);
+            foreach ($brisPorte->getLiasseDocumentaire()->getDocuments() as $document) {
+                $mailer->addAttachment(
+                    $documentManager->getDocumentBody($document),
+                    $document
+                );
+            }
+
+            $mailer->send(user: $agent);
+        }
 
         return $this->redirectToRoute('requerant_home_index');
     }

@@ -269,7 +269,7 @@ class PersonnePhysique
 
     public function getNomComplet(): ?string
     {
-        $civilite = $this->getCivilite()->value;
+        $civilite = $this->getCivilite()->getLibelle();
         $nomNaissance = $this->getNomNaissance();
         $nom = $this->getNom();
         if($nomNaissance && $nom)

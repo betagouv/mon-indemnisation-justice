@@ -1,0 +1,85 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% block subject %}Mon indemnisation justice : nouveau dossier d'indemnisation de bris de porte déposé{% endblock subject %}
+
+{% block entete %}
+Nouveau dossier d'indemnisation de bris de porte déposé<br/>
+<b>Référence: {{ brisPorte.reference }}</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+Bonjour {{ agent.nomComplet }},
+<br/>
+<br/>
+Le dossier <b>{{ brisPorte.reference}}</b> de demande d'indemnisation de <i>bris de porte</i> vient d'être
+déposé, avec les détails suivants
+<br/>
+<h4>Identité du / de la dépositaire</h4>
+<ul>
+    <li>
+        Nom : <b>{{ brisPorte.requerant.personnePhysique.nomNaissance }}</b>
+    </li>
+    <li>
+        Prénom : <b>{{ brisPorte.requerant.personnePhysique.prenom1 }}</b>
+    </li>
+    <li>
+        Domicilié : <b>{{ brisPorte.requerant.adresse }}</b>
+    </li>
+</ul>
+<h4>Bris de porte</h4>
+<ul>
+    <li>
+        Date : <b>{{ brisPorte.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY") }}</b>
+    </li>
+    <li>
+        Lieu : <b>{{ brisPorte.adresse }}</b>
+    </li>
+    <li>
+        Qualité du demandeur : <b>{{ brisPorte.qualiteRequerant.libelle }}{% if brisPorte.qualiteRequerant == 'AUT' %}({{ brisPorte.precisionRequerant }}){% endif %}</b>
+    </li>
+    <li>
+        Attestation remise à : <b>{{ brisPorte.receveurAttestation.nomComplet }}</b>, en qualité de <b>{{ brisPorte.receveurAttestation.qualiteRequerant.libelle }}{% if brisPorte.receveurAttestation.qualiteRequerant == 'AUT' %}({{ brisPorte.receveurAttestation.precision }}){% endif %}</b>
+    </li>
+</ul>
+<h4>Service enquêteur</h4>
+<ul>
+    <li>
+        Nom : <b>{{ brisPorte.serviceEnqueteur.nom }}</b>
+    </li>
+    <li>
+        Téléphone : <b>{{ brisPorte.serviceEnqueteur.telephone }}</b>
+    </li>
+    <li>
+        Courriel : <b>{{ brisPorte.serviceEnqueteur.courriel }}</b>
+    </li>
+    <li>
+        Numéro de PV : <b>{{ brisPorte.serviceEnqueteur.numeroPv }}</b>
+    </li>
+    <li>
+        Juridiction : <b>{{ brisPorte.serviceEnqueteur.juridiction }}</b>
+    </li>
+    <li>
+        Magistrat : <b>{{ brisPorte.serviceEnqueteur.magistrat }}</b>
+    </li>
+    <li>
+        Numéro de parquet : <b>{{ brisPorte.serviceEnqueteur.numeroParquet }}</b>
+    </li>
+</ul>
+<h4>Documents joints</h4>
+<ul>
+    {% for document in brisPorte.liasseDocumentaire.documents %}
+        <li>
+            {# TODO Lien vers la pièce jointe correspondante (voir: https://stackoverflow.com/questions/9983248/can-an-html-email-body-reference-a-file-sent-as-an-attachment-in-the-same-email/9983277#9983277 ) #}
+            Nom: <b>{{ document.originalFilename }}</b>
+        </li>
+    {% endfor %}
+</ul>
+{# Documents #}
+
+
+Cordialement,<br/>
+L'équipe Mon Indemnisation Justice
+{% endblock contenu %}

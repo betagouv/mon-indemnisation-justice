@@ -98,9 +98,10 @@ class DepotBrisPorteTest extends PantherTestCase
         sleep(1);
         $this->assertTrue($button->isEnabled());
         $this->client->submit($form);
+        $this->client->takeScreenshot('public/screenshots/depot/003-connexion-formulaire-soumis.png');
 
-        $this->client->waitForVisibility('main', 1);
-        $this->client->takeScreenshot('public/screenshots/depot/003-page-accueil-requerant.png');
+        $this->client->waitForVisibility('main', 2);
+        $this->client->takeScreenshot('public/screenshots/depot/004-page-accueil-requerant.png');
 
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Déclarer un bris de porte');

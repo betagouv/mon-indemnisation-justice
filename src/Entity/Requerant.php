@@ -67,6 +67,9 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateChangementMDP = null;
 
+    #[ORM\Column(type: 'string', length: 12, nullable: true)]
+    protected ?string $jetonVerification;
+
     #[ORM\Column(type: 'boolean')]
     private $estVerifieCourriel = false;
 
@@ -82,7 +85,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Adresse $adresse = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'compte')]
     private ?PersonnePhysique $personnePhysique = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
@@ -218,6 +221,23 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getJetonVerification(): ?string
+    {
+        return $this->jetonVerification;
+    }
+
+
+    public function genererJetonVerification(): void
+    {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $this->jetonVerification = '';
+
+        for ($i = 0; $i < 12; ++$i) {
+            $this->jetonVerification .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        }
+    }
+
+
     public function estVerifieCourriel(): bool
     {
         return $this->estVerifieCourriel;
@@ -225,6 +245,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setVerifieCourriel(): static
     {
+        $this->jetonVerification = null;
         $this->estVerifieCourriel = true;
 
         return $this;

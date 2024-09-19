@@ -136,4 +136,9 @@ class Document
 
         return $this;
     }
+
+    public function getContentId(): string
+    {
+        return "$this->type+$this->filename";
+    }
 }
