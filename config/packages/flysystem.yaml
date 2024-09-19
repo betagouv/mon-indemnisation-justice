@@ -2,11 +2,23 @@
 flysystem:
     storages:
         default.storage:
-            adapter: 'local'
-            options:
-                directory: '%kernel.project_dir%/public/document'
-        aws.storage:
             adapter: 'aws'
             options:
                 client: Aws\S3\S3Client
                 bucket: '%env(resolve:SCW_BUCKET)%'
+
+when@dev:
+    flysystem:
+        storages:
+            default.storage:
+                adapter: 'local'
+                options:
+                    directory: '%kernel.project_dir%/documents/dev'
+
+when@test:
+    flysystem:
+        storages:
+            default.storage:
+                adapter: 'local'
+                options:
+                    directory: '%kernel.project_dir%/documents/test'
