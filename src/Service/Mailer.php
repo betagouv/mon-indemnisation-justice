@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Service\Mailer;
+namespace App\Service;
 
-use App\Contracts\MailerInterface;
 use App\Entity\Document;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Transport\TransportInterface;
@@ -10,7 +9,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class BasicMailer implements MailerInterface
+class Mailer
 {
     const BASE_DOMAIN = "mon-indemnisation.anje-justice.fr";
     private ?TemplatedEmail $email = null;

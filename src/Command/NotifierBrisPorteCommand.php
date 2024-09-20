@@ -6,8 +6,8 @@ namespace App\Command;
 
 use App\Entity\Agent;
 use App\Entity\BrisPorte;
+use App\Service\Mailer;
 use App\Service\DocumentManager;
-use App\Service\Mailer\BasicMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,8 +20,8 @@ class NotifierBrisPorteCommand extends Command
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly BasicMailer $mailer,
-        protected readonly DocumentManager $documentManager,
+        protected readonly Mailer                 $mailer,
+        protected readonly DocumentManager        $documentManager,
     ) {
         parent::__construct();
     }

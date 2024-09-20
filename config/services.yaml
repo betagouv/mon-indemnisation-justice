@@ -22,10 +22,7 @@ services:
     App\Controller\SecurityController:
         $baseUrl: '%env(BASE_URL)%'
 
-    App\Service\Mailer\Mailer:
-        $mailerFrom: '%env(MAILER_FROM)%'
-
-    App\Service\Mailer\BasicMailer:
+    App\Service\Mailer:
         $emailFrom: '%env(EMAIL_FROM)%'
         $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
 

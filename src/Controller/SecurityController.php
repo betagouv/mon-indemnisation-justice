@@ -2,15 +2,17 @@
 
 namespace App\Controller;
 
+use App\Dto\MotDePasseOublieDto;
 use App\Entity\Civilite;
 use App\Entity\Requerant;
 use App\Repository\RequerantRepository;
-use App\Service\Mailer\BasicMailer;
+use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -19,75 +21,73 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
     public function __construct(
-        protected UrlGeneratorInterface $urlGenerator,
-        protected UserPasswordHasherInterface $userPasswordHasher,
-        protected AuthenticationUtils $authenticationUtils,
-        protected BasicMailer $mailer,
-        protected EntityManagerInterface $em,
+        protected UrlGeneratorInterface        $urlGenerator,
+        protected UserPasswordHasherInterface  $userPasswordHasher,
+        protected AuthenticationUtils          $authenticationUtils,
+        protected Mailer                       $mailer,
+        protected EntityManagerInterface       $em,
         protected readonly RequerantRepository $requerantRepository,
-        protected readonly string $baseUrl
+        protected readonly string              $baseUrl
     ) {
     }
 
-    #[Route(path: '/envoi-de-mon-mot-de-passe', name: 'app_send_reset_password', methods: ['POST'], options: ['expose' => true])]
-    public function send_email_for_reset(Request $request): JsonResponse
+    #[Route(path: '/mon-mot-de-passe/oublie', name: 'app_send_reset_password', methods: ['POST'], options: ['expose' => true])]
+    public function motDePasseOublie(#[MapRequestPayload(acceptFormat: 'json')] MotDePasseOublieDto $motDePasseOublieDto): JsonResponse
     {
-        $content = json_decode($request->getContent(), true);
-        $email = $content['email'] ?? null;
-        $user = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $email]);
-        $sent = false;
-        if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
+        $requerant = $this->em->getRepository(Requerant::class)->findOneBy([
+            'email' => $motDePasseOublieDto->email,
+            'estVerifieCourriel' => true
+        ]);
+
+        if ($requerant && $requerant->hasRole(Requerant::ROLE_REQUERANT)) {
+            // Génération d'un jeton de vérification
+            $requerant->genererJetonVerification();
+
+            $this->em->persist($requerant);
+            $this->em->flush();
+
             // Envoi du mail de confirmation.
             $this->mailer
-                ->to($user->getEmail())
+                ->to($requerant->getEmail())
                 ->subject("Mon Indemnisation Justice: réinitialisation de votre mot de passe")
-                ->htmlTemplate('security/send_link_for_new_password.html.twig', [
-                    'name' => "Mon Indemnisation Justice",
-                    'mail' => $user->getEmail(),
-                    'url' => $this->baseUrl,
-                    'nomComplet' => $user->getNomComplet(),
+                ->htmlTemplate('email/mot_de_passe_oublie.html.twig', [
+                    'requerant' => $requerant,
                 ])
-                ->send(pathname: 'app_reset_password', user: $user);
-            $sent = true;
+                ->send(pathname: 'app_reset_password', user: $requerant);
         }
 
-        return new JsonResponse(['email' => $email, 'sent' => $sent]);
+        return new JsonResponse();
     }
 
-    #[Route(path: '/je-mets-a-jour-mon-mot-de-passe', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
-    public function reset_password(Request $request, RequerantRepository $ur): Response
+    #[Route(path: '/mon-mot-de-passe/mettre-a-jour/{jeton}', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
+    public function reset_password(Request $request, RequerantRepository $ur, string $jeton): Response
     {
-        /** @var ?int $id */
-        $id = $request->query->get('id', null);
-        /** @var ?Requerant $user */
-        $user = $ur->find($id);
-        if (
-            (null === $user)
-            || (false === $this->mailer->check($request, $user))
-        ) {
-            throw $this->createNotFoundException("Le lien n'est pas valide ou expiré. Veuillez renouveler une nouvelle tentative de réinitialisation de votre mot de passe");
-        }
+        /** @var Requerant $requerant */
+        $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
 
         $submittedToken = $request->getPayload()->get('_csrf_token');
         $successMsg = '';
-        /*
-         * Le formulaire a bien été soumis
-         *
-         */
+        // Le formulaire a bien été soumis
         if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
-            $userPasswordHasher = $this->userPasswordHasher;
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
+            $requerant->setPassword(
+                $this->userPasswordHasher->hashPassword(
+                    $requerant,
                     $request->get('_password')
                 )
             );
-            $successMsg = 'Le mot de passe a été mis à jour avec succès !';
+            $requerant->supprimerJetonVerification();
+
             $this->em->flush();
+            $this->addFlash('success', [
+                'title' => "Mot de passe modifié",
+                'message' => "Le mot de passe a été modifié avec succès !"
+            ]);
+
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('security/reset_password.html.twig', [
-            'user' => $user,
+            'user' => $requerant,
             'successMsg' => $successMsg,
         ]);
     }
@@ -121,41 +121,20 @@ class SecurityController extends AbstractController
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
-    private static function has_fields(Request $request): bool
+    #[Route('/inscription/validation-du-compte/{jeton}', name: 'app_verify_email')]
+    public function verifyUserEmail(string $jeton): Response
     {
-        return null !== $request->get('type', null);
-    }
-
-    private static function get_fields(Request $request): array
-    {
-        $type = $request->get('type', null);
-        $fields = ['type' => $type];
-        switch ($type) {
-            case 'BRI':
-                $fields = array_merge($fields, [
-                    'dateOperationPJ' => null,
-                    'numeroPV' => null,
-                    'numeroParquet' => null,
-                    'isErreurPorte' => null,
-                ]);
-                foreach ($fields as $field => $value) {
-                    $fields[$field] = $request->get($field);
-                }
-                break;
-            default:
-        }
-
-        return $fields;
-    }
-
-    #[Route('/validation-du-compte-requerant/{jeton}', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, string $jeton): Response
-    {
+        /** @var Requerant $requerant */
         $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
         if (null === $requerant) {
+            if ($requerant->estVerifieCourriel()) {
+                return $this->redirectToRoute('app_reset_password');
+            }
+
             return $this->redirectToRoute('app_login');
         }
         $requerant->setVerifieCourriel();
+        $requerant->supprimerJetonVerification();
         $this->em->flush();
 
         return $this->redirectToRoute('app_login', ['courriel' => $requerant->getEmail()]);

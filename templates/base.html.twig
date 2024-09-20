@@ -46,9 +46,6 @@
         {% endif %}
 
         {# Fil d'ariane: à intégrer #}
-        {% block modale %}
-        {% endblock modale %}
-
         <main role="main">
             <div class="fr-container fr-container--fluid fr-my-2w fr-px-3w">
                 {% block main %}
@@ -57,6 +54,9 @@
         </main>
 
         {% include('_footer.html.twig') %}
+
+        {% block modale %}
+        {% endblock modale %}
 
         {% block javascripts %}
             <script>

@@ -226,6 +226,12 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->jetonVerification;
     }
 
+    public function supprimerJetonVerification(): self
+    {
+        $this->jetonVerification = null;
+
+        return $this;
+    }
 
     public function genererJetonVerification(): void
     {

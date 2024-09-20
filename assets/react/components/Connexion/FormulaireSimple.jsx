@@ -30,6 +30,10 @@ const FormulaireSimple = ({ errorMessage, csrfToken, lastUsername}) => {
     const url = Routing.generate('app_send_reset_password');
     fetch(url,{
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
       body: JSON.stringify({email: email})
     })
       .then((response) => response.json())
