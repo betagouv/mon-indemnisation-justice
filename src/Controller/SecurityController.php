@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Dto\ModificationMotDePasseDto;
 use App\Dto\MotDePasseOublieDto;
 use App\Entity\Civilite;
 use App\Entity\Requerant;
@@ -9,6 +10,8 @@ use App\Repository\RequerantRepository;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,13 +24,13 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
     public function __construct(
-        protected UrlGeneratorInterface        $urlGenerator,
-        protected UserPasswordHasherInterface  $userPasswordHasher,
-        protected AuthenticationUtils          $authenticationUtils,
-        protected Mailer                       $mailer,
-        protected EntityManagerInterface       $em,
+        protected UrlGeneratorInterface $urlGenerator,
+        protected UserPasswordHasherInterface $userPasswordHasher,
+        protected AuthenticationUtils $authenticationUtils,
+        protected Mailer $mailer,
+        protected EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
-        protected readonly string              $baseUrl
+        protected readonly string $baseUrl,
     ) {
     }
 
@@ -36,7 +39,7 @@ class SecurityController extends AbstractController
     {
         $requerant = $this->em->getRepository(Requerant::class)->findOneBy([
             'email' => $motDePasseOublieDto->email,
-            'estVerifieCourriel' => true
+            'estVerifieCourriel' => true,
         ]);
 
         if ($requerant && $requerant->hasRole(Requerant::ROLE_REQUERANT)) {
@@ -49,7 +52,7 @@ class SecurityController extends AbstractController
             // Envoi du mail de confirmation.
             $this->mailer
                 ->to($requerant->getEmail())
-                ->subject("Mon Indemnisation Justice: réinitialisation de votre mot de passe")
+                ->subject('Mon Indemnisation Justice: réinitialisation de votre mot de passe')
                 ->htmlTemplate('email/mot_de_passe_oublie.html.twig', [
                     'requerant' => $requerant,
                 ])
@@ -66,29 +69,38 @@ class SecurityController extends AbstractController
         $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
 
         $submittedToken = $request->getPayload()->get('_csrf_token');
-        $successMsg = '';
-        // Le formulaire a bien été soumis
-        if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
-            $requerant->setPassword(
-                $this->userPasswordHasher->hashPassword(
-                    $requerant,
-                    $request->get('_password')
-                )
-            );
-            $requerant->supprimerJetonVerification();
 
-            $this->em->flush();
-            $this->addFlash('success', [
-                'title' => "Mot de passe modifié",
-                'message' => "Le mot de passe a été modifié avec succès !"
-            ]);
+        $form = $this->createFormBuilder(new ModificationMotDePasseDto())
+            ->add('email', TextType::class)
+            ->add('motDePasse', PasswordType::class)
+            ->add('confirmation', PasswordType::class)
+            ->getForm();
 
-            return $this->redirectToRoute('app_login');
+        if ('POST' === $request->getMethod()) {
+            $form->submit($request->request->all());
+
+            if ($form->isValid()) {
+                $requerant->setPassword(
+                    $this->userPasswordHasher->hashPassword(
+                        $requerant,
+                        $request->get('_password')
+                    )
+                );
+                $requerant->supprimerJetonVerification();
+
+                $this->em->flush();
+                $this->addFlash('success', [
+                    'title' => 'Mot de passe modifié',
+                    'message' => 'Le mot de passe a été modifié avec succès !',
+                ]);
+
+                return $this->redirectToRoute('app_login');
+            }
         }
 
         return $this->render('security/reset_password.html.twig', [
-            'user' => $requerant,
-            'successMsg' => $successMsg,
+            'requerant' => $requerant,
+            'form' => $form,
         ]);
     }
 
@@ -102,7 +114,7 @@ class SecurityController extends AbstractController
 
         $errorMessage = '';
         if ($error && $error->getMessage()) {
-            $errorMessage = "Identifiants invalides";
+            $errorMessage = 'Identifiants invalides';
         }
         if (null !== $user) {
             return $this->redirect('/redirect');
@@ -148,7 +160,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('requerant_home_index');
         }
 
-        if ($request->getMethod() === 'GET' && $request->getSession()->has('emailRequerantInscrit')) {
+        if ('GET' === $request->getMethod() && $request->getSession()->has('emailRequerantInscrit')) {
             $email = $request->getSession()->get('emailRequerantInscrit');
             $request->getSession()->remove('emailRequerantInscrit');
 
@@ -173,9 +185,9 @@ class SecurityController extends AbstractController
             $requerant->getPersonnePhysique()->setNom($request->get('nom'));
             $requerant->getPersonnePhysique()->setNomNaissance($request->get('nomNaissance'));
             $requerant->setPassword(
-            $this->userPasswordHasher->hashPassword(
-                $requerant,
-                $request->get('password')
+                $this->userPasswordHasher->hashPassword(
+                    $requerant,
+                    $request->get('password')
                 )
             );
             $requerant->addRole(Requerant::ROLE_REQUERANT);
@@ -185,7 +197,7 @@ class SecurityController extends AbstractController
             $this->em->persist($requerant);
             $this->em->flush();
 
-            /**
+            /*
              * Envoi du mail de confirmation.
              */
             $this->mailer
