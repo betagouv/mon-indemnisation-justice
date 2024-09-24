@@ -11,8 +11,14 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ServiceEnqueteurRepository::class)]
 #[ApiResource(
   operations:[
-    new Get(name: '_api_service_enqueteur_get'),
-    new Patch(name: '_api_service_enqueteur_patch')
+    new Get(
+        name: '_api_service_enqueteur_get',
+        security: "is_granted('ROLE_REQUERANT')"
+    ),
+    new Patch(
+        name: '_api_service_enqueteur_patch',
+        security: "is_granted('ROLE_REQUERANT')"
+    )
   ]
 )]
 class ServiceEnqueteur
