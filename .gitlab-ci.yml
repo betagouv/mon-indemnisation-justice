@@ -8,6 +8,7 @@ build:
     APP_ENV: test
     APP_SECRET: bafc23a0315b735289c499a886798934
     DATABASE_URL: pgsql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15
+    PRECONTENTIEUX_COURRIEL_EQUIPE: equipe@precontentieux.anje-justice.test
     COMPOSER_ALLOW_SUPERUSER: 1
     POSTGRES_DB: precontest
     POSTGRES_PASSWORD: precontentieux
