@@ -2,16 +2,16 @@
 
 namespace App\Controller;
 
-use App\Dto\ModificationMotDePasseDto;
+use App\Dto\ModificationMotDePasse;
 use App\Dto\MotDePasseOublieDto;
 use App\Entity\Civilite;
 use App\Entity\Requerant;
+use App\Forms\ModificationMotDePasseType;
 use App\Repository\RequerantRepository;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,40 +67,49 @@ class SecurityController extends AbstractController
     {
         /** @var Requerant $requerant */
         $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
+        if (null === $requerant) {
+            return $this->redirectToRoute('app_login');
+        }
 
-        $submittedToken = $request->getPayload()->get('_csrf_token');
+        $modificationMotDePasse = new ModificationMotDePasse();
 
-        $form = $this->createFormBuilder(new ModificationMotDePasseDto())
-            ->add('email', TextType::class)
-            ->add('motDePasse', PasswordType::class)
-            ->add('confirmation', PasswordType::class)
-            ->getForm();
+        $form = $this->createForm(ModificationMotDePasseType::class, $modificationMotDePasse);
+        $errors = [];
 
-        if ('POST' === $request->getMethod()) {
-            $form->submit($request->request->all());
+        if ($request->getMethod() === Request::METHOD_POST) {
+            $form->handleRequest($request);
+            if ($form->isSubmitted()) {
+                if ($form->isValid()) {
+                    $modificationMotDePasse = $form->getData();
+                    $requerant->setPassword(
+                        $this->userPasswordHasher->hashPassword(
+                            $requerant,
+                            $modificationMotDePasse->motDePasse
+                        )
+                    );
+                    $requerant->supprimerJetonVerification();
 
-            if ($form->isValid()) {
-                $requerant->setPassword(
-                    $this->userPasswordHasher->hashPassword(
-                        $requerant,
-                        $request->get('_password')
-                    )
-                );
-                $requerant->supprimerJetonVerification();
+                    $this->em->flush();
+                    $this->addFlash('success', [
+                        'title' => 'Mot de passe modifié',
+                        'message' => 'Le mot de passe a été modifié avec succès !',
+                    ]);
 
-                $this->em->flush();
-                $this->addFlash('success', [
-                    'title' => 'Mot de passe modifié',
-                    'message' => 'Le mot de passe a été modifié avec succès !',
-                ]);
-
-                return $this->redirectToRoute('app_login');
+                    return $this->redirectToRoute('app_login');
+                } else {
+                    /** @var FormError $error */
+                    foreach ($form->getErrors(true) as $key => $error) {
+                        $errors[$error->getOrigin()?->getName()] = $error->getMessage();
+                    }
+                    dump($errors);
+                }
             }
         }
 
         return $this->render('security/reset_password.html.twig', [
             'requerant' => $requerant,
             'form' => $form,
+            'errors' => $errors,
         ]);
     }
 
