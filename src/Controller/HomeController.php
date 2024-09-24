@@ -38,16 +38,16 @@ class HomeController extends AbstractController
         $raccourci = $request->get('raccourci') ?? '';
 
         $statuts = [];
-        if ($this->isCsrfTokenValid('authenticate', $request->getPayload()->get('_csrf_token'))) {
+        if ($this->isCsrfTokenValid('suiviDeDossier', $request->getPayload()->get('_csrf_token'))) {
             $brisPorte = $this
               ->em
               ->getRepository(BrisPorte::class)
-              ->findOneBy(['raccourci' => $raccourci])
-            ;
+              ->findOneBy(['raccourci' => $raccourci]);
+
             if (null !== $brisPorte) {
                 $statuts[] = [
-                    $brisPorte->getDateDeclaration()->format('d/m/Y H:i'),
-                    $brisPorte->getLastStatut()->getLibelle(),
+                    "date" => $brisPorte->getDateDeclaration()->format('d/m/Y H:i'),
+                    "libelle" => $brisPorte->getLastStatut()->getLibelle(),
                 ];
             }
         }
