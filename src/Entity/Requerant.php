@@ -17,6 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Context;
 
 #[ApiResource(
     operations: [
@@ -58,9 +59,6 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'simple_array')]
     protected array $roles = [self::ROLE_REQUERANT];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
@@ -75,17 +73,17 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\Column(options: ['default' => false])]
-    private ?bool $isPersonneMorale = null;
+    protected bool $isPersonneMorale = false;
 
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $testEligibilite = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Adresse $adresse = null;
+    private ?Adresse $adresse;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
-    #[ORM\OneToOne(cascade: ['persist', 'remove'], inversedBy: 'compte')]
+    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonnePhysique $personnePhysique = null;
 
     #[Groups(['user:read', 'prejudice:read', 'user:write'])]
@@ -99,7 +97,6 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->personneMorale = new PersonneMorale();
         $this->personnePhysique = new PersonnePhysique();
-        $this->isPersonneMorale = false;
         $this->adresse = new Adresse();
         $this->brisPorte = new ArrayCollection();
     }
@@ -130,6 +127,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return '';
     }
+
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->getRoles());
@@ -137,7 +135,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addRole(string $role): self
     {
-        if ($role === self::ROLE_REQUERANT
+        if (self::ROLE_REQUERANT === $role
             && !in_array($role, $this->roles)
         ) {
             $this->roles[] = $role;
@@ -226,6 +224,12 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->jetonVerification;
     }
 
+    public function supprimerJetonVerification(): self
+    {
+        $this->jetonVerification = null;
+
+        return $this;
+    }
 
     public function genererJetonVerification(): void
     {
@@ -236,7 +240,6 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
             $this->jetonVerification .= $alphabet[random_int(0, strlen($alphabet) - 1)];
         }
     }
-
 
     public function estVerifieCourriel(): bool
     {
@@ -261,11 +264,17 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         $this->adresse = $adresse;
         return $this;
     }
-
-    public function isPersonneMorale(): ?bool
+    public function getIsPersonneMorale(): ?bool
     {
 
-        return $this->personneMorale?->getSirenSiret() !== null;
+        return $this->isPersonneMorale;
+    }
+
+    public function setIsPersonneMorale(bool $isPersonneMorale): self
+    {
+
+        $this->isPersonneMorale = $isPersonneMorale;
+        return $this;
     }
 
     public function getPersonnePhysique(): ?PersonnePhysique

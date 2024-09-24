@@ -5,9 +5,11 @@ namespace App\Controller\Requerant;
 use App\Entity\Agent;
 use App\Entity\BrisPorte;
 use App\Entity\Requerant;
+use App\Event\BrisPorteConstitueEvent;
+use App\Service\Mailer;
 use App\Service\DocumentManager;
-use App\Service\Mailer\BasicMailer;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,6 +21,7 @@ class BrisPorteController extends RequerantController
 {
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
+        protected readonly EventDispatcherInterface $eventDispatcher
     ) {
     }
 
@@ -62,7 +65,7 @@ class BrisPorteController extends RequerantController
     }
 
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', methods: ['GET'], options: ['expose' => true])]
-    public function redirection(BrisPorte $brisPorte, BasicMailer $mailer, DocumentManager $documentManager): RedirectResponse
+    public function redirection(BrisPorte $brisPorte, Mailer $mailer, DocumentManager $documentManager): RedirectResponse
     {
         $requerant = $this->getRequerant();
         $brisPorte->setDeclare();
@@ -70,32 +73,16 @@ class BrisPorteController extends RequerantController
         $this->entityManager->flush();
 
         $mailer
-           ->to($requerant->getEmail())
+           ->toRequerant($requerant)
            ->subject('Votre déclaration de bris de porte a bien été pris en compte')
            ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
                'brisPorte' => $brisPorte,
                'requerant' => $requerant,
            ])
-           ->send(user: $requerant)
+           ->send()
         ;
 
-        foreach ($this->entityManager->getRepository(Agent::class)->getAllActiveAgents() as $agent) {
-            $mailer
-                ->to($agent->getEmail())
-                ->subject("Mon indemnisation justice: nouveau dossier d'indemnisation de bris de porte déposé")
-                ->htmlTemplate('email/agent_nouveau_dossier_constitue.html.twig', [
-                    'agent' => $agent,
-                    'brisPorte' => $brisPorte,
-                ]);
-            foreach ($brisPorte->getLiasseDocumentaire()->getDocuments() as $document) {
-                $mailer->addAttachment(
-                    $documentManager->getDocumentBody($document),
-                    $document
-                );
-            }
-
-            $mailer->send(user: $agent);
-        }
+        $this->eventDispatcher->dispatch(new BrisPorteConstitueEvent($brisPorte));
 
         return $this->redirectToRoute('requerant_home_index');
     }

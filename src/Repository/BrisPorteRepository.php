@@ -88,7 +88,7 @@ SELECT
     WHEN LENGTH(pp.nom_naissance)>0 AND LENGTH(pp.nom) > 0 THEN pp.nom || ' né.e ' || pp.nom_naissance
     WHEN LENGTH(pp.nom_naissance)>0 THEN pp.nom_naissance
     ELSE pp.nom
-  END nom,
+  END as nom,
   pp.liasse_documentaire_id pp_liasse_documentaire_id,
   ra.prenom1 ra_prenom1,
   ra.nom ra_nom,
@@ -109,7 +109,7 @@ SELECT
     WHEN b.qualite_requerant = 'HEB' THEN 'Hébergeant'
     WHEN b.qualite_requerant = 'AUT' THEN 'Autre - '|| b.precision_requerant 
     ELSE 'non renseigné'
-  END qualite_requerant,
+  END as qualite_requerant,
   CASE
     WHEN ra.qualite_requerant = 'PRO' THEN 'Propriétaire'
     WHEN ra.qualite_requerant = 'LOC' THEN 'Locataire'

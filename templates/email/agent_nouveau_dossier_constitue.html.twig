@@ -11,7 +11,7 @@ Nouveau dossier d'indemnisation de bris de porte déposé<br/>
 
 
 {% block contenu %}
-Bonjour {{ agent.nomComplet }},
+Bonjour l'équipe Précontentieux,
 <br/>
 <br/>
 Le dossier <b>{{ brisPorte.reference}}</b> de demande d'indemnisation de <i>bris de porte</i> vient d'être
@@ -19,14 +19,24 @@ déposé, avec les détails suivants
 <br/>
 <h4>Identité du / de la dépositaire</h4>
 <ul>
-    <li>
+    {% if brisPorte.requerant.isPersonneMorale %}
+        <li>
+            Raison sociale : <b>{{ brisPorte.requerant.personneMorale.raisonSociale }}</b>
+        </li>
+
+        <li>
+            SIREN / SIRET : <b>{{ brisPorte.requerant.personneMorale.sirenSiret }}</b>
+        </li>
+    {% else %}
+        <li>
         Nom : <b>{{ brisPorte.requerant.personnePhysique.nomNaissance }}</b>
-    </li>
+        </li>
+        <li>
+            Prénom : <b>{{ brisPorte.requerant.personnePhysique.prenom1 }}</b>
+        </li>
+    {% endif %}
     <li>
-        Prénom : <b>{{ brisPorte.requerant.personnePhysique.prenom1 }}</b>
-    </li>
-    <li>
-        Domicilié : <b>{{ brisPorte.requerant.adresse }}</b>
+        Domicilié : {% if brisPorte.requerant.adresse %}<b>{{ brisPorte.requerant.adresse.libelle }}</b>{% else %}<i>non renseignée</i>{% endif %}
     </li>
 </ul>
 <h4>Bris de porte</h4>
@@ -35,48 +45,67 @@ déposé, avec les détails suivants
         Date : <b>{{ brisPorte.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY") }}</b>
     </li>
     <li>
-        Lieu : <b>{{ brisPorte.adresse }}</b>
+        Lieu : <b>{{ brisPorte.adresse.libelle }}</b>
     </li>
     <li>
-        Qualité du demandeur : <b>{{ brisPorte.qualiteRequerant.libelle }}{% if brisPorte.qualiteRequerant == 'AUT' %}({{ brisPorte.precisionRequerant }}){% endif %}</b>
+        Qualité du demandeur : {% if brisPorte.qualiteRequerant %}
+            <b>{{ brisPorte.qualiteRequerant.libelle }}{% if brisPorte.qualiteRequerant == 'AUT' %}({{ brisPorte.precisionRequerant }}){% endif %}</b>
+            {% else %}
+            <i>non renseignée</i>
+        {% endif %}
     </li>
     <li>
-        Attestation remise à : <b>{{ brisPorte.receveurAttestation.nomComplet }}</b>, en qualité de <b>{{ brisPorte.receveurAttestation.qualiteRequerant.libelle }}{% if brisPorte.receveurAttestation.qualiteRequerant == 'AUT' %}({{ brisPorte.receveurAttestation.precision }}){% endif %}</b>
+        Attestation remise à : <b>{{ brisPorte.receveurAttestation.nomComplet }}</b>
+        {% if brisPorte.receveurAttestation.qualiteRequerant %}, en qualité de <b>{{ brisPorte.receveurAttestation.qualiteRequerant.libelle }}{% if brisPorte.receveurAttestation.qualiteRequerant == 'AUT' %}({{ brisPorte.receveurAttestation.precision }}){% endif %}</b>{% endif %}
     </li>
+    <li>
+        Erreur de la Police: <b>{% if brisPorte.isErreurPorte %}Oui{% else %}non{% endif %}</b>
+    </li>
+    <li>
+        Porte blindée: <b>{% if brisPorte.isPorteBlindee %}Oui{% else %}non{% endif %}</b>
+    </li>
+
 </ul>
 <h4>Service enquêteur</h4>
 <ul>
     <li>
-        Nom : <b>{{ brisPorte.serviceEnqueteur.nom }}</b>
+        Nom : {% if brisPorte.serviceEnqueteur.nom|default('') is not empty %}<b>{{ brisPorte.serviceEnqueteur.nom }}</b>{% else %}<i>non renseigné</i>{% endif %}
     </li>
     <li>
-        Téléphone : <b>{{ brisPorte.serviceEnqueteur.telephone }}</b>
+        Téléphone : {% if brisPorte.serviceEnqueteur.telephone|default('') is not empty %}<b>{{ brisPorte.serviceEnqueteur.telephone }}</b>{% else %}<i>non renseigné</i>{% endif %}
     </li>
     <li>
-        Courriel : <b>{{ brisPorte.serviceEnqueteur.courriel }}</b>
+        Courriel : {% if brisPorte.serviceEnqueteur.courriel|default('') is not empty %}<b>{{ brisPorte.serviceEnqueteur.courriel }}</b>{% else %}<i>non renseigné</i>{% endif %}
     </li>
     <li>
-        Numéro de PV : <b>{{ brisPorte.serviceEnqueteur.numeroPv }}</b>
+        Numéro de PV : {% if brisPorte.serviceEnqueteur.numeroPV|default('') is not empty %}<b>{{ brisPorte.serviceEnqueteur.numeroPv }}</b>{% else %}<i>non renseigné</i>{% endif %}
     </li>
     <li>
-        Juridiction : <b>{{ brisPorte.serviceEnqueteur.juridiction }}</b>
+        Juridiction : {% if brisPorte.serviceEnqueteur.juridiction|default('') is not empty %}<b>{{ brisPorte.serviceEnqueteur.juridiction }}</b>{% else %}<i>non renseignée</i>{% endif %}
     </li>
     <li>
-        Magistrat : <b>{{ brisPorte.serviceEnqueteur.magistrat }}</b>
+        Magistrat : {% if brisPorte.serviceEnqueteur.magistrat|default('') is not empty %}<b>{{ brisPorte.serviceEnqueteur.magistrat }}</b>{% else %}<i>non renseigné</i>{% endif %}
     </li>
     <li>
-        Numéro de parquet : <b>{{ brisPorte.serviceEnqueteur.numeroParquet }}</b>
+        Numéro de parquet : {% if brisPorte.serviceEnqueteur.numeroParquet|default('') is not empty %}<b>{{ brisPorte.serviceEnqueteur.numeroParquet }}</b>{% else %}<i>non renseigné</i>{% endif %}
     </li>
 </ul>
 <h4>Documents joints</h4>
 <ul>
-    {% for document in brisPorte.liasseDocumentaire.documents %}
-        <li>
-            {# TODO Lien vers la pièce jointe correspondante (voir: https://stackoverflow.com/questions/9983248/can-an-html-email-body-reference-a-file-sent-as-an-attachment-in-the-same-email/9983277#9983277 ) #}
-            Nom: <b>{{ document.originalFilename }}</b>
-        </li>
-    {% endfor %}
+{% for document in brisPorte.liasseDocumentaire.documents %}
+
+
+    <li>
+        {# TODO Lien vers la pièce jointe correspondante (voir: https://stackoverflow.com/questions/9983248/can-an-html-email-body-reference-a-file-sent-as-an-attachment-in-the-same-email/9983277#9983277 ) #}
+        Nom: <b>{{ document.originalFilename }}</b>
+    </li>
+{% else %}
+    <li>
+        <i>Aucun document fourni.</i>
+    </li>
+{% endfor %}
 </ul>
+
 {# Documents #}
 
 

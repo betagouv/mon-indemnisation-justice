@@ -1,0 +1,30 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% set reinitialisation_url = url('app_reset_password', {'jeton': requerant.jetonVerification }) %}
+
+{% block subject %}Mon indemnisation justice : demande de modification de votre mot de passe{% endblock subject %}
+
+{% block entete %}
+<b>Mot de passe oublié</b>
+<br/>
+{{ requerant.email }}
+{% endblock entete %}
+
+{% block contenu %}
+Bonjour {{ requerant.nomComplet }},
+<br/>
+<br/>
+Vous avez demandé à modifier votre mot de passe.
+<br/>
+<br/>
+Pour le faire, cliquez sur le bouton ci-dessous, ou rendez-vous à l'adresse suivante : <a href="{{ reinitialisation_url }}" title="Modification du mot de pase">{{ reinitialisation_url }}</a>.
+<br/>
+<br/>
+{{ email.bouton("Modifier mon mot de passe", reinitialisation_url) }}
+<br/>
+<br/>
+Cordialement,<br/>
+L'équipe Mon Indemnisation Justice
+{% endblock contenu %}

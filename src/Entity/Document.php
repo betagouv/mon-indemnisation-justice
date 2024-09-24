@@ -10,7 +10,6 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Repository\DocumentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\Index(name: "document_liasse_documentaire_id_type_idx", columns: ["liasse_documentaire_id","type"])]
@@ -20,7 +19,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     new GetCollection(name: '_api_document_get_collection'),
   ]
 )]
-#[Vich\Uploadable]
 class Document
 {
     const TYPE_ATTESTATION_INFORMATION = "attestation_information";
@@ -45,8 +43,8 @@ class Document
     #[ORM\Column(length: 40)]
     private ?string $type = null;
 
-    #[Vich\UploadableField(mapping: 'document', fileNameProperty: 'filename', size: 'size')]
-    private ?File $file = null;
+    #[ORM\Column(length: 64, nullable: true)]
+    protected ?string $mime = null;
 
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     #[ORM\ManyToOne(inversedBy: 'documents')]
@@ -88,6 +86,17 @@ class Document
         return $this;
     }
 
+    public function getMime(): ?string
+    {
+        return $this->mime;
+    }
+
+    public function setMime(?string $mime): Document
+    {
+        $this->mime = $mime;
+        return $this;
+    }
+
     public function getLiasseDocumentaire(): ?LiasseDocumentaire
     {
         return $this->liasseDocumentaire;
@@ -110,19 +119,6 @@ class Document
         $this->size = $size;
 
         return $this;
-    }
-
-    public function getFile(): ?File
-    {
-        return $this->file;
-    }
-
-    public function setFile(?File $file = null): void
-    {
-        $this->file = $file;
-
-        if (null !== $file)
-            $this->date = new \DateTimeImmutable();
     }
 
     public function getOriginalFilename(): ?string

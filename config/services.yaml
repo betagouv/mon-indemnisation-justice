@@ -22,29 +22,38 @@ services:
     App\Controller\SecurityController:
         $baseUrl: '%env(BASE_URL)%'
 
-    App\Controller\Requerant\DocumentController:
-        $bucket: '%env(SCW_BUCKET)%'
-
-    App\Service\DocumentManager:
-        $bucket: '%env(SCW_BUCKET)%'
-
-    App\Service\Mailer\Mailer:
-        $mailerFrom: '%env(MAILER_FROM)%'
-
-    App\Service\Mailer\BasicMailer:
+    App\Service\Mailer:
         $emailFrom: '%env(EMAIL_FROM)%'
         $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
+
+    App\Service\BrisPorteManager:
+        $courrielEquipe: '%env(PRECONTENTIEUX_COURRIEL_EQUIPE)%'
 
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous
     Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
-    Aws\S3\S3Client:
-        arguments:
-            - version: 'latest'
-              region: '%env(resolve:SCW_REGION)%'
-              endpoint: '%env(resolve:SCW_HOST)%'
-              use_path_style_endpoint: true
-              credentials:
-                  key: '%env(resolve:SCW_ACCESS_KEY)%'
-                  secret: '%env(resolve:SCW_SECRET_KEY)%'
+
+when@prod:
+    services:
+        Aws\S3\S3Client:
+            arguments:
+                - version: 'latest'
+                  region: '%env(resolve:SCW_REGION)%'
+                  endpoint: '%env(resolve:SCW_HOST)%'
+                  use_path_style_endpoint: true
+                  credentials:
+                      key: '%env(resolve:SCW_ACCESS_KEY)%'
+                      secret: '%env(resolve:SCW_SECRET_KEY)%'
+
+when@develop:
+    services:
+        Aws\S3\S3Client:
+            arguments:
+                - version: 'latest'
+                  region: '%env(resolve:SCW_REGION)%'
+                  endpoint: '%env(resolve:SCW_HOST)%'
+                  use_path_style_endpoint: true
+                  credentials:
+                      key: '%env(resolve:SCW_ACCESS_KEY)%'
+                      secret: '%env(resolve:SCW_SECRET_KEY)%'

@@ -13,6 +13,90 @@
         <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
         {% block stylesheets %}
+            <style>
+                .pr-content {
+                    position: relative;
+                    background-color: var(--background-alt-grey);
+                    z-index: 0;
+                }
+
+                .pr-content_header .pr-whoami {
+                    position: relative;
+                    min-height: 20rem;
+                }
+
+                .pr-content_header .pr-whoami::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    opacity: 0.7;
+                    z-index: -1;
+                    background-image: url('{{ asset("images/picture/pic_olympe-site.jpg") }}');
+                    background-size: 100%;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                }
+
+                .pr-content_header .pr-whoami .pr-whoami_text {
+                    position: relative;
+                    width: 55%
+                }
+
+                .pr-content_header .pr-whoami .pr-whoami_text::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    opacity: 0.7;
+                    z-index: -1;
+                    background-color: var(--pr-bg-color-white);
+                }
+
+                .pr-content_body {
+                    border: 1px solid var(--pr-color-grey);
+                    background-color: var(--background-default-grey);
+                }
+
+                .pr-content_body .pr-requests > ul, .pr-content_body .pr-requests > ul > li {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .pr-content_body .pr-requests ul li {
+                    list-style: none;
+                }
+
+                .pr-content_body .pr-requests ul li .fr-tile {
+                    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+                }
+
+                .pr-service-national_body {
+                    background-color: var(--pr-color-grey);
+                }
+
+                .pr-service-national-text {
+                    color: var(--pr-bg-color-blue-royal);
+                }
+
+                .pr-service-national-text h3 {
+                    color: var(--pr-bg-color-blue-royal);
+                }
+
+                .pr-service-national-illu_france {
+                    background-image: url('{{  asset('images/illustration/illu_territoires-france.png') }}');
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: 100%;
+                    min-height: 30rem;
+                    width: 100%;
+                }
+
+            </style>
         {% endblock stylesheets %}
         <title>{% block title %}Mon indemnisation justice{% if title is defined %} - {{ title }}{% endif %}{% endblock %}</title>
         {% block analytic %}
@@ -46,9 +130,6 @@
         {% endif %}
 
         {# Fil d'ariane: à intégrer #}
-        {% block modale %}
-        {% endblock modale %}
-
         <main role="main">
             <div class="fr-container fr-container--fluid fr-my-2w fr-px-3w">
                 {% block main %}
@@ -57,6 +138,9 @@
         </main>
 
         {% include('_footer.html.twig') %}
+
+        {% block modale %}
+        {% endblock modale %}
 
         {% block javascripts %}
             <script>

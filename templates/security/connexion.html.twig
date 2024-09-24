@@ -2,6 +2,31 @@
 
 {% set title = 'Se connecter à mon espace' %}
 
+{% block modale %}
+{% set flash = app.flashes('success')|first %}
+{% if flash %}
+<dialog aria-labelledby="fr-modal-flash-success" role="dialog" id="fr-modal-flash-success" class="fr-modal fr-modal--opened">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-flash-success">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <div class="fr-alert fr-alert--success">
+                            <h3 class="fr-alert__title">{{ flash.title }}</h3>
+                            <p>{{ flash.message }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>
+{% endif %}
+{% endblock modale %}
+
 {% block main %}
   {% set csrf_token = csrf_token('authenticate') %}
   <div {{ stimulus_controller('security_login',{
@@ -10,3 +35,4 @@
     csrfToken: csrf_token,
   }) }}></div>
 {% endblock %}
+

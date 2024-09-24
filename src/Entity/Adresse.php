@@ -65,7 +65,12 @@ class Adresse
 
     public function __toString()
     {
-        return $this->getLigne1()." - ".$this->getCodePostal()." ".$this->getLocalite();
+        return $this->getLibelle();
+    }
+
+    public function getLibelle(): string
+    {
+        return "{$this->getLigne1()} {$this->getCodePostal()} {$this->getLocalite()}";
     }
     
     public function __construct()

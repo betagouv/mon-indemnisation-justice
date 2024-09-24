@@ -19,8 +19,9 @@ const BrisPortePanel = function({id, user, brisPorte}) {
   const gotoSecondSection= () => gotoSection(1);
   const gotoThirdSection= () => gotoSection(2);
   const gotoSection = (index) => {
-    const userUri = Routing.generate('_api_requerant_get',{id:user.id});
-    const prejudiceUri = Routing.generate('_api_bris_porte_get',{id:brisPorte.id});
+    /*
+    const userUri = Routing.generate('_api_requerant_get',{id: user.id});
+    const prejudiceUri = Routing.generate('_api_bris_porte_get',{id: brisPorte.id});
     Promise
       .all([userUri,prejudiceUri]
         .map((u) => fetch(u).then((response) => response.json()))
@@ -32,6 +33,8 @@ const BrisPortePanel = function({id, user, brisPorte}) {
       })
       .catch(() => {})
     ;
+     */
+    setStep(index);
   }
   const [step,setStep]=useState(0);
   const [title,setTitle]=useState("");

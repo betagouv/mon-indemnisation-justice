@@ -95,12 +95,12 @@ class BrisPorte
     private ?\DateTimeInterface $dateOperationPJ = null;
 
     #[Groups(['prejudice:read', 'prejudice:write'])]
-    #[ORM\Column(nullable: true, options: ['default' => false])]
-    private ?bool $isPorteBlindee = null;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isPorteBlindee = false;
 
     #[Groups(['prejudice:read', 'prejudice:write'])]
-    #[ORM\Column(nullable: true, options: ['default' => false])]
-    private ?bool $isErreurPorte = null;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isErreurPorte = false;
 
     #[Groups(['prejudice:read', 'prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
