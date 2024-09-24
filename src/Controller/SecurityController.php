@@ -51,12 +51,12 @@ class SecurityController extends AbstractController
 
             // Envoi du mail de confirmation.
             $this->mailer
-                ->to($requerant->getEmail())
+                ->toRequerant($requerant)
                 ->subject('Mon Indemnisation Justice: réinitialisation de votre mot de passe')
                 ->htmlTemplate('email/mot_de_passe_oublie.html.twig', [
                     'requerant' => $requerant,
                 ])
-                ->send(pathname: 'app_reset_password', user: $requerant);
+                ->send();
         }
 
         return new JsonResponse();
@@ -126,7 +126,7 @@ class SecurityController extends AbstractController
             $errorMessage = 'Identifiants invalides';
         }
         if (null !== $user) {
-            return $this->redirect('/redirect');
+            return $this->redirectToRoute('requerant_home_index');
         }
 
         return $this->render('security/connexion.html.twig', [
@@ -210,13 +210,13 @@ class SecurityController extends AbstractController
              * Envoi du mail de confirmation.
              */
             $this->mailer
-                ->to($requerant->getEmail())
+                ->toRequerant($requerant)
                 ->subject("Activation de votre compte sur l'application Mon indemnisation justice")
                 ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
                     'requerant' => $requerant,
                 ])
-                ->send($requerant);
-            // Ajout d'un drapeau pour marquer la réussite de l'inscription:
+                ->send();
+            // Ajout d'un drapeau pour marquer la réussite de l'inscription et pouvoir rediriger vers une page de succès
             $request->getSession()->set('emailRequerantInscrit', $requerant->getEmail());
 
             return $this->redirectToRoute('app_inscription');

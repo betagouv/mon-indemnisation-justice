@@ -26,6 +26,9 @@ services:
         $emailFrom: '%env(EMAIL_FROM)%'
         $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
 
+    App\Service\BrisPorteManager:
+        $courrielEquipe: '%env(PRECONTENTIEUX_COURRIEL_EQUIPE)%'
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous

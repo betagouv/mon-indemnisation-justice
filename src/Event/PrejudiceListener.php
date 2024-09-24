@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EventListener;
+namespace App\Event;
 
 use App\Entity\BasePrejudice;
 use App\Entity\BrisPorte;
