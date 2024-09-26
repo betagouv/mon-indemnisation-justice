@@ -1,11 +1,49 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .pr-content_body .pr-requests > ul, .pr-content_body .pr-requests > ul > li {
+            margin: 0;
+            padding: 0;
+        }
 
+        .pr-content_body .pr-requests ul li {
+            list-style: none;
+        }
+
+        .pr-content_body .pr-requests ul li .fr-tile {
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        }
+        {# Désactivé en attente des décisions maquettes
+        main {
+            background-image: url('{{ asset("images/picture/pic_olympe-site.jpg") }}');
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .pr-whoami .fr-container {
+            width: 100%;
+            height: 100%;
+            opacity: 0.7;
+            z-index: -1;
+            background-color: var(--pr-bg-color-white);
+        }
+
+        .pr-whoami .fr-container * {
+            opacity: 1;
+        }
+        #}
+    </style>
+
+{% endblock stylesheets %}
 {% block main %}
-    <div data-controller="category-index">
         <section class="pr-whoami">
             <div class="fr-container">
-                <div class="fr-pt-6w fr-pb-12w"><h1>Nous vous aidons dans votre demande d'indemnisation</h1></div>
+                <div class="fr-pt-6w fr-pb-12w">
+                    <h1>Nous vous aidons dans votre demande d'indemnisation</h1>
+                </div>
             </div>
         </section>
         <div class="fr-container">
@@ -112,8 +150,9 @@
                         </ul>
                     </div>
                 </section>
-                <br><br></div>
+            </div>
         </div>
-    </div>
+
+
 
 {% endblock %}

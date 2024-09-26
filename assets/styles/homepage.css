@@ -15,7 +15,7 @@
   height: 100%;
   opacity: 0.7;
   z-index: -1;
-  background-image: url('../images/picture/pic_olympe-site.jpg');
+  background-image: url('../../public/images/picture/pic_olympe-site.jpg');
   background-size: 100%;
   background-repeat: no-repeat;
   background-position: center;

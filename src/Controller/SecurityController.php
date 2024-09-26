@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Dto\ModificationMotDePasse;
 use App\Dto\MotDePasseOublieDto;
-use App\Entity\Civilite;
 use App\Entity\Requerant;
 use App\Forms\ModificationMotDePasseType;
 use App\Repository\RequerantRepository;
@@ -140,94 +139,5 @@ class SecurityController extends AbstractController
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
-    }
-
-    #[Route('/inscription/validation-du-compte/{jeton}', name: 'app_verify_email')]
-    public function verifyUserEmail(string $jeton): Response
-    {
-        /** @var Requerant $requerant */
-        $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
-        if (null === $requerant) {
-            if ($requerant->estVerifieCourriel()) {
-                return $this->redirectToRoute('app_reset_password');
-            }
-
-            return $this->redirectToRoute('app_login');
-        }
-        $requerant->setVerifieCourriel();
-        $requerant->supprimerJetonVerification();
-        $this->em->flush();
-
-        return $this->redirectToRoute('app_login', ['courriel' => $requerant->getEmail()]);
-    }
-
-    #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
-    public function inscription(Request $request): Response
-    {
-        $user = $this->getUser();
-        if (null !== $user && $user instanceof Requerant) {
-            return $this->redirectToRoute('requerant_home_index');
-        }
-
-        if ('GET' === $request->getMethod() && $request->getSession()->has('emailRequerantInscrit')) {
-            $email = $request->getSession()->get('emailRequerantInscrit');
-            $request->getSession()->remove('emailRequerantInscrit');
-
-            return $this->render('security/success.html.twig', [
-                'email' => $email,
-            ]);
-        }
-
-        /*
-         * TODO: utiliser un **VRAI** formulaire Symfony
-         *
-         * Le formulaire a bien été soumis
-         */
-        if ($this->isCsrfTokenValid('authenticate', $request->getPayload()->get('_csrf_token'))) {
-            /**
-             * Création du nouveau compte.
-             */
-            $requerant = new Requerant();
-            $requerant->setEmail($request->get('email'));
-            $requerant->getPersonnePhysique()->setCivilite(Civilite::tryFrom($request->get('civilite')));
-            $requerant->getPersonnePhysique()->setPrenom1($request->get('prenom1'));
-            $requerant->getPersonnePhysique()->setNom($request->get('nom'));
-            $requerant->getPersonnePhysique()->setNomNaissance($request->get('nomNaissance'));
-            $requerant->setPassword(
-                $this->userPasswordHasher->hashPassword(
-                    $requerant,
-                    $request->get('password')
-                )
-            );
-            $requerant->addRole(Requerant::ROLE_REQUERANT);
-            $requerant->genererJetonVerification();
-            $requerant->setTestEligibilite($request->getSession()->get('testEligibilite'));
-            $request->getSession()->remove('testEligibilite');
-            $this->em->persist($requerant);
-            $this->em->flush();
-
-            /*
-             * Envoi du mail de confirmation.
-             */
-            $this->mailer
-                ->toRequerant($requerant)
-                ->subject("Activation de votre compte sur l'application Mon indemnisation justice")
-                ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
-                    'requerant' => $requerant,
-                ])
-                ->send();
-            // Ajout d'un drapeau pour marquer la réussite de l'inscription et pouvoir rediriger vers une page de succès
-            $request->getSession()->set('emailRequerantInscrit', $requerant->getEmail());
-
-            return $this->redirectToRoute('app_inscription');
-        }
-
-        $error = $this->authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $this->authenticationUtils->getLastUsername();
-
-        return $this->render('security/inscription.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error,
-        ]);
     }
 }

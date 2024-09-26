@@ -19,16 +19,16 @@ class HomeController extends AbstractController
 
     #[Route('/', name: 'app_homepage')]
     #[Route('/declarer-un-prejudice', name: 'app_category', options: ['expose' => true])]
-    public function category(): Response
+    public function index(): Response
     {
-        return $this->render('homepage/category.html.twig', [
+        return $this->render('index.html.twig', [
         ]);
     }
 
     #[Route('/qui-sommes-nous', name: 'app_qui_sommes_nous', options: ['expose' => true])]
-    public function index(): Response
+    public function quiSommesNous(): Response
     {
-        return $this->render('homepage/index.html.twig');
+        return $this->render('qui-sommes-nous.html.twig');
     }
 
     #[Route('/suivi-de-mon-dossier', name: 'app_suivi_mon_dossier', options: ['expose' => true])]
@@ -52,7 +52,7 @@ class HomeController extends AbstractController
             }
         }
 
-        return $this->render('homepage/suivi_dossier.html.twig', [
+        return $this->render('suivi-dossier.html.twig', [
             'raccourci' => $raccourci,
             'statuts' => $statuts,
         ]);
@@ -61,7 +61,7 @@ class HomeController extends AbstractController
     #[Route('/conditions-generales-d-utilisation', name: 'app_cgu', options: ['expose' => true])]
     public function cgu(): Response
     {
-        return $this->render('homepage/cgu.html.twig');
+        return $this->render('cgu.html.twig');
     }
 
     #[Route('/bris-de-porte/tester-mon-eligibilite', name: 'home_test_eligibilite_bris_porte', options: ['expose' => true], methods: ['GET', 'POST'])]

@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
         {% block stylesheets %}
+            {#
             <style>
                 .pr-content {
                     position: relative;
@@ -62,19 +63,6 @@
                     background-color: var(--background-default-grey);
                 }
 
-                .pr-content_body .pr-requests > ul, .pr-content_body .pr-requests > ul > li {
-                    margin: 0;
-                    padding: 0;
-                }
-
-                .pr-content_body .pr-requests ul li {
-                    list-style: none;
-                }
-
-                .pr-content_body .pr-requests ul li .fr-tile {
-                    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-                }
-
                 .pr-service-national_body {
                     background-color: var(--pr-color-grey);
                 }
@@ -97,6 +85,7 @@
                 }
 
             </style>
+             #}
         {% endblock stylesheets %}
         <title>{% block title %}Mon indemnisation justice{% if title is defined %} - {{ title }}{% endif %}{% endblock %}</title>
         {% block analytic %}
@@ -131,7 +120,7 @@
 
         {# Fil d'ariane: à intégrer #}
         <main role="main">
-            <div class="fr-container fr-container--fluid fr-my-2w fr-px-3w">
+            <div class="fr-container fr-container--fluid fr-my-2w{% block containerClasses %} fr-px-3w{% endblock containerClasses %}">
                 {% block main %}
                 {% endblock main %}
             </div>
