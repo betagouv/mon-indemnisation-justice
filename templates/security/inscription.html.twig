@@ -21,25 +21,14 @@
         }
         .pr-form-subscribe { border: 1px solid var(--pr-color-grey);  }
         .pr-form-subscribe_had-account { border-bottom: 1px solid var(--pr-color-grey); }
-        .pr-form-auth_has-not-account { border-top: 1px solid var(--pr-color-grey);  }
 
-        .pr-authentification_success_wrapper {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: var(--pr-bg-color-blue-royal);
-        }
-
-        .pr-icon_success {
-          display: inline-block;
-          background-image: url('{{ asset("images/icon/icon-success.svg") }}');
-          background-size: 100% 100%;
-          height: 10rem;
-          width: 10rem;
-        }
 
         .pr-form-subscribe, .pr-form-subscribe_had-account {
             border-bottom: 1px solid var(--pr-color-grey);
+        }
+
+        .fr-password__checkbox {
+            order: inherit !important;
         }
     </style>
 {% endblock %}
@@ -114,7 +103,7 @@
                                         <div class="fr-col-lg-6 fr-col-12">
                                             <div class="fr-input-group">
                                                 <label class="fr-label" for="input-:r6:">Nom de naissance</label>
-                                                <input name="nom"
+                                                <input name="nomNaissance"
                                                        id="input-:r6:"
                                                        class="fr-input"
                                                        aria-describedby="input-:r6:-desc-error"
@@ -127,7 +116,7 @@
                                         <div class="fr-col-lg-6 fr-col-12">
                                             <div class="fr-input-group">
                                                 <label class="fr-label" for="input-:r7:">Nom d'usage</label>
-                                                <input name="nomUsage"
+                                                <input name="nom"
                                                        class="fr-input"
                                                        aria-describedby="input-:r7:-desc-error"
                                                        type="text"
@@ -155,12 +144,13 @@
                                             </div>
                                         </div>
                                         {# Mot de passe #}
-                                        <div class="fr-col-lg-6 fr-col-12" >
+                                        <div class="fr-input-group fr-col-lg-6 fr-col-12">
                                             <div class="fr-password" id="password-input-:r9:" data-fr-js-password="true">
                                                 <label class="fr-label" for="password-:ra:">Mot de passe<br/><br/></label>
                                                 <div class="fr-input-wrap">
                                                     <input name="motDePasse"
                                                            class="fr-password__input fr-input"
+                                                           :class="{ 'fr-input--error' : erreurs?.motDePasse }"
                                                            id="password-:ra:"
                                                            type="password"
                                                            :type="revelations.motDePasse ? 'text' : 'password'"
@@ -177,16 +167,21 @@
                                                            x-text="revelations.motDePasse ? 'Masquer' : 'Afficher'"
                                                     >Afficher</label>
                                                 </div>
+                                                <p id="input-:ra:-desc-error"
+                                                       class="fr-error-text fr-hidden"
+                                                       :class="{ 'fr-hidden' : !erreurs?.motDePasse }"
+                                                       x-text="erreurs?.motDePasse"></p>
                                             </div>
                                         </div>
-                                        <div class="fr-col-lg-6 fr-col-12">
+                                        <div class="fr-input-group fr-col-lg-6 fr-col-12">
                                             <div class="fr-password"
                                                  id="password-input-:rb:"
                                                  data-fr-js-password="true">
-                                                <label class="fr-label" for="password-:rc:">Confirmation du mot de passe</label>
+                                                <label class="fr-label" style="width:100%;" for="password-:rc:">Confirmation du mot de passe</label>
                                                 <div class="fr-input-wrap">
                                                     <input name="confirmation"
                                                            class="fr-password__input fr-input"
+                                                           :class="{ 'fr-input--error' : erreurs?.confirmation }"
                                                            id="password-:rc:"
                                                            type="password"
                                                            :type="revelations.confirmation ? 'text' : 'password'"
@@ -195,13 +190,16 @@
                                                 <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
                                                     <input aria-label="Afficher le mot de passe"
                                                            id="password-:rc:-toggle-show" type="checkbox"
-                                                           data-fr-js-checkbox-input="true"
-                                                           data-fr-js-password-toggle="true" />
+                                                           x-model="revelations.confirmation" />
                                                     <label class="fr-password__checkbox fr-label"
                                                            for="password-:rc:-toggle-show"
                                                            x-text="revelations.confirmation ? 'Masquer' : 'Afficher'"
                                                     >Afficher</label>
                                                 </div>
+                                                <p id="input-:rb:-desc-error"
+                                                       class="fr-error-text fr-hidden"
+                                                       :class="{ 'fr-hidden' : !erreurs?.confirmation }"
+                                                       x-text="erreurs?.confirmation"></p>
                                             </div>
                                         </div>
                                         {# CGU #}
@@ -251,7 +249,7 @@
     <script id="input-inscription" type="application/json">{{ inscription | json_encode | raw }}</script>
     <script id="input-erreurs" type="application/json">{{ errors | json_encode | raw }}</script>
     <script type="text/javascript">
-        let inscription = Object.assign(
+        const inscription = Object.assign(
             {
                 prenom: "",
                 nom: "",
@@ -263,46 +261,76 @@
             },
             JSON.parse(document.getElementById('input-inscription')?.textContent || "{}")
         );
-        let erreurs = Object.assign({}, JSON.parse(document.getElementById('input-erreurs')?.textContent || "{}"));
+        const erreurs = Object.assign({}, JSON.parse(document.getElementById('input-erreurs')?.textContent || "{}"));
 
         function formulaireInscription() {
             return {
-                erreurs,
+                erreurs: {...erreurs},
                 submissible: false,
-                inscription,
-                avant: null,
+                inscription: {...inscription},
+                avant: {},
                 revelations: {
                     motDePasse: false,
                     confirmation: false,
                 },
-                verifierEstRempli(valeur) {
+                estRempli(valeur) {
                     return !!valeur && valeur.trim().length > 0;
                 },
-                verifierEstCourrielValide(valeur) {
-                    return !!valeur &&
-                        valeur.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-                },
-                verifierEstMotDePasseValide(valeur) {
-                    return !!valeur && valeur.length >= 8 && valeur.match(/\d/);
+                estCourrielValide(valeur) {
+                    return !!valeur && valeur.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
                 },
                 verifier(inscription) {
-                    this.submissible = (
-                        this.verifierEstRempli(inscription.prenom) &&
-                        this.verifierEstRempli(inscription.nom) &&
-                        this.verifierEstCourrielValide(inscription.courriel) &&
-                        this.verifierEstMotDePasseValide(inscription.motDePasse) &&
-                        this.verifierEstMotDePasseValide(inscription.confirmation) &&
-                        inscription.motDePasse === inscription.confirmation &&
-                        inscription.cguOk
-                    );
-
-                    if (this.avant?.courriel && this.avant?.courriel !== inscription.courriel) {
-                        this.erreurs = {}
+                    if (this.avant?.prenom !== inscription.prenom) {
+                        if (!this.estRempli(inscription.prenom)) {
+                            this.erreurs.prenom = "";
+                        } else {
+                            delete this.erreurs.prenom;
+                        }
                     }
 
-                    this.avant = {
-                        courriel: inscription.courriel
-                    };
+                    if (this.avant?.nom !== inscription.nom) {
+                        if (!this.estRempli(inscription.nom)) {
+                            this.erreurs.nom = "";
+                        } else {
+                            delete this.erreurs.nom;
+                        }
+                    }
+
+                    if (this.avant?.courriel !== inscription.courriel) {
+                        if (!this.estCourrielValide(inscription.courriel)) {
+                            this.erreurs.courriel = inscription.courriel ? "L'adresse courriel n'est pas valide" : false;
+                        } else {
+                            delete this.erreurs.courriel;
+                        }
+                    }
+
+                    // Vérification du mot de passe:
+                    if (
+                        (this.avant?.motDePasse !== inscription.motDePasse) ||
+                        (this.avant?.confirmation !== inscription.confirmation)
+                    ) {
+                        delete this.erreurs.motDePasse;
+                        delete this.erreurs.confirmation;
+                        if (inscription.motDePasse.length < 8) {
+                            this.erreurs.motDePasse = false;
+                        } else if (!inscription.motDePasse.match(/\d/)) {
+                            this.erreurs.motDePasse = "Votre mot de passe doit contenir au moins 1 chiffre";
+                        } else if (this.estRempli(inscription.motDePasse) && inscription.confirmation !== inscription.motDePasse) {
+                            this.erreurs.confirmation = "Les deux mots de passe doivent être identiques";
+                        }
+                    }
+
+                    if (this.avant?.cguOk !== inscription.cguOk) {
+                        if (!inscription.cguOk) {
+                            this.erreurs.cguOk = "";
+                        } else {
+                            delete this.erreurs.cguOk;
+                        }
+                    }
+
+                    this.submissible = Object.keys(this.erreurs).length === 0;
+
+                    this.avant = {...inscription};
                 },
                 soumettre(event) {
                     if (this.submissible) {

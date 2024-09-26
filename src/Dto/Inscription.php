@@ -16,10 +16,10 @@ class Inscription
     #[Assert\NotBlank(message: '', allowNull: false)]
     public string $nom;
 
-    public string $nomNaissance;
+    public ?string $nomNaissance = null;
 
     #[Assert\NotBlank(message: '', allowNull: false)]
-    #[Assert\Email(message: "L'adresse ne pas valide")]
+    #[Assert\Email(message: "L'adresse courriel n'est pas valide")]
     #[UniqueRequerantCourriel]
     public string $courriel;
 

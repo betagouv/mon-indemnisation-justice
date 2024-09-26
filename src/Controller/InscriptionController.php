@@ -68,7 +68,7 @@ class InscriptionController extends AbstractController
                     $requerant->setPassword(
                         $this->userPasswordHasher->hashPassword(
                             $requerant,
-                            $request->get('password')
+                            $inscription->motDePasse
                         )
                     );
                     // $requerant->addRole(Requerant::ROLE_REQUERANT);

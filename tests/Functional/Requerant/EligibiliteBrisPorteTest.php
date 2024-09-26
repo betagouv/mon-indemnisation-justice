@@ -51,6 +51,7 @@ class EligibiliteBrisPorteTest extends PantherTestCase
         $this->mailerClient->delete('/api/v1/messages');
     }
 
+    // TODO: tester avec différents viewport ($_SERVER['PANTHER_FIREFOX_ARGUMENTS'] = '-width=1200' & $_SERVER['PANTHER_FIREFOX_ARGUMENTS'] = '-width=428')
     public function testDepotDossierBrisPorte(): void
     {
         $this->client->request('GET', '/');
@@ -120,12 +121,12 @@ class EligibiliteBrisPorteTest extends PantherTestCase
         $button = $this->client->getCrawler()->selectButton('Valider mon inscription et poursuivre ma demande')->first();
         $form = $button->form([
             'civilite' => 'M',
-            'prenom1' => 'Rick',
-            'nomNaissance' => 'Errant',
-            'email' => 'rick.errant@courriel.fr',
-            'password' => 'P4ssword',
-            'confirm' => 'P4ssword',
-            'cgu' => 'true',
+            'prenom' => 'Rick',
+            'nom' => 'Errant',
+            'courriel' => 'rick.errant@courriel.fr',
+            'motDePasse' => 'P4ssword',
+            'confirmation' => 'P4ssword',
+            'cguOk' => 'true',
         ]);
 
         $this->client->takeScreenshot('public/screenshots/test-eligibilite/007-inscription-formulaire-rempli.png');
