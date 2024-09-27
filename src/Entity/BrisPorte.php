@@ -16,16 +16,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new Get(
             normalizationContext: ['groups' => ['prejudice:read']],
+            security: "is_granted('ROLE_REQUERANT')",
             name: '_api_bris_porte_get'
         ),
         new Get(
             uriTemplate: '/requerant/bris-de-porte/{id}/optimise',
             controller: GetBrisPorteOptimized::class,
+            security: "is_granted('ROLE_REQUERANT')",
             name: '_api_bris_porte_get_optimized'
         ),
         new GetCollection(),
         new Patch(
             normalizationContext: ['groups' => ['prejudice:write']],
+            security: "is_granted('ROLE_REQUERANT')",
             name: '_api_bris_porte_patch'
         ),
     ]

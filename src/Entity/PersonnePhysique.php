@@ -15,11 +15,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
   operations:[
     new Get(
-      name: '_api_personne_physique_get'
+      name: '_api_personne_physique_get',
+      security: "is_granted('ROLE_REQUERANT')"
     ),
     new Patch(
-      name: '_api_personne_physique_patch'
-      #,security: "is_granted('ROLE_REQUERANT') and object.compte == user"
+      name: '_api_personne_physique_patch',
+      security: "is_granted('ROLE_REQUERANT')"
   )]
 )]
 class PersonnePhysique

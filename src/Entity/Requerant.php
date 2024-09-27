@@ -22,15 +22,17 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ApiResource(
     operations: [
         new GetCollection(
-            name: '_api_requerant_get_collection'
+            name: '_api_requerant_get_collection',
+            security: "is_granted('ROLE_REQUERANT')"
         ),
         new Get(
             name: '_api_requerant_get',
-            normalizationContext: ['groups' => ['user:write']]
+            normalizationContext: ['groups' => ['user:write']],
+            security: "is_granted('ROLE_REQUERANT')"
         ),
         new Patch(
-            name: '_api_requerant_patch'
-            // ,security: "is_granted('ROLE_REQUERANT')"
+            name: '_api_requerant_patch',
+            security: "is_granted('ROLE_REQUERANT')"
         )]
 )]
 #[ORM\Entity(repositoryClass: RequerantRepository::class)]

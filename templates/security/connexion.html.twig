@@ -27,6 +27,8 @@
 {% endif %}
 {% endblock modale %}
 
+{% block containerClasses %}{% endblock containerClasses %}
+
 {% block main %}
   {% set csrf_token = csrf_token('authenticate') %}
   <div {{ stimulus_controller('security_login',{

@@ -36,12 +36,12 @@ framework:
         #base_path: '%kernel.project_dir%/assets'
 
 
-#when@prod:
-#    webpack_encore:
+when@prod:
+    webpack_encore:
 #        # Cache the entrypoints.json (rebuild Symfony's cache when entrypoints.json changes)
 #        # Available in version 1.2
-#        cache: true
+        cache: true
 
-#when@test:
-#    webpack_encore:
-#        strict_mode: false
+when@dev:
+    webpack_encore:
+        output_path: '%kernel.project_dir%/public/preview'

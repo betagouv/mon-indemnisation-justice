@@ -9,14 +9,19 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\DocumentRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\File;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\Index(name: "document_liasse_documentaire_id_type_idx", columns: ["liasse_documentaire_id","type"])]
 #[ApiResource(
   operations:[
-    new Get(name: '_api_document_get'),
-    new GetCollection(name: '_api_document_get_collection'),
+    new Get(
+        name: '_api_document_get',
+        security: "is_granted('ROLE_REQUERANT')"
+    ),
+    new GetCollection(
+        name: '_api_document_get_collection',
+        security: "is_granted('ROLE_REQUERANT')"
+    ),
   ]
 )]
 class Document
