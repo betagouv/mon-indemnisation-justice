@@ -126,7 +126,7 @@ class EligibiliteBrisPorteTest extends PantherTestCase
             'courriel' => 'rick.errant@courriel.fr',
             'motDePasse' => 'P4ssword',
             'confirmation' => 'P4ssword',
-            'cguOk' => 'true',
+            'cguOk' => true,
         ]);
 
         $this->client->takeScreenshot('public/screenshots/test-eligibilite/007-inscription-formulaire-rempli.png');

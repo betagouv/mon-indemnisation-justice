@@ -27,8 +27,31 @@
             border-bottom: 1px solid var(--pr-color-grey);
         }
 
-        .fr-password__checkbox {
-            order: inherit !important;
+        /** Bouton afficher / masquer le mot de passe */
+        button.fr-btn--input-overlay {
+            padding:0;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            right: .5rem;
+            bottom: 0.75rem;
+            width: 2rem;
+            height: 2rem;
+            --icon-size: 1rem;
+            margin: auto;
+            pointer-events: all;
+            z-index:10;
+            background-color:transparent;
+        }
+
+        button.fr-btn--input-overlay:hover {
+            background-color:transparent !important;
+        }
+
+        button.fr-btn--input-overlay *:hover {
+            background-color:transparent;
+            color: inherit;
         }
     </style>
 {% endblock %}
@@ -154,17 +177,15 @@
                                                            aria-describedby="inscription-champs-mot-de-passe-error"
                                                            type="password"
                                                            :type="revelations.motDePasse ? 'text' : 'password'"
-                                                           x-model="inscription.motDePasse" />
-                                                </div>
-                                                <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
-                                                    <input aria-label="Afficher le mot de passe"
-                                                           type="checkbox"
-                                                           x-model="revelations.motDePasse"
+                                                           x-model="inscription.motDePasse"
                                                     />
-                                                    <label class="fr-password__checkbox fr-label"
-                                                           for="password-:ra:-toggle-show"
-                                                           x-text="revelations.motDePasse ? 'Masquer' : 'Afficher'"
-                                                    >Afficher</label>
+                                                    <button role="button"
+                                                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
+                                                            x-on:click="revelations.motDePasse = !revelations.motDePasse"
+                                                            :title="revelations.motDePasse ? 'Masque' : 'Afficher'"
+                                                    >
+                                                        <span :class="{'fr-icon-eye-line': !revelations.motDePasse, 'fr-icon-eye-off-line': revelations.motDePasse }" aria-hidden="true"></span>
+                                                    </button>
                                                 </div>
                                                 <p id="inscription-champs-mot-de-passe-error"
                                                        class="fr-error-text fr-hidden"
@@ -184,16 +205,15 @@
                                                            aria-describedby="inscription-champs-confirmation-error"
                                                            type="password"
                                                            :type="revelations.confirmation ? 'text' : 'password'"
-                                                           x-model="inscription.confirmation" />
-                                                </div>
-                                                <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
-                                                    <input aria-label="Afficher le mot de passe"
-                                                           type="checkbox"
-                                                           x-model="revelations.confirmation" />
-                                                    <label class="fr-password__checkbox fr-label"
-                                                           for="password-:rc:-toggle-show"
-                                                           x-text="revelations.confirmation ? 'Masquer' : 'Afficher'"
-                                                    >Afficher</label>
+                                                           x-model="inscription.confirmation"
+                                                    />
+                                                    <button role="button"
+                                                            class="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
+                                                            x-on:click="revelations.confirmation = !revelations.confirmation"
+                                                            :title="revelations.confirmation ? 'Masque' : 'Afficher'"
+                                                    >
+                                                        <span :class="{'fr-icon-eye-line': !revelations.motDePasse, 'fr-icon-eye-off-line': revelations.motDePasse }" aria-hidden="true"></span>
+                                                    </button>
                                                 </div>
                                                 <p id="inscription-champs-confirmation-error"
                                                    class="fr-error-text fr-hidden"
@@ -209,6 +229,7 @@
                                                         <input type="checkbox"
                                                                id="inscription-champs-cgu-ok"
                                                                name="cguOk"
+                                                               value="{{ form.cguOk.vars.value }}"
                                                                x-model.boolean="inscription.cguOk" />
                                                         <label class="fr-label"
                                                                for="inscription-champs-cgu-ok">
