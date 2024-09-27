@@ -64,7 +64,7 @@
                             <div class="fr-col-12">
                                 <div class=" fr-p-0 fr-p-4w">
                                     <h2>Créer un compte</h2>
-                                    <div id="fr-alert-:r1:" class="fr-alert fr-alert--info fr-alert--sm">
+                                    <div class="fr-alert fr-alert--info fr-alert--sm">
                                         <h3 class="fr-alert__title">Pourquoi ?</h3>
                                         <div>
                                             <p>L'accès au formulaire de demande d'indemnisation recquiert la création d'un compte</p>
@@ -73,11 +73,11 @@
                                     <p class="fr-my-4w">Sauf mention contraire, tous les champs sont obligatoires</p>
                                     <div class="fr-grid-row fr-grid-row--gutters">
                                         <div class="fr-col-lg-4 fr-col-12">
-                                            <div id="fr-select-group-:r2:" class="fr-select-group">
-                                                <label class="fr-label" for="select-:r3:">Civilité</label>
+                                            <div class="fr-select-group">
+                                                <label class="fr-label" for="inscription-champs-civilite">Civilité</label>
                                                 <select name="civilite"
                                                         class="fr-select"
-                                                        id="select-:r3:"
+                                                        id="inscription-champs-civilite"
                                                         aria-describedby="select-:r4:-desc"
                                                         x-model="inscription.civilite"
                                                 >
@@ -89,9 +89,9 @@
                                         </div>
                                         <div class="fr-col-lg-8 fr-col-12">
                                             <div class="fr-input-group">
-                                                <label class="fr-label" for="input-:r5:">Prénom(s)</label>
+                                                <label class="fr-label" for="inscription-champs-prenom">Prénom(s)</label>
                                                 <input name="prenom"
-                                                       id="input-:r5:"
+                                                       id="inscription-champs-prenom"
                                                        class="fr-input"
                                                        aria-describedby="input-:r5:-desc-error"
                                                        type="text"
@@ -102,9 +102,9 @@
                                         </div>
                                         <div class="fr-col-lg-6 fr-col-12">
                                             <div class="fr-input-group">
-                                                <label class="fr-label" for="input-:r6:">Nom de naissance</label>
+                                                <label class="fr-label" for="inscription-champs-nom">Nom de naissance</label>
                                                 <input name="nomNaissance"
-                                                       id="input-:r6:"
+                                                       id="inscription-champs-nom"
                                                        class="fr-input"
                                                        aria-describedby="input-:r6:-desc-error"
                                                        type="text"
@@ -115,12 +115,11 @@
                                         </div>
                                         <div class="fr-col-lg-6 fr-col-12">
                                             <div class="fr-input-group">
-                                                <label class="fr-label" for="input-:r7:">Nom d'usage</label>
+                                                <label class="fr-label" for="inscription-champs-nom-usage">Nom d'usage</label>
                                                 <input name="nom"
                                                        class="fr-input"
-                                                       aria-describedby="input-:r7:-desc-error"
                                                        type="text"
-                                                       id="input-:r7:"
+                                                       id="inscription-champs-nom-usage"
                                                        value="{{ form.nom.vars.value }}"
                                                        x-model="inscription.nom"
                                                 />
@@ -128,16 +127,16 @@
                                         </div>
                                         <div class="fr-col-12">
                                             <div class="fr-input-group" :class="{ 'fr-input-group--error': !!erreurs?.courriel }">
-                                                <label class="fr-label" for="input-:r8:">Adresse courriel</label>
+                                                <label class="fr-label" for="inscription-champs-courriel">Adresse courriel</label>
                                                 <input name="courriel"
-                                                       id="input-:r8:"
+                                                       id="inscription-champs-courriel"
                                                        class="fr-input"
                                                        :class="{ 'fr-input--error': !!erreurs?.courriel }"
-                                                       aria-describedby="input-:r8:-desc-error"
+                                                       aria-describedby="inscription-champs-courriel-error"
                                                        type="text"
                                                        x-model="inscription.courriel"
                                                 />
-                                                <p id="input-:r8:-desc-error"
+                                                <p id="inscription-champs-courriel-error"
                                                    class="fr-error-text fr-hidden"
                                                    :class="{ 'fr-hidden' : !erreurs?.courriel }"
                                                    x-text="erreurs?.courriel"></p>
@@ -145,20 +144,20 @@
                                         </div>
                                         {# Mot de passe #}
                                         <div class="fr-input-group fr-col-lg-6 fr-col-12">
-                                            <div class="fr-password" id="password-input-:r9:" data-fr-js-password="true">
-                                                <label class="fr-label" for="password-:ra:">Mot de passe<br/><br/></label>
+                                            <div class="fr-password">
+                                                <label class="fr-label" for="inscription-champs-mot-de-passe">Mot de passe<br/><br/></label>
                                                 <div class="fr-input-wrap">
                                                     <input name="motDePasse"
                                                            class="fr-password__input fr-input"
                                                            :class="{ 'fr-input--error' : erreurs?.motDePasse }"
-                                                           id="password-:ra:"
+                                                           id="inscription-champs-mot-de-passe"
+                                                           aria-describedby="inscription-champs-mot-de-passe-error"
                                                            type="password"
                                                            :type="revelations.motDePasse ? 'text' : 'password'"
                                                            x-model="inscription.motDePasse" />
                                                 </div>
                                                 <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
                                                     <input aria-label="Afficher le mot de passe"
-                                                           id="password-:ra:-toggle-show"
                                                            type="checkbox"
                                                            x-model="revelations.motDePasse"
                                                     />
@@ -167,7 +166,7 @@
                                                            x-text="revelations.motDePasse ? 'Masquer' : 'Afficher'"
                                                     >Afficher</label>
                                                 </div>
-                                                <p id="input-:ra:-desc-error"
+                                                <p id="inscription-champs-mot-de-passe-error"
                                                        class="fr-error-text fr-hidden"
                                                        :class="{ 'fr-hidden' : !erreurs?.motDePasse }"
                                                        x-text="erreurs?.motDePasse"></p>
@@ -175,45 +174,44 @@
                                         </div>
                                         <div class="fr-input-group fr-col-lg-6 fr-col-12">
                                             <div class="fr-password"
-                                                 id="password-input-:rb:"
                                                  data-fr-js-password="true">
-                                                <label class="fr-label" style="width:100%;" for="password-:rc:">Confirmation du mot de passe</label>
+                                                <label class="fr-label" for="inscription-champs-confirmation:">Confirmation du mot de passe</label>
                                                 <div class="fr-input-wrap">
                                                     <input name="confirmation"
                                                            class="fr-password__input fr-input"
                                                            :class="{ 'fr-input--error' : erreurs?.confirmation }"
-                                                           id="password-:rc:"
+                                                           id="inscription-champs-confirmation"
+                                                           aria-describedby="inscription-champs-confirmation-error"
                                                            type="password"
                                                            :type="revelations.confirmation ? 'text' : 'password'"
                                                            x-model="inscription.confirmation" />
                                                 </div>
                                                 <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
                                                     <input aria-label="Afficher le mot de passe"
-                                                           id="password-:rc:-toggle-show" type="checkbox"
+                                                           type="checkbox"
                                                            x-model="revelations.confirmation" />
                                                     <label class="fr-password__checkbox fr-label"
                                                            for="password-:rc:-toggle-show"
                                                            x-text="revelations.confirmation ? 'Masquer' : 'Afficher'"
                                                     >Afficher</label>
                                                 </div>
-                                                <p id="input-:rb:-desc-error"
-                                                       class="fr-error-text fr-hidden"
-                                                       :class="{ 'fr-hidden' : !erreurs?.confirmation }"
-                                                       x-text="erreurs?.confirmation"></p>
+                                                <p id="inscription-champs-confirmation-error"
+                                                   class="fr-error-text fr-hidden"
+                                                   :class="{ 'fr-hidden' : !erreurs?.confirmation }"
+                                                   x-text="erreurs?.confirmation"></p>
                                             </div>
                                         </div>
                                         {# CGU #}
                                         <div class="fr-col-12">
-                                            <fieldset id="fr-fieldset-checkbox-:rd:"
-                                                      class="fr-fieldset"
-                                                      aria-labelledby="fr-fieldset-checkbox-:rd:-messages">
+                                            <fieldset class="fr-fieldset">
                                                 <div class="fr-fieldset__content">
                                                     <div class="fr-checkbox-group">
                                                         <input type="checkbox"
-                                                               id="fr-fieldset-checkbox-:rd:-0"
-                                                               name="cguOk" value="true"
+                                                               id="inscription-champs-cgu-ok"
+                                                               name="cguOk"
                                                                x-model.boolean="inscription.cguOk" />
-                                                        <label class="fr-label" for="fr-fieldset-checkbox-:rd:-0">
+                                                        <label class="fr-label"
+                                                               for="inscription-champs-cgu-ok">
                                                             Je certifie avoir lu et accepté les
                                                             <a class="fr-link"
                                                                href="/conditions-generales-d-utilisation"
@@ -222,9 +220,6 @@
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div class="fr-messages-group"
-                                                     id="fr-fieldset-checkbox-:rd:-messages"
-                                                     aria-live="assertive"></div>
                                             </fieldset>
                                         </div>
                                         <div class="fr-col-12">
