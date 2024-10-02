@@ -86,10 +86,10 @@ const FormulaireReceveur = function({personnePhysique}) {
     <>
       <h3>Attestation d'information remise à</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-3">
+        <div className="fr-col-lg-3 fr-col-4">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
-        <div className="fr-col-9">
+        <div className="fr-col-lg-9 fr-col-8">
           <Input
             label="Prénom(s)"
             state={statePrenom1}
@@ -102,7 +102,7 @@ const FormulaireReceveur = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Nom de naissance"
             state={stateNom}
@@ -114,7 +114,7 @@ const FormulaireReceveur = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label={"Nom d'usage"}
             nativeInputProps={{
