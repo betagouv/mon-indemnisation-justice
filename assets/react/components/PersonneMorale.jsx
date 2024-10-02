@@ -46,7 +46,7 @@ const PersonneMorale = ({personneMorale}) => {
     <>
       <h3>Identité de la société</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Raison sociale"
             state={stateRaisonSociale}
@@ -58,7 +58,7 @@ const PersonneMorale = ({personneMorale}) => {
             }}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="SIREN / SIRET"
             state={stateSirenSiret}

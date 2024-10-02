@@ -82,10 +82,10 @@ const RepresentantLegal = function({personnePhysique}) {
     <>
       <h3>Identité du représentant légal</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-2">
+        <div className="fr-col-lg-2 fr-col-4">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
-        <div className="fr-col-10">
+        <div className="fr-col-lg-10 fr-col-8">
           <Input
             label="Prénom(s)"
             state={statePrenom1}
@@ -93,7 +93,7 @@ const RepresentantLegal = function({personnePhysique}) {
             nativeInputProps={{placeholder: "Premier prénom", name: 'prenom1', value: prenom1, onChange: ev => setPrenom1(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Nom de naissance"
             state={stateNom}
@@ -101,19 +101,19 @@ const RepresentantLegal = function({personnePhysique}) {
             nativeInputProps={{name: 'nomNaissance', value: nomNaissance, onChange: ev => setNomNaissance(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Nom d'usage"
             nativeInputProps={{value: nom, onChange: ev => setNom(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Courriel professionnel"
             nativeInputProps={{value: email, onChange: ev => setEmail(ev.target.value)}}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Numéro de téléphone professionnel"
             nativeInputProps={{value: telephone, onChange: ev => setTelephone(ev.target.value)}}

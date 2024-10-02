@@ -71,37 +71,37 @@ const FormulaireSimple = ({serviceEnqueteurIri}) => {
               nativeInputProps={{value: nom, onChange: ev=>setNom(ev.target.value)}}
             />
           </div>
-          <div className="fr-col-6">
+          <div className="fr-col-lg-6 fr-col-12">
             <Input
               label="Téléphone"
               nativeInputProps={{value: telephone, onChange: ev=>setTelephone(ev.target.value)}}
             />
           </div>
-          <div className="fr-col-6">
+          <div className="fr-col-lg-6 fr-col-12">
             <Input
               label="Courriel"
               nativeInputProps={{value: courriel, onChange: ev=>setCourriel(ev.target.value)}}
             />
           </div>
-          <div className="fr-col-6">
+          <div className="fr-col-lg-6 fr-col-12">
             <Input
               label="Numéro de procès-verbal"
               nativeInputProps={{value: numeroPV, onChange: ev=>setNumeroPV(ev.target.value)}}
             />
           </div>
-          <div className="fr-col-6">
+          <div className="fr-col-lg-6 fr-col-12">
             <Input
               label="Juridiction"
               nativeInputProps={{value: juridiction, onChange: ev=>setJuridiction(ev.target.value)}}
             />
           </div>
-          <div className="fr-col-6">
+          <div className="fr-col-lg-6 fr-col-12">
             <Input
               label="Nom du magistrat"
               nativeInputProps={{value: magistrat, onChange: ev=>setMagistrat(ev.target.value)}}
             />
           </div>
-          <div className="fr-col-6">
+          <div className="fr-col-lg-6 fr-col-12">
             <Input
               label="Numéro de parquet ou d'instruction"
               nativeInputProps={{value: numeroParquet, onChange: ev=>setNumeroParquet(ev.target.value)}}

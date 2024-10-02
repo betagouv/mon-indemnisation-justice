@@ -82,7 +82,7 @@ const BrisPorte = ({brisPorte}) => {
         <section className="pr-form-section fr-p-4w">
           <h3>Informations sur le bris de porte</h3>
           <div className="fr-grid-row fr-grid-row--gutters">
-            <div className="fr-col-4">
+            <div className="fr-col-lg-4 fr-col-12">
               <Input
                 label="Date de l'opération de police judiciaire"
                 nativeInputProps={{type: 'date',value: dateOperationPJ, onChange: ev=>setDateOperationPJ(ev.target.value)}}

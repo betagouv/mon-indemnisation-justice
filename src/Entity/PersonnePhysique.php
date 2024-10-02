@@ -268,6 +268,11 @@ class PersonnePhysique
         return $this;
     }
 
+    public function getNomCourant(): string
+    {
+        return "{$this->prenom1} {$this->nom}";
+    }
+
     public function getNomComplet(): ?string
     {
         $civilite = $this->getCivilite()?->getLibelle();

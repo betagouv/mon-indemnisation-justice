@@ -26,8 +26,8 @@ const Requerant = function({
   const label2 = !check_empty(precisionText) ? precisionText : "Préciser votre qualité";
   return (
     <>
-      <div className="fr-grid-row">
-        <div className="fr-col-4 fr-pr-md-1w">
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-4">
           <Referentiel
             label={label}
             options={Object.entries(QualiteRequerant)}

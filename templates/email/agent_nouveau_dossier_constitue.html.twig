@@ -15,9 +15,9 @@ Bonjour l'équipe Précontentieux,
 <br/>
 <br/>
 Le dossier <b>{{ brisPorte.reference}}</b> de demande d'indemnisation de <i>bris de porte</i> vient d'être
-déposé, avec les détails suivants
+déposé, avec les détails suivants :
 <br/>
-<h4>Identité du / de la dépositaire</h4>
+<h4>Identité et contact du / de la dépositaire</h4>
 <ul>
     {% if brisPorte.requerant.isPersonneMorale %}
         <li>
@@ -37,6 +37,9 @@ déposé, avec les détails suivants
     {% endif %}
     <li>
         Domicilié : {% if brisPorte.requerant.adresse %}<b>{{ brisPorte.requerant.adresse.libelle }}</b>{% else %}<i>non renseignée</i>{% endif %}
+    </li>
+    <li>
+        Courriel : <a href="mailto:{{ brisPorte.requerant.email }}">{{ brisPorte.requerant.email }}</a>
     </li>
 </ul>
 <h4>Bris de porte</h4>

@@ -6,15 +6,18 @@ use App\Entity\Adresse;
 use App\Entity\Civilite;
 use App\Entity\PersonnePhysique;
 use App\Entity\Requerant;
+use App\Tests\Functional\AbstractFunctionalTestCase;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
+use Facebook\WebDriver\WebDriverDimension;
+use Facebook\WebDriver\WebDriverPoint;
 use GuzzleHttp\Client as HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Panther\Client as PantherClient;
 use Symfony\Component\Panther\PantherTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class DepotBrisPorteTest extends PantherTestCase
+class DepotBrisPorteTest extends AbstractFunctionalTestCase
 {
     protected PantherClient $client;
     protected EntityManagerInterface $em;
@@ -33,7 +36,6 @@ class DepotBrisPorteTest extends PantherTestCase
                 ],
             ]
         );
-        $this->client->getCookieJar()->clear();
 
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
         $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
@@ -80,13 +82,33 @@ class DepotBrisPorteTest extends PantherTestCase
         StaticDriver::beginTransaction();
     }
 
-    public function testDepotDossierBrisPorte(): void
+    /**
+     * @dataProvider devices
+     *
+     * @param string $device
+     * @param int $width
+     * @param int $height
+     *
+     * @return void
+     *
+     * @throws \Facebook\WebDriver\Exception\NoSuchElementException
+     * @throws \Facebook\WebDriver\Exception\TimeoutException
+     */
+    public function testDepotDossierBrisPorte(string $device, int $width, int $height): void
     {
+        $this->client->getCookieJar()->clear();
+        $this->client->manage()->window()
+            ->maximize()
+            ->setPosition(new WebDriverPoint(0, 0))
+            ->setSize(new WebDriverDimension($width, $height))
+
+        ;
+
         $this->client->get('/connexion');
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
 
         $this->client->waitForVisibility('main', 1);
-        $this->client->takeScreenshot('public/screenshots/depot/001-page-connexion.png');
+        $this->client->takeScreenshot("public/screenshots/depot/$device/001-page-connexion.png");
         $this->assertSelectorTextContains('main h2', "Me connecter à mon espace");
         $button = $this->client->getCrawler()->selectButton('Je me connecte à mon espace')->first();
         $form = $button->form([
@@ -94,14 +116,14 @@ class DepotBrisPorteTest extends PantherTestCase
             'password' => 'P4ssword',
         ]);
 
-        $this->client->takeScreenshot('public/screenshots/depot/002-connexion-formulaire-rempli.png');
+        $this->client->takeScreenshot("public/screenshots/depot/$device/002-connexion-formulaire-rempli.png");
         sleep(1);
         $this->assertTrue($button->isEnabled());
         $this->client->submit($form);
-        $this->client->takeScreenshot('public/screenshots/depot/003-connexion-formulaire-soumis.png');
+        $this->client->takeScreenshot("public/screenshots/depot/$device/003-connexion-formulaire-soumis.png");
 
         $this->client->waitForVisibility('main', 2);
-        $this->client->takeScreenshot('public/screenshots/depot/004-page-accueil-requerant.png');
+        $this->client->takeScreenshot("public/screenshots/depot/$device/004-page-accueil-requerant.png");
 
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Déclarer un bris de porte');

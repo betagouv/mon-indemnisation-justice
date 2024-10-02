@@ -54,9 +54,13 @@
                 <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                     <div class="fr-modal__body">
                         <form name="eligibilite-test-form" action="{{ url(app.current_route) }}" method="POST"
-                              x-data="eligibiliteTestForm()" @submit.prevent="soumettre">
+                              x-data="eligibiliteTestForm()">
                             <div class="fr-modal__header">
-                                <button class="fr-btn--close fr-btn" aria-controls="modale-test-eligibilite">Fermer
+                                <button
+                                    class="fr-btn--close fr-btn"
+                                    aria-controls="modale-test-eligibilite"
+                                    type="button"
+                                >Fermer
                                 </button>
                             </div>
                             <div class="fr-modal__content">
@@ -162,13 +166,13 @@
                                     et est communiqué à titre informatif.</p>
                             </div>
                             <div class="fr-modal__footer">
-                                <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-reverse fr-btns-group--inline-lg fr-btns-group--icon-left">
+                                <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
 
                                     <button
-                                        class="fr-btn"
+                                        class="fr-btn fr-btn--tertiary-no-outline"
                                         aria-controls="modale-test-eligibilite"
                                         data-fr-js-modal-button="true"
-                                        x-show="eligibilite === false"
+                                        type="button"
                                     >Abandonner
                                     </button>
                                     <button
@@ -178,7 +182,11 @@
                                     >Effectuer ma demande d'indemnisation
                                     </button>
 
-                                    <button class="fr-btn" type="submit" x-show="eligibilite === true">
+                                    <button
+                                        class="fr-btn"
+                                        type="submit"
+                                        x-show="eligibilite === true"
+                                    >
                                         Accéder au formulaire de demande d'indemnisation
                                     </button>
 
@@ -277,10 +285,6 @@
                     if (Object.keys(this.errors).length === 0) {
                         this.eligibilite = this.testEligibilite.isErreurPorte;
                     }
-                },
-                soumettre(event) {
-                        event.target.closest('form')?.submit();
-
                 },
             };
         };
