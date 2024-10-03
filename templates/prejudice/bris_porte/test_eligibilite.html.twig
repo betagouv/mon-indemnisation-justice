@@ -36,176 +36,277 @@
         }
 
         @keyframes spin {
-    from {
-        transform:rotate(0deg);
-    }
-    to {
-        transform:rotate(360deg);
-    }
-}
+            from {
+                transform:rotate(0deg);
+            }
+            to {
+                transform:rotate(360deg);
+            }
+        }
+
+        /* AlpineJS */
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 {% endblock stylesheets %}
 
 {% block modale %}
-    <dialog aria-labelledby="modale-test-eligibilite-title" id="modale-test-eligibilite" class="fr-modal" role="dialog"
-            data-fr-opened="true">
-        <div class="fr-container fr-container--fluid fr-container-md">
-            <div class="fr-grid-row fr-grid-row--center">
-                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                    <div class="fr-modal__body">
-                        <form name="eligibilite-test-form" action="{{ url(app.current_route) }}" method="POST"
-                              x-data="eligibiliteTestForm()">
-                            <div class="fr-modal__header">
-                                <button
-                                    class="fr-btn--close fr-btn"
-                                    aria-controls="modale-test-eligibilite"
-                                    type="button"
-                                >Fermer
-                                </button>
+<dialog aria-labelledby="modale-test-eligibilite-title" id="modale-test-eligibilite" class="fr-modal fr-modal--opened" role="dialog"
+        data-fr-opened="true">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <form
+                        name="eligibilite-test-form"
+                        action="{{ url(app.current_route) }}"
+                        method="POST"
+                        {# x-data="eligibiliteTestForm()"#}
+                        x-data="{ statut: null, estConcerne: null, estRecherche: null, recoursAssurance: null, termine: false }"
+                    >
+                        <div class="fr-modal__header">
+                            <button
+                                class="fr-btn--close fr-btn"
+                                aria-controls="modale-test-eligibilite"
+                                type="button"
+                            >Fermer
+                            </button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <h1 id="fr-modal-title-foo-modal" class="fr-modal__title">Tester mon éligibilité à l'indemnisation</h1>
+
+                            <p x-show="!termine">
+                                La porte de votre logement a été fracturé par les forces de police dans le cadre d'une opération judiciaire.
+                            </p>
+
+                            <div class="fr-col-12" x-show="!termine">
+                                <label>
+                                    Quel est votre statut par rapport au logement ?
+                                </label>
+                                <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-btns-group--right fr-pt-2w">
+                                    <li>
+                                        <button
+                                            class="fr-btn fr-btn--secondary"
+                                            :class="{ 'fr-btn--secondary': ('PROPRIETAIRE_OCCUPANT' !== statut) }"
+                                            type="button"
+                                            @click="statut = ('PROPRIETAIRE_OCCUPANT' === statut) ? null : 'PROPRIETAIRE_OCCUPANT'"
+                                        >
+                                            Propriétaire occupant
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            class="fr-btn fr-btn--secondary"
+                                            :class="{ 'fr-btn--secondary': ('PROPRIETAIRE_BAILLEUR' !== statut) }"
+                                            type="button"
+                                            @click="statut = ('PROPRIETAIRE_BAILLEUR' === statut) ? null : 'PROPRIETAIRE_BAILLEUR'"
+                                        >
+                                            Propriétaire bailleur
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            class="fr-btn fr-btn--secondary"
+                                            :class="{ 'fr-btn--secondary': ('LOCATAIRE' !== statut) }"
+                                            type="button"
+                                            @click="statut = ('LOCATAIRE' === statut) ? null : 'LOCATAIRE'"
+                                        >
+                                            Locataire
+                                        </button>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="fr-modal__content">
-                                <h1 id="fr-modal-title-foo-modal" class="fr-modal__title">Tester mon éligibilité à
-                                    l'indemnisation</h1>
 
+                            <div class="fr-col-12" x-show="!termine && !!statut" x-cloak>
+                                <label>
+                                    Êtes-vous concerné par l'opération de police judiciaire ?
+                                </label>
+                                <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-btns-group--right fr-pt-2w">
+                                    <li>
+                                        <button
+                                            class="fr-btn fr-btn--secondary"
+                                            :class="{ 'fr-btn--secondary': ('OUI' !== estConcerne) }"
+                                            type="button"
+                                            @click="estConcerne = ('OUI' === estConcerne) ? null : 'OUI'"
+                                        >
+                                            Oui
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            class="fr-btn fr-btn--secondary"
+                                            :class="{ 'fr-btn--secondary': ('NON' !== estConcerne) }"
+                                            type="button"
+                                            @click="estConcerne = ('NON' === estConcerne) ? null : 'NON'"
+                                        >
+                                            Non
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
 
-                                <div class="fr-callout" x-show="eligibilite === null">
-                                    <h2 class="fr-callout__title">Comment remplir ce formulaire ?</h2>
-                                    <p class="fr-callout__text">
-                                        Munissez-vous de l'attestation d'informations qui vous a été remise par le
-                                        service enquêteur et saisissez les informations qui y sont renseignées dans le
-                                        formulaire ci-dessous
+                            <div class="fr-col-12" x-show="!termine && !!estConcerne" x-cloak>
+                                <input type="hidden" name="estConcerne" :value="'OUI' === estRecherche" />
+                                <label>
+                                    Est-ce que la personne recherchée réside ou est hébergée à cette adresse ?
+                                </label>
+                                <div class="fr-alert fr-alert--info" x-if="statut === 'PROPRIETAIRE_BAILLEUR'">
+                                    <p class="fr-text--xs">
+                                        Si votre locataire est la personne visée par l'opération de police judiciaire,
+                                        vous pouvez engager sa <b>responsabilité contractuelle</b> (article 1732 du code
+                                        civil).
+                                    </p>
+                                </div>
+                                <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-btns-group--right fr-pt-2w">
+                                    <li>
+                                        <button
+                                            class="fr-btn fr-btn--secondary"
+                                            :class="{ 'fr-btn--secondary': ('OUI' !== estRecherche) }"
+                                            type="button"
+                                            @click="estRecherche = ('OUI' === estRecherche) ? null : 'OUI'"
+                                        >
+                                            Oui
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            class="fr-btn fr-btn--secondary"
+                                            :class="{ 'fr-btn--secondary': ('NON' !== estRecherche) }"
+                                            type="button"
+                                            @click="estRecherche = ('NON' === estRecherche) ? null : 'NON'"
+                                        >
+                                            Non
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="fr-col-12" x-show="!termine && !!estRecherche" x-cloak>
+                                <label>
+                                    Avez-vous sollicité votre <b>assurance habitation</b> afin de vérifier la prise en charge du sinistre ?
+                                </label>
+                                <div class="fr-alert fr-alert--info">
+                                    <p class="fr-text--xs">
+                                        Afin de déposer un dossier de demande d'indemnisation, <b>une attestation de non
+                                        prise en charge</b> du sinistre par votre assureur vous sera demandée.
                                     </p>
                                 </div>
 
-                                <div class="fr-grid-row fr-grid-row--gutters" x-show="eligibilite === null">
-                                    <div class="fr-col-md-7 fr-col-12 fr-col-md-offset-5">
-                                        <div class="fr-input-group">
-                                            <label class="fr-label" for="date-operation-pj">
-                                                Date de l'opération de police judiciaire
-                                            </label>
-                                            <input class="fr-input" aria-describedby="text-input-date-messages"
-                                                   id="date-operation-pj" type="date" name="dateOperationPJ"
-                                                   x-model="testEligibilite.dateOperationPJ">
-                                            <div class="fr-messages-group fr-message--error "
-                                                 x-show="!!errors?.dateOperationPJ"
-                                                 x-text="errors?.dateOperationPJ"
-                                                 aria-live="assertive"></div>
-                                        </div>
 
-                                    </div>
-                                    <div class="fr-col-12">
-                                        <div class="fr-input-group">
-                                            <label class="fr-label"
-                                                   for="eligibilite-bris-de-porte_date-operation">Numéros de dossier
-                                                <span class="fr-hint-text">Vous devez compléter au moins un champ</span>
-                                            </label>
-                                        </div>
-                                        <div class="pr-eligibilite_form-group">
-                                            <div class="fr-p-2w">
-                                                <div class="fr-input-group" :class="{'fr-input-group--error': !!errors?.numeros}">
-                                                    <label class="fr-label" for="numero-pv">Numéro de
-                                                        procès-verbal</label>
-                                                    <input class="fr-input fr-input--error" type="text" id="numero-pv"
-                                                           name="numeroPV" x-model="testEligibilite.numeroPv">
-                                                </div>
+                                <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-btns-group--right fr-pt-2w">
+                                    <li>
+                                        <button
+                                            class="fr-btn fr-btn--secondary"
+                                            :class="{ 'fr-btn--secondary': ('OUI' !== recoursAssurance) }"
+                                            type="button"
+                                            @click="recoursAssurance = 'OUI'; termine = true;"
+                                        >
+                                            Oui
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            class="fr-btn fr-btn--secondary"
+                                            :class="{ 'fr-btn--secondary': ('NON' !== recoursAssurance) }"
+                                            type="button"
+                                            @click="recoursAssurance = 'NON'; termine = true;"
+                                        >
+                                            Non
+                                        </button>
+                                    </li>
+                                </ul>
 
-                                                <div class="fr-messages-group fr-message--error fr-my-2w" aria-live="assertive" x-show="!!errors?.numeros" x-text="errors?.numeros">
-                                                    Vous devez fournir un numéro de procès-verbal et/ou un numéro de
-                                                    parquet ou d'instruction.
-                                                </div>
-
-                                                <div class="fr-input-group" :class="{'fr-input-group--error': !!errors?.numeros}">
-                                                    <label class="fr-label" for="numero-parquet">Numéro de parquet ou
-                                                        d'instruction</label>
-                                                    <input class="fr-input fr-input--error" type="text"
-                                                           id="numero-parquet" name="numeroParquet"
-                                                           x-model="testEligibilite.numeroParquet">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="fr-col-12">
-                                        <fieldset class="fr-fieldset" id="is-erreur-porte" aria-labelledby="is-erreur-porte-legend">
-                                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="is-erreur-porte-legend">
-                                                S'agit-il d'une erreur des services de police ?
-                                            </legend>
-                                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                                <div class="fr-radio-group">
-                                                    <input type="radio" id="is-erreur-porte-oui" name="isErreurPorte" value="true" x-model.boolean="testEligibilite.isErreurPorte">
-                                                    <label class="fr-label" for="is-erreur-porte-oui">
-                                                        Oui
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                                <div class="fr-radio-group">
-                                                    <input type="radio" id="is-erreur-porte-non" name="isErreurPorte" value="false" x-model.boolean="testEligibilite.isErreurPorte">
-                                                    <label class="fr-label" for="is-erreur-porte-non">
-                                                        Non
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                </div>
-
-
-                                <div class="fr-alert fr-alert--error" x-show="eligibilite === false">
-                                    <h3 class="fr-alert__title">Vous n'êtes pas éligible à l'indemnisation</h3>
-                                    <p>Les informations saisies ne vous permettent pas d'obtenir une indemnisation</p>
-                                </div>
-                                <p class="fr-mt-2w" x-show="eligibilite === false">Le résultat indiqué ci-dessus découle des éléments saisis
-                                    et est communiqué à titre informatif.</p>
-
-                                <div class="fr-alert fr-alert--success" x-show="eligibilite === true">
-                                    <h3 class="fr-alert__title">Vous êtes éligible à l'indemnisation</h3>
-                                    <p>Effectuer votre demande amiable d'indemnisation en cliquant sur le bouton
-                                        ci-dessous.</p>
-                                </div>
-                                <p class="fr-mt-2w" x-show="eligibilite === true">Le résultat indiqué ci-dessus découle des éléments saisis
-                                    et est communiqué à titre informatif.</p>
                             </div>
-                            <div class="fr-modal__footer">
-                                <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
 
-                                    <button
-                                        class="fr-btn fr-btn--tertiary-no-outline"
-                                        aria-controls="modale-test-eligibilite"
-                                        data-fr-js-modal-button="true"
-                                        type="button"
-                                    >Abandonner
-                                    </button>
-                                    <button
-                                        class="fr-btn fr-btn--secondary"
-                                        type="submit"
-                                        x-show="eligibilite === false"
-                                    >Effectuer ma demande d'indemnisation
-                                    </button>
-
-                                    <button
-                                        class="fr-btn"
-                                        type="submit"
-                                        x-show="eligibilite === true"
-                                    >
-                                        Accéder au formulaire de demande d'indemnisation
-                                    </button>
-
-                                    <button
-                                        class="fr-btn{# fr-icon-refresh-line fr-button-icon-spin #}"
-                                        @click="valider()"
-                                        type="button"
-                                        x-show="eligibilite === null"
-                                    >
-                                        Vérifier mon éligibilité à l'indemnisation
-                                    </button>
-                                </div>
+                            <div
+                                class="fr-alert fr-alert--warning"
+                                x-show="termine && estConcerne === 'OUI'"
+                                x-cloak
+                            >
+                                <h3 class="fr-alert__title">Vous n'êtes pas éligible à l'indemnisation</h3>
+                                <p>
+                                    [CONCERNÉ WARNING]<br/>
+                                    <br/>
+                                    En étant concerné par l'opération de police judiciaire, vous ne pouvez prétendre à
+                                    une quelconque indemnisation.<br/>
+                                    <br/>
+                                    Vous pouvez malgré tout déposer votre demande en créant votre compte via le bouton
+                                    ci-dessous. Mais soyez conscient que celle-ci n'a que très peu de chance d'aboutir
+                                    à une indemnisation.
+                                </p>
                             </div>
-                        </form>
-                    </div>
+
+                            <div
+                                class="fr-alert fr-alert--success"
+                                x-show="termine && statut === 'PROPRIETAIRE_OCCUPANT' && estConcerne === 'NON' && estRecherche === 'NON'"
+                                x-cloak
+                            >
+                                <h3 class="fr-alert__title">Vous êtes éligible à l'indemnisation</h3>
+                                <p>
+                                    [PROPRIETAIRE OCCUPANT OK]<br/>
+                                    <br/>
+                                    Vous pouvez dès à présent effectuer votre demande amiable d'indemnisation en créant
+                                    votre compte via le bouton ci-dessous.
+                                </p>
+                            </div>
+
+                            <div
+                                class="fr-alert fr-alert--success"
+                                x-show="termine && statut === 'PROPRIETAIRE_BAILLEUR' && estConcerne === 'NON' && estRecherche === 'NON'"
+                                x-cloak
+                            >
+                                <h3 class="fr-alert__title">Vous êtes éligible à l'indemnisation</h3>
+                                <p>
+                                    [PROPRIETAIRE BAILLEUR OK]<br/>
+                                    <br/>
+                                    Vous pouvez dès à présent effectuer votre demande amiable d'indemnisation en créant
+                                    votre compte via le bouton ci-dessous.
+                                </p>
+                            </div>
+
+                            <div
+                                    x-show="termine && statut === 'LOCATAIRE' && estConcerne === 'NON' && estRecherche === 'NON'"
+                                    class="fr-alert fr-alert--success"
+                                x-cloak
+                            >
+                                <h3 class="fr-alert__title">Vous êtes éligible à l'indemnisation</h3>
+                                <p>
+                                    [LOCATAIRE OCCUPANT OK]<br/>
+                                    <br/>
+                                    Vous pouvez dès à présent effectuer votre demande amiable d'indemnisation en créant
+                                    votre compte via le bouton ci-dessous.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="fr-modal__footer">
+                            <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg">
+                                <button
+                                    x-show="termine"
+                                    x-cloak
+                                    class="fr-btn fr-btn--tertiary-no-outline"
+                                    aria-controls="modale-test-eligibilite"
+                                    data-fr-js-modal-button="true"
+                                    type="button"
+                                >Annuler
+                                </button>
+                                <button
+                                    class="fr-btn"
+                                    type="submit"
+                                    x-show="termine"
+                                    x-cloak
+                                >Faire ma demande
+                                </button>
+
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </dialog>
+    </div>
+</dialog>
 {% endblock modale %}
 
 {% block main %}
@@ -263,29 +364,9 @@
     <script type="text/javascript">
         function eligibiliteTestForm() {
             return {
-                errors: {},
-                testEligibilite: {
-                    dateOperationPJ: null,
-                    numeroPv: "",
-                    numeroParquet: "",
-                    isErreurPorte: false
-                },
-                eligibilite: null,
-                valider() {
-                    this.errors = {};
-                    // Produire les erreurs dans errors
-                    if (this.testEligibilite.dateOperationPJ === null || !Date.parse(this.testEligibilite.dateOperationPJ)) {
-                        this.errors.dateOperationPJ = "La date de l'opération de police judiciaire doit être renseignée";
-                    }
+                questions: [
 
-                    if (this.testEligibilite.numeroPv?.trim().length === 0 && this.testEligibilite.numeroParquet?.trim().length === 0) {
-                        this.errors.numeros = "Vous devez fournir un numéro de procès-verbal et/ou un numéro de parquet ou d'instruction.";
-                    }
-
-                    if (Object.keys(this.errors).length === 0) {
-                        this.eligibilite = this.testEligibilite.isErreurPorte;
-                    }
-                },
+                ]
             };
         };
     </script>

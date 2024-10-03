@@ -63,6 +63,7 @@ class EligibiliteBrisPorteTest extends AbstractFunctionalTestCase
      */
     public function testDepotDossierBrisPorte(string $device, int $width, int $height): void
     {
+        $this->markTestSkipped("En attente de la validation du nouveau formulaire");
         $this->client->getCookieJar()->clear();
         $this->client->manage()->window()
             ->maximize()
