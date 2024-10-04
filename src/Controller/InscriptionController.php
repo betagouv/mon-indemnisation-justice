@@ -112,10 +112,6 @@ class InscriptionController extends AbstractController
         /** @var Requerant $requerant */
         $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
         if (null === $requerant) {
-            if ($requerant->estVerifieCourriel()) {
-                return $this->redirectToRoute('app_reset_password');
-            }
-
             return $this->redirectToRoute('app_login');
         }
         $requerant->setVerifieCourriel();
