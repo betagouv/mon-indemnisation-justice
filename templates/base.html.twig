@@ -120,10 +120,9 @@
 
         {# Fil d'ariane: à intégrer #}
         <main role="main">
-            <div class="fr-container fr-container--fluid fr-my-2w{% block containerClasses %} fr-px-3w{% endblock containerClasses %}">
-                {% block main %}
-                {% endblock main %}
-            </div>
+
+            {% block main %}
+            {% endblock main %}
         </main>
 
         {% include('_footer.html.twig') %}

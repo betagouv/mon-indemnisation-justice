@@ -15,6 +15,28 @@
         .pr-content_body .pr-requests ul li .fr-tile {
             box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
         }
+
+        .fr-jumbotron {
+            width: 100%;
+              top: 0;
+              left: 0;
+              background-size: cover !important;
+              background-position: 50% 50% !important;
+              z-index: 0;
+        }
+
+        .fr-jumbotron--olympe-de-gouges {
+            background-image: url('{{ asset("images/picture/olympe-de-gouges.webp") }}');
+        }
+
+        .fr-text--bold {
+            font-weight: bold;
+        }
+
+        .fr-text--white {
+            color: var(--background-default-grey);
+        }
+
         {# Désactivé en attente des décisions maquettes
         main {
             background-image: url('{{ asset("images/picture/pic_olympe-site.jpg") }}');
@@ -38,124 +60,51 @@
     </style>
 
 {% endblock stylesheets %}
+
+{% block containerClasses %}{% endblock containerClasses %}
+
 {% block main %}
-        <section class="pr-whoami">
-            <div class="fr-container">
-                <div class="fr-pt-6w fr-pb-12w">
-                    <h1>Nous vous aidons dans votre demande d'indemnisation</h1>
-                </div>
-            </div>
-        </section>
-        <div class="fr-container">
-            <div class="pr-content_body pr-mt-n6w ">
-                <section class="pr-requests">
-                    <div class="fr-px-4w fr-pt-4w"><h2>Catégories de demandes</h2>
-                        <p>Vous avez la possibilité d'effectuer un test d'éligibilité suivi d'une demande amiable
-                            d'indemnisation en sélectionnant l'une des catégories suivantes.</p>
-                        <ul class="fr-grid-row fr-grid-row--gutters">
-                            <li class="fr-col-12 fr-col-lg-4">
-                                <div class="fr-tile fr-enlarge-link" id="tile-6609">
-                                    <div class="fr-tile__body">
-                                        <div class="fr-tile__content">
-                                            <h3 class="fr-tile__title">
-                                                <a href="mailto:precontentieux.dsj-fip6@justice.gouv.fr">
-                                                    Bris de porte
-                                                </a>
-                                            </h3>
-                                            <div class="fr-tile__start"><span
-                                                        class="fr-badge fr-badge--success fr-badge--no-icon"
-                                                        id="fr-badge-:r1:">disponible</span></div>
-                                            <p class="fr-tile__desc">Ou autres dégâts matériels causés dans le cadre
-                                                d'une opération de police judiciaire</p></div>
-                                    </div>
-                                    <div class="fr-tile__header">
-                                        <div class="fr-tile__pictogram"></div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="fr-col-12 fr-col-lg-4">
-                                <div class="fr-tile fr-enlarge-link" id="tile-6609">
-                                    <div class="fr-tile__body">
-                                        <div class="fr-tile__content">
-                                            <h3 class="fr-tile__title"><a>
-                                                    <div style="color: gray;">Perte de loyers</div>
-                                                </a></h3>
-                                            <div class="fr-tile__start"><span
-                                                        class="fr-badge fr-badge--warning fr-badge--no-icon"
-                                                        id="fr-badge-:r3:">Non disponible</span></div>
-                                            <p class="fr-tile__desc">En raison du placement sous scellés d'un bien
-                                                immobilier pour les besoins d'une enquête judiciaire</p></div>
-                                    </div>
-                                    <div class="fr-tile__header">
-                                        <div class="fr-tile__pictogram"></div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="fr-col-12 fr-col-lg-4">
-                                <div class="fr-tile fr-enlarge-link" id="tile-6609">
-                                    <div class="fr-tile__body">
-                                        <div class="fr-tile__content">
-                                            <h3 class="fr-tile__title"><a>
-                                                    <div style="color: gray;">Dysfonctionnements du service public de la
-                                                        justice
-                                                    </div>
-                                                </a></h3>
-                                            <div class="fr-tile__start"><span
-                                                        class="fr-badge fr-badge--warning fr-badge--no-icon"
-                                                        id="fr-badge-:r5:">Non disponible</span></div>
-                                            <p class="fr-tile__desc">Délai de procédure déraisonnable devant les
-                                                juridictions de l'ordre judiciaire, non restitution des scellés, mise en
-                                                fourrière injustifiée, ...</p></div>
-                                    </div>
-                                    <div class="fr-tile__header">
-                                        <div class="fr-tile__pictogram"></div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="fr-col-12 fr-col-lg-6">
-                                <div class="fr-tile fr-enlarge-link" id="tile-6609">
-                                    <div class="fr-tile__body">
-                                        <div class="fr-tile__content">
-                                            <h3 class="fr-tile__title"><a>
-                                                    <div style="color: gray;">Accident impliquant un véhicule de la
-                                                        Direction des services judiciaires
-                                                    </div>
-                                                </a></h3>
-                                            <div class="fr-tile__start"><span
-                                                        class="fr-badge fr-badge--warning fr-badge--no-icon"
-                                                        id="fr-badge-:r7:">Non disponible</span></div>
-                                            <p class="fr-tile__desc"></p></div>
-                                    </div>
-                                    <div class="fr-tile__header">
-                                        <div class="fr-tile__pictogram"></div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="fr-col-12 fr-col-lg-6">
-                                <div class="fr-tile fr-enlarge-link" id="tile-6609">
-                                    <div class="fr-tile__body">
-                                        <div class="fr-tile__content">
-                                            <h3 class="fr-tile__title"><a>
-                                                    <div style="color: gray;">Sinistre survenu au sein d’un bâtiment
-                                                        judiciaire
-                                                    </div>
-                                                </a></h3>
-                                            <div class="fr-tile__start"><span
-                                                        class="fr-badge fr-badge--warning fr-badge--no-icon"
-                                                        id="fr-badge-:r9:">Non disponible</span></div>
-                                            <p class="fr-tile__desc"></p></div>
-                                    </div>
-                                    <div class="fr-tile__header">
-                                        <div class="fr-tile__pictogram"></div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </section>
+<section class="fr-jumbotron fr-jumbotron--olympe-de-gouges fr-pb-md-5w fr-pt-md-9w fr-pt-3w fr-pb-sm-3w">
+    <div class="fr-container">
+        <div class="fr-col-md-8">
+            <div class="fr-grid-col">
+                <h1 class="fr-h1 fr-mt-3w fr-text--white">Vous êtes concernés par un bris de porte ?</h1>
+                <p class="fr-text--white">
+                    Mon indemnisation est un service en ligne qui vous permet de faire une demande d’indemnisation pour un bris de portes ou tout autres dégâts matériels causés dans le cadre d’une opération de police judiciaire.
+                </p>
+                <p>
+                    <a href="#" onclick="javascript:alert('Coucou');" class="fr-btn fr-mt-2w fr-px-3w fr-py-3v">
+                        <span class="text-center full-width">Déposer votre demande d’indemnisation</span>
+                    </a>
+                </p>
             </div>
         </div>
+    </div>
+</section>
 
+<section>
+    <div class="fr-container">
+        <h3>Comment réagir ?</h3>
+    </div>
+</section>
+
+<section>
+    <div class="fr-container">
+        <h3>Comment faire ma demande d'indemnisation ?</h3>
+    </div>
+</section>
+
+<section>
+    <div class="fr-container">
+        <h3>Comment se passe ma demande d'indemnisation ?</h3>
+    </div>
+</section>
+
+<section>
+    <div class="fr-container">
+        <h3>Je souhaite déposer ma demande d'indemnisation</h3>
+    </div>
+</section>
 
 
 {% endblock %}
