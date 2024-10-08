@@ -25,6 +25,10 @@ Encore
         from: './node_modules/alpinejs/dist',
         to: 'alpinejs/[name].[ext]',
     })
+    .copyFiles({
+        from: './node_modules/remixicon',
+        to: 'remixicon/[name].[ext]',
+    })
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

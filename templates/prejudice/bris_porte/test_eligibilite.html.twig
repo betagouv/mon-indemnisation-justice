@@ -352,7 +352,7 @@
                     {
                         label: "Avez-vous pris contact avec votre bailleur ?",
                         condition: (reponses) => reponses?.statut === 'LOCATAIRE',
-                        info: "Celui-ci a, à votre égard, une obligation de sécurité (article 170 du code civil)",
+                        info: "Celui-ci a, à votre égard, une obligation de sécurité (article 1720 du code civil)",
                         champs: "contacteBailleur",
                         reponses: [
                             {
@@ -385,14 +385,14 @@
                     {
                         type: "warning",
                         titre: "Contactez votre assurance",
-                        condition: (reponses) => reponses?.contactAssurance === false,
+                        condition: (reponses) => reponses?.statut !== 'LOCATAIRE' && reponses?.contactAssurance === false,
                         message: "[PAS ENCORE CONTACTE ASSURANCE]<br/><br/>Faites-le c'est mieux",
                     },
                     // Cas sans attestation assurance
                     {
                         type: "warning",
                         titre: "Rapprochez-vous de votre assurance",
-                        condition: (reponses) => reponses?.attestationAssurance === false,
+                        condition: (reponses) => reponses?.statut !== 'LOCATAIRE'  && reponses?.attestationAssurance === false,
                         message: "[PAS ENCORE CONTACTE ASSURANCE]<br/><br/>Afin d'obtenir l'attestation de non-prise en charge. Celle-ci est nécessaire pour valider une indemnisation de notre part.",
                     },
                     // Cas ok tout va bien
