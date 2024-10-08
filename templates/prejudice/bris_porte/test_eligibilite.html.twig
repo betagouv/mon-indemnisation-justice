@@ -31,6 +31,10 @@
               animation-timing-function: linear;
         }
 
+        .fr-text--underlined {
+            text-decoration: underline;
+        }
+
         input[type=radio] {
             z-index: 2;
         }
@@ -56,7 +60,7 @@
         data-fr-opened="true">
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-8">
                 <div class="fr-modal__body">
                     <form
                         name="eligibilite-test-form"
@@ -83,8 +87,8 @@
 
                             {# Questions #}
                             <template x-for="(question, index) in questions">
-                                <div class="fr-col-12" x-show="!decision && estActive(question)">
-                                    <label x-text="question.label"></label>
+                                <div class="fr-col-12" x-show="!decision && (estActive(question) || estRepondue(question))">
+                                    <label x-text="question.label" class="fr-text--lg fr-text--underlined"></label>
 
                                     <div class="fr-alert fr-alert--info fr-alert--sm" x-show="question.info">
                                         <p x-html="question.info"></p>
@@ -213,13 +217,13 @@
                 },
                 estActive(question) {
                     /**
-                     * Une question active si elle est applicable, pas encore répondue et si toutes, les questions avant
-                     * elle sont soient répondues soient non applicables.
+                     * Une question est active si elle est applicable, pas encore répondue et si toutes les questions
+                     * précédentes ont une réponse ou ne sont pas applicables.
                      */
                     return !this.estRepondue(question) &&
                         this.estApplicable(question) &&
                         this.questions.slice(0, this.questions.indexOf(question)).every(
-                            (uestionPrecedente) => this.estRepondue(uestionPrecedente) || !this.estApplicable(uestionPrecedente)
+                            (questionPrecedente) => this.estRepondue(questionPrecedente) || !this.estApplicable(questionPrecedente)
                         );
                 },
                 estRepondue(question) {
@@ -231,6 +235,11 @@
                     } else {
                         this.reponses[question.champs] = reponse.valeur;
                     }
+                    // Supprimer les réponses aux questions suivantes (cas du changement de réponse)
+                    for (let champs of Array.from(this.questions.slice(this.questions.indexOf(question) + 1).map((q) => q.champs))) {
+                        delete this.reponses[champs];
+                    }
+
                     // Recalculer ?
                     this.decision = this.decisions.find((decision) => decision.condition(this.reponses)) ?? null;
                 },
