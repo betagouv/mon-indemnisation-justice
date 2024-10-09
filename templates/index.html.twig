@@ -83,33 +83,33 @@
 
         /** Section "Comment faire votre demande d'indemnisation ?" */
 
-        .pr-comment-faire {
+        .pr-section-comment-faire {
             padding: 1.5rem 0;
             background-color: #E6EEFE;
         }
 
 
         @media (max-width: 575px) {
-            .pr-comment-faire div.fr-container {
+            .pr-section-comment-faire div.fr-container {
                 display: flex;
                 flex-direction: column;
                 gap: 3rem;
             }
 
-            .pr-comment-faire--etape {
+            .pr-section-comment-faire--etape {
                 display: flex;
                 flex-direction: column;
                 gap: 1.5rem;
             }
         }
         @media (min-width: 576px) {
-            .pr-comment-faire div.fr-container {
+            .pr-section-comment-faire div.fr-container {
                 display: flex;
                 flex-direction: row;
 
             }
 
-            .pr-comment-faire--etape {
+            .pr-section-comment-faire--etape {
                 display: flex;
                 flex-direction: row;
                 gap: 1.5rem;
@@ -117,22 +117,22 @@
         }
 
 
-        .pr-comment-faire--titre {
+        .pr-section-comment-faire--titre {
             display: flex;
             flex-direction: column;
         }
 
-        .pr-comment-faire--titre img {
+        .pr-section-comment-faire--titre img {
             background: url('{{ asset("images/icon/icon-circle.svg") }}') center center no-repeat;
             width: 70%;
             margin: auto;
             padding: 3rem;
         }
 
-        .pr-comment-faire--etape-icone {
+        .pr-section-comment-faire--etape-icone {
             width: 4rem;
         }
-        .pr-comment-faire--etape-icone span {
+        .pr-section-comment-faire--etape-icone span {
             width: 4rem;
             height: 4rem;
             border-radius: 50%;
@@ -146,12 +146,12 @@
             align-items: center;
         }
 
-        .pr-comment-faire--etape-description {
+        .pr-section-comment-faire--etape-description {
             display: flex;
             flex-direction: column;
         }
 
-        .pr-comment-faire--etape-description h6 {
+        .pr-section-comment-faire--etape-description h6 {
             color: #000091;
             margin: 0 0 1.5rem 0;
         }
@@ -249,6 +249,38 @@
             color: #000091;
             margin: 1.5rem 0;
         }
+
+        /** Section "Je souhaite déposer ma demande d'indemnisation" */
+
+        .pr-section-deposer {
+            padding: 3rem 0;
+            background-color: #eee;
+        }
+
+        @media (max-width: 575px) {
+            .pr-section-deposer--3a {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .pr-section-deposer--3a-description {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (min-width: 576px) {
+            .pr-section-deposer--3a {
+                display: flex;
+                flex-direction: row;
+            }
+        }
+
+        .pr-section-deposer--3a-icone img {
+            width: 70%;
+            margin: auto;
+        }
     </style>
 
 {% endblock stylesheets %}
@@ -258,7 +290,7 @@
 {% block main %}
 <section class="fr-jumbotron fr-jumbotron--olympe-de-gouges fr-py-3w">
     <div class="fr-container">
-        <div class="fr-col-md-8">
+        <div class="fr-col-md-9">
             <div class="fr-grid-col">
                 <h1 class="fr-h1 fr-mt-3w fr-text--white">Vous êtes concernés par un bris de porte ?</h1>
                 <p class="fr-text--white">
@@ -366,21 +398,21 @@
     </div>
 </section>
 
-<section class="fr-my-6w pr-comment-faire">
+<section class="fr-my-6w pr-section-comment-faire">
     <div class="fr-container">
-        <div class="fr-col-lg-6 fr-col-12 pr-comment-faire--titre">
+        <div class="fr-col-lg-6 fr-col-12 pr-section-comment-faire--titre">
             <h3>Comment faire ma demande d'indemnisation ?</h3>
 
             <img src="{{ asset('images/undraw_image_folder.svg') }}" alt="Icône recherche dossier" />
         </div>
 
-        <div class="fr-col-lg-6 fr-col-12 pr-comment-faire--etapes">
-            <div class="pr-comment-faire--etape">
-                <div class="pr-comment-faire--etape-icone">
+        <div class="fr-col-lg-6 fr-col-12 pr-section-comment-faire--etapes">
+            <div class="pr-section-comment-faire--etape">
+                <div class="pr-section-comment-faire--etape-icone">
                     <span>1</span>
                 </div>
 
-                <div class="pr-comment-faire--etape-description">
+                <div class="pr-section-comment-faire--etape-description">
                     <h6>Testez votre éligibilité à l’indemnisation</h6>
                     <p>
                         Afin de vérifier votre éligibilité à l’indemnisation, vous devez répondre à quelques questions.
@@ -388,12 +420,12 @@
                 </div>
             </div>
 
-            <div class="pr-comment-faire--etape">
-                <div class="pr-comment-faire--etape-icone">
+            <div class="pr-section-comment-faire--etape">
+                <div class="pr-section-comment-faire--etape-icone">
                     <span>2</span>
                 </div>
 
-                <div class="pr-comment-faire--etape-description">
+                <div class="pr-section-comment-faire--etape-description">
                     <h6>Créez votre dossier</h6>
                     <p>
                         Votre compte vous permet de constituer votre dossier, de recevoir des messages de nos services
@@ -402,12 +434,12 @@
                 </div>
             </div>
 
-            <div class="pr-comment-faire--etape">
-                <div class="pr-comment-faire--etape-icone">
+            <div class="pr-section-comment-faire--etape">
+                <div class="pr-section-comment-faire--etape-icone">
                     <span>3</span>
                 </div>
 
-                <div class="pr-comment-faire--etape-description">
+                <div class="pr-section-comment-faire--etape-description">
                     <h6>Constituez votre dossier</h6>
                     <p>
                         Vous devez constituer votre dossier en remplissant le formulaire de demande d’indemnisation,
@@ -416,12 +448,12 @@
                 </div>
             </div>
 
-            <div class="pr-comment-faire--etape">
-                <div class="pr-comment-faire--etape-icone">
+            <div class="pr-section-comment-faire--etape">
+                <div class="pr-section-comment-faire--etape-icone">
                     <span>4</span>
                 </div>
 
-                <div class="pr-comment-faire--etape-description">
+                <div class="pr-section-comment-faire--etape-description">
                     <h6>Envoyez votre demande d’indemnisation</h6>
                     <p>
                         Vous avez complété et renseigné votre dossier, vous pouvez vérifier l’exactitude des
@@ -445,7 +477,7 @@
 
         <p>Vous avez constitué et déposé votre dossier ? Quelles sont les prochaines étapes ?. </p>
 
-        <div class="pr-etapes-indemnisation fr-grid-row fr-grid-row--gutters">
+        <div class="pr-etapes-indemnisation fr-grid-row fr-mb-3w">
             <div class="fr-col-12 fr-col-lg-4 pr-etapes-indemnisation-etape pr-etapes-indemnisation-etape-1">
                 {# Icone #}
                 <div class="pr-etapes-indemnisation--etape-icone">
@@ -491,40 +523,54 @@ sur votre compte bancaire.
             </div>
 
         </div>
-        {#
 
-
-
-
-Indemnisation
-
-
-
-
-Informations importantes
-Deux conditions cumulatives d’indemnisation : (cf : test d’éligibilité).
-Vous ne devez pas être concerné(e) par l'opération de police judiciaire
-ET
-L'opération de police judiciaire doit avoir été réalisée par erreur à votre domicile.
-Seuls les frais de remise en état à l’identique de la porte endommagée seront remboursés.
-Pour plus de précisions sur les critères d’éligibilité à l’indemnisation, je consulte les sites Internet suivants :  justice.gouv.fr     ;
-interieur.gouv.fr     et service-public.fr
-
-
-
-
-
-
-
-
-
-        #}
+        <div class="fr-callout fr-icon-info-line">
+            <h3 class="fr-callout__title">Informations importantes</h3>
+            <p>Deux conditions cumulatives d’indemnisation : (cf : test d’éligibilité).</p>
+            <ul class="fr-my-2w">
+                <li>
+                    Vous ne devez pas être concerné(e) par l'opération de police judiciaire <b>ET</b>
+                </li>
+                <li>
+                    L'opération de police judiciaire doit avoir été réalisée par erreur à votre domicile.
+                </li>
+            </ul>
+            <p>
+                <b>Seuls les frais de remise en état à l’identique de la porte endommagée seront remboursés.</b>
+            </p>
+            <p class="fr-text--sm fr-my-2w">
+                Pour plus de précisions sur les critères d’éligibilité à l’indemnisation, je consulte les sites Internet suivants :
+                <a title="Vers le site https://justice.gouv.fr" href="https://justice.gouv.fr" target="_blank" rel="noopener external">justice.gouv.fr</a>,
+                <a title="Vers le site https://interieur.gouv.fr" href="https://interieur.gouv.fr" target="_blank" rel="noopener external">interieur.gouv.fr</a>
+                et <a title="Vers le site https://service-public.fr" href="https://service-public.fr" target="_blank" rel="noopener external">service-public.fr</a>.
+            </p>
+        </div>
     </div>
+
+
 </section>
 
-<section class="fr-my-6w">
+<section class="fr-my-6w pr-section-deposer">
     <div class="fr-container">
         <h3>Je souhaite déposer ma demande d'indemnisation</h3>
+        
+        <div class="pr-section-deposer--3a">
+            <div class="pr-section-deposer--3a-icone fr-col-lg-2 fr-col-12">
+                <img alt="" src="{{ asset('images/undraw_reminder.svg') }}" />
+            </div>
+            <div class="pr-section-deposer--3a-description fr-col-lg-10 fr-col-12">
+                <p>
+                    Avant de soumettre une demande d'indemnisation, vous devez passer un test d'éligibilité pour vérifier que vous remplissez les critères requis.
+                </p>
+
+                <p>
+                    Pour ce faire, vous devez avoir en votre possession l'attestation d’informations remise en main propre par les forces de l’ordre, qui sera nécessaire pour compléter les informations demandées par le test d’éligibilité.
+                </p>
+
+                <button type="button" class="fr-btn">Déposer votre demande d’indemnisation</button>
+            </div>
+
+        </div>
     </div>
 </section>
 
