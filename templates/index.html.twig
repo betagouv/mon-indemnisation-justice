@@ -40,7 +40,7 @@
 
         /** Section "Comment réagir ?" */
 
-        @media (min-width: 576px) {
+        @media (min-width: 992px) {
             .pr-comment-reagir {
                 padding-right: 17%;
                 background-image: url('{{ asset("images/undraw_searching.svg") }}');
@@ -58,12 +58,14 @@
             display: flex;
             flex-direction: column;
             width:100%;
-            background-color: #E6EEFE;
+            /*background-color: #E6EEFE;*/
+            background-color: var(--background-contrast-blue-cumulus);
             background-clip: content-box;
         }
 
         .pr-info-importante--titre {
-            background-color: #BCD3FC;
+            /*background-color: #BCD3FC;*/
+            background-color: var(--background-contrast-blue-cumulus-hover);
             padding: 1rem;
         }
 
@@ -80,15 +82,16 @@
             padding: 1rem;
         }
 
-        /** Section "Comment faire votre demande d'indemnisation ?" */
+        /** Section "Comment faire ma demande d'indemnisation ?" */
 
         .pr-section-comment-faire {
             padding: 1.5rem 0;
-            background-color: #E6EEFE;
+            /*background-color: #E6EEFE;*/
+            background-color: var(--background-contrast-blue-cumulus);
         }
 
 
-        @media (max-width: 575px) {
+        @media (max-width: 991px) {
             .pr-section-comment-faire div.fr-container {
                 display: flex;
                 flex-direction: column;
@@ -101,7 +104,7 @@
                 gap: 1.5rem;
             }
         }
-        @media (min-width: 576px) {
+        @media (min-width: 992px) {
             .pr-section-comment-faire div.fr-container {
                 display: flex;
                 flex-direction: row;
@@ -135,10 +138,12 @@
             width: 4rem;
             height: 4rem;
             border-radius: 50%;
-            background-color: #000091;
+            /*background-color: #000091;*/
+            background-color: var(--text-active-blue-france);
             font-size: 1.6rem;
             font-weight: normal;
-            color: #fff;
+            /*color: #fff;*/
+            color: var(--background-overlap-grey);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -151,7 +156,8 @@
         }
 
         .pr-section-comment-faire--etape-description h6 {
-            color: #000091;
+            /*color: #000091;*/
+            color: var(--text-active-blue-france);
             margin: 0 0 1.5rem 0;
         }
 
@@ -159,21 +165,35 @@
 
         .pr-etapes-indemnisation-etape {
             position: relative;
+            padding: 2rem 1rem;
         }
 
         .pr-etapes-indemnisation-etape:nth-child(1) {
-            background-color: transparent;
+            background-color: var(--background-overlap-grey);
+        }
+
+        .pr-etapes-indemnisation-etape:nth-child(2):before {
+            /*background-color: #fff;*/
+            background-color: var(--background-overlap-grey);
         }
 
         .pr-etapes-indemnisation-etape:nth-child(2) {
-            background-color: #E6EEFE;
+            /*background-color: #E6EEFE;*/
+            background-color: var(--background-contrast-blue-cumulus);
         }
+
+        .pr-etapes-indemnisation-etape:nth-child(3):before {
+            background-color: var(--background-contrast-blue-cumulus);
+
+        }
+
         .pr-etapes-indemnisation-etape:nth-child(3) {
-            background-color: #BCD3FC;
+            /*background-color: #BCD3FC;*/
+            background-color: var(--background-contrast-blue-cumulus-hover);
         }
 
         {# Mobiles #}
-        @media (max-width: 575px) {
+        @media (max-width: 991px) {
             .pr-etapes-indemnisation-etape {
                 padding: 1rem !important;
             }
@@ -195,7 +215,7 @@
         }
 
         {# Tablets and desktops #}
-        @media (min-width: 576px) {
+        @media (min-width: 992px) {
             .pr-etapes-indemnisation-etape:not(:first-child) {
                 padding-left:4rem;
             }
@@ -212,21 +232,12 @@
             }
         }
 
-
-        .pr-etapes-indemnisation-etape:nth-child(2):before {
-            background-color: #fff;
-        }
-
-        .pr-etapes-indemnisation-etape:nth-child(3)::before {
-            background-color: #E6EEFE;
-        }
-
-
         .pr-etapes-indemnisation--etape-icone {
             width: 4rem;
             height: 4rem;
             border-radius: 50%;
-            background-color: #000091;
+            /*background-color: #000091;*/
+            background-color: var(--text-active-blue-france);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -235,17 +246,18 @@
 
         .pr-etapes-indemnisation--etape-icone span, .pr-etapes-indemnisation--etape-icone i {
             font-weight: bold;
-            color: #fff;
+            /*color: #fff;*/
+            color: var(--background-overlap-grey);
         }
 
         .pr-etapes-indemnisation--etape-icone span:before,i:before {
             font-size: 1.8rem;
             font-weight: normal;
-
         }
 
         .pr-etapes-indemnisation-etape h6 {
-            color: #000091;
+            /*color: #000091;*/
+            color: var(--text-active-blue-france);
             margin: 1.5rem 0;
         }
 
@@ -253,13 +265,24 @@
 
         .pr-section-deposer {
             padding: 3rem 0;
-            background-color: #eee;
+            /*background-color: #eee;*/
+            background-color: var(--background-contrast-grey);
         }
 
-        @media (max-width: 575px) {
+        @media (max-width: 991px) {
             .pr-section-deposer--3a {
                 display: flex;
                 flex-direction: column;
+            }
+
+            .pr-section-deposer--3a-icone {
+                display: flex;
+                align-content: center;
+            }
+
+            .pr-section-deposer--3a-icone img {
+                width: 10rem;
+                margin: 3rem auto;
             }
 
             .pr-section-deposer--3a-description {
@@ -269,17 +292,20 @@
             }
         }
 
-        @media (min-width: 576px) {
+
+        @media (min-width: 992px) {
             .pr-section-deposer--3a {
                 display: flex;
                 flex-direction: row;
             }
+
+            .pr-section-deposer--3a-icone img {
+                width: 60%;
+                margin: auto;
+            }
         }
 
-        .pr-section-deposer--3a-icone img {
-            width: 70%;
-            margin: auto;
-        }
+
     </style>
 
 {% endblock stylesheets %}
@@ -479,7 +505,7 @@
         <p>Vous avez constitué et déposé votre dossier ? Quelles sont les prochaines étapes ?. </p>
 
         <div class="pr-etapes-indemnisation fr-grid-row fr-mb-3w">
-            <div class="fr-col-12 fr-col-lg-4 pr-etapes-indemnisation-etape pr-etapes-indemnisation-etape-1">
+            <div class="fr-col-12 fr-col-lg-4 pr-etapes-indemnisation-etape">
                 {# Icone #}
                 <div class="pr-etapes-indemnisation--etape-icone">
                     <i class="ri-search-2-line" aria-hidden="true"></i>
@@ -492,7 +518,7 @@
                 </p>
             </div>
 
-            <div class="fr-col-12 fr-col-lg-4 pr-etapes-indemnisation-etape" style="background-color: #E6EEFE;">
+            <div class="fr-col-12 fr-col-lg-4 pr-etapes-indemnisation-etape">
 
                 <div class="pr-etapes-indemnisation--etape-icone">
                     <i class="ri-shake-hands-line" aria-hidden="true"></i>

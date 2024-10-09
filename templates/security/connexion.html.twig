@@ -3,6 +3,7 @@
 {% set title = 'Se connecter à mon espace' %}
 
 {% block modale %}
+    {{ parent() }}
 {% set flash = app.flashes('success')|first %}
 {% if flash %}
 <dialog aria-labelledby="fr-modal-flash-success" role="dialog" id="fr-modal-flash-success" class="fr-modal fr-modal--opened">
