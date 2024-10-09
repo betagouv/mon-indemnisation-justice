@@ -58,7 +58,6 @@
             display: flex;
             flex-direction: column;
             width:100%;
-            align-self: stretch;
             background-color: #E6EEFE;
             background-clip: content-box;
         }
@@ -76,7 +75,7 @@
             padding-left: 30px;
         }
 
-        .pr-info-importante--contenu {
+        .pr-comment-reagir--infos-info {
 
             padding: 1rem;
         }
@@ -297,20 +296,22 @@
                     Mon indemnisation est un service en ligne qui vous permet de faire une demande d’indemnisation pour un bris de portes ou tout autres dégâts matériels causés dans le cadre d’une opération de police judiciaire.
                 </p>
                 <p>
-                    <a href="#" onclick="javascript:alert('Vers la demande d indemnisation');" class="fr-btn fr-mt-2w fr-px-3w fr-py-3v">
+                    {% block appelAAction %}
+                    <a href="mailto:precontentieux.dsj-fip6@justice.gouv.fr" class="fr-btn fr-p-3v">
                         <span class="text-center full-width">Déposer votre demande d’indemnisation</span>
                     </a>
+                    {% endblock appelAAction %}
                 </p>
             </div>
         </div>
     </div>
 </section>
 
-<section class="fr-my-6w">
+<section class="fr-my-6w pr-section-comment-reagir">
     <div class="fr-container">
         <h3>Comment réagir ?</h3>
 
-        <div class="pr-comment-reagir">
+        <div class="pr-comment-reagir--reflexes">
             <h5>Les bons réflexes</h5>
             <p>
                 L’agent des forces de l’ordre doit vous remettre une attestation d’information qui vous sera nécessaire pour faire votre demande d’indemnisation.
@@ -322,7 +323,7 @@
             </ul>
         </div>
 
-        <div>
+        <div class="pr-comment-reagir--infos">
             <h5>Informations importantes</h5>
             <p>
                 Des voies de recours vous sont ouvertes. Vous devez les exercer avant de nous saisir.
@@ -334,7 +335,7 @@
                         <div class="pr-info-importante--titre">
                             <strong>Vous êtes propriétaire occupant</strong>
                         </div>
-                        <div class="pr-info-importante--contenu">
+                        <div class="pr-comment-reagir--infos-info">
                             <ul>
                                 <li>
                                     Prenez contact avec votre <b>assurance habitation</b> afin de vérifier la prise en
@@ -348,7 +349,7 @@
                         <div class="pr-info-importante--titre">
                             <strong>Vous êtes propriétaire bailleur</strong>
                         </div>
-                        <div class="pr-info-importante--contenu">
+                        <div class="pr-comment-reagir--infos-info">
                             <ul>
                                 <li>
                                     Si votre locataire était la personne visée par l’opération de police judiciaire, vous pouvez engager sa <b>responsabilité contractuelle</b> (article 1732 du code civil)
@@ -371,7 +372,7 @@
                         <div class="pr-info-importante--titre">
                             <strong>Vous êtes locataire</strong>
                         </div>
-                        <div class="pr-info-importante--contenu">
+                        <div class="pr-comment-reagir--infos-info">
                             <ul>
                                 <li>
                                     Prenez contact avec votre <b>assurance habitation</b> afin de vérifier la prise en charge du sinistre
@@ -566,8 +567,7 @@ sur votre compte bancaire.
                 <p>
                     Pour ce faire, vous devez avoir en votre possession l'attestation d’informations remise en main propre par les forces de l’ordre, qui sera nécessaire pour compléter les informations demandées par le test d’éligibilité.
                 </p>
-
-                <button type="button" class="fr-btn">Déposer votre demande d’indemnisation</button>
+                {{ block('appelAAction') }}
             </div>
 
         </div>
