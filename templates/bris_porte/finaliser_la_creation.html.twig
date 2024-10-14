@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bris de porte : bienvenue{% endblock %}
+
+{% block main %}
+<div class="fr-container fr-my-3w">
+    {#  Indicateur d'étapes #}
+    <div class="fr-stepper">
+        <h2 class="fr-stepper__title">
+            Finaliser la création de votre compte
+            <span class="fr-stepper__state">Étape 3 sur 3</span>
+        </h2>
+        <div class="fr-stepper__steps" data-fr-current-step="3" data-fr-steps="3"></div>
+    </div>
+
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+
+                <p>Pour finaliser la création de votre compte, nous vous invitons à cliquer sur le lien qui vous a été
+                    envoyé à l'adresse email renseignée : <b>{{ email }}</b>
+                </p>
+                <p>Une fois votre compte créé, vous pourrez accéder à votre espace personnel pour effectuer votre demande
+                    d'indemnisation.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}
+

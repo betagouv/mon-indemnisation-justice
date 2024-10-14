@@ -1,4 +1,4 @@
-{% extends 'index.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Bris de porte : tester mon éligibilité{% endblock %}
 
@@ -24,107 +24,95 @@
     </style>
 {% endblock stylesheets %}
 
-{% block modale %}
-<dialog aria-labelledby="modale-test-eligibilite-title" id="modale-test-eligibilite" class="fr-modal" role="dialog"
-        data-fr-opened="true">
-    <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-8">
-                <div class="fr-modal__body">
-                    <form
-                        name="eligibilite-test-form"
-                        action="{{ url(app.current_route) }}"
-                        method="POST"
-                        x-data="eligibiliteTestForm()"
-                        {# x-init="$watch('reponses', )" #}
-                    >
-                        <div class="fr-modal__header">
-                            <button
-                                class="fr-btn--close fr-btn"
-                                aria-controls="modale-test-eligibilite"
-                                type="button"
-                                @click="reinitialiser()"
-                            >Fermer
-                            </button>
-                        </div>
-                        <div class="fr-modal__content">
-                            <h1 id="fr-modal-title-foo-modal" class="fr-modal__title">Tester mon éligibilité à l'indemnisation</h1>
+{% block main %}
+    <div class="fr-container fr-my-3w">
+        {#  Indicateur d'étapes #}
+        <div class="fr-stepper">
+            <h2 class="fr-stepper__title">
+                Tester mon éligibilité
+                <span class="fr-stepper__state">Étape 1 sur 3</span>
+            </h2>
+            <div class="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3"></div>
+            <p class="fr-stepper__details">
+                <span class="fr-text--bold">Étape suivante :</span> Création de mon compte
+            </p>
+        </div>
 
-                            <p x-show="false">
-                                La porte de votre logement a été fracturé par les forces de police dans le cadre d'une opération judiciaire.
-                            </p>
+        <div class="fr-col-12">
 
-                            {# Questions #}
-                            <template x-for="(question, index) in questions">
-                                <fieldset class="fr-fieldset" aria-labelledby="checkboxes-inline-legend checkboxes-inline-messages" x-show="estActive(question) || estRepondue(question)" x-transition.duration.500ms>
-                                    <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend" x-text="question.label"></legend>
 
-                                    <template x-for="(reponse, indexReponse) in question.reponses" :key="`question-${index}`">
-                                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                            <div class="fr-checkbox-group">
-                                                <input
-                                                    :id="`question-${index}-reponse-${indexReponse}`"
-                                                    :name="question.champs"
-                                                    :value="reponse.value"
-                                                    :disabled="decision"
-                                                    type="checkbox"
-                                                    @click="repondre(question, reponse)"
-                                                />
-                                                <label class="fr-label" for="checkboxes-inline-1" :for="`question-${index}-reponse-${indexReponse}`" x-text="reponse.libelle"></label>
-                                            </div>
-                                        </div>
-                                    </template>
+            {# Formulaire #}
+            <form
+                name="eligibilite-test-form"
+                action="{{ url(app.current_route) }}"
+                method="POST"
+                x-data="eligibiliteTestForm()"
+                {# x-init="$watch('reponses', )" #}
+            >
 
-                                </fieldset>
-                            </template>
+                <p x-show="false">
+                    La porte de votre logement a été fracturé par les forces de police dans le cadre d'une opération judiciaire.
+                </p>
 
-                            {# Décisions #}
-                            <div
-                                class="fr-alert"
-                                :class="decision ? `fr-alert--${decision?.type}` : null"
-                                x-show="!!decision"
-                                x-cloak
-                            >
-                                <h3 class="fr-alert__title" x-text="decision?.titre"></h3>
-                                <p x-html="decision?.message"></p>
+                {# Questions #}
+                <template x-for="(question, index) in questions">
+                    <fieldset class="fr-fieldset" aria-labelledby="checkboxes-inline-legend checkboxes-inline-messages" x-show="estActive(question) || estRepondue(question)" x-transition.duration.500ms>
+                        <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend" x-text="question.label"></legend>
+
+                        <template x-for="(reponse, indexReponse) in question.reponses" :key="`question-${index}`">
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-checkbox-group">
+                                    <input
+                                        :id="`question-${index}-reponse-${indexReponse}`"
+                                        :name="question.champs"
+                                        :value="reponse.value"
+                                        :disabled="decision"
+                                        type="checkbox"
+                                        @click="repondre(question, reponse)"
+                                    />
+                                    <label class="fr-label" for="checkboxes-inline-1" :for="`question-${index}-reponse-${indexReponse}`" x-text="reponse.libelle"></label>
+                                </div>
                             </div>
-                        </div>
+                        </template>
 
-                        <div class="fr-modal__footer">
-                            <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg">
-                                <button
-                                    x-show="true"
-                                    x-cloak
-                                    class="fr-btn fr-btn--tertiary-no-outline"
-                                    aria-controls="modale-test-eligibilite"
-                                    data-fr-js-modal-button="true"
-                                    @click="reinitialiser()"
-                                    type="button"
-                                >Annuler
-                                </button>
-                                <button
-                                    class="fr-btn"
-                                    type="submit"
-                                    :disabled="!decision || !(decision?.eligible ?? true)"
-                                    x-cloak
-                                >Faire ma demande
-                                </button>
+                    </fieldset>
+                </template>
 
-                            </div>
-                        </div>
-                    </form>
+                {# Décisions #}
+                <div
+                    class="fr-alert fr-my-2w"
+                    :class="decision ? `fr-alert--${decision?.type}` : null"
+                    x-show="!!decision"
+                    x-cloak
+                >
+                    <h3 class="fr-alert__title" x-text="decision?.titre"></h3>
+                    <p x-html="decision?.message"></p>
                 </div>
-            </div>
+
+                <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg">
+                    <button
+                        x-show="true"
+                        x-cloak
+                        class="fr-btn fr-btn--tertiary-no-outline"
+                        aria-controls="modale-test-eligibilite"
+                        data-fr-js-modal-button="true"
+                        @click="reinitialiser()"
+                        type="button"
+                    >Recommencer
+                    </button>
+                    <button
+                        class="fr-btn"
+                        type="submit"
+                        :disabled="!decision || !(decision?.eligible ?? true)"
+                        x-cloak
+                    >Faire ma demande
+                    </button>
+
+                </div>
+            </form>
         </div>
     </div>
-</dialog>
-{% endblock modale %}
-
-{% block appelAAction %}
-    <button class="fr-btn fr-p-3v" data-fr-opened="false" aria-controls="modale-test-eligibilite">
-        <span class="text-center full-width">Déposer votre demande d’indemnisation</span>
-    </button>
-{% endblock appelAAction %}
+{% endblock main %}
 
 {% block javascripts %}
     {{ parent() }}
