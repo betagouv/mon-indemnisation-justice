@@ -39,12 +39,18 @@ class BrisPorteController extends AbstractController
     {
         $testEligibilite = new TestEligibilite();
         $form = $this->createForm(TestEligibiliteType::class, $testEligibilite);
+        $errors = [];
 
         if (Request::METHOD_POST === $request->getMethod()) {
+            dump($request->request->all());
             $form->handleRequest($request);
-            if ($form->isValid()) {
+            dump($form->isSubmitted());
+            dump($form->isValid());
+
+            if ($form->isSubmitted() && $form->isValid()) {
                 /** @var TestEligibilite $testEligibilite */
                 $testEligibilite = $form->getData();
+                dump($testEligibilite);
 
                 $requerant = $this->getUser();
                 if ($requerant instanceof Requerant) {
@@ -59,9 +65,15 @@ class BrisPorteController extends AbstractController
                     return $this->redirectToRoute('bris_porte_creation_de_compte');
                 }
             }
+            /** @var FormError $error */
+            foreach ($form->getErrors(true) as $error) {
+                $errors[$error->getOrigin()?->getName()] = $error->getMessage();
+            }
+
+            dump($errors);
         }
 
-        return $this->render('bris_porte/tester_mon_eligibilite.html.twig');
+        return $this->render('bris_porte/tester_mon_eligibilite.html.twig', ['form' => $form]);
     }
 
     #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET', 'POST'])]
@@ -70,6 +82,10 @@ class BrisPorteController extends AbstractController
         $user = $this->getUser();
         if ($user instanceof Requerant) {
             return $this->redirectToRoute('requerant_home_index');
+        }
+
+        if (!$request->getSession()->has('testEligibilite')) {
+            return $this->redirectToRoute('bris_porte_tester_eligibilite');
         }
 
         $inscription = new Inscription();
@@ -114,7 +130,7 @@ class BrisPorteController extends AbstractController
                         ])
                         ->send();
                     // Ajout d'un drapeau pour marquer la réussite de l'inscription et pouvoir rediriger vers une page de succès
-                    $request->getSession()->set('emailRequerantInscrit', $requerant->getEmail());
+                    $this->addFlash('emailRequerantInscrit', $requerant->getEmail());
 
                     return $this->redirectToRoute('bris_porte_finaliser_la_creation');
                 } else {
@@ -136,13 +152,12 @@ class BrisPorteController extends AbstractController
     #[Route(path: '/finaliser-la-creation', name: 'bris_porte_finaliser_la_creation')]
     public function finaliserLaCreation(Request $request): Response
     {
-        if ($request->getSession()->has('emailRequerantInscrit')) {
-            return $this->redirectToRoute('bris_porte_creation_de_compte');
+        $email = @$request->getSession()->getFlashBag()->get('emailRequerantInscrit')[0];
+
+        if (!$email) {
+            return $this->redirectToRoute('bris_porte_atterrissage');
         }
 
-        $email = $request->getSession()->get('emailRequerantInscrit');
-        $request->getSession()->remove('emailRequerantInscrit');
-
-        return $this->render('bris_porte/finaliser_la_creation.html.twig', ['email' => 'nope']);
+        return $this->render('bris_porte/finaliser_la_creation.html.twig', ['email' => $email]);
     }
 }

@@ -2,14 +2,10 @@
 
 namespace App\Forms;
 
-use App\Dto\Inscription;
 use App\Dto\TestEligibilite;
-use App\Entity\Civilite;
-use Doctrine\DBAL\Types\BooleanType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,18 +24,34 @@ class TestEligibiliteType extends AbstractType
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
             'csrf_token_id' => self::class,
+            'allow_extra_fields' => true
         ]);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $tranformer = new CallbackTransformer(
+            function ($property) {
+                return $property ? 'true' : 'false';
+            },
+            function ($property) {
+                return filter_var($property, FILTER_VALIDATE_BOOL);
+            }
+        );
+
         $builder
-            ->add('dateOperationPJ', DateTimeType::class)
-            ->add('estVise', BooleanType::class)
-            ->add('estRecherche', BooleanType::class)
-            ->add('estProprietaire', BooleanType::class)
-            ->add('aContacteAssurance', BooleanType::class)
-            ->add('aContacteBailleur', BooleanType::class)
+            ->add('dateOperationPJ', DateType::class, ['widget' => 'single_text', 'format' => 'yyyy-MM-dd'])
+            ->add('estVise', TextType::class, ['required' => false])
+            ->add('estRecherche', TextType::class)
+            ->add('estProprietaire', TextType::class)
+            ->add('aContacteAssurance', TextType::class)
+            ->add('aContacteBailleur', TextType::class)
         ;
+        $builder->get('estVise')->addModelTransformer($tranformer);
+        $builder->get('estRecherche')->addModelTransformer($tranformer);
+        $builder->get('estProprietaire')->addModelTransformer($tranformer);
+        $builder->get('aContacteAssurance')->addModelTransformer($tranformer);
+        $builder->get('aContacteBailleur')->addModelTransformer($tranformer);
+
     }
 }

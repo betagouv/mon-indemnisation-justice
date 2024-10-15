@@ -6,10 +6,10 @@ class TestEligibilite
 {
     public \DateTime $dateOperationPJ;
     public bool $estVise;
-    public bool $estRecherche;
-    public bool $estProprietaire;
-    public bool $aContacteAssurance;
-    public bool $aContacteBailleur;
+    public ?bool $estRecherche;
+    public ?bool $estProprietaire;
+    public ?bool $aContacteAssurance;
+    public ?bool $aContacteBailleur;
 
     public function toArray(): array
     {
