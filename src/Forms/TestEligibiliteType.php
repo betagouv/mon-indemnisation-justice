@@ -23,7 +23,6 @@ class TestEligibiliteType extends AbstractType
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
             'csrf_token_id' => self::class,
-            'allow_extra_fields' => true
         ]);
     }
 

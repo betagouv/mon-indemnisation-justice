@@ -178,7 +178,10 @@
                                     <div class="fr-input-group fr-col-lg-6 fr-col-12">
                                         <div class="fr-password">
                                             <label class="fr-label" for="inscription-champs-mot-de-passe">Mot de passe<br/><br/></label>
-                                            <div class="fr-input-wrap">
+                                            <div
+                                                class="fr-input-wrap"
+                                                @click.outside="revelations.motDePasse = false"
+                                            >
                                                 <input name="motDePasse"
                                                        class="fr-password__input fr-input"
                                                        :class="{ 'fr-input--error' : erreurs?.motDePasse }"
@@ -191,8 +194,7 @@
                                                 <button role="button"
                                                         tabindex="-1"
                                                         class="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
-                                                        x-on:click="revelations.motDePasse = !revelations.motDePasse"
-                                                        x-on:blur="revelations.motDePasse = false"
+                                                        @click="revelations.motDePasse = !revelations.motDePasse"
                                                         :title="revelations.motDePasse ? 'Masque' : 'Afficher'"
                                                 >
                                                     <span :class="{'fr-icon-eye-line': !revelations.motDePasse, 'fr-icon-eye-off-line': revelations.motDePasse }" aria-hidden="true"></span>
@@ -207,8 +209,11 @@
                                     <div class="fr-input-group fr-col-lg-6 fr-col-12">
                                         <div class="fr-password"
                                              data-fr-js-password="true">
-                                            <label class="fr-label" for="inscription-champs-confirmation:">Confirmation du mot de passe</label>
-                                            <div class="fr-input-wrap">
+                                            <label class="fr-label" for="inscription-champs-confirmation">Confirmation du mot de passe</label>
+                                            <div
+                                                class="fr-input-wrap"
+                                                @click.outside="revelations.confirmation = false"
+                                            >
                                                 <input name="confirmation"
                                                        class="fr-password__input fr-input"
                                                        :class="{ 'fr-input--error' : erreurs?.confirmation }"
@@ -221,8 +226,7 @@
                                                 <button role="button"
                                                         tabindex="-1"
                                                         class="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
-                                                        x-on:click="revelations.confirmation = !revelations.confirmation"
-                                                        x-on:blur="revelations.confirmation = false"
+                                                        @click="revelations.confirmation = !revelations.confirmation"
                                                         :title="revelations.confirmation ? 'Masque' : 'Afficher'"
                                                 >
                                                     <span :class="{'fr-icon-eye-line': !revelations.confirmation, 'fr-icon-eye-off-line': revelations.confirmation }" aria-hidden="true"></span>
@@ -341,9 +345,9 @@
                         delete this.erreurs.motDePasse;
                         delete this.erreurs.confirmation;
                         if (inscription.motDePasse.length < 8) {
-                            this.erreurs.motDePasse = false;
+                            this.erreurs.motDePasse = "Le mot de passe doit contenir au moins 8 caractères, dont 1 chiffre";
                         } else if (!inscription.motDePasse.match(/\d/)) {
-                            this.erreurs.motDePasse = "Votre mot de passe doit contenir au moins 1 chiffre";
+                            this.erreurs.motDePasse = "Le mot de passe doit contenir au moins 1 chiffre";
                         } else if (this.estRempli(inscription.motDePasse) && inscription.confirmation !== inscription.motDePasse) {
                             this.erreurs.confirmation = "Les deux mots de passe doivent être identiques";
                         }

@@ -41,6 +41,7 @@ class BrisPorteController extends AbstractController
         $form = $this->createForm(TestEligibiliteType::class, $testEligibilite);
 
         if (Request::METHOD_POST === $request->getMethod()) {
+            $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var TestEligibilite $testEligibilite */
                 $testEligibilite = $form->getData();
