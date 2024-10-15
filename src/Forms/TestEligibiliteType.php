@@ -5,7 +5,6 @@ namespace App\Forms;
 use App\Dto\TestEligibilite;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -40,7 +39,6 @@ class TestEligibiliteType extends AbstractType
         );
 
         $builder
-            ->add('dateOperationPJ', DateType::class, ['widget' => 'single_text', 'format' => 'yyyy-MM-dd'])
             ->add('estVise', TextType::class, ['required' => false])
             ->add('estRecherche', TextType::class)
             ->add('estProprietaire', TextType::class)

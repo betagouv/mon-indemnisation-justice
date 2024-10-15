@@ -39,18 +39,11 @@ class BrisPorteController extends AbstractController
     {
         $testEligibilite = new TestEligibilite();
         $form = $this->createForm(TestEligibiliteType::class, $testEligibilite);
-        $errors = [];
 
         if (Request::METHOD_POST === $request->getMethod()) {
-            dump($request->request->all());
-            $form->handleRequest($request);
-            dump($form->isSubmitted());
-            dump($form->isValid());
-
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var TestEligibilite $testEligibilite */
                 $testEligibilite = $form->getData();
-                dump($testEligibilite);
 
                 $requerant = $this->getUser();
                 if ($requerant instanceof Requerant) {
@@ -65,12 +58,6 @@ class BrisPorteController extends AbstractController
                     return $this->redirectToRoute('bris_porte_creation_de_compte');
                 }
             }
-            /** @var FormError $error */
-            foreach ($form->getErrors(true) as $error) {
-                $errors[$error->getOrigin()?->getName()] = $error->getMessage();
-            }
-
-            dump($errors);
         }
 
         return $this->render('bris_porte/tester_mon_eligibilite.html.twig', ['form' => $form]);
