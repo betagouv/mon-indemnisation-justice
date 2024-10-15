@@ -40,6 +40,18 @@
             >
                 <input type="hidden" name="_token" value="{{ form._token.vars.value }}">
 
+                <div class="fr-callout">
+                    <h3 class="fr-callout__title">
+                        Avant de démarrer le questionnaire
+                    </h3>
+                    <p class="fr-callout__text">
+                        Dans le cadre d’un sinistre "Bris de Porte", il est important de noter que vous ne pouvez pas être indemnisé plusieurs fois par différents intermédiaires pour le même dommage. Afin de garantir <a class="fr-link" aria-describedby="infobulle-respect-principe" id="lien-infobulle-respect-principe" href="#">le respect de ce principe</a>, nous vous prions de bien vouloir répondre aux questions suivantes. À l'issue de ce questionnaire, nous vous informerons des démarches à suivre et des éléments manquants le cas échéant pour traiter votre demande dans les meilleures conditions.
+                    </p>
+                    <span class="fr-tooltip fr-placement" id="infobulle-respect-principe" role="tooltip" aria-hidden="true">
+                        En vertu du principe de réparation intégrale du préjudice sans perte ni profit, la victime d'un dommage ne peut obtenir deux indemnisations distinctes en réparation du même préjudice (Cour de cassation, civile, Chambre civile 2, 16 décembre 2021, 19-11.294, Inédit ; Cour de cassation, civile, Chambre civile 2, 9 février 2023, 21-21.217, Publié au bulletin)
+                    </span>
+                </div>
+
                 {# Questions #}
 
                 <div
@@ -104,6 +116,7 @@
                                     id="eligibilite-test-form-est-recherche-oui"
                                     name="estRecherche"
                                     value="true"
+                                    :checked="reponses?.estRecherche === true"
                                     @change="reinitialiser('estRecherche')"
                                     type="radio"
                                 />
@@ -117,6 +130,7 @@
                                     id="eligibilite-test-form-est-recherche-non"
                                     name="estRecherche"
                                     value="false"
+                                    :checked="reponses?.estRecherche === false"
                                     @change="reinitialiser('estRecherche')"
                                     type="radio"
                                 />
@@ -145,6 +159,7 @@
                                     id="eligibilite-test-form-est-proprietaire-oui"
                                     name="estProprietaire"
                                     value="true"
+                                    :checked="reponses?.estProprietaire === true"
                                     @change="reinitialiser('estProprietaire')"
                                     type="radio"
                                 />
@@ -158,6 +173,7 @@
                                     id="eligibilite-test-form-est-proprietaire-non"
                                     name="estProprietaire"
                                     value="false"
+                                    :checked="reponses?.estProprietaire === false"
                                     @change="reinitialiser('estProprietaire')"
                                     type="radio"
                                 />
@@ -187,6 +203,7 @@
                                     id="eligibilite-test-form-a-contacte-assurance-oui"
                                     name="aContacteAssurance"
                                     value="true"
+                                    :checked="reponses?.aContacteAssurance === true"
                                     @change="reinitialiser('aContacteAssurance')"
                                     type="radio"
                                 />
@@ -200,6 +217,7 @@
                                     id="eligibilite-test-form-a-contacte-assurance-non"
                                     name="aContacteAssurance"
                                     value="false"
+                                    :checked="reponses?.aContacteAssurance === false"
                                     @change="reinitialiser('aContacteAssurance')"
                                     type="radio"
                                 />
@@ -228,6 +246,7 @@
                                 <input
                                     id="eligibilite-test-form-a-contacte-bailleur-oui"
                                     name="aContacteBailleur"
+                                    :checked="reponses?.aContacteBailleur === true"
                                     value="true"
                                     type="radio"
                                 />
@@ -240,6 +259,7 @@
                                 <input
                                     id="eligibilite-test-form-a-contacte-bailleur-non"
                                     name="aContacteBailleur"
+                                    :checked="reponses?.aContacteBailleur === false"
                                     value="false"
                                     type="radio"
                                 />
@@ -257,13 +277,10 @@
                     x-cloak
                 >
                     <h3 class="fr-alert__title">
-                        Vous n'êtes pas éligible
+                        Vous n’êtes pas éligible à l’indemnisation.
                     </h3>
                     <p>
-                        [REFUS EST VISÉ]
-                    </p>
-                    <p>
-                        En étant concerné par l'opération de police judiciaire, vous ne pouvez prétendre à une quelconque indemnisation.
+                        Si vous étiez la personne visée par l’opération des forces de l’ordre, vous ne pouvez pas prétendre à l’indemnisation par nos services.
                     </p>
                 </div>
 
@@ -273,13 +290,13 @@
                     x-cloak
                 >
                     <h3 class="fr-alert__title">
-                        Vous n'êtes pas éligible
+                        Vous n’êtes pas éligible à l’indemnisation.
                     </h3>
                     <p>
-                        [REFUS EST RECHERCHÉ]
+                        Si la personne visée par les forces de l'ordre réside ou est hébergée à cette adresse, il ne s’agit pas d’une erreur de porte. Vous ne pouvez pas prétendre à l’indemnisation de nos services.
                     </p>
                     <p>
-                        Si la personne recherchée réside oh est hébergée dans le logement dont la porte a été fracturée dans le cadre l'opération de police judiciaire, vous ne pouvez prétendre à une quelconque indemnisation.
+                        Si votre locataire était la personne recherchée, vous pouvez engager sa responsabilité contractuelle conformément à l'article 1732 du Code civil. Cela peut vous aider à obtenir réparation en cas de dommages ou de manquements liés à ses obligations en tant que locataire.
                     </p>
                 </div>
 
@@ -288,11 +305,8 @@
                     x-show="decision?.name === 'warning_proprietaire_assurance'"
                     x-cloak
                 >
-                    <h3 class="fr-alert__title">
-                        [Inciter la démarche 4]
-                    </h3>
                     <p>
-                        Propriétaire, rapprochez-vous de votre assurance habitation.
+                        Nous vous recommandons de prendre contact avec votre assurance habitation dès que possible. En cas de refus de prise en charge du sinistre, il est important de demander une attestation de non prise en charge. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
                     </p>
                 </div>
 
@@ -301,11 +315,8 @@
                     x-show="decision?.name === 'warning_locataire_assurance'"
                     x-cloak
                 >
-                    <h3 class="fr-alert__title">
-                        [Inciter la démarche 6]
-                    </h3>
                     <p>
-                        Locataire, rapprochez-vous de votre assurance habitation.
+                        Nous vous recommandons de prendre contact avec votre assurance habitation dès que possible. En cas de refus de prise en charge du sinistre, il est important de demander une attestation de non prise en charge. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
                     </p>
                 </div>
 
@@ -314,11 +325,8 @@
                     x-show="decision?.name === 'warning_locataire_bailleur'"
                     x-cloak
                 >
-                    <h3 class="fr-alert__title">
-                        [Inciter la démarche 8]
-                    </h3>
                     <p>
-                        Locataire, rapprochez-vous de votre assurance habitation.
+                        Nous vous recommandons de contacter votre bailleur dès que possible, pour obtenir l’attestation de non prise en charge des réparations. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
                     </p>
                 </div>
 
@@ -328,16 +336,10 @@
                     x-cloak
                 >
                     <h3 class="fr-alert__title">
-                        Vous êtes éligible.
+                        Vous êtes éligible à l’indemnisation.
                     </h3>
                     <p>
-                        [OK]
-                    </p>
-                    <p>
-                        Vous remplissez tous les critères pour déposer un dossier de demande d'indemnisation.
-                    </p>
-                    <p>
-                        Nous vous invitons à créer un compte dès maintenant en cliquant sur le bouton ci-dessous.
+                        Nous vous invitons à suivre les indications afin de créer votre compte et compléter votre dossier.
                     </p>
                 </div>
 
