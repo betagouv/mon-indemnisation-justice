@@ -6,6 +6,24 @@
     {{ parent() }}
     <script src="{{ asset('build/alpinejs/cdn.js') }}" defer></script>
     <style>
+        form[name="eligibilite-test-form"] {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .pr-section-formulaire {
+            /* fr-my-3w */
+            /*margin: 1.5rem 0;*/
+            /* fr-px-3w && fr-py-4w */
+            padding: 1.5rem 2rem;
+            box-shadow:0 0 8px 2px var(--shadow-color);
+        }
+
+        .pr-section-formulaire h4 {
+            font-weight: 400 !important;
+        }
+
         /* AlpineJS */
         [x-cloak] {
             display: none !important;
@@ -28,8 +46,6 @@
         </div>
 
         <div class="fr-col-12">
-
-
             {# Formulaire #}
             <form
                 name="eligibilite-test-form"
@@ -53,226 +69,236 @@
                 </div>
 
                 {# Questions #}
-
-                <div
-                    class="fr-col-12"
-                    x-show="questions.estVise(reponses)"
-                    x-model.boolean="reponses.estVise"
-                    x-transition.duration.500ms
-                >
-                    <fieldset
-                        class="fr-fieldset"
-                        aria-labelledby="checkboxes-inline-legend"
-
+                <div class="pr-section-formulaire" x-show="questions.estVise(reponses)">
+                    <h4>Personne recherchée</h4>
+                    <div
+                        class="fr-col-12"
+                        x-show="questions.estVise(reponses)"
+                        x-model.boolean="reponses.estVise"
+                        x-transition.duration.500ms
                     >
-                        <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
-                            Êtes-vous la personne visée par l'opération des forces de l'ordre ?
-                        </legend>
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-est-vise-oui"
-                                    name="estVise"
-                                    value="true"
-                                    @change="reinitialiser('estVise')"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-est-vise-oui" >Oui</label>
-                            </div>
-                        </div>
 
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-est-vise-non"
-                                    name="estVise"
-                                    value="false"
-                                    @change="reinitialiser('estVise')"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-est-vise-non" >Non</label>
-                            </div>
-                        </div>
 
-                    </fieldset>
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Êtes-vous la personne visée par l'opération des forces de l'ordre ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-vise-oui"
+                                        name="estVise"
+                                        value="true"
+                                        :checked="reponses?.estVise === true"
+                                        @change="reinitialiser('estVise')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-vise-oui" >Oui</label>
+                                </div>
+                            </div>
+
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-vise-non"
+                                        name="estVise"
+                                        value="false"
+                                        :checked="reponses?.estVise === false"
+                                        @change="reinitialiser('estVise')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-vise-non" >Non</label>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+
+                    <div
+                        class="fr-col-12"
+                        x-show="questions.estRecherche(reponses)"
+                        x-model.boolean="reponses.estRecherche"
+                        x-transition.duration.500ms
+                    >
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Est-ce que la personne recherchée réside ou est hébergée à cette adresse ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-recherche-oui"
+                                        name="estRecherche"
+                                        value="true"
+                                        :checked="reponses?.estRecherche === true"
+                                        @change="reinitialiser('estRecherche')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-recherche-oui" >Oui</label>
+                                </div>
+                            </div>
+
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-recherche-non"
+                                        name="estRecherche"
+                                        value="false"
+                                        :checked="reponses?.estRecherche === false"
+                                        @change="reinitialiser('estRecherche')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-recherche-non" >Non</label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
                 </div>
 
-                <div
-                    class="fr-col-12"
-                    x-show="questions.estRecherche(reponses)"
-                    x-model.boolean="reponses.estRecherche"
-                    x-transition.duration.500ms
-                >
-                    <fieldset
-                        class="fr-fieldset"
-                        aria-labelledby="checkboxes-inline-legend"
+                <div class="pr-section-formulaire" x-show="questions.estProprietaire(reponses)">
+                    <h4>Situation liée au logement et possession des attestations</h4>
+
+                    <div
+                        class="fr-col-12"
+                        x-show="questions.estProprietaire(reponses)"
+                        x-model.boolean="reponses.estProprietaire"
+                        x-transition.duration.500ms
                     >
-                        <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
-                            Est-ce que la personne recherchée réside ou est hébergée à cette adresse ?
-                        </legend>
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-est-recherche-oui"
-                                    name="estRecherche"
-                                    value="true"
-                                    :checked="reponses?.estRecherche === true"
-                                    @change="reinitialiser('estRecherche')"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-est-recherche-oui" >Oui</label>
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Quel est votre statut par rapport au logement ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-proprietaire-oui"
+                                        name="estProprietaire"
+                                        value="true"
+                                        :checked="reponses?.estProprietaire === true"
+                                        @change="reinitialiser('estProprietaire')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-proprietaire-oui" >Propriétaire</label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-est-recherche-non"
-                                    name="estRecherche"
-                                    value="false"
-                                    :checked="reponses?.estRecherche === false"
-                                    @change="reinitialiser('estRecherche')"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-est-recherche-non" >Non</label>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-proprietaire-non"
+                                        name="estProprietaire"
+                                        value="false"
+                                        :checked="reponses?.estProprietaire === false"
+                                        @change="reinitialiser('estProprietaire')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-proprietaire-non" >Locataire</label>
+                                </div>
                             </div>
-                        </div>
-                    </fieldset>
-                </div>
 
-                <div
-                    class="fr-col-12"
-                    x-show="questions.estProprietaire(reponses)"
-                    x-model.boolean="reponses.estProprietaire"
-                    x-transition.duration.500ms
-                >
-                    <fieldset
-                        class="fr-fieldset"
-                        aria-labelledby="checkboxes-inline-legend"
+                        </fieldset>
+                    </div>
+
+                    <div
+                        class="fr-col-12"
+                        x-show="questions.aContacteAssurance(reponses)"
+                        x-model.boolean="reponses.aContacteAssurance"
+                        x-transition.duration.500ms
                     >
-                        <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
-                            Quel est votre statut par rapport au logement ?
-                        </legend>
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-est-proprietaire-oui"
-                                    name="estProprietaire"
-                                    value="true"
-                                    :checked="reponses?.estProprietaire === true"
-                                    @change="reinitialiser('estProprietaire')"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-est-proprietaire-oui" >Propriétaire</label>
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Avez-vous contacté votre assurance habitation et obtenu, si nécessaire, une attestation de non prise en charge du sinistre ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-a-contacte-assurance-oui"
+                                        name="aContacteAssurance"
+                                        value="true"
+                                        :checked="reponses?.aContacteAssurance === true"
+                                        @change="reinitialiser('aContacteAssurance')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-assurance-oui" >Oui</label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-est-proprietaire-non"
-                                    name="estProprietaire"
-                                    value="false"
-                                    :checked="reponses?.estProprietaire === false"
-                                    @change="reinitialiser('estProprietaire')"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-est-proprietaire-non" >Locataire</label>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-a-contacte-assurance-non"
+                                        name="aContacteAssurance"
+                                        value="false"
+                                        :checked="reponses?.aContacteAssurance === false"
+                                        @change="reinitialiser('aContacteAssurance')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-assurance-non" >Non</label>
+                                </div>
                             </div>
-                        </div>
 
-                    </fieldset>
-                </div>
+                        </fieldset>
+                    </div>
 
-                <div
-                    class="fr-col-12"
-                    x-show="questions.aContacteAssurance(reponses)"
-                    x-model.boolean="reponses.aContacteAssurance"
-                    x-transition.duration.500ms
-                >
-                    <fieldset
-                        class="fr-fieldset"
-                        aria-labelledby="checkboxes-inline-legend"
+                    <div
+                        class="fr-col-12"
+                        x-show="questions.aContacteBailleur(reponses)"
+                        x-model.boolean="reponses.aContacteBailleur"
+                        x-transition.duration.500ms
                     >
-                        <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
-                            Avez-vous contacté votre assurance habitation et obtenu, si nécessaire, une attestation de non prise en charge du sinistre ?
-                        </legend>
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-a-contacte-assurance-oui"
-                                    name="aContacteAssurance"
-                                    value="true"
-                                    :checked="reponses?.aContacteAssurance === true"
-                                    @change="reinitialiser('aContacteAssurance')"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-a-contacte-assurance-oui" >Oui</label>
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Avez-vous pris contact avec votre bailleur car celui-ci a, à votre égard, une obligation de sécurité (article 170 du code civil) ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-a-contacte-bailleur-oui"
+                                        name="aContacteBailleur"
+                                        :checked="reponses?.aContacteBailleur === true"
+                                        value="true"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-oui" >Oui</label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-a-contacte-assurance-non"
-                                    name="aContacteAssurance"
-                                    value="false"
-                                    :checked="reponses?.aContacteAssurance === false"
-                                    @change="reinitialiser('aContacteAssurance')"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-a-contacte-assurance-non" >Non</label>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-a-contacte-bailleur-non"
+                                        name="aContacteBailleur"
+                                        :checked="reponses?.aContacteBailleur === false"
+                                        value="false"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-non" >Non</label>
+                                </div>
                             </div>
-                        </div>
 
-                    </fieldset>
-                </div>
-
-                <div
-                    class="fr-col-12"
-                    x-show="questions.aContacteBailleur(reponses)"
-                    x-model.boolean="reponses.aContacteBailleur"
-                    x-transition.duration.500ms
-                >
-                    <fieldset
-                        class="fr-fieldset"
-                        aria-labelledby="checkboxes-inline-legend"
-                    >
-                        <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
-                            Avez-vous pris contact avec votre bailleur car celui-ci a, à votre égard, une obligation de sécurité (article 170 du code civil) ?
-                        </legend>
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-a-contacte-bailleur-oui"
-                                    name="aContacteBailleur"
-                                    :checked="reponses?.aContacteBailleur === true"
-                                    value="true"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-oui" >Oui</label>
-                            </div>
-                        </div>
-
-                        <div class="fr-fieldset__element fr-fieldset__element--inline">
-                            <div class="fr-radio-group">
-                                <input
-                                    id="eligibilite-test-form-a-contacte-bailleur-non"
-                                    name="aContacteBailleur"
-                                    :checked="reponses?.aContacteBailleur === false"
-                                    value="false"
-                                    type="radio"
-                                />
-                                <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-non" >Non</label>
-                            </div>
-                        </div>
-
-                    </fieldset>
+                        </fieldset>
+                    </div>
                 </div>
 
                 {# Décisions #}
                 <div
-                    class="fr-alert fr-my-2w fr-alert--error"
+                    class="fr-alert fr-alert--error"
                     x-show="decision?.name === 'error_est_vise'"
                     x-cloak
                 >
@@ -285,7 +311,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-my-2w fr-alert--error"
+                    class="fr-alert fr-alert--error"
                     x-show="decision?.name === 'error_est_recherche'"
                     x-cloak
                 >
@@ -301,7 +327,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-my-2w fr-alert--warning"
+                    class="fr-alert fr-alert--warning"
                     x-show="decision?.name === 'warning_proprietaire_assurance'"
                     x-cloak
                 >
@@ -311,7 +337,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-my-2w fr-alert--warning"
+                    class="fr-alert fr-alert--warning"
                     x-show="decision?.name === 'warning_locataire_assurance'"
                     x-cloak
                 >
@@ -321,7 +347,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-my-2w fr-alert--warning"
+                    class="fr-alert fr-alert--warning"
                     x-show="decision?.name === 'warning_locataire_bailleur'"
                     x-cloak
                 >
@@ -331,7 +357,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-my-2w fr-alert--success"
+                    class="fr-alert fr-alert--success"
                     x-show="decision?.name === 'success'"
                     x-cloak
                 >
@@ -346,25 +372,24 @@
 
                 {# Boutons #}
 
-                <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg">
-                    <button
-                        x-show="true"
-                        x-cloak
-                        class="fr-btn fr-btn--tertiary-no-outline"
-                        aria-controls="modale-test-eligibilite"
-                        data-fr-js-modal-button="true"
-                        @click="reinitialiser()"
-                        type="button"
-                    >Recommencer
-                    </button>
+                <div class="fr-btns-group fr-btns-group--left fr-btns-group--inline-lg">
                     <button
                         class="fr-btn"
                         type="submit"
                         :disabled="!decision || !(decision?.eligible ?? true)"
                         x-cloak
-                    >Faire ma demande
+                    >Commencer la demande d'indemnisation
                     </button>
-
+                    <button
+                        x-show="true"
+                        x-cloak
+                        class="fr-btn fr-btn--secondary"
+                        aria-controls="modale-test-eligibilite"
+                        data-fr-js-modal-button="true"
+                        @click="reinitialiser()"
+                        type="button"
+                    >Annuler la demande d'indemnisation
+                    </button>
                 </div>
 
             </form>
