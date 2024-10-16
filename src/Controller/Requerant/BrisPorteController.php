@@ -2,12 +2,12 @@
 
 namespace App\Controller\Requerant;
 
-use App\Entity\Agent;
 use App\Entity\BrisPorte;
+use App\Entity\QualiteRequerant;
 use App\Entity\Requerant;
 use App\Event\BrisPorteConstitueEvent;
-use App\Service\Mailer;
 use App\Service\DocumentManager;
+use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,7 +21,7 @@ class BrisPorteController extends RequerantController
 {
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
-        protected readonly EventDispatcherInterface $eventDispatcher
+        protected readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -37,7 +37,15 @@ class BrisPorteController extends RequerantController
             }
             $brisPorte->setNumeroPV(@$testEligibilite['numeroPV']);
             $brisPorte->setNumeroParquet(@$testEligibilite['numeroParquet']);
-            $brisPorte->setIsErreurPorte(@$testEligibilite['isErreurPorte']);
+            if (isset($testEligibilite['isErreurPorte'])) {
+                $brisPorte->setIsErreurPorte(true);
+            } elseif (isset($testEligibilite['estVise'])) {
+                $brisPorte->setIsErreurPorte(!$testEligibilite['estVise'] && !$testEligibilite['estRecherche']);
+            }
+
+            if (isset($testEligibilite['estProprietaire'])) {
+                $brisPorte->setQualiteRequerant($testEligibilite['estProprietaire'] ? QualiteRequerant::PRO : QualiteRequerant::LOC);
+            }
 
             $serviceEnqueteur = $brisPorte->getServiceEnqueteur();
             $serviceEnqueteur->setNumeroPV($brisPorte->getNumeroPV());
@@ -52,8 +60,6 @@ class BrisPorteController extends RequerantController
 
         return $this->redirectToRoute('app_bris_porte_edit', ['id' => $brisPorte->getId()]);
     }
-
-
 
     #[IsGranted('edit', subject: 'brisPorte')]
     #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', methods: ['GET'], options: ['expose' => true])]

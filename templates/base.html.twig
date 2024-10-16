@@ -110,13 +110,15 @@
 
     </head>
     <body>
-        {% if app.user|est_requerant %}
-            {% include('requerant/_header.html.twig') %}
-        {% elseif app.user|est_agent %}
-            {% include('agent/_header.html.twig') %}
-        {% else %}
-            {% include('_header.html.twig') %}
-        {% endif %}
+        {% block header %}
+            {% if app.user|est_requerant %}
+                {% include('requerant/_header.html.twig') %}
+            {% elseif app.user|est_agent %}
+                {% include('agent/_header.html.twig') %}
+            {% else %}
+                {% include('_header.html.twig') %}
+            {% endif %}
+        {% endblock header %}
 
         {# Fil d'ariane: à intégrer #}
         <main role="main">
