@@ -65,10 +65,16 @@
                         Avant de démarrer le questionnaire
                     </h3>
                     <p class="fr-callout__text">
-                        Dans le cadre d’un sinistre "Bris de Porte", il est important de noter que vous ne pouvez pas être indemnisé plusieurs fois par différents intermédiaires pour le même dommage. Afin de garantir <a class="fr-link" aria-describedby="infobulle-respect-principe" id="lien-infobulle-respect-principe" href="#">le respect de ce principe</a>, nous vous prions de bien vouloir répondre aux questions suivantes. À l'issue de ce questionnaire, nous vous informerons des démarches à suivre et des éléments manquants le cas échéant pour traiter votre demande dans les meilleures conditions.
+                        Il est important de noter que vous ne pouvez pas être indemnisé plusieurs fois par différents
+                        intermédiaires pour le même préjudice. Afin de garantir
+                        <a class="fr-link" aria-describedby="infobulle-respect-principe" id="lien-infobulle-respect-principe" href="#">le respect de ce principe</a>,
+                        nous vous prions de bien vouloir répondre aux questions suivantes.
                     </p>
                     <span class="fr-tooltip fr-placement" id="infobulle-respect-principe" role="tooltip" aria-hidden="true">
-                        En vertu du principe de réparation intégrale du préjudice sans perte ni profit, la victime d'un dommage ne peut obtenir deux indemnisations distinctes en réparation du même préjudice (Cour de cassation, civile, Chambre civile 2, 16 décembre 2021, 19-11.294, Inédit ; Cour de cassation, civile, Chambre civile 2, 9 février 2023, 21-21.217, Publié au bulletin)
+                        En vertu du principe de réparation intégrale du préjudice sans perte ni profit, la victime d'un
+                        dommage ne peut obtenir deux indemnisations distinctes en réparation du même préjudice (Cour de
+                        cassation, civile, Chambre civile 2, 16 décembre 2021, 19-11.294, Inédit ; Cour de cassation,
+                        civile, Chambre civile 2, 9 février 2023, 21-21.217, Publié au bulletin)
                     </span>
                 </div>
 
@@ -268,7 +274,7 @@
                             aria-labelledby="checkboxes-inline-legend"
                         >
                             <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
-                                Avez-vous pris contact avec votre bailleur car celui-ci a, à votre égard, une obligation de sécurité (article 170 du code civil) ?
+                                Avez-vous pris contact avec votre bailleur car celui-ci a, à votre égard, une obligation de sécurité (article 1720 du code civil) ?
                             </legend>
                             <div class="fr-fieldset__element fr-fieldset__element--inline">
                                 <div class="fr-radio-group">
@@ -303,36 +309,41 @@
                 {# Décisions #}
                 <div
                     class="fr-alert fr-alert--error"
-                    x-show="decision?.name === 'error_est_vise'"
+                    x-show="estDecide('error_est_vise')"
                     x-cloak
                 >
                     <h3 class="fr-alert__title">
                         Vous n’êtes pas éligible à l’indemnisation.
                     </h3>
                     <p>
-                        Si vous étiez la personne visée par l’opération des forces de l’ordre, vous ne pouvez pas prétendre à l’indemnisation par nos services.
+                        Vous ne pouvez prétendre à une indemnisation que si les force de l'ordre ont commis une
+                        <a class="fr-link" aria-describedby="infobulle-faute-lourde" id="lien-infobulle-faute-lourde" href="#">faute lourde</a>
+                        au cours de leur intervention. Il vous appartiendra de prouver cette faute.
                     </p>
+                    <span class="fr-tooltip fr-placement" id="infobulle-faute-lourde" role="tooltip" aria-hidden="true">
+                        Constitue une faute lourde toute déficience caractérisée par un fait ou une série de faits
+                        traduisant l'inaptitude du service public de la justice à remplir la mission dont il est investi
+                        (Cour de Cassation, Assemblée plénière, du 23 février 2001, 99-16.165, Publié au bulletin)
+                    </span>
                 </div>
 
                 <div
                     class="fr-alert fr-alert--error"
-                    x-show="decision?.name === 'error_est_recherche'"
+                    x-show="estDecide('error_est_recherche')"
                     x-cloak
                 >
                     <h3 class="fr-alert__title">
                         Vous n’êtes pas éligible à l’indemnisation.
                     </h3>
                     <p>
-                        Si la personne visée par les forces de l'ordre réside ou est hébergée à cette adresse, il ne s’agit pas d’une erreur de porte. Vous ne pouvez pas prétendre à l’indemnisation de nos services.
-                    </p>
-                    <p>
-                        Si votre locataire était la personne recherchée, vous pouvez engager sa responsabilité contractuelle conformément à l'article 1732 du Code civil. Cela peut vous aider à obtenir réparation en cas de dommages ou de manquements liés à ses obligations en tant que locataire.
+                        Vous n’êtes pas éligible à l’indemnisation car il n'y a pas d'erreur de la part des forces de
+                        l'ordre.
                     </p>
                 </div>
 
                 <div
                     class="fr-alert fr-alert--warning"
-                    x-show="decision?.name === 'warning_proprietaire_assurance'"
+                    x-show="estDecide('warning_proprietaire_assurance')"
                     x-cloak
                 >
                     <p>
@@ -342,7 +353,7 @@
 
                 <div
                     class="fr-alert fr-alert--warning"
-                    x-show="decision?.name === 'warning_locataire_assurance'"
+                    x-show="estDecide('warning_locataire_assurance')"
                     x-cloak
                 >
                     <p>
@@ -352,24 +363,25 @@
 
                 <div
                     class="fr-alert fr-alert--warning"
-                    x-show="decision?.name === 'warning_locataire_bailleur'"
+                    x-show="estDecide('warning_locataire_bailleur')"
                     x-cloak
                 >
                     <p>
-                        Nous vous recommandons de contacter votre bailleur dès que possible, pour obtenir l’attestation de non prise en charge des réparations. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
+                        Nous vous recommandons de prendre contact avec votre bailleur dès que possible, pour obtenir l’attestation de non prise en charge des réparations. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
                     </p>
                 </div>
 
                 <div
                     class="fr-alert fr-alert--success"
-                    x-show="decision?.name === 'success'"
+                    x-show="estDecide('success')"
                     x-cloak
                 >
                     <h3 class="fr-alert__title">
                         Vous êtes éligible à l’indemnisation.
                     </h3>
                     <p>
-                        Nous vous invitons à suivre les indications afin de créer votre compte et compléter votre dossier.
+                        Nous vous invitons à suivre les indications afin de créer votre compte et effectuer votre demande
+                        d'indemnisation.
                     </p>
                 </div>
 
@@ -380,7 +392,7 @@
                     <button
                         class="fr-btn"
                         type="submit"
-                        :disabled="!decision || !(decision?.eligible ?? true)"
+                        :disabled="decisions.filter((decision) => decision.eligible ?? true).length === 0"
                         x-cloak
                     >Commencer la demande d'indemnisation
                     </button>
@@ -419,38 +431,48 @@
                     estRecherche: (reponses) => reponses.estVise === false,
                     estProprietaire: (reponses) => reponses.estRecherche === false,
                     aContacteAssurance: (reponses) => reponses.estProprietaire != null,
-                    aContacteBailleur: (reponses) => reponses.aContacteAssurance && reponses.estProprietaire === false
+                    aContacteBailleur: (reponses) => reponses.aContacteAssurance != null && reponses.estProprietaire === false
                 },
-                decision: null,
+                decisions: [],
+                estDecide(nom) {
+                    return !!this.decisions.find((decision) => decision.name === nom);
+                },
                 statuer(reponses) {
+                    this.decisions.length = 0;
                     // Statuer sur une décision ici :
                     if (reponses.estVise) {
-                        this.decision = {
+                        this.decisions.push({
                             name: "error_est_vise",
                             eligible: false
-                        };
+                        });
                     } else if (reponses.estRecherche) {
-                        this.decision = {
+                        this.decisions.push({
                             name: "error_est_recherche",
                             eligible: false
-                        };
+                        });
                     } else {
                         if (reponses.estProprietaire) {
                             if (reponses?.aContacteAssurance != null) {
-                                this.decision = {
+                                this.decisions.push({
                                     name: reponses.aContacteAssurance ? 'success' : 'warning_proprietaire_assurance'
-                                };
+                                });
                             }
                         } else if (reponses.estProprietaire === false) {
-                            if (reponses?.aContacteAssurance != null) {
+                            if (reponses?.aContacteAssurance != null && reponses?.aContacteBailleur != null) {
                                 if (reponses?.aContacteAssurance === false) {
-                                    this.decision = {
+                                    this.decisions.push({
                                         name: "warning_locataire_assurance"
-                                    };
-                                } else if (reponses?.aContacteBailleur != null) {
-                                    this.decision = {
-                                        name: reponses?.aContacteBailleur ? 'success' : 'warning_locataire_bailleur'
-                                    };
+                                    });
+                                }
+                                if (reponses?.aContacteBailleur === false) {
+                                    this.decisions.push({
+                                        name: 'warning_locataire_bailleur'
+                                    });
+                                }
+                                if (reponses.aContacteAssurance && reponses.aContacteBailleur) {
+                                    this.decisions.push({
+                                        name: 'success'
+                                    });
                                 }
                             }
                         }
@@ -460,11 +482,10 @@
                     if (question) {
                         const questions = Object.keys(this.reponses);
                         questions.slice(questions.indexOf(question) + 1).forEach((c) => this.reponses[c] = null);
-                        this.decision = null;
                         this.statuer(this.reponses);
                     } else {
                         Object.keys(this.reponses).forEach((c) => this.reponses[c] = null);
-                        this.decision = null;
+                        this.decisions.length = 0;
                     }
                 },
             };

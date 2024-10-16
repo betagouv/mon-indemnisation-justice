@@ -58,9 +58,11 @@ class HomeController extends AbstractController
         ]);
     }
 
+    /*
     #[Route('/conditions-generales-d-utilisation', name: 'app_cgu', options: ['expose' => true])]
     public function cgu(): Response
     {
         return $this->render('cgu.html.twig');
     }
+    */
 }

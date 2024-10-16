@@ -56,6 +56,10 @@
     </style>
 {% endblock %}
 
+{% block header %}
+    {% include('bris_porte/_header.html.twig') %}
+{% endblock header %}
+
 {% block main %}
 <div class="fr-container fr-my-3w">
     {#  Indicateur d'étapes #}
@@ -238,7 +242,9 @@
                                                x-text="erreurs?.confirmation"></p>
                                         </div>
                                     </div>
-                                    {# CGU #}
+                                    {# CGU (désactivé tant que la page CGU n'existe pas) #}
+                                    <input type="hidden" name="cguOk" value="1">
+                                    {#
                                     <div class="fr-col-12">
                                         <fieldset class="fr-fieldset">
                                             <div class="fr-fieldset__content">
@@ -260,6 +266,7 @@
                                             </div>
                                         </fieldset>
                                     </div>
+                                     #}
                                     <div class="fr-col-12">
                                         <button class="fr-btn" :disabled="!submissible">Valider mon inscription et
                                             poursuivre ma demande
@@ -290,7 +297,7 @@
                 courriel: "",
                 motDePasse: "",
                 confirmation: "",
-                cguOk: false
+                cguOk: true
             },
             JSON.parse(document.getElementById('input-inscription')?.textContent || "{}")
         );
@@ -353,6 +360,7 @@
                         }
                     }
 
+                    /*
                     if (this.avant?.cguOk !== inscription.cguOk) {
                         if (!inscription.cguOk) {
                             this.erreurs.cguOk = "";
@@ -360,6 +368,7 @@
                             delete this.erreurs.cguOk;
                         }
                     }
+                    */
 
                     this.submissible = Object.keys(this.erreurs).length === 0;
 
