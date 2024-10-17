@@ -138,10 +138,11 @@
         {% block javascripts %}
             <script>
                 window.dsfr = {
-                    verbose: {% if app.debug %}true{% else %}false{% endif %},
+                    //verbose: {% if app.debug %}true{% else %}false{% endif %},
                     production: {% if app.environment == 'prod' %}true{% else %}false{% endif %},
                 };
             </script>
+            <script src="https://cdn.jsdelivr.net/npm/css-vars-ponyfill@2"></script>
             <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
             <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
         {% endblock %}
