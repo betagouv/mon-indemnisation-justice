@@ -21,6 +21,7 @@ Encore
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     .addEntry('app', './assets/app.js')
+    //.addEntry('bris-porte-tester-mon-eligibilite', './assets/react/apps/bris_porte/tester_mon_eligibilite.tsx')
     .copyFiles({
         from: './node_modules/alpinejs/dist',
         to: 'alpinejs/[name].[ext]',
@@ -95,7 +96,7 @@ Encore
     //.enableSassLoader()
 
     // uncomment if you use TypeScript
-    //.enableTypeScriptLoader()
+    .enableTypeScriptLoader()
 
     // uncomment if you use React
     // uncomment to get integrity="..." attributes on your script & link tags

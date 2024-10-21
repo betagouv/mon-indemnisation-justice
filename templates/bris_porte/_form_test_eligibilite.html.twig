@@ -1,58 +1,12 @@
-{% extends 'base.html.twig' %}
 
-{% block title %}Bris de porte : tester mon éligibilité{% endblock %}
+            {# Formulaire #}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <style>
-        form[name="eligibilite-test-form"] {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .pr-section-formulaire {
-            /* fr-my-3w */
-            /*margin: 1.5rem 0;*/
-            /* fr-px-3w && fr-py-4w */
-            padding: 1.5rem 2rem;
-            box-shadow:0 0 8px 2px var(--shadow-color);
-        }
-
-        .pr-section-formulaire h4 {
-            font-weight: 400 !important;
-        }
-
-        /* Vue */
-        [v-cloak] {
-            display: none !important;
-        }
-    </style>
-{% endblock stylesheets %}
-
-{% block header %}
-    {% include('bris_porte/_header.html.twig') %}
-{% endblock header %}
-
-{% block main %}
-    <div class="fr-container fr-my-3w">
-        {#  Indicateur d'étapes #}
-        <div class="fr-stepper">
-            <h2 class="fr-stepper__title">
-                Tester mon éligibilité
-                <span class="fr-stepper__state">Étape 1 sur 3</span>
-            </h2>
-            <div class="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3"></div>
-            <p class="fr-stepper__details">
-                <span class="fr-text--bold">Étape suivante :</span> Création de mon compte
-            </p>
-        </div>
-
-        <div class="fr-col-12" id="vue-app" v-scope>
             <form
                 name="eligibilite-test-form"
                 action="{{ url(app.current_route) }}"
                 method="POST"
+                x-data="eligibiliteTestForm()"
+                x-init="$watch('reponses', function(reponses) { statuer(reponses)})"
             >
                 <input type="hidden" name="_token" value="{{ form._token.vars.value }}">
 
@@ -75,14 +29,20 @@
                 </div>
 
                 {# Questions #}
-                <div class="pr-section-formulaire">
+                <div class="pr-section-formulaire" x-show="questions.estVise(reponses)">
                     <h4>Personne recherchée</h4>
                     <div
                         class="fr-col-12"
+                        x-show="questions.estVise(reponses)"
+                        x-model.boolean="reponses.estVise"
+                        x-transition.duration.500ms
                     >
+
+
                         <fieldset
                             class="fr-fieldset"
                             aria-labelledby="checkboxes-inline-legend"
+
                         >
                             <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
                                 Êtes-vous la personne visée par l'opération des forces de l'ordre ?
@@ -92,8 +52,8 @@
                                     <input
                                         id="eligibilite-test-form-est-vise-oui"
                                         name="estVise"
-                                        :value="true"
-                                        v-model="reponses.estVise"
+                                        value="true"
+                                        :checked="reponses.estVise === true"
                                         @change="reinitialiser('estVise')"
                                         type="radio"
                                     />
@@ -106,8 +66,8 @@
                                     <input
                                         id="eligibilite-test-form-est-vise-non"
                                         name="estVise"
-                                        :value="false"
-                                        v-model="reponses.estVise"
+                                        value="false"
+                                        :checked="reponses.estVise === false"
                                         @change="reinitialiser('estVise')"
                                         type="radio"
                                     />
@@ -119,9 +79,10 @@
                     </div>
 
                     <div
-                        class="fr-col-12 pr-question"
-                        v-if="questions.estRecherche(reponses, decisions)"
-                        v-cloak
+                        class="fr-col-12"
+                        x-show="questions.estRecherche(reponses)"
+                        x-model.boolean="reponses.estRecherche"
+                        x-transition.duration.500ms
                     >
                         <fieldset
                             class="fr-fieldset"
@@ -135,8 +96,8 @@
                                     <input
                                         id="eligibilite-test-form-est-recherche-oui"
                                         name="estRecherche"
-                                        :value="true"
-                                        v-model="reponses.estRecherche"
+                                        value="true"
+                                        :checked="reponses.estRecherche === true"
                                         @change="reinitialiser('estRecherche')"
                                         type="radio"
                                     />
@@ -149,8 +110,8 @@
                                     <input
                                         id="eligibilite-test-form-est-recherche-non"
                                         name="estRecherche"
-                                        :value="false"
-                                        v-model="reponses.estRecherche"
+                                        value="false"
+                                        :checked="reponses.estRecherche === false"
                                         @change="reinitialiser('estRecherche')"
                                         type="radio"
                                     />
@@ -161,16 +122,14 @@
                     </div>
                 </div>
 
-                <div
-                    class="pr-section-formulaire"
-                    v-if="questions.estProprietaire(reponses, decisions)"
-                    v-cloak
-                >
+                <div class="pr-section-formulaire" x-show="questions.estProprietaire(reponses)">
                     <h4>Situation liée au logement et possession des attestations</h4>
 
                     <div
                         class="fr-col-12"
-                        v-if="questions.estProprietaire(reponses, decisions)"
+                        x-show="questions.estProprietaire(reponses)"
+                        x-model.boolean="reponses.estProprietaire"
+                        x-transition.duration.500ms
                     >
                         <fieldset
                             class="fr-fieldset"
@@ -184,8 +143,8 @@
                                     <input
                                         id="eligibilite-test-form-est-proprietaire-oui"
                                         name="estProprietaire"
-                                        :value="true"
-                                        v-model="reponses.estProprietaire"
+                                        value="true"
+                                        :checked="reponses.estProprietaire === true"
                                         @change="reinitialiser('estProprietaire')"
                                         type="radio"
                                     />
@@ -198,8 +157,8 @@
                                     <input
                                         id="eligibilite-test-form-est-proprietaire-non"
                                         name="estProprietaire"
-                                        :value="false"
-                                        v-model="reponses.estProprietaire"
+                                        value="false"
+                                        :checked="reponses.estProprietaire === false"
                                         @change="reinitialiser('estProprietaire')"
                                         type="radio"
                                     />
@@ -212,7 +171,9 @@
 
                     <div
                         class="fr-col-12"
-                        v-if="questions.aContacteAssurance(reponses, decisions)"
+                        x-show="questions.aContacteAssurance(reponses)"
+                        x-model.boolean="reponses.aContacteAssurance"
+                        x-transition.duration.500ms
                     >
                         <fieldset
                             class="fr-fieldset"
@@ -226,8 +187,8 @@
                                     <input
                                         id="eligibilite-test-form-a-contacte-assurance-oui"
                                         name="aContacteAssurance"
-                                        :value="true"
-                                        v-model="reponses.aContacteAssurance"
+                                        value="true"
+                                        :checked="reponses.aContacteAssurance === true"
                                         @change="reinitialiser('aContacteAssurance')"
                                         type="radio"
                                     />
@@ -240,8 +201,8 @@
                                     <input
                                         id="eligibilite-test-form-a-contacte-assurance-non"
                                         name="aContacteAssurance"
-                                        :value="false"
-                                        v-model="reponses.aContacteAssurance"
+                                        value="false"
+                                        :checked="reponses.aContacteAssurance === false"
                                         @change="reinitialiser('aContacteAssurance')"
                                         type="radio"
                                     />
@@ -254,7 +215,9 @@
 
                     <div
                         class="fr-col-12"
-                        v-if="questions.aContacteBailleur(reponses, decisions)"
+                        x-show="questions.aContacteBailleur(reponses)"
+                        x-model.boolean="reponses.aContacteBailleur"
+                        x-transition.duration.500ms
                     >
                         <fieldset
                             class="fr-fieldset"
@@ -268,9 +231,8 @@
                                     <input
                                         id="eligibilite-test-form-a-contacte-bailleur-oui"
                                         name="aContacteBailleur"
-                                        :value="true"
-                                        v-model="reponses.aContacteBailleur"
-                                        @change="reinitialiser('aContacteBailleur')"
+                                        :checked="reponses.aContacteBailleur === true"
+                                        value="true"
                                         type="radio"
                                     />
                                     <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-oui" >Oui</label>
@@ -282,9 +244,8 @@
                                     <input
                                         id="eligibilite-test-form-a-contacte-bailleur-non"
                                         name="aContacteBailleur"
-                                        :value="false"
-                                        v-model="reponses.aContacteBailleur"
-                                        @change="reinitialiser('aContacteBailleur')"
+                                        :checked="reponses.aContacteBailleur === false"
+                                        value="false"
                                         type="radio"
                                     />
                                     <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-non" >Non</label>
@@ -298,8 +259,8 @@
                 {# Décisions #}
                 <div
                     class="fr-alert fr-alert--error"
-                    v-if="estDecide('error_est_vise')"
-                    v-cloak
+                    x-show="estDecide('error_est_vise')"
+                    x-cloak
                 >
                     <h3 class="fr-alert__title">
                         Vous n’êtes pas éligible à l’indemnisation.
@@ -318,8 +279,8 @@
 
                 <div
                     class="fr-alert fr-alert--error"
-                    v-if="estDecide('error_est_recherche')"
-                    v-cloak
+                    x-show="estDecide('error_est_recherche')"
+                    x-cloak
                 >
                     <h3 class="fr-alert__title">
                         Vous n’êtes pas éligible à l’indemnisation.
@@ -332,8 +293,8 @@
 
                 <div
                     class="fr-alert fr-alert--warning"
-                    v-if="estDecide('warning_proprietaire_assurance')"
-                    v-cloak
+                    x-show="estDecide('warning_proprietaire_assurance')"
+                    x-cloak
                 >
                     <p>
                         Nous vous recommandons de prendre contact avec votre assurance habitation dès que possible. En cas de refus de prise en charge du sinistre, il est important de demander une attestation de non prise en charge. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
@@ -342,8 +303,8 @@
 
                 <div
                     class="fr-alert fr-alert--warning"
-                    v-if="estDecide('warning_locataire_assurance')"
-                    v-cloak
+                    x-show="estDecide('warning_locataire_assurance')"
+                    x-cloak
                 >
                     <p>
                         Nous vous recommandons de prendre contact avec votre assurance habitation dès que possible. En cas de refus de prise en charge du sinistre, il est important de demander une attestation de non prise en charge. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
@@ -352,8 +313,8 @@
 
                 <div
                     class="fr-alert fr-alert--warning"
-                    v-if="estDecide('warning_locataire_bailleur')"
-                    v-cloak
+                    x-show="estDecide('warning_locataire_bailleur')"
+                    x-cloak
                 >
                     <p>
                         Nous vous recommandons de prendre contact avec votre bailleur dès que possible, pour obtenir l’attestation de non prise en charge des réparations. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
@@ -362,8 +323,8 @@
 
                 <div
                     class="fr-alert fr-alert--success"
-                    v-if="estDecide('success')"
-                    v-cloak
+                    x-show="estDecide('success')"
+                    x-cloak
                 >
                     <h3 class="fr-alert__title">
                         Vous êtes éligible à l’indemnisation.
@@ -382,10 +343,12 @@
                         class="fr-btn"
                         type="submit"
                         :disabled="decisions.filter(function(decision) { return decision.eligible ?? true}).length === 0"
+                        x-cloak
                     >Commencer la demande d'indemnisation
                     </button>
                     <button
-                        v-if="true"
+                        x-show="true"
+                        x-cloak
                         class="fr-btn fr-btn--secondary"
                         aria-controls="modale-test-eligibilite"
                         data-fr-js-modal-button="true"
@@ -396,89 +359,3 @@
                 </div>
 
             </form>
-
-        </div>
-    </div>
-{% endblock main %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://unpkg.com/petite-vue"></script>
-    <script>
-        PetiteVue.createApp({
-            reponses: {
-                estVise: null,
-                estRecherche: null,
-                estProprietaire: null,
-                aContacteAssurance: null,
-                aContacteBailleur: null,
-            },
-            questions: {
-                estVise: function() { return true; },
-                estRecherche: function(reponses, decisions) { return reponses.estVise != null && (decisions.length === 0 || reponses.estRecherche != null); },
-                estProprietaire: function(reponses, decisions) { return reponses.estRecherche != null  && (decisions.length === 0 || reponses.estProprietaire != null); },
-                aContacteAssurance: function(reponses, decisions) { return reponses.estProprietaire != null && (decisions.length === 0 || reponses.aContacteAssurance != null); },
-                aContacteBailleur: function(reponses, decisions) { return reponses.aContacteAssurance != null && reponses.estProprietaire === false  && (decisions.length === 0 || reponses.aContacteBailleur != null); }
-            },
-            decisions: [],
-            estDecide: function (nom) {
-                return !!this.decisions.find(function(decision) { return decision.name === nom; });
-            },
-            statuer: function (reponses) {
-                this.decisions.length = 0;
-                // Statuer sur une décision ici :
-                if (reponses.estVise) {
-                    this.decisions.push({
-                        name: "error_est_vise",
-                        eligible: false
-                    });
-                } else if (reponses.estRecherche) {
-                    this.decisions.push({
-                        name: "error_est_recherche",
-                        eligible: false
-                    });
-                } else {
-                    if (reponses.estProprietaire) {
-                        if (reponses.aContacteAssurance != null) {
-                            this.decisions.push({
-                                name: reponses.aContacteAssurance ? 'success' : 'warning_proprietaire_assurance'
-                            });
-                        }
-                    } else if (reponses.estProprietaire === false) {
-                        if (reponses.aContacteAssurance != null && reponses.aContacteBailleur != null) {
-                            if (reponses.aContacteAssurance === false) {
-                                this.decisions.push({
-                                    name: "warning_locataire_assurance"
-                                });
-                            }
-                            if (reponses.aContacteBailleur === false) {
-                                this.decisions.push({
-                                    name: 'warning_locataire_bailleur'
-                                });
-                            }
-                            if (reponses.aContacteAssurance && reponses.aContacteBailleur) {
-                                this.decisions.push({
-                                    name: 'success'
-                                });
-                            }
-                        }
-                    }
-                }
-            },
-            reinitialiser: function (question) {
-                if (question) {
-                    const questions = Object.keys(this.reponses);
-                    for (const c of questions.slice(questions.indexOf(question) + 1)) {
-                        this.reponses[c] = null;
-                    }
-                    this.statuer(this.reponses);
-                } else {
-                    for (const c of Object.keys(this.reponses)) {
-                        this.reponses[c] = null;
-                    }
-                    this.decisions.length = 0;
-                }
-            },
-      }).mount('#vue-app')
-    </script>
-{% endblock javascripts %}
