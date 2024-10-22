@@ -17,15 +17,6 @@
 
 ###> symfony/phpunit-bridge ###
 ###< symfony/phpunit-bridge ###
-###> symfony/webpack-encore-bundle ###
-/node_modules/
-/public/build/
-/public/assets/
-/public/preview/
-npm-debug.log
-yarn-error.log
-###< symfony/webpack-encore-bundle ###
-
 /public/dsfr/
 /public/screenshots/
 compose.override.yaml
@@ -36,3 +27,7 @@ compose.override.yaml
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 /drivers/
+###> pentatrion/vite-bundle ###
+/node_modules/
+/public/build/
+###< pentatrion/vite-bundle ###

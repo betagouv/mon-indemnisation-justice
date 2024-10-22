@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
         {% block stylesheets %}
+            {{ vite_entry_link_tags('app') }}
             {#
             <style>
                 .pr-content {
@@ -143,11 +144,6 @@
                 };
             </script>
             <script src="https://cdn.jsdelivr.net/npm/css-vars-ponyfill@2"></script>
-            <script type="text/javascript">
-                cssVars({
-                  // Options...
-                });
-            </script>
             <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
             <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
         {% endblock %}

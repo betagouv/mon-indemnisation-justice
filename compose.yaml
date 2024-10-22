@@ -61,13 +61,13 @@ services:
     ports:
       - "9000:9000"
 
-  # Encore dev server (frontend assets)
-  encore:
-    image: node:18
-    hostname: encore
-    command: bash -c 'yarn install && yarn dev-server'
+  # Vite dev server (frontend assets)
+  vite:
+    image: node:22
+    hostname: vite
+    command: bash -c 'yarn install && yarn dev'
     working_dir: /app
     volumes:
       - .:/app
     ports:
-      - "8081:8081"
+      - "5173:5173"
