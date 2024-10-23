@@ -3,9 +3,13 @@ import { defineConfig } from 'vite'
 import symfonyPlugin from 'vite-plugin-symfony';
 import react from '@vitejs/plugin-react';
 import copy from 'rollup-plugin-copy';
+import legacy from '@vitejs/plugin-legacy'
 
 export default defineConfig({
   plugins: [
+    legacy({
+      targets: ['defaults', 'not IE 11'],
+    }),
     symfonyPlugin({
       originOverride: 'https://precontentieux.anje-justice.dev',
       stimulus: true,

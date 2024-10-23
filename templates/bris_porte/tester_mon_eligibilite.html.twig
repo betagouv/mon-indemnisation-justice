@@ -8,7 +8,11 @@
         form[name="eligibilite-test-form"] {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+        }
+
+        form > * {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
         }
 
         .pr-section-formulaire {
@@ -48,7 +52,7 @@
             </p>
         </div>
 
-        <div class="fr-col-12" id="vue-app" v-scope>
+        <div class="fr-col-12" id="vue-app">
             <form
                 name="eligibilite-test-form"
                 action="{{ url(app.current_route) }}"
