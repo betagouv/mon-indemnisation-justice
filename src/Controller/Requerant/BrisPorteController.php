@@ -31,11 +31,11 @@ class BrisPorteController extends RequerantController
         $requerant = $this->getRequerant();
         $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($requerant);
 
-        if (
-            null !== ($testEligibilite = $requerant->getTestEligibilite()) &&
-            ($dateOperationPJ = \DateTimeImmutable::createFromFormat('Y-m-d', @$testEligibilite['dateOperationPJ']))
-        ) {
-            if (isset($testEligibilite['dateOperationPJ'])) {
+        if (null !== ($testEligibilite = $requerant->getTestEligibilite())) {
+            if (
+                isset($testEligibilite['dateOperationPJ']) &&
+                ($dateOperationPJ = \DateTimeImmutable::createFromFormat('Y-m-d', $testEligibilite['dateOperationPJ']))
+            ) {
                 $brisPorte->setDateOperationPJ($dateOperationPJ);
             }
             $brisPorte->setNumeroPV(@$testEligibilite['numeroPV']);
