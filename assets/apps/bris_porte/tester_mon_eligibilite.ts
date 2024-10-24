@@ -76,7 +76,4 @@ createApp({
             this.decisions.length = 0;
         }
     },
-    mounted() {
-        console.log("Monté!");
-    }
 }).mount('#vue-app');

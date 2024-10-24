@@ -9,6 +9,7 @@ export default defineConfig({
   plugins: [
     legacy({
       targets: ['defaults', 'not IE 11'],
+      modernTargets: 'edge>=18, firefox>=60, chrome>=61, opera>=48, safari>=12, chromeAndroid>=64, iOS>=12'
     }),
     symfonyPlugin({
       originOverride: 'https://precontentieux.anje-justice.dev',
@@ -35,6 +36,7 @@ export default defineConfig({
         "app": "./assets/app.js",
         "bris_porte_tester_mon_eligibilite": "./assets/apps/bris_porte/tester_mon_eligibilite.ts",
       }
+      // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
     },
   },
   server: {
