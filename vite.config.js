@@ -22,6 +22,7 @@ export default defineConfig({
     copy({
       targets: [
         { src: "node_modules/@gouvfr/dsfr/dist/*", dest: "public/dsfr" },
+        { src: "node_modules/remixicon/*", dest: "public/remixicon" },
       ],
       hook: 'writeBundle'
     })

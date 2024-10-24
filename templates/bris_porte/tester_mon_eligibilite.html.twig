@@ -10,11 +10,6 @@
             flex-direction: column;
         }
 
-        form > * {
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-
         .pr-section-formulaire {
             /* fr-my-3w */
             /*margin: 1.5rem 0;*/
@@ -52,7 +47,7 @@
             </p>
         </div>
 
-        <div class="fr-col-12" id="vue-app">
+        <div class="fr-col-12 fr-my-2w" id="vue-app">
             <form
                 name="eligibilite-test-form"
                 action="{{ url(app.current_route) }}"
@@ -79,10 +74,10 @@
                 </div>
 
                 {# Questions #}
-                <div class="pr-section-formulaire">
+                <div class="pr-section-formulaire fr-my-3w">
                     <h4>Personne recherchée</h4>
                     <div
-                        class="fr-col-12"
+                        class="fr-col-12 fr-my-2w"
                     >
                         <fieldset
                             class="fr-fieldset"
@@ -123,7 +118,7 @@
                     </div>
 
                     <div
-                        class="fr-col-12 pr-question"
+                        class="fr-col-12 fr-my-2w"
                         v-if="questions.estRecherche(reponses, decisions)"
                         v-cloak
                     >
@@ -215,7 +210,7 @@
                     </div>
 
                     <div
-                        class="fr-col-12"
+                        class="fr-col-12 fr-my-2w"
                         v-if="questions.aContacteAssurance(reponses, decisions)"
                     >
                         <fieldset
@@ -257,7 +252,7 @@
                     </div>
 
                     <div
-                        class="fr-col-12"
+                        class="fr-col-12 fr-my-2w"
                         v-if="questions.aContacteBailleur(reponses, decisions)"
                     >
                         <fieldset
@@ -301,7 +296,7 @@
 
                 {# Décisions #}
                 <div
-                    class="fr-alert fr-alert--error"
+                    class="fr-alert fr-alert--error fr-my-2w"
                     v-if="estDecide('error_est_vise')"
                     v-cloak
                 >
@@ -321,7 +316,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-alert--error"
+                    class="fr-alert fr-alert--error fr-my-2w"
                     v-if="estDecide('error_est_recherche')"
                     v-cloak
                 >
@@ -335,7 +330,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-alert--warning"
+                    class="fr-alert fr-alert--warning fr-my-2w"
                     v-if="estDecide('warning_proprietaire_assurance')"
                     v-cloak
                 >
@@ -345,7 +340,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-alert--warning"
+                    class="fr-alert fr-alert--warning fr-my-2w"
                     v-if="estDecide('warning_locataire_assurance')"
                     v-cloak
                 >
@@ -355,7 +350,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-alert--warning"
+                    class="fr-alert fr-alert--warning fr-my-2w"
                     v-if="estDecide('warning_locataire_bailleur')"
                     v-cloak
                 >
@@ -365,7 +360,7 @@
                 </div>
 
                 <div
-                    class="fr-alert fr-alert--success"
+                    class="fr-alert fr-alert--success fr-my-2w"
                     v-if="estDecide('success')"
                     v-cloak
                 >

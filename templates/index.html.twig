@@ -2,7 +2,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link href="{{ asset('build/remixicon/fonts/remixicon.css') }}" rel="stylesheet" />
+    <link href="{{ asset('remixicon/fonts/remixicon.css') }}" rel="stylesheet" />
     <style>
         .pr-content_body .pr-requests > ul, .pr-content_body .pr-requests > ul > li {
             margin: 0;
@@ -95,13 +95,27 @@
             .pr-section-comment-faire div.fr-container {
                 display: flex;
                 flex-direction: column;
-                gap: 3rem;
+            }
+
+            .pr-section-comment-faire div.fr-container > *:not:first-child {
+                margin-top: 1.5rem;
+            }
+
+            .pr-section-comment-faire div.fr-container > *:not:last-child {
+                margin-bottom: 1.5rem;
             }
 
             .pr-section-comment-faire--etape {
                 display: flex;
                 flex-direction: column;
-                gap: 1.5rem;
+            }
+
+            .pr-section-comment-faire--etape > *:not:first-child {
+                margin-top: .75rem;
+            }
+
+            .pr-section-comment-faire--etape > *:not:last-child {
+                margin-bottom: .75rem;
             }
         }
         @media (min-width: 992px) {
