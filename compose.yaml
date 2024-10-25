@@ -65,7 +65,7 @@ services:
   vite:
     image: node:22
     hostname: vite
-    command: bash -c 'yarn install && yarn dev'
+    command: bash -c 'yarn install && yarn dev -l info'
     working_dir: /app
     volumes:
       - .:/app

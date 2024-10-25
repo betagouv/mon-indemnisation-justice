@@ -31,4 +31,5 @@ compose.override.yaml
 ###> pentatrion/vite-bundle ###
 /node_modules/
 /public/build/
+/public/preview/
 ###< pentatrion/vite-bundle ###

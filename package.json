@@ -30,5 +30,8 @@
     },
     "resolutions": {
         "rollup": "npm:@rollup/wasm-node"
+    },
+    "devDependencies": {
+        "@symfony/stimulus-bridge": "^3.2.0"
     }
 }

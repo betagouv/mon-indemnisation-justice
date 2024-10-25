@@ -14,79 +14,6 @@
         <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
         {% block stylesheets %}
             {{ vite_entry_link_tags('app') }}
-            {#
-            <style>
-                .pr-content {
-                    position: relative;
-                    background-color: var(--background-alt-grey);
-                    z-index: 0;
-                }
-
-                .pr-content_header .pr-whoami {
-                    position: relative;
-                    min-height: 20rem;
-                }
-
-                .pr-content_header .pr-whoami::before {
-                    content: "";
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    opacity: 0.7;
-                    z-index: -1;
-                    background-image: url('{{ asset("images/picture/pic_olympe-site.jpg") }}');
-                    background-size: 100%;
-                    background-repeat: no-repeat;
-                    background-position: center;
-                }
-
-                .pr-content_header .pr-whoami .pr-whoami_text {
-                    position: relative;
-                    width: 55%
-                }
-
-                .pr-content_header .pr-whoami .pr-whoami_text::before {
-                    content: "";
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    opacity: 0.7;
-                    z-index: -1;
-                    background-color: var(--pr-bg-color-white);
-                }
-
-                .pr-content_body {
-                    border: 1px solid var(--pr-color-grey);
-                    background-color: var(--background-default-grey);
-                }
-
-                .pr-service-national_body {
-                    background-color: var(--pr-color-grey);
-                }
-
-                .pr-service-national-text {
-                    color: var(--pr-bg-color-blue-royal);
-                }
-
-                .pr-service-national-text h3 {
-                    color: var(--pr-bg-color-blue-royal);
-                }
-
-                .pr-service-national-illu_france {
-                    background-image: url('{{  asset('images/illustration/illu_territoires-france.png') }}');
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-size: 100%;
-                    min-height: 30rem;
-                    width: 100%;
-                }
-
-            </style>
-             #}
         {% endblock stylesheets %}
         <title>{% block title %}Mon indemnisation justice{% if title is defined %} - {{ title }}{% endif %}{% endblock %}</title>
         {% block analytic %}
@@ -128,7 +55,9 @@
             {% endblock main %}
         </main>
 
-        {% include('_footer.html.twig') %}
+        {% block footer %}
+            {% include('_footer.html.twig') %}
+        {% endblock footer %}
 
 
 
@@ -143,7 +72,6 @@
                     production: {% if app.environment == 'prod' %}true{% else %}false{% endif %},
                 };
             </script>
-            <script src="https://cdn.jsdelivr.net/npm/css-vars-ponyfill@2"></script>
             <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
             <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
         {% endblock %}

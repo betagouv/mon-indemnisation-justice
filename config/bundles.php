@@ -21,4 +21,5 @@ return [
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true],
     DAMA\DoctrineTestBundle\DAMADoctrineTestBundle::class => ['test' => true],
     Pentatrion\ViteBundle\PentatrionViteBundle::class => ['all' => true],
+    Acsiomatic\DeviceDetectorBundle\AcsiomaticDeviceDetectorBundle::class => ['all' => true],
 ];
