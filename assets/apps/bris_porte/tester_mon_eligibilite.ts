@@ -21,6 +21,9 @@ createApp({
     estDecide: function (nom) {
         return !!this.decisions.find(function(decision) { return decision.name === nom; });
     },
+    estEligible() {
+        return this.decisions.every((decision) => decision?.eligible !== false)
+    },
     statuer: function (reponses) {
         this.decisions.length = 0;
         // Statuer sur une décision ici :

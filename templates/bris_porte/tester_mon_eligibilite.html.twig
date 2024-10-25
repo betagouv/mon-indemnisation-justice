@@ -10,15 +10,25 @@
         }
 
         .pr-section-formulaire {
-            /* fr-my-3w */
-            /*margin: 1.5rem 0;*/
-            /* fr-px-3w && fr-py-4w */
             padding: 1.5rem 2rem;
             box-shadow:0 0 8px 2px var(--shadow-color);
         }
 
         .pr-section-formulaire h4 {
             font-weight: 400 !important;
+        }
+
+        .pr-section-decision {
+            background-color: var(--background-contrast-blue-cumulus);
+            padding: 1.5rem 2rem;
+        }
+
+        .pr-section-decision h4 {
+            font-weight: 400 !important;
+        }
+
+        .pr-section-decision > .fr-alert {
+            background-color: var(--background-overlap-grey) !important;
         }
 
         /* Vue */
@@ -60,9 +70,11 @@
                     </h3>
                     <p class="fr-callout__text">
                         Il est important de noter que vous ne pouvez pas être indemnisé plusieurs fois par différents
-                        intermédiaires pour le même préjudice. Afin de garantir
+                        intermédiaires pour le même dommage. Afin de garantir
                         <a class="fr-link" aria-describedby="infobulle-respect-principe" id="lien-infobulle-respect-principe" href="#">le respect de ce principe</a>,
-                        nous vous prions de bien vouloir répondre aux questions suivantes.
+                        nous vous prions de bien vouloir répondre aux questions suivantes. À l'issue de ce questionnaire,
+                        nous vous informerons des démarches à suivre et des éléments manquants le cas échéant pour
+                        traiter votre demande dans les meilleures conditions.
                     </p>
                     <span class="fr-tooltip fr-placement" id="infobulle-respect-principe" role="tooltip" aria-hidden="true">
                         En vertu du principe de réparation intégrale du préjudice sans perte ni profit, la victime d'un
@@ -217,7 +229,7 @@
                             aria-labelledby="checkboxes-inline-legend"
                         >
                             <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
-                                Avez-vous contacté votre assurance habitation et obtenu, si nécessaire, une attestation de non prise en charge du sinistre ?
+                                Avez-vous contacté votre assurance habitation et obtenu une attestation de non prise en charge du sinistre ?
                             </legend>
                             <div class="fr-fieldset__element fr-fieldset__element--inline">
                                 <div class="fr-radio-group">
@@ -259,7 +271,7 @@
                             aria-labelledby="checkboxes-inline-legend"
                         >
                             <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
-                                Avez-vous pris contact avec votre bailleur car celui-ci a, à votre égard, une obligation de sécurité (article 1720 du code civil) ?
+                                Avez-vous pris contact avec votre bailleur, car celui-ci a, à votre égard, une obligation de sécurité (article 1720 du code civil) ?
                             </legend>
                             <div class="fr-fieldset__element fr-fieldset__element--inline">
                                 <div class="fr-radio-group">
@@ -294,13 +306,84 @@
                 </div>
 
                 {# Décisions #}
+                <div class="pr-section-decision fr-my-3w" v-cloak v-if="estDecide('success')">
+                    <h4>Vous êtes éligible à l’indemnisation</h4>
+
+                    <div class="fr-alert fr-alert--success fr-my-2w">
+                        <p>
+                            Nous vous invitons à suivre les indications afin de créer votre compte et effectuer votre demande d’indemnisation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pr-section-decision fr-my-3w" v-cloak v-if="estDecide('error_est_vise') || estDecide('error_est_recherche') || estDecide('warning_proprietaire_assurance') || estDecide('warning_locataire_assurance') || estDecide('warning_locataire_bailleur')">
+                    <h4>Vous ne remplissez pas tous les critères d’indemnisation</h4>
+
+                    <p>
+                        Votre dossier ne sera pas en mesure d’être traité si tous les critères indiqués ci-dessous ne sont pas réunis. Nous vous recommandons d’effectuer ces démarches avant de faire votre demande.
+                    </p>
+
+                    <div class="fr-alert fr-alert--error fr-my-2w"
+                        v-if="estDecide('error_est_vise')"
+                    >
+                        <h3 class="fr-alert__title">
+                            Vous ne devez pas être visé par les opérations des forces de l’ordre
+                        </h3>
+                        <p>
+                            Vous ne pouvez prétendre à une indemnisation que si les force de l'ordre ont commis une
+                            <a class="fr-link" aria-describedby="infobulle-faute-lourde" id="lien-infobulle-faute-lourde" href="#">faute lourde</a>
+                            au cours de leur intervention. Il vous appartiendra de prouver cette faute.
+                        </p>
+                        <span class="fr-tooltip fr-placement" id="infobulle-faute-lourde" role="tooltip" aria-hidden="true">
+                            Constitue une faute lourde toute déficience caractérisée par un fait ou une série de faits
+                            traduisant l'inaptitude du service public de la justice à remplir la mission dont il est investi
+                            (Cour de Cassation, Assemblée plénière, du 23 février 2001, 99-16.165, Publié au bulletin)
+                        </span>
+                    </div>
+
+                    <div class="fr-alert fr-alert--error fr-my-2w"
+                        v-if="estDecide('error_est_recherche')"
+                    >
+                        <h3 class="fr-alert__title">
+                            La personne recherchée ne doit pas être résidé ou être hébergée à votre adresse
+                        </h3>
+                        <p>
+                            Vous n’êtes pas éligible à l’indemnisation car il n’y a pas d’erreur de la part des forces de l’ordre.
+                        </p>
+                    </div>
+
+                    <div class="fr-alert fr-alert--error fr-my-2w"
+                         v-if="estDecide('warning_locataire_assurance') || estDecide('warning_proprietaire_assurance')"
+                    >
+                        <h3 class="fr-alert__title">
+                            Vous n’avez pas pris contact avec votre bailleur et/ou obtenu une attestation de non prise en charge des réparations
+                        </h3>
+
+                        <p>
+                            Nous vous recommandons de prendre contact avec votre bailleur dès que possible, pour obtenir l’attestation de non prise en charge des réparations. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
+                        </p>
+                    </div>
+
+                    <div class="fr-alert fr-alert--error fr-my-2w" v-if="estDecide('warning_locataire_bailleur')">
+                        <h3 class="fr-alert__title">
+                            Vous n’avez pas pris contact avec votre assurance habitation et/ou obtenu une attestation de non prise en charge du sinistre
+                        </h3>
+
+                        <p>
+                            Nous vous recommandons de prendre contact avec votre assurance habitation dès que possible. En cas de refus de prise en charge du sinistre, il est important de demander une attestation de non prise en charge. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
+                        </p>
+                    </div>
+                </div>
+
+                {#
+
                 <div
                     class="fr-alert fr-alert--error fr-my-2w"
                     v-if="estDecide('error_est_vise')"
                     v-cloak
                 >
                     <h3 class="fr-alert__title">
-                        Vous n’êtes pas éligible à l’indemnisation.
+                        Vous ne devez pas être visé par les opérations des des forces de l’ordre
                     </h3>
                     <p>
                         Vous ne pouvez prétendre à une indemnisation que si les force de l'ordre ont commis une
@@ -367,23 +450,29 @@
                         Vous êtes éligible à l’indemnisation.
                     </h3>
                     <p>
-                        Nous vous invitons à suivre les indications afin de créer votre compte et effectuer votre demande
-                        d'indemnisation.
+                        Nous vous invitons à suivre les indications afin de créer votre compte et effectuer votre demande d’indemnisation.
                     </p>
                 </div>
-
+                 #}
 
                 {# Boutons #}
 
                 <div class="fr-btns-group fr-btns-group--left fr-btns-group--inline-lg">
+                    <a
+                        v-if="decisions.length > 0 && !estEligible()"
+                        class="fr-btn fr-btn--primary"
+                        href="{{ path('bris_porte_atterrissage') }}"
+                    >Revenir vers la page d'accueil
+                    </a>
                     <button
                         class="fr-btn"
+                        :class="estEligible() ? 'fr-btn--primary' :'fr-btn--secondary'"
                         type="submit"
-                        :disabled="decisions.filter(function(decision) { return decision.eligible ?? true}).length === 0"
+                        :disabled="decisions.length === 0"
                     >Commencer la demande d'indemnisation
                     </button>
                     <button
-                        v-if="true"
+                        v-if="decisions.length > 0 && estEligible()"
                         class="fr-btn fr-btn--secondary"
                         aria-controls="modale-test-eligibilite"
                         data-fr-js-modal-button="true"
