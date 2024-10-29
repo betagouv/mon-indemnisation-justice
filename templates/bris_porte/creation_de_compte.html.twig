@@ -1,0 +1,386 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bris de porte : création de mon compte{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <script src="{{ asset('build/alpinejs/cdn.js') }}" defer></script>
+    <style>
+        /** Hack: maintenir les input de type checkbox et radio "cliquables". */
+        input[type=radio], input[type=checkbox] {
+            z-index: 2;
+        }
+
+        .pr-keyboard-hands .pic-keyboard-hands {
+          background-image: url('{{ asset("images/picture/pic_keyboard-hands.jpg") }}');
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: auto 100%;
+          height: 870px;
+            width:100%;
+        }
+        .pr-form-subscribe { border: 1px solid var(--pr-color-grey);  }
+        .pr-form-subscribe_had-account { border-bottom: 1px solid var(--pr-color-grey); }
+
+
+        .pr-form-subscribe, .pr-form-subscribe_had-account {
+            border-bottom: 1px solid var(--pr-color-grey);
+        }
+
+        /** Bouton afficher / masquer le mot de passe */
+        button.fr-btn--input-overlay {
+            padding:0;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            right: .5rem;
+            bottom: 0.75rem;
+            width: 2rem;
+            height: 2rem;
+            --icon-size: 1rem;
+            margin: auto;
+            pointer-events: all;
+            z-index:10;
+            background-color:transparent;
+        }
+
+        button.fr-btn--input-overlay:hover {
+            background-color:transparent !important;
+        }
+
+        button.fr-btn--input-overlay *:hover {
+            background-color:transparent;
+            color: inherit;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    {% include('bris_porte/_header.html.twig') %}
+{% endblock header %}
+
+{% block main %}
+<div class="fr-container fr-my-3w">
+    {#  Indicateur d'étapes #}
+    <div class="fr-stepper">
+        <h2 class="fr-stepper__title">
+            Création de mon compte
+            <span class="fr-stepper__state">Étape 2 sur 3</span>
+        </h2>
+        <div class="fr-stepper__steps" data-fr-current-step="2" data-fr-steps="3"></div>
+        <p class="fr-stepper__details">
+            <span class="fr-text--bold">Étape suivante :</span> Finaliser la création de votre compte
+        </p>
+    </div>
+
+    <div class="fr-grid-row fr-mb-6w">
+        <section class="pr-keyboard-hands fr-col-lg-6 fr-hidden fr-unhidden-lg">
+            <div class="pic-keyboard-hands"></div>
+        </section>
+        <div class="fr-col-lg-6 fr-col-12">
+            <section class="pr-form-subscribe" style="border: 1px solid var(--border-default-grey);">
+                <form method="POST"
+                      action="{{ url(app.current_route) }}"
+                      x-data="formulaireInscription()"
+                      x-init="$watch('inscription', (inscription) => verifier(inscription))"
+                      @submit.prevent="soumettre"
+                >
+                    <input type="hidden" name="_token" value="{{ form._token.vars.value }}">
+                    <div class="fr-grid-row">
+
+                        <div class="pr-form-subscribe_had-account fr-col-12">
+
+                        </div>
+
+                        <div class="fr-col-12">
+                            <div class=" fr-p-0 fr-p-4w">
+                                <div class="fr-alert fr-alert--info fr-alert--sm">
+                                    <div>
+                                        <p>L'accès au formulaire de demande d'indemnisation requiert la création d'un compte</p>
+                                    </div>
+                                </div>
+
+                                <div class="fr-py-2w">
+                                    <p class="fr-text--sm">Vous possédez déjà un compte ? <a href="{{ url('app_login') }}"  class="fr-link fr-icon-arrow-right-line fr-link--icon-right">Connectez-vous</a></p>
+
+                                </div>
+
+                                <p class="fr-my-2w">Tous les champs sont obligatoires</p>
+                                <div class="fr-grid-row fr-grid-row--gutters">
+                                    <div class="fr-col-lg-4 fr-col-12">
+                                        <div class="fr-select-group">
+                                            <label class="fr-label" for="inscription-champs-civilite">Civilité</label>
+                                            <select name="civilite"
+                                                    class="fr-select"
+                                                    id="inscription-champs-civilite"
+                                                    aria-describedby="select-:r4:-desc"
+                                                    x-model="inscription.civilite"
+                                            >
+                                                <option value="" disabled="" hidden=""></option>
+                                                <option value="M">Monsieur</option>
+                                                <option value="MME">Madame</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-lg-8 fr-col-12">
+                                        <div class="fr-input-group">
+                                            <label class="fr-label" for="inscription-champs-prenom">Prénom(s)</label>
+                                            <input name="prenom"
+                                                   id="inscription-champs-prenom"
+                                                   class="fr-input"
+                                                   aria-describedby="input-:r5:-desc-error"
+                                                   type="text"
+                                                   value="{{ form.prenom.vars.value }}"
+                                                   x-model="inscription.prenom"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-lg-6 fr-col-12">
+                                        <div class="fr-input-group">
+                                            <label class="fr-label" for="inscription-champs-nom">Nom de naissance</label>
+                                            <input name="nomNaissance"
+                                                   id="inscription-champs-nom"
+                                                   class="fr-input"
+                                                   aria-describedby="input-:r6:-desc-error"
+                                                   type="text"
+                                                   value="{{ form.nomNaissance.vars.value }}"
+                                                   x-model="inscription.nomNaissance"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-lg-6 fr-col-12">
+                                        <div class="fr-input-group">
+                                            <label class="fr-label" for="inscription-champs-nom-usage">Nom d'usage</label>
+                                            <input name="nom"
+                                                   class="fr-input"
+                                                   type="text"
+                                                   id="inscription-champs-nom-usage"
+                                                   value="{{ form.nom.vars.value }}"
+                                                   x-model="inscription.nom"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12">
+                                        <div class="fr-input-group" :class="{ 'fr-input-group--error': !!erreurs?.courriel }">
+                                            <label class="fr-label" for="inscription-champs-courriel">Adresse courriel</label>
+                                            <input name="courriel"
+                                                   id="inscription-champs-courriel"
+                                                   class="fr-input"
+                                                   :class="{ 'fr-input--error': !!erreurs?.courriel }"
+                                                   aria-describedby="inscription-champs-courriel-error"
+                                                   type="text"
+                                                   x-model="inscription.courriel"
+                                            />
+                                            <p id="inscription-champs-courriel-error"
+                                               class="fr-error-text fr-hidden"
+                                               :class="{ 'fr-hidden' : !erreurs?.courriel }"
+                                               x-text="erreurs?.courriel"></p>
+                                        </div>
+                                    </div>
+                                    {# Mot de passe #}
+                                    <div class="fr-input-group fr-col-lg-6 fr-col-12">
+                                        <div class="fr-password">
+                                            <label class="fr-label" for="inscription-champs-mot-de-passe">Mot de passe<br/><br/></label>
+                                            <div
+                                                class="fr-input-wrap"
+                                                @click.outside="revelations.motDePasse = false"
+                                            >
+                                                <input name="motDePasse"
+                                                       class="fr-password__input fr-input"
+                                                       :class="{ 'fr-input--error' : erreurs?.motDePasse }"
+                                                       id="inscription-champs-mot-de-passe"
+                                                       aria-describedby="inscription-champs-mot-de-passe-error"
+                                                       type="password"
+                                                       :type="revelations.motDePasse ? 'text' : 'password'"
+                                                       x-model="inscription.motDePasse"
+                                                />
+                                                <button role="button"
+                                                        tabindex="-1"
+                                                        class="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
+                                                        @click="revelations.motDePasse = !revelations.motDePasse"
+                                                        :title="revelations.motDePasse ? 'Masque' : 'Afficher'"
+                                                >
+                                                    <span :class="{'fr-icon-eye-line': !revelations.motDePasse, 'fr-icon-eye-off-line': revelations.motDePasse }" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <p id="inscription-champs-mot-de-passe-error"
+                                                   class="fr-error-text fr-hidden"
+                                                   :class="{ 'fr-hidden' : !erreurs?.motDePasse }"
+                                                   x-text="erreurs?.motDePasse"></p>
+                                        </div>
+                                    </div>
+                                    <div class="fr-input-group fr-col-lg-6 fr-col-12">
+                                        <div class="fr-password"
+                                             data-fr-js-password="true">
+                                            <label class="fr-label" for="inscription-champs-confirmation">Confirmation du mot de passe</label>
+                                            <div
+                                                class="fr-input-wrap"
+                                                @click.outside="revelations.confirmation = false"
+                                            >
+                                                <input name="confirmation"
+                                                       class="fr-password__input fr-input"
+                                                       :class="{ 'fr-input--error' : erreurs?.confirmation }"
+                                                       id="inscription-champs-confirmation"
+                                                       aria-describedby="inscription-champs-confirmation-error"
+                                                       type="password"
+                                                       :type="revelations.confirmation ? 'text' : 'password'"
+                                                       x-model="inscription.confirmation"
+                                                />
+                                                <button role="button"
+                                                        tabindex="-1"
+                                                        class="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
+                                                        @click="revelations.confirmation = !revelations.confirmation"
+                                                        :title="revelations.confirmation ? 'Masque' : 'Afficher'"
+                                                >
+                                                    <span :class="{'fr-icon-eye-line': !revelations.confirmation, 'fr-icon-eye-off-line': revelations.confirmation }" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <p id="inscription-champs-confirmation-error"
+                                               class="fr-error-text fr-hidden"
+                                               :class="{ 'fr-hidden' : !erreurs?.confirmation }"
+                                               x-text="erreurs?.confirmation"></p>
+                                        </div>
+                                    </div>
+                                    {# CGU (désactivé tant que la page CGU n'existe pas) #}
+                                    <input type="hidden" name="cguOk" value="1">
+                                    {#
+                                    <div class="fr-col-12">
+                                        <fieldset class="fr-fieldset">
+                                            <div class="fr-fieldset__content">
+                                                <div class="fr-checkbox-group">
+                                                    <input type="checkbox"
+                                                           id="inscription-champs-cgu-ok"
+                                                           name="cguOk"
+                                                           value="{{ form.cguOk.vars.value }}"
+                                                           x-model.boolean="inscription.cguOk" />
+                                                    <label class="fr-label"
+                                                           for="inscription-champs-cgu-ok">
+                                                        Je certifie avoir lu et accepté les
+                                                        <a class="fr-link"
+                                                           href="/conditions-generales-d-utilisation"
+                                                           target="_blank">Conditions générales
+                                                            d'utilisation</a>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                     #}
+                                    <div class="fr-col-12">
+                                        <button class="fr-btn" :disabled="!submissible">Valider mon inscription et
+                                            poursuivre ma demande
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+
+{% endblock main %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script id="input-inscription" type="application/json">{{ inscription | json_encode | raw }}</script>
+    <script id="input-erreurs" type="application/json">{{ errors | json_encode | raw }}</script>
+    <script type="text/javascript">
+        const inscription = Object.assign(
+            {
+                prenom: "",
+                nom: "",
+                nomNaissance: "",
+                courriel: "",
+                motDePasse: "",
+                confirmation: "",
+                cguOk: true
+            },
+            JSON.parse(document.getElementById('input-inscription')?.textContent || "{}")
+        );
+        const erreurs = Object.assign({}, JSON.parse(document.getElementById('input-erreurs')?.textContent || "{}"));
+
+        function formulaireInscription() {
+            return {
+                erreurs: {...erreurs},
+                submissible: false,
+                inscription: {...inscription},
+                avant: {},
+                revelations: {
+                    motDePasse: false,
+                    confirmation: false,
+                },
+                estRempli(valeur) {
+                    return !!valeur && valeur.trim().length > 0;
+                },
+                estCourrielValide(valeur) {
+                    return !!valeur && valeur.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+                },
+                verifier(inscription) {
+                    if (this.avant?.prenom !== inscription.prenom) {
+                        if (!this.estRempli(inscription.prenom)) {
+                            this.erreurs.prenom = "";
+                        } else {
+                            delete this.erreurs.prenom;
+                        }
+                    }
+
+                    if (this.avant?.nom !== inscription.nom) {
+                        if (!this.estRempli(inscription.nom)) {
+                            this.erreurs.nom = "";
+                        } else {
+                            delete this.erreurs.nom;
+                        }
+                    }
+
+                    if (this.avant?.courriel !== inscription.courriel) {
+                        if (!this.estCourrielValide(inscription.courriel)) {
+                            this.erreurs.courriel = inscription.courriel ? "L'adresse courriel n'est pas valide" : false;
+                        } else {
+                            delete this.erreurs.courriel;
+                        }
+                    }
+
+                    // Vérification du mot de passe:
+                    if (
+                        (this.avant?.motDePasse !== inscription.motDePasse) ||
+                        (this.avant?.confirmation !== inscription.confirmation)
+                    ) {
+                        delete this.erreurs.motDePasse;
+                        delete this.erreurs.confirmation;
+                        if (inscription.motDePasse.length < 8) {
+                            this.erreurs.motDePasse = "Le mot de passe doit contenir au moins 8 caractères, dont 1 chiffre";
+                        } else if (!inscription.motDePasse.match(/\d/)) {
+                            this.erreurs.motDePasse = "Le mot de passe doit contenir au moins 1 chiffre";
+                        } else if (this.estRempli(inscription.motDePasse) && inscription.confirmation !== inscription.motDePasse) {
+                            this.erreurs.confirmation = "Les deux mots de passe doivent être identiques";
+                        }
+                    }
+
+                    /*
+                    if (this.avant?.cguOk !== inscription.cguOk) {
+                        if (!inscription.cguOk) {
+                            this.erreurs.cguOk = "";
+                        } else {
+                            delete this.erreurs.cguOk;
+                        }
+                    }
+                    */
+
+                    this.submissible = Object.keys(this.erreurs).length === 0;
+
+                    this.avant = {...inscription};
+                },
+                soumettre(event) {
+                    if (this.submissible) {
+                        event.target.closest('form')?.submit();
+                    }
+                },
+            };
+        };
+    </script>
+{% endblock javascripts %}
+

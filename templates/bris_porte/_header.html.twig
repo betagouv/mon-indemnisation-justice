@@ -28,10 +28,10 @@
                     <div class="fr-header__tools-links">
                         <ul class="fr-btns-group">
                             <li>
-                                <span class="fr-btn fr-icon-user-line">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}</span>
+                                <a class="fr-btn fr-icon-government-line" href="{{ path('app_agent_securite_connexion') }}">Agent</a>
                             </li>
-                            <a class="fr-btn fr-icon-logout-box-r-line"
-                               href="{{ path('app_logout') }}">Déconnexion</a>
+                            <li>
+                                <a class="fr-btn fr-icon-lock-line" href="{{ path('app_login') }}">Se connecter</a>
                             </li>
                         </ul>
                     </div>
@@ -53,24 +53,27 @@
                 <div class="fr-header__menu-links">
                     <ul class="fr-btns-group">
                         <li>
-                            <span class="fr-btn fr-icon-user-line">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}</span>
+                            <a class="fr-btn fr-icon-government-line" href="{{ path('app_agent_securite_connexion') }}">Agent</a>
                         </li>
-                        <a class="fr-btn fr-icon-logout-box-r-line"
-                           href="{{ path('app_logout') }}">Déconnexion</a>
+                        <li>
+                            <a class="fr-btn fr-icon-lock-line" href="{{ path('app_login') }}">Se connecter</a>
                         </li>
                     </ul>
                 </div>
 
                 {# Menu principal #}
-                <nav id="fr-header-main-navigation" class="fr-nav" role="navigation" aria-label="Menu principal">
+                <nav id="fr-header-main-navigation fr-container" class="fr-nav" role="navigation" aria-label="Menu principal" data-fr-js-navigation="true">
                     <ul class="fr-nav__list">
-
                         <li class="fr-nav__item" data-fr-js-navigation-item="true">
-                            <a href="{{ path('bris_porte_tester_eligibilite') }}" class="fr-nav__link">Déclarer un préjudice</a>
+                            <a href="{{ path('bris_porte_atterrissage') }}" class="fr-nav__link fr-text-action-high--blue-france"{% if app.current_route == 'bris_porte_atterrissage' %} aria-current="page"{% endif %}>
+                                <span class="fr-icon-home-4-line fr-text--bold" aria-hidden="true"></span>
+                            </a>
                         </li>
+                        {#
                         <li class="fr-nav__item" data-fr-js-navigation-item="true">
-                            <a href="{{ url('requerant_home_index') }}" class="fr-nav__link">Mes demandes</a>
+                            <a href="{{ path('app_qui_sommes_nous') }}" class="fr-nav__link"{% if app.current_route == 'app_qui_sommes_nous' %} aria-current="page"{% endif %}>Qui sommes-nous ?</a>
                         </li>
+                         #}
                     </ul>
                 </nav>
             </div>

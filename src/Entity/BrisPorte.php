@@ -105,6 +105,21 @@ class BrisPorte
     #[ORM\Column(options: ['default' => false])]
     private bool $isErreurPorte = false;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $estVise;
+
+    #[ORM\Column(nullable: true, options: ['comments' => "La personne recherchée réside ou est hébergée à cette adresse"])]
+    protected ?bool $estHebergeant;
+
+    #[ORM\Column(nullable: true)]
+    protected ?bool $estProprietaire;
+
+    #[ORM\Column(nullable: true)]
+    protected ?bool $aContactAssurance;
+
+    #[ORM\Column(nullable: true)]
+    protected ?bool $aContactBailleur;
+
     #[Groups(['prejudice:read', 'prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $identitePersonneRecherchee = null;
@@ -356,11 +371,6 @@ class BrisPorte
         return $this->isErreurPorte;
     }
 
-    public function getIsErreurPorte(): ?bool
-    {
-        return $this->isErreurPorte();
-    }
-
     public function setErreurPorte(?bool $isErreurPorte): self
     {
         $this->isErreurPorte = $isErreurPorte;
@@ -368,10 +378,58 @@ class BrisPorte
         return $this;
     }
 
-    public function setIsErreurPorte(?bool $isErreurPorte): self
+    public function estVise(): ?bool
     {
-        $this->setErreurPorte($isErreurPorte);
+        return $this->estVise;
+    }
 
+    public function setEstVise(?bool $estVise): BrisPorte
+    {
+        $this->estVise = $estVise;
+        return $this;
+    }
+
+    public function estHebergeant(): ?bool
+    {
+        return $this->estHebergeant;
+    }
+
+    public function setEstHebergeant(?bool $estHebergeant): BrisPorte
+    {
+        $this->estHebergeant = $estHebergeant;
+        return $this;
+    }
+
+    public function estProprietaire(): ?bool
+    {
+        return $this->estProprietaire;
+    }
+
+    public function setEstProprietaire(?bool $estProprietaire): BrisPorte
+    {
+        $this->estProprietaire = $estProprietaire;
+        return $this;
+    }
+
+    public function aContactAssurance(): ?bool
+    {
+        return $this->aContactAssurance;
+    }
+
+    public function setAContactAssurance(?bool $aContactAssurance): BrisPorte
+    {
+        $this->aContactAssurance = $aContactAssurance;
+        return $this;
+    }
+
+    public function aContactBailleur(): ?bool
+    {
+        return $this->aContactBailleur;
+    }
+
+    public function setAContactBailleur(?bool $aContactBailleur): BrisPorte
+    {
+        $this->aContactBailleur = $aContactBailleur;
         return $this;
     }
 

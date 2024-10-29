@@ -34,6 +34,8 @@ services:
     # please note that last definitions always *replace* previous
     Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
 
+    Pentatrion\ViteBundle\Service\EntrypointsLookup: '@pentatrion_vite.entrypoints_lookup[_default]'
+
 when@prod:
     services:
         Aws\S3\S3Client:

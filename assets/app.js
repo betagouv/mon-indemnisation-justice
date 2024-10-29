@@ -8,12 +8,11 @@ import './bootstrap.js';
  */
 import './styles/app.css';
 
-const $ = require('jquery');
-window.jQuery = $;
-window.$ = $;
+import jQuery from "jquery";
+window.$ = window.jQuery = jQuery;
 
-const routes = require('../public/js/fos_js_routes.json');
-const Routing = require('fos-router');
+import routes  from '../public/js/fos_js_routes.json';
+import Routing from 'fos-router';
 Routing.setRoutingData(routes);
 window.Routing = Routing;
 

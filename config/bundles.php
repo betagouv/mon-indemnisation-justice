@@ -11,7 +11,6 @@ return [
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
     FOS\JsRoutingBundle\FOSJsRoutingBundle::class => ['all' => true],
-    Symfony\WebpackEncoreBundle\WebpackEncoreBundle::class => ['all' => true],
     Symfony\UX\StimulusBundle\StimulusBundle::class => ['all' => true],
     Nelmio\CorsBundle\NelmioCorsBundle::class => ['all' => true],
     ApiPlatform\Symfony\Bundle\ApiPlatformBundle::class => ['all' => true],
@@ -21,4 +20,6 @@ return [
     Sentry\SentryBundle\SentryBundle::class => ['all' => true],
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true],
     DAMA\DoctrineTestBundle\DAMADoctrineTestBundle::class => ['test' => true],
+    Pentatrion\ViteBundle\PentatrionViteBundle::class => ['all' => true],
+    Acsiomatic\DeviceDetectorBundle\AcsiomaticDeviceDetectorBundle::class => ['all' => true],
 ];
