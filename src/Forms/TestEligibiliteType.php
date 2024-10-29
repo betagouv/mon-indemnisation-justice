@@ -30,10 +30,13 @@ class TestEligibiliteType extends AbstractType
     {
         $tranformer = new CallbackTransformer(
             function ($property) {
+                if (null === $property) {
+                    return null;
+                }
                 return $property ? 'true' : 'false';
             },
             function ($property) {
-                return filter_var($property, FILTER_VALIDATE_BOOL);
+                return $property ? filter_var($property, FILTER_VALIDATE_BOOL) : null;
             }
         );
 

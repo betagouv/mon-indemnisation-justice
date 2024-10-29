@@ -94,7 +94,7 @@ class BrisPorteController extends AbstractController
                         ->setCivilite($inscription->civilite)
                         ->setPrenom1($inscription->prenom)
                         ->setNom($inscription->nom)
-                        ->setNomNaissance($inscription->nomNaissance)
+                        ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom)
                     ;
                     $requerant->setPassword(
                         $this->userPasswordHasher->hashPassword(

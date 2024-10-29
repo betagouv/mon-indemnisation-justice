@@ -1,7 +1,7 @@
 import {defineConfig} from 'vite'
 
 import symfonyPlugin from 'vite-plugin-symfony';
-import react from '@vitejs/plugin-react';
+import reactPlugin from '@vitejs/plugin-react';
 import copy from 'rollup-plugin-copy';
 import legacy from '@vitejs/plugin-legacy'
 
@@ -30,7 +30,7 @@ export default defineConfig(({command, mode}) => {
                         outDir,
                     },
                 }),
-                react(),
+                reactPlugin(),
                 copy({
                     targets: [
                         {src: "node_modules/@gouvfr/dsfr/dist/*", dest: "public/dsfr"},

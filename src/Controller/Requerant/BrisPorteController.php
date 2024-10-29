@@ -25,34 +25,23 @@ class BrisPorteController extends RequerantController
     ) {
     }
 
-    #[Route('/ajouter-un-bris-de-porte', name: 'app_bris_porte_add', methods: ['POST', 'GET'], options: ['expose' => true])]
+    #[Route('/ajouter-un-bris-de-porte', name: 'app_bris_porte_add', methods: ['GET'])]
     public function add(EntityManagerInterface $em): Response
     {
         $requerant = $this->getRequerant();
         $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($requerant);
 
         if (null !== ($testEligibilite = $requerant->getTestEligibilite())) {
-            if (
-                isset($testEligibilite['dateOperationPJ']) &&
-                ($dateOperationPJ = \DateTimeImmutable::createFromFormat('Y-m-d', $testEligibilite['dateOperationPJ']))
-            ) {
-                $brisPorte->setDateOperationPJ($dateOperationPJ);
-            }
-            $brisPorte->setNumeroPV(@$testEligibilite['numeroPV']);
-            $brisPorte->setNumeroParquet(@$testEligibilite['numeroParquet']);
-            if (isset($testEligibilite['isErreurPorte'])) {
-                $brisPorte->setIsErreurPorte(true);
-            } elseif (isset($testEligibilite['estVise'])) {
-                $brisPorte->setIsErreurPorte(!$testEligibilite['estVise'] && !$testEligibilite['estRecherche']);
-            }
+            $brisPorte->setEstVise($requerant->getTestEligibilite()['estVise'] ?? null);
+            $brisPorte->setEstHebergeant($requerant->getTestEligibilite()['estRecherche'] ?? null);
+            $brisPorte->setEstProprietaire($requerant->getTestEligibilite()['estProprietaire'] ?? null);
+            $brisPorte->setAContactAssurance($requerant->getTestEligibilite()['aContacteAssurance'] ?? null);
+            $brisPorte->setAContactBailleur($requerant->getTestEligibilite()['aContacteBailleur'] ?? null);
+            $brisPorte->setErreurPorte(!($brisPorte->estVise() || $brisPorte->estHebergeant()));
 
-            if (isset($testEligibilite['estProprietaire'])) {
-                $brisPorte->setQualiteRequerant($testEligibilite['estProprietaire'] ? QualiteRequerant::PRO : QualiteRequerant::LOC);
+            if (null !== $brisPorte->estProprietaire()) {
+                $brisPorte->setQualiteRequerant($brisPorte->estProprietaire() ? QualiteRequerant::PRO : QualiteRequerant::LOC);
             }
-
-            $serviceEnqueteur = $brisPorte->getServiceEnqueteur();
-            $serviceEnqueteur->setNumeroPV($brisPorte->getNumeroPV());
-            $serviceEnqueteur->setNumeroParquet($brisPorte->getNumeroParquet());
 
             $requerant->setTestEligibilite(null);
             $em->persist($requerant);
