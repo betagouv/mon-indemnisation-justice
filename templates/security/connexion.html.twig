@@ -1,41 +1,47 @@
-{% extends 'base_react.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% set title = 'Se connecter à mon espace' %}
 
 {% block modale %}
     {{ parent() }}
-{% set flash = app.flashes('success')|first %}
-{% if flash %}
-<dialog aria-labelledby="fr-modal-flash-success" role="dialog" id="fr-modal-flash-success" class="fr-modal fr-modal--opened">
-    <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                <div class="fr-modal__body">
-                    <div class="fr-modal__header">
-                        <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-flash-success">Fermer</button>
-                    </div>
-                    <div class="fr-modal__content">
-                        <div class="fr-alert fr-alert--success">
-                            <h3 class="fr-alert__title">{{ flash.title }}</h3>
-                            <p>{{ flash.message }}</p>
+    {% set flash = app.flashes('success')|first %}
+    {% if flash %}
+    <dialog aria-labelledby="fr-modal-flash-success" role="dialog" id="fr-modal-flash-success" class="fr-modal fr-modal--opened">
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-flash-success">Fermer</button>
+                        </div>
+                        <div class="fr-modal__content">
+                            <div class="fr-alert fr-alert--success">
+                                <h3 class="fr-alert__title">{{ flash.title }}</h3>
+                                <p>{{ flash.message }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</dialog>
-{% endif %}
+    </dialog>
+    {% endif %}
 {% endblock modale %}
-
-{% block containerClasses %}{% endblock containerClasses %}
 
 {% block main %}
   {% set csrf_token = csrf_token('authenticate') %}
-  <div {{ stimulus_controller('security_login',{
-    lastUsername: last_username,
-    errorMessage: error_message,
-    csrfToken: csrf_token,
-  }) }}></div>
+  <div id="react-app"></div>
 {% endblock %}
 
+{% block stylesheets %}
+    {{ vite_entry_link_tags('react_security_login') }}
+{% endblock %}
+
+{% block javascripts %}
+    {% if est_vite_server_actif() %}
+        {% include '_vite_hmr_extra.html.twig' %}
+    {% endif %}
+    {{ vite_entry_script_tags('react_security_login') }}
+
+    {{ parent() }}
+{% endblock %}

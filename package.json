@@ -15,7 +15,6 @@
         "draft-js": "^0.11.7",
         "draft-js-export-html": "^1.4.1",
         "fos-router": "^2.4.6",
-        "jquery": "^3.7.1",
         "petite-vue": "^0.4.1",
         "prop-types": "^15.8.1",
         "react": "^18.3.1",

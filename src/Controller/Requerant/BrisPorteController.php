@@ -31,7 +31,7 @@ class BrisPorteController extends RequerantController
         $requerant = $this->getRequerant();
         $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($requerant);
 
-        if (null !== ($testEligibilite = $requerant->getTestEligibilite())) {
+        if ($requerant->getTestEligibilite()) {
             $brisPorte->setEstVise($requerant->getTestEligibilite()['estVise'] ?? null);
             $brisPorte->setEstHebergeant($requerant->getTestEligibilite()['estRecherche'] ?? null);
             $brisPorte->setEstProprietaire($requerant->getTestEligibilite()['estProprietaire'] ?? null);

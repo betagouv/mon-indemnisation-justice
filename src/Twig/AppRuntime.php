@@ -8,7 +8,6 @@ use App\Entity\PersonneMorale;
 use App\Entity\PersonnePhysique;
 use App\Entity\Requerant;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
-use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 

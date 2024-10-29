@@ -60,7 +60,7 @@ const BrisPortePanel = function({id, user, brisPorte}) {
     ;
   }
   function getCurrentStep() { return step+1; }
-  function gotoStepper() { $("#pr-case_stepper").focus(); }
+  function gotoStepper() { document.getElementById("pr-case_stepper")?.focus(); }
 
   const toggleIsPersonneMorale = () => setIsPersonneMorale(!isPersonneMorale);
 
