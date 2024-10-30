@@ -112,13 +112,12 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'], options: ['expose' => true])]
+    #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(Request $request): Response
     {
         $error = $this->authenticationUtils->getLastAuthenticationError();
         $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
         $user = $this->getUser();
-        $isAgent = ('1' == $request->get('isAgent'));
 
         $errorMessage = '';
         if ($error && $error->getMessage()) {
@@ -131,7 +130,6 @@ class SecurityController extends AbstractController
         return $this->render('security/connexion.html.twig', [
             'last_username' => $lastUsername,
             'error_message' => $errorMessage,
-            'is_agent' => $isAgent,
         ]);
     }
 

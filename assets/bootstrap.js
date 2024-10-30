@@ -10,7 +10,7 @@ registerControllers(
     "./controllers/*_controller.jsx",
     {
       query: "?stimulus",
-      eager: false,
+      eager: true,
     },
   ),
 );
