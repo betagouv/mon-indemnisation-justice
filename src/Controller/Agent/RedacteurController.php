@@ -4,8 +4,7 @@ namespace App\Controller\Agent;
 
 use App\Entity\Agent;
 use App\Entity\BrisPorte;
-use App\Entity\EtatBrisPorte;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\BrisPorteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,25 +15,15 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class RedacteurController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em
+        protected readonly BrisPorteRepository $brisPorteRepository,
     ) {
     }
 
     #[Route('/', name: 'app_agent_redacteur_accueil', options: ['expose' => true])]
     public function index(): Response
     {
-        $em = $this->em;
-        $statuts = $em->getRepository(EtatBrisPorte::class)->findBy(['code' => [
-            EtatBrisPorte::CODE_CONSTITUE,
-        ]]);
-
-        $brisPortes = $em
-          ->getRepository(BrisPorte::class)
-          ->findByStatuts($statuts, [], 0, 10)
-        ;
-
         return $this->render('agent/redacteur/index.html.twig', [
-            'prejudices' => $brisPortes,
+            'dossiers' => $this->brisPorteRepository->getDossiersConstitues(),
         ]);
     }
 }

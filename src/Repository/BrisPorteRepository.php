@@ -35,6 +35,22 @@ class BrisPorteRepository extends ServiceEntityRepository
         return $brisPorte;
     }
 
+    /**
+     * Retourne la liste des dossiers constitués (i.e. dont la valeur de `dateDeclaration` est non nulle)
+     *
+     * @return BrisPorte[]
+     */
+    public function getDossiersConstitues(): array
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        return $qb
+            ->from(BrisPorte::class, 'bp')
+            ->where($qb->expr()->isNotNull('bp.dateDeclaration'))
+            ->getQuery()
+            ->getResult();
+    }
+
     public function generateRaccourci(int $length = 8): string
     {
         $conn = $this->getEntityManager()->getConnection();

@@ -1,9 +1,0 @@
-{% extends 'base_react.html.twig' %}
-
-{% block title %}Les dossiers{% endblock %}
-
-{% block main %}
-  <div {{ stimulus_controller('prejudice_redacteur_list',{
-    prejudices: prejudices|serialize('json',{groups: 'prejudice:read'}),
-  }) }}></div>
-{% endblock %}

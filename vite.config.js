@@ -22,7 +22,7 @@ export default defineConfig(({command, mode}) => {
                 }),
                 symfonyPlugin({
                     originOverride: 'https://precontentieux.anje-justice.dev',
-                    stimulus: true,
+                    stimulus: false,
                     build: {
                         manifest: true,
                         outDir,
@@ -43,12 +43,11 @@ export default defineConfig(({command, mode}) => {
                 target: "es2015",
                 modulePreload: false,
                 rollupOptions: {
+                    // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
                     input: {
-                        "app": "./assets/app.js",
                         "bris_porte_tester_mon_eligibilite": "./assets/apps/bris_porte/tester_mon_eligibilite.ts",
                         "bris_porte_deposer_mon_dossier": "./assets/apps/bris_porte/deposer_mon_dossier.tsx",
                     }
-                    // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
                 },
             },
             server: {

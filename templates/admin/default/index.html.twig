@@ -1,9 +1,67 @@
-{% extends 'base_react.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Administration des utilisateurs{% endblock %}
 
 {% block main %}
-  <div {{ stimulus_controller('user_list', {
-    agents: agents|serialize('json')
-  }) }}></div>
+<div class="fr-container">
+    <div class="fr-grid-row">
+        <div class="fr-col-12">
+                <div class="fr-table">
+                    <div class="fr-table__wrapper">
+                        <div class="fr-table__container">
+                            <div class="fr-table__content">
+                                <table>
+                                    <caption>Administration des utilisateurs</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="fr-col-6">Adresse courriel</th>
+                                            <th scope="col" class="fr-col-5">Rôle</th>
+                                            <th scope="col" class="fr-col-1">Compte activé</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if agents|length > 0 %}
+                                            {% set csrfToken =  csrf_token('activation_agent') %}
+                                            {% for agent in agents %}
+                                                <tr data-fr-js-table-row="true">
+                                                    <td class="fr-col-6">{{ agent.email }}</td>
+                                                    <td class="fr-col-5">{{ agent.plaintextRole }}</td>
+                                                    <td class="fr-col-1">
+                                                        <form action="{{ url('agent_gestionnaire_activer_agent', { 'id' : agent.id}) }}" method="post">
+                                                            <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                                                            <div  class="fr-toggle">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    name="agentActif"
+                                                                    class="fr-toggle__input"
+                                                                    id="fr-toggle-agent-{{ agent.id }}"
+                                                                    {% if agent.active %}checked{% endif %}
+                                                                    {% if agent.id != app.user.id %}
+                                                                        onChange="this.form.submit()"
+                                                                    {% else %}
+                                                                        disabled
+                                                                    {% endif %}
+                                                                >
+                                                                <label
+                                                                    class="fr-toggle__label"
+                                                                    for="fr-toggle-agent-{{ agent.id }}"
+                                                                    data-fr-checked-label="Activé"
+                                                                    data-fr-unchecked-label="Désactivé"
+                                                                ></label>
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="fr-col-9"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

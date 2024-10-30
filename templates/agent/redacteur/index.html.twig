@@ -7,6 +7,7 @@
     <div class="fr-container">
         <h3>Dossiers</h3>
 
+        {#
         <div class="fr-tabs">
             <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
                 <li role="presentation">
@@ -21,8 +22,10 @@
             </ul>
 
         </div>
+         #}
 
         <div class="fr-container">
+            {#
             <div class="fr-col-12 fr-col-md-4 fr-py-3w">
                 <div class="fr-search-bar" id="pr-search-dossiers" role="search">
                     <label class="fr-label" for="pr-search-dossiers-nouveaux">
@@ -35,6 +38,7 @@
                     </button>
                 </div>
             </div>
+             #}
 
 
             <!-- Tableau -->
@@ -67,23 +71,23 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for prejudice in prejudices %}
+                                    {% for dossier in dossiers %}
                                         <tr id="prec-tableau-dossiers-nouveaux_ligne--<?= $i; ?>"
                                             data-row-key="<?= $i; ?>">
                                             <td>
-                                                {{ prejudice.reference }}
+                                                {{ dossier.reference }}
                                             </td>
                                             <td>
-                                                {{ prejudice.requerant.personnePhysique.prenom1 }} {{ prejudice.requerant.personnePhysique.nom }}
+                                                {{ dossier.requerant.personnePhysique.prenom1 }} {{ dossier.requerant.personnePhysique.nom }}
                                             </td>
                                             <td>
-                                                {{ prejudice.qualiteRequerant.libelleCourt }}
+                                                {{ dossier.qualiteRequerant.libelle }}
                                             </td>
                                             <td>
-                                                {{ prejudice.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM YYYY") }}
+                                                {{ dossier.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM YYYY") }}
                                             </td>
                                             <td>
-                                                <a href="{{ url('agent_bris_porte_consulter', {'id': prejudice.id}) }}" class="fr-btn fr-btn--sm fr-btn--icon fr-icon-eye-line">Accéder
+                                                <a href="{{ url('agent_bris_porte_consulter', {'id': dossier.id}) }}" class="fr-btn fr-btn--sm fr-btn--icon fr-icon-eye-line">Accéder
                                                     au dossier</a>
                                             </td>
                                         </tr>
@@ -94,44 +98,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- / Fin tableau -->
-                <!-- Pagination -->
-                <nav role="navigation" class="fr-pagination" aria-label="Pagination">
-                    <ul class="fr-pagination__list">
-                        <li>
-                            <a class="fr-pagination__link fr-pagination__link--first" aria-disabled="true"
-                               role="link">
-                                Première page
-                            </a>
-                        </li>
-                        <li>
-                            <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label"
-                               aria-disabled="true" role="link">
-                                Page précédente
-                            </a>
-                        </li>
-                        <?php for ($i = 0; $i <= 4; $i++): ?>
-                        <li>
-                            <a class="fr-pagination__link" aria-current="page" title="Page <?= $i; ?>">
-                                <?= $i; ?>
-                            </a>
-                        </li>
-                        <?php endfor; ?>
 
-                        <li>
-                            <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label"
-                               href="#">
-                                Page suivante
-                            </a>
-                        </li>
-                        <li>
-                            <a class="fr-pagination__link fr-pagination__link--last" href="#">
-                                Dernière page
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <!-- / Fin pagination -->
 
             </div>
         </div>
