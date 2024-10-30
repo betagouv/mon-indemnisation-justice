@@ -48,7 +48,7 @@ const PersonnePhysique = function({personnePhysique}) {
 
     if(false === mustBeRecorded())
       return;
-    const url =Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
+    const url = Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
     const data = { nom:nom, nomNaissance: nomNaissance,
       prenom1: prenom1, codeSecuriteSociale: codeSS,
       communeNaissance: communeNaissance, numeroSecuriteSociale: numeroSS
