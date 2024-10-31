@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Dto\Inscription;
 use App\Dto\TestEligibilite;
+use App\Entity\GeoDepartement;
 use App\Entity\Requerant;
 use App\Forms\InscriptionType;
 use App\Forms\TestEligibiliteType;
@@ -61,7 +62,7 @@ class BrisPorteController extends AbstractController
             }
         }
 
-        return $this->render('bris_porte/tester_mon_eligibilite.html.twig', ['form' => $form]);
+        return $this->render('bris_porte/tester_mon_eligibilite.html.twig', ['form' => $form, 'departements' => $this->entityManager->getRepository(GeoDepartement::class)->findAll()]);
     }
 
     #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET', 'POST'])]
