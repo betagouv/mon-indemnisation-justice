@@ -2,12 +2,37 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use App\Entity\Agent;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class AgentRepository extends EntityRepository
+
+/**
+ * @extends ServiceEntityRepository<Agent>
+ *
+ * @method Agent|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Agent|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Agent[]    findAll()
+ * @method Agent[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class AgentRepository extends ServiceEntityRepository
 {
-    public function getAllActiveAgents(): array
+
+    public function __construct(ManagerRegistry $registry)
     {
-        return $this->findBy(["estActif" => true]);
+        parent::__construct($registry, Agent::class);
+    }
+    public function findByRoles(array $roles): array
+    {
+        $qb = $this
+            ->createQueryBuilder('a')
+            ->orderBy('a.nom');
+
+        foreach ($roles as $index => $role) {
+            $qb->orWhere("a.roles LIKE :role$index");
+            $qb->setParameter("role$index", "%$role%");
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

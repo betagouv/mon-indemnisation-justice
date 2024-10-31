@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
 class BrisPorteController extends AbstractController
 {
-    #[Route('/consulter/{id}', name: 'agent_bris_porte_consulter', options: ['expose' => true], methods: ['GET', 'POST'])]
+    #[Route('/consulter/{id}', name: 'agent_bris_porte_consulter', methods: ['GET'])]
     public function consulter(BrisPorte $brisPorte): Response
     {
         return $this->render('agent/bris_porte/consulter_bris_porte.html.twig', [

@@ -28,7 +28,7 @@ class HomeController extends RequerantController
         }
 
         return $this->render('requerant/default/index.html.twig', [
-            'brisPortes' => $this->brisPorteRepository->getForRequerant($requerant),
+            'dossiers' => $this->brisPorteRepository->getForRequerant($requerant),
         ]);
     }
 }

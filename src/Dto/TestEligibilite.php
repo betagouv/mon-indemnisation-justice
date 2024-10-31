@@ -4,11 +4,11 @@ namespace App\Dto;
 
 class TestEligibilite
 {
-    public bool $estVise;
-    public ?bool $estRecherche;
-    public ?bool $estProprietaire;
-    public ?bool $aContacteAssurance;
-    public ?bool $aContacteBailleur;
+    public bool $estVise = false;
+    public ?bool $estRecherche = null;
+    public ?bool $estProprietaire = null;
+    public ?bool $aContacteAssurance = null;
+    public ?bool $aContacteBailleur = null;
 
     public function toArray(): array
     {

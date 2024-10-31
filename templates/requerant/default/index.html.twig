@@ -1,10 +1,48 @@
-{% extends 'base_react.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Mes dossiers{% endblock %}
 
 {% block main %}
-  {% set user = app.user %}
-  <div {{ stimulus_controller('dossier_list',{
-    brisPortes: brisPortes|serialize('json',{groups: 'prejudice:read'}),
-  }) }}></div>
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <div class="fr-table fr-table--layout-fixed"
+                     >
+                    <table data-fr-js-table-element="true" class="">
+                        <caption>Mes dossiers</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Référence</th>
+                                <th scope="col">Statut du dossier</th>
+                                <th scope="col">Date du dernier statut</th>
+                                <th scope="col">Code suivi</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {# @var dossiers App\Entity\BrisPorte[] #}
+                            {% for dossier in dossiers %}
+                            <tr>
+                                <td>{{ dossier.reference }}</td>
+                                <td>Demande d'indemnisation constituée</td>
+                                <td>{{ dossier.dateDeclaration| default(dossier.dateCreation)|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY, HH'h'mm") }}</td>
+                                <td>{{ dossier.raccourci }}</td>
+                                <td>
+                                    {% if not dossier.estConstitue %}
+                                        <a
+                                            href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
+                                            class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left"
+                                        >
+                                            Compléter</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="fr-col-9"></div>
+        </div>
+    </div>
 {% endblock %}

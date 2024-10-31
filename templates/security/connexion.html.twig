@@ -1,41 +1,201 @@
-{% extends 'base_react.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% set title = 'Se connecter à mon espace' %}
 
 {% block modale %}
     {{ parent() }}
-{% set flash = app.flashes('success')|first %}
-{% if flash %}
-<dialog aria-labelledby="fr-modal-flash-success" role="dialog" id="fr-modal-flash-success" class="fr-modal fr-modal--opened">
-    <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                <div class="fr-modal__body">
-                    <div class="fr-modal__header">
-                        <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-flash-success">Fermer</button>
+    {% set flash = app.flashes('success')|first %}
+    {% if flash %}
+        <dialog aria-labelledby="fr-modal-flash-success" role="dialog" id="fr-modal-flash-success"
+                class="fr-modal fr-modal--opened">
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                        <div class="fr-modal__body">
+                            <div class="fr-modal__header">
+                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
+                                        aria-controls="fr-modal-flash-success">Fermer
+                                </button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <div class="fr-alert fr-alert--success">
+                                    <h3 class="fr-alert__title">{{ flash.title }}</h3>
+                                    <p>{{ flash.message }}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="fr-modal__content">
-                        <div class="fr-alert fr-alert--success">
-                            <h3 class="fr-alert__title">{{ flash.title }}</h3>
-                            <p>{{ flash.message }}</p>
+                </div>
+            </div>
+        </dialog>
+    {% endif %}
+
+    <dialog
+        aria-labelledby="fr-modal-title-fr-modal-motdepasse-oublie"
+        role="dialog"
+        id="fr-modal-motdepasse-oublie"
+        class="fr-modal"
+    >
+        <div class="fr-container fr-container--fluid fr-container-md">
+            <div class="fr-grid-row fr-grid-row--center">
+                <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                    <div class="fr-modal__body" data-fr-js-modal-body="true">
+                        <div class="fr-modal__header">
+                            <button class="fr-btn--close fr-btn" title="Fermer" aria-controls="fr-modal-motdepasse-oublie" type="button"
+                                    data-fr-js-modal-button="true">Fermer
+                            </button>
+                        </div>
+                        <div class="fr-modal__content"><h1 id="fr-modal-title-fr-modal-motdepasse-oublie" class="fr-modal__title">J'ai
+                                oublié mon mot de passe</h1>
+                            <div class="fr-grid-row fr-grid-row--gutters">
+                                <div class="fr-col-12">
+                                    <div id="fr-alert-:r9:" class="fr-alert fr-alert--info fr-alert--sm"><p>Saisissez
+                                            votre email ici, vous recevrez à cette adresse un courriel pour
+                                            réinitialiser votre mot de passe</p></div>
+                                </div>
+                                <div class="fr-col-12">
+                                    <div class="fr-input-group">
+                                        <label class="fr-label" for="input-:rb:">
+                                            Adresse courriel</label>
+                                        <input
+                                            placeholder="Format attendu : nom@domaine.fr"
+                                            class="fr-input"
+                                            aria-describedby="input-:rb:-desc-error"
+                                            type="text"
+                                            id="input-:rb:"
+                                            value=""
+                                        >
+                                        <div id="input-:rb:-messages-group" class="fr-messages-group" aria-live="polite"></div>
+                                    </div>
+
+                                </div>
+                                <div class="fr-col-12">
+                                    <button id="fr-button-:rd:" class="fr-btn">Recevoir un courriel pour mettre à jour
+                                        votre mot de passe
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</dialog>
-{% endif %}
+    </dialog>
 {% endblock modale %}
 
-{% block containerClasses %}{% endblock containerClasses %}
+{% block stylesheets %}
+    <style>
+        .pr-keyboard-hands .pic-keyboard-hands {
+          background-image: url("{{ asset('images/picture/pic_keyboard-hands.jpg')}}");
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: auto 100%;
+          height: 870px;
+          width:100%;
+        }
+        .pr-form-subscribe { border: 1px solid var(--pr-color-grey);  }
+
+    </style>
+{% endblock stylesheets %}
 
 {% block main %}
-  {% set csrf_token = csrf_token('authenticate') %}
-  <div {{ stimulus_controller('security_login',{
-    lastUsername: last_username,
-    errorMessage: error_message,
-    csrfToken: csrf_token,
-  }) }}></div>
+
+    <div class="pr-authentification">
+        <div class="fr-container">
+            <div class="fr-grid-row fr-mb-6w">
+                <section class="pr-keyboard-hands fr-col-lg-6 fr-hidden fr-unhidden-lg">
+                    <div class="pic-keyboard-hands"></div>
+                </section>
+                <div class="fr-col-12 fr-col-lg-6">
+                    <section class="pr-form-subscribe">
+                        <form method="POST">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                            <div class="fr-p-4w">
+                                <h2>Me connecter à mon espace</h2>
+                                <p>Pour effectuer ou suivre une demande d'indemnisation, se connecter à son espace
+                                    personnel</p>
+                                <p>Sauf mention contraire, tous les champs sont obligatoires</p>
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12 fr-mb-2w">
+                                        <div class="fr-input-group">
+                                            <label class="fr-label" for="input-:r1:">
+                                                Adresse courriel<span class="fr-hint-text">Format attendu : nom@domaine.fr</span>
+                                            </label>
+                                            <input
+                                                type="email"
+                                                name="_username"
+                                                class="fr-input"
+                                                aria-describedby="input-:r1:-desc-error"
+                                                id="input-:r1:" value="{{ last_username }}"
+                                            >
+                                            {% if error_message %}
+                                            <div id="input-:r1:-messages-group" class="fr-messages-group fr-message--error" aria-live="polite">
+                                                {{ error_message }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12 fr-mb-1w">
+                                        <div class="fr-password" id="password-input-:r4:" data-fr-js-password="true">
+                                            <label class="fr-label" for="password-:r5:">Mot de passe</label>
+                                            <div class="fr-input-wrap">
+                                                <input
+                                                    name="_password"
+                                                    class="fr-password__input fr-input"
+                                                    id="password-:r5:"
+                                                    type="password"
+                                                    value=""
+                                                >
+                                            </div>
+                                            <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
+                                                <input
+                                                    aria-label="Afficher le mot de passe"
+                                                    id="password-:r5:-toggle-show"
+                                                    type="checkbox"
+                                                >
+                                                <label
+                                                    class="fr-password__checkbox fr-label"
+                                                    for="password-:r5:-toggle-show">
+                                                    Afficher
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12  fr-mb-3w">
+                                        <div class="fr-btns-group fr-btns-group--inline">
+                                            <button
+                                                class="fr-btn fr-btn--tertiary-no-outline"
+                                                type="button"
+                                                aria-controls="fr-modal-motdepasse-oublie"
+                                                data-fr-opened="false"
+                                            >
+                                                J'ai oublié mon mot de passe
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12">
+                                        <button class="fr-btn" type="submit">Je me connecte à mon espace</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 {% endblock %}
 
+{% block javascripts %}
+    {#
+    {% if est_vite_server_actif() %}
+        {% include '_vite_hmr_extra.html.twig' %}
+    {% endif %}
+    {{ vite_entry_script_tags('react_security_login') }}
+    #}
+
+    {{ parent() }}
+
+{% endblock %}

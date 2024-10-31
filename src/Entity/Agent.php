@@ -75,14 +75,19 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPlaintextRole(): string
     {
-        if ($this->hasRole(self::ROLE_AGENT_VALIDATEUR)) {
-            return self::ROLE_AGENT_VALIDATEUR;
-        }
-        if ($this->hasRole(self::ROLE_AGENT_REDACTEUR)) {
-            return self::ROLE_AGENT_REDACTEUR;
+        $roles = [];
+        if ($this->hasRole(self::ROLE_AGENT_GESTION_PERSONNEL)) {
+            $roles[] = 'gestionnaire';
         }
 
-        return '';
+        if ($this->hasRole(self::ROLE_AGENT_VALIDATEUR)) {
+            $roles[] = 'validateur';
+        }
+        if ($this->hasRole(self::ROLE_AGENT_REDACTEUR)) {
+            $roles[] = 'rédacteur';
+        }
+
+        return ucfirst(implode(', ', $roles));
     }
 
     public function hasRole(string $role): bool
@@ -140,11 +145,6 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->email;
-    }
-
-    public function isAdminFonc(): bool
-    {
-        return $this->hasRole(self::ROLE_AGENT_GESTION_PERSONNEL);
     }
 
     /**

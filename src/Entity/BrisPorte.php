@@ -200,6 +200,11 @@ class BrisPorte
         return null !== $this->dateDeclaration ? BrisPorteStatut::CONSTITUE : BrisPorteStatut::EN_COURS_DE_CONSTITUTION;
     }
 
+    public function estConstitue(): bool
+    {
+        return $this->getLastStatut() === BrisPorteStatut::CONSTITUE;
+    }
+
     public function getDateCreation(): \DateTimeInterface
     {
         return $this->dateCreation;

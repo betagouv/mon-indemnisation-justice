@@ -60,6 +60,6 @@ class DetectObsoleteBrowserListener implements EventSubscriberInterface
     {
         preg_match("/\d+\./", $version, $match, PREG_UNMATCHED_AS_NULL);
 
-        return $match[0] ? intval($match[0]) : null;
+        return isset($match[0]) ? intval($match[0]) : null;
     }
 }

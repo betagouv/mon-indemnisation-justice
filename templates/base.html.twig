@@ -12,9 +12,7 @@
         <link rel="manifest" href="{{ asset('dsfr/favicon/manifest.webmanifest') }}" crossorigin="use-credentials"/>
         <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
-        {% block stylesheets %}
-            {{ vite_entry_link_tags('app') }}
-        {% endblock stylesheets %}
+        {% block stylesheets %}{% endblock stylesheets %}
         <title>{% block title %}Mon indemnisation justice{% if title is defined %} - {{ title }}{% endif %}{% endblock %}</title>
         {% block analytic %}
             {% if app.environment == 'prod' %}
@@ -68,7 +66,6 @@
         {% block javascripts %}
             <script>
                 window.dsfr = {
-                    //verbose: {% if app.debug %}true{% else %}false{% endif %},
                     production: {% if app.environment == 'prod' %}true{% else %}false{% endif %},
                 };
             </script>

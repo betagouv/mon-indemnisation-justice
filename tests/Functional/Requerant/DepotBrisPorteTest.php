@@ -65,10 +65,10 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
             )
             ->setVerifieCourriel()
             ->setTestEligibilite([
-                "dateOperationPJ" => "2023-12-31",
-                "numeroPV" => "PV44",
-                "numeroParquet" =>  "",
-                "isErreurPorte" => true
+                'dateOperationPJ' => '2023-12-31',
+                'numeroPV' => 'PV44',
+                'numeroParquet' => '',
+                'isErreurPorte' => true,
             ])
             ->setEmail('raquel.randt@courriel.fr')
             ->setRoles([Requerant::ROLE_REQUERANT])
@@ -84,12 +84,6 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
 
     /**
      * @dataProvider devices
-     *
-     * @param string $device
-     * @param int $width
-     * @param int $height
-     *
-     * @return void
      *
      * @throws \Facebook\WebDriver\Exception\NoSuchElementException
      * @throws \Facebook\WebDriver\Exception\TimeoutException
@@ -109,11 +103,11 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
 
         $this->client->waitForVisibility('main', 1);
         $this->client->takeScreenshot("public/screenshots/depot/$device/001-page-connexion.png");
-        $this->assertSelectorTextContains('main h2', "Me connecter à mon espace");
+        $this->assertSelectorTextContains('main h2', 'Me connecter à mon espace');
         $button = $this->client->getCrawler()->selectButton('Je me connecte à mon espace')->first();
         $form = $button->form([
-            'email' => 'raquel.randt@courriel.fr',
-            'password' => 'P4ssword',
+            '_username' => 'raquel.randt@courriel.fr',
+            '_password' => 'P4ssword',
         ]);
 
         $this->client->takeScreenshot("public/screenshots/depot/$device/002-connexion-formulaire-rempli.png");

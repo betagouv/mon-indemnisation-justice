@@ -33,6 +33,7 @@ const PersonneMorale = ({personneMorale}) => {
     keyUpTimer.current = setTimeout(() => {
       fetch(url, {
         method: 'PATCH',
+        redirect: 'error',
         headers: {'Content-Type': 'application/merge-patch+json'},
         body: JSON.stringify(data)
       })

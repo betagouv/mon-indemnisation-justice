@@ -8,30 +8,22 @@
     "dependencies": {
         "@codegouvfr/react-dsfr": "^1.14.1",
         "@gouvfr/dsfr": "^1.12.1",
-        "@hotwired/stimulus": "^3.0.0",
         "@vitejs/plugin-legacy": "^5.4.2",
         "@vitejs/plugin-react": "^4.3.3",
         "date-fns": "^4.1.0",
-        "draft-js": "^0.11.7",
-        "draft-js-export-html": "^1.4.1",
         "fos-router": "^2.4.6",
-        "jquery": "^3.7.1",
         "petite-vue": "^0.4.1",
         "prop-types": "^15.8.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
-        "react-draft-wysiwyg": "^1.15.0",
         "remixicon": "^4.4.0",
         "rollup-plugin-copy": "^3.5.0",
         "terser": "^5.36.0",
         "vite": "^5.0",
-        "vite-plugin-static-copy": "^2.0.0",
         "vite-plugin-symfony": "^7.0"
     },
     "resolutions": {
         "rollup": "npm:@rollup/wasm-node"
     },
-    "devDependencies": {
-        "@symfony/stimulus-bridge": "^3.2.0"
-    }
+    "devDependencies": {}
 }
