@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bris de porte : contactez-nous{% endblock %}
+
+
+
+{% block header %}
+    {% include('bris_porte/_header.html.twig') %}
+{% endblock header %}
+
+{% block main %}
+<div class="fr-container fr-my-3w">
+    {#  Indicateur d'étapes #}
+    <div class="fr-stepper">
+        <h2 class="fr-stepper__title">
+            Contactez-nous
+            <span class="fr-stepper__state">Étape 3 sur 3</span>
+        </h2>
+        <div class="fr-stepper__steps" data-fr-current-step="3" data-fr-steps="3"></div>
+    </div>
+
+    <div class="fr-grid-row fr-mb-6w">
+        <h3>Contactez-nous</h3>
+
+        <div class="fr-alert fr-alert--info">
+            <h3 class="fr-alert__title">L'application n'est pas encore déployée chez vous</h3>
+
+            <p>Notre application est encore en cours de développement.</p>
+
+            <p>À ce titre, elle est encore en cours de déploiement sur le territoire, et pas encore dans le département {{ testEligibilite.departement.nom }} ({{ testEligibilite.departement.code }}).</p>
+
+        </div>
+
+        <div class="fr-my-3w">
+            <p>Vous pouvez nous contacter à l'adresse <a href="mailto:{{ precontentieux_courriel_equipe }}">{{ precontentieux_courriel_equipe }}</a>,
+                en joignant les éléments suivants :
+            </p>
+
+            <ul>
+                <li>
+                    Attestation de bris de porte remise par les forces de police
+                </li>
+                <li>
+                    Attestation de non prise en charge de l'assurance
+                </li>
+                {% if not testEligibilite.estProprietaire %}
+                <li>
+                    Attestation de non indemnisation du bailleur
+                </li>
+                {% endif %}
+                <li>
+                    La facture correspondant aux frais de réparation engagés
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock main %}

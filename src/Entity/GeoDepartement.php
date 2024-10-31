@@ -35,9 +35,15 @@ class GeoDepartement
         return $this->nom;
     }
 
-    #[SerializedName('est_deploye')]
-    public function isDeployed(): bool
+    public function estDeploye(): bool
     {
         return $this->estDeploye;
     }
+
+    public function __toString(): string
+    {
+        return $this->nom;
+    }
+
+
 }

@@ -29,12 +29,6 @@ class BrisPorteController extends AbstractController
     ) {
     }
 
-    #[Route('', name: 'bris_porte_atterrissage')]
-    public function atterrissage(): Response
-    {
-        return $this->render('bris_porte/atterrissage.html.twig');
-    }
-
     #[Route('/tester-mon-eligibilite', name: 'bris_porte_tester_eligibilite', methods: ['GET', 'POST'])]
     public function testerMonEligibilite(Request $request): Response
     {
@@ -47,22 +41,40 @@ class BrisPorteController extends AbstractController
                 /** @var TestEligibilite $testEligibilite */
                 $testEligibilite = $form->getData();
 
-                $requerant = $this->getUser();
-                if ($requerant instanceof Requerant) {
-                    $requerant->setTestEligibilite($testEligibilite->toArray());
-                    $this->entityManager->persist($requerant);
-                    $this->entityManager->flush();
+                if ($testEligibilite->departement->estDeploye()) {
+                    $requerant = $this->getUser();
+                    if ($requerant instanceof Requerant) {
+                        $requerant->setTestEligibilite($testEligibilite->toArray());
+                        $this->entityManager->persist($requerant);
+                        $this->entityManager->flush();
 
-                    return $this->redirectToRoute('app_bris_porte_add');
-                } else {
-                    $request->getSession()->set('testEligibilite', $testEligibilite->toArray());
+                        return $this->redirectToRoute('app_bris_porte_add');
+                    } else {
+                        $request->getSession()->set('testEligibilite', $testEligibilite->toArray());
 
-                    return $this->redirectToRoute('bris_porte_creation_de_compte');
+                        return $this->redirectToRoute('bris_porte_creation_de_compte');
+                    }
                 }
+
+                $request->getSession()->set('testEligibilite', $testEligibilite);
+
+                return $this->redirectToRoute('bris_porte_contactez_nous');
             }
         }
 
         return $this->render('bris_porte/tester_mon_eligibilite.html.twig', ['form' => $form, 'departements' => $this->entityManager->getRepository(GeoDepartement::class)->findAll()]);
+    }
+
+    #[Route('/contactez-nous', name: 'bris_porte_contactez_nous', methods: ['GET'])]
+    public function contactezNous(Request $request): Response
+    {
+        if (!$request->getSession()->has('testEligibilite')) {
+            return $this->redirectToRoute('app_homepage');
+        }
+
+        return $this->render('bris_porte/contactez_nous.html.twig', [
+            'testEligibilite' => $request->getSession()->get('testEligibilite'),
+        ]);
     }
 
     #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET', 'POST'])]
@@ -144,7 +156,7 @@ class BrisPorteController extends AbstractController
         $email = @$request->getSession()->getFlashBag()->get('emailRequerantInscrit')[0];
 
         if (!$email) {
-            return $this->redirectToRoute('bris_porte_atterrissage');
+            return $this->redirectToRoute('app_homepage');
         }
 
         return $this->render('bris_porte/finaliser_la_creation.html.twig', ['email' => $email]);

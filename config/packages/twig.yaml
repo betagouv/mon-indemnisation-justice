@@ -1,5 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        precontentieux_courriel_equipe: '%env(PRECONTENTIEUX_COURRIEL_EQUIPE)%'
 
 when@test:
     twig:
