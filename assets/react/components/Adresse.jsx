@@ -36,6 +36,7 @@ const Adresse = ({adresse ,optionalLigne1Texte=null}) => {
     keyUpTimer.current = setTimeout(() => {
       fetch(url, {
         method: 'PATCH',
+        redirect: 'error',
         headers: {'Content-Type': 'application/merge-patch+json'},
         body: JSON.stringify(data)
       })
@@ -63,7 +64,7 @@ const Adresse = ({adresse ,optionalLigne1Texte=null}) => {
           }}
         />
       </div>
-      <div className="fr-col-2">
+      <div className="fr-col-lg-2 fr-col-4">
         <Input
           label="Code postal"
           nativeInputProps={{
@@ -74,7 +75,7 @@ const Adresse = ({adresse ,optionalLigne1Texte=null}) => {
           }}
         />
       </div>
-      <div className="fr-col-10">
+      <div className="fr-col-lg-10 fr-col-8">
         <Input
           label="Ville"
           nativeInputProps={{

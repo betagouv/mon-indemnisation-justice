@@ -1,9 +1,5 @@
-import React,{useEffect,useState} from 'react';
+import React from 'react';
 
-import { ContentState, EditorState ,convertFromHTML } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import { stateToHTML } from 'draft-js-export-html';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './main.css';
 
 export const Br = ({space=1}) => {
@@ -12,41 +8,10 @@ export const Br = ({space=1}) => {
   return (rows);
 }
 
-export const Wysiwyg = ({label,value,setValue,readOnly=false}) => {
-  const _value = value ? value : "<p></p>";
-  const contentDataState = ContentState.createFromBlockArray(convertFromHTML(_value));
-  const editorDataState = EditorState.createWithContent(contentDataState);
-  const [editorState,setEditorState]=useState(editorDataState);
-
-  useEffect(() => {
-    const content = editorState.getCurrentContent();
-    setValue(stateToHTML(content));
-  },[editorState]);
-
-  return (
-    <>
-      <label className="fr-label">{label}</label>
-      <Editor
-        readOnly={readOnly}
-        editorState={editorState}
-        onEditorStateChange={setEditorState}
-        wrapperClassName="wrapper-class"
-        editorClassName="editor-class"
-        toolbarClassName="toolbar-class"
-        toolbar={{
-          options: ['inline','textAlign'],
-          inline: {
-            options: ['bold','italic','underline']
-          }
-        }}
-      />
-    </>
-  );
-}
 export const Hidden = ({name,value}) => (<input type="hidden" name={name} value={value} />);
 
 export const Submit = ({label,type='primary',disabled=false}) => {
-  const _type = (type=='secondary') ? 'fr-btn--secondary' : '';
+  const _type = (type === 'secondary') ? 'fr-btn--secondary' : '';
   return (
     <button className={"fr-btn "+_type} disabled={disabled}>{label}</button>
   );

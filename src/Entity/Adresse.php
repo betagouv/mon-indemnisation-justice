@@ -14,11 +14,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: AdresseRepository::class)]
 #[ApiResource(
   operations:[
-    new Get(),
+    new Get(
+        security: "is_granted('ROLE_REQUERANT')"
+    ),
     new Patch(
-      name: '_api_adresse_patch'
-      #,
-      #security: "is_granted('ROLE_ADMIN') or object.id == user.id"
+      name: '_api_adresse_patch',
+      security: "is_granted('ROLE_REQUERANT')"
   )]
 )]
 class Adresse
@@ -65,7 +66,12 @@ class Adresse
 
     public function __toString()
     {
-        return $this->getLigne1()." - ".$this->getCodePostal()." ".$this->getLocalite();
+        return $this->getLibelle();
+    }
+
+    public function getLibelle(): string
+    {
+        return "{$this->getLigne1()} {$this->getCodePostal()} {$this->getLocalite()}";
     }
     
     public function __construct()

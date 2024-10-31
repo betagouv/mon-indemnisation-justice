@@ -48,7 +48,7 @@ const PersonnePhysique = function({personnePhysique}) {
 
     if(false === mustBeRecorded())
       return;
-    const url =Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
+    const url = Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
     const data = { nom:nom, nomNaissance: nomNaissance,
       prenom1: prenom1, codeSecuriteSociale: codeSS,
       communeNaissance: communeNaissance, numeroSecuriteSociale: numeroSS
@@ -59,6 +59,7 @@ const PersonnePhysique = function({personnePhysique}) {
     keyUpTimer.current = setTimeout(() => {
       fetch(url, {
         method: 'PATCH',
+        redirect: 'error',
         headers: {'Content-Type': 'application/merge-patch+json'},
         body: JSON.stringify(data)
       })
@@ -74,10 +75,10 @@ const PersonnePhysique = function({personnePhysique}) {
     <>
       <h3>Votre identité</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-3">
+        <div className="fr-col-lg-3 fr-col-4">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
-        <div className="fr-col-9">
+        <div className="fr-col-lg-9 fr-col-8">
           <Input
             label="Prénom(s)"
             state={statePrenom1}
@@ -90,7 +91,7 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Nom de naissance"
             state={stateNom}
@@ -102,7 +103,7 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Nom d'usage"
             nativeInputProps={{
@@ -112,7 +113,7 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-3">
+        <div className="fr-col-lg-3 fr-col-12">
           <Input
             label="Date de naissance"
             nativeInputProps={{
@@ -122,7 +123,7 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-9">
+        <div className="fr-col-lg-9 fr-col-12">
           <Input
             label="Ville de naissance"
             nativeInputProps={{
@@ -132,7 +133,7 @@ const PersonnePhysique = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <SecuriteSociale
             codeSS={codeSS}
             numeroSS={numeroSS}

@@ -1,9 +1,10 @@
 .pr-keyboard-hands .pic-keyboard-hands {
-  background-image: url('../images/picture/pic_keyboard-hands.jpg');
+  background-image: url('../../public/images/picture/pic_keyboard-hands.jpg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: auto 100%;
   height: 870px;
+  width:100%;
 }
 .pr-form-subscribe { border: 1px solid var(--pr-color-grey);  }
 .pr-form-subscribe_had-account { border-bottom: 1px solid var(--pr-color-grey); }
@@ -18,7 +19,7 @@
 
 .pr-icon_success {
   display: inline-block;
-  background-image: url('../images/icon/icon-success.svg');
+  background-image: url('../../public/images/icon/icon-success.svg');
   background-size: 100% 100%;
   height: 10rem;
   width: 10rem;

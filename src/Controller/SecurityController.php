@@ -2,15 +2,19 @@
 
 namespace App\Controller;
 
-use App\Entity\Civilite;
+use App\Dto\ModificationMotDePasse;
+use App\Dto\MotDePasseOublieDto;
 use App\Entity\Requerant;
+use App\Forms\ModificationMotDePasseType;
 use App\Repository\RequerantRepository;
-use App\Service\Mailer\SignedMailer;
+use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -22,101 +26,110 @@ class SecurityController extends AbstractController
         protected UrlGeneratorInterface $urlGenerator,
         protected UserPasswordHasherInterface $userPasswordHasher,
         protected AuthenticationUtils $authenticationUtils,
-        protected SignedMailer $mailer,
+        protected Mailer $mailer,
         protected EntityManagerInterface $em,
-        protected readonly string $emailFrom,
-        protected readonly string $emailFromLabel,
-        protected readonly string $baseUrl
+        protected readonly RequerantRepository $requerantRepository,
+        protected readonly string $baseUrl,
     ) {
     }
 
-    #[Route(path: '/envoi-de-mon-mot-de-passe', name: 'app_send_reset_password', methods: ['POST'], options: ['expose' => true])]
-    public function send_email_for_reset(Request $request): JsonResponse
+    #[Route(path: '/mon-mot-de-passe/oublie', name: 'app_send_reset_password', methods: ['POST'], options: ['expose' => true])]
+    public function motDePasseOublie(#[MapRequestPayload(acceptFormat: 'json')] MotDePasseOublieDto $motDePasseOublieDto): JsonResponse
     {
-        $content = json_decode($request->getContent(), true);
-        $email = $content['email'] ?? null;
-        $user = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $email]);
-        $sent = false;
-        if ($user && $user->hasRole(Requerant::ROLE_REQUERANT)) {
-            /**
-             * Envoi du mail de confirmation.
-             */
+        $requerant = $this->em->getRepository(Requerant::class)->findOneBy([
+            'email' => $motDePasseOublieDto->email,
+            'estVerifieCourriel' => true,
+        ]);
 
+        if ($requerant && $requerant->hasRole(Requerant::ROLE_REQUERANT)) {
+            // Génération d'un jeton de vérification
+            $requerant->genererJetonVerification();
+
+            $this->em->persist($requerant);
+            $this->em->flush();
+
+            // Envoi du mail de confirmation.
             $this->mailer
-                ->from($this->emailFrom, $this->emailFromLabel)
-                ->to($user->getEmail())
-                ->subject("Mon Indemnisation Justice: réinitialisation de votre mot de passe")
-                ->htmlTemplate('security/send_link_for_new_password.html.twig', [
-                    'name' => "Mon Indemnisation Justice",
-                    'mail' => $user->getEmail(),
-                    'url' => $this->baseUrl,
-                    'nomComplet' => $user->getNomComplet(),
+                ->toRequerant($requerant)
+                ->subject('Mon Indemnisation Justice: réinitialisation de votre mot de passe')
+                ->htmlTemplate('email/mot_de_passe_oublie.html.twig', [
+                    'requerant' => $requerant,
                 ])
-                ->send(pathname: 'app_reset_password', user: $user);
-            $sent = true;
+                ->send();
         }
 
-        return new JsonResponse(['email' => $email, 'sent' => $sent]);
+        return new JsonResponse();
     }
 
-    #[Route(path: '/je-mets-a-jour-mon-mot-de-passe', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
-    public function reset_password(Request $request, RequerantRepository $ur): Response
+    #[Route(path: '/mon-mot-de-passe/mettre-a-jour/{jeton}', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
+    public function reset_password(Request $request, RequerantRepository $ur, string $jeton): Response
     {
-        /** @var ?int $id */
-        $id = $request->query->get('id', null);
-        /** @var ?Requerant $user */
-        $user = $ur->find($id);
-        if (
-            (null === $user)
-            || (false === $this->mailer->check($request, $user))
-        ) {
-            throw $this->createNotFoundException("Le lien n'est pas valide ou expiré. Veuillez renouveler une nouvelle tentative de réinitialisation de votre mot de passe");
+        /** @var Requerant $requerant */
+        $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
+        if (null === $requerant) {
+            return $this->redirectToRoute('app_login');
         }
 
-        $submittedToken = $request->getPayload()->get('_csrf_token');
-        $successMsg = '';
-        /*
-         * Le formulaire a bien été soumis
-         *
-         */
-        if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
-            $userPasswordHasher = $this->userPasswordHasher;
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $request->get('_password')
-                )
-            );
-            $successMsg = 'Le mot de passe a été mis à jour avec succès !';
-            $this->em->flush();
+        $modificationMotDePasse = new ModificationMotDePasse();
+
+        $form = $this->createForm(ModificationMotDePasseType::class, $modificationMotDePasse);
+        $errors = [];
+
+        if ($request->getMethod() === Request::METHOD_POST) {
+            $form->handleRequest($request);
+            if ($form->isSubmitted()) {
+                if ($form->isValid()) {
+                    $modificationMotDePasse = $form->getData();
+                    $requerant->setPassword(
+                        $this->userPasswordHasher->hashPassword(
+                            $requerant,
+                            $modificationMotDePasse->motDePasse
+                        )
+                    );
+                    $requerant->supprimerJetonVerification();
+
+                    $this->em->flush();
+                    $this->addFlash('success', [
+                        'title' => 'Mot de passe modifié',
+                        'message' => 'Le mot de passe a été modifié avec succès !',
+                    ]);
+
+                    return $this->redirectToRoute('app_login');
+                } else {
+                    /** @var FormError $error */
+                    foreach ($form->getErrors(true) as $key => $error) {
+                        $errors[$error->getOrigin()?->getName()] = $error->getMessage();
+                    }
+                    dump($errors);
+                }
+            }
         }
 
         return $this->render('security/reset_password.html.twig', [
-            'user' => $user,
-            'successMsg' => $successMsg,
+            'requerant' => $requerant,
+            'form' => $form,
+            'errors' => $errors,
         ]);
     }
 
-    #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'], options: ['expose' => true])]
+    #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(Request $request): Response
     {
         $error = $this->authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $this->authenticationUtils->getLastUsername();
+        $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
         $user = $this->getUser();
-        $isAgent = ('1' == $request->get('isAgent'));
 
         $errorMessage = '';
         if ($error && $error->getMessage()) {
-            $errorMessage = "Identifiants invalides";
+            $errorMessage = 'Identifiants invalides';
         }
         if (null !== $user) {
-            return $this->redirect('/redirect');
+            return $this->redirectToRoute('requerant_home_index');
         }
 
         return $this->render('security/connexion.html.twig', [
             'last_username' => $lastUsername,
             'error_message' => $errorMessage,
-            'is_agent' => $isAgent,
         ]);
     }
 
@@ -124,150 +137,5 @@ class SecurityController extends AbstractController
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
-    }
-
-    private static function has_fields(Request $request): bool
-    {
-        return null !== $request->get('type', null);
-    }
-
-    private static function get_fields(Request $request): array
-    {
-        $type = $request->get('type', null);
-        $fields = ['type' => $type];
-        switch ($type) {
-            case 'BRI':
-                $fields = array_merge($fields, [
-                    'dateOperationPJ' => null,
-                    'numeroPV' => null,
-                    'numeroParquet' => null,
-                    'isErreurPorte' => null,
-                ]);
-                foreach ($fields as $field => $value) {
-                    $fields[$field] = $request->get($field);
-                }
-                break;
-            default:
-        }
-
-        return $fields;
-    }
-
-    private function handleUserRequest(Request $request, Requerant $user): void
-    {
-        /** @var ?int $civiliteId */
-        $civiliteId = $request->get('civilite', null);
-        /** @var ?Civilite $civilite */
-        $civilite = (null !== $civiliteId) ? $this->em->getRepository(Civilite::class)->find($civiliteId) : null;
-        $userPasswordHasher = $this->userPasswordHasher;
-        $user->setEmail($request->get('email'));
-        $user->getPersonnePhysique()->setPrenom1($request->get('prenom1'));
-        $user->getPersonnePhysique()->setNom($request->get('nom'));
-        $user->getPersonnePhysique()->setNomNaissance($request->get('nomNaissance'));
-        $user->setPassword(
-            $userPasswordHasher->hashPassword(
-                $user,
-                $request->get('password')
-            )
-        );
-        $user->getPersonnePhysique()->setCivilite($civilite);
-        $user->addRole(Requerant::ROLE_REQUERANT);
-    }
-
-    #[Route('/validation-du-compte-requerant', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, RequerantRepository $ur): Response
-    {
-        /** @var ?int $id */
-        $id = $request->query->get('id', null);
-        /** @var ?Requerant $user */
-        $user = $ur->find($id);
-        if (
-            (null !== $user)
-            && (true === $this->mailer->check($request, $user))
-        ) {
-            $user->setVerifieCourriel();
-            $this->em->flush();
-        }
-
-        return $this->redirectToRoute('app_login');
-    }
-
-    private function buildSession(Request $request): void
-    {
-        $session = $request->getSession();
-        $fields = self::get_fields($request);
-        if (true === self::has_fields($request)) {
-            if ('BRI' !== $fields['type']) {
-                $session->set('test_eligibilite', null);
-            } else {
-                $session->set('test_eligibilite', $fields);
-            }
-        }
-    }
-
-    #[Route(path: '/inscription', name: 'app_inscription', methods: ['GET', 'POST'], options: ['expose' => true])]
-    public function inscription(Request $request): Response
-    {
-        $user = $this->getUser();
-        if (null !== $user) {
-            $this->buildSession($request);
-
-            return $this->redirect('/redirect');
-        }
-
-        $session = $request->getSession();
-        $submittedToken = $request->getPayload()->get('_csrf_token');
-        $fields = self::get_fields($request);
-
-        /*
-         * Le formulaire a bien été soumis
-         *
-         */
-        if ($this->isCsrfTokenValid('authenticate', $submittedToken)) {
-            /**
-             * Création du nouveau compte.
-             */
-            $user = new Requerant();
-            $this->handleUserRequest($request, $user);
-            $this->em->persist($user);
-            $this->em->flush();
-
-            /**
-             * Envoi du mail de confirmation.
-             */
-            $this->mailer
-                ->from($this->emailFrom, $this->emailFromLabel)
-                ->to($user->getEmail())
-                ->subject("Précontentieux : finalisation de l'activation de votre compte pour l'application Mon Indemnisation Justice")
-                ->htmlTemplate('registration/confirmation_email.html.twig', [
-                    'mail' => $user->getEmail(),
-                    'url' => $this->baseUrl,
-                    'nom_complet' => $user->getNomComplet(),
-                ])
-                ->send(pathname: 'app_verify_email', user: $user);
-
-            return $this->render('security/success.html.twig', [
-                'user' => $user,
-            ]);
-        } /*
-         * Le formulaire a bien été identifié
-         *
-         */
-        elseif (true === self::has_fields($request)) {
-            if ('BRI' !== $fields['type']) {
-                $session->set('test_eligibilite', null);
-
-                return $this->redirect('/');
-            }
-            $session->set('test_eligibilite', $fields);
-        }
-
-        $error = $this->authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $this->authenticationUtils->getLastUsername();
-
-        return $this->render('security/inscription.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error,
-        ]);
     }
 }

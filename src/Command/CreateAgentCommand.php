@@ -24,7 +24,7 @@ class CreateAgentCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('prenom', InputArgument::REQUIRED)
@@ -63,7 +63,7 @@ class CreateAgentCommand extends Command
         return Command::SUCCESS;
     }
 
-    protected static function generatePassword($length = 10)
+    protected static function generatePassword($length = 10): string
     {
         return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', (int) ceil($length / strlen($x)))), 1, $length);
     }

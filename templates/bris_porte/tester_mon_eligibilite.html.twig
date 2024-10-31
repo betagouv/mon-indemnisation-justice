@@ -1,0 +1,415 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bris de porte : tester mon éligibilité{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        form[name="eligibilite-test-form"] {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pr-section-formulaire {
+            padding: 1.5rem 2rem;
+            box-shadow:0 0 8px 2px var(--shadow-color);
+        }
+
+        .pr-section-formulaire h4 {
+            font-weight: 400 !important;
+        }
+
+        .pr-section-decision {
+            background-color: var(--background-contrast-blue-cumulus);
+            padding: 1.5rem 2rem;
+        }
+
+        .pr-section-decision h4 {
+            font-weight: 400 !important;
+        }
+
+        .pr-section-decision > .fr-alert {
+            background-color: var(--background-overlap-grey) !important;
+        }
+
+        /* Vue */
+        [v-cloak] {
+            display: none !important;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block header %}
+    {% include('bris_porte/_header.html.twig') %}
+{% endblock header %}
+
+{% block main %}
+    <div class="fr-container fr-my-3w">
+        {#  Indicateur d'étapes #}
+        <div class="fr-stepper">
+            <h2 class="fr-stepper__title">
+                Tester mon éligibilité
+                <span class="fr-stepper__state">Étape 1 sur 3</span>
+            </h2>
+            <div class="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3"></div>
+            <p class="fr-stepper__details">
+                <span class="fr-text--bold">Étape suivante :</span> Création de mon compte
+            </p>
+        </div>
+
+        <div class="fr-col-12 fr-my-2w" id="vue-app">
+            <form
+                name="eligibilite-test-form"
+                action="{{ url(app.current_route) }}"
+                method="POST"
+            >
+                <input type="hidden" name="_token" value="{{ form._token.vars.value }}">
+
+                <div class="fr-callout">
+                    <h3 class="fr-callout__title">
+                        Avant de démarrer le questionnaire
+                    </h3>
+                    <p class="fr-callout__text">
+                        Il est important de noter que vous ne pouvez pas être indemnisé plusieurs fois par différents
+                        intermédiaires pour le même dommage. Afin de garantir
+                        <a class="fr-link" aria-describedby="infobulle-respect-principe" id="lien-infobulle-respect-principe" href="#">le respect de ce principe</a>,
+                        nous vous prions de bien vouloir répondre aux questions suivantes. À l'issue de ce questionnaire,
+                        nous vous informerons des démarches à suivre et des éléments manquants le cas échéant pour
+                        traiter votre demande dans les meilleures conditions.
+                    </p>
+                    <span class="fr-tooltip fr-placement" id="infobulle-respect-principe" role="tooltip" aria-hidden="true">
+                        En vertu du principe de réparation intégrale du préjudice sans perte ni profit, la victime d'un
+                        dommage ne peut obtenir deux indemnisations distinctes en réparation du même préjudice (Cour de
+                        cassation, civile, Chambre civile 2, 16 décembre 2021, 19-11.294, Inédit ; Cour de cassation,
+                        civile, Chambre civile 2, 9 février 2023, 21-21.217, Publié au bulletin)
+                    </span>
+                </div>
+
+                {# Questions #}
+                <div class="pr-section-formulaire fr-my-3w">
+                    <h4>Personne recherchée</h4>
+                    <div
+                        class="fr-col-12 fr-my-2w"
+                    >
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Êtes-vous la personne visée par l'opération des forces de l'ordre ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-vise-oui"
+                                        name="estVise"
+                                        :value="true"
+                                        v-model="reponses.estVise"
+                                        @change="reinitialiser('estVise')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-vise-oui" >Oui</label>
+                                </div>
+                            </div>
+
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-vise-non"
+                                        name="estVise"
+                                        :value="false"
+                                        v-model="reponses.estVise"
+                                        @change="reinitialiser('estVise')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-vise-non" >Non</label>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+
+                    <div
+                        class="fr-col-12 fr-my-2w"
+                        v-if="questions.estRecherche(reponses, decisions)"
+                        v-cloak
+                    >
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Est-ce que la personne recherchée réside ou est hébergée à cette adresse ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-recherche-oui"
+                                        name="estRecherche"
+                                        :value="true"
+                                        v-model="reponses.estRecherche"
+                                        @change="reinitialiser('estRecherche')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-recherche-oui" >Oui</label>
+                                </div>
+                            </div>
+
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-recherche-non"
+                                        name="estRecherche"
+                                        :value="false"
+                                        v-model="reponses.estRecherche"
+                                        @change="reinitialiser('estRecherche')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-recherche-non" >Non</label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+                <div
+                    class="pr-section-formulaire"
+                    v-if="questions.estProprietaire(reponses, decisions)"
+                    v-cloak
+                >
+                    <h4>Situation liée au logement et possession des attestations</h4>
+
+                    <div
+                        class="fr-col-12"
+                        v-if="questions.estProprietaire(reponses, decisions)"
+                    >
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Quel est votre statut par rapport au logement ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-proprietaire-oui"
+                                        name="estProprietaire"
+                                        :value="true"
+                                        v-model="reponses.estProprietaire"
+                                        @change="reinitialiser('estProprietaire')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-proprietaire-oui" >Propriétaire</label>
+                                </div>
+                            </div>
+
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-est-proprietaire-non"
+                                        name="estProprietaire"
+                                        :value="false"
+                                        v-model="reponses.estProprietaire"
+                                        @change="reinitialiser('estProprietaire')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-est-proprietaire-non" >Locataire</label>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+
+                    <div
+                        class="fr-col-12 fr-my-2w"
+                        v-if="questions.aContacteAssurance(reponses, decisions)"
+                    >
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Avez-vous contacté votre assurance habitation et obtenu une attestation de non prise en charge du sinistre ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-a-contacte-assurance-oui"
+                                        name="aContacteAssurance"
+                                        :value="true"
+                                        v-model="reponses.aContacteAssurance"
+                                        @change="reinitialiser('aContacteAssurance')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-assurance-oui" >Oui</label>
+                                </div>
+                            </div>
+
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-a-contacte-assurance-non"
+                                        name="aContacteAssurance"
+                                        :value="false"
+                                        v-model="reponses.aContacteAssurance"
+                                        @change="reinitialiser('aContacteAssurance')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-assurance-non" >Non</label>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+
+                    <div
+                        class="fr-col-12 fr-my-2w"
+                        v-if="questions.aContacteBailleur(reponses, decisions)"
+                    >
+                        <fieldset
+                            class="fr-fieldset"
+                            aria-labelledby="checkboxes-inline-legend"
+                        >
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
+                                Avez-vous pris contact avec votre bailleur, car celui-ci a, à votre égard, une obligation de sécurité (article 1720 du code civil) ?
+                            </legend>
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-a-contacte-bailleur-oui"
+                                        name="aContacteBailleur"
+                                        :value="true"
+                                        v-model="reponses.aContacteBailleur"
+                                        @change="reinitialiser('aContacteBailleur')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-oui" >Oui</label>
+                                </div>
+                            </div>
+
+                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                <div class="fr-radio-group">
+                                    <input
+                                        id="eligibilite-test-form-a-contacte-bailleur-non"
+                                        name="aContacteBailleur"
+                                        :value="false"
+                                        v-model="reponses.aContacteBailleur"
+                                        @change="reinitialiser('aContacteBailleur')"
+                                        type="radio"
+                                    />
+                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-non" >Non</label>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                </div>
+
+                {# Décisions #}
+                <div class="pr-section-decision fr-my-3w" v-cloak v-if="estDecide('success')">
+                    <h4>Vous êtes éligible à l’indemnisation</h4>
+
+                    <div class="fr-alert fr-alert--success fr-my-2w">
+                        <p>
+                            Nous vous invitons à suivre les indications afin de créer votre compte et effectuer votre demande d’indemnisation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pr-section-decision fr-my-3w" v-cloak v-if="estDecide('error_est_vise') || estDecide('error_est_recherche') || estDecide('warning_proprietaire_assurance') || estDecide('warning_locataire_assurance') || estDecide('warning_locataire_bailleur')">
+                    <h4>Vous ne remplissez pas tous les critères d’indemnisation</h4>
+
+                    <p>
+                        Votre dossier ne sera pas en mesure d’être traité si tous les critères indiqués ci-dessous ne sont pas réunis. Nous vous recommandons d’effectuer ces démarches avant de faire votre demande.
+                    </p>
+
+                    <div class="fr-alert fr-alert--error fr-my-2w"
+                        v-if="estDecide('error_est_vise')"
+                    >
+                        <h3 class="fr-alert__title">
+                            Vous ne devez pas être visé par les opérations des forces de l’ordre
+                        </h3>
+                        <p>
+                            Vous ne pouvez prétendre à une indemnisation que si les force de l'ordre ont commis une
+                            <a class="fr-link" aria-describedby="infobulle-faute-lourde" id="lien-infobulle-faute-lourde" href="#">faute lourde</a>
+                            au cours de leur intervention. Il vous appartiendra de prouver cette faute.
+                        </p>
+                        <span class="fr-tooltip fr-placement" id="infobulle-faute-lourde" role="tooltip" aria-hidden="true">
+                            Constitue une faute lourde toute déficience caractérisée par un fait ou une série de faits
+                            traduisant l'inaptitude du service public de la justice à remplir la mission dont il est investi
+                            (Cour de Cassation, Assemblée plénière, du 23 février 2001, 99-16.165, Publié au bulletin)
+                        </span>
+                    </div>
+
+                    <div class="fr-alert fr-alert--error fr-my-2w"
+                        v-if="estDecide('error_est_recherche')"
+                    >
+                        <h3 class="fr-alert__title">
+                            La personne recherchée ne doit pas être résidé ou être hébergée à votre adresse
+                        </h3>
+                        <p>
+                            Vous n’êtes pas éligible à l’indemnisation car il n’y a pas d’erreur de la part des forces de l’ordre.
+                        </p>
+                    </div>
+
+                    <div class="fr-alert fr-alert--error fr-my-2w"
+                         v-if="estDecide('warning_locataire_assurance') || estDecide('warning_proprietaire_assurance')"
+                    >
+                        <h3 class="fr-alert__title">
+                            Vous n’avez pas pris contact avec votre bailleur et/ou obtenu une attestation de non prise en charge des réparations
+                        </h3>
+
+                        <p>
+                            Nous vous recommandons de prendre contact avec votre bailleur dès que possible, pour obtenir l’attestation de non prise en charge des réparations. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
+                        </p>
+                    </div>
+
+                    <div class="fr-alert fr-alert--error fr-my-2w" v-if="estDecide('warning_locataire_bailleur')">
+                        <h3 class="fr-alert__title">
+                            Vous n’avez pas pris contact avec votre assurance habitation et/ou obtenu une attestation de non prise en charge du sinistre
+                        </h3>
+
+                        <p>
+                            Nous vous recommandons de prendre contact avec votre assurance habitation dès que possible. En cas de refus de prise en charge du sinistre, il est important de demander une attestation de non prise en charge. Ce document est essentiel pour pouvoir traiter votre demande d’indemnisation.
+                        </p>
+                    </div>
+                </div>
+
+                {# Boutons #}
+
+                <div class="fr-btns-group fr-btns-group--left fr-btns-group--inline-lg">
+                    <a
+                        v-if="decisions.length > 0 && !estEligible()"
+                        class="fr-btn fr-btn--primary"
+                        href="{{ path('bris_porte_atterrissage') }}"
+                    >Revenir vers la page d'accueil
+                    </a>
+                    <button
+                        class="fr-btn"
+                        :class="estEligible() ? 'fr-btn--primary' :'fr-btn--secondary'"
+                        type="submit"
+                        :disabled="decisions.length === 0"
+                    >Commencer la demande d'indemnisation
+                    </button>
+                    <button
+                        v-if="decisions.length > 0 && estEligible()"
+                        class="fr-btn fr-btn--secondary"
+                        aria-controls="modale-test-eligibilite"
+                        data-fr-js-modal-button="true"
+                        @click="reinitialiser()"
+                        type="button"
+                    >Annuler la demande d'indemnisation
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+{% endblock main %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ vite_entry_script_tags('bris_porte_tester_mon_eligibilite') }}
+
+{% endblock javascripts %}

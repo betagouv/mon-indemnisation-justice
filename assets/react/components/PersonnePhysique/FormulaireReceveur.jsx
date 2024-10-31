@@ -12,7 +12,7 @@ const FormulaireReceveur = function({personnePhysique}) {
   const [nom, setNom]=useState(personnePhysique.nom??"");
   const [prenom1, setPrenom1]=useState(personnePhysique.prenom1??"");
   const [nomNaissance, setNomNaissance]=useState(personnePhysique.nomNaissance??"");
-  const [qualiteRequerant, setQualiteRequerant]=useState(personnePhysique.qualite??"");
+  const [qualiteRequerant, setQualiteRequerant]=useState(personnePhysique.qualiteRequerant??"");
   const [precisionRequerant, setPrecisionRequerant]=useState(personnePhysique.precision??"");
 
   const [stateNom, setStateNom]=useState(getStateOnEmpty(personnePhysique.nomNaissance));
@@ -31,7 +31,7 @@ const FormulaireReceveur = function({personnePhysique}) {
       (nom !== personnePhysique.nom) ||
       (prenom1 !== personnePhysique.prenom1) ||
       (nomNaissance !== personnePhysique.nomNaissance) ||
-      (qualiteRequerant !== personnePhysique.qualite) ||
+      (qualiteRequerant !== personnePhysique.qualiteRequerant) ||
       (precisionRequerant !== personnePhysique.precision) ||
       (true === recordActived)
     ;
@@ -63,12 +63,13 @@ const FormulaireReceveur = function({personnePhysique}) {
       numeroSecuriteSociale: numeroSS, precision: precisionRequerant
     };
     if(civilite) { data['civilite']=civilite }
-    if(qualiteRequerant) { data['qualite']=qualiteRequerant }
+    if(qualiteRequerant) { data['qualiteRequerant']=qualiteRequerant }
 
     clearTimeout(keyUpTimer.current);
     keyUpTimer.current = setTimeout(() => {
       fetch(url, {
         method: 'PATCH',
+        redirect: 'error',
         headers: {'Content-Type': 'application/merge-patch+json'},
         body: JSON.stringify(data)
       })
@@ -86,10 +87,10 @@ const FormulaireReceveur = function({personnePhysique}) {
     <>
       <h3>Attestation d'information remise à</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-3">
+        <div className="fr-col-lg-3 fr-col-4">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>
         </div>
-        <div className="fr-col-9">
+        <div className="fr-col-lg-9 fr-col-8">
           <Input
             label="Prénom(s)"
             state={statePrenom1}
@@ -102,7 +103,7 @@ const FormulaireReceveur = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Nom de naissance"
             state={stateNom}
@@ -114,7 +115,7 @@ const FormulaireReceveur = function({personnePhysique}) {
             }}
           />
         </div>
-        <div className="fr-col-6">
+        <div className="fr-col-lg-6 fr-col-12">
           <Input
             label={"Nom d'usage"}
             nativeInputProps={{

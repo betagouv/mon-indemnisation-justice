@@ -1,9 +1,0 @@
-{% extends 'base_react.html.twig' %}
-
-{% set title = 'Confirmation de la création de votre espace personnel' %}
-
-{% block main %}
-  <div {{ stimulus_controller('security_success',{
-    user: user|serialize('json',{groups: 'user:read'}),
-  }) }}></div>
-{% endblock %}

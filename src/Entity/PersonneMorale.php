@@ -13,11 +13,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
   operations:[
     new Get(
-      name: '_api_personne_morale_get'
+      name: '_api_personne_morale_get',
+      security: "is_granted('ROLE_REQUERANT')"
     ),
     new Patch(
-      name: '_api_personne_morale_patch'
-      #,security: "is_granted('ROLE_REQUERANT') and object.compte == user"
+      name: '_api_personne_morale_patch',
+      security: "is_granted('ROLE_REQUERANT')"
   )]
   )]
 class PersonneMorale
@@ -31,11 +32,11 @@ class PersonneMorale
     #[ORM\OneToOne(mappedBy: 'personneMorale', cascade: ['persist', 'remove'])]
     private ?Requerant $compte = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','prejudice:read','user:write',])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $sirenSiret = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','prejudice:read','user:write', 'prejudice:write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
 
@@ -64,12 +65,22 @@ class PersonneMorale
         return $this->sirenSiret;
     }
 
+    public function setSirenSiret(?string $sirenSiret): PersonneMorale
+    {
+        $this->sirenSiret = $sirenSiret;
+        return $this;
+    }
+
     public function getRaisonSociale(): ?string
     {
         return $this->raisonSociale;
     }
 
-
+    public function setRaisonSociale(?string $raisonSociale): PersonneMorale
+    {
+        $this->raisonSociale = $raisonSociale;
+        return $this;
+    }
 
     public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static
     {

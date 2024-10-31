@@ -90,3 +90,25 @@ Soit depuis docker
 docker compose exec symfony bin/console fos:js-routing:dump --format json
 docker compose cp symfony:/app/public/js/fos_js_routes.json public/js/fos_js_routes.json
 ```
+
+## Test fonctionnels:
+
+En cas d'erreur suivante :
+
+```
+Fatal error: Uncaught Facebook\WebDriver\Exception\Internal\WebDriverCurlException: Curl error thrown for http DELETE to /session/a0be33fe-07d6-4f9b-8c03-24fc29795ae8
+
+Failed to connect to 127.0.0.1 port 4444 after 0 ms: Couldn't connect to server in /app/vendor/php-webdriver/webdriver/lib/Exception/Internal/WebDriverCurlException.php:20
+```
+
+Ensuite suivie de :
+
+```
+RuntimeException: The port 9080 is already in use.
+```
+
+Il faut prendre soin de supprimer le process zombie qui écoute le port désiré par `panther`:
+
+```bash
+lsof -nP -t -i:9080 | xargs kill -9
+```

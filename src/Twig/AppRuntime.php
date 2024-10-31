@@ -7,11 +7,18 @@ use App\Entity\LiasseDocumentaire;
 use App\Entity\PersonneMorale;
 use App\Entity\PersonnePhysique;
 use App\Entity\Requerant;
+use Pentatrion\ViteBundle\Service\EntrypointsLookup;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AppRuntime implements RuntimeExtensionInterface
 {
+    public function __construct(
+
+        protected readonly EntrypointsLookup $entrypointLookup,
+    ) {
+    }
+
     public function estRequerant(?UserInterface $user = null): bool
     {
         return $user instanceof Requerant;
@@ -57,5 +64,10 @@ class AppRuntime implements RuntimeExtensionInterface
         $reflectionClass->getProperty('personneMorale')->setValue($user, $personneMorale);
 
         return $user;
+    }
+
+    public function estViteServerActif(): bool
+    {
+        return null !== $this->entrypointLookup->getViteServer();
     }
 }

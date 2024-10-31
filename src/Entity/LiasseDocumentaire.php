@@ -12,7 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: LiasseDocumentaireRepository::class)]
 #[ApiResource(
   operations:[
-    new Get(name: '_api_liasse_documentaire_get'),
+    new Get(
+        name: '_api_liasse_documentaire_get',
+        security: "is_granted('ROLE_REQUERANT')"
+    ),
   ]
 )]
 class LiasseDocumentaire

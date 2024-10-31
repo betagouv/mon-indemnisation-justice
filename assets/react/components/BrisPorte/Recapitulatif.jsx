@@ -64,7 +64,7 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=n
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
-      <div className="fr-col-6">
+      <div className="fr-col-lg-6 fr-col-12">
         <section className="pr-form-section fr-p-4w">
         {loading && blob.user.isPersonneMorale &&
           <>
@@ -94,7 +94,7 @@ const Recapitulatif = ({user,brisPorte,gotoFirstSection=null,gotoSecondSection=n
         }
         </section>
       </div>
-      <div className="fr-col-6">
+      <div className="fr-col-lg-6 fr-col-12">
         <section className="pr-form-section fr-p-4w">
         {loading &&
           <>

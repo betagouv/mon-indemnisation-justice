@@ -2,13 +2,13 @@ import React, {useState,useEffect} from 'react';
 
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
-import {default as RecapitulatifBrisPorte} from './BrisPorte/Recapitulatif';
+import { default as RecapitulatifBrisPorte } from './BrisPorte/Recapitulatif';
 import { Br } from "../utils/fundamental";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import BrisPorte from './BrisPorte';
 import User from './User';
 
-const BrisPortePanel = function({id, user, brisPorte}) {
+const BrisPortePanel = function({ user, brisPorte }) {
   const sections = [
     "Données personnelles du justiciable",
     "Informations relatives au bris de porte",
@@ -19,8 +19,9 @@ const BrisPortePanel = function({id, user, brisPorte}) {
   const gotoSecondSection= () => gotoSection(1);
   const gotoThirdSection= () => gotoSection(2);
   const gotoSection = (index) => {
-    const userUri = Routing.generate('_api_requerant_get',{id:user.pId});
-    const prejudiceUri = Routing.generate('_api_bris_porte_get',{id:brisPorte.id});
+    /*
+    const userUri = Routing.generate('_api_requerant_get',{id: user.id});
+    const prejudiceUri = Routing.generate('_api_bris_porte_get',{id: brisPorte.id});
     Promise
       .all([userUri,prejudiceUri]
         .map((u) => fetch(u).then((response) => response.json()))
@@ -32,15 +33,17 @@ const BrisPortePanel = function({id, user, brisPorte}) {
       })
       .catch(() => {})
     ;
+     */
+    setStep(index);
   }
   const [step,setStep]=useState(0);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
   const [isPersonneMorale,setIsPersonneMorale]=useState(user.isPersonneMorale);
   const [_brisPorte,setBrisPorte]=useState(brisPorte);
-  const [_user,setUser]=useState(user);
   function incrementStep() { setStep(step+1);gotoStepper(); }
   function decrementStep() {
+    /*
     const userUri = Routing.generate('_api_requerant_get',{id:user.pId});
     const prejudiceUri = Routing.generate('_api_bris_porte_get',{id:brisPorte.id});
     Promise
@@ -50,14 +53,15 @@ const BrisPortePanel = function({id, user, brisPorte}) {
       .then(([u_d,bp_d]) => {
         setUser(u_d);
         setBrisPorte(bp_d);
-        setStep(step-1);
-        gotoStepper();
       })
       .catch(() => {})
     ;
+    */
+    setStep(step-1);
+    gotoStepper();
   }
   function getCurrentStep() { return step+1; }
-  function gotoStepper() { $("#pr-case_stepper").focus(); }
+  function gotoStepper() { document.getElementById("pr-case_stepper")?.focus(); }
 
   const toggleIsPersonneMorale = () => setIsPersonneMorale(!isPersonneMorale);
 
@@ -82,7 +86,7 @@ const BrisPortePanel = function({id, user, brisPorte}) {
     }
     {(step===0) &&
     <section className="pr-case_form fr-mb-4w">
-      <User user={_user} id={id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
+      <User user={user} id={user.id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12">
           <Button onClick={incrementStep}>Valider et passer à l'étape suivante</Button>
@@ -213,7 +217,7 @@ const BrisPortePanel = function({id, user, brisPorte}) {
         <>
           <RecapitulatifBrisPorte
             brisPorte={_brisPorte}
-            user={_user}
+            user={user}
             gotoFirstSection={gotoFirstSection}
             gotoSecondSection={gotoSecondSection}
             gotoThirdSection={gotoThirdSection}
