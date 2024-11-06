@@ -2,8 +2,11 @@
 
 namespace App\Dto;
 
+use App\Entity\GeoDepartement;
+
 class TestEligibilite
 {
+    public ?GeoDepartement $departement = null;
     public bool $estVise = false;
     public ?bool $estRecherche = null;
     public ?bool $estProprietaire = null;
@@ -13,6 +16,7 @@ class TestEligibilite
     public function toArray(): array
     {
         return [
+            'departerment' => $this->departement,
             'estVise' => $this->estVise,
             'estRecherche' => $this->estRecherche,
             'estProprietaire' => $this->estProprietaire,
