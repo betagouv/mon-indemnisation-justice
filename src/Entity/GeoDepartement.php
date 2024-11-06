@@ -44,6 +44,4 @@ class GeoDepartement
     {
         return $this->nom;
     }
-
-
 }
