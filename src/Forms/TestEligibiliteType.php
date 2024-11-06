@@ -3,6 +3,9 @@
 namespace App\Forms;
 
 use App\Dto\TestEligibilite;
+use App\Entity\GeoDepartement;
+use Doctrine\ORM\Mapping\Entity;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -41,6 +44,7 @@ class TestEligibiliteType extends AbstractType
         );
 
         $builder
+            ->add('departement', EntityType::class, ['class' => GeoDepartement::class])
             ->add('estVise', TextType::class, ['required' => false])
             ->add('estRecherche', TextType::class)
             ->add('estProprietaire', TextType::class)

@@ -1,9 +1,22 @@
 import { createApp } from 'petite-vue';
 
-console.log("Démarrage");
+class Departement {
+    code: string;
+    nom: string;
+    estDeploye: boolean;
+}
+
+const args = JSON.parse(document.getElementById('vue-arguments')?.textContent || "{}");
+console.log(args)
+
+const departements = (args?.departements || []) as Departement[];
+
+console.log(departements)
 
 createApp({
+    departements,
     reponses: {
+        departement: null,
         estVise: null,
         estRecherche: null,
         estProprietaire: null,
@@ -11,7 +24,7 @@ createApp({
         aContacteBailleur: null,
     },
     questions: {
-        estVise: function() { return true; },
+        estVise: function(reponses, decisions) { return reponses.departement != null; },
         estRecherche: function(reponses, decisions) { return reponses.estVise != null && (decisions.length === 0 || reponses.estRecherche != null); },
         estProprietaire: function(reponses, decisions) { return reponses.estRecherche != null  && (decisions.length === 0 || reponses.estProprietaire != null); },
         aContacteAssurance: function(reponses, decisions) { return reponses.estProprietaire != null && (decisions.length === 0 || reponses.aContacteAssurance != null); },

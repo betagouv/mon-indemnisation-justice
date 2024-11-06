@@ -86,6 +86,19 @@
 
                 {# Questions #}
                 <div class="pr-section-formulaire fr-my-3w">
+                    <h4>Situation géographique</h4>
+                    <div class="fr-select-group fr-col-lg-6">
+                        <label class="fr-label" for="eligibilite-test-form-deaprtement">Dans quel département se situe le logement ?</label>
+                        <select class="fr-select" id="eligibilite-test-form-departement" name="departement" v-model="reponses.departement">
+                            <option value="" selected disabled hidden>Sélectionner une option</option>
+                            <option v-for="departement in departements" :key="`departement${departement.code}`" :value="departement.code" v-text="departement.nom"></option>
+                        </select>
+                    </div>
+
+                </div>
+
+
+                <div class="pr-section-formulaire fr-my-3w" v-if="questions.estVise(reponses, decisions)">
                     <h4>Personne recherchée</h4>
                     <div
                         class="fr-col-12 fr-my-2w"
@@ -381,7 +394,7 @@
                     <a
                         v-if="decisions.length > 0 && !estEligible()"
                         class="fr-btn fr-btn--primary"
-                        href="{{ path('bris_porte_atterrissage') }}"
+                        href="{{ path('app_homepage') }}"
                     >Revenir vers la page d'accueil
                     </a>
                     <button
@@ -409,6 +422,11 @@
 {% endblock main %}
 
 {% block javascripts %}
+    <script id="vue-arguments" type="application/json">
+    {
+        "departements": {{ departements|serialize('json')|raw }}
+    }
+    </script>
     {{ parent() }}
     {{ vite_entry_script_tags('bris_porte_tester_mon_eligibilite') }}
 

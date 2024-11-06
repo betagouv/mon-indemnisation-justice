@@ -14,6 +14,8 @@ class AppExtension extends AbstractExtension
             new TwigFilter('spellout', [AppRuntime::class, 'spellout']),
             new TwigFilter('est_agent', [AppRuntime::class, 'estAgent']),
             new TwigFilter('est_requerant', [AppRuntime::class, 'estRequerant']),
+            new TwigFilter('base64_encode', 'base64_encode'),
+            new TwigFilter('base64_decode', 'base64_decode'),
         ];
     }
 
