@@ -62,7 +62,10 @@ class BrisPorteController extends AbstractController
             }
         }
 
-        return $this->render('bris_porte/tester_mon_eligibilite.html.twig', ['form' => $form, 'departements' => $this->entityManager->getRepository(GeoDepartement::class)->findAll()]);
+        return $this->render('bris_porte/tester_mon_eligibilite.html.twig', [
+            'form' => $form,
+            'departements' => $this->entityManager->getRepository(GeoDepartement::class)->getListeTriee()]
+        );
     }
 
     #[Route('/contactez-nous', name: 'bris_porte_contactez_nous', methods: ['GET'])]

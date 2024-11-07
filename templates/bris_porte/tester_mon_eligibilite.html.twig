@@ -185,7 +185,7 @@
                 </div>
 
                 <div
-                    class="pr-section-formulaire"
+                    class="pr-section-formulaire fr-my-3w"
                     v-if="questions.estProprietaire(reponses, decisions)"
                     v-cloak
                 >
@@ -365,8 +365,9 @@
                         </p>
                     </div>
 
-                    <div class="fr-alert fr-alert--error fr-my-2w"
-                         v-if="estDecide('warning_locataire_assurance') || estDecide('warning_proprietaire_assurance')"
+                    <div
+                        class="fr-alert fr-alert--error fr-my-2w"
+                        v-if="estDecide('warning_locataire_bailleur')"
                     >
                         <h3 class="fr-alert__title">
                             Vous n’avez pas pris contact avec votre bailleur et/ou obtenu une attestation de non prise en charge des réparations
@@ -377,7 +378,10 @@
                         </p>
                     </div>
 
-                    <div class="fr-alert fr-alert--error fr-my-2w" v-if="estDecide('warning_locataire_bailleur')">
+                    <div
+                        class="fr-alert fr-alert--error fr-my-2w"
+                        v-if="estDecide('warning_locataire_assurance') || estDecide('warning_proprietaire_assurance')"
+                    >
                         <h3 class="fr-alert__title">
                             Vous n’avez pas pris contact avec votre assurance habitation et/ou obtenu une attestation de non prise en charge du sinistre
                         </h3>
