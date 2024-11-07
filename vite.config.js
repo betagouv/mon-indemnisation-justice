@@ -5,6 +5,20 @@ import reactPlugin from '@vitejs/plugin-react';
 import copy from 'rollup-plugin-copy';
 import legacy from '@vitejs/plugin-legacy'
 
+// Vite will ignore native environment variables, unless they're declared in local `.env` file
+// (see https://github.com/vitejs/vite/issues/562)
+// Here we had them dynamically
+
+import.meta.env = import.meta.env ?? {};
+
+Object
+    .entries(process.env)
+    .filter(
+        ([key, value]) => key.startsWith('VITE_')
+    ).forEach(
+        ([key, value]) => import.meta.env[key] = value
+    );
+
 export default defineConfig(({command, mode}) => {
         const base = mode === 'production' ? '/build/' : '/preview/';
         const outDir = `public/${base}`;
@@ -45,8 +59,13 @@ export default defineConfig(({command, mode}) => {
                 rollupOptions: {
                     // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
                     input: {
-                        "bris_porte_tester_mon_eligibilite": "./assets/apps/bris_porte/tester_mon_eligibilite.ts",
-                        "bris_porte_deposer_mon_dossier": "./assets/apps/bris_porte/deposer_mon_dossier.tsx",
+                        ...{
+                            "bris_porte_tester_mon_eligibilite": "./assets/apps/bris_porte/tester_mon_eligibilite.ts",
+                            "bris_porte_deposer_mon_dossier": "./assets/apps/bris_porte/deposer_mon_dossier.tsx",
+                        },
+                        ...(import.meta.env?.VITE_SENTRY_DSN && {
+                            "sentry": "./assets/apps/sentry.ts"
+                        })
                     }
                 },
             },

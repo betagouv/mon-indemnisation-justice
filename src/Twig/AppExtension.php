@@ -24,6 +24,7 @@ class AppExtension extends AbstractExtension
         return [
             new TwigFunction('empty_user', [AppRuntime::class, 'emptyUser']),
             new TwigFunction('est_vite_server_actif', [AppRuntime::class, 'estViteServerActif']),
+            new TwigFunction('vite_entree_existe', [AppRuntime::class, 'viteEntreeExiste']),
         ];
     }
 }
