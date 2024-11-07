@@ -73,5 +73,10 @@
             <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
         {% endblock %}
 
+
+        {# Sentry browser #}
+        {% if vite_entree_existe('sentry') %}
+            {{ vite_entry_script_tags('sentry') }}
+        {% endif %}
     </body>
 </html>

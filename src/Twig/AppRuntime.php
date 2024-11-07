@@ -7,6 +7,7 @@ use App\Entity\LiasseDocumentaire;
 use App\Entity\PersonneMorale;
 use App\Entity\PersonnePhysique;
 use App\Entity\Requerant;
+use Pentatrion\ViteBundle\Exception\EntrypointNotFoundException;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Twig\Extension\RuntimeExtensionInterface;
@@ -69,5 +70,14 @@ class AppRuntime implements RuntimeExtensionInterface
     public function estViteServerActif(): bool
     {
         return null !== $this->entrypointLookup->getViteServer();
+    }
+
+    public function viteEntreeExiste(string $entree): bool
+    {
+        try {
+            return !empty($this->entrypointLookup->getJSFiles($entree));
+        } catch (EntrypointNotFoundException $e) {
+            return false;
+        }
     }
 }
