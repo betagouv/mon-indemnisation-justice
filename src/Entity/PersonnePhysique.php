@@ -24,11 +24,8 @@ class PersonnePhysique
     #[ORM\Column(length: 13, nullable: true)]
     private ?string $numeroSecuriteSociale = null;
 
-    #[ORM\Column(length: 2, nullable: true)]
-    private ?string $codeSecuriteSociale = null;
-
     #[ORM\OneToOne(mappedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
-    private ?Requerant $compte = null;
+    protected ?Requerant $compte = null;
 
     #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]

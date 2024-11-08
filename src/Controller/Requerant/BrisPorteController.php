@@ -3,13 +3,12 @@
 namespace App\Controller\Requerant;
 
 use App\Entity\BrisPorte;
-use App\Entity\GeoDepartement;
-use App\Entity\QualiteRequerant;
 use App\Entity\Requerant;
 use App\Event\BrisPorteConstitueEvent;
+use App\Repository\BrisPorteRepository;
+use App\Repository\GeoDepartementRepository;
 use App\Service\DocumentManager;
 use App\Service\Mailer;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +20,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class BrisPorteController extends RequerantController
 {
     public function __construct(
-        protected readonly EntityManagerInterface $entityManager,
+        protected readonly BrisPorteRepository $brisPorteRepository,
+        protected readonly GeoDepartementRepository $departementRepository,
         protected readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
@@ -40,8 +40,7 @@ class BrisPorteController extends RequerantController
     {
         $requerant = $this->getRequerant();
         $brisPorte->setDeclare();
-        $this->entityManager->persist($brisPorte);
-        $this->entityManager->flush();
+        $this->brisPorteRepository->save($brisPorte);
 
         $mailer
            ->toRequerant($requerant)

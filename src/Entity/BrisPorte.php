@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Patch;
 use App\Repository\BrisPorteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -36,6 +38,13 @@ class BrisPorte
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist', 'remove'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected Requerant $requerant;
+
+    #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier')]
+    protected Collection $historiqueEtats;
+
+    #[ORM\OneToOne(targetEntity: EtatDossier::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id')]
+    protected ?EtatDossier $etatDossier = null;
 
     #[Groups('dossier:lecture')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
@@ -140,6 +149,7 @@ class BrisPorte
         $this->dateCreation = new \DateTimeImmutable();
         $this->liasseDocumentaire = new LiasseDocumentaire();
         $this->adresse = new Adresse();
+        $this->historiqueEtats = new ArrayCollection([]);
     }
 
     public function getPid(): ?int
@@ -169,7 +179,22 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups(['dossier:lecture'])]
+    public function changerStatut(EtatDossierType $type, bool $requerant = false, ?Agent $agent = null): self
+    {
+        if ($requerant) {
+            $this->historiqueEtats->add(EtatDossier::creerRequerant($this, $type));
+        } elseif (null !== $agent) {
+            $this->historiqueEtats->add(EtatDossier::creerAgent($this, $type, $agent));
+        } else {
+            $this->historiqueEtats->add(EtatDossier::creer($this, $type));
+        }
+
+        $this->etatDossier = $this->historiqueEtats->last();
+
+        return $this;
+    }
+
+    #[Groups(['prejudice:read'])]
     public function getLastStatut(): BrisPorteStatut
     {
         return null !== $this->dateDeclaration ? BrisPorteStatut::CONSTITUE : BrisPorteStatut::EN_COURS_DE_CONSTITUTION;
@@ -208,7 +233,9 @@ class BrisPorte
 
     public function setDeclare(): self
     {
-        return $this->setDateDeclaration(new \DateTimeImmutable());
+        return $this
+            ->setDateDeclaration(new \DateTimeImmutable())
+            ->changerStatut(EtatDossierType::DOSSIER_DEPOSE, requerant: true);
     }
 
     public function getReference(): ?string

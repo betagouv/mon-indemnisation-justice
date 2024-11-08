@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\BrisPorte;
+use App\Entity\EtatDossier;
+use App\Entity\EtatDossierType;
 use App\Entity\Requerant;
 use App\Service\PasswordGenerator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -23,15 +25,12 @@ class BrisPorteRepository extends ServiceEntityRepository
         parent::__construct($registry, BrisPorte::class);
     }
 
-    public function newInstance(Requerant $user): BrisPorte
+    public function save(BrisPorte $dossier, bool $flush = true): void
     {
-        $brisPorte = (new BrisPorte())
-            ->setRequerant($user);
-
-        $this->getEntityManager()->persist($brisPorte);
-        $this->getEntityManager()->flush();
-
-        return $brisPorte;
+        $this->getEntityManager()->persist($dossier);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 
     /**
@@ -48,6 +47,15 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->where($qb->expr()->isNotNull('bp.dateDeclaration'))
             ->getQuery()
             ->getResult();
+    }
+
+    public function nouveauDossier(Requerant $requerant): BrisPorte
+    {
+        $dossier = (new BrisPorte())->setRequerant($requerant);
+
+        $dossier->changerStatut(EtatDossierType::DOSSIER_INITIE, requerant: true);
+
+        return $dossier;
     }
 
     public function generateRaccourci(int $length = 8): string
