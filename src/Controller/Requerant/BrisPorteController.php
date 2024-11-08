@@ -3,6 +3,7 @@
 namespace App\Controller\Requerant;
 
 use App\Entity\BrisPorte;
+use App\Entity\GeoDepartement;
 use App\Entity\QualiteRequerant;
 use App\Entity\Requerant;
 use App\Event\BrisPorteConstitueEvent;
@@ -32,12 +33,17 @@ class BrisPorteController extends RequerantController
         $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($requerant);
 
         if ($requerant->getTestEligibilite()) {
+
+            if (isset($requerant->getTestEligibilite()['departement'])) {
+                $brisPorte->setDepartement($em->getRepository(GeoDepartement::class)->find($requerant->getTestEligibilite()['departement']));
+            }
+
             $brisPorte->setEstVise($requerant->getTestEligibilite()['estVise'] ?? null);
             $brisPorte->setEstHebergeant($requerant->getTestEligibilite()['estRecherche'] ?? null);
             $brisPorte->setEstProprietaire($requerant->getTestEligibilite()['estProprietaire'] ?? null);
             $brisPorte->setAContactAssurance($requerant->getTestEligibilite()['aContacteAssurance'] ?? null);
             $brisPorte->setAContactBailleur($requerant->getTestEligibilite()['aContacteBailleur'] ?? null);
-            $brisPorte->setErreurPorte(!($brisPorte->estVise() || $brisPorte->estHebergeant()));
+            $brisPorte->setErreurPorte(!$brisPorte->estVise() && !$brisPorte->estHebergeant());
 
             if (null !== $brisPorte->estProprietaire()) {
                 $brisPorte->setQualiteRequerant($brisPorte->estProprietaire() ? QualiteRequerant::PRO : QualiteRequerant::LOC);

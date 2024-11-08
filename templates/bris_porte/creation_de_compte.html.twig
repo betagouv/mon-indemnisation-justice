@@ -4,7 +4,6 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <script src="{{ asset('build/alpinejs/cdn.js') }}" defer></script>
     <style>
         /** Hack: maintenir les input de type checkbox et radio "cliquables". */
         input[type=radio], input[type=checkbox] {
@@ -53,6 +52,10 @@
             background-color:transparent;
             color: inherit;
         }
+
+        [v-cloak] {
+            display: none !important;
+        }
     </style>
 {% endblock %}
 
@@ -82,9 +85,8 @@
             <section class="pr-form-subscribe" style="border: 1px solid var(--border-default-grey);">
                 <form method="POST"
                       action="{{ url(app.current_route) }}"
-                      x-data="formulaireInscription()"
-                      x-init="$watch('inscription', (inscription) => verifier(inscription))"
-                      @submit.prevent="soumettre"
+                      id="vue-app"
+                      v-effect="verifier(inscription)"
                 >
                     <input type="hidden" name="_token" value="{{ form._token.vars.value }}">
                     <div class="fr-grid-row">
@@ -115,7 +117,7 @@
                                                     class="fr-select"
                                                     id="inscription-champs-civilite"
                                                     aria-describedby="select-:r4:-desc"
-                                                    x-model="inscription.civilite"
+                                                    v-model="inscription.civilite"
                                             >
                                                 <option value="" disabled="" hidden=""></option>
                                                 <option value="M">Monsieur</option>
@@ -132,7 +134,7 @@
                                                    aria-describedby="input-:r5:-desc-error"
                                                    type="text"
                                                    value="{{ form.prenom.vars.value }}"
-                                                   x-model="inscription.prenom"
+                                                   v-model="inscription.prenom"
                                             />
                                         </div>
                                     </div>
@@ -145,7 +147,7 @@
                                                    aria-describedby="input-:r6:-desc-error"
                                                    type="text"
                                                    value="{{ form.nomNaissance.vars.value }}"
-                                                   x-model="inscription.nomNaissance"
+                                                   v-model="inscription.nomNaissance"
                                             />
                                         </div>
                                     </div>
@@ -157,7 +159,7 @@
                                                    type="text"
                                                    id="inscription-champs-nom-usage"
                                                    value="{{ form.nom.vars.value }}"
-                                                   x-model="inscription.nom"
+                                                   v-model="inscription.nom"
                                             />
                                         </div>
                                     </div>
@@ -170,12 +172,15 @@
                                                    :class="{ 'fr-input--error': !!erreurs?.courriel }"
                                                    aria-describedby="inscription-champs-courriel-error"
                                                    type="text"
-                                                   x-model="inscription.courriel"
+                                                   v-model="inscription.courriel"
                                             />
                                             <p id="inscription-champs-courriel-error"
-                                               class="fr-error-text fr-hidden"
+                                               class="fr-error-text"
+                                               v-cloak
                                                :class="{ 'fr-hidden' : !erreurs?.courriel }"
-                                               x-text="erreurs?.courriel"></p>
+                                               >
+                                                {% verbatim %}{{ erreurs?.courriel }}{% endverbatim %}
+                                            </p>
                                         </div>
                                     </div>
                                     {# Mot de passe #}
@@ -184,7 +189,6 @@
                                             <label class="fr-label" for="inscription-champs-mot-de-passe">Mot de passe<br/><br/></label>
                                             <div
                                                 class="fr-input-wrap"
-                                                @click.outside="revelations.motDePasse = false"
                                             >
                                                 <input name="motDePasse"
                                                        class="fr-password__input fr-input"
@@ -193,21 +197,25 @@
                                                        aria-describedby="inscription-champs-mot-de-passe-error"
                                                        type="password"
                                                        :type="revelations.motDePasse ? 'text' : 'password'"
-                                                       x-model="inscription.motDePasse"
+                                                       v-model="inscription.motDePasse"
                                                 />
-                                                <button role="button"
+                                                <button type="button"
                                                         tabindex="-1"
                                                         class="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
-                                                        @click="revelations.motDePasse = !revelations.motDePasse"
+                                                        @click="basculer('motDePasse')"
                                                         :title="revelations.motDePasse ? 'Masque' : 'Afficher'"
                                                 >
                                                     <span :class="{'fr-icon-eye-line': !revelations.motDePasse, 'fr-icon-eye-off-line': revelations.motDePasse }" aria-hidden="true"></span>
                                                 </button>
                                             </div>
-                                            <p id="inscription-champs-mot-de-passe-error"
-                                                   class="fr-error-text fr-hidden"
-                                                   :class="{ 'fr-hidden' : !erreurs?.motDePasse }"
-                                                   x-text="erreurs?.motDePasse"></p>
+                                            <p
+                                                id="inscription-champs-mot-de-passe-error"
+                                                class="fr-error-text"
+                                                v-cloak
+                                                :class="{ 'fr-hidden' : erreurs?.motDePasse == null }"
+                                            >
+                                                {% verbatim %}{{ erreurs?.motDePasse }}{% endverbatim %}
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="fr-input-group fr-col-lg-6 fr-col-12">
@@ -216,7 +224,6 @@
                                             <label class="fr-label" for="inscription-champs-confirmation">Confirmation du mot de passe</label>
                                             <div
                                                 class="fr-input-wrap"
-                                                @click.outside="revelations.confirmation = false"
                                             >
                                                 <input name="confirmation"
                                                        class="fr-password__input fr-input"
@@ -225,21 +232,24 @@
                                                        aria-describedby="inscription-champs-confirmation-error"
                                                        type="password"
                                                        :type="revelations.confirmation ? 'text' : 'password'"
-                                                       x-model="inscription.confirmation"
+                                                       v-model="inscription.confirmation"
                                                 />
-                                                <button role="button"
+                                                <button type="button"
                                                         tabindex="-1"
                                                         class="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
-                                                        @click="revelations.confirmation = !revelations.confirmation"
+                                                        @click="basculer('confirmation')"
                                                         :title="revelations.confirmation ? 'Masque' : 'Afficher'"
                                                 >
                                                     <span :class="{'fr-icon-eye-line': !revelations.confirmation, 'fr-icon-eye-off-line': revelations.confirmation }" aria-hidden="true"></span>
                                                 </button>
                                             </div>
                                             <p id="inscription-champs-confirmation-error"
-                                               class="fr-error-text fr-hidden"
+                                               class="fr-error-text"
+                                               v-cloak
                                                :class="{ 'fr-hidden' : !erreurs?.confirmation }"
-                                               x-text="erreurs?.confirmation"></p>
+                                            >
+                                                {% verbatim %}{{ erreurs?.confirmation }}{% endverbatim %}
+                                            </p>
                                         </div>
                                     </div>
                                     {# CGU (désactivé tant que la page CGU n'existe pas) #}
@@ -253,7 +263,7 @@
                                                            id="inscription-champs-cgu-ok"
                                                            name="cguOk"
                                                            value="{{ form.cguOk.vars.value }}"
-                                                           x-model.boolean="inscription.cguOk" />
+                                                           v-model.boolean="inscription.cguOk" />
                                                     <label class="fr-label"
                                                            for="inscription-champs-cgu-ok">
                                                         Je certifie avoir lu et accepté les
@@ -288,99 +298,8 @@
     {{ parent() }}
     <script id="input-inscription" type="application/json">{{ inscription | json_encode | raw }}</script>
     <script id="input-erreurs" type="application/json">{{ errors | json_encode | raw }}</script>
-    <script type="text/javascript">
-        const inscription = Object.assign(
-            {
-                prenom: "",
-                nom: "",
-                nomNaissance: "",
-                courriel: "",
-                motDePasse: "",
-                confirmation: "",
-                cguOk: true
-            },
-            JSON.parse(document.getElementById('input-inscription')?.textContent || "{}")
-        );
-        const erreurs = Object.assign({}, JSON.parse(document.getElementById('input-erreurs')?.textContent || "{}"));
 
-        function formulaireInscription() {
-            return {
-                erreurs: {...erreurs},
-                submissible: false,
-                inscription: {...inscription},
-                avant: {},
-                revelations: {
-                    motDePasse: false,
-                    confirmation: false,
-                },
-                estRempli(valeur) {
-                    return !!valeur && valeur.trim().length > 0;
-                },
-                estCourrielValide(valeur) {
-                    return !!valeur && valeur.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-                },
-                verifier(inscription) {
-                    if (this.avant?.prenom !== inscription.prenom) {
-                        if (!this.estRempli(inscription.prenom)) {
-                            this.erreurs.prenom = "";
-                        } else {
-                            delete this.erreurs.prenom;
-                        }
-                    }
+    {{ vite_entry_script_tags('bris_porte_creation_de_compte') }}
 
-                    if (this.avant?.nom !== inscription.nom) {
-                        if (!this.estRempli(inscription.nom)) {
-                            this.erreurs.nom = "";
-                        } else {
-                            delete this.erreurs.nom;
-                        }
-                    }
-
-                    if (this.avant?.courriel !== inscription.courriel) {
-                        if (!this.estCourrielValide(inscription.courriel)) {
-                            this.erreurs.courriel = inscription.courriel ? "L'adresse courriel n'est pas valide" : false;
-                        } else {
-                            delete this.erreurs.courriel;
-                        }
-                    }
-
-                    // Vérification du mot de passe:
-                    if (
-                        (this.avant?.motDePasse !== inscription.motDePasse) ||
-                        (this.avant?.confirmation !== inscription.confirmation)
-                    ) {
-                        delete this.erreurs.motDePasse;
-                        delete this.erreurs.confirmation;
-                        if (inscription.motDePasse.length < 8) {
-                            this.erreurs.motDePasse = "Le mot de passe doit contenir au moins 8 caractères, dont 1 chiffre";
-                        } else if (!inscription.motDePasse.match(/\d/)) {
-                            this.erreurs.motDePasse = "Le mot de passe doit contenir au moins 1 chiffre";
-                        } else if (this.estRempli(inscription.motDePasse) && inscription.confirmation !== inscription.motDePasse) {
-                            this.erreurs.confirmation = "Les deux mots de passe doivent être identiques";
-                        }
-                    }
-
-                    /*
-                    if (this.avant?.cguOk !== inscription.cguOk) {
-                        if (!inscription.cguOk) {
-                            this.erreurs.cguOk = "";
-                        } else {
-                            delete this.erreurs.cguOk;
-                        }
-                    }
-                    */
-
-                    this.submissible = Object.keys(this.erreurs).length === 0;
-
-                    this.avant = {...inscription};
-                },
-                soumettre(event) {
-                    if (this.submissible) {
-                        event.target.closest('form')?.submit();
-                    }
-                },
-            };
-        };
-    </script>
 {% endblock javascripts %}
 

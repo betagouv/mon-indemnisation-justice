@@ -3,7 +3,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { castNumber } from '../utils/cast';
 
 
-const SecuriteSociale = ({codeSS, numeroSS, setCodeSS, setNumeroSS}) => {
+const SecuriteSociale = ({ numeroSS, setNumeroSS}) => {
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters">

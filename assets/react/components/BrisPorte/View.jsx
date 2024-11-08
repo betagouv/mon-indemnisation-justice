@@ -22,12 +22,6 @@ const BrisPorteView = ({brisPorte}) => {
       </div>
       <div className="fr-col-12">
         <ReadOnlyInput
-          label="S'agit-il d'une erreur des services de police ?"
-          value={brisPorte.isErreurPorte ? "Oui" : "Non"}
-        />
-      </div>
-      <div className="fr-col-12">
-        <ReadOnlyInput
           label="Si NON, préciser l'identité de la personne recherchée"
           value={brisPorte.identitePersonneRecherchee}
         />

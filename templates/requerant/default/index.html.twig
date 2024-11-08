@@ -24,7 +24,7 @@
                             {% for dossier in dossiers %}
                             <tr>
                                 <td>{{ dossier.reference }}</td>
-                                <td>Demande d'indemnisation constituée</td>
+                                <td>Demande d'indemnisation déposée</td>
                                 <td>{{ dossier.dateDeclaration| default(dossier.dateCreation)|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY, HH'h'mm") }}</td>
                                 <td>{{ dossier.raccourci }}</td>
                                 <td>

@@ -16,7 +16,7 @@ class TestEligibilite
     public function toArray(): array
     {
         return [
-            'departerment' => $this->departement,
+            'departement' => $this->departement->getCode(),
             'estVise' => $this->estVise,
             'estRecherche' => $this->estRecherche,
             'estProprietaire' => $this->estProprietaire,

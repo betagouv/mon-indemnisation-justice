@@ -9,7 +9,6 @@ import { castDate } from '../utils/cast';
 const PersonnePhysique = function({personnePhysique}) {
 
   const [numeroSS, setNumeroSS]=useState(personnePhysique.numeroSecuriteSociale??"");
-  const [codeSS, setCodeSS]=useState(personnePhysique.codeSecuriteSociale??"");
   const [civilite,setCivilite]=useState(personnePhysique.civilite??"");
   const [nom, setNom]=useState(personnePhysique.nom??"");
   const [prenom1, setPrenom1]=useState(personnePhysique.prenom1??"");
@@ -27,12 +26,11 @@ const PersonnePhysique = function({personnePhysique}) {
   function mustBeRecorded() {
     const test =
       (numeroSS !== personnePhysique.numeroSecuriteSociale) ||
-      (codeSS !== personnePhysique.codeSecuriteSociale) ||
       (civilite !== personnePhysique.civilite) ||
       (nom !== personnePhysique.nom) ||
       (prenom1 !== personnePhysique.prenom1) ||
       (nomNaissance !== personnePhysique.nomNaissance) ||
-      (dateNaissance !== personnePhysique.dateNaissance) ||
+      (dateNaissance !== (personnePhysique.dateNaissance || "")) ||
       (communeNaissance !== personnePhysique.communeNaissance) ||
       (true === recordActived)
     ;
@@ -49,9 +47,12 @@ const PersonnePhysique = function({personnePhysique}) {
     if(false === mustBeRecorded())
       return;
     const url = Routing.generate('_api_personne_physique_patch',{id:personnePhysique.id});
-    const data = { nom:nom, nomNaissance: nomNaissance,
-      prenom1: prenom1, codeSecuriteSociale: codeSS,
-      communeNaissance: communeNaissance, numeroSecuriteSociale: numeroSS
+    const data = {
+        nom:nom,
+        nomNaissance: nomNaissance,
+        prenom1: prenom1,
+        communeNaissance: communeNaissance,
+        numeroSecuriteSociale: numeroSS
     };
     if(civilite) { data['civilite']=civilite }
     if(dateNaissance) { data['dateNaissance']=dateNaissance }
@@ -67,7 +68,7 @@ const PersonnePhysique = function({personnePhysique}) {
         .then((data) => {})
       ;
     }, KEY_UP_TIMER_DELAY);
-  },[codeSS, nom, nomNaissance, numeroSS, prenom1,
+  },[nom, nomNaissance, numeroSS, prenom1,
     civilite, dateNaissance, communeNaissance, numeroSS
   ]);
 
@@ -135,9 +136,7 @@ const PersonnePhysique = function({personnePhysique}) {
         </div>
         <div className="fr-col-lg-6 fr-col-12">
           <SecuriteSociale
-            codeSS={codeSS}
             numeroSS={numeroSS}
-            setCodeSS={setCodeSS}
             setNumeroSS={setNumeroSS}
           />
         </div>
