@@ -18,7 +18,7 @@ enum BrisPorteStatut: string
     {
         return match ($this) {
             self::EN_COURS_DE_CONSTITUTION => "Demande d'indemnisation en cours de constitution",
-            self::CONSTITUE => "Demande d'indemnisation constituée",
+            self::CONSTITUE => "Demande d'indemnisation déposée",
             self::RENVOI_EN_CONSTITUTION => "Demande de pièce(s) complémentaire(s) sur la demande d'indemnisation",
             self::VALIDE => "Demande d'indemnisation validée (en attente signature)",
             self::REJETE => "Demande d'indemnisation rejetée (en attente signature)",

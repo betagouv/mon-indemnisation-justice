@@ -25,7 +25,6 @@ const SpecificRecapitulatif = ({brisPorte}) => {
       </dl>
         <dl className="fr-mb-2w">
           <dd>Porte blindée : <strong>{brisPorte.isPorteBlindee? 'Oui' : 'Non'}</strong></dd>
-          <dd>Erreur de porte : <strong>{brisPorte.isErreurPorte? 'Oui' : 'Non'}</strong></dd>
         </dl>
         <div className="fr-mb-2w">
           <label>J'effectue ma demande en qualité de : <strong>{brisPorte.qualiteRequerant}</strong></label>

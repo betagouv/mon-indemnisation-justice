@@ -97,11 +97,14 @@ class BrisPorte
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateOperationPJ = null;
 
+    #[ORM\ManyToOne(targetEntity: GeoDepartement::class)]
+    #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code', onDelete: 'SET NULL')]
+    protected GeoDepartement $departement;
+
     #[Groups(['prejudice:read', 'prejudice:write'])]
     #[ORM\Column(options: ['default' => false])]
     private bool $isPorteBlindee = false;
 
-    #[Groups(['prejudice:read', 'prejudice:write'])]
     #[ORM\Column(options: ['default' => false])]
     private bool $isErreurPorte = false;
 
@@ -435,6 +438,17 @@ class BrisPorte
     public function setAContactBailleur(?bool $aContactBailleur): BrisPorte
     {
         $this->aContactBailleur = $aContactBailleur;
+        return $this;
+    }
+
+    public function getDepartement(): GeoDepartement
+    {
+        return $this->departement;
+    }
+
+    public function setDepartement(GeoDepartement $departement): BrisPorte
+    {
+        $this->departement = $departement;
         return $this;
     }
 

@@ -3,12 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\AgentRepository;
+use App\Repository\GeoDepartementRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Table(name: 'geo_departements')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: GeoDepartementRepository::class)]
 class GeoDepartement
 {
     #[ORM\Id]

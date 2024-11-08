@@ -1,8 +1,10 @@
 {
-   "compilerOptions": {
+  "compilerOptions": {
     "module": "ESNext",
+    "moduleResolution": "NodeNext",
     "jsx": "react",
-     "esModuleInterop": true,
-     "resolveJsonModule": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "types": ["vite/client", "vitest/globals"]
   }
 }

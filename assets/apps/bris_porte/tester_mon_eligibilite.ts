@@ -3,13 +3,14 @@ import { createApp } from 'petite-vue';
 class Departement {
     code: string;
     nom: string;
-    estDeploye: boolean;
 }
 
 const args = JSON.parse(document.getElementById('vue-arguments')?.textContent || "{}");
-console.log(args)
 
-const departements = (args?.departements || []) as Departement[];
+const departements = (args?.departements.map(({code, nom}) => ({
+    code,
+    nom: `${code.padStart(2, '0')} - ${nom}`
+})) || []) as Departement[];
 
 console.log(departements)
 

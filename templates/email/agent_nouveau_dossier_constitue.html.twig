@@ -2,7 +2,7 @@
 
 {% import "email/_macros.twig" as email %}
 
-{% block subject %}Mon indemnisation justice : nouveau dossier d'indemnisation de bris de porte déposé{% endblock subject %}
+{% block subject %}Mon Indemnisation Justice : nouveau dossier d'indemnisation de bris de porte déposé{% endblock subject %}
 
 {% block entete %}
 Nouveau dossier d'indemnisation de bris de porte déposé<br/>
@@ -42,6 +42,33 @@ déposé, avec les détails suivants :
         Courriel : <a href="mailto:{{ brisPorte.requerant.email }}">{{ brisPorte.requerant.email }}</a>
     </li>
 </ul>
+
+<h4>Test d'éligibilité</h4>
+<ul>
+    <li>
+        Département: <b>{{ brisPorte.departement }}</b>
+    </li>
+    <li>
+        Est la personne visée par l'opération ? <b>{{ brisPorte.estVise ? 'Oui' : 'Non' }}</b>
+    </li>
+    <li>
+        Hébergeait la personne recherchée par l'opération ? <b>{{ brisPorte.estHebergeant ? 'Oui' : 'Non' }}</b>
+    </li>
+    {% if not brisPorte.estVise and not brisPorte.estHebergeant %}
+        <li>
+            Situation vis-à-vis du logement: <b>{{ brisPorte.estProprietaire ? 'Propriétaire' : 'Locataire' }}</b>
+        </li>
+        <li>
+            Assurance contactée ? <b>{{ brisPorte.aContactAssurance ? 'Oui' : 'Non' }}</b>
+        </li>
+        {% if not brisPorte.estProprietaire %}
+            <li>
+                Bailleur contacté ? <b>{{ brisPorte.aContactBailleur ? 'Oui' : 'Non' }}</b>
+            </li>
+        {% endif %}
+    {% endif %}
+</ul>
+
 <h4>Bris de porte</h4>
 <ul>
     <li>
@@ -60,9 +87,6 @@ déposé, avec les détails suivants :
     <li>
         Attestation remise à : <b>{{ brisPorte.receveurAttestation.nomComplet }}</b>
         {% if brisPorte.receveurAttestation.qualiteRequerant %}, en qualité de <b>{{ brisPorte.receveurAttestation.qualiteRequerant.libelle }}{% if brisPorte.receveurAttestation.qualiteRequerant == 'AUT' %}({{ brisPorte.receveurAttestation.precision }}){% endif %}</b>{% endif %}
-    </li>
-    <li>
-        Erreur de la Police: <b>{% if brisPorte.isErreurPorte %}Oui{% else %}non{% endif %}</b>
     </li>
     <li>
         Porte blindée: <b>{% if brisPorte.isPorteBlindee %}Oui{% else %}non{% endif %}</b>
