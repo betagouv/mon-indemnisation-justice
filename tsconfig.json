@@ -4,6 +4,7 @@
     "moduleResolution": "NodeNext",
     "jsx": "react",
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["vite/client", "vitest/globals"]
   }
 }

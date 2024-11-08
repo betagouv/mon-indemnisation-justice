@@ -10,7 +10,6 @@ const BrisPorte = ({brisPorte}) => {
 
   const [dateOperationPJ, setDateOperationPJ]=useState(castDate(brisPorte.dateOperationPJ??""));
   const [isPorteBlindee, setIsPorteBlindee]=useState(brisPorte.isPorteBlindee);
-  const [isErreurPorte, setIsErreurPorte]=useState(brisPorte.isErreurPorte);
   const [identitePersonneRecherchee, setIdentitePersonneRecherchee]=useState(brisPorte.identitePersonneRecherchee??'');
   const [nomRemiseAttestation, setNomRemiseAttestation]=useState(brisPorte.nomRemiseAttestation??'');
   const [prenomRemiseAttestation, setPrenomRemiseAttestation]=useState(brisPorte.prenomRemiseAttestation??'');
@@ -32,7 +31,6 @@ const BrisPorte = ({brisPorte}) => {
     const test =
     !checkDate(dateOperationPJ,brisPorte.dateOperationPJ)||
     (isPorteBlindee!==brisPorte.isPorteBlindee)||
-    (isErreurPorte!==brisPorte.isErreurPorte)||
     !checkString(identitePersonneRecherchee,brisPorte.identitePersonneRecherchee)||
     !checkString(nomRemiseAttestation,brisPorte.nomRemiseAttestation)||
     !checkString(prenomRemiseAttestation,brisPorte.prenomRemiseAttestation)||
@@ -52,9 +50,12 @@ const BrisPorte = ({brisPorte}) => {
       return;
 
     const url =Routing.generate('_api_bris_porte_patch',{id:brisPorte.id});
-    const data = { dateOperationPJ: formatDate(dateOperationPJ), isPorteBlindee: isPorteBlindee,
-      isErreurPorte: isErreurPorte,identitePersonneRecherchee: identitePersonneRecherchee,
-      nomRemiseAttestation: nomRemiseAttestation, prenomRemiseAttestation: prenomRemiseAttestation,
+    const data = {
+      dateOperationPJ: formatDate(dateOperationPJ),
+      isPorteBlindee: isPorteBlindee,
+      identitePersonneRecherchee: identitePersonneRecherchee,
+      nomRemiseAttestation: nomRemiseAttestation,
+      prenomRemiseAttestation: prenomRemiseAttestation,
       qualiteRequerant: formatUrl(qualiteRequerant), precisionRequerant: precisionRequerant
     };
 
@@ -71,7 +72,7 @@ const BrisPorte = ({brisPorte}) => {
         .catch(() => {})
       ;
     },KEY_UP_TIMER_DELAY);
-  },[dateOperationPJ,isPorteBlindee,isErreurPorte,identitePersonneRecherchee,
+  },[dateOperationPJ,isPorteBlindee,identitePersonneRecherchee,
     nomRemiseAttestation, prenomRemiseAttestation, qualiteRequerant,
     precisionRequerant
   ]);
@@ -107,20 +108,8 @@ const BrisPorte = ({brisPorte}) => {
               />
             </div>
             <div className="fr-col-12">
-              <RadioButtons
-                hintText="Se référer aux mentions figurant sur l'attestation d'informations"
-                legend="S'agit-il d'une erreur des services de police ?"
-                orientation='horizontal'
-                options={[
-                  {label: "Oui",nativeInputProps: {checked: (isErreurPorte === true),onChange: ()=> setIsErreurPorte(true)}},
-                  {label: "Non",nativeInputProps: {checked: (isErreurPorte !== true),onChange: ()=> setIsErreurPorte(false)}},
-                ]}
-              />
-            </div>
-            {!isErreurPorte &&
-            <div className="fr-col-12">
               <Input
-                label="Si NON, préciser l'identité de la personne recherchée"
+                label="Si vous la connaissez, précisez l'identité de la personne recherchée"
                 nativeInputProps={{
                   value: identitePersonneRecherchee,
                   onChange: ev=>setIdentitePersonneRecherchee(ev.target.value),
@@ -128,7 +117,6 @@ const BrisPorte = ({brisPorte}) => {
                 }}
               />
             </div>
-            }
             <div className="fr-col-12">
               <Requerant
                 qualiteRequerant={qualiteRequerant}

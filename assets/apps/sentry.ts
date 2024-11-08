@@ -7,7 +7,7 @@ if (import.meta.env?.VITE_SENTRY_DSN) {
 
     integrations: [
       Sentry.feedbackIntegration({
-        // Additional SDK configuration goes in here, for example:
+        // https://docs.sentry.io/platforms/javascript/user-feedback/configuration/
         colorScheme: "system",
         showEmail: false,
         isNameRequired: true,
