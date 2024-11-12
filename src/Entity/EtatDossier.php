@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\EtatDossierRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 #[ORM\Entity(repositoryClass: EtatDossierRepository::class)]
 #[ORM\Table(name: 'dossier_etats')]

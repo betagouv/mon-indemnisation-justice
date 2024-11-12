@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -26,6 +25,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     ]
 )]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'bris_porte')]
 class BrisPorte
 {
@@ -45,7 +45,15 @@ class BrisPorte
     /** @var Collection<EtatDossier> $historiqueEtats */
     protected Collection $historiqueEtats;
 
+    #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
+    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ?EtatDossier $etatDossier = null;
+
+    #[ORM\PreRemove]
+    public function onPreRemove(): void
+    {
+        $this->etatDossier = null;
+    }
 
     #[Groups('prejudice:read')]
     #[Groups('dossier:lecture')]
@@ -206,9 +214,6 @@ class BrisPorte
 
     public function getEtatDossier(): ?EtatDossier
     {
-        if (null === $this->etatDossier) {
-            $this->etatDossier = $this->historiqueEtats->last();
-        }
         return $this->etatDossier;
     }
 
