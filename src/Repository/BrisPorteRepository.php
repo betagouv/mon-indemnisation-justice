@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\BrisPorte;
-use App\Entity\EtatDossier;
 use App\Entity\EtatDossierType;
 use App\Entity\Requerant;
 use App\Service\PasswordGenerator;
@@ -40,13 +39,29 @@ class BrisPorteRepository extends ServiceEntityRepository
      */
     public function getDossiersConstitues(): array
     {
-        $qb = $this->createQueryBuilder('b');
-
-        return $qb
-            ->from(BrisPorte::class, 'bp')
-            ->where($qb->expr()->isNotNull('bp.dateDeclaration'))
+        return $this->createQueryBuilder('b')
+            ->join('b.etatDossier', 'e')
+            ->where('e.etat = :etat')
+            ->setParameter('etat', EtatDossierType::DOSSIER_DEPOSE->value)
             ->getQuery()
             ->getResult();
+    }
+
+    public function decompteParEtat(): array
+    {
+        return array_merge(
+            ...array_map(
+                fn(array $row) => [
+                    $row['etat']->value => $row['nbDossiers']
+                ],
+                $this->createQueryBuilder('b')
+                ->join('b.etatDossier', 'e')
+                ->select('e.etat', 'COUNT(b.id) AS nbDossiers')
+                ->groupBy('e.etat')
+                ->getQuery()
+                ->getArrayResult()
+            )
+        );
     }
 
     public function nouveauDossier(Requerant $requerant): BrisPorte

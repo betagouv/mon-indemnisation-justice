@@ -6,6 +6,7 @@ namespace App\Controller\Agent;
 
 use App\Entity\Agent;
 use App\Entity\BrisPorte;
+use App\Repository\BrisPorteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,11 +16,18 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
 class BrisPorteController extends AbstractController
 {
+
+    public function __construct(
+        protected readonly BrisPorteRepository $brisPorteRepository,
+    ) {
+    }
+
     #[Route('/consulter/{id}', name: 'agent_bris_porte_consulter', methods: ['GET'])]
-    public function consulter(BrisPorte $brisPorte): Response
+    public function consulter(BrisPorte $dossier): Response
     {
         return $this->render('agent/bris_porte/consulter_bris_porte.html.twig', [
-            'brisPorte' => $brisPorte,
+            'decompte' => $this->brisPorteRepository->decompteParEtat(),
+            'dossier' => $dossier,
         ]);
     }
 }

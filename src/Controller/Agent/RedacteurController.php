@@ -21,7 +21,10 @@ class RedacteurController extends AbstractController
     #[Route('/', name: 'app_agent_redacteur_accueil')]
     public function index(): Response
     {
+        dump($this->brisPorteRepository->decompteParEtat());
+
         return $this->render('agent/redacteur/index.html.twig', [
+            'decompte' => $this->brisPorteRepository->decompteParEtat(),
             'dossiers' => $this->brisPorteRepository->getDossiersConstitues(),
         ]);
     }
