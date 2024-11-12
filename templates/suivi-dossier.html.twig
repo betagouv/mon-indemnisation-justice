@@ -38,12 +38,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            {% for statut in statuts %}
+                                {% if dossier is not null %}
                                 <tr>
-                                    <td>{{ statut.date }}</td>
-                                    <td>{{ statut.libelle }}</td>
+                                    <td>{{ dossier.etatDossier.date|format_datetime(locale='fr',pattern="d MMMM YYYY") }}</td>
+                                    <td>{{ dossier.etatDossier.libelle }}</td>
                                 </tr>
-                            {% endfor %}
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
