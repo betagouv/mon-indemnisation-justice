@@ -36,24 +36,17 @@ class HomeController extends AbstractController
         /** @var string $raccourci */
         $raccourci = $request->get('raccourci') ?? '';
 
-        $statuts = [];
+        $dossier = null;
         if ($this->isCsrfTokenValid('suiviDeDossier', $request->getPayload()->get('_csrf_token'))) {
-            $brisPorte = $this
+            $dossier = $this
               ->em
               ->getRepository(BrisPorte::class)
               ->findOneBy(['raccourci' => $raccourci]);
-
-            if (null !== $brisPorte) {
-                $statuts[] = [
-                    'date' => $brisPorte->getDateDeclaration()->format('d/m/Y H:i'),
-                    'libelle' => $brisPorte->getLastStatut()->getLibelle(),
-                ];
-            }
         }
 
         return $this->render('suivi-dossier.html.twig', [
             'raccourci' => $raccourci,
-            'statuts' => $statuts,
+            'dossier' => $dossier,
         ]);
     }
 

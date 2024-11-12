@@ -28,9 +28,17 @@ final class Version20241108163213 extends AbstractMigration
         $this->addSql('ALTER TABLE dossier_etats ADD CONSTRAINT FK_71671FCF611C0C56 FOREIGN KEY (dossier_id) REFERENCES bris_porte (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE dossier_etats ADD CONSTRAINT FK_71671FCF3414710B FOREIGN KEY (agent_id) REFERENCES agents (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE dossier_etats ADD CONSTRAINT FK_71671FCF4A93DAA5 FOREIGN KEY (requerant_id) REFERENCES requerants (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE bris_porte ADD etat_actuel_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE bris_porte ADD CONSTRAINT FK_BC580EEDF90DA413 FOREIGN KEY (etat_actuel_id) REFERENCES dossier_etats (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_BC580EEDF90DA413 ON bris_porte (etat_actuel_id)');
+        $this->addSql(<<<SQL
+INSERT INTO dossier_etats (dossier_id, etat, date, requerant_id)
+SELECT
+    d.id AS dossier_id, 'DOSSIER_INITIE' AS etat, d.date_creation, d.requerant_id
+FROM bris_porte d
+UNION ALL
+SELECT
+    d.id AS dossier_id, 'DOSSIER_DEPOSE' AS etat, d.date_declaration, d.requerant_id
+FROM bris_porte d
+WHERE d.date_declaration IS NOT null
+SQL);
         $this->addSql('ALTER TABLE personne_physique DROP code_securite_sociale');
 
         // TODO migrer les données depuis les champs date

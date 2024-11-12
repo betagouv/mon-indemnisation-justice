@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -39,11 +40,11 @@ class BrisPorte
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected Requerant $requerant;
 
-    #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier')]
+    #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER')]
+    #[ORM\OrderBy(['dateEntree' => 'ASC'])]
+    /** @var Collection<EtatDossier> $historiqueEtats */
     protected Collection $historiqueEtats;
 
-    #[ORM\OneToOne(targetEntity: EtatDossier::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id')]
     protected ?EtatDossier $etatDossier = null;
 
     #[Groups('prejudice:read')]
@@ -198,14 +199,22 @@ class BrisPorte
     }
 
     #[Groups(['prejudice:read'])]
-    public function getLastStatut(): BrisPorteStatut
+    public function getLastStatut(): EtatDossier
     {
-        return null !== $this->dateDeclaration ? BrisPorteStatut::CONSTITUE : BrisPorteStatut::EN_COURS_DE_CONSTITUTION;
+        return $this->getEtatDossier();
+    }
+
+    public function getEtatDossier(): ?EtatDossier
+    {
+        if (null === $this->etatDossier) {
+            $this->etatDossier = $this->historiqueEtats->last();
+        }
+        return $this->etatDossier;
     }
 
     public function estConstitue(): bool
     {
-        return BrisPorteStatut::CONSTITUE === $this->getLastStatut();
+        return null !== $this->getDateDeclaration();
     }
 
     public function getDateCreation(): \DateTimeInterface
@@ -213,31 +222,16 @@ class BrisPorte
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): self
-    {
-        $this->dateCreation = $dateCreation;
-
-        return $this;
-    }
-
     public function getDateDeclaration(): ?\DateTimeInterface
     {
-        return $this->dateDeclaration;
-    }
-
-    public function setDateDeclaration(\DateTimeInterface $dateDeclaration): self
-    {
-        if (!$this->dateDeclaration) {
-            $this->dateDeclaration = $dateDeclaration;
-        }
-
-        return $this;
+        return $this->historiqueEtats
+            ->findFirst(fn (int $index, EtatDossier $etat) =>  EtatDossierType::DOSSIER_DEPOSE === $etat->getEtat()
+            )?->getDate();
     }
 
     public function setDeclare(): self
     {
         return $this
-            ->setDateDeclaration(new \DateTimeImmutable())
             ->changerStatut(EtatDossierType::DOSSIER_DEPOSE, requerant: true);
     }
 
