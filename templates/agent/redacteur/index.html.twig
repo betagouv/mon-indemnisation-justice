@@ -13,6 +13,35 @@
     </style>
 {% endblock stylesheets %}
 
+{% block modale %}
+    {{ parent() }}
+    {% set flash = app.flashes('success')|first %}
+    {% if flash %}
+        <dialog aria-labelledby="fr-modal-flash-success" role="dialog" id="fr-modal-flash-success"
+                class="fr-modal fr-modal--opened">
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                        <div class="fr-modal__body">
+                            <div class="fr-modal__header">
+                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
+                                        aria-controls="fr-modal-flash-success">Fermer
+                                </button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <div class="fr-alert fr-alert--success">
+                                    <h3 class="fr-alert__title">{{ flash.title }}</h3>
+                                    <p>{{ flash.message }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+    {% endif %}
+{% endblock modale %}
+
 {% block main %}
 
     <div class="fr-container fr-container--fluid">
@@ -30,7 +59,7 @@
                         <ul class="fr-sidemenu__list">
                             <li class="fr-sidemenu__item fr-sidemenu__item--active">
                                 <a class="fr-sidemenu__link" href="#" target="_self" aria-current="page">Nouveaux <p class="fr-badge fr-badge--new fr-badge--no-icon fr-mx-2v">
-                                    {{ decompte['DOSSIER_DEPOSE'] }}</p></a>
+                                    {{ decompte['DOSSIER_DEPOSE']|default(0) }}</p></a>
                             </li>
                             {#
                             <li class="fr-sidemenu__item fr-sidemenu__item--active">

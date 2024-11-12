@@ -43,9 +43,126 @@
             </div>
         </nav>
         <div class="fr-col-lg-9">
-            <h1>Dossier {{ dossier.reference }} <p class="fr-badge fr-badge--new">Nouveau</p></h1>
 
-            <p>À implémenter</p>
+
+
+            {#  Résumé de l'état + boutons #}
+            <div>
+
+                <h3>Dossier {{ dossier.reference }} <p class="fr-badge fr-badge--new">Nouveau</p></h3>
+
+                <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--right">
+                    <li>
+                        <form action="{{ url('agent_dossier_pre_valider', {'id': dossier.id }) }}" method="post">
+
+                            <input type="hidden" name="_token" value="{{ csrf_token('preValiderDossier') }}" />
+
+                            <button class="fr-btn fr-btn" type="submit">
+                                Valider le dossier
+                            </button>
+                        </form>
+                    </li>
+                    <li>
+                        <button class="fr-btn fr-btn--secondary">
+                            Refuser le dossier
+                        </button>
+
+                    </li>
+                </ul>
+
+            </div>
+
+
+            {# Onglets de navigation #}
+            <div class="fr-tabs fr-mt-2w">
+                <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
+                    <li role="presentation">
+                        <button id="tabpanel-404" class="fr-tabs__tab fr-icon-article-line fr-tabs__tab--icon-left"
+                                tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">
+                            Informations du dossier
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button id="tabpanel-405" class="fr-tabs__tab fr-icon-archive-line fr-tabs__tab--icon-left"
+                                tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">
+                            Documents
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button id="tabpanel-406" class="fr-tabs__tab fr-icon-chat-2-line fr-tabs__tab--icon-left" disabled
+                                tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-406-panel">Label
+                            Lettre synthèse
+                        </button>
+                    </li>
+                </ul>
+
+                <div
+                    id="tabpanel-404-panel"
+                    role="tabpanel"
+                    class="fr-tabs__panel fr-tabs__panel--selected"
+                    aria-labelledby="tabpanel-404"
+                    tabindex="0"
+                >
+                    <div style="display:flex; flex-direction:column;">
+                        <h5>Requérant</h5>
+
+                        <ul class="fr-list">
+                            <li>
+                                <b>Nom: </b> {{ dossier.requerant.personnePhysique.nom }}
+                            </li>
+                            <li>
+                                <b>Prénom: </b> {{ dossier.requerant.personnePhysique.prenom1 }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div style="display:flex; flex-direction:column;">
+                        <h5>
+                            Logement
+                        </h5>
+
+                        <ul>
+                            <li>
+                                <b>Adresse: </b> {{ dossier.adresse.libelle }}
+                            </li>
+                            <li>
+                                <b>Porte blindée: </b> {{ dossier.porteBlindee ? 'Oui' : 'Non' }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div
+                    id="tabpanel-405-panel"
+                     role="tabpanel"
+                    class="fr-tabs__panel"
+                    aria-labelledby="tabpanel-405"
+                    tabindex="0">
+
+
+                    <div style="display:flex; flex-direction:column;">
+                        <h5>Facture</h5>
+
+
+                        <iframe
+                            src="https://www.autoentrepreneur.urssaf.fr/portail/files/DocsUtiles/Autres%20docs/urssaf-modele-de-facture-pour-le"
+                            frameBorder="0"
+                            scrolling="auto"
+                            height="100%"
+                            width="100%"
+                        ></iframe>
+
+                    </div>
+
+
+
+
+
+                </div>
+
+
+            </div>
+
+
 
         </div>
     </div>
