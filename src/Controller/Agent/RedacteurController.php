@@ -24,19 +24,56 @@ class RedacteurController extends AbstractController
     #[Route('/', name: 'app_agent_redacteur_accueil')]
     public function index(): Response
     {
-        dump($this->brisPorteRepository->decompteParEtat());
+        /** @var $agent Agent */
+        $agent = $this->getUser();
+        if ($agent->hasRole(Agent::ROLE_AGENT_VALIDATEUR)) {
+            return $this->redirectToRoute('agent_redacteur_dossiers_a_valider');
+        }
 
-        return $this->render('agent/redacteur/index.html.twig', [
-            'decompte' => $this->brisPorteRepository->decompteParEtat(),
+        return $this->redirectToRoute('agent_redacteur_nouveaux_dossiers');
+    }
+
+    #[Route('/dossiers/nouveaux', name: 'agent_redacteur_nouveaux_dossiers')]
+    public function nouveauxDossiers(): Response
+    {
+        return $this->render('agent/redacteur/nouveaux_dossiers.html.twig', [
+            'decompte' => $this->getDecompteDossiers(),
             'dossiers' => $this->brisPorteRepository->getDossiersConstitues(),
+        ]);
+    }
+
+    #[Route('/dossiers/a-valider', name: 'agent_redacteur_dossiers_a_valider')]
+    public function dossiersAValider(): Response
+    {
+        return $this->render('agent/redacteur/dossiers_a_valider.html.twig', [
+            'decompte' => $this->getDecompteDossiers(),
+            'dossiers' => $this->brisPorteRepository->getDossiersAValider(),
+        ]);
+    }
+
+    #[Route('/dossiers/valides', name: 'agent_redacteur_dossiers_valides')]
+    public function dossiersValides(): Response
+    {
+        return $this->render('agent/redacteur/dossiers_acceptes.html.twig', [
+            'decompte' => $this->getDecompteDossiers(),
+            'dossiers' => $this->brisPorteRepository->getDossiersAValider(),
+        ]);
+    }
+
+    #[Route('/dossiers/refuses', name: 'agent_redacteur_dossiers_refuses')]
+    public function dossiersRefuses(): Response
+    {
+        return $this->render('agent/redacteur/dossiers_refuses.html.twig', [
+            'decompte' => $this->getDecompteDossiers(),
+            'dossiers' => $this->brisPorteRepository->getDossiersAValider(),
         ]);
     }
 
     #[Route('/dossier/{id}/consulter', name: 'agent_bris_porte_consulter', methods: ['GET'])]
     public function consulter(BrisPorte $dossier): Response
     {
-        return $this->render('agent/bris_porte/consulter_bris_porte.html.twig', [
-            'decompte' => $this->brisPorteRepository->decompteParEtat(),
+        return $this->render('agent/redacteur/consulter_bris_porte.html.twig', [
+            'decompte' => $this->getDecompteDossiers(),
             'dossier' => $dossier,
         ]);
     }
@@ -55,5 +92,19 @@ class RedacteurController extends AbstractController
         }
 
         return $this->redirectToRoute('app_agent_redacteur_accueil');
+    }
+
+    protected function getDecompteDossiers(): array
+    {
+        $decomptes = $this->brisPorteRepository->decompteParEtat();
+
+        // TODO: maybe cache
+
+        return [
+            'nouveaux' => $decomptes[EtatDossierType::DOSSIER_DEPOSE->value] ?? 0,
+            'aValider' => ($decomptes[EtatDossierType::DOSSIER_PRE_VALIDE->value] ?? 0) + ($decomptes[EtatDossierType::DOSSIER_PRE_REFUSE->value] ?? 0),
+            'acceptes' => $decomptes[EtatDossierType::DOSSIER_ACCEPTE->value] ?? 0,
+            'refuses' => $decomptes[EtatDossierType::DOSSIER_REFUSE->value] ?? 0
+        ];
     }
 }
