@@ -217,6 +217,17 @@ class BrisPorte
         return $this->etatDossier;
     }
 
+
+    public function getEtatPreValide(): ?EtatDossier
+    {
+        return $this->getEtat(EtatDossierType::DOSSIER_PRE_VALIDE) ?? $this->getEtat(EtatDossierType::DOSSIER_PRE_REFUSE);
+    }
+
+    public function getEtat(EtatDossierType $type): ?EtatDossier
+    {
+        return $this->historiqueEtats->findFirst(fn (int $index, EtatDossier $etat) => $etat->getEtat() === $type);
+    }
+
     public function estConstitue(): bool
     {
         return null !== $this->getDateDeclaration();

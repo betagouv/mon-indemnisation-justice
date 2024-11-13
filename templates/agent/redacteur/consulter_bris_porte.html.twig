@@ -17,34 +17,9 @@
 <div class="fr-container fr-container--fluid">
     <div class="fr-grid-row">
 
-        <nav class="fr-sidemenu fr-col-lg-3" aria-labelledby="fr-sidemenu-title">
-            <div class="fr-sidemenu__inner">
-                {#
-                <button class="fr-sidemenu__btn" hidden aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
-                    Dans cette rubrique
-                </button>
-                 #}
-                <div class="fr-collapse" id="fr-sidemenu-wrapper">
-                    <div class="fr-sidemenu__title" id="fr-sidemenu-title">Tous les dossiers</div>
-                    <ul class="fr-sidemenu__list">
-                        <li class="fr-sidemenu__item fr-sidemenu__item--active">
-                            <a class="fr-sidemenu__link" href="#" target="_self" aria-current="page">Nouveaux <p class="fr-badge fr-badge--new fr-badge--no-icon fr-mx-2v">
-                                {{ decompte['DOSSIER_DEPOSE'] }}</p></a>
-                        </li>
-                        {#
-                        <li class="fr-sidemenu__item fr-sidemenu__item--active">
-                            <a class="fr-sidemenu__link" href="#" target="_self" aria-current="page">Nouveaux <p class="fr-badge fr-badge--new fr-badge--no-icon fr-mx-2v">
-                                {{ decompte['DOSSIER_DEPOSE'] }}</p></a>
-                        </li>
-                        #}
+        {% include 'agent/redacteur/_menu_lateral.html.twig' %}
 
-                    </ul>
-                </div>
-            </div>
-        </nav>
         <div class="fr-col-lg-9">
-
-
 
             {#  Résumé de l'état + boutons #}
             <div>

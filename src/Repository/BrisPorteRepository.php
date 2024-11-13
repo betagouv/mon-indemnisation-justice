@@ -33,16 +33,36 @@ class BrisPorteRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne la liste des dossiers constitués (i.e. dont la valeur de `dateDeclaration` est non nulle).
+     * Retourne la liste des dossiers constitués (i.e. dont l'état actuel est `DOSSIER_DEPOSE`).
      *
      * @return BrisPorte[]
      */
     public function getDossiersConstitues(): array
     {
+        return $this->getDossiersParEtat(EtatDossierType::DOSSIER_DEPOSE);
+    }
+
+    /**
+     * Retourne la liste des dossiers à valider par la personne chef•fe de service (i.e. dont l'état actuel est `DOSSIER_PRE_VALIDE` ou `DOSSIER_PRE_REFUSE`).
+     *
+     * @return BrisPorte[]
+     */
+    public function getDossiersAValider(): array
+    {
+        return $this->getDossiersParEtat(EtatDossierType::DOSSIER_PRE_VALIDE, EtatDossierType::DOSSIER_PRE_REFUSE);
+    }
+
+    /**
+     * @param EtatDossierType[] $etats
+     *
+     * @return BrisPorte[]
+     */
+    protected function getDossiersParEtat(...$etats): array
+    {
         return $this->createQueryBuilder('b')
             ->join('b.etatDossier', 'e')
-            ->where('e.etat = :etat')
-            ->setParameter('etat', EtatDossierType::DOSSIER_DEPOSE->value)
+            ->where('e.etat in (:etats)')
+            ->setParameter('etats', $etats)
             ->getQuery()
             ->getResult();
     }
@@ -51,8 +71,8 @@ class BrisPorteRepository extends ServiceEntityRepository
     {
         return array_merge(
             ...array_map(
-                fn(array $row) => [
-                    $row['etat']->value => $row['nbDossiers']
+                fn (array $row) => [
+                    $row['etat']->value => $row['nbDossiers'],
                 ],
                 $this->createQueryBuilder('b')
                 ->join('b.etatDossier', 'e')
