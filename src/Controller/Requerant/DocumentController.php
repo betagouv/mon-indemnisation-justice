@@ -33,7 +33,7 @@ class DocumentController extends AbstractController
     public function upload(LiasseDocumentaire $liasseDocumentaire, Request $request, string $type): JsonResponse
     {
         $files = $request->files->all();
-        dump($files);
+
         /** @var UploadedFile $file */
         foreach ($files as $file) {
             $content = $file->getContent();
