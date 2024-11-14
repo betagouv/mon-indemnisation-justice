@@ -1,19 +1,31 @@
 # Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+
+# config/packages/flysystem.yaml
+
+services:
+    scaleway_spaces_client:
+        class: 'AsyncAws\S3\S3Client'
+        arguments:
+            -  endpoint: '%env(resolve:SCW_HOST)%'
+               accessKeyId: '%env(resolve:SCW_ACCESS_KEY)%'
+               accessKeySecret: '%env(resolve:SCW_SECRET_KEY)%'
+               region: '%env(resolve:SCW_REGION)%'
+
 flysystem:
     storages:
         default.storage:
-            adapter: 'aws'
+            adapter: 'asyncaws'
             options:
-                client: Aws\S3\S3Client
+                client: 'scaleway_spaces_client'
                 bucket: '%env(resolve:SCW_BUCKET)%'
 
-when@dev:
-    flysystem:
-        storages:
-            default.storage:
-                adapter: 'local'
-                options:
-                    directory: '%kernel.project_dir%/documents/dev'
+#when@dev:
+#    flysystem:
+#        storages:
+#            default.storage:
+#                adapter: 'local'
+#                options:
+#                    directory: '%kernel.project_dir%/documents/dev'
 
 when@test:
     flysystem:
