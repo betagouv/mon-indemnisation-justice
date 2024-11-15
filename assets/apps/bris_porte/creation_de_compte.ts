@@ -6,6 +6,7 @@ const inscription = Object.assign(
         nom: "",
         nomNaissance: "",
         courriel: "",
+        telephone: "",
         motDePasse: "",
         confirmation: "",
         cguOk: true
@@ -54,6 +55,15 @@ createApp({
                 this.erreurs.courriel = inscription.courriel ? "L'adresse courriel n'est pas valide" : false;
             } else {
                 delete this.erreurs.courriel;
+            }
+        }
+
+
+        if (this.avant?.telephone !== inscription.telephone) {
+            if (!this.estRempli(inscription.telephone)) {
+                this.erreurs.telephone = "";
+            } else {
+                delete this.erreurs.telephone;
             }
         }
 
