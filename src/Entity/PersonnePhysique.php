@@ -69,10 +69,6 @@ class PersonnePhysique
 
     #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $portable = null;
-
-    #[Groups(['user:read','prejudice:read','user:write'])]
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $communeNaissance = null;
 
     #[Groups(['user:read','prejudice:read','user:write'])]
@@ -204,18 +200,6 @@ class PersonnePhysique
     public function setTelephone(?string $telephone): static
     {
         $this->telephone = $telephone;
-
-        return $this;
-    }
-
-    public function getPortable(): ?string
-    {
-        return $this->portable;
-    }
-
-    public function setPortable(?string $portable): static
-    {
-        $this->portable = $portable;
 
         return $this;
     }

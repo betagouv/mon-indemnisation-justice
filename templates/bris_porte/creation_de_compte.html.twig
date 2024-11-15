@@ -105,7 +105,6 @@
 
                                 <div class="fr-py-2w">
                                     <p class="fr-text--sm">Vous possédez déjà un compte ? <a href="{{ url('app_login') }}"  class="fr-link fr-icon-arrow-right-line fr-link--icon-right">Connectez-vous</a></p>
-
                                 </div>
 
                                 <p class="fr-my-2w">Tous les champs sont obligatoires</p>
@@ -163,7 +162,7 @@
                                             />
                                         </div>
                                     </div>
-                                    <div class="fr-col-12">
+                                    <div class="fr-col-6">
                                         <div class="fr-input-group" :class="{ 'fr-input-group--error': !!erreurs?.courriel }">
                                             <label class="fr-label" for="inscription-champs-courriel">Adresse courriel</label>
                                             <input name="courriel"
@@ -181,6 +180,19 @@
                                                >
                                                 {% verbatim %}{{ erreurs?.courriel }}{% endverbatim %}
                                             </p>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-6">
+                                        <div class="fr-input-group" :class="{ 'fr-input-group--error': !!erreurs?.telephone }">
+                                            <label class="fr-label" for="inscription-champs-telephone">Numéro de téléphone</label>
+                                            <input name="telephone"
+                                                   id="inscription-champs-telephone"
+                                                   class="fr-input"
+                                                   :class="{ 'fr-input--error': !!erreurs?.telephone }"
+                                                   aria-describedby="inscription-champs-telephone-error"
+                                                   type="text"
+                                                   v-model="inscription.telephone"
+                                            />
                                         </div>
                                     </div>
                                     {# Mot de passe #}

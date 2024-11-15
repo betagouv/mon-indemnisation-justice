@@ -38,6 +38,7 @@ class InscriptionType extends AbstractType
             ->add('nom', TextType::class)
             ->add('nomNaissance', TextType::class)
             ->add('courriel', TextType::class)
+            ->add('telephone', TextType::class)
             ->add('motDePasse', TextType::class)
             ->add('confirmation', TextType::class)
             ->add('cguOk', CheckboxType::class)
