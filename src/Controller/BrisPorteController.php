@@ -109,6 +109,8 @@ class BrisPorteController extends AbstractController
                     $requerant->getPersonnePhysique()
                         ->setCivilite($inscription->civilite)
                         ->setPrenom1($inscription->prenom)
+                        ->setEmail($inscription->courriel)
+                        ->setTelephone($inscription->telephone)
                         ->setNom($inscription->nom)
                         ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom)
                     ;

@@ -23,6 +23,9 @@ class Inscription
     #[UniqueRequerantCourriel]
     public string $courriel;
 
+    #[Assert\NotBlank(message: 'Le numéro de téléphone est manquant', allowNull: false)]
+    public string $telephone;
+
     #[Assert\Length(min: 8, minMessage: 'Votre mot de passe doit contenir au moins 8 caractères')]
     #[Assert\Regex("/\d/", message: 'Votre mot de passe doit contenir au moins 1 chiffre')]
     public string $motDePasse = '';
