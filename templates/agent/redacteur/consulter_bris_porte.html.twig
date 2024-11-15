@@ -5,13 +5,99 @@
 {% block stylesheets %}
     {{ parent() }}
 
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+
     <style>
         main {
             margin-top: 2rem;
             margin-bottom: 2rem;
         }
+
+
+        .previsualisation-lettre {
+            all: revert;
+            border: 1px solid var(--border-default-grey);
+            padding: 25px;
+        }
+
+        .previsualisation-lettre * {
+            all: revert;
+        }
+
+        .row {
+          display: inline-block;
+          width: 100%;
+        }
     </style>
 {% endblock stylesheets %}
+
+{% block modale %}
+    {{ parent() }}
+
+    <dialog aria-labelledby="fr-modal-flash-success" role="alertdialog" id="fr-modal-pre-valider"
+            class="fr-modal">
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                        <div class="fr-modal__body">
+                            <form action="{{ url('agent_dossier_statuer_pre_validation', {'id': dossier.id }) }}" method="post">
+
+                                <div class="fr-modal__header">
+                                    <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
+                                            aria-controls="fr-modal-pre-valider">Fermer
+                                    </button>
+                                </div>
+                                <div class="fr-modal__content">
+
+                                    <h2 id="fr-modal-2-title" class="fr-modal__title">
+                                        Accepter la demande d'indemnisation du dossier {{ dossier.reference }}
+                                    </h2>
+
+
+                                    <input type="hidden" name="_token" value="{{ csrf_token('preValiderDossier') }}" />
+
+                                    <div class="fr-input-group">
+                                        <label class="fr-label" for="pre-valider-form-indemnisation">
+                                          Montant alloué à l'indemnisation
+                                        </label>
+                                        <input
+                                            class="fr-input fr-input--error"
+                                            aria-describedby="text-input-error-desc-error"
+                                            type="number"
+                                            id="pre-valider-form-indemnisation"
+                                            name="indemnisation"
+                                            value="300"
+                                            min="1"
+                                            max="10000"
+                                            step="1"
+                                        />
+                                        {#
+                                        <p id="text-input-error-desc-error" class="fr-error-text">
+                                          Texte d’erreur obligatoire
+                                        </p>
+                                         #}
+                                    </div>
+
+                                </div>
+
+                                <div class="fr-modal__footer">
+                                    <div class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left">
+                                        <button class="fr-btn fr-btn--tertiary-no-outline">
+                                            Annuler
+                                        </button>
+                                        <button class="fr-btn fr-btn fr-icon-checkbox-circle-line fr-btn--icon-left" type="submit   ">
+                                            Accepter
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+
+{% endblock modale %}
 
 {% block main %}
 <div class="fr-container fr-container--fluid">
@@ -27,15 +113,11 @@
                 <h3>Dossier {{ dossier.reference }} <p class="fr-badge fr-badge--new">Nouveau</p></h3>
 
                 <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--right">
+                    {#  Actions, à adapter en fonction de l'état du dossier et des droits de l'agent #}
                     <li>
-                        <form action="{{ url('agent_dossier_pre_valider', {'id': dossier.id }) }}" method="post">
-
-                            <input type="hidden" name="_token" value="{{ csrf_token('preValiderDossier') }}" />
-
-                            <button class="fr-btn fr-btn" type="submit">
-                                Valider le dossier
-                            </button>
-                        </form>
+                        <button class="fr-btn fr-btn" type="button" data-fr-opened="false" aria-controls="fr-modal-pre-valider">
+                            Accepter l'indemnisation
+                        </button>
                     </li>
                     <li>
                         <button class="fr-btn fr-btn--secondary">
@@ -53,19 +135,22 @@
                 <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
                     <li role="presentation">
                         <button id="tabpanel-404" class="fr-tabs__tab fr-icon-article-line fr-tabs__tab--icon-left"
-                                tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">
+                                tabindex="0" role="tab" aria-selected="false" aria-controls="tabpanel-404-panel"
+                        >
                             Informations du dossier
                         </button>
                     </li>
                     <li role="presentation">
                         <button id="tabpanel-405" class="fr-tabs__tab fr-icon-archive-line fr-tabs__tab--icon-left"
-                                tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">
+                                tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel"
+                        >
                             Documents
                         </button>
                     </li>
                     <li role="presentation">
-                        <button id="tabpanel-406" class="fr-tabs__tab fr-icon-chat-2-line fr-tabs__tab--icon-left" disabled
-                                tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-406-panel">Label
+                        <button id="tabpanel-406" class="fr-tabs__tab fr-icon-chat-2-line fr-tabs__tab--icon-left" {% if indemnisation is not defined %}disabled{% endif %}
+                                tabindex="1" role="tab" aria-selected="true" aria-controls="tabpanel-406-panel"
+                        >
                             Lettre synthèse
                         </button>
                     </li>
@@ -74,7 +159,7 @@
                 <div
                     id="tabpanel-404-panel"
                     role="tabpanel"
-                    class="fr-tabs__panel fr-tabs__panel--selected"
+                    class="fr-tabs__panel"
                     aria-labelledby="tabpanel-404"
                     tabindex="0"
                 >
@@ -114,7 +199,7 @@
                     tabindex="0">
 
 
-                    <div style="display:flex; flex-direction:column;">
+                    <div style="display:flex; flex-direction:column;height:1100px;">
                         <h5>Facture</h5>
 
 
@@ -127,11 +212,58 @@
                         ></iframe>
 
                     </div>
+                </div>
+
+                <div
+                    id="tabpanel-406-panel"
+                     role="tabpanel"
+                    class="fr-tabs__panel fr-tabs__panel--selected"
+                    aria-labelledby="tabpanel-406"
+                    tabindex="0">
+
+                    <div style="display:flex; flex-direction:column;">
+                        <h5>Édition de la lettre synthèse</h5>
+
+
+                        {% if indemnisation is defined %}
+                            <div class="previsualisation-lettre">
+                                {% set indemnite = indemnisation %}
+                                {% set prejudice = dossier %}
+                                {% set agent = app.user %}
+
+                                <div style="">
+                                    <div class="row">
+                                        <img src="data:image/png;base64,{{ base_64_image('images/entete-mj.png') }}" alt="Logo du Ministère de la Justice" />
+                                    </div>
+
+                                    <div class="row" >
+                                        <div style="float:right;">
+                                            <p class="text-right">
+                                                Paris, le {{"now"|date("d/m/Y")}}
+                                            </p>
+                                        </div>
 
 
 
+                                    <div style="width: 60%;">
+                                        <p class="text-bold">
+                                            DIRECTION DES SERVICES JUDICIAIRES<br/>
+                                            SOUS-DIRECTION DES FINANCES,<br/>
+                                            DE L'IMMOBILIER ET DE LA PERFORMANCE<br/>
+                                            <br/>
+                                            BUREAU DES FRAIS DE JUSTICE<br/>
+                                            ET DE L'OPTIMISATION DE LA DEPENSE (FIP4)
+                                        </p>
+                                    </div>
+                                </div>
 
 
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
                 </div>
 
 
@@ -144,3 +276,28 @@
 
 </div>
 {% endblock main %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+    <script>
+      const quill = new Quill('#lettre-contenu', {
+          modules: {
+              toolbar: [
+                [{ 'font': [] }, { 'size': [] }],
+                [ 'bold', 'italic', 'underline', 'strike' ],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'script': 'super' }, { 'script': 'sub' }],
+                [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block' ],
+                [{ 'list': 'ordered' }, { 'list': 'bullet'}, { 'indent': '-1' }, { 'indent': '+1' }],
+                [ 'direction', { 'align': [] }],
+                //[ 'link', 'image', 'video', 'formula' ],
+                [ 'clean' ]
+              ]
+          },
+        theme: 'snow',
+      });
+    </script>
+{% endblock javascripts %}

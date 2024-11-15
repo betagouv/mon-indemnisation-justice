@@ -1,9 +1,20 @@
 {% extends 'base_pdf.html.twig' %}
 
-{% set indemnite = prejudice.propositionIndemnisation ?? '0.' %}
-
 {% block stylesheets %}
   {{ parent() }}
+
+  <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
+  <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
+
+  <style>
+    .row {
+      display: inline-block;
+      width: 100%;
+    }
+
+
+  </style>
+
 {% endblock %}
 
 {% block javascripts %}
@@ -15,24 +26,51 @@
 {% set personnePhysique = requerant.personnePhysique %}
 {% set personneMorale = requerant.personneMorale %}
 <div class="text-md">
-  <img src="{{ asset('images/entete-mj.png') }}">
-  <p class="text-right">
-  Paris, le {{"now"|date("d/m/Y")}}
-  </p>
-  <p class="text-blue text-bold">
-    DIRECTION DES SERVICES JUDICIAIRES<br/>
-    SOUS-DIRECTION DES FINANCES,<br/>
-    DE L'IMMOBILIER ET DE LA PERFORMANCE<br/>
-    <br/>
-    BUREAU DES FRAIS DE JUSTICE<br/>
-    ET DE L'OPTIMISATION DE LA DEPENSE (FIP4)
-  </p>
+  <div class="row">
+    <img src="data:image/png;base64,{{ base_64_image('images/entete-mj.png') }}" alt="Logo du Ministère de la Justice" />
+  </div>
+
+  <div class="row" >
+    <div style="float:right;">
+      <p class="text-right">
+        Paris, le {{"now"|date("d/m/Y")}}
+      </p>
+    </div>
+
+
+
+    <div style="width: 60%;">
+      <p class="text-bold">
+        DIRECTION DES SERVICES JUDICIAIRES<br/>
+          SOUS-DIRECTION DES FINANCES,<br/>
+          DE L'IMMOBILIER ET DE LA PERFORMANCE<br/>
+          <br/>
+          BUREAU DES FRAIS DE JUSTICE<br/>
+          ET DE L'OPTIMISATION DE LA DEPENSE (FIP4)
+        </p>
+    </div>
+
+
+
+
+
+
+  </div>
+
+  <div id="lettre-contenu">
+
+  </div>
+
+
+
+
+{#
   <table>
     <tr>
       <th class="text-underline text-left">Référence à rappeler</th><td> : </td><td>{{prejudice.reference}}<td/>
     </tr>
     <tr>
-      <th class="text-underline text-left">Affaire suivie par</th><td> : </td><td>{{prejudice.lastStatut.emetteur.username}}<td/>
+      <th class="text-underline text-left">Affaire suivie par</th><td> : </td><td>{{ agent.nomComplet }}<td/>
     </tr>
   </table>
   <p>
@@ -41,7 +79,7 @@
 
   <p>
   J’ai bien reçu votre requête du {{prejudice.dateDeclaration|date('d/m/Y')}} par laquelle vous sollicitez,
-  {% if(requerant.isPersonneMorale) %}pour le compte de {{personneMorale.raisonSociale}}{% else %}en qualité de {{prejudice.qualitePlaintext}}{% endif %}, l’indemnisation du préjudice subi en raison de la
+  {% if(requerant.isPersonneMorale) %}pour le compte de {{personneMorale.raisonSociale}}{% else %}en qualité de {{prejudice.qualiteRequerant.libelle }}{% endif %}, l’indemnisation du préjudice subi en raison de la
   détérioration de la porte d’entrée de votre logement sis {{prejudice.adressePlaintext}}, lors
   d'une opération de police judiciaire du {{prejudice.dateOperationPJ|date('d/m/Y')}}.
   </p>
@@ -69,8 +107,8 @@
   Je vous prie de croire, {{personnePhysique.civilite.libelle}}, à l’assurance de ma considération distinguée.
   </p>
   <p>
-  {{ user }},<br/>
-  {{ user.email }}
+  Sylvie VOKO,<br/>
   </p>
+   #}
 </div>
 {% endblock %}

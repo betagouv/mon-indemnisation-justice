@@ -9,15 +9,20 @@ use App\Entity\PersonnePhysique;
 use App\Entity\Requerant;
 use Pentatrion\ViteBundle\Exception\EntrypointNotFoundException;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AppRuntime implements RuntimeExtensionInterface
 {
-    public function __construct(
+    protected string $publicDirectory;
 
+    public function __construct(
         protected readonly EntrypointsLookup $entrypointLookup,
+        #[Autowire(param: 'kernel.project_dir')]
+        string $projectDirectory,
     ) {
+        $this->publicDirectory = "$projectDirectory/public";
     }
 
     public function estRequerant(?UserInterface $user = null): bool
@@ -79,5 +84,14 @@ class AppRuntime implements RuntimeExtensionInterface
         } catch (EntrypointNotFoundException $e) {
             return false;
         }
+    }
+
+    public function base64Image(string $path)
+    {
+        if (file_exists("$this->publicDirectory/$path")) {
+            return base64_encode(file_get_contents("$this->publicDirectory/$path"));
+        }
+
+        return '';
     }
 }

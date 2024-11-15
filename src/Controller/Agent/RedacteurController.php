@@ -75,6 +75,18 @@ class RedacteurController extends AbstractController
         return $this->render('agent/redacteur/consulter_bris_porte.html.twig', [
             'decompte' => $this->getDecompteDossiers(),
             'dossier' => $dossier,
+            // Test
+            'indemnisation' => 1234
+        ]);
+    }
+
+    #[Route('/dossier/{id}/statuer/pre-validation', name: 'agent_dossier_statuer_pre_validation', methods: ['POST'])]
+    public function statuerPreValidation(BrisPorte $dossier, Request $request): Response
+    {
+        return $this->render('agent/redacteur/consulter_bris_porte.html.twig', [
+            'decompte' => $this->getDecompteDossiers(),
+            'indemnisation' => (int) $request->request->get('indemnisation'),
+            'dossier' => $dossier,
         ]);
     }
 
