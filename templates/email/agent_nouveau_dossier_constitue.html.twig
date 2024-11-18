@@ -76,7 +76,7 @@ déposé, avec les détails suivants :
 <h4>Bris de porte</h4>
 <ul>
     <li>
-        Date : <b>{{ brisPorte.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY") }}</b>
+        Date : <b>{{ brisPorte.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}</b>
     </li>
     <li>
         Lieu : <b>{{ brisPorte.adresse.libelle }}</b>
