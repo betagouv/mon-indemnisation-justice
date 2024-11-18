@@ -39,7 +39,7 @@ class BrisPorteController extends RequerantController
             }
 
             $brisPorte->setEstVise($requerant->getTestEligibilite()['estVise'] ?? null);
-            $brisPorte->setEstHebergeant($requerant->getTestEligibilite()['estRecherche'] ?? null);
+            $brisPorte->setEstHebergeant($requerant->getTestEligibilite()['estHebergeant'] ?? null);
             $brisPorte->setEstProprietaire($requerant->getTestEligibilite()['estProprietaire'] ?? null);
             $brisPorte->setAContactAssurance($requerant->getTestEligibilite()['aContacteAssurance'] ?? null);
             $brisPorte->setAContactBailleur($requerant->getTestEligibilite()['aContacteBailleur'] ?? null);
