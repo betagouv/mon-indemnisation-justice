@@ -85,7 +85,7 @@ const FormulaireReceveur = function({personnePhysique}) {
 
   return (
     <>
-      <h3>Attestation d'information remise à</h3>
+      <h3>Attestation remise par les force de l'ordre à</h3>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-lg-3 fr-col-4">
           <Civilite civilite={civilite} setCivilite={setCivilite}/>

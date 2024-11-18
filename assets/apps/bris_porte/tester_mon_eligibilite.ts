@@ -12,22 +12,20 @@ const departements = (args?.departements.map(({code, nom}) => ({
     nom: `${code.padStart(2, '0')} - ${nom}`
 })) || []) as Departement[];
 
-console.log(departements)
-
 createApp({
     departements,
     reponses: {
         departement: null,
         estVise: null,
-        estRecherche: null,
+        estHebergeant: null,
         estProprietaire: null,
         aContacteAssurance: null,
         aContacteBailleur: null,
     },
     questions: {
         estVise: function(reponses, decisions) { return reponses.departement != null; },
-        estRecherche: function(reponses, decisions) { return reponses.estVise != null && (decisions.length === 0 || reponses.estRecherche != null); },
-        estProprietaire: function(reponses, decisions) { return reponses.estRecherche != null  && (decisions.length === 0 || reponses.estProprietaire != null); },
+        estHebergeant: function(reponses, decisions) { return reponses.estVise != null && (decisions.length === 0 || reponses.estHebergeant != null); },
+        estProprietaire: function(reponses, decisions) { return reponses.estHebergeant != null  && (decisions.length === 0 || reponses.estProprietaire != null); },
         aContacteAssurance: function(reponses, decisions) { return reponses.estProprietaire != null && (decisions.length === 0 || reponses.aContacteAssurance != null); },
         aContacteBailleur: function(reponses, decisions) { return reponses.aContacteAssurance != null && reponses.estProprietaire === false  && (decisions.length === 0 || reponses.aContacteBailleur != null); }
     },
@@ -46,28 +44,28 @@ createApp({
                 name: "error_est_vise",
                 eligible: false
             });
-        } else if (reponses.estRecherche) {
+        } else if (reponses.estHebergeant) {
             this.decisions.push({
-                name: "error_est_recherche",
+                name: "error_est_hebergeant",
                 eligible: false
             });
         } else {
             if (reponses.estProprietaire) {
                 if (reponses.aContacteAssurance != null) {
                     this.decisions.push({
-                        name: reponses.aContacteAssurance ? 'success' : 'warning_proprietaire_assurance'
+                        name: reponses.aContacteAssurance ? 'success' : 'warning_contact_assurance'
                     });
                 }
             } else if (reponses.estProprietaire === false) {
                 if (reponses.aContacteAssurance != null && reponses.aContacteBailleur != null) {
                     if (reponses.aContacteAssurance === false) {
                         this.decisions.push({
-                            name: "warning_locataire_assurance"
+                            name: "warning_contact_assurance"
                         });
                     }
                     if (reponses.aContacteBailleur === false) {
                         this.decisions.push({
-                            name: 'warning_locataire_bailleur'
+                            name: 'warning_contact_bailleur'
                         });
                     }
                     if (reponses.aContacteAssurance && reponses.aContacteBailleur) {

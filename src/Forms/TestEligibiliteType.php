@@ -46,13 +46,13 @@ class TestEligibiliteType extends AbstractType
         $builder
             ->add('departement', EntityType::class, ['class' => GeoDepartement::class])
             ->add('estVise', TextType::class, ['required' => false])
-            ->add('estRecherche', TextType::class)
+            ->add('estHebergeant', TextType::class)
             ->add('estProprietaire', TextType::class)
             ->add('aContacteAssurance', TextType::class)
             ->add('aContacteBailleur', TextType::class)
         ;
         $builder->get('estVise')->addModelTransformer($tranformer);
-        $builder->get('estRecherche')->addModelTransformer($tranformer);
+        $builder->get('estHebergeant')->addModelTransformer($tranformer);
         $builder->get('estProprietaire')->addModelTransformer($tranformer);
         $builder->get('aContacteAssurance')->addModelTransformer($tranformer);
         $builder->get('aContacteBailleur')->addModelTransformer($tranformer);

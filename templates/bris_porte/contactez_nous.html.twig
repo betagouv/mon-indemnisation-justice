@@ -26,8 +26,8 @@
             <h3 class="fr-alert__title">Notre application n’est pas encore fonctionnelle sur votre territoire : {{ testEligibilite.departement.nom }} ({{ testEligibilite.departement.code }})</h3>
 
             <p>
-                Nous sommes en cours déploiement, nous vous invitons à nous faire parvenir votre dossier avec l’ensemble
-                des documents nécessaire (voir ci-dessous) à cette adresse mail : <a data-mailto="{{ precontentieux_courriel_equipe|base64_encode }}" href="mailto:"></a>
+                Nous sommes en cours de déploiement. Nous vous invitons à nous faire parvenir votre dossier avec l’ensemble
+                des documents nécessaires (voir ci-dessous) à cette adresse mail : <a data-mailto="{{ precontentieux_courriel_equipe|base64_encode }}" href="mailto:"></a>
             </p>
 
         </div>
@@ -47,7 +47,7 @@
                 <li>Attestation de non prise en charge du sinistre par votre assurance habitation</li>
                  {% if not testEligibilite.estProprietaire %}
                     <li>
-                        Attestation de non prise en charge du sinistre par le bailleur
+                        Attestation de non prise en charge des réparations par votre bailleur
                     </li>
                 {% endif %}
                 <li>

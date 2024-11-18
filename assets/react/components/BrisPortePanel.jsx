@@ -10,10 +10,10 @@ import User from './User';
 
 const BrisPortePanel = function({ user, brisPorte }) {
   const sections = [
-    "Données personnelles du justiciable",
+    "Données personnelles",
     "Informations relatives au bris de porte",
     "Documents à joindre obligatoirement à votre demande",
-    "Vérification et soumission de ma demande"
+    "Vérification et soumission de votre demande"
   ];
   const gotoFirstSection= () => gotoSection(0);
   const gotoSecondSection= () => gotoSection(1);
@@ -117,7 +117,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-                  label="Attestation d'informations complétée par les forces de l'ordre"
+                  label="Attestation complétée par les forces de l'ordre"
                   type={"attestation_information"}
                 />
               </section>
@@ -127,7 +127,6 @@ const BrisPortePanel = function({ user, brisPorte }) {
                 <Document
                   liasseDocumentaireIri={brisPorte.liasseDocumentaire}
                   label="Photos de la porte endommagée"
-                  hint_text="Seuls les frais de remise en état à l'identique de la porte endommagée seront indemnisés"
                   type={"photo_prejudice"}
                 />
               </section>
@@ -137,7 +136,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
-                  label="Copie de ma pièce d'identité recto-verso"
+                  label="Copie de votre pièce d'identité recto-verso"
                   hint_text=" "
                   type={"carte_identite"}
                 />
@@ -148,7 +147,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={brisPorte.liasseDocumentaire}
-                  label="Facture acquittée et copie du relevé de compte bancaire attestant du paiement"
+                  label="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
                   hint_text=" "
                   type={"preuve_paiement_facture"}
                 />
@@ -159,7 +158,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={user.personneMorale.liasseDocumentaire}
-                  label="Relevé d'identité bancaire de ma société"
+                  label="Relevé d'identité bancaire de votre société"
                   hint_text=" "
                   type={"rib"}
                 />
@@ -171,7 +170,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
               <section className="pr-form-section fr-p-4w">
                 <Document
                   liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
-                  label="Mon relevé d'identité bancaire"
+                  label="Votre relevé d'identité bancaire"
                   hint_text=" "
                   type={"rib"}
                 />

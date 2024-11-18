@@ -35,7 +35,7 @@ const User = function({ user, id, toggleIsPersonneMorale}) {
             <div className="pr-case_bris-de-porte_is-personne-morale fr-px-2w fr-pt-4w">
               <RadioButtons
                 orientation="horizontal"
-                legend="Ma demande d'indemnisation concerne une personne morale (société, entreprise, association, fondation etc.)"
+                legend="Votre demande d'indemnisation concerne une personne morale (société, entreprise, association, fondation etc.)"
                 options={[
                   {
                     label: "Oui",

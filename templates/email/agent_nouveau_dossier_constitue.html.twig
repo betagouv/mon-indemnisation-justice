@@ -17,7 +17,7 @@ Bonjour l'équipe Précontentieux,
 Le dossier <b>{{ brisPorte.reference}}</b> de demande d'indemnisation de <i>bris de porte</i> vient d'être
 déposé, avec les détails suivants :
 <br/>
-<h4>Identité et contact du / de la dépositaire</h4>
+<h4>Identité et contact du / de la requérant(e)</h4>
 <ul>
     {% if brisPorte.requerant.isPersonneMorale %}
         <li>
@@ -56,7 +56,7 @@ déposé, avec les détails suivants :
         Est la personne visée par l'opération ? <b>{{ brisPorte.estVise ? 'Oui' : 'Non' }}</b>
     </li>
     <li>
-        Hébergeait la personne recherchée par l'opération ? <b>{{ brisPorte.estHebergeant ? 'Oui' : 'Non' }}</b>
+        Hébergeait la personne recherchée ? <b>{{ brisPorte.estHebergeant ? 'Oui' : 'Non' }}</b>
     </li>
     {% if not brisPorte.estVise and not brisPorte.estHebergeant %}
         <li>
@@ -76,7 +76,7 @@ déposé, avec les détails suivants :
 <h4>Bris de porte</h4>
 <ul>
     <li>
-        Date : <b>{{ brisPorte.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY") }}</b>
+        Date : <b>{{ brisPorte.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}</b>
     </li>
     <li>
         Lieu : <b>{{ brisPorte.adresse.libelle }}</b>

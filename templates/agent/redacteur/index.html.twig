@@ -84,7 +84,7 @@
                                                 {{ dossier.qualiteRequerant.libelle }}
                                             </td>
                                             <td>
-                                                {{ dossier.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM YYYY") }}
+                                                {{ dossier.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
                                             </td>
                                             <td>
                                                 <a href="{{ url('agent_bris_porte_consulter', {'id': dossier.id}) }}" class="fr-btn fr-btn--sm fr-btn--icon fr-icon-eye-line">Accéder

@@ -8,7 +8,7 @@ class TestEligibilite
 {
     public ?GeoDepartement $departement = null;
     public bool $estVise = false;
-    public ?bool $estRecherche = null;
+    public ?bool $estHebergeant = null;
     public ?bool $estProprietaire = null;
     public ?bool $aContacteAssurance = null;
     public ?bool $aContacteBailleur = null;
@@ -18,7 +18,7 @@ class TestEligibilite
         return [
             'departement' => $this->departement->getCode(),
             'estVise' => $this->estVise,
-            'estRecherche' => $this->estRecherche,
+            'estHebergeant' => $this->estHebergeant,
             'estProprietaire' => $this->estProprietaire,
             'aContacteAssurance' => $this->aContacteAssurance,
             'aContacteBailleur' => $this->aContacteBailleur,
