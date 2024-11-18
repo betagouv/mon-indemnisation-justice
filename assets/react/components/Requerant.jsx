@@ -22,8 +22,8 @@ const Requerant = function({
       return;
     setLoading(true);
   },[])
-  const label = (null!==qualiteText) ? qualiteText : "J'effectue ma demande en qualité de";
-  const label2 = !check_empty(precisionText) ? precisionText : "Préciser votre qualité";
+  const label = (null!==qualiteText) ? qualiteText : "Vous effectuez votre demande en qualité de";
+  const label2 = !check_empty(precisionText) ? precisionText : "Précisez votre qualité";
   return (
     <>
       <div className="fr-grid-row fr-grid-row--gutters">

@@ -130,7 +130,7 @@ class BrisPorteController extends AbstractController
                     // Envoi du mail de confirmation.
                     $this->mailer
                         ->toRequerant($requerant)
-                        ->subject("Activation de votre compte sur l'application Mon indemnisation justice")
+                        ->subject("Activation de votre compte sur l'application Mon Indemnisation Justice")
                         ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
                             'requerant' => $requerant,
                         ])

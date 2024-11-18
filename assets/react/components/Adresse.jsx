@@ -48,14 +48,12 @@ const Adresse = ({adresse ,optionalLigne1Texte=null}) => {
   },[ligne1,ligne2,ligne3,codePostal,localite]);
 
   const ligne1Text = (optionalLigne1Texte!==null) ? optionalLigne1Texte : "Adresse complète";
-  const ligne1HintText = (optionalLigne1Texte!==null) ? "" : "Adresse où seront envoyés les courriers";
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters">
       <div className="fr-col-12">
         <Input
           label={ligne1Text}
-          hintText={ligne1HintText}
           nativeInputProps={{
             name: 'ligne1',
             value: ligne1,

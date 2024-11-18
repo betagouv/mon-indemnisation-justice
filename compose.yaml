@@ -47,6 +47,7 @@ services:
     command: bash -c 'composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && php-fpm'
     environment:
       - APP_ENV=${APP_ENV:-dev}
+      - TS=Europe/Paris
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - PANTHER_ERROR_SCREENSHOT_DIR=public/screenshots
       - PANTHER_ERROR_SCREENSHOT_ATTACH=true
