@@ -1,5 +1,7 @@
-import { createContext } from "react";
+import {createContext } from "react";
 
-const DossierContext = createContext({ dossier: null, setDossier: null });
+// Basé sur l'exemple https://react.dev/reference/react/useContext#scaling-up-with-context-and-a-reducer
+const DossierContext = createContext(null);
+const PatchDossierContext = createContext(null);
 
-export default DossierContext;
+export {DossierContext, PatchDossierContext };

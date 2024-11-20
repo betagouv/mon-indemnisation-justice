@@ -2,13 +2,12 @@ import React, {useState, useEffect, useContext} from 'react';
 
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
-import { default as RecapitulatifBrisPorte } from './BrisPorte/Recapitulatif';
 import { Br } from "../utils/fundamental";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import BrisPorte from './BrisPorte';
 import User from './User';
 
-const BrisPortePanel = function({ user }) {
+const BrisPortePanel = function() {
 
   const sections = [
     "Données personnelles",
@@ -40,7 +39,7 @@ const BrisPortePanel = function({ user }) {
   const [step,setStep]=useState(0);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
-  const [isPersonneMorale,setIsPersonneMorale]=useState(user.isPersonneMorale);
+
 
   function incrementStep() { setStep(step+1);gotoStepper(); }
   function decrementStep() {
@@ -64,8 +63,6 @@ const BrisPortePanel = function({ user }) {
   function getCurrentStep() { return step+1; }
   function gotoStepper() { document.getElementById("pr-case_stepper")?.focus(); }
 
-  const toggleIsPersonneMorale = () => setIsPersonneMorale(!isPersonneMorale);
-
   useEffect(() => {
     setTitle(sections[step]);
     if(sections[step+1])
@@ -87,7 +84,7 @@ const BrisPortePanel = function({ user }) {
     }
     {(step===0) &&
     <section className="pr-case_form fr-mb-4w">
-      <User user={user} id={user.id} toggleIsPersonneMorale={toggleIsPersonneMorale}/>
+      <User />
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12">
           <Button onClick={incrementStep}>Valider et passer à l'étape suivante</Button>
@@ -132,11 +129,11 @@ const BrisPortePanel = function({ user }) {
                 />
               </section>
             </div>
-            {!isPersonneMorale &&
+            {!(dossier.requerant.personneMorale != null) &&
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
+                  liasseDocumentaireIri={dossier.liasseDocumentaire}
                   label="Copie de votre pièce d'identité recto-verso"
                   hint_text=" "
                   type={"carte_identite"}
@@ -154,11 +151,11 @@ const BrisPortePanel = function({ user }) {
                 />
               </section>
             </div>
-            {isPersonneMorale &&
+            {(dossier.requerant.personneMorale != null) &&
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={user.personneMorale.liasseDocumentaire}
+                  liasseDocumentaireIri={dossier.liasseDocumentaire}
                   label="Relevé d'identité bancaire de votre société"
                   hint_text=" "
                   type={"rib"}
@@ -166,11 +163,11 @@ const BrisPortePanel = function({ user }) {
               </section>
             </div>
             }
-            {!isPersonneMorale &&
+            {!(dossier.requerant.personneMorale != null) &&
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={user.personnePhysique.liasseDocumentaire}
+                  liasseDocumentaireIri={dossier.liasseDocumentaire}
                   label="Votre relevé d'identité bancaire"
                   hint_text=" "
                   type={"rib"}
@@ -188,7 +185,7 @@ const BrisPortePanel = function({ user }) {
                 />
               </section>
             </div>
-            {!isPersonneMorale &&
+            {!(dossier.requerant.personneMorale != null) &&
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
@@ -215,8 +212,8 @@ const BrisPortePanel = function({ user }) {
         }
         {(step===3) &&
         <>
+          {/*
           <RecapitulatifBrisPorte
-            user={user}
             gotoFirstSection={gotoFirstSection}
             gotoSecondSection={gotoSecondSection}
             gotoThirdSection={gotoThirdSection}
@@ -237,6 +234,7 @@ const BrisPortePanel = function({ user }) {
               </li>
             </ul>
           </div>
+          */}
         </>
         }
       <div className="fr-col-12">

@@ -6,11 +6,10 @@ import Adresse from './Adresse';
 import { format as dateFormat } from 'date-fns';
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import FormulaireSimple from './ServiceEnqueteur/FormulaireSimple';
-import DossierContext from "../contexts/DossierContext.ts";
+import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts";
 const BrisPorte = () => {
-
-  const {dossier, setDossier} = useContext(DossierContext);
-  console.log(dossier)
+    const dossier = useContext(DossierContext);
+  const patchDossier = useContext(PatchDossierContext);
 
   /*
   const [dateOperationPJ, setDateOperationPJ]=useState(castDate(brisPorte.dateOperationPJ??""));
@@ -86,8 +85,7 @@ const BrisPorte = () => {
                 nativeInputProps={{
                     type: 'date',
                     value: dateFormat(Date.parse(dossier.dateOperationPJ), "yyyy-MM-dd") ?? null,
-                    onChange: ev=> setDossier({
-                        ...dossier,
+                    onChange: ev=> patchDossier({
                         dateOperationPJ: ev.target.value
                     })
                 }}
@@ -105,8 +103,8 @@ const BrisPorte = () => {
                 legend="S'agit-il d'une porte blindée ?"
                 orientation='horizontal'
                 options={[
-                  {label: "Oui", nativeInputProps: {checked: (dossier.isPorteBlindee === true), onChange: () => setDossier({...dossier, isPorteBlindee: true}) }},
-                  {label: "Non",nativeInputProps: {checked: (dossier.isPorteBlindee !== true), onChange: () => setDossier({...dossier, isPorteBlindee: false})}},
+                  {label: "Oui", nativeInputProps: {checked: (dossier.isPorteBlindee === true), onChange: () => patchDossier({isPorteBlindee: true}) }},
+                  {label: "Non",nativeInputProps: {checked: (dossier.isPorteBlindee !== true), onChange: () => patchDossier({isPorteBlindee: false})}},
                 ]}
               />
             </div>

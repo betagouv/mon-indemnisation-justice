@@ -12,91 +12,79 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PersonnePhysiqueRepository::class)]
-#[ApiResource(
-  operations:[
-    new Get(
-      name: '_api_personne_physique_get',
-      security: "is_granted('ROLE_REQUERANT')"
-    ),
-    new Patch(
-      name: '_api_personne_physique_patch',
-      security: "is_granted('ROLE_REQUERANT')"
-  )]
-)]
 class PersonnePhysique
 {
     #[ApiProperty(identifier: true)]
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 13, nullable: true)]
     private ?string $numeroSecuriteSociale = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
     #[ORM\Column(length: 2, nullable: true)]
     private ?string $codeSecuriteSociale = null;
 
     #[ORM\OneToOne(mappedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
     private ?Requerant $compte = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
     protected ?Civilite $civilite = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom1 = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom2 = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom3 = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $communeNaissance = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $paysNaissance = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateNaissance = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomNaissance = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
     protected ?QualiteRequerant $qualiteRequerant = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precision = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 

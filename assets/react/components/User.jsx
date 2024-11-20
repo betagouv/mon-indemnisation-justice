@@ -1,33 +1,16 @@
-import React, {useState,useEffect} from 'react';
+import React, { useContext} from 'react';
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Adresse from './Adresse';
 import PersonnePhysique from './PersonnePhysique';
 import PersonneMorale from './PersonneMorale';
-import RepresentantLegal from './RepresentantLegal'
+import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts";
+import Civilite from "./Civilite.jsx";
+import {Input} from "@codegouvfr/react-dsfr/Input.js";
 
-const User = function({ user, id, toggleIsPersonneMorale}) {
-  const [isPersonneMorale, setIsPersonneMorale] = useState(user.isPersonneMorale);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    if(!loading) {
-      setLoading(true);
-      return;
-    }
-    const url =Routing.generate('_api_requerant_patch',{id:id});
-    const data = { isPersonneMorale: isPersonneMorale };
+const User = function() {
+  const dossier = useContext(DossierContext);
+  const patchDossier = useContext(PatchDossierContext);
 
-    fetch(url, {
-      method: 'PATCH',
-      redirect: 'error',
-      headers: {'Content-Type': 'application/merge-patch+json'},
-      body: JSON.stringify(data)
-    })
-    .then((response) => response.json())
-    .then((data) => console.log('backup user'))
-    ;
-  },[isPersonneMorale])
-
-  const _isPersonneMorale=isPersonneMorale;
   return (
       <>
         <div className="fr-grid-row">
@@ -40,17 +23,15 @@ const User = function({ user, id, toggleIsPersonneMorale}) {
                   {
                     label: "Oui",
                     nativeInputProps: {
-                      checked: isPersonneMorale,
-                      onChange: ()=> {setIsPersonneMorale(true);toggleIsPersonneMorale()}
-
+                      checked: dossier.requerant.isPersonneMorale,
+                      onChange: () => patchDossier({requerant: {isPersonneMorale: true}})
                     }
                   },
                   {
                     label: "Non",
                     nativeInputProps: {
-                      checked: !isPersonneMorale,
-                      onChange: ()=> {setIsPersonneMorale(false);toggleIsPersonneMorale()}
-
+                      checked: !dossier.requerant.isPersonneMorale,
+                      onChange: () => patchDossier({ requerant: {isPersonneMorale: false}})
                     }
                   }
                 ]}
@@ -59,44 +40,102 @@ const User = function({ user, id, toggleIsPersonneMorale}) {
           </div>
         </div>
         <a name="identite"></a>
-        { _isPersonneMorale &&
+        { dossier.requerant.isPersonneMorale &&
           <>
             <div id="pr-bris-de-porte_personne-morale">
               <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
                   <section className="pr-form-section fr-p-4w">
-                    <PersonneMorale personneMorale={user.personneMorale} />
-                    <Adresse adresse={user.adresse} />
+                    <PersonneMorale />
+                    <Adresse adresse={dossier.requerant.adresse} />
                   </section>
                 </div>
                 <div className="fr-col-12">
-                  <section className="pr-form-section fr-p-4w">
-                    <RepresentantLegal personnePhysique={user.personnePhysique} />
-                  </section>
+                    <section className="pr-form-section fr-p-4w">
+                        <h3>Identité du représentant légal</h3>
+                        <div className="fr-grid-row fr-grid-row--gutters">
+                            <div className="fr-col-lg-2 fr-col-4">
+                                <Civilite
+                                    civilite={dossier.requerant.personnePhysique.civilite}
+                                    setCivilite={(civilite) => patchDossier({ requerant: { personnePhysique: { civilite }}})}
+                                />
+                            </div>
+                            <div className="fr-col-lg-10 fr-col-8">
+                                {/*
+                                <Input
+                                    label="Prénom(s)"
+                                    stateRelatedMessage="Le champs est obligatoire"
+                                    nativeInputProps={{
+                                        placeholder: "Premier prénom",
+                                        value: dossier.requerant.personnePhysique.prenom1,
+                                        onChange: (e) => patchDossier({requerant: {personnePhysique: { prenom1: e.target.value}}})
+                                    }}
+                                />
+                                */}
+                            </div>
+                            <div className="fr-col-lg-6 fr-col-12">
+                                <Input
+                                    label="Nom de naissance"
+
+                                    //stateRelatedMessage="Le champs est obligatoire"
+                                    nativeInputProps={{
+                                        value: dossier.requerant.personnePhysique.nomNaissance,
+                                        onChange: (e) => patchDossier({requerant: {personnePhysique: { nomNaissance: e.target.value}}})
+                                    }}
+                                />
+                            </div>
+                            <div className="fr-col-lg-6 fr-col-12">
+                                <Input
+                                    label="Nom d'usage"
+                                    nativeInputProps={{
+                                        value: dossier.requerant.personnePhysique.nom,
+                                        onChange: (e) => patchDossier({requerant: {personnePhysique: { nom: e.target.value}}})
+                                    }}
+                                />
+                            </div>
+                            <div className="fr-col-lg-6 fr-col-12">
+                                <Input
+                                    label="Courriel professionnel"
+                                    nativeInputProps={{
+                                        value: dossier.requerant.personnePhysique.email,
+                                        onChange: (e) => patchDossier({requerant: {personnePhysique: { email: e.target.value}}})
+                                    }}
+                                />
+                            </div>
+                            <div className="fr-col-lg-6 fr-col-12">
+                                <Input
+                                    label="Numéro de téléphone professionnel"
+                                    nativeInputProps={{
+                                        value: dossier.requerant.personnePhysique.telephone,
+                                        onChange: (e) => patchDossier({requerant: {personnePhysique: { telephone: e.target.value}}})
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </section>
                 </div>
-            </div>
-            </div>
-          </>
-        }
-        { !_isPersonneMorale &&
-          <>
-          <div id="pr-bris-de-porte_personne-physique">
-            <div className="fr-grid-row fr-grid-row--gutters">
-              <div className="fr-col-12">
-                <section className="pr-form-section fr-p-4w">
-                  <PersonnePhysique isPersonneMorale={isPersonneMorale} personnePhysique={user.personnePhysique} />
-                  <Adresse adresse={user.adresse} />
-                </section>
               </div>
             </div>
-          </div>
           </>
         }
+          {!dossier.requerant.isPersonneMorale &&
+              <>
+                  <div id="pr-bris-de-porte_personne-physique">
+                      <div className="fr-grid-row fr-grid-row--gutters">
+                          <div className="fr-col-12">
+                              <section className="pr-form-section fr-p-4w">
+                                  <PersonnePhysique/>
+                                  <Adresse adresse={dossier.requerant.adresse}/>
+                              </section>
+                          </div>
+                      </div>
+                  </div>
+              </>
+          }
       </>
   );
 }
 
-User.propTypes = {
-}
+User.propTypes = {}
 
 export default User;

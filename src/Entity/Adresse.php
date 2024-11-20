@@ -12,49 +12,39 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AdresseRepository::class)]
-#[ApiResource(
-  operations:[
-    new Get(
-        security: "is_granted('ROLE_REQUERANT')"
-    ),
-    new Patch(
-      name: '_api_adresse_patch',
-      security: "is_granted('ROLE_REQUERANT')"
-  )]
-)]
 class Adresse
 {
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne1 = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne2 = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne3 = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lieuDit = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $localite = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $pays = null;
 

@@ -10,17 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PersonneMoraleRepository::class)]
-#[ApiResource(
-  operations:[
-    new Get(
-      name: '_api_personne_morale_get',
-      security: "is_granted('ROLE_REQUERANT')"
-    ),
-    new Patch(
-      name: '_api_personne_morale_patch',
-      security: "is_granted('ROLE_REQUERANT')"
-  )]
-  )]
 class PersonneMorale
 {
     #[Groups(['user:read','prejudice:read','user:write'])]

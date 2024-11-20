@@ -1,7 +1,7 @@
-import React, {useState,useEffect} from 'react';
+import React  from 'react';
 import { Select } from "@codegouvfr/react-dsfr/Select";
 
-const Civilite = ({civilite,setCivilite, defaultOptionText=null}) => {
+const Civilite = ({civilite, setCivilite, defaultOptionText=null}) => {
 
   const civilites = {
     M: 'Monsieur',
