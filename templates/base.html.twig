@@ -13,6 +13,11 @@
         <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
         <link rel="stylesheet" href="{{ asset('remixicon/fonts/remixicon.css') }}"/>
+        {#  Search engine #}
+        {% if app.environment != 'prod' %}
+        <meta name="robots" content="noindex">
+        {% endif %}
+
         {% block stylesheets %}{% endblock stylesheets %}
         <title>{% block title %}Mon indemnisation justice{% if title is defined %} - {{ title }}{% endif %}{% endblock %}</title>
         {% block analytic %}
