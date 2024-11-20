@@ -13,7 +13,7 @@
 {% block javascripts %}
   <script id="react-arguments" type="application/json">
     {
-        "brisPorte": {{ brisPorte|serialize('json', {groups: 'prejudice:read'})|raw }},
+        "dossier": {{ brisPorte|serialize('json', {groups: 'prejudice:read'})|raw }},
         "user": {{ app.user|serialize('json',{groups: 'user:write'})|raw }}
     }
   </script>

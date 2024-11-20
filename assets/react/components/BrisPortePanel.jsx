@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
@@ -8,7 +8,8 @@ import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import BrisPorte from './BrisPorte';
 import User from './User';
 
-const BrisPortePanel = function({ user, brisPorte }) {
+const BrisPortePanel = function({ user }) {
+
   const sections = [
     "Données personnelles",
     "Informations relatives au bris de porte",
@@ -40,7 +41,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
   const [isPersonneMorale,setIsPersonneMorale]=useState(user.isPersonneMorale);
-  const [_brisPorte,setBrisPorte]=useState(brisPorte);
+
   function incrementStep() { setStep(step+1);gotoStepper(); }
   function decrementStep() {
     /*
@@ -96,7 +97,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
     }
     {(step===1) &&
     <>
-      <BrisPorte brisPorte={_brisPorte} />
+      <BrisPorte />
       <div className="fr-col-12">
         <ul className="fr-btns-group fr-btns-group--inline-sm">
           <li>
@@ -116,7 +117,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  liasseDocumentaireIri={dossier.liasseDocumentaire}
                   label="Attestation complétée par les forces de l'ordre"
                   type={"attestation_information"}
                 />
@@ -125,7 +126,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  liasseDocumentaireIri={dossier.liasseDocumentaire}
                   label="Photos de la porte endommagée"
                   type={"photo_prejudice"}
                 />
@@ -146,7 +147,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  liasseDocumentaireIri={dossier.liasseDocumentaire}
                   label="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
                   hint_text=" "
                   type={"preuve_paiement_facture"}
@@ -180,7 +181,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  liasseDocumentaireIri={dossier.liasseDocumentaire}
                   label="Titre de propriété"
                   hint_text=" "
                   type={"titre_propriete"}
@@ -191,7 +192,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={brisPorte.liasseDocumentaire}
+                  liasseDocumentaireIri={dossier.liasseDocumentaire}
                   label={"Contrat de location"}
                   hint_text={""}
                   type={"contrat_location"}
@@ -215,7 +216,6 @@ const BrisPortePanel = function({ user, brisPorte }) {
         {(step===3) &&
         <>
           <RecapitulatifBrisPorte
-            brisPorte={_brisPorte}
             user={user}
             gotoFirstSection={gotoFirstSection}
             gotoSecondSection={gotoSecondSection}
@@ -226,7 +226,7 @@ const BrisPortePanel = function({ user, brisPorte }) {
               <li>
                 <Button
                   linkProps={{
-                    href: Routing.generate('app_requerant_update_statut_to_constitue',{id:brisPorte.id})
+                    href: Routing.generate('app_requerant_update_statut_to_constitue',{id: dossier.id})
                   }}
                 >
                 Je déclare mon bris de porte

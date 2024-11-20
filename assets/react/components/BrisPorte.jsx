@@ -1,13 +1,18 @@
-import React,{useState,useEffect,useRef} from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import Requerant from './Requerant';
 import FormulaireReceveur from './PersonnePhysique/FormulaireReceveur';
 import Adresse from './Adresse';
-import { checkUrl,generateUrl, castDate, checkDate, checkString, formatUrl,castUrl,formatDate } from '../utils/cast';
+import { format as dateFormat } from 'date-fns';
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import FormulaireSimple from './ServiceEnqueteur/FormulaireSimple';
-const BrisPorte = ({brisPorte}) => {
+import DossierContext from "../contexts/DossierContext.ts";
+const BrisPorte = () => {
 
+  const {dossier, setDossier} = useContext(DossierContext);
+  console.log(dossier)
+
+  /*
   const [dateOperationPJ, setDateOperationPJ]=useState(castDate(brisPorte.dateOperationPJ??""));
   const [isPorteBlindee, setIsPorteBlindee]=useState(brisPorte.isPorteBlindee);
   const [identitePersonneRecherchee, setIdentitePersonneRecherchee]=useState(brisPorte.identitePersonneRecherchee??'');
@@ -15,8 +20,9 @@ const BrisPorte = ({brisPorte}) => {
   const [prenomRemiseAttestation, setPrenomRemiseAttestation]=useState(brisPorte.prenomRemiseAttestation??'');
   const [qualiteRequerant, setQualiteRequerant]=useState(brisPorte.qualiteRequerant??"");
   const [precisionRequerant, setPrecisionRequerant]=useState(brisPorte.precisionRequerant??"");
+  */
 
-  const [recordActived, setRecordActived]=useState(false);
+  //const [recordActived, setRecordActived]=useState(false);
   const [loading, setLoading]=useState(false);
 
   var keyUpTimer = useRef(null);
@@ -28,21 +34,10 @@ const BrisPorte = ({brisPorte}) => {
     setLoading(true);
   },[]);
   function mustBeRecorded() {
-    const test =
-    !checkDate(dateOperationPJ,brisPorte.dateOperationPJ)||
-    (isPorteBlindee!==brisPorte.isPorteBlindee)||
-    !checkString(identitePersonneRecherchee,brisPorte.identitePersonneRecherchee)||
-    !checkString(nomRemiseAttestation,brisPorte.nomRemiseAttestation)||
-    !checkString(prenomRemiseAttestation,brisPorte.prenomRemiseAttestation)||
-    !checkUrl(qualiteRequerant,brisPorte.qualiteRequerant?generateUrl("/api/qualite_requerants/",brisPorte.qualiteRequerant.code):null)||
-    !checkString(precisionRequerant,brisPorte.precisionRequerant)||
-    (true === recordActived)
-    ;
-
-    setRecordActived(test);
-    return test;
+    return false;
   }
 
+  /*
   useEffect(() => {
     if(false===loading)
       return;
@@ -76,6 +71,7 @@ const BrisPorte = ({brisPorte}) => {
     nomRemiseAttestation, prenomRemiseAttestation, qualiteRequerant,
     precisionRequerant
   ]);
+  */
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
@@ -87,13 +83,20 @@ const BrisPorte = ({brisPorte}) => {
             <div className="fr-col-lg-4 fr-col-12">
               <Input
                 label="Date de l'opération de police judiciaire"
-                nativeInputProps={{type: 'date',value: dateOperationPJ, onChange: ev=>setDateOperationPJ(ev.target.value)}}
+                nativeInputProps={{
+                    type: 'date',
+                    value: dateFormat(Date.parse(dossier.dateOperationPJ), "yyyy-MM-dd") ?? null,
+                    onChange: ev=> setDossier({
+                        ...dossier,
+                        dateOperationPJ: ev.target.value
+                    })
+                }}
               />
             </div>
             <div className="fr-col-offset-8"></div>
             <div className="fr-col-12">
               <Adresse
-                adresse={brisPorte.adresse}
+                adresse={dossier.adresse}
                 optionalLigne1Texte="Adresse complète du logement concerné par le bris de porte"
               />
             </div>
@@ -102,8 +105,8 @@ const BrisPorte = ({brisPorte}) => {
                 legend="S'agit-il d'une porte blindée ?"
                 orientation='horizontal'
                 options={[
-                  {label: "Oui",nativeInputProps: {checked: (isPorteBlindee === true),onChange: ()=> setIsPorteBlindee(true)}},
-                  {label: "Non",nativeInputProps: {checked: (isPorteBlindee !== true),onChange: ()=> setIsPorteBlindee(false)}},
+                  {label: "Oui", nativeInputProps: {checked: (dossier.isPorteBlindee === true), onChange: () => setDossier({...dossier, isPorteBlindee: true}) }},
+                  {label: "Non",nativeInputProps: {checked: (dossier.isPorteBlindee !== true), onChange: () => setDossier({...dossier, isPorteBlindee: false})}},
                 ]}
               />
             </div>
@@ -111,18 +114,18 @@ const BrisPorte = ({brisPorte}) => {
               <Input
                 label="Si vous la connaissez, précisez l'identité de la personne recherchée"
                 nativeInputProps={{
-                  value: identitePersonneRecherchee,
-                  onChange: ev=>setIdentitePersonneRecherchee(ev.target.value),
+                  value: dossier.identitePersonneRecherchee,
+                  onChange: (e) => console.log({identitePersonneRecherchee: e.target.value}),
                   maxLength: 255
                 }}
               />
             </div>
             <div className="fr-col-12">
               <Requerant
-                qualiteRequerant={qualiteRequerant}
-                setQualiteRequerant={setQualiteRequerant}
-                precisionRequerant={precisionRequerant}
-                setPrecisionRequerant={setPrecisionRequerant}
+                qualiteRequerant={dossier.qualiteRequerant}
+                /*setQualiteRequerant={setQualiteRequerant}*/
+                precisionRequerant={dossier.precisionRequerant}
+                /*setPrecisionRequerant={setPrecisionRequerant}*/
               />
             </div>
           </div>
@@ -130,13 +133,13 @@ const BrisPorte = ({brisPorte}) => {
       </div>
       <div className="fr-col-12">
         <section className="pr-form-section fr-p-4w">
-          <FormulaireReceveur personnePhysique={brisPorte.receveurAttestation}/>
+          <FormulaireReceveur personnePhysique={dossier.receveurAttestation}/>
         </section>
       </div>
       <a name="service-enqueteur"></a>
       <div className="fr-col-12">
         <section className="pr-form-section fr-p-4w">
-          <FormulaireSimple serviceEnqueteurIri={brisPorte.serviceEnqueteur}/>
+          <FormulaireSimple serviceEnqueteurIri={dossier.serviceEnqueteur}/>
         </section>
       </div>
     </div>
