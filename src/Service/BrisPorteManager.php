@@ -29,12 +29,15 @@ class BrisPorteManager implements EventSubscriberInterface
             ->htmlTemplate('email/agent_nouveau_dossier_constitue.html.twig', [
                 'brisPorte' => $event->brisPorte,
             ]);
+        // Pièces jointes non
+        /*
         foreach ($event->brisPorte->getLiasseDocumentaire()->getDocuments() as $document) {
             $this->mailer->addAttachment(
                 $this->documentManager->getDocumentBody($document),
                 $document
             );
         }
+        */
 
         $this->mailer->send();
     }
