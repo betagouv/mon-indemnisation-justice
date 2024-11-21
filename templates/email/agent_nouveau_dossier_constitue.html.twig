@@ -121,13 +121,12 @@ déposé, avec les détails suivants :
         Numéro de parquet : {% if brisPorte.serviceEnqueteur.numeroParquet|default('') is not empty %}<b>{{ brisPorte.serviceEnqueteur.numeroParquet }}</b>{% else %}<i>non renseigné</i>{% endif %}
     </li>
 </ul>
-<h4>Documents joints</h4>
+<h4>Documents transmis (<i>bientôt</i> consultables depuis l'espace rédacteur)</h4>
 <ul>
 {% for document in brisPorte.liasseDocumentaire.documents %}
 
 
     <li>
-        {# TODO Lien vers la pièce jointe correspondante (voir: https://stackoverflow.com/questions/9983248/can-an-html-email-body-reference-a-file-sent-as-an-attachment-in-the-same-email/9983277#9983277 ) #}
         Nom: <b>{{ document.originalFilename }}</b>
     </li>
 {% else %}
@@ -136,8 +135,6 @@ déposé, avec les détails suivants :
     </li>
 {% endfor %}
 </ul>
-
-{# Documents #}
 
 
 Cordialement,<br/>
