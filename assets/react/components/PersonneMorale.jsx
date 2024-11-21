@@ -13,7 +13,7 @@ const PersonneMorale = () => {
         <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Raison sociale"
-            stateRelatedMessage="Le champs est obligatoire"
+            //stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
               value: dossier.requerant.personneMorale?.raisonSociale,
               onChange: (e) => patchDossier({requerant: {personneMorale: {raisonSociale: e.target.value}}}),
@@ -22,9 +22,9 @@ const PersonneMorale = () => {
           />
         </div>
         <div className="fr-col-lg-6 fr-col-12">
-          <Input
+        <Input
             label="SIREN / SIRET"
-            stateRelatedMessage="Le champs est obligatoire"
+            //stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
               value: dossier.requerant.personneMorale?.sirenSiret,
               onChange: (e) => patchDossier({requerant: {personneMorale: {sirenSiret: e.target.value}}}),

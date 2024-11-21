@@ -6,6 +6,14 @@ import Routing from 'fos-router';
 import routes  from '../../../public/js/fos_js_routes.json';
 import _ from "lodash";
 
+// En développement, vider la console après chaque action de HMR (Hot Module Replacement)
+if (import.meta.hot) {
+  import.meta.hot.on(
+    "vite:beforeUpdate",
+    () => console.clear()
+  );
+}
+
 Routing.setRoutingData(routes);
 
 declare global {
@@ -23,7 +31,6 @@ const root = ReactDOM.createRoot(document.getElementById('react-app'));
 
 
 function DossierApp({dossier}) {
-    console.log(dossier);
 
     const [_dossier, _patchDossier] = useReducer((dossier: object, update: object) => {
         // Il faut recréer un objet pour que le re-render soit déclenché
@@ -39,7 +46,6 @@ function DossierApp({dossier}) {
     // Async function that reaches the backend
     // TODO give a try to https://www.npmjs.com/package/@bitovi/use-simple-reducer
     const _patchDossierAsync = (update: object) => {
-        console.log(update);
         _patchDossier(update);
         // Run a PATCH call and store the result as state
         fetch(`/api/requerant/dossier/${_dossier.id}`, {

@@ -2,89 +2,37 @@ import React,{useState,useEffect,useRef} from 'react';
 import { Uploader } from '../Uploader';
 import { Loading } from '../../utils/fundamental';
 
-export const Document = ({liasseDocumentaireIri,type,label,hint_text="",readonly=false}) => {
-  const [loading,setLoading]=useState(false);
-  const [documents,setDocuments]=useState([]);
-  const [selectedFile,setSelectedFile]=useState(null);
-  const [reload, setReload]=useState(false);
-  const toggleReload = () => setReload(!reload);
-
-  var locked = useRef(false);
-
-  useEffect(() => {
-    if(!selectedFile)
-      return;
-    const tmp=documents;
-    tmp.push(selectedFile);
-    setDocuments(tmp);
-    toggleReload();
-  },[selectedFile]);
-
-  useEffect(() => {
-    if(!reload) { return; }
-    toggleReload();
-  },[reload]);
-
-  useEffect(() => {
-
-    if(locked.current === true)
-      return;
-    locked.current=true;
-
-    const url = Routing.generate('_api_document_get_collection',{
-      liasseDocumentaire: liasseDocumentaireIri,
-      type: type
-    });
-
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        const count = data["hydra:totalItems"];
-        const items = data["hydra:member"];
-        setDocuments(items);
-        setLoading(true);
-      })
-      .catch(() => setLoading(true))
-  },[]);
+export const Document = ({documents, libelle, description, lectureSeule, type}) => {
 
   return (
     <>
-      {loading &&
-      <>
-        <div className="fr-col-12">
-        {readonly &&
-          <label className="fr-label">{label}</label>
+      <div className="fr-col-12">
+        {lectureSeule &&
+          <label className="fr-label">{libelle}</label>
         }
-        {!readonly &&
+        {!lectureSeule &&
           <Uploader
-            hint_text={hint_text}
-            label={label}
+            hint_text={description || ""}
+            label={libelle}
             type={type}
-            liasseDocumentaireIri={liasseDocumentaireIri}
-            selectedFile={selectedFile}
-            setSelectedFile={setSelectedFile}
+            //liasseDocumentaireIri={liasseDocumentaireIri}
           />
         }
         </div>
         <div className="fr-col-12">
-        {documents.map((item) =>
-            <div key={item.id}>
+        {documents.map((document) =>
+            <div key={document.id}>
               <a
                 className="fr-link"
                 target="_blank"
-                href={Routing.generate('app_document_download',{id:item.id, filename: item.filename})}
+                href={Routing.generate('app_document_download',{id:document.id, filename: document.filename})}
               >
-              {item.originalFilename}
+              {document.originalFilename}
               </a>&nbsp;|&nbsp;
             </div>
           )
         }
         </div>
-      </>
-      }
-      {!loading &&
-      <Loading/>
-      }
     </>
   );
 }

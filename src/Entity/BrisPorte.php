@@ -11,6 +11,8 @@ use App\Repository\BrisPorteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ApiResource(
     operations: [
@@ -97,6 +99,7 @@ class BrisPorte
     private ?Adresse $adresse;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateOperationPJ = null;
 

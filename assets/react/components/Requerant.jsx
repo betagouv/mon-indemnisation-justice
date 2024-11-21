@@ -15,21 +15,12 @@ const Requerant = function({
   setPrecisionRequerant
 }) {
 
-  const [loading,setLoading]=useState(false);
-
-  useEffect(() => {
-    if(true===loading)
-      return;
-    setLoading(true);
-  },[])
-  const label = (null!==qualiteText) ? qualiteText : "Vous effectuez votre demande en qualité de";
-  const label2 = !check_empty(precisionText) ? precisionText : "Précisez votre qualité";
   return (
     <>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-4">
           <Referentiel
-            label={label}
+            label={qualiteText ?? "Vous effectuez votre demande en qualité de"}
             options={Object.entries(QualiteRequerant)}
             content={qualiteRequerant}
             setContent={setQualiteRequerant}
@@ -38,10 +29,10 @@ const Requerant = function({
         <div className="fr-col-8">
           {qualiteRequerant == 'AUT' &&
           <Input
-            label={label2}
+            label={precisionText ?? "Précisez votre qualité"}
             nativeInputProps={{
               value: precisionRequerant,
-              onChange: ev=>setPrecisionRequerant(ev.target.value),
+              onChange: ev=> setPrecisionRequerant(ev.target.value),
               maxLength: 255
             }}
           />

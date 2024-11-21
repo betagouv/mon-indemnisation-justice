@@ -2,12 +2,16 @@ import React, {useState, useEffect, useContext} from 'react';
 
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
+//import { default as RecapitulatifBrisPorte } from './BrisPorte/Recapitulatif';
 import { Br } from "../utils/fundamental";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import BrisPorte from './BrisPorte';
 import User from './User';
+import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts";
 
 const BrisPortePanel = function() {
+  const dossier = useContext(DossierContext);
+  const patchDossier = useContext(PatchDossierContext);
 
   const sections = [
     "Données personnelles",
@@ -19,21 +23,6 @@ const BrisPortePanel = function() {
   const gotoSecondSection= () => gotoSection(1);
   const gotoThirdSection= () => gotoSection(2);
   const gotoSection = (index) => {
-    /*
-    const userUri = Routing.generate('_api_requerant_get',{id: user.id});
-    const prejudiceUri = Routing.generate('_api_bris_porte_get',{id: brisPorte.id});
-    Promise
-      .all([userUri,prejudiceUri]
-        .map((u) => fetch(u).then((response) => response.json()))
-      )
-      .then(([u_d,bp_d]) => {
-        setUser(u_d);
-        setBrisPorte(bp_d);
-        setStep(index);
-      })
-      .catch(() => {})
-    ;
-     */
     setStep(index);
   }
   const [step,setStep]=useState(0);
@@ -43,20 +32,6 @@ const BrisPortePanel = function() {
 
   function incrementStep() { setStep(step+1);gotoStepper(); }
   function decrementStep() {
-    /*
-    const userUri = Routing.generate('_api_requerant_get',{id:user.pId});
-    const prejudiceUri = Routing.generate('_api_bris_porte_get',{id:brisPorte.id});
-    Promise
-      .all([userUri,prejudiceUri]
-        .map((u) => fetch(u).then((response) => response.json()))
-      )
-      .then(([u_d,bp_d]) => {
-        setUser(u_d);
-        setBrisPorte(bp_d);
-      })
-      .catch(() => {})
-    ;
-    */
     setStep(step-1);
     gotoStepper();
   }
@@ -114,8 +89,8 @@ const BrisPortePanel = function() {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={dossier.liasseDocumentaire}
-                  label="Attestation complétée par les forces de l'ordre"
+                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "attestation_information")}
+                  libelle="Attestation complétée par les forces de l'ordre"
                   type={"attestation_information"}
                 />
               </section>
@@ -123,8 +98,8 @@ const BrisPortePanel = function() {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={dossier.liasseDocumentaire}
-                  label="Photos de la porte endommagée"
+                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "photo_prejudice")}
+                  libelle="Photos de la porte endommagée"
                   type={"photo_prejudice"}
                 />
               </section>
@@ -133,9 +108,8 @@ const BrisPortePanel = function() {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={dossier.liasseDocumentaire}
-                  label="Copie de votre pièce d'identité recto-verso"
-                  hint_text=" "
+                  documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "carte_identite")}
+                  libelle="Copie de votre pièce d'identité recto-verso"
                   type={"carte_identite"}
                 />
               </section>
@@ -144,32 +118,29 @@ const BrisPortePanel = function() {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={dossier.liasseDocumentaire}
-                  label="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
-                  hint_text=" "
+                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "preuve_paiement_facture")}
+                  libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
                   type={"preuve_paiement_facture"}
                 />
               </section>
             </div>
-            {(dossier.requerant.personneMorale != null) &&
+            {dossier.requerant.isPersonneMorale &&
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={dossier.liasseDocumentaire}
-                  label="Relevé d'identité bancaire de votre société"
-                  hint_text=" "
+                  documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
+                  libelle="Relevé d'identité bancaire de votre société"
                   type={"rib"}
                 />
               </section>
             </div>
             }
-            {!(dossier.requerant.personneMorale != null) &&
+            {!dossier.requerant.isPersonneMorale &&
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={dossier.liasseDocumentaire}
-                  label="Votre relevé d'identité bancaire"
-                  hint_text=" "
+                  documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
+                  libelle="Votre relevé d'identité bancaire"
                   type={"rib"}
                 />
               </section>
@@ -178,9 +149,8 @@ const BrisPortePanel = function() {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={dossier.liasseDocumentaire}
-                  label="Titre de propriété"
-                  hint_text=" "
+                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "titre_propriete")}
+                  libelle="Titre de propriété"
                   type={"titre_propriete"}
                 />
               </section>
@@ -189,9 +159,8 @@ const BrisPortePanel = function() {
             <div className="fr-col-12">
               <section className="pr-form-section fr-p-4w">
                 <Document
-                  liasseDocumentaireIri={dossier.liasseDocumentaire}
-                  label={"Contrat de location"}
-                  hint_text={""}
+                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "contrat_location")}
+                  libelle={"Contrat de location"}
                   type={"contrat_location"}
                 />
               </section>

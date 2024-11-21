@@ -2,9 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Patch;
 use App\Repository\PersonneMoraleRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -12,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: PersonneMoraleRepository::class)]
 class PersonneMorale
 {
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
@@ -21,22 +18,22 @@ class PersonneMorale
     #[ORM\OneToOne(mappedBy: 'personneMorale', cascade: ['persist', 'remove'])]
     private ?Requerant $compte = null;
 
-    #[Groups(['user:read','prejudice:read','user:write',])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $sirenSiret = null;
 
-    #[Groups(['user:read','prejudice:read','user:write', 'prejudice:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
 
-    #[Groups(['user:read','prejudice:read','user:write'])]
+    //#[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
 
     public function __construct()
     {
-      $this->liasseDocumentaire=new LiasseDocumentaire();
+        $this->liasseDocumentaire = new LiasseDocumentaire();
     }
 
     public function getId(): ?int
@@ -57,6 +54,7 @@ class PersonneMorale
     public function setSirenSiret(?string $sirenSiret): PersonneMorale
     {
         $this->sirenSiret = $sirenSiret;
+
         return $this;
     }
 
@@ -68,6 +66,7 @@ class PersonneMorale
     public function setRaisonSociale(?string $raisonSociale): PersonneMorale
     {
         $this->raisonSociale = $raisonSociale;
+
         return $this;
     }
 

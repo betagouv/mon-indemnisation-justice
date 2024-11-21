@@ -8,7 +8,7 @@ const Referentiel = ({label, options,content,setContent}) => {
         label={label}
         nativeSelectProps={{
             onChange: event => setContent(event.target.value),
-            value: content
+            value: content || ""
         }}
       >
         <option value="" disabled hidden>Selectionnez une option</option>
