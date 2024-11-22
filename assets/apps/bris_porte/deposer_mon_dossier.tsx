@@ -1,7 +1,7 @@
-import React, {useReducer, useState} from 'react';
+import React, {useReducer} from 'react';
 import ReactDOM from "react-dom/client";
-import BrisPortePanel from '../../react/components/BrisPortePanel.jsx';
-import { DossierContext, PatchDossierContext } from '../../react/contexts/DossierContext.ts';
+import BrisPortePanel from '@/react/components/BrisPortePanel.jsx';
+import { DossierContext, PatchDossierContext } from '@/react/contexts/DossierContext.ts';
 import Routing from 'fos-router';
 import routes  from '../../../public/js/fos_js_routes.json';
 import _ from "lodash";
@@ -29,40 +29,50 @@ const { dossier } = JSON.parse(document.getElementById('react-arguments').textCo
 
 const root = ReactDOM.createRoot(document.getElementById('react-app'));
 
+let queuedChanges = {};
+
+
+const apiPatch = () => {
+    if (Object.keys(queuedChanges).length > 0) {
+        console.log("Ça patche les petits potches", JSON.stringify(queuedChanges));
+        // Run a PATCH call and store the result as state
+        fetch(`/api/requerant/dossier/${dossier.id}`, {
+            method: 'PATCH',
+            redirect: 'error',
+            headers: {'Content-Type': 'application/merge-patch+json'},
+            body: JSON.stringify(queuedChanges)
+        }).then(
+            (response) => {
+                queuedChanges = {};
+            }
+        )
+    }
+}
+
+const debouncedApiPatch = _.debounce(apiPatch, 1000);
+
 
 function DossierApp({dossier}) {
+    const [_dossier, _patchDossier] = useReducer((dossier: object, changes: object) => {
+        // Ajouter les changements à la file d'attente
+        queuedChanges = {
+            ..._.merge(
+                queuedChanges, changes
+            )
+        };
+        debouncedApiPatch();
 
-    const [_dossier, _patchDossier] = useReducer((dossier: object, update: object) => {
         // Il faut recréer un objet pour que le re-render soit déclenché
         return {
             ..._.merge(
-                dossier, update
+                dossier, changes
             )
         };
     }, dossier);
 
-
-
-    // Async function that reaches the backend
-    // TODO give a try to https://www.npmjs.com/package/@bitovi/use-simple-reducer
-    const _patchDossierAsync = (update: object) => {
-        _patchDossier(update);
-        // Run a PATCH call and store the result as state
-        fetch(`/api/requerant/dossier/${_dossier.id}`, {
-            method: 'PATCH',
-            redirect: 'error',
-            headers: {'Content-Type': 'application/merge-patch+json'},
-            body: JSON.stringify(update)
-        }).then(
-            (response) => response.json().then(
-                (dossier) => {}//console.log(dossier);_patchDossier(dossier)
-            )
-        );
-    }
-
     return (
         <DossierContext.Provider value={_dossier} >
-            <PatchDossierContext.Provider value={_patchDossierAsync} >
+            <PatchDossierContext.Provider value={_patchDossier} >
                 <div className="fr-container">
                     <h1>Déclarer un bris de porte</h1>
                     <BrisPortePanel />

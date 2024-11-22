@@ -10,6 +10,8 @@ use ApiPlatform\Metadata\Patch;
 use App\Repository\PersonnePhysiqueRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: PersonnePhysiqueRepository::class)]
 class PersonnePhysique
@@ -64,6 +66,7 @@ class PersonnePhysique
     private ?string $paysNaissance = null;
 
     #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateNaissance = null;
 
