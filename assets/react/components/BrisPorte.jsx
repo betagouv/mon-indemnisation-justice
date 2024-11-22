@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import Requerant from './Requerant';
-import { format as dateFormat } from 'date-fns';
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts";
 import Civilite from "./Civilite.jsx";
@@ -23,9 +22,7 @@ const BrisPorte = () => {
                 nativeInputProps={{
                     type: 'date',
                     value: dossier.dateOperationPJ || "",
-                    onChange: ev=> patchDossier({
-                        dateOperationPJ: ev.target.value
-                    })
+                    onChange: (e) => patchDossier({ dateOperationPJ: e.target.value })
                 }}
               />
             </div>
@@ -169,7 +166,7 @@ const BrisPorte = () => {
                       <Input
                           label="Nom du service"
                           nativeInputProps={{
-                              value: dossier.serviceEnqueteur.nom,
+                              value: dossier.serviceEnqueteur.nom || "",
                               onChange: (e) => patchDossier({ serviceEnqueteur: { nom: e.target.value}}),
                         }}
                       />
@@ -178,7 +175,7 @@ const BrisPorte = () => {
                       <Input
                           label="Téléphone"
                           nativeInputProps={{
-                              value: dossier.serviceEnqueteur.telephone,
+                              value: dossier.serviceEnqueteur.telephone || "",
                               onChange: (e) => patchDossier({ serviceEnqueteur: { telephone: e.target.value}}),
                           }}
                       />
@@ -187,7 +184,7 @@ const BrisPorte = () => {
                       <Input
                           label="Courriel"
                           nativeInputProps={{
-                              value: dossier.serviceEnqueteur.courriel,
+                              value: dossier.serviceEnqueteur.courriel || "",
                               onChange: (e) => patchDossier({ serviceEnqueteur: { courriel: e.target.value}}),
                           }}
                       />
@@ -196,7 +193,7 @@ const BrisPorte = () => {
                       <Input
                           label="Numéro de procès-verbal"
                           nativeInputProps={{
-                              value: dossier.serviceEnqueteur.numeroPV,
+                              value: dossier.serviceEnqueteur.numeroPV || "",
                               onChange: (e) => patchDossier({ serviceEnqueteur: {numeroPV: e.target.value}}),
                           }}
                       />
@@ -205,7 +202,7 @@ const BrisPorte = () => {
                       <Input
                           label="Juridiction"
                           nativeInputProps={{
-                              value: dossier.serviceEnqueteur.juridiction,
+                              value: dossier.serviceEnqueteur.juridiction || "",
                               onChange: (e) => patchDossier({ serviceEnqueteur: { juridiction: e.target.value}}),
                           }}
                       />
@@ -214,7 +211,7 @@ const BrisPorte = () => {
                       <Input
                           label="Nom du magistrat"
                           nativeInputProps={{
-                              value: dossier.serviceEnqueteur.magistrat,
+                              value: dossier.serviceEnqueteur.magistrat || "",
                               onChange: (e) => patchDossier({ serviceEnqueteur: { magistrat: e.target.value}}),
                           }}
                       />
@@ -223,7 +220,7 @@ const BrisPorte = () => {
                       <Input
                           label="Numéro de parquet ou d'instruction"
                           nativeInputProps={{
-                              value: dossier.serviceEnqueteur.numeroParquet,
+                              value: dossier.serviceEnqueteur.numeroParquet || "",
                               onChange: (e) => patchDossier({ serviceEnqueteur: { numeroParquet: e.target.value}}),
                           }}
                       />

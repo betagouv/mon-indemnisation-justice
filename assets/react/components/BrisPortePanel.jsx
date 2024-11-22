@@ -2,8 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from './PieceJointe/PieceJointe';
-//import { default as RecapitulatifBrisPorte } from './BrisPorte/Recapitulatif';
-import { Br } from "../utils/fundamental";
+import { default as RecapitulatifBrisPorte } from './BrisPorte/Recapitulatif';
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import BrisPorte from './BrisPorte';
 import User from './User';
@@ -11,7 +10,6 @@ import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts
 
 const BrisPortePanel = function() {
   const dossier = useContext(DossierContext);
-  const patchDossier = useContext(PatchDossierContext);
 
   const sections = [
     "Données personnelles",
@@ -181,7 +179,7 @@ const BrisPortePanel = function() {
         }
         {(step===3) &&
         <>
-          {/*
+
           <RecapitulatifBrisPorte
             gotoFirstSection={gotoFirstSection}
             gotoSecondSection={gotoSecondSection}
@@ -203,12 +201,9 @@ const BrisPortePanel = function() {
               </li>
             </ul>
           </div>
-          */}
+
         </>
         }
-      <div className="fr-col-12">
-        <Br space={2}/>
-      </div>
 
   </>
   );

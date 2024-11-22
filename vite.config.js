@@ -1,5 +1,6 @@
 import {defineConfig} from 'vite'
 
+import { fileURLToPath, URL } from 'node:url'
 import symfonyPlugin from 'vite-plugin-symfony';
 import reactPlugin from '@vitejs/plugin-react';
 import copy from 'rollup-plugin-copy';
@@ -51,6 +52,11 @@ export default defineConfig(({command, mode}) => {
                     hook: 'writeBundle'
                 })
             ],
+            resolve: {
+                alias: {
+                  '@': fileURLToPath(new URL('./assets', import.meta.url))
+                }
+              },
             esbuild: false,
             build: {
                 outDir,

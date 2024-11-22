@@ -1,6 +1,6 @@
-import React,{useState,useEffect,useRef} from 'react';
+import React from 'react';
 import { Uploader } from '../Uploader';
-import { Loading } from '../../utils/fundamental';
+
 
 export const Document = ({documents, libelle, description, lectureSeule, type}) => {
 

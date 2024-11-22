@@ -3,10 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
-use App\Controller\Requerant\GetBrisPorteOptimized;
 use App\Repository\BrisPorteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,19 +13,6 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ApiResource(
     operations: [
-        new Get(
-            normalizationContext: ['groups' => ['dossier:lecture']],
-            security: "is_granted('ROLE_REQUERANT')",
-            name: '_api_bris_porte_get'
-        ),
-        new Get(
-            uriTemplate: '/requerant/bris-de-porte/{id}/optimise',
-            controller: GetBrisPorteOptimized::class,
-            security: "is_granted('ROLE_REQUERANT')",
-            name: '_api_bris_porte_get_optimized'
-        ),
-        new GetCollection(),
-        // Objectif : ne garder **que** ce call API
         new Patch(
             uriTemplate: '/requerant/dossier/{id}',
             normalizationContext: ['groups' => ['dossier:lecture'], 'skip_null_values' => false],
