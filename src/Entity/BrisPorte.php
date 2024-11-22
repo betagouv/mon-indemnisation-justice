@@ -217,7 +217,9 @@ class BrisPorte
 
     public function setDateDeclaration(\DateTimeInterface $dateDeclaration): self
     {
-        $this->dateDeclaration = $dateDeclaration;
+        if (!$this->dateDeclaration) {
+            $this->dateDeclaration = $dateDeclaration;
+        }
 
         return $this;
     }

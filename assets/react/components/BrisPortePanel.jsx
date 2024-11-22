@@ -23,7 +23,7 @@ const BrisPortePanel = function() {
   const gotoSection = (index) => {
     setStep(index);
   }
-  const [step,setStep]=useState(0);
+  const [step,setStep]=useState(dossier.dateDeclaration ? 3 : 0);
   const [title,setTitle]=useState("");
   const [nextTitle,setNextTitle]=useState("");
 
@@ -193,7 +193,7 @@ const BrisPortePanel = function() {
                     href: Routing.generate('app_requerant_update_statut_to_constitue',{id: dossier.id})
                   }}
                 >
-                Je déclare mon bris de porte
+                  {dossier.dateDeclaration ? "Mettre à jour mon dossier" : "Je déclare mon bris de porte"}
                 </Button>
               </li>
               <li>

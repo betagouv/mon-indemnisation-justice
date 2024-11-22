@@ -110,7 +110,7 @@ const BrisPorte = () => {
                   <div className="fr-col-lg-3 fr-col-4">
                       <Civilite
                           civilite={dossier.receveurAttestation.civilite}
-                          setCivilite={(civilite) => patchDossier({receveurAttastation: { civilite }})}
+                          setCivilite={(civilite) => patchDossier({receveurAttestation: { civilite }})}
                       />
                   </div>
                   <div className="fr-col-lg-9 fr-col-8">
