@@ -22,6 +22,8 @@ services:
     volumes:
       # Ce partage, via un volume, est requis afin que Nginx puisse servir les fichiers statiques seul
       - ./public:/app/public
+    environment:
+      - CC_PHP_VERSION=8.2.26
     ports:
       - "80:80"
       - "443:443"

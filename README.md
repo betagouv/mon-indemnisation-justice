@@ -2,6 +2,40 @@
 
 ## Installation
 
+### Image Docker pour PHP, composer, Apache et autres utilitaires
+
+L'image PHP de base contient en réalité un peu plus que PHP:
+- `php-fpm` (_Fork Process Manager): qui permet de démarrer autant de processus PHP qu'il y a de requêtes entrantes (c'est l'implémentation [CGI](https://fr.wikipedia.org/wiki/Common_Gateway_Interface) pour PHP)
+- les extensions requises pour PHP: `zip`, `intl`, `calendar`, `gd`, `pgsql`, `pdo`, `pdo_pgsql` et `ldap`
+- `node`: afin de compiler les assets (grâce à [`vite`](https://vite.dev/))
+- `firefox-esr` & `chromium`: afin de disposer de navigateurs _headless_ pour les tests fonctionnels
+- `wkhtmltopdf`: qui, comme son nom l'indique, permet de convertir un fichier HTML en PDF 
+- `libreoffice`: afin de pouvoir, un jour, convertir un fichier `.docx` en PDF
+
+Cette image est utilisée pour le développement, i.e. _en local_, ainsi que pour jouer les tests unitaires en CI (Gitlab).
+
+Hormis Apache `httpd` qui n'est pas utilisé en développement, le reste de la configuration vise à être alignée avec [la
+configuration des serveurs sur Clever CLoud](https://developers.clever-cloud.com/doc/applications/php/).
+
+Puisque l'image est longue à builder, on ne la génère qu'en cas de modification type montée de version de PHP. Le reste
+du temps, on s'appuie sur l'image précédemment construite et publiée (actuellement sur [le compte `pierrelemee` de Docker
+Hub](https://hub.docker.com/repository/docker/pierrelemee/precontentieux-full/general)).
+
+Pour la construire :
+
+```bash
+docker build -f .docker/php/Dockerfile . --platform linux/amd64 -t pierrelemee/precontentieux-full:latest
+```
+
+Pour la publier :
+
+```bash
+docker push pierrelemee/precontentieux-full:latest
+```
+
+
+### Faire tourner l'environnement de développement depuis Docker
+
 Avant tout, éditez un fichier `.env.local` en reprenant les valeurs déclarées dans `.env.internet`.
 
 Ensuite, démarrer le projet via `docker compose`:
