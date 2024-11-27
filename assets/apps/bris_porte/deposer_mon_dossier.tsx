@@ -53,19 +53,22 @@ const debouncedApiPatch = _.debounce(apiPatch, 1000);
 
 
 function DossierApp({dossier}) {
-    const [_dossier, _patchDossier] = useReducer((dossier: object, changes: object) => {
-        // Ajouter les changements à la file d'attente
-        queuedChanges = {
-            ..._.merge(
-                queuedChanges, changes
-            )
-        };
-        debouncedApiPatch();
+    const [_dossier, _patchDossier] = useReducer((dossier: object, changes: any) => {
+        const { patch = true, ...diff } = changes;
+        if (patch) {
+            // Ajouter les changements à la file d'attente
+            queuedChanges = {
+                ..._.merge(
+                    queuedChanges, diff
+                )
+            };
+            debouncedApiPatch();
+        }
 
         // Il faut recréer un objet pour que le re-render soit déclenché
         return {
             ..._.merge(
-                dossier, changes
+                dossier, diff
             )
         };
     }, dossier);

@@ -2,7 +2,7 @@ import React from 'react';
 import { Uploader } from '../Uploader';
 
 
-export const Document = ({documents, libelle, description, lectureSeule, type}) => {
+export const Document = ({documents, libelle, description, lectureSeule, liasseDocumentaire, type, onUploaded}) => {
 
   return (
     <>
@@ -15,7 +15,8 @@ export const Document = ({documents, libelle, description, lectureSeule, type}) 
             hint_text={description || ""}
             label={libelle}
             type={type}
-            //liasseDocumentaireIri={liasseDocumentaireIri}
+            liasseDocumentaire={liasseDocumentaire}
+            onUploaded={onUploaded}
           />
         }
         </div>

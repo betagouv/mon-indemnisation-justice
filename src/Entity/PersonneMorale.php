@@ -26,10 +26,10 @@ class PersonneMorale
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
 
-    //#[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?LiasseDocumentaire $liasseDocumentaire = null;
+    private ?LiasseDocumentaire $liasseDocumentaire;
 
     public function __construct()
     {
@@ -68,6 +68,11 @@ class PersonneMorale
         $this->raisonSociale = $raisonSociale;
 
         return $this;
+    }
+
+    public function getLiasseDocumentaire(): ?LiasseDocumentaire
+    {
+        return $this->liasseDocumentaire;
     }
 
     public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static

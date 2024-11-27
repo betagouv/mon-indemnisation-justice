@@ -17,13 +17,13 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 class PersonnePhysique
 {
     #[ApiProperty(identifier: true)]
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 13, nullable: true)]
     private ?string $numeroSecuriteSociale = null;
 
@@ -33,61 +33,61 @@ class PersonnePhysique
     #[ORM\OneToOne(mappedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
     private ?Requerant $compte = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
     protected ?Civilite $civilite = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom1 = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom2 = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom3 = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $communeNaissance = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $paysNaissance = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateNaissance = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomNaissance = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
     protected ?QualiteRequerant $qualiteRequerant = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precision = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture','dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
