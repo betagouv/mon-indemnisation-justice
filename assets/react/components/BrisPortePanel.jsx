@@ -10,6 +10,8 @@ import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts
 
 const BrisPortePanel = function() {
   const dossier = useContext(DossierContext);
+  console.log(dossier.liasseDocumentaire.documents);
+
   const patchDossier = useContext(PatchDossierContext);
 
   const sections = [
@@ -86,59 +88,70 @@ const BrisPortePanel = function() {
           <a name="pieces"></a>
           <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
             <div className="fr-col-12">
-              <section className="pr-form-section fr-p-4w">
+              <section className="pr-form-section">
                 <Document
                   documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "attestation_information")}
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle="Attestation complétée par les forces de l'ordre"
                   type={"attestation_information"}
+                  onRemoved={(document) => {
+                    patchDossier({
+                      liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id)},
+                      patch: false
+                    })
+                  }
+                  }
                   onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
                 />
               </section>
             </div>
             <div className="fr-col-12">
-              <section className="pr-form-section fr-p-4w">
+              <section className="pr-form-section">
                 <Document
                   documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "photo_prejudice")}
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle="Photos de la porte endommagée"
                   type={"photo_prejudice"}
+                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id) }, patch: false }) }
                   onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
                 />
               </section>
             </div>
             {!dossier.requerant.isPersonneMorale &&
             <div className="fr-col-12">
-              <section className="pr-form-section fr-p-4w">
+              <section className="pr-form-section">
                 <Document
                   documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "carte_identite")}
                   liasseDocumentaire={dossier.requerant.personnePhysique.liasseDocumentaire}
                   libelle="Copie de votre pièce d'identité recto-verso"
                   type={"carte_identite"}
+                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
                   onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
                 />
               </section>
             </div>
             }
             <div className="fr-col-12">
-              <section className="pr-form-section fr-p-4w">
+              <section className="pr-form-section">
                 <Document
                   documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "preuve_paiement_facture")}
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
                   type={"preuve_paiement_facture"}
+                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
                   onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
                 />
               </section>
             </div>
             {dossier.requerant.isPersonneMorale &&
             <div className="fr-col-12">
-              <section className="pr-form-section fr-p-4w">
+              <section className="pr-form-section">
                 <Document
                   documents={dossier.requerant.personneMorale.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
                   liasseDocumentaire={dossier.requerant.personneMorale.liasseDocumentaire}
                   libelle="Relevé d'identité bancaire de votre société"
                   type={"rib"}
+                  onRemoved={(document) => patchDossier({ requerant: { personneMorale: { liasseDocumentaire: { documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
                   onUploaded={(document) => patchDossier({ requerant: { personneMorale: {liasseDocumentaire: {documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
                 />
               </section>
@@ -146,37 +159,39 @@ const BrisPortePanel = function() {
             }
             {!dossier.requerant.isPersonneMorale &&
             <div className="fr-col-12">
-              <section className="pr-form-section fr-p-4w">
+              <section className="pr-form-section">
                 <Document
                   documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
                   liasseDocumentaire={dossier.requerant.personnePhysique.liasseDocumentaire}
                   libelle="Votre relevé d'identité bancaire"
                   type={"rib"}
+                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
                   onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
                 />
               </section>
             </div>
             }
             <div className="fr-col-12">
-              <section className="pr-form-section fr-p-4w">
+              <section className="pr-form-section">
                 <Document
                   documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "titre_propriete")}
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle="Titre de propriété"
                   type={"titre_propriete"}
+                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id) }, patch: false }) }
                   onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
-
                 />
               </section>
             </div>
             {!dossier.requerant.isPersonneMorale &&
             <div className="fr-col-12">
-              <section className="pr-form-section fr-p-4w">
+              <section className="pr-form-section">
                 <Document
                   documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "contrat_location")}
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle={"Contrat de location"}
                   type={"contrat_location"}
+                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id)}, patch: false }) }
                   onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
                 />
               </section>

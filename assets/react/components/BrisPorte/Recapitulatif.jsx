@@ -126,7 +126,7 @@ const Recapitulatif = ({ gotoFirstSection = null, gotoSecondSection = null, }) =
                 </section>
             </div>
             <div className="fr-col-12">
-                <section className="pr-form-section fr-p-4w">
+                <section className="pr-form-section fr-px-4w">
                     <h3>Documents à joindre obligatoirement à votre demande</h3>
 
                     <Document
@@ -138,6 +138,7 @@ const Recapitulatif = ({ gotoFirstSection = null, gotoSecondSection = null, }) =
 
                     <Document
                         documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "photo_prejudice")}
+                        lectureSeule={true}
                         libelle="Photos de la porte endommagée"
                         type={"photo_prejudice"}
                     />

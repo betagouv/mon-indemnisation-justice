@@ -60,6 +60,21 @@ class DocumentController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/{filename}', name: 'app_document_remove', methods: ['DELETE'])]
+    public function delete(Document $document, string $filename): Response
+    {
+        if ($document->getFilename() !== $filename) {
+            throw new NotFoundHttpException('Document non trouvé');
+        }
+
+        $this->storage->delete($document->getFilename());
+
+        $this->em->remove($document);
+        $this->em->flush();
+
+        return JsonResponse::fromJsonString('', Response::HTTP_NO_CONTENT);
+    }
+
     /**
      * @author yanroussel
      *

@@ -24,18 +24,15 @@ export const Uploader = ({liasseDocumentaire, type, onUploaded, label=null,hint_
     ;
   }
 
-  const getGrpClassnames = (msg) => "fr-upload-group "+(msg?"fr-input-group--error":"");
+  const getGrpClassnames = (msg) => "fr-my-2w fr-upload-group "+(msg?"fr-input-group--error":"");
   const _label= label ?? "Ajouter des fichiers";
   const _hint_text= hint_text ?? "Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf.";
 
   return (
     <div className={getGrpClassnames(erreur)}>
-      <label className="fr-label" htmlFor="file-upload">{_label}
-          <span className="fr-hint-text">{_hint_text}</span>
-      </label>
       <input className="fr-upload" type="file" onChange={handleFileInput} />
       {erreur &&
-      <p className="fr-error-text">{erreur}</p>
+        <p className="fr-error-text">{erreur}</p>
       }
     </div>
   );

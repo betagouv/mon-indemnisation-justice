@@ -55,6 +55,49 @@ const debouncedApiPatch = _.debounce(apiPatch, 1000);
 function DossierApp({dossier}) {
     const [_dossier, _patchDossier] = useReducer((dossier: object, changes: any) => {
         const { patch = true, ...diff } = changes;
+
+        // Ugly patch to avoid recursive merge to mess data with arrays
+        if (Array.isArray(diff?.liasseDocumentaire?.documents)) {
+            return {
+                ...dossier,
+                ...{
+                    liasseDocumentaire: {
+                        documents: diff?.liasseDocumentaire?.documents
+                    }
+                }
+            };
+        }
+        if (Array.isArray(diff?.requerant?.personnePhysique?.liasseDocumentaire?.documents)) {
+            return {
+                ...dossier,
+                ...{
+                    requerant: {
+                        personnePhysique: {
+                            liasseDocumentaire: {
+                                documents: diff?.requerant?.personnePhysique?.liasseDocumentaire?.documents
+                            }
+                        }
+
+                    }
+                }
+            };
+        }
+        if (Array.isArray(diff?.requerant?.personneMorale?.liasseDocumentaire?.documents)) {
+            return {
+                ...dossier,
+                ...{
+                    requerant: {
+                        personneMorale: {
+                            liasseDocumentaire: {
+                                documents: diff?.requerant?.personneMorale?.liasseDocumentaire?.documents
+                            }
+                        }
+
+                    }
+                }
+            };
+        }
+
         if (patch) {
             // Ajouter les changements à la file d'attente
             queuedChanges = {
