@@ -80,8 +80,7 @@ class BrisPorteController extends RequerantController
            ->toRequerant($requerant)
            ->subject('Votre déclaration de bris de porte a bien été pris en compte')
            ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
-               'brisPorte' => $brisPorte,
-               'requerant' => $requerant,
+               'dossier' => $brisPorte,
            ])
            ->send()
         ;
