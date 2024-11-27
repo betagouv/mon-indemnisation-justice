@@ -10,35 +10,36 @@
 
 
 {% block contenu %}
-Bonjour {{ requerant.nomCourant }},
-<br/>
-<br/>
-Vous avez déclaré un bris de porte ce jour. Nos services mettent tout en œuvre afin de revenir vers vous dans les meilleurs délais.
-<br/>
-<br/>
-Nous tenons à vous préciser que le bureau du précontentieux reçoit beaucoup de demandes d'indemnisation quotidiennement
-provenant de l'ensemble du territoire national et traite différentes catégories de dossiers.
-<br/>
-<br/>
-De plus, l'instruction des demandes nécessite le recueil d'informations auprès des forces de l'ordre ou des autorités
-judiciaires.
-<br/>
-<br/>
-Enfin, le règlement de l'indemnité est effectué par le bureau du budget dont les délais de traitement sont à prendre en compte.
+Bonjour {{ dossier.requerant.nomCourant }},
 <br/>
 <br/>
 <ul>
     <li>
-        Référence du dossier à rappeler dans toutes vos correspondances : <b>{{ brisPorte.reference }}</b>
+        Référence du dossier à rappeler dans toutes vos correspondances : {{ dossier.reference }}
     </li>
     <li>
-        Numéro de suivi pour suivre l'avancement de votre dossier : <b>{{ brisPorte.raccourci }}</b>
+        Numéro de suivi pour suivre l'avancement de votre dossier : {{ dossier.raccourci }}
     </li>
 </ul>
 <br/>
+<p>
+Vous avez déclaré un bris de porte ce jour.
+</p>
+
+<p>
+Votre demande est prise en compte.
+</p>
+<p>
+Nos services reviendront vers vous dans les meilleurs délais, sans qu’une nouvelle démarche de votre part soit nécessaire.
+</p>
+<p>
+Nous vous remercions par avance de votre compréhension.
+</p>
+<p>
 <br/>
-Aidez-nous à améliorer notre application en <a href="https://docs.google.com/forms/d/e/1FAIpQLSfx1dyzPjfqP1H-X0YxUD66_Ai8JqoeYp7m5Fl34UhvjyyFVg/viewform?usp=sf_link">répondant à quelques questions</a>  à propos de votre expérience.
-<br/>
+Aidez-nous à améliorer notre application en <a href="https://docs.google.com/forms/d/e/1FAIpQLSfx1dyzPjfqP1H-X0YxUD66_Ai8JqoeYp7m5Fl34UhvjyyFVg/viewform?usp=sf_link">répondant à quelques questions</a>
+à propos de votre expérience.
+</p>
 <br/>
 Cordialement,<br/>
 L'équipe Mon Indemnisation Justice

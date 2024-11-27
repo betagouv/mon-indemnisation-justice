@@ -345,7 +345,11 @@
 
                 <div class="fr-alert fr-alert--error fr-my-3w" v-cloak v-if="estDecide('error_est_vise') || estDecide('error_est_hebergeant')">
 
-                    <h3 class="fr-alert__title">Vous n’êtes pas éligible à l’indemnisation, car il n’y a pas d’erreur de la part des forces de l’ordre</h3>
+                    <h3 v-if="estDecide('error_est_vise')" class="fr-alert__title">Vous n’êtes pas éligible à l’indemnisation, car vous étiez concerné par l'opération de police judiciaire exécutée à votre domicile<sup>1</sup>.</h3>
+
+                    <h3 v-if="estDecide('error_est_hebergeant')" class="fr-alert__title">Vous n’êtes pas éligible à l’indemnisation, car l’intervention des forces de l’ordre visait une personne de votre domicile<sup>1</sup>.</h3>
+
+
 
                     <p v-if="estDecide('error_est_vise')">
                         Vous ne pouvez prétendre à une indemnisation que si les forces de l'ordre ont commis une
@@ -356,6 +360,14 @@
                         Constitue une faute lourde toute déficience caractérisée par un fait ou une série de faits
                         traduisant l'inaptitude du service public de la justice à remplir la mission dont il est investi
                         (Cour de Cassation, Assemblée plénière, du 23 février 2001, 99-16.165, Publié au bulletin)
+                    </span>
+
+                    <span class="fr-text--sm fr-m-2w" v-if="estDecide('error_est_vise')">
+                        (1) Cour de Cassation, Chambre civile 1, du 10 juin 1986, 84-15.740, Publié au bulletin.
+                    </span>
+
+                    <span class="fr-text--sm fr-m-2w" v-if="estDecide('error_est_hebergeant')" >
+                        (1) Article 1735 du code civil : <q>Le preneur est tenu des dégradations et des pertes qui arrivent par le fait des personnes de sa maison ou de ses sous-locataires</q>
                     </span>
                 </div>
 
