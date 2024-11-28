@@ -1,7 +1,7 @@
-import React, { useEffect, useContext} from 'react';
-import Civilite from './Civilite';
+import React, { useContext} from 'react';
+import Civilite from '@/react/components/Civilite';
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import {DossierContext,PatchDossierContext} from "../contexts/DossierContext.ts";
+import {DossierContext,PatchDossierContext} from "@/react/contexts/DossierContext.ts";
 
 const PersonnePhysique = function() {
   const dossier = useContext(DossierContext);

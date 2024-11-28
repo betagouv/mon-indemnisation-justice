@@ -1,10 +1,8 @@
-import React, {useState,useEffect} from 'react';
-import Referentiel from './Referentiel';
-import { check_empty } from '../utils/check_state';
-import { castNumber } from '../utils/cast';
+import React from 'react';
+import Referentiel from '@/react/components/Referentiel';
 
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import QualiteRequerant from "../utils/QualiteRequerant";
+import QualiteRequerant from "@/react/types/QualiteRequerant";
 
 const Requerant = function({
   qualiteText=null,
@@ -27,7 +25,7 @@ const Requerant = function({
           />
         </div>
         <div className="fr-col-8">
-          {qualiteRequerant == 'AUT' &&
+          {qualiteRequerant === QualiteRequerant.AUT &&
           <Input
             label={precisionText ?? "Précisez votre qualité"}
             nativeInputProps={{

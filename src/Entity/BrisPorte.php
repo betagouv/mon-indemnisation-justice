@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
         new Patch(
             uriTemplate: '/requerant/dossier/{id}',
             normalizationContext: ['groups' => ['dossier:lecture'], 'skip_null_values' => false],
-            denormalizationContext: ['groups' => ['dossier:patch'], /*'skip_null_values' => false, */ 'allow_extra_attributes' => false],
+            denormalizationContext: ['groups' => ['dossier:patch'], 'allow_extra_attributes' => false],
             security: "is_granted('ROLE_REQUERANT') and object.getRequerant() == user",
             name: 'requerant_dossier_api_patch'
         ),

@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {format as dateFormat} from 'date-fns';
 import {Button} from "@codegouvfr/react-dsfr/Button";
 import {DossierContext} from "@/react/contexts/DossierContext.ts";
-import {Document} from "../PieceJointe/PieceJointe.jsx";
+import {Document} from "@/react/components/PieceJointe/PieceJointe.jsx";
 
 
 const Recapitulatif = ({ gotoFirstSection = null, gotoSecondSection = null, }) => {

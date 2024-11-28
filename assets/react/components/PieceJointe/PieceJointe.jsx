@@ -1,14 +1,13 @@
 import React from 'react';
-import {Uploader} from '../Uploader';
+import {Uploader} from '@/react/components/Uploader';
 
 
-export const Document = ({documents, libelle, description, lectureSeule, liasseDocumentaire, type, onRemoved, onUploaded}) => {
+export const Document = ({documents, libelle, lectureSeule, liasseDocumentaire, type, onRemoved, onUploaded}) => {
 
     const handleRemove = (document, e) => {
-        fetch(`/document/${document.id}/${document.filename}`,{ method: "DELETE" })
+        fetch(router.removeDocument,{ method: "DELETE" })
           .then(() => onRemoved(document))
           .catch(() => {});
-        onRemoved(document);
     }
 
     return (
@@ -25,10 +24,7 @@ export const Document = ({documents, libelle, description, lectureSeule, liasseD
                             <a
                                 className="fr-link"
                                 target="_blank"
-                                href={Routing.generate('app_document_download', {
-                                    id: document.id,
-                                    filename: document.filename
-                                })}
+                                href={`/document/${document.id}/${document.filename}`}
                             >
                                 {document.originalFilename}
                             </a>
@@ -47,7 +43,6 @@ export const Document = ({documents, libelle, description, lectureSeule, liasseD
                 }
                 {!lectureSeule &&
                     <Uploader
-                        hint_text={description || ""}
                         label={libelle}
                         type={type}
                         liasseDocumentaire={liasseDocumentaire}

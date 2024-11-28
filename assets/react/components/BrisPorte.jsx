@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import Requerant from './Requerant';
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts";
-import Civilite from "./Civilite.jsx";
+import {DossierContext, PatchDossierContext} from "@/react/contexts/DossierContext.ts";
+import Civilite from "@/react/components/Civilite.jsx";
 
 const BrisPorte = () => {
   const dossier = useContext(DossierContext);

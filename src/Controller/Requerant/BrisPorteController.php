@@ -60,7 +60,7 @@ class BrisPorteController extends RequerantController
     }
 
     #[IsGranted('edit', subject: 'brisPorte')]
-    #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', methods: ['GET'], options: ['expose' => true])]
+    #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', methods: ['GET'])]
     public function edit(BrisPorte $brisPorte): Response
     {
         return $this->render('prejudice/declare_bris_porte.html.twig', [
@@ -68,7 +68,7 @@ class BrisPorteController extends RequerantController
         ]);
     }
 
-    #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', methods: ['GET'], options: ['expose' => true])]
+    #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', methods: ['GET'])]
     public function redirection(BrisPorte $brisPorte, Mailer $mailer, DocumentManager $documentManager): RedirectResponse
     {
         $requerant = $this->getRequerant();

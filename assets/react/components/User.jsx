@@ -1,9 +1,9 @@
 import React, {useContext} from 'react';
 import {RadioButtons} from "@codegouvfr/react-dsfr/RadioButtons";
-import PersonnePhysique from './PersonnePhysique';
-import PersonneMorale from './PersonneMorale';
-import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts";
-import Civilite from "./Civilite.jsx";
+import PersonnePhysique from '@/react/components/PersonnePhysique';
+import PersonneMorale from '@/react/components/PersonneMorale';
+import {DossierContext, PatchDossierContext} from "@/react/contexts/DossierContext.ts";
+import Civilite from "@/react/components/Civilite.jsx";
 import {Input} from "@codegouvfr/react-dsfr/Input.js";
 
 const User = function () {

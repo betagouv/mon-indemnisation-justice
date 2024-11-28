@@ -1,17 +1,15 @@
 import React, {useState, useEffect, useContext} from 'react';
 
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Document } from './PieceJointe/PieceJointe';
+import { Document } from '@/react/components/PieceJointe/PieceJointe';
 import { default as RecapitulatifBrisPorte } from './BrisPorte/Recapitulatif';
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import BrisPorte from './BrisPorte';
+import BrisPorte from '@/react/components/BrisPorte';
 import User from './User';
-import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts";
+import {DossierContext, PatchDossierContext} from "@/react/contexts/DossierContext.ts";
 
 const BrisPortePanel = function() {
   const dossier = useContext(DossierContext);
-  console.log(dossier.liasseDocumentaire.documents);
-
   const patchDossier = useContext(PatchDossierContext);
 
   const sections = [
@@ -223,7 +221,8 @@ const BrisPortePanel = function() {
               <li>
                 <Button
                   linkProps={{
-                    href: Routing.generate('app_requerant_update_statut_to_constitue',{id: dossier.id})
+                    // Route: app_requerant_update_statut_to_constitue
+                    href: `/requerant/bris-de-porte//passage-a-l-etat-constitue/${dossier.id}`
                   }}
                 >
                   {dossier.dateDeclaration ? "Mettre à jour mon dossier" : "Je déclare mon bris de porte"}

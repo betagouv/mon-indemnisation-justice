@@ -1,8 +1,7 @@
-import React,{ useState } from 'react';
+import React, {useState} from 'react';
 
-import { castNumber } from '../utils/cast';
+export const Uploader = ({liasseDocumentaire, onUploaded, label=null}) => {
 
-export const Uploader = ({liasseDocumentaire, type, onUploaded, label=null,hint_text=null}) => {
   const MAX_SIZE=2048*1000*8;
   const [erreur,setErreur]=useState("");
 
@@ -10,30 +9,32 @@ export const Uploader = ({liasseDocumentaire, type, onUploaded, label=null,hint_
     setErreur("");
     const file = ev.target.files[0];
     if (file.size > MAX_SIZE) {
-      setErreur("Taille de fichier supérieure à 16Mo");
+      setErreur("Taille de fichier supérieure à 2Mo");
       return;
     }
 
-    const route = Routing.generate('app_document_upload',{type: type, id: liasseDocumentaire.id});
     const data = new FormData();
     data.append('file', ev.target.files[0]);
-    fetch(route,{ method: "POST", body: data })
+    fetch(`/document/${liasseDocumentaire.id}`,{ method: "POST", body: data })
       .then((response) => response.json())
       .then((document) => onUploaded(document))
       .catch(() => {})
     ;
   }
 
-  const getGrpClassnames = (msg) => "fr-my-2w fr-upload-group "+(msg?"fr-input-group--error":"");
-  const _label= label ?? "Ajouter des fichiers";
-  const _hint_text= hint_text ?? "Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf.";
-
   return (
-    <div className={getGrpClassnames(erreur)}>
-      <input className="fr-upload" type="file" onChange={handleFileInput} />
-      {erreur &&
-        <p className="fr-error-text">{erreur}</p>
-      }
-    </div>
+      <div className={`fr-my-2w fr-upload-group ${erreur ? 'fr-input-group--error' : ''}`}>
+        <label className="fr-label" htmlFor="file-upload">
+          <span className="fr-icon-upload-2-line fr-mr-1w" aria-hidden="true"></span>
+          Ajouter un document
+        </label>
+        <input className="fr-upload" type="file" onChange={handleFileInput}/>
+        <span className="fr-hint-text">
+            Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf.
+          </span>
+        {erreur &&
+            <p className="fr-error-text">{erreur}</p>
+        }
+      </div>
   );
 }
