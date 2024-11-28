@@ -31,11 +31,11 @@ const apiPatch = () => {
             (response) => {
                 queuedChanges = {};
             }
-        )
+        )//.catch((e) => alert(e))
     }
 }
 
-const debouncedApiPatch = _.debounce(apiPatch, 1000);
+const debouncedApiPatch = _.debounce(apiPatch, 500);
 
 
 function DossierApp({dossier}) {

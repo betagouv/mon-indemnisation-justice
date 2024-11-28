@@ -2,6 +2,7 @@ import React, { useContext} from 'react';
 import Civilite from '@/react/components/Civilite';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import {DossierContext,PatchDossierContext} from "@/react/contexts/DossierContext.ts";
+import {randomId} from "@/react/services/Random.ts";
 
 const PersonnePhysique = function() {
   const dossier = useContext(DossierContext);
@@ -21,6 +22,7 @@ const PersonnePhysique = function() {
           <Input
             label="Prénom(s)"
             nativeInputProps={{
+              id: randomId(),
               placeholder: "Prénom(s)",
               value: dossier.requerant.personnePhysique?.prenom1 || "",
               onChange: (e) => patchDossier({
@@ -34,6 +36,7 @@ const PersonnePhysique = function() {
           <Input
             label="Nom de naissance"
             nativeInputProps={{
+              id: randomId(),
               value: dossier.requerant.personnePhysique.nomNaissance || "",
               onChange: (e) => patchDossier({ requerant: { personnePhysique: { nomNaissance: e.target.value}}}),
               maxLength: 255
@@ -44,6 +47,7 @@ const PersonnePhysique = function() {
           <Input
             label="Nom d'usage"
             nativeInputProps={{
+              id: randomId(),
               value: dossier.requerant.personnePhysique.nom || "",
               onChange: (e) => patchDossier({ requerant: { personnePhysique: { nom: e.target.value}}}),
               maxLength: 255
@@ -54,6 +58,7 @@ const PersonnePhysique = function() {
           <Input
             label="Date de naissance"
             nativeInputProps={{
+              id: randomId(),
               type: 'date',
               value: dossier.requerant.personnePhysique.dateNaissance || "",
               onChange: (e) => patchDossier({ requerant: { personnePhysique: { dateNaissance: e.target.value}}}),
@@ -64,6 +69,7 @@ const PersonnePhysique = function() {
           <Input
             label="Ville de naissance"
             nativeInputProps={{
+              id: randomId(),
               value: dossier.requerant.personnePhysique.communeNaissance || "",
               onChange: (e) => patchDossier({ requerant: { personnePhysique: { communeNaissance: e.target.value}}}),
               maxLength: 255
@@ -76,6 +82,7 @@ const PersonnePhysique = function() {
                     <Input
                         label="Les 10 premiers chiffres de votre numéro de sécurité sociale"
                         nativeInputProps={{
+                            id: randomId(),
                             value: dossier.requerant.personnePhysique.numeroSecuriteSociale || "",
                             onChange: (e) => patchDossier({ requerant: { personnePhysique: { numeroSecuriteSociale: e.target.value}}}),
                             maxLength: 10

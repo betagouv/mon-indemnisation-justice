@@ -9,9 +9,13 @@ use App\Entity\Requerant;
 use App\Tests\Functional\AbstractFunctionalTestCase;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
+use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverDimension;
+use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverPoint;
 use GuzzleHttp\Client as HttpClient;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Panther\Client as PantherClient;
 use Symfony\Component\Panther\PantherTestCase;
@@ -23,10 +27,11 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
     protected EntityManagerInterface $em;
     protected UserPasswordHasherInterface $passwordHasher;
     protected HttpClient $mailerClient;
+    protected string $screenShotDir;
 
     protected function setUp(): void
     {
-        // your app is automatically started using the built-in web server
+        // See config https://hacks.mozilla.org/2017/12/using-headless-mode-in-firefox/
         $this->client = static::createPantherClient(
             [
                 'browser' => PantherTestCase::FIREFOX,
@@ -34,11 +39,26 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
                     'APP_ENV' => 'test',
                     'BASE_URL' => 'http://127.0.0.1:9080/',
                 ],
+            ],
+            [],
+            [
+                'capabilities' => [
+                    'goog:loggingPrefs' => [
+                        'browser' => 'ALL', // calls to console.* methods
+                        'performance' => 'ALL', // performance data
+                    ],
+                ],
             ]
         );
 
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
         $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
+        $this->screenShotDir = self::getContainer()->getParameter('kernel.project_dir').'/public/screenshots';
+        $finder = new Finder();
+        $filesystem = new Filesystem();
+        if ($filesystem->exists($this->screenShotDir)) {
+            $filesystem->remove($finder->directories()->in($this->screenShotDir));
+        }
 
         $requerant = $this->em
             ->getRepository(Requerant::class)
@@ -65,10 +85,11 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
             )
             ->setVerifieCourriel()
             ->setTestEligibilite([
-                'dateOperationPJ' => '2023-12-31',
-                'numeroPV' => 'PV44',
-                'numeroParquet' => '',
-                'isErreurPorte' => true,
+                'departement' => '13',
+                'estVise' => false,
+                'estHebergeant' => false,
+                'estProprietaire' => true,
+                'aContacteAssurance' => false,
             ])
             ->setEmail('raquel.randt@courriel.fr')
             ->setRoles([Requerant::ROLE_REQUERANT])
@@ -80,6 +101,44 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         // Obligatoire pour contourner le DoctrineTestBundle https://github.com/dmaicher/doctrine-test-bundle?tab=readme-ov-file#debugging
         StaticDriver::commit();
         StaticDriver::beginTransaction();
+    }
+
+    protected function getFieldByLabel(string $label, bool $exactMatch = false): ?WebDriverElement
+    {
+        $label = $this->client->getCrawler()->filter('label')
+                ->reduce(function (WebDriverElement $e) use ($label, $exactMatch) {
+                    if ($exactMatch) {
+                        return trim($e->getText()) === $label;
+                    }
+
+                    return str_contains($e->getText(), $label);
+                })
+                ->first() ?? null;
+
+        if ($label && $label->getAttribute('for')) {
+            $target = $this->client->getCrawler()->findElement(WebDriverBy::id($label->getAttribute('for'))) ?? null;
+
+            if (null === $target) {
+                throw new \LogicException("No form field found with id {$label->getAttribute('for')}");
+            }
+
+            if (!in_array($target->getTagName(), ['input', 'select', 'textarea'])) {
+                throw new \LogicException('Target element is not a form field (<input>, <select> or  <textarea>)');
+            }
+
+            return $target;
+        }
+
+        return null;
+    }
+
+    protected function getButton(string $label): ?WebDriverElement
+    {
+        return $this->client->getCrawler()->filter('button')
+                ->reduce(function (WebDriverElement $e) use ($label) {
+                    return trim($e->getText()) === $label;
+                })
+                ->first() ?? null;
     }
 
     /**
@@ -102,7 +161,7 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
 
         $this->client->waitForVisibility('main', 1);
-        $this->client->takeScreenshot("public/screenshots/depot/$device/001-page-connexion.png");
+        $this->client->takeScreenshot("$this->screenShotDir/$device/001-page-connexion.png");
         $this->assertSelectorTextContains('main h2', 'Me connecter à mon espace');
         $button = $this->client->getCrawler()->selectButton('Je me connecte à mon espace')->first();
         $form = $button->form([
@@ -110,16 +169,37 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
             '_password' => 'P4ssword',
         ]);
 
-        $this->client->takeScreenshot("public/screenshots/depot/$device/002-connexion-formulaire-rempli.png");
+        $this->client->takeScreenshot("$this->screenShotDir/$device/002-connexion-formulaire-rempli.png");
         sleep(1);
         $this->assertTrue($button->isEnabled());
         $this->client->submit($form);
-        $this->client->takeScreenshot("public/screenshots/depot/$device/003-connexion-formulaire-soumis.png");
+        $this->client->takeScreenshot("$this->screenShotDir/$device/003-connexion-formulaire-soumis.png");
 
         $this->client->waitForVisibility('main', 2);
-        $this->client->takeScreenshot("public/screenshots/depot/$device/004-page-accueil-requerant.png");
+        $this->client->takeScreenshot("$this->screenShotDir/$device/004-page-accueil-requerant.png");
 
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Déclarer un bris de porte');
+
+        /*
+        $input = $this->getFieldByLabel('Les 10 premiers chiffres de votre numéro de sécurité sociale');
+
+        $input->clear();
+        $input->sendKeys('2790656123');
+        // Attendre pour s'assurer que les données ont bien été transmises à l'API
+        $this->client->wait(500);
+
+        $this->client->takeScreenshot("$this->screenShotDir/$device/005-page-donnees-personnelles.png");
+
+        $this->getButton("Valider et passer à l'étape suivante")->click();
+
+        $this->client->takeScreenshot("$this->screenShotDir/$device/006-page-donnees-bris-de-porte.png");
+
+        $requerant = $requerant = $this->em
+            ->getRepository(Requerant::class)
+            ->findOneBy(['email' => 'raquel.randt@courriel.fr']);
+        $this->assertNotNull($requerant);
+        $this->assertEquals('2790656123', $requerant->getPersonnePhysique()?->getNumeroSecuriteSociale());
+        */
     }
 }
