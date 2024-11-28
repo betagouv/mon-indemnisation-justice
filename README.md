@@ -71,25 +71,6 @@ rm -Rf .docker/postgres/data/*
 docker compose up -d postgres
 ```
 
-## Re-générer le manifeste des routes pour le javascript
-
-Quand une nouvelle route est exposée en JS (via l'attribut `options: ['expose' => true]`), ou quand son nom est changé,
-il faut re-générer le fichier de manifeste des routes Symfony exposées au JS. 
-
-Ceci se fait via la commande `fos:js-routing:dump`, soit nativement :
-
-```bash
-bin/console fos:js-routing:dump --format json
-```
-
-Le fichier est alors créé sous `public/js/fos_js_routes.json`.
-
-Soit depuis docker
-
-```bash
-docker compose exec symfony bin/console fos:js-routing:dump --format json
-docker compose cp symfony:/app/public/js/fos_js_routes.json public/js/fos_js_routes.json
-```
 
 ## Test fonctionnels:
 
