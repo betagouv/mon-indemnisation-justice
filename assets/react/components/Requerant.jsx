@@ -16,7 +16,7 @@ const Requerant = function({
   return (
     <>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-4">
+        <div className="fr-col-lg-6 fr-col-12">
           <Referentiel
             label={qualiteText ?? "Vous effectuez votre demande en qualité de"}
             options={Object.entries(QualiteRequerant)}
@@ -24,8 +24,8 @@ const Requerant = function({
             setContent={setQualiteRequerant}
           />
         </div>
-        <div className="fr-col-8">
-          {qualiteRequerant === QualiteRequerant.AUT &&
+        <div className="fr-col-lg-6 fr-col-12">
+          {qualiteRequerant === "AUT" &&
           <Input
             label={precisionText ?? "Précisez votre qualité"}
             nativeInputProps={{

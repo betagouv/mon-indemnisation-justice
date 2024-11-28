@@ -54,6 +54,7 @@ const Recapitulatif = ({ gotoFirstSection = null, gotoSecondSection = null, }) =
                     }
                 </section>
             </div>
+            {/*
             <div className="fr-col-lg-6 fr-col-12">
                 <section className="pr-form-section fr-p-4w">
                     <h3>Service enquêteur</h3>
@@ -88,6 +89,7 @@ const Recapitulatif = ({ gotoFirstSection = null, gotoSecondSection = null, }) =
                     }
                 </section>
             </div>
+            */}
             <div className="fr-col-12">
                 <section className="pr-form-section fr-p-4w">
 
@@ -109,13 +111,14 @@ const Recapitulatif = ({ gotoFirstSection = null, gotoSecondSection = null, }) =
                     <div className="fr-mb-2w">
                         <label>J'effectue ma demande en qualité de : <strong>{dossier.qualiteRequerant}</strong></label>
                     </div>
+                    {/*
                     <dl className="fr-mb-2w">
                         <dd>Attestation remise à
                             : <strong>{dossier.receveurAttestation.civilite} {dossier.receveurAttestation.prenom1} {dossier.receveurAttestation.nom}</strong>
                         </dd>
                         <dd>En qualité de <strong>{dossier.receveurAttestation.qualite}</strong></dd>
                     </dl>
-
+                    */}
                     {gotoSecondSection &&
                         <Button
                             onClick={gotoSecondSection}

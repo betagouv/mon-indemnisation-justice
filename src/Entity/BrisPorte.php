@@ -113,7 +113,6 @@ class BrisPorte
     #[ORM\Column(nullable: true)]
     protected ?bool $aContactBailleur;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $identitePersonneRecherchee = null;
 
@@ -141,23 +140,21 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $numeroParquet = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    // TODO supprimer définitivement ce champs
     #[ORM\ManyToOne(cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn]
     private ?PersonnePhysique $receveurAttestation = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    // TODO supprimer définitivement ce champs et la table
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn]
     private ?ServiceEnqueteur $serviceEnqueteur = null;
 
     public function __construct()
     {
         $this->dateCreation = new \DateTimeImmutable();
         $this->liasseDocumentaire = new LiasseDocumentaire();
-        $this->receveurAttestation = new PersonnePhysique();
         $this->adresse = new Adresse();
-        $this->serviceEnqueteur = new ServiceEnqueteur();
     }
 
     public function getPid(): ?int

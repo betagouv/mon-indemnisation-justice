@@ -82,6 +82,7 @@ const BrisPorte = () => {
                       ]}
                   />
               </div>
+              {/*
               <div className="fr-col-12">
                   <Input
                       label="Si vous la connaissez, précisez l'identité de la personne recherchée"
@@ -91,7 +92,8 @@ const BrisPorte = () => {
                           maxLength: 255
                       }}
               />
-            </div>
+              </div>
+              */}
             <div className="fr-col-12">
               <Requerant
                 qualiteRequerant={dossier.qualiteRequerant}
@@ -103,6 +105,7 @@ const BrisPorte = () => {
           </div>
         </section>
       </div>
+      {/*
       <div className="fr-col-12">
           <section className="pr-form-section fr-p-4w">
               <h3>Attestation remise par les force de l'ordre à</h3>
@@ -157,6 +160,8 @@ const BrisPorte = () => {
               </div>
           </section>
       </div>
+      */}
+      {/*
       <a name="service-enqueteur"></a>
       <div className="fr-col-12">
           <section className="pr-form-section fr-p-4w">
@@ -228,6 +233,7 @@ const BrisPorte = () => {
               </div>
           </section>
       </div>
+      */}
     </div>
   );
 }
