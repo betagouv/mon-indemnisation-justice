@@ -15,7 +15,7 @@ const PersonneMorale = () => {
             label="Raison sociale"
             //stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
-              value: dossier.requerant.personneMorale?.raisonSociale,
+              value: dossier.requerant.personneMorale?.raisonSociale || "",
               onChange: (e) => patchDossier({requerant: {personneMorale: {raisonSociale: e.target.value}}}),
               maxLength: 255
             }}
@@ -26,7 +26,7 @@ const PersonneMorale = () => {
             label="SIREN / SIRET"
             //stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
-              value: dossier.requerant.personneMorale?.sirenSiret,
+              value: dossier.requerant.personneMorale?.sirenSiret || "",
               onChange: (e) => patchDossier({requerant: {personneMorale: {sirenSiret: e.target.value}}}),
               maxLength: 255
             }}

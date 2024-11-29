@@ -4,6 +4,7 @@ import { disableReactDevTools } from '@/react/services/devtools.js';
 import BrisPortePanel from '@/react/components/BrisPortePanel.jsx';
 import { DossierContext, PatchDossierContext } from '@/react/contexts/DossierContext.ts';
 import _ from "lodash";
+import {recursiveMerge, recursivePatch} from "@/react/services/Object.js";
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
@@ -48,64 +49,14 @@ function DossierApp({dossier}) {
     const [_dossier, _patchDossier] = useReducer((dossier: object, changes: any) => {
         const { patch = true, ...diff } = changes;
 
-        // Ugly patch to avoid recursive merge to mess data with arrays
-        if (Array.isArray(diff?.liasseDocumentaire?.documents)) {
-            return {
-                ...dossier,
-                ...{
-                    liasseDocumentaire: {
-                        documents: diff?.liasseDocumentaire?.documents
-                    }
-                }
-            };
-        }
-        if (Array.isArray(diff?.requerant?.personnePhysique?.liasseDocumentaire?.documents)) {
-            return {
-                ...dossier,
-                ...{
-                    requerant: {
-                        personnePhysique: {
-                            liasseDocumentaire: {
-                                documents: diff?.requerant?.personnePhysique?.liasseDocumentaire?.documents
-                            }
-                        }
-
-                    }
-                }
-            };
-        }
-        if (Array.isArray(diff?.requerant?.personneMorale?.liasseDocumentaire?.documents)) {
-            return {
-                ...dossier,
-                ...{
-                    requerant: {
-                        personneMorale: {
-                            liasseDocumentaire: {
-                                documents: diff?.requerant?.personneMorale?.liasseDocumentaire?.documents
-                            }
-                        }
-
-                    }
-                }
-            };
-        }
-
         if (patch) {
             // Ajouter les changements à la file d'attente
-            queuedChanges = {
-                ..._.merge(
-                    queuedChanges, diff
-                )
-            };
+            queuedChanges = recursiveMerge(queuedChanges, diff);
             debouncedApiPatch();
         }
 
         // Il faut recréer un objet pour que le re-render soit déclenché
-        return {
-            ..._.merge(
-                dossier, diff
-            )
-        };
+        return recursivePatch(dossier, diff);
     }, dossier);
 
     return (
