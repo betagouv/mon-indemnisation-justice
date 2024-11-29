@@ -1,5 +1,6 @@
 import React, {useReducer} from 'react';
 import ReactDOM from "react-dom/client";
+import { disableReactDevTools } from '@/react/services/devtools.js';
 import BrisPortePanel from '@/react/components/BrisPortePanel.jsx';
 import { DossierContext, PatchDossierContext } from '@/react/contexts/DossierContext.ts';
 import _ from "lodash";
@@ -10,6 +11,11 @@ if (import.meta.hot) {
     "vite:beforeUpdate",
     () => console.clear()
   );
+}
+
+// En production, désactivation de React devtools
+if (import.meta.env.PROD) {
+    disableReactDevTools();
 }
 
 const { dossier, router } = JSON.parse(document.getElementById('react-arguments').textContent);
