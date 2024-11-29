@@ -92,11 +92,8 @@ const BrisPortePanel = function() {
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle="Attestation complétée par les forces de l'ordre"
                   type={"attestation_information"}
-                  onRemoved={(document) => {
-                    patchDossier({ liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id)} })
-                  }
-                  }
-                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document]) }})}
+                  onRemoved={(document) => { patchDossier({ liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id)}, patch: false }) } }
+                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document]) }, patch: false})}
                 />
               </section>
             </div>
@@ -107,8 +104,8 @@ const BrisPortePanel = function() {
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle="Photos de la porte endommagée"
                   type={"photo_prejudice"}
-                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id) } }) }
-                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}})}
+                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id) }, patch: false }) }
+                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
                 />
               </section>
             </div>
@@ -120,8 +117,8 @@ const BrisPortePanel = function() {
                   liasseDocumentaire={dossier.requerant.personnePhysique.liasseDocumentaire}
                   libelle="Copie de votre pièce d'identité recto-verso"
                   type={"carte_identite"}
-                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}} }) }
-                  onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}})}
+                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
+                  onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
                 />
               </section>
             </div>
@@ -133,8 +130,8 @@ const BrisPortePanel = function() {
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
                   type={"preuve_paiement_facture"}
-                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}} }) }
-                  onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}})}
+                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
+                  onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
                 />
               </section>
             </div>
@@ -146,8 +143,8 @@ const BrisPortePanel = function() {
                   liasseDocumentaire={dossier.requerant.personneMorale.liasseDocumentaire}
                   libelle="Relevé d'identité bancaire de votre société"
                   type={"rib"}
-                  onRemoved={(document) => patchDossier({ requerant: { personneMorale: { liasseDocumentaire: { documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}} }) }
-                  onUploaded={(document) => patchDossier({ requerant: { personneMorale: {liasseDocumentaire: {documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.concat([document])}}}})}
+                  onRemoved={(document) => patchDossier({ requerant: { personneMorale: { liasseDocumentaire: { documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
+                  onUploaded={(document) => patchDossier({ requerant: { personneMorale: {liasseDocumentaire: {documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
                 />
               </section>
             </div>
@@ -160,8 +157,8 @@ const BrisPortePanel = function() {
                   liasseDocumentaire={dossier.requerant.personnePhysique.liasseDocumentaire}
                   libelle="Votre relevé d'identité bancaire"
                   type={"rib"}
-                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}} }) }
-                  onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}})}
+                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
+                  onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
                 />
               </section>
             </div>
@@ -173,8 +170,8 @@ const BrisPortePanel = function() {
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle="Titre de propriété"
                   type={"titre_propriete"}
-                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id) } }) }
-                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}})}
+                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id) }, patch: false }) }
+                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
                 />
               </section>
             </div>
@@ -186,8 +183,8 @@ const BrisPortePanel = function() {
                   liasseDocumentaire={dossier.liasseDocumentaire}
                   libelle={"Contrat de location"}
                   type={"contrat_location"}
-                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id)} }) }
-                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}})}
+                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id)}, patch: false }) }
+                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
                 />
               </section>
             </div>

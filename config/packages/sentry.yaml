@@ -6,7 +6,7 @@ when@prod: &prod
             ignore_exceptions:
                 - 'Symfony\Component\ErrorHandler\Error\FatalError'
                 - 'Symfony\Component\Debug\Exception\FatalErrorException'
-                - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'
+                - 'Symfony\Component\HttpKernel\Exception\HttpException'
                 - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
             send-default-pii: true
 
