@@ -5,7 +5,7 @@ import {Uploader} from '@/react/components/Uploader';
 export const Document = ({documents, libelle, lectureSeule, liasseDocumentaire, type, onRemoved, onUploaded}) => {
 
     const handleRemove = (document, e) => {
-        fetch(router.removeDocument,{ method: "DELETE" })
+        fetch(`/document/${document.id}/${document.filename}`,{ method: "DELETE" })
           .then(() => onRemoved(document))
           .catch(() => {});
     }

@@ -222,7 +222,7 @@ const BrisPortePanel = function() {
                 <Button
                   linkProps={{
                     // Route: app_requerant_update_statut_to_constitue
-                    href: `/requerant/bris-de-porte//passage-a-l-etat-constitue/${dossier.id}`
+                    href: `/requerant/bris-de-porte/passage-a-l-etat-constitue/${dossier.id}`
                   }}
                 >
                   {dossier.dateDeclaration ? "Mettre à jour mon dossier" : "Je déclare mon bris de porte"}
