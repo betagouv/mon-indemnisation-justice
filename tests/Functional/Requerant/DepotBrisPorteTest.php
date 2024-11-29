@@ -170,7 +170,7 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         ]);
 
         $this->client->takeScreenshot("$this->screenShotDir/$device/002-connexion-formulaire-rempli.png");
-        sleep(1);
+
         $this->assertTrue($button->isEnabled());
         $this->client->submit($form);
         $this->client->takeScreenshot("$this->screenShotDir/$device/003-connexion-formulaire-soumis.png");
@@ -181,25 +181,25 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Déclarer un bris de porte');
 
-        /*
         $input = $this->getFieldByLabel('Les 10 premiers chiffres de votre numéro de sécurité sociale');
 
         $input->clear();
         $input->sendKeys('2790656123');
+        // Astuce pour s'assurer que la requête xhr de `PATCH` ait bien été déclenchée:
+        sleep(1);
         // Attendre pour s'assurer que les données ont bien été transmises à l'API
-        $this->client->wait(500);
-
         $this->client->takeScreenshot("$this->screenShotDir/$device/005-page-donnees-personnelles.png");
 
         $this->getButton("Valider et passer à l'étape suivante")->click();
 
         $this->client->takeScreenshot("$this->screenShotDir/$device/006-page-donnees-bris-de-porte.png");
 
-        $requerant = $requerant = $this->em
+        // Il faut purger le cache Doctrine, afin de s'assurer que l'ORM rejoue une requête et récupère l'objet à jour
+        $this->em->clear();
+        $requerant = $this->em
             ->getRepository(Requerant::class)
             ->findOneBy(['email' => 'raquel.randt@courriel.fr']);
         $this->assertNotNull($requerant);
         $this->assertEquals('2790656123', $requerant->getPersonnePhysique()?->getNumeroSecuriteSociale());
-        */
     }
 }

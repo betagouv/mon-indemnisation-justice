@@ -4,7 +4,7 @@ const allowedCharacters = `${alphabet}ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`
 
 
 function randomPick(value: string): string {
-    return value.charAt(Math.floor(Math.random() * (allowedCharacters.length - 1)));
+    return value.charAt(Math.floor(Math.random() * (value.length - 1)));
 }
 
 function randomString(length: number = 10): string {
@@ -23,7 +23,7 @@ function randomId(length: number = 10): string {
     if (length <= 0) {
         return "";
     }
-    return randomPick(alphabet).concat(randomString(length - 1));
+    return randomPick(alphabet) + randomString(length - 1);
 }
 
 export { randomId };
