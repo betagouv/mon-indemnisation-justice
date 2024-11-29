@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-export const Uploader = ({liasseDocumentaire, onUploaded, label=null}) => {
+export const Uploader = ({liasseDocumentaire, onUploaded, type }) => {
 
   const MAX_SIZE=2048*1000*8;
   const [erreur,setErreur]=useState("");
@@ -15,7 +15,7 @@ export const Uploader = ({liasseDocumentaire, onUploaded, label=null}) => {
 
     const data = new FormData();
     data.append('file', ev.target.files[0]);
-    fetch(`/document/${liasseDocumentaire.id}`,{ method: "POST", body: data })
+    fetch(`/document/${liasseDocumentaire.id}/${type}`,{ method: "POST", body: data })
       .then((response) => response.json())
       .then((document) => onUploaded(document))
       .catch(() => {})
