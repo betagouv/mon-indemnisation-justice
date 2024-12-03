@@ -33,7 +33,7 @@ class BrisPorte
     public ?int $id = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist', 'remove'], inversedBy: 'brisPorte')]
+    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist', 'remove'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected Requerant $requerant;
 

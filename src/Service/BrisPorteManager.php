@@ -27,7 +27,7 @@ class BrisPorteManager implements EventSubscriberInterface
             ->to($this->courrielEquipe)
             ->subject("Mon Indemnisation Justice: nouveau dossier d'indemnisation de bris de porte déposé")
             ->htmlTemplate('email/agent_nouveau_dossier_constitue.html.twig', [
-                'brisPorte' => $event->brisPorte,
+                'dossier' => $event->brisPorte,
             ]);
         // Pièces jointes non
         /*

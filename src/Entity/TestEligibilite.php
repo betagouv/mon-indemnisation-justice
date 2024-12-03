@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'eligibilite_tests')]
+#[ORM\HasLifecycleCallbacks]
 class TestEligibilite
 {
     #[ORM\Id]
@@ -13,8 +15,8 @@ class TestEligibilite
     #[ORM\Column]
     public ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: GeoDepartement::class)]
-    #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: GeoDepartement::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code', nullable: false, onDelete: 'SET NULL')]
     public GeoDepartement $departement;
 
     #[ORM\Column(nullable: true)]
@@ -31,6 +33,22 @@ class TestEligibilite
 
     #[ORM\Column(nullable: true)]
     public ?bool $aContacteBailleur = null;
+
+    #[ORM\OneToOne(targetEntity: Requerant::class)]
+    #[ORM\JoinColumn]
+    public ?Requerant $requerant = null;
+
+    #[ORM\Column]
+    public bool $estEligibleExperimentation = false;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    public \DateTimeInterface $dateSoumission;
+
+    #[ORM\PrePersist]
+    public function prePersist()
+    {
+        $this->dateSoumission = new \DateTimeImmutable();
+    }
 
     public function toArray(): array
     {

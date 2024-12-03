@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\BrisPorteController as PublicBrisPorteController;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant')]
@@ -16,6 +17,10 @@ class HomeController extends RequerantController
     public function index(Request $request): Response
     {
         $requerant = $this->getRequerant();
+
+        if ($request->getSession()->has(PublicBrisPorteController::SESSION_CONTEXT_KEY)) {
+            $request->getSession()->remove(PublicBrisPorteController::SESSION_CONTEXT_KEY);
+        }
 
         if (!($dossier = $requerant->getDernierDossier())?->estConstitue()) {
             return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
