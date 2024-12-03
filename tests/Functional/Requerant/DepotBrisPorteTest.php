@@ -84,6 +84,8 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
                 ->setNom('Randt')
             )
             ->setVerifieCourriel()
+            /*
+             * TODO créer une entité et la lier au dossier
             ->setTestEligibilite([
                 'departement' => '13',
                 'estVise' => false,
@@ -91,6 +93,7 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
                 'estProprietaire' => true,
                 'aContacteAssurance' => false,
             ])
+            */
             ->setEmail('raquel.randt@courriel.fr')
             ->setRoles([Requerant::ROLE_REQUERANT])
         ;
@@ -185,7 +188,8 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
 
         $input->clear();
         $input->sendKeys('2790656123');
-        // Astuce pour s'assurer que la requête xhr de `PATCH` ait bien été déclenchée:
+        // Astuce pour s'assurer que la requête xhr de `PATCH` ait bien été déclenchée :
+        // TODO voir pour observer les `queuedChanges` par exemple https://github.com/php-webdriver/php-webdriver/wiki/How-to-work-with-AJAX-(jQuery,-Prototype,-Dojo)
         sleep(1);
         // Attendre pour s'assurer que les données ont bien été transmises à l'API
         $this->client->takeScreenshot("$this->screenShotDir/$device/005-page-donnees-personnelles.png");

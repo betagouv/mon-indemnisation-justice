@@ -21,7 +21,7 @@ Object
     );
 
 export default defineConfig(({command, mode}) => {
-        const base = mode === 'production' ? '/build/' : '/preview/';
+        const base = (mode === 'production') ? '/build/' : '/preview/';
         const outDir = `public/${base}`;
 
         return {

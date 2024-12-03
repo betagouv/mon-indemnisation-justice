@@ -30,8 +30,8 @@ class BrisPorteController extends RequerantController
     public function add(EntityManagerInterface $em): Response
     {
         $requerant = $this->getRequerant();
-        $brisPorte = $em->getRepository(BrisPorte::class)->newInstance($requerant);
 
+        /*
         if ($requerant->getTestEligibilite()) {
             if (isset($requerant->getTestEligibilite()['departement'])) {
                 $brisPorte->setDepartement($em->getRepository(GeoDepartement::class)->find($requerant->getTestEligibilite()['departement']));
@@ -51,6 +51,7 @@ class BrisPorteController extends RequerantController
             $requerant->setTestEligibilite(null);
             $em->persist($requerant);
         }
+        */
 
         $em->persist($brisPorte);
         $em->flush();

@@ -53,9 +53,6 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(options: ['default' => false])]
     protected bool $isPersonneMorale = false;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    protected ?array $testEligibilite = null;
-
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Adresse $adresse;
@@ -68,15 +65,17 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale;
 
-    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'])]
-    protected Collection $brisPorte;
+    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'], )]
+    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    /** @type Collection<BrisPorte> $brisPorte */
+    protected Collection $dossiers;
 
     public function __construct()
     {
         $this->personneMorale = null;
         $this->personnePhysique = new PersonnePhysique();
         $this->adresse = new Adresse();
-        $this->brisPorte = new ArrayCollection();
+        $this->dossiers = new ArrayCollection();
     }
 
     public function getPId(): ?int
@@ -289,16 +288,21 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->getPersonnePhysique()?->getNomComplet() ?? null;
     }
 
-    public function getTestEligibilite(): ?array
-    {
-        return $this->testEligibilite;
-    }
-
     public function setTestEligibilite(?array $testEligibilite): self
     {
         $this->testEligibilite = $testEligibilite;
 
         return $this;
+    }
+
+    public function getDernierDossier(): ?BrisPorte
+    {
+        return $this->dossiers->last();
+    }
+
+    public function getDossiers(): Collection
+    {
+        return $this->dossiers;
     }
 
     public function __toString(): string

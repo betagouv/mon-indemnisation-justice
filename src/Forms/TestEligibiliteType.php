@@ -2,9 +2,8 @@
 
 namespace App\Forms;
 
-use App\Dto\TestEligibilite;
 use App\Entity\GeoDepartement;
-use Doctrine\ORM\Mapping\Entity;
+use App\Entity\TestEligibilite;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;

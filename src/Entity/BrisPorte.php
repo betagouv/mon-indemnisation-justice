@@ -87,10 +87,6 @@ class BrisPorte
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateOperationPJ = null;
 
-    #[ORM\ManyToOne(targetEntity: GeoDepartement::class)]
-    #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code', onDelete: 'SET NULL')]
-    protected GeoDepartement $departement;
-
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(options: ['default' => false])]
     private bool $isPorteBlindee = false;
@@ -98,20 +94,9 @@ class BrisPorte
     #[ORM\Column(options: ['default' => false])]
     private bool $isErreurPorte = false;
 
-    #[ORM\Column(nullable: true)]
-    private ?bool $estVise;
-
-    #[ORM\Column(nullable: true, options: ['comments' => 'La personne recherchée réside ou est hébergée à cette adresse'])]
-    protected ?bool $estHebergeant;
-
-    #[ORM\Column(nullable: true)]
-    protected ?bool $estProprietaire;
-
-    #[ORM\Column(nullable: true)]
-    protected ?bool $aContactAssurance;
-
-    #[ORM\Column(nullable: true)]
-    protected ?bool $aContactBailleur;
+    #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: true)]
+    protected ?TestEligibilite $testEligibilite = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $identitePersonneRecherchee = null;
@@ -339,6 +324,18 @@ class BrisPorte
         return $this;
     }
 
+    public function getTestEligibilite(): ?TestEligibilite
+    {
+        return $this->testEligibilite;
+    }
+
+    public function setTestEligibilite(?TestEligibilite $testEligibilite): BrisPorte
+    {
+        $this->testEligibilite = $testEligibilite;
+
+        return $this;
+    }
+
     public function isPorteBlindee(): ?bool
     {
         return $this->isPorteBlindee;
@@ -371,78 +368,6 @@ class BrisPorte
     public function setErreurPorte(?bool $isErreurPorte): self
     {
         $this->isErreurPorte = $isErreurPorte;
-
-        return $this;
-    }
-
-    public function estVise(): ?bool
-    {
-        return $this->estVise;
-    }
-
-    public function setEstVise(?bool $estVise): BrisPorte
-    {
-        $this->estVise = $estVise;
-
-        return $this;
-    }
-
-    public function estHebergeant(): ?bool
-    {
-        return $this->estHebergeant;
-    }
-
-    public function setEstHebergeant(?bool $estHebergeant): BrisPorte
-    {
-        $this->estHebergeant = $estHebergeant;
-
-        return $this;
-    }
-
-    public function estProprietaire(): ?bool
-    {
-        return $this->estProprietaire;
-    }
-
-    public function setEstProprietaire(?bool $estProprietaire): BrisPorte
-    {
-        $this->estProprietaire = $estProprietaire;
-
-        return $this;
-    }
-
-    public function aContactAssurance(): ?bool
-    {
-        return $this->aContactAssurance;
-    }
-
-    public function setAContactAssurance(?bool $aContactAssurance): BrisPorte
-    {
-        $this->aContactAssurance = $aContactAssurance;
-
-        return $this;
-    }
-
-    public function aContactBailleur(): ?bool
-    {
-        return $this->aContactBailleur;
-    }
-
-    public function setAContactBailleur(?bool $aContactBailleur): BrisPorte
-    {
-        $this->aContactBailleur = $aContactBailleur;
-
-        return $this;
-    }
-
-    public function getDepartement(): GeoDepartement
-    {
-        return $this->departement;
-    }
-
-    public function setDepartement(GeoDepartement $departement): BrisPorte
-    {
-        $this->departement = $departement;
 
         return $this;
     }

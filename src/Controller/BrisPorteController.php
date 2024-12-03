@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Dto\Inscription;
-use App\Dto\TestEligibilite;
+use App\Entity\BrisPorte;
 use App\Entity\GeoDepartement;
 use App\Entity\Requerant;
+use App\Entity\TestEligibilite;
 use App\Forms\InscriptionType;
 use App\Forms\TestEligibiliteType;
 use App\Service\Mailer;
@@ -40,17 +41,22 @@ class BrisPorteController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var TestEligibilite $testEligibilite */
                 $testEligibilite = $form->getData();
+                $this->entityManager->persist($testEligibilite);
+                $this->entityManager->flush();
 
                 if ($testEligibilite->departement->estDeploye()) {
                     $requerant = $this->getUser();
                     if ($requerant instanceof Requerant) {
-                        $requerant->setTestEligibilite($testEligibilite->toArray());
-                        $this->entityManager->persist($requerant);
+                        $dossier = (new BrisPorte())
+                            ->setRequerant($requerant)
+                            ->setTestEligibilite($testEligibilite);
+
+                        $this->entityManager->persist($dossier);
                         $this->entityManager->flush();
 
-                        return $this->redirectToRoute('app_bris_porte_add');
+                        return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
                     } else {
-                        $request->getSession()->set('testEligibilite', $testEligibilite->toArray());
+                        $request->getSession()->set('testEligibilite', $testEligibilite);
 
                         return $this->redirectToRoute('bris_porte_creation_de_compte');
                     }
@@ -122,8 +128,12 @@ class BrisPorteController extends AbstractController
                     );
                     // $requerant->addRole(Requerant::ROLE_REQUERANT);
                     $requerant->genererJetonVerification();
-                    $requerant->setTestEligibilite($request->getSession()->get('testEligibilite'));
+                    // $requerant->setTestEligibilite($request->getSession()->get('testEligibilite'));
+                    $dossier = (new BrisPorte())
+                        ->setRequerant($user);
+
                     $request->getSession()->remove('testEligibilite');
+                    $this->entityManager->persist($dossier);
                     $this->entityManager->persist($requerant);
                     $this->entityManager->flush();
 
