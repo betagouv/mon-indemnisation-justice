@@ -6,17 +6,18 @@
     <div class="fr-container">
         <div class="fr-grid-row">
             <div class="fr-col-12">
-                <div class="fr-table fr-table--layout-fixed"
-                     >
+                <div class="fr-table fr-table--layout-fixed">
+                    {# TODO voir si on peut adapter l'affichage en mobile #}
+
                     <table data-fr-js-table-element="true" class="">
                         <caption>Mes dossiers</caption>
                         <thead>
                             <tr>
-                                <th scope="col">Référence</th>
-                                <th scope="col">Statut du dossier</th>
-                                <th scope="col">Date du dernier statut</th>
-                                <th scope="col">Code suivi</th>
-                                <th scope="col">Actions</th>
+                                <th scope="col" class="fr-col-1">Référence</th>
+                                <th scope="col" class="fr-col-5">Statut du dossier</th>
+                                <th scope="col" class="fr-col-3">Date du dernier statut</th>
+                                <th scope="col" class="fr-col-1">Code suivi</th>
+                                <th scope="col" class="fr-col-2"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -24,17 +25,31 @@
                             {% for dossier in dossiers %}
                             <tr>
                                 <td>{{ dossier.reference }}</td>
-                                <td>Demande d'indemnisation déposée</td>
-                                <td>{{ dossier.dateDeclaration| default(dossier.dateCreation)|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY, HH'h'mm", timezone='Europe/Paris') }}</td>
+                                <td>
+                                    {% if dossier.estConstitue %}
+                                        <p class="fr-badge fr-badge fr-badge--blue-cumulus">
+                                            Demande d'indemnisation déposée&nbsp;
+                                            <span class="fr-icon-send-plane-line" aria-hidden="true"></span>
+                                        </p>
+                                    {% else %}
+                                        <p class="fr-badge fr-badge">
+                                            Dossier en cours de constitution&nbsp;
+                                            <span class="fr-icon-time-line" aria-hidden="true"></span>
+                                        </p>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ dossier.dateDeclaration| default(dossier.dateCreation)|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY", timezone='Europe/Paris') }}<br/>
+                                    ({{ dossier.dateDeclaration| default(dossier.dateCreation)|format_datetime(locale='fr',pattern="HH'h'mm", timezone='Europe/Paris') }})
+                                </td>
                                 <td>{{ dossier.raccourci }}</td>
                                 <td>
-                                    {% if not dossier.estConstitue %}
-                                        <a
-                                            href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
-                                            class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left"
-                                        >
-                                            Compléter</a>
-                                    {% endif %}
+                                    <a
+                                        href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
+                                        class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left"
+                                    >
+                                        {% if dossier.estConstitue %}Modifier{% else %}Compléter{% endif %}
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}

@@ -19,7 +19,7 @@ class SecurityAgentController extends AbstractController
     ) {
     }
 
-    #[Route(path: '/connexion', name: 'app_agent_securite_connexion', methods: ['GET', 'POST'], options: ['expose' => true])]
+    #[Route(path: '/connexion', name: 'app_agent_securite_connexion', methods: ['GET', 'POST'])]
     public function connexionAgent(Request $request): Response
     {
         return $this->render('agent/connexion.html.twig', [

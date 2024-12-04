@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\BrisPorte;
-use App\Entity\Requerant;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,25 +12,25 @@ use Symfony\Component\Routing\Attribute\Route;
 class HomeController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
     ) {
     }
 
     #[Route('/', name: 'app_homepage')]
-    #[Route('/declarer-un-prejudice', name: 'app_category', options: ['expose' => true])]
+    #[Route('/declarer-un-prejudice', name: 'app_category')]
     public function index(): Response
     {
         return $this->render('index.html.twig', [
         ]);
     }
 
-    #[Route('/qui-sommes-nous', name: 'app_qui_sommes_nous', options: ['expose' => true])]
+    #[Route('/qui-sommes-nous', name: 'app_qui_sommes_nous')]
     public function quiSommesNous(): Response
     {
         return $this->render('qui-sommes-nous.html.twig');
     }
 
-    #[Route('/suivi-de-mon-dossier', name: 'app_suivi_mon_dossier', options: ['expose' => true])]
+    #[Route('/suivi-de-mon-dossier', name: 'app_suivi_mon_dossier')]
     public function suiviDossier(Request $request): Response
     {
         /** @var string $raccourci */
@@ -46,8 +45,8 @@ class HomeController extends AbstractController
 
             if (null !== $brisPorte) {
                 $statuts[] = [
-                    "date" => $brisPorte->getDateDeclaration()->format('d/m/Y H:i'),
-                    "libelle" => $brisPorte->getLastStatut()->getLibelle(),
+                    'date' => $brisPorte->getDateDeclaration()->format('d/m/Y H:i'),
+                    'libelle' => $brisPorte->getLastStatut()->getLibelle(),
                 ];
             }
         }
@@ -59,7 +58,7 @@ class HomeController extends AbstractController
     }
 
     /*
-    #[Route('/conditions-generales-d-utilisation', name: 'app_cgu', options: ['expose' => true])]
+    #[Route('/conditions-generales-d-utilisation', name: 'app_cgu')]
     public function cgu(): Response
     {
         return $this->render('cgu.html.twig');

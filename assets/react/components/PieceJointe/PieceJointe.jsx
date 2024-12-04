@@ -1,90 +1,56 @@
-import React,{useState,useEffect,useRef} from 'react';
-import { Uploader } from '../Uploader';
-import { Loading } from '../../utils/fundamental';
+import React from 'react';
+import {Uploader} from '@/react/components/Uploader';
 
-export const Document = ({liasseDocumentaireIri,type,label,hint_text="",readonly=false}) => {
-  const [loading,setLoading]=useState(false);
-  const [documents,setDocuments]=useState([]);
-  const [selectedFile,setSelectedFile]=useState(null);
-  const [reload, setReload]=useState(false);
-  const toggleReload = () => setReload(!reload);
 
-  var locked = useRef(false);
+export const Document = ({documents, libelle, lectureSeule, liasseDocumentaire, type, onRemoved, onUploaded}) => {
+    
+    const handleRemove = (document, e) => {
+        fetch(`/document/${document.id}/${document.filename}`,{ method: "DELETE" })
+          .then(() => onRemoved(document))
+          .catch(() => {});
+    }
 
-  useEffect(() => {
-    if(!selectedFile)
-      return;
-    const tmp=documents;
-    tmp.push(selectedFile);
-    setDocuments(tmp);
-    toggleReload();
-  },[selectedFile]);
-
-  useEffect(() => {
-    if(!reload) { return; }
-    toggleReload();
-  },[reload]);
-
-  useEffect(() => {
-
-    if(locked.current === true)
-      return;
-    locked.current=true;
-
-    const url = Routing.generate('_api_document_get_collection',{
-      liasseDocumentaire: liasseDocumentaireIri,
-      type: type
-    });
-
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        const count = data["hydra:totalItems"];
-        const items = data["hydra:member"];
-        setDocuments(items);
-        setLoading(true);
-      })
-      .catch(() => setLoading(true))
-  },[]);
-
-  return (
-    <>
-      {loading &&
-      <>
-        <div className="fr-col-12">
-        {readonly &&
-          <label className="fr-label">{label}</label>
-        }
-        {!readonly &&
-          <Uploader
-            hint_text={hint_text}
-            label={label}
-            type={type}
-            liasseDocumentaireIri={liasseDocumentaireIri}
-            selectedFile={selectedFile}
-            setSelectedFile={setSelectedFile}
-          />
-        }
-        </div>
-        <div className="fr-col-12">
-        {documents.map((item) =>
-            <div key={item.id}>
-              <a
-                className="fr-link"
-                target="_blank"
-                href={Routing.generate('app_document_download',{id:item.id, filename: item.filename})}
-              >
-              {item.originalFilename}
-              </a>&nbsp;|&nbsp;
+    return (
+        <>
+            <div className="fr-col-12 fr-m-3w">
+                {lectureSeule ?
+                    <h6>{libelle}</h6> :
+                    <h4>{libelle}</h4>
+                }
+                <div className="fr-pl-3w">
+                {documents.map((document) =>
+                    <div key={document.id} className="fr-grid-row">
+                        <div className="fr-col-lg-10 fr-col-12 fr-my-1w">
+                            <a
+                                className="fr-link"
+                                target="_blank"
+                                href={`/document/${document.id}/${document.filename}`}
+                            >
+                                {document.originalFilename}
+                            </a>
+                        </div>
+                        {!lectureSeule &&
+                            <div className="fr-col-lg-2 fr-col-12 fr-btns-group fr-btns-group--sm fr-btns-group--right">
+                                <button className="fr-btn fr-icon-delete-line fr-btn--tertiary-no-outline" onClick={() => handleRemove(document)}>
+                                    Retirer
+                                </button>
+                            </div>
+                        }
+                    </div>
+                )}
+                {documents.length === 0 &&
+                    <i>Aucun document</i>
+                }
+                {!lectureSeule &&
+                    <Uploader
+                        label={libelle}
+                        type={type}
+                        liasseDocumentaire={liasseDocumentaire}
+                        onUploaded={onUploaded}
+                    />
+                }
+                </div>
             </div>
-          )
-        }
-        </div>
-      </>
-      }
-      {!loading &&
-      <Loading/>
-      }
-    </>
-  );
+        </>
+    );
 }

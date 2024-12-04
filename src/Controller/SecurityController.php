@@ -33,7 +33,7 @@ class SecurityController extends AbstractController
     ) {
     }
 
-    #[Route(path: '/mon-mot-de-passe/oublie', name: 'app_send_reset_password', methods: ['POST'], options: ['expose' => true])]
+    #[Route(path: '/mon-mot-de-passe/oublie', name: 'app_send_reset_password', methods: ['POST'])]
     public function motDePasseOublie(#[MapRequestPayload(acceptFormat: 'json')] MotDePasseOublieDto $motDePasseOublieDto): JsonResponse
     {
         $requerant = $this->em->getRepository(Requerant::class)->findOneBy([
@@ -61,7 +61,7 @@ class SecurityController extends AbstractController
         return new JsonResponse();
     }
 
-    #[Route(path: '/mon-mot-de-passe/mettre-a-jour/{jeton}', name: 'app_reset_password', methods: ['GET', 'POST'], options: ['expose' => true])]
+    #[Route(path: '/mon-mot-de-passe/mettre-a-jour/{jeton}', name: 'app_reset_password', methods: ['GET', 'POST'])]
     public function reset_password(Request $request, RequerantRepository $ur, string $jeton): Response
     {
         /** @var Requerant $requerant */

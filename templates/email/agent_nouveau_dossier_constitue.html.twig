@@ -88,15 +88,18 @@ déposé, avec les détails suivants :
             <i>non renseignée</i>
         {% endif %}
     </li>
+    {#
     <li>
         Attestation remise à : <b>{{ brisPorte.receveurAttestation.nomComplet }}</b>
         {% if brisPorte.receveurAttestation.qualiteRequerant %}, en qualité de <b>{{ brisPorte.receveurAttestation.qualiteRequerant.libelle }}{% if brisPorte.receveurAttestation.qualiteRequerant == 'AUT' %}({{ brisPorte.receveurAttestation.precision }}){% endif %}</b>{% endif %}
     </li>
+     #}
     <li>
         Porte blindée: <b>{% if brisPorte.isPorteBlindee %}Oui{% else %}non{% endif %}</b>
     </li>
 
 </ul>
+{#
 <h4>Service enquêteur</h4>
 <ul>
     <li>
@@ -121,6 +124,7 @@ déposé, avec les détails suivants :
         Numéro de parquet : {% if brisPorte.serviceEnqueteur.numeroParquet|default('') is not empty %}<b>{{ brisPorte.serviceEnqueteur.numeroParquet }}</b>{% else %}<i>non renseigné</i>{% endif %}
     </li>
 </ul>
+ #}
 <h4>Documents transmis (<i>bientôt</i> consultables depuis l'espace rédacteur)</h4>
 <ul>
 {% for document in brisPorte.liasseDocumentaire.documents %}

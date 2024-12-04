@@ -3,7 +3,6 @@
 namespace App\Controller\Agent;
 
 use App\Entity\Agent;
-use App\Entity\BrisPorte;
 use App\Repository\BrisPorteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +18,7 @@ class RedacteurController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'app_agent_redacteur_accueil', options: ['expose' => true])]
+    #[Route('/', name: 'app_agent_redacteur_accueil')]
     public function index(): Response
     {
         return $this->render('agent/redacteur/index.html.twig', [

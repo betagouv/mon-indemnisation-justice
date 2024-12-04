@@ -1,5 +1,6 @@
 import {defineConfig} from 'vite'
 
+import { fileURLToPath, URL } from 'node:url'
 import symfonyPlugin from 'vite-plugin-symfony';
 import reactPlugin from '@vitejs/plugin-react';
 import copy from 'rollup-plugin-copy';
@@ -51,11 +52,18 @@ export default defineConfig(({command, mode}) => {
                     hook: 'writeBundle'
                 })
             ],
+            resolve: {
+                alias: {
+                  '@': fileURLToPath(new URL('./assets', import.meta.url))
+                }
+              },
+            // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
             esbuild: false,
             build: {
                 outDir,
                 target: "es2015",
                 modulePreload: false,
+                sourcemap: false,
                 rollupOptions: {
                     // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
                     input: {

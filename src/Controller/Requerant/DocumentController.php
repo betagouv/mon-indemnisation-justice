@@ -29,7 +29,7 @@ class DocumentController extends AbstractController
     ) {
     }
 
-    #[Route('/{id}/{type}', name: 'app_document_upload', methods: ['POST'], options: ['expose' => true])]
+    #[Route('/{id}/{type}', name: 'document_upload', methods: ['POST'])]
     public function upload(LiasseDocumentaire $liasseDocumentaire, Request $request, string $type): JsonResponse
     {
         $files = $request->files->all();
@@ -60,12 +60,27 @@ class DocumentController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/{filename}', name: 'document_remove', methods: ['DELETE'])]
+    public function remove(Document $document, string $filename): Response
+    {
+        if ($document->getFilename() !== $filename) {
+            throw new NotFoundHttpException('Document non trouvé');
+        }
+
+        $this->storage->delete($document->getFilename());
+
+        $this->em->remove($document);
+        $this->em->flush();
+
+        return JsonResponse::fromJsonString('', Response::HTTP_NO_CONTENT);
+    }
+
     /**
      * @author yanroussel
      *
      * @todo   Download à refaire proprement
      */
-    #[Route('/{id}/{filename}', name: 'app_document_download', methods: ['GET'], options: ['expose' => true])]
+    #[Route('/{id}/{filename}', name: 'document_download', methods: ['GET'])]
     public function download(Document $document, string $filename): Response
     {
         if ($document->getFilename() !== $filename) {

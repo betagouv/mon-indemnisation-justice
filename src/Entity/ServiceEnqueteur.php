@@ -2,58 +2,43 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Patch;
-use App\Repository\ServiceEnqueteurRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: ServiceEnqueteurRepository::class)]
-#[ApiResource(
-  operations:[
-    new Get(
-        name: '_api_service_enqueteur_get',
-        security: "is_granted('ROLE_REQUERANT')"
-    ),
-    new Patch(
-        name: '_api_service_enqueteur_patch',
-        security: "is_granted('ROLE_REQUERANT')"
-    )
-  ]
-)]
+#[ORM\Entity]
 class ServiceEnqueteur
 {
-    #[Groups(['prejudice:read','prejudice:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['prejudice:read','prejudice:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
-    #[Groups(['prejudice:read','prejudice:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
 
-    #[Groups(['prejudice:read','prejudice:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $courriel = null;
 
-    #[Groups(['prejudice:read','prejudice:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $numeroPV = null;
 
-    #[Groups(['prejudice:read','prejudice:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $juridiction = null;
 
-    #[Groups(['prejudice:read','prejudice:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $magistrat = null;
 
-    #[Groups(['prejudice:read','prejudice:write'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $numeroParquet = null;
 

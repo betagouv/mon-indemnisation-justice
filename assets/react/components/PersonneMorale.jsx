@@ -1,48 +1,11 @@
-import React, { useState,useEffect,useRef } from 'react';
-import { getStateOnEmpty } from '../utils/check_state';
-import { castNumber } from '../utils/cast';
+import React, { useContext } from 'react';
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import {DossierContext, PatchDossierContext} from "../contexts/DossierContext.ts";
 
-const PersonneMorale = ({personneMorale}) => {
+const PersonneMorale = () => {
+  const dossier = useContext(DossierContext);
+  const patchDossier = useContext(PatchDossierContext);
 
-  const [sirenSiret, setSirenSiret]=useState(personneMorale.sirenSiret??"");
-  const [raisonSociale, setRaisonSociale]=useState(personneMorale.raisonSociale??"");
-
-  const [stateRaisonSociale, setStateRaisonSociale]=useState(getStateOnEmpty(personneMorale.raisonSociale));
-  const [stateSirenSiret, setStateSirenSiret]=useState(getStateOnEmpty(personneMorale.sirenSiret));
-  const [loading, setLoading] = useState(false);
-
-  var keyUpTimer = useRef(null);
-  const KEY_UP_TIMER_DELAY = 1000;
-
-  useEffect(() => {
-    setStateRaisonSociale(getStateOnEmpty(raisonSociale));
-    setStateSirenSiret(getStateOnEmpty(sirenSiret));
-  },[sirenSiret, raisonSociale]);
-
-  useEffect(() => {
-    if(!loading) {
-      setLoading(true);
-      return;
-    }
-
-    const url =Routing.generate('_api_personne_morale_patch',{id:personneMorale.id});
-    const data = { sirenSiret: sirenSiret, raisonSociale: raisonSociale };
-
-    clearTimeout(keyUpTimer.current);
-    keyUpTimer.current = setTimeout(() => {
-      fetch(url, {
-        method: 'PATCH',
-        redirect: 'error',
-        headers: {'Content-Type': 'application/merge-patch+json'},
-        body: JSON.stringify(data)
-      })
-      .then((response) => response.json())
-      .then((data) => {})
-      .catch(() => {})
-      ;
-    },KEY_UP_TIMER_DELAY);
-  },[sirenSiret, raisonSociale]);
   return (
     <>
       <h3>Identité de la société</h3>
@@ -50,23 +13,21 @@ const PersonneMorale = ({personneMorale}) => {
         <div className="fr-col-lg-6 fr-col-12">
           <Input
             label="Raison sociale"
-            state={stateRaisonSociale}
-            stateRelatedMessage="Le champs est obligatoire"
+            //stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
-              value: raisonSociale,
-              onChange: ev => setRaisonSociale(ev.target.value),
+              value: dossier.requerant.personneMorale?.raisonSociale || "",
+              onChange: (e) => patchDossier({requerant: {personneMorale: {raisonSociale: e.target.value}}}),
               maxLength: 255
             }}
           />
         </div>
         <div className="fr-col-lg-6 fr-col-12">
-          <Input
+        <Input
             label="SIREN / SIRET"
-            state={stateSirenSiret}
-            stateRelatedMessage="Le champs est obligatoire"
+            //stateRelatedMessage="Le champs est obligatoire"
             nativeInputProps={{
-              value: sirenSiret,
-              onChange: ev => setSirenSiret(castNumber(ev.target.value)),
+              value: dossier.requerant.personneMorale?.sirenSiret || "",
+              onChange: (e) => patchDossier({requerant: {personneMorale: {sirenSiret: e.target.value}}}),
               maxLength: 255
             }}
           />
