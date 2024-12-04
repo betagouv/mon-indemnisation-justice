@@ -61,7 +61,7 @@ const PersonnePhysique = function() {
               id: randomId(),
               type: 'date',
               value: dossier.requerant.personnePhysique.dateNaissance || "",
-              onChange: (e) => patchDossier({ requerant: { personnePhysique: { dateNaissance: e.target.value}}}),
+              onChange: (e) => patchDossier({ requerant: { personnePhysique: { dateNaissance: e.target.value || null}}}),
             }}
           />
         </div>

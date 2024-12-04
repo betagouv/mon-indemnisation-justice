@@ -22,7 +22,7 @@ const BrisPorte = () => {
                 nativeInputProps={{
                     type: 'date',
                     value: dossier.dateOperationPJ || "",
-                    onChange: (e) => patchDossier({ dateOperationPJ: e.target.value })
+                    onChange: (e) => patchDossier({ dateOperationPJ: e.target.value || null})
                 }}
               />
             </div>
