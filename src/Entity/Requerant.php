@@ -297,7 +297,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getDernierDossier(): ?BrisPorte
     {
-        return $this->dossiers->last() ?? null;
+        return $this->dossiers->isEmpty() ? null : $this->dossiers->last();
     }
 
     public function getDossiers(): Collection

@@ -53,18 +53,16 @@
                                 </td>
                             </tr>
                             {% endfor %}
-                            {% if dossiers|length > 0 %}
-                                <tr>
-                                    <td colspan="5" style="text-align:right;">
-                                        <a
-                                            href="{{ url('bris_porte_tester_eligibilite') }}"
-                                            class="fr-btn fr-btn--icon-left fr-icon-add-line"
-                                        >
-                                            Déposer une nouvelle demande
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endif %}
+                            <tr>
+                                <td colspan="5" style="text-align:right;">
+                                    <a
+                                        href="{{ url('bris_porte_tester_eligibilite') }}"
+                                        class="fr-btn fr-btn--icon-left fr-icon-add-line"
+                                    >
+                                        Déposer une nouvelle demande
+                                    </a>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

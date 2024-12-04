@@ -22,7 +22,8 @@ class HomeController extends RequerantController
             $request->getSession()->remove(PublicBrisPorteController::SESSION_CONTEXT_KEY);
         }
 
-        if (!($dossier = $requerant->getDernierDossier())?->estConstitue()) {
+        $dossier = $requerant->getDernierDossier();
+        if (null !== $dossier && !$dossier?->estConstitue()) {
             return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
         }
 

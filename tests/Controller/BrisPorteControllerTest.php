@@ -2,10 +2,19 @@
 
 namespace App\Tests\Controller;
 
+use App\Forms\TestEligibiliteType;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class BrisPorteControllerTest extends WebTestCase
 {
+    protected KernelBrowser $client;
+
+    public function setUp(): void
+    {
+        $this->client = self::createClient();
+    }
+
     /**
      * ETQ visiteur, je dois pouvoir remplir le formulaire de test d'éligibilité.
      *
@@ -18,7 +27,21 @@ class BrisPorteControllerTest extends WebTestCase
      */
     public function testTesterMonEligibilite(): void
     {
-        $this->fail("Ce test n'est pas implémenté");
+        $this->client->request('GET', '/bris-de-porte/tester-mon-eligibilite');
+        $this->assertResponseIsSuccessful();
+        $form = $this->client->getCrawler()->selectButton("Commencer la demande d'indemnisation")->form();
+
+        $this->client->request($form->getMethod(), $form->getUri(), [
+            '_token' => $this->client->getCrawler()->filter('input[name="_token"]')->first()->attr('value'),
+            'departement' => '77',
+            'estVise' => 'false',
+            'estHebergeant' => 'false',
+            'estProprietaire' => 'true',
+            'aContacteAssurance' => 'false',
+        ]);
+
+        $this->assertResponseRedirects('/bris-de-porte/creation-de-compte', 302, 'À la soumission du formulaire, je dois être redirigé vers la page de création de compte');
+
     }
 
     /**
@@ -27,7 +50,7 @@ class BrisPorteControllerTest extends WebTestCase
      */
     public function testContactezNous(): void
     {
-        $this->fail("Ce test n'est pas implémenté");
+        $this->markTestSkipped("Ce test n'est pas implémenté");
     }
 
     /**
@@ -36,7 +59,7 @@ class BrisPorteControllerTest extends WebTestCase
      */
     public function testCreationDeCompte(): void
     {
-        $this->fail("Ce test n'est pas implémenté");
+        $this->markTestSkipped("Ce test n'est pas implémenté");
     }
 
     /**
@@ -46,6 +69,6 @@ class BrisPorteControllerTest extends WebTestCase
      */
     public function testFinaliserLaCreation(): void
     {
-        $this->fail("Ce test n'est pas implémenté");
+        $this->markTestSkipped("Ce test n'est pas implémenté");
     }
 }

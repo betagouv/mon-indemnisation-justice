@@ -1,19 +1,6 @@
 import { createApp } from 'petite-vue';
 
-class Departement {
-    code: string;
-    nom: string;
-}
-
-const args = JSON.parse(document.getElementById('vue-arguments')?.textContent || "{}");
-
-const departements = (args?.departements.map(({code, nom}) => ({
-    code,
-    nom: `${code.padStart(2, '0')} - ${nom}`
-})) || []) as Departement[];
-
 createApp({
-    departements,
     reponses: {
         departement: null,
         estVise: null,
