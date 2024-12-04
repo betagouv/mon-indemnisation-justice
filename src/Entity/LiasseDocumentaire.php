@@ -2,33 +2,26 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use App\Repository\LiasseDocumentaireRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: LiasseDocumentaireRepository::class)]
-#[ApiResource(
-  operations:[
-    new Get(
-        name: '_api_liasse_documentaire_get',
-        security: "is_granted('ROLE_REQUERANT')"
-    ),
-  ]
-)]
+#[ORM\Entity]
 class LiasseDocumentaire
 {
+    #[Groups(['dossier:lecture'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
+
     /**
      * @var Collection<int, Document>
      */
     #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'liasseDocumentaire')]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     private Collection $documents;
 
     public function __construct()

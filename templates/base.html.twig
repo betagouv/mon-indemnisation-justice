@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr" data-fr-scheme="system">
     <head>
         <meta charset="utf-8">
@@ -72,7 +72,7 @@
         {% block javascripts %}
             <script>
                 window.dsfr = {
-                    production: {% if app.environment == 'prod' %}true{% else %}false{% endif %},
+                    production: {% if app.environment == 'dev' %}false{% else %}true{% endif %},
                 };
             </script>
             <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>

@@ -2,28 +2,12 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use App\Repository\DocumentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\Index(name: "document_liasse_documentaire_id_type_idx", columns: ["liasse_documentaire_id","type"])]
-#[ApiResource(
-  operations:[
-    new Get(
-        name: '_api_document_get',
-        security: "is_granted('ROLE_REQUERANT')"
-    ),
-    new GetCollection(
-        name: '_api_document_get_collection',
-        security: "is_granted('ROLE_REQUERANT')"
-    ),
-  ]
-)]
 class Document
 {
     const TYPE_ATTESTATION_INFORMATION = "attestation_information";
@@ -39,26 +23,31 @@ class Document
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
+    #[Groups(['dossier:lecture'])]
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['dossier:lecture'])]
     private ?string $filename = null;
 
-    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
+    #[Groups(['dossier:lecture'])]
     #[ORM\Column(length: 40)]
     private ?string $type = null;
 
+    #[Groups(['dossier:lecture'])]
     #[ORM\Column(length: 64, nullable: true)]
     protected ?string $mime = null;
 
-    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
+
     #[ORM\ManyToOne(inversedBy: 'documents')]
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
 
+    #[Groups(['dossier:lecture'])]
     #[ORM\Column(nullable: true)]
     private ?string $size = null;
 
+    #[Groups(['dossier:lecture'])]
     #[ORM\Column(length: 255,nullable: true)]
     private ?string $originalFilename = null;
 

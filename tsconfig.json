@@ -6,6 +6,11 @@
     "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "types": ["vite/client", "vitest/globals"]
+    "types": ["vite/client", "vitest/globals"],
+    "allowImportingTsExtensions": true,
+     "baseUrl": ".",
+      "paths": {
+        "@/*": ["./assets/*"]
+      }
   }
 }

@@ -1,7 +1,8 @@
-import React, {useState,useEffect} from 'react';
+import React  from 'react';
 import { Select } from "@codegouvfr/react-dsfr/Select";
+import {randomId} from "@/react/services/Random.ts";
 
-const Civilite = ({civilite,setCivilite, defaultOptionText=null}) => {
+const Civilite = ({civilite, setCivilite, defaultOptionText=null}) => {
 
   const civilites = {
     M: 'Monsieur',
@@ -12,6 +13,7 @@ const Civilite = ({civilite,setCivilite, defaultOptionText=null}) => {
     <Select
       label="Civilité"
       nativeSelectProps={{
+          id: randomId(),
           name: "civilite",
           onChange: event => setCivilite(event.target.value),
           value: civilite??""

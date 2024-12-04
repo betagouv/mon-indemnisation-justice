@@ -71,27 +71,33 @@ rm -Rf .docker/postgres/data/*
 docker compose up -d postgres
 ```
 
-## Re-générer le manifeste des routes pour le javascript
-
-Quand une nouvelle route est exposée en JS (via l'attribut `options: ['expose' => true]`), ou quand son nom est changé,
-il faut re-générer le fichier de manifeste des routes Symfony exposées au JS. 
-
-Ceci se fait via la commande `fos:js-routing:dump`, soit nativement :
-
-```bash
-bin/console fos:js-routing:dump --format json
-```
-
-Le fichier est alors créé sous `public/js/fos_js_routes.json`.
-
-Soit depuis docker
-
-```bash
-docker compose exec symfony bin/console fos:js-routing:dump --format json
-docker compose cp symfony:/app/public/js/fos_js_routes.json public/js/fos_js_routes.json
-```
 
 ## Test fonctionnels:
+
+Pour lancer un test fonctionnel, on utilise [Panther](https://github.com/symfony/panther) et Firefox.
+
+Pour pouvoir les lancer depuis le conteneur Docker:
+
+```bash
+# Firefox est déjà installé sur l'image de base ✅
+./vendor/bin/bdi detect drivers
+./vendor/bin/phpunit  tests/Functional/
+# Ou un test spécifique, pour un jeu de données précis:
+./vendor/bin/phpunit --filter DepotBrisPorteTest::testDepotDossierBrisPorte@desktop
+```
+
+Si le test ne passe pas, c'est très compliqué de débugger en _headless_ depuis un conteneur. Dans ce cas on rejoue le
+test depuis la machine _host_ :
+
+```bash
+# Aliaser les noms de service Docker comme étant locaux:
+echo "127.0.0.1 postgres" | sudo tee -a /etc/hosts
+echo "127.0.0.1 mailpit" | sudo tee -a /etc/hosts
+# Installer `geckodriver` https://github.com/symfony/panther?tab=readme-ov-file#installing-chromedriver-and-geckodriver
+# Ex sur MacOS :
+brew install geckodriver
+PANTHER_NO_HEADLESS=1 ./vendor/bin/phpunit tests/Functional/
+```
 
 En cas d'erreur suivante :
 
