@@ -2,17 +2,20 @@
 
 namespace App\Tests\Controller;
 
-use App\Forms\TestEligibiliteType;
+use App\Entity\TestEligibilite;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class BrisPorteControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
+    protected EntityManagerInterface $em;
 
     public function setUp(): void
     {
-        $this->client = self::createClient();
+        $this->client = self::createClient(['debug' => 0]);
+        $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
     /**
@@ -34,6 +37,7 @@ class BrisPorteControllerTest extends WebTestCase
         $this->client->request($form->getMethod(), $form->getUri(), [
             '_token' => $this->client->getCrawler()->filter('input[name="_token"]')->first()->attr('value'),
             'departement' => '77',
+            'description' => 'Perquisition pendant mon absence, ce matin',
             'estVise' => 'false',
             'estHebergeant' => 'false',
             'estProprietaire' => 'true',
@@ -42,6 +46,23 @@ class BrisPorteControllerTest extends WebTestCase
 
         $this->assertResponseRedirects('/bris-de-porte/creation-de-compte', 302, 'À la soumission du formulaire, je dois être redirigé vers la page de création de compte');
 
+        /** @var TestEligibilite $testEligibilite */
+        $testEligibilite = $this->em->getRepository(TestEligibilite::class)
+            ->createQueryBuilder('t')
+            ->orderBy('t.dateSoumission')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+        $this->assertNotNull($testEligibilite);
+        $this->assertEquals('77', $testEligibilite->departement->getCode());
+        $this->assertEquals('Perquisition pendant mon absence, ce matin', $testEligibilite->description);
+        $this->assertNotNull($testEligibilite->dateSoumission);
+        $this->assertFalse($testEligibilite->estVise);
+        $this->assertFalse($testEligibilite->estHebergeant);
+        $this->assertTrue($testEligibilite->estProprietaire);
+        $this->assertFalse($testEligibilite->aContacteAssurance);
+        $this->assertNull($testEligibilite->requerant);
+        $this->assertTrue($testEligibilite->estEligibleExperimentation);
     }
 
     /**

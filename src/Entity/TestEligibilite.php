@@ -19,6 +19,9 @@ class TestEligibilite
     #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code', nullable: false, onDelete: 'SET NULL')]
     public GeoDepartement $departement;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    public ?string $description;
+
     #[ORM\Column(nullable: true)]
     public bool $estVise = false;
 

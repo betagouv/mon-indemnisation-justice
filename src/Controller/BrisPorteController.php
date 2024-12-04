@@ -13,7 +13,6 @@ use App\Forms\InscriptionType;
 use App\Forms\TestEligibiliteType;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Exception\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -40,10 +39,6 @@ class BrisPorteController extends AbstractController
     ) {
     }
 
-    /**
-     * @throws \Doctrine\ORM\Exception\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     protected function getTestEligibilite(Request $request): ?TestEligibilite
     {
         $id = $request->getSession()->get(self::SESSION_CONTEXT_KEY, null);
@@ -81,6 +76,7 @@ class BrisPorteController extends AbstractController
         $form = $this->createForm(TestEligibiliteType::class, new TestEligibilite());
 
         if (Request::METHOD_POST === $request->getMethod()) {
+
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var TestEligibilite $testEligibilite */
@@ -88,7 +84,6 @@ class BrisPorteController extends AbstractController
                 $testEligibilite->estEligibleExperimentation = $testEligibilite->departement->estDeploye();
 
                 $this->entityManager->persist($testEligibilite);
-
                 $this->entityManager->flush();
 
                 if (($requerant = $this->getUser()) instanceof Requerant) {
@@ -122,7 +117,6 @@ class BrisPorteController extends AbstractController
     public function contactezNous(Request $request): Response
     {
         $testEligibilite = $this->getTestEligibilite($request);
-        dd($testEligibilite);
 
         if (null === $testEligibilite) {
             return $this->redirectToRoute('bris_porte_tester_eligibilite');

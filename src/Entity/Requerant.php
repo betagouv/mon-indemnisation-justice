@@ -288,13 +288,6 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->getPersonnePhysique()?->getNomComplet() ?? null;
     }
 
-    public function setTestEligibilite(?array $testEligibilite): self
-    {
-        $this->testEligibilite = $testEligibilite;
-
-        return $this;
-    }
-
     public function getDernierDossier(): ?BrisPorte
     {
         return $this->dossiers->isEmpty() ? null : $this->dossiers->last();

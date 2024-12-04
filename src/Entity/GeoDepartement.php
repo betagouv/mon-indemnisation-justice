@@ -43,7 +43,7 @@ class GeoDepartement
 
     public function getLibelle(): string
     {
-        return sprintf("%s - (%s)", $this->nom, str_pad($this->code,2, '0',STR_PAD_LEFT));
+        return sprintf("%s - %s", str_pad($this->code,2, '0',STR_PAD_LEFT), $this->nom);
     }
 
     public function __toString(): string

@@ -3,6 +3,7 @@ import { createApp } from 'petite-vue';
 createApp({
     reponses: {
         departement: null,
+        description: null,
         estVise: null,
         estHebergeant: null,
         estProprietaire: null,
@@ -10,7 +11,8 @@ createApp({
         aContacteBailleur: null,
     },
     questions: {
-        estVise: function(reponses, decisions) { return reponses.departement != null; },
+        description: function(reponses, decisions) { return reponses.departement != null; },
+        estVise: function(reponses, decisions) { return reponses.description != null; },
         estHebergeant: function(reponses, decisions) { return reponses.estVise != null && (decisions.length === 0 || reponses.estHebergeant != null); },
         estProprietaire: function(reponses, decisions) { return reponses.estHebergeant != null  && (decisions.length === 0 || reponses.estProprietaire != null); },
         aContacteAssurance: function(reponses, decisions) { return reponses.estProprietaire != null && (decisions.length === 0 || reponses.aContacteAssurance != null); },
@@ -67,10 +69,34 @@ createApp({
     reinitialiser: function (question) {
         if (question) {
             const questions = Object.keys(this.reponses);
-            for (const c of questions.slice(questions.indexOf(question) + 1)) {
-                this.reponses[c] = null;
+            const questionsSuivantes = questions.slice(questions.indexOf(question) + 1);
+
+            if (questionsSuivantes.length > 0) {
+                // Vider les questions suivantes, dont la réponse n'est peut-être plus pertinente
+                for (const c of questionsSuivantes) {
+                    this.reponses[c] = null;
+                }
             }
+
             this.statuer(this.reponses);
+
+            // Automatiquement scroller à la prochaine question
+            setTimeout(() => {
+                let element = null;
+                if (questions.at(questions.indexOf(question) + 1)) {
+                    element = document.getElementById(`eligibilite-test-form-question-${questions.at(questions.indexOf(question) + 1)}`);
+                } else {
+                    element = document.querySelector('.eligibilite-test-form-decision');
+                }
+
+                if (element) {
+                    window.scroll({
+                        top: element.getBoundingClientRect().top + window.scrollY,
+                        behavior: 'smooth'
+                    });
+                }
+            }, 100);
+
         } else {
             for (const c of Object.keys(this.reponses)) {
                 this.reponses[c] = null;

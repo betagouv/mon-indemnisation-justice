@@ -20,7 +20,7 @@ final class Version20241203102655 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE eligibilite_tests (id SERIAL NOT NULL, departement_code VARCHAR(3) NOT NULL, est_vise BOOLEAN DEFAULT NULL, est_hebergeant BOOLEAN DEFAULT NULL, est_proprietaire BOOLEAN DEFAULT NULL, a_contacte_assurance BOOLEAN DEFAULT NULL, a_contacte_bailleur BOOLEAN DEFAULT NULL, requerant_id INT DEFAULT NULL, est_eligible_experimentation BOOLEAN NOT NULL, date_soumission TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE eligibilite_tests (id SERIAL NOT NULL, departement_code VARCHAR(3) NOT NULL, description TEXT DEFAULT NULL, est_vise BOOLEAN DEFAULT NULL, est_hebergeant BOOLEAN DEFAULT NULL, est_proprietaire BOOLEAN DEFAULT NULL, a_contacte_assurance BOOLEAN DEFAULT NULL, a_contacte_bailleur BOOLEAN DEFAULT NULL, requerant_id INT DEFAULT NULL, est_eligible_experimentation BOOLEAN NOT NULL, date_soumission TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_881877C16A333750 ON eligibilite_tests (departement_code)');
         $this->addSql('ALTER TABLE eligibilite_tests ADD CONSTRAINT FK_881877C16A333750 FOREIGN KEY (departement_code) REFERENCES geo_departements (code) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE bris_porte ADD test_eligibilite_id INT DEFAULT NULL');
