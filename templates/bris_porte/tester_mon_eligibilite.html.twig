@@ -38,10 +38,6 @@
     </style>
 {% endblock stylesheets %}
 
-{% block header %}
-    {% include('bris_porte/_header.html.twig') %}
-{% endblock header %}
-
 {% block main %}
     <div class="fr-container fr-my-3w">
         {#  Indicateur d'étapes #}
@@ -84,15 +80,41 @@
 
                 {# Questions #}
                 <div class="pr-section-formulaire fr-my-3w">
-                    <h4>Situation géographique</h4>
-                    <div class="fr-select-group fr-col-lg-6">
-                        <label class="fr-label" for="eligibilite-test-form-deaprtement">Dans quel département se situe le logement ?</label>
-                        <select class="fr-select" id="eligibilite-test-form-departement" name="departement" v-model="reponses.departement">
+                    <h4>Contexte</h4>
+                    <div class="fr-select-group fr-col-lg-6" id="eligibilite-test-form-question-departement">
+                        <label class="fr-label" for="eligibilite-test-form-departement">Dans quel département se situe le logement ?</label>
+                        <select class="fr-select" id="eligibilite-test-form-departement" name="departement" v-model="reponses.departement" @change="reinitialiser('departement')">
                             <option value="" selected disabled hidden>Sélectionner une option</option>
-                            <option v-for="departement in departements" :key="`departement${departement.code}`" :value="departement.code" v-text="departement.nom"></option>
+                            {% for departement in departements %}
+                                <option value="{{ departement.code }}" >{{ departement.libelle }}</option>
+                            {% endfor %}
+
                         </select>
                     </div>
+                    
+                    <div class="fr-input-group" v-if="questions.description(reponses, decisions)" v-cloak id="eligibilite-test-form-question-description">
+                        <label class="fr-label" for="eligibilite-test-form-description">
+                            Vous souhaitez nous apporter des précisions sur l'intervention ?
+                            <span class="fr-hint-text">Facultatif</span>
+                        </label>
+                        <textarea
+                            class="fr-input"
+                            type="text"
+                            rows="10"
+                            cols="50"
+                            id="eligibilite-test-form-description"
+                            placeholder="Intervention survenue ce matin ..."
+                            name="description"
+                        ></textarea>
 
+                        <ul class="fr-btns-group fr-btns-group--inline-sm fr-btns-group--right fr-mt-2w">
+                            <li>
+                                <button type="button" class="fr-btn fr-btn--sm" @click="reponses.description = document.getElementById('eligibilite-test-form-description').value; reinitialiser('description')">
+                                    Passer à la question suivante
+                                </button>
+                            </li>
+
+                        </ul>
                 </div>
 
 
@@ -108,7 +130,7 @@
                             <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="checkboxes-inline-legend">
                                 Êtes-vous la personne visée par l'intervention des forces de l'ordre ?
                             </legend>
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
+                            <div class="fr-fieldset__element fr-fieldset__element--inline" id="eligibilite-test-form-question-estVise">
                                 <div class="fr-radio-group">
                                     <input
                                         id="eligibilite-test-form-est-vise-oui"
@@ -141,6 +163,7 @@
 
                     <div
                         class="fr-col-12 fr-my-2w"
+                        id="eligibilite-test-form-question-estHebergeant"
                         v-if="questions.estHebergeant(reponses, decisions)"
                         v-cloak
                     >
@@ -191,6 +214,7 @@
 
                     <div
                         class="fr-col-12"
+                        id="eligibilite-test-form-question-estProprietaire"
                         v-if="questions.estProprietaire(reponses, decisions)"
                     >
                         <fieldset
@@ -233,6 +257,7 @@
 
                     <div
                         class="fr-col-12 fr-my-2w"
+                        id="eligibilite-test-form-question-aContacteAssurance"
                         v-if="questions.aContacteAssurance(reponses, decisions)"
                     >
                         <fieldset
@@ -275,6 +300,7 @@
 
                     <div
                         class="fr-col-12 fr-my-2w"
+                        id="eligibilite-test-form-question-aContacteBailleur"
                         v-if="questions.aContacteBailleur(reponses, decisions)"
                     >
                         <fieldset
@@ -317,7 +343,7 @@
                 </div>
 
                 {# Décisions #}
-                <div class="fr-alert fr-alert--success fr-my-3w" v-cloak v-if="estDecide('success')">
+                <div class="fr-alert fr-alert--success fr-my-3w eligibilite-test-form-decision" v-cloak v-if="estDecide('success')">
 
                     <h3 class="fr-alert__title">Vous êtes éligible à l’indemnisation</h3>
 
@@ -326,7 +352,7 @@
                     </p>
                 </div>
 
-                <div class="fr-alert fr-alert--warning fr-my-3w" v-cloak v-if="estDecide('warning_contact_assurance') || estDecide('warning_contact_bailleur')">
+                <div class="fr-alert fr-alert--warning fr-my-3w eligibilite-test-form-decision" v-cloak v-if="estDecide('warning_contact_assurance') || estDecide('warning_contact_bailleur')">
 
                     <h3 class="fr-alert__title" v-if="estDecide('warning_contact_assurance') && estDecide('warning_contact_bailleur')">Nous ne serons pas en mesure de traiter votre demande d’indemnisation car ces attestations sont des documents essentiels pour s’assurer du respect du principe de la réparation intégrale sans perte ni profit</h3>
                     <h3 class="fr-alert__title" v-else="">Nous ne serons pas en mesure de traiter votre demande d’indemnisation, car cette attestation est un document essentiel pour s’assurer du respect du principe de la réparation intégrale sans perte ni profit</h3>
@@ -343,7 +369,7 @@
                     </p>
                 </div>
 
-                <div class="fr-alert fr-alert--error fr-my-3w" v-cloak v-if="estDecide('error_est_vise') || estDecide('error_est_hebergeant')">
+                <div class="fr-alert fr-alert--error fr-my-3w eligibilite-test-form-decision" v-cloak v-if="estDecide('error_est_vise') || estDecide('error_est_hebergeant')">
 
                     <h3 v-if="estDecide('error_est_vise')" class="fr-alert__title">Vous n’êtes pas éligible à l’indemnisation, car vous étiez concerné par l'opération de police judiciaire exécutée à votre domicile<sup>1</sup>.</h3>
 
@@ -396,11 +422,6 @@
 {% endblock main %}
 
 {% block javascripts %}
-    <script id="vue-arguments" type="application/json">
-    {
-        "departements": {{ departements|serialize('json')|raw }}
-    }
-    </script>
     {{ parent() }}
     {{ vite_entry_script_tags('bris_porte_tester_mon_eligibilite') }}
 

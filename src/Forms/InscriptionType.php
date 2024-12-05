@@ -41,7 +41,7 @@ class InscriptionType extends AbstractType
             ->add('telephone', TextType::class)
             ->add('motDePasse', TextType::class)
             ->add('confirmation', TextType::class)
-            ->add('cguOk', CheckboxType::class)
+            //->add('cguOk', CheckboxType::class)
         ;
     }
 }

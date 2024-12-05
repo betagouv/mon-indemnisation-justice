@@ -3,9 +3,12 @@
 namespace App\Tests\Functional\Requerant;
 
 use App\Entity\Adresse;
+use App\Entity\BrisPorte;
 use App\Entity\Civilite;
+use App\Entity\GeoDepartement;
 use App\Entity\PersonnePhysique;
 use App\Entity\Requerant;
+use App\Entity\TestEligibilite;
 use App\Tests\Functional\AbstractFunctionalTestCase;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
@@ -84,18 +87,22 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
                 ->setNom('Randt')
             )
             ->setVerifieCourriel()
-            ->setTestEligibilite([
-                'departement' => '13',
-                'estVise' => false,
-                'estHebergeant' => false,
-                'estProprietaire' => true,
-                'aContacteAssurance' => false,
-            ])
             ->setEmail('raquel.randt@courriel.fr')
             ->setRoles([Requerant::ROLE_REQUERANT])
         ;
         $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
 
+        $testEligibilite = new TestEligibilite();
+        $testEligibilite->departement = $this->em->getRepository(GeoDepartement::class)->findOneBy(['code' => '13']);
+        $testEligibilite->estVise = false;
+        $testEligibilite->estHebergeant = false;
+        $testEligibilite->estProprietaire = true;
+        $testEligibilite->aContacteAssurance = false;
+
+        $dossier = (new BrisPorte())->setRequerant($requerant)->setTestEligibilite($testEligibilite);
+
+        $this->em->persist($testEligibilite);
+        $this->em->persist($dossier);
         $this->em->persist($requerant);
         $this->em->flush();
         // Obligatoire pour contourner le DoctrineTestBundle https://github.com/dmaicher/doctrine-test-bundle?tab=readme-ov-file#debugging
@@ -185,7 +192,8 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
 
         $input->clear();
         $input->sendKeys('2790656123');
-        // Astuce pour s'assurer que la requête xhr de `PATCH` ait bien été déclenchée:
+        // Astuce pour s'assurer que la requête xhr de `PATCH` ait bien été déclenchée :
+        // TODO voir pour observer les `queuedChanges` par exemple https://github.com/php-webdriver/php-webdriver/wiki/How-to-work-with-AJAX-(jQuery,-Prototype,-Dojo)
         sleep(1);
         // Attendre pour s'assurer que les données ont bien été transmises à l'API
         $this->client->takeScreenshot("$this->screenShotDir/$device/005-page-donnees-personnelles.png");

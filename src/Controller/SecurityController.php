@@ -100,7 +100,6 @@ class SecurityController extends AbstractController
                     foreach ($form->getErrors(true) as $key => $error) {
                         $errors[$error->getOrigin()?->getName()] = $error->getMessage();
                     }
-                    dump($errors);
                 }
             }
         }

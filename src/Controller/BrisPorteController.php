@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Dto\Inscription;
-use App\Dto\TestEligibilite;
+use App\Entity\BrisPorte;
 use App\Entity\GeoDepartement;
 use App\Entity\Requerant;
+use App\Entity\TestEligibilite;
 use App\Forms\InscriptionType;
 use App\Forms\TestEligibiliteType;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,9 +21,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
+class TestContexte
+{
+    public ?TestEligibilite $testEligibilite = null;
+    public ?Requerant $requerant = null;
+}
+
 #[Route('/bris-de-porte')]
 class BrisPorteController extends AbstractController
 {
+    public const SESSION_CONTEXT_KEY = 'testEligibilite';
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
@@ -29,34 +39,69 @@ class BrisPorteController extends AbstractController
     ) {
     }
 
+    protected function getTestEligibilite(Request $request): ?TestEligibilite
+    {
+        $id = $request->getSession()->get(self::SESSION_CONTEXT_KEY, null);
+
+        if ($id) {
+            try {
+                return $this->entityManager->find(TestEligibilite::class, $id);
+            } catch (ORMException $exception) {
+                $request->getSession()->remove(self::SESSION_CONTEXT_KEY);
+            }
+
+        }
+
+        return null;
+    }
+
+    protected function setTestEligibilite(TestEligibilite $testEligibilite, Request $request): void
+    {
+        $request->getSession()->set(self::SESSION_CONTEXT_KEY, $testEligibilite?->id);
+    }
+
     #[Route('/tester-mon-eligibilite', name: 'bris_porte_tester_eligibilite', methods: ['GET', 'POST'])]
     public function testerMonEligibilite(Request $request): Response
     {
-        $testEligibilite = new TestEligibilite();
-        $form = $this->createForm(TestEligibiliteType::class, $testEligibilite);
+        $testEligibilite = $this->getTestEligibilite($request);
+
+        if (null !== $testEligibilite?->requerant) {
+            return $this->redirectToRoute('bris_porte_finaliser_la_creation');
+        }
+
+        if (null !== $testEligibilite?->departement) {
+            return $this->redirectToRoute($testEligibilite->departement->estDeploye() ? 'bris_porte_creation_de_compte' : 'bris_porte_contactez_nous');
+        }
+
+        $form = $this->createForm(TestEligibiliteType::class, new TestEligibilite());
 
         if (Request::METHOD_POST === $request->getMethod()) {
+
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var TestEligibilite $testEligibilite */
                 $testEligibilite = $form->getData();
+                $testEligibilite->estEligibleExperimentation = $testEligibilite->departement->estDeploye();
 
-                if ($testEligibilite->departement->estDeploye()) {
-                    $requerant = $this->getUser();
-                    if ($requerant instanceof Requerant) {
-                        $requerant->setTestEligibilite($testEligibilite->toArray());
-                        $this->entityManager->persist($requerant);
-                        $this->entityManager->flush();
+                $this->entityManager->persist($testEligibilite);
+                $this->entityManager->flush();
 
-                        return $this->redirectToRoute('app_bris_porte_add');
-                    } else {
-                        $request->getSession()->set('testEligibilite', $testEligibilite->toArray());
+                if (($requerant = $this->getUser()) instanceof Requerant) {
+                    $dossier = (new BrisPorte())
+                        ->setRequerant($requerant)
+                        ->setTestEligibilite($testEligibilite);
 
-                        return $this->redirectToRoute('bris_porte_creation_de_compte');
-                    }
+                    $this->entityManager->persist($dossier);
+                    $this->entityManager->flush();
+
+                    return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
                 }
 
-                $request->getSession()->set('testEligibilite', $testEligibilite);
+                $this->setTestEligibilite($testEligibilite, $request);
+
+                if ($testEligibilite->departement->estDeploye()) {
+                    return $this->redirectToRoute('bris_porte_creation_de_compte');
+                }
 
                 return $this->redirectToRoute('bris_porte_contactez_nous');
             }
@@ -71,25 +116,44 @@ class BrisPorteController extends AbstractController
     #[Route('/contactez-nous', name: 'bris_porte_contactez_nous', methods: ['GET'])]
     public function contactezNous(Request $request): Response
     {
-        if (!$request->getSession()->has('testEligibilite')) {
-            return $this->redirectToRoute('app_homepage');
+        $testEligibilite = $this->getTestEligibilite($request);
+
+        if (null === $testEligibilite) {
+            return $this->redirectToRoute('bris_porte_tester_eligibilite');
+        }
+
+        if (null !== $testEligibilite->requerant) {
+            return $this->redirectToRoute('bris_porte_finaliser_la_creation');
+        }
+
+        if ($testEligibilite->departement->estDeploye()) {
+            return $this->redirectToRoute('bris_porte_creation_de_compte');
         }
 
         return $this->render('bris_porte/contactez_nous.html.twig', [
-            'testEligibilite' => $request->getSession()->get('testEligibilite'),
+            'testEligibilite' => $testEligibilite,
         ]);
     }
 
     #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET', 'POST'])]
-    public function inscription(Request $request): Response
+    public function creationDeCompte(Request $request): Response
     {
-        $user = $this->getUser();
-        if ($user instanceof Requerant) {
+        if ($this->getUser() instanceof Requerant) {
             return $this->redirectToRoute('requerant_home_index');
         }
 
-        if (!$request->getSession()->has('testEligibilite')) {
+        $testEligibilite = $this->getTestEligibilite($request);
+
+        if (null === $testEligibilite) {
             return $this->redirectToRoute('bris_porte_tester_eligibilite');
+        }
+
+        if (null !== $testEligibilite->requerant) {
+            return $this->redirectToRoute('bris_porte_finaliser_la_creation');
+        }
+
+        if (!$testEligibilite->departement->estDeploye()) {
+            return $this->redirectToRoute('bris_porte_contactez_nous');
         }
 
         $inscription = new Inscription();
@@ -120,12 +184,21 @@ class BrisPorteController extends AbstractController
                             $inscription->motDePasse
                         )
                     );
-                    // $requerant->addRole(Requerant::ROLE_REQUERANT);
                     $requerant->genererJetonVerification();
-                    $requerant->setTestEligibilite($request->getSession()->get('testEligibilite'));
-                    $request->getSession()->remove('testEligibilite');
+
                     $this->entityManager->persist($requerant);
+
+                    $dossier = (new BrisPorte())
+                        ->setRequerant($requerant)
+                        ->setTestEligibilite($testEligibilite)
+                    ;
+                    $this->entityManager->persist($dossier);
+
+                    $testEligibilite->requerant = $requerant;
+                    $this->entityManager->persist($testEligibilite);
+
                     $this->entityManager->flush();
+                    $this->setTestEligibilite($testEligibilite, $request);
 
                     // Envoi du mail de confirmation.
                     $this->mailer
@@ -158,12 +231,20 @@ class BrisPorteController extends AbstractController
     #[Route(path: '/finaliser-la-creation', name: 'bris_porte_finaliser_la_creation')]
     public function finaliserLaCreation(Request $request): Response
     {
-        $email = @$request->getSession()->getFlashBag()->get('emailRequerantInscrit')[0];
+        $testEligibilite = $this->getTestEligibilite($request);
 
-        if (!$email) {
-            return $this->redirectToRoute('app_homepage');
+        if (null === $testEligibilite) {
+            return $this->redirectToRoute('bris_porte_tester_eligibilite');
+        } else {
+            if (!$testEligibilite->departement->estDeploye()) {
+                return $this->redirectToRoute('bris_porte_contactez_nous');
+            }
+
+            if (null === $testEligibilite->requerant) {
+                return $this->redirectToRoute('bris_porte_creation_de_compte');
+            }
         }
 
-        return $this->render('bris_porte/finaliser_la_creation.html.twig', ['email' => $email]);
+        return $this->render('bris_porte/finaliser_la_creation.html.twig', ['email' => $testEligibilite->requerant->getEmail()]);
     }
 }
