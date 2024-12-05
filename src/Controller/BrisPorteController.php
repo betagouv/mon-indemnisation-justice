@@ -122,6 +122,10 @@ class BrisPorteController extends AbstractController
             return $this->redirectToRoute('bris_porte_tester_eligibilite');
         }
 
+        if (null !== $testEligibilite->requerant) {
+            return $this->redirectToRoute('bris_porte_finaliser_la_creation');
+        }
+
         if ($testEligibilite->departement->estDeploye()) {
             return $this->redirectToRoute('bris_porte_creation_de_compte');
         }

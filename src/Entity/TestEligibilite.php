@@ -53,15 +53,20 @@ class TestEligibilite
         $this->dateSoumission = new \DateTimeImmutable();
     }
 
-    public function toArray(): array
+    public static function fromArray(array $values): TestEligibilite
     {
-        return [
-            'departement' => $this->departement->getCode(),
-            'estVise' => $this->estVise,
-            'estHebergeant' => $this->estHebergeant,
-            'estProprietaire' => $this->estProprietaire,
-            'aContacteAssurance' => $this->aContacteAssurance,
-            'aContacteBailleur' => $this->aContacteBailleur,
-        ];
+        $testEligibilite = new TestEligibilite();
+
+        $testEligibilite->departement = $values['departement'] ?? null;
+        $testEligibilite->estEligibleExperimentation = $testEligibilite->departement?->estDeploye() ?? false;
+        $testEligibilite->description = $values['description'] ?? null;
+        $testEligibilite->estVise = $values['estVise'] ?? false;
+        $testEligibilite->estHebergeant = $values['estHebergeant'] ?? null;
+        $testEligibilite->estProprietaire = $values['estProprietaire'] ?? null;
+        $testEligibilite->aContacteAssurance = $values['aContacteAssurance'] ?? null;
+        $testEligibilite->aContacteBailleur = $values['aContacteBailleur'] ?? null;
+        $testEligibilite->requerant = $values['requerant'] ?? null;
+
+        return $testEligibilite;
     }
 }
