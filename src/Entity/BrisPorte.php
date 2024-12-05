@@ -49,7 +49,6 @@ class BrisPorte
     #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ?EtatDossier $etatDossier = null;
 
-    #[Groups('prejudice:read')]
     #[Groups('dossier:lecture')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateCreation;
@@ -204,7 +203,6 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups(['prejudice:read'])]
     public function getLastStatut(): EtatDossier
     {
         return $this->getEtatDossier();
