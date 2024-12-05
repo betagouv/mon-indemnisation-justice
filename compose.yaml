@@ -59,6 +59,10 @@ services:
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
       - .:/app
+      # Dossier à ne pas partager entre guest et host
+      - /app/drivers
+      - /app/vendor
+      - /app/node_modules
     ports:
       - "9000:9000"
 
@@ -70,5 +74,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+      # Dossier à ne pas partager entre guest et host
+      - /app/node_modules
     ports:
       - "5173:5173"
