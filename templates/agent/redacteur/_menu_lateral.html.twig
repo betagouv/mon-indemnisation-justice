@@ -25,7 +25,7 @@
             <div class="fr-sidemenu__title" id="fr-sidemenu-title">Tous les dossiers</div>
             <ul class="fr-sidemenu__list">
                 {{ _self.menu_lien('Nouveaux', 'agent_redacteur_nouveaux_dossiers', decompte['nouveaux'], 'fr-badge--new') }}
-                {{ _self.menu_lien('À valider', 'agent_redacteur_dossiers_a_valider', decompte['aValider'], 'fr-badge--green-archipel') }}
+                {{ _self.menu_lien('À statuer', 'agent_redacteur_dossiers_a_valider', decompte['aValider'], 'fr-badge--green-archipel') }}
                 {{ _self.menu_lien('Acceptés', 'agent_redacteur_dossiers_valides', decompte['acceptes'], 'fr-badge--success') }}
                 {{ _self.menu_lien('Refusés', 'agent_redacteur_dossiers_refuses', decompte['refuses'], 'fr-badge--error') }}
             </ul>

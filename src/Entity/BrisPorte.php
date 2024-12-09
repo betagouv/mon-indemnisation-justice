@@ -42,20 +42,13 @@ class BrisPorte
 
     #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER')]
     #[ORM\OrderBy(['dateEntree' => 'ASC'])]
-    /** @var Collection<EtatDossier> $historiqueEtats */
+    /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
     #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
     #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ?EtatDossier $etatDossier = null;
 
-    #[ORM\PreRemove]
-    public function onPreRemove(): void
-    {
-        $this->etatDossier = null;
-    }
-
-    #[Groups('prejudice:read')]
     #[Groups('dossier:lecture')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateCreation;
@@ -116,8 +109,6 @@ class BrisPorte
     #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true)]
     protected ?TestEligibilite $testEligibilite = null;
-    #[ORM\Column(nullable: true)]
-    private ?bool $estVise;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $identitePersonneRecherchee = null;
@@ -162,6 +153,12 @@ class BrisPorte
         $this->liasseDocumentaire = new LiasseDocumentaire();
         $this->adresse = new Adresse();
         $this->historiqueEtats = new ArrayCollection([]);
+    }
+
+    #[ORM\PreRemove]
+    public function onPreRemove(): void
+    {
+        $this->etatDossier = null;
     }
 
     public function getPid(): ?int
@@ -217,7 +214,6 @@ class BrisPorte
         return $this->etatDossier;
     }
 
-
     public function getEtatPreValide(): ?EtatDossier
     {
         return $this->getEtat(EtatDossierType::DOSSIER_PRE_VALIDE) ?? $this->getEtat(EtatDossierType::DOSSIER_PRE_REFUSE);
@@ -241,7 +237,7 @@ class BrisPorte
     public function getDateDeclaration(): ?\DateTimeInterface
     {
         return $this->historiqueEtats
-            ->findFirst(fn (int $index, EtatDossier $etat) =>  EtatDossierType::DOSSIER_DEPOSE === $etat->getEtat()
+            ->findFirst(fn (int $index, EtatDossier $etat) => EtatDossierType::DOSSIER_DEPOSE === $etat->getEtat()
             )?->getDate();
     }
 

@@ -237,9 +237,10 @@ class PersonnePhysique
         return $this;
     }
 
-    public function getNomCourant(): string
+    public function getNomCourant(bool $civilite = false): string
     {
-        return "{$this->prenom1} {$this->nom}";
+        return sprintf('%s%s %s',
+            $civilite ? ucfirst(strtolower($this->civilite->value)) . ". " : "", $this->prenom1, ucfirst($this->nom));
     }
 
     public function getNomComplet(): ?string
