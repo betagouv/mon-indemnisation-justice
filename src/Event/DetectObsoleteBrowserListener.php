@@ -10,6 +10,15 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Twig\Environment;
 
+/**
+ * Détecte la version du navigateur et redirige vers une page d'avertissement de non-prise en charge en cas de version
+ * obsolète.
+ *
+ * La version du navigateur doit être supérieure ou égale aux versions:
+ * - supportées par le DSFR https://www.systeme-de-design.gouv.fr/a-propos/configuration-minimale-requise-pour-utiliser-le-dsfr/
+ * - prenant en charge les ESM https://caniuse.com/?search=ESM
+ *
+ */
 class DetectObsoleteBrowserListener implements EventSubscriberInterface
 {
     public function __construct(
@@ -40,6 +49,26 @@ class DetectObsoleteBrowserListener implements EventSubscriberInterface
 
                 return;
             }
+
+            if ('Chrome' == $browser && $version < 61) {
+                $event->setResponse($this->createRedirectResponse());
+
+                return;
+            }
+
+            if ('Edge' == $browser && $version < 18) {
+                $event->setResponse($this->createRedirectResponse());
+
+                return;
+            }
+
+            if ('Opera' == $browser && $version < 48) {
+                $event->setResponse($this->createRedirectResponse());
+
+                return;
+            }
+
+            // TODO détecter ios (10+) & Android(4.4+)
 
             if ('Internet Explorer' == $browser) {
                 $event->setResponse($this->createRedirectResponse());
