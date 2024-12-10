@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\ApiProperty;
 use App\Repository\PersonnePhysiqueRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
@@ -14,89 +14,89 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 class PersonnePhysique
 {
     #[ApiProperty(identifier: true)]
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 13, nullable: true)]
     private ?string $numeroSecuriteSociale = null;
 
     #[ORM\OneToOne(mappedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
     protected ?Requerant $compte = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
     protected ?Civilite $civilite = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom1 = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom2 = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom3 = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $communeNaissance = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $paysNaissance = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateNaissance = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomNaissance = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
     protected ?QualiteRequerant $qualiteRequerant = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precision = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
 
-    #[Groups(['dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
     public function __construct()
     {
-      $this->liasseDocumentaire=new LiasseDocumentaire();
+        $this->liasseDocumentaire = new LiasseDocumentaire();
     }
 
     public function __toString()
     {
-      return implode(" ",[
-       $this->getCivilite()?->value,
-       ucfirst(strtolower($this->getPrenom1())),
-       strtoupper($this->getNomNaissance())
-     ]);
+        return implode(' ', [
+            $this->getCivilite()?->value,
+            ucfirst(strtolower($this->getPrenom1())),
+            strtoupper($this->getNomNaissance()),
+        ]);
     }
 
     public function getId(): ?int
@@ -126,6 +126,7 @@ class PersonnePhysique
     public function setNumeroSecuriteSociale(?string $numeroSecuriteSociale): PersonnePhysique
     {
         $this->numeroSecuriteSociale = $numeroSecuriteSociale;
+
         return $this;
     }
 
@@ -175,6 +176,11 @@ class PersonnePhysique
         $this->prenom3 = $prenom3;
 
         return $this;
+    }
+
+    public function getPrenoms(): ?string
+    {
+        return implode(', ', array_filter([$this->prenom1, $this->prenom2, $this->prenom3], fn ($prenom) => !empty($prenom)));
     }
 
     public function getTelephone(): ?string
@@ -240,7 +246,7 @@ class PersonnePhysique
     public function getNomCourant(bool $civilite = false): string
     {
         return sprintf('%s%s %s',
-            $civilite ? ucfirst(strtolower($this->civilite->value)) . ". " : "", $this->prenom1, ucfirst($this->nom));
+            $civilite ? ucfirst(strtolower($this->civilite->value)).'. ' : '', $this->prenom1, ucfirst($this->nom));
     }
 
     public function getNomComplet(): ?string
@@ -248,11 +254,13 @@ class PersonnePhysique
         $civilite = $this->getCivilite()?->getLibelle();
         $nomNaissance = $this->getNomNaissance();
         $nom = $this->getNom();
-        if($nomNaissance && $nom)
-          $nom = $nom.' né.e '.$nomNaissance;
-        elseif($nomNaissance)
-          $nom = $nomNaissance;
-        return implode(" ",[$civilite,$this->getPrenom1(),$nom]);
+        if ($nomNaissance && $nom) {
+            $nom = $nom.' né.e '.$nomNaissance;
+        } elseif ($nomNaissance) {
+            $nom = $nomNaissance;
+        }
+
+        return implode(' ', [$civilite, $this->getPrenom1(), $nom]);
     }
 
     public function getQualiteRequerant(): ?QualiteRequerant

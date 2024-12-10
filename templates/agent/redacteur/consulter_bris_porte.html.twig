@@ -16,6 +16,11 @@
             /*border-radius: 10px 0 0 10px;*/
 
         }
+        
+        .fr-grid-column {
+            display:flex;
+            flex-direction:column;
+        }
 
 
         .fr-dossier-etat p {
@@ -127,13 +132,13 @@
                 <ul class="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
                     {#  Actions, à adapter en fonction de l'état du dossier et des droits de l'agent #}
                     <li>
-                        <button class="fr-btn fr-btn--sm fr-btn--secondary">
+                        <button class="fr-btn fr-btn--sm fr-btn--secondary" disabled>
                             Refuser le dossier
                         </button>
 
                     </li>
                     <li>
-                        <button class="fr-btn fr-btn--sm" type="button" data-fr-opened="false" aria-controls="fr-modal-pre-valider">
+                        <button class="fr-btn fr-btn--sm" type="button" data-fr-opened="false" aria-controls="fr-modal-pre-valider" disabled>
                             Accepter l'indemnisation
                         </button>
                     </li>
@@ -150,26 +155,37 @@
                             <button class="fr-accordion__btn" aria-expanded="true" aria-controls="accordion-114">Informations du dossier</button>
                         </h3>
                         <div class="fr-collapse" id="accordion-114">
-                            <div style="display:flex; flex-direction:column;">
+                            <div class="fr-grid-column">
                                 <h5>Requérant</h5>
 
                                 <ul class="fr-list">
                                     <li>
-                                        <b>Nom: </b> {{ dossier.requerant.personnePhysique.nom }}
+                                        <b>Nom: </b> {{ dossier.requerant.personnePhysique.civilite.libelle }} {{ dossier.requerant.personnePhysique.nom }} {% if not dossier.requerant.personnePhysique.nomNaissance is empty and dossier.requerant.personnePhysique.nomNaissance != dossier.requerant.personnePhysique.nom %}, né{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %} {{ dossier.requerant.personnePhysique.nom }}{% endif %}
                                     </li>
                                     <li>
-                                        <b>Prénom: </b> {{ dossier.requerant.personnePhysique.prenom1 }}
+                                        <b>Prénom(s): </b> {{ dossier.requerant.personnePhysique.prenoms }}
                                     </li>
+                                    <li>
+                                        <b>Né{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %}: </b> le {{ dossier.requerant.personnePhysique.dateNaissance|format_date(locale='fr',pattern="d MMMM YYYY") }}, à {{ dossier.requerant.personnePhysique.communeNaissance}}{% if dossier.requerant.personnePhysique.paysNaissance is not empty %} , {{ dossier.requerant.personnePhysique.paysNaissance }}{% endif %}
+                                    </li>
+                                    {% if dossier.requerant.isPersonneMorale %}
+                                        <li>
+                                            <b>Représentant{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %} légal{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %}: </b> de la société {{ dossier.requerant.personneMorale.raisonSociale }} (SIREN: {{ dossier.requerant.personneMorale.sirenSiret }})
+                                        </li>
+                                    {% endif %}
                                 </ul>
                             </div>
-                            <div style="display:flex; flex-direction:column;">
+                            <div class="fr-grid-column">
                                 <h5>
-                                    Logement
+                                    Bris de porte
                                 </h5>
 
                                 <ul>
                                     <li>
-                                        <b>Adresse: </b> {{ dossier.adresse.libelle }}
+                                        <b>Survenu à l'adresse: </b> {{ dossier.adresse.libelle }}
+                                    </li>
+                                    <li>
+                                        <b>Le: </b> {{ dossier.dateOperationPJ|format_date(locale='fr',pattern="d MMMM YYYY") }}
                                     </li>
                                     <li>
                                         <b>Porte blindée: </b> {{ dossier.porteBlindee ? 'Oui' : 'Non' }}
