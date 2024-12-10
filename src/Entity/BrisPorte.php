@@ -66,6 +66,9 @@ class BrisPorte
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
 
+    /** @var Document[]|null */
+    protected ?array $documents = null;
+
     #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $note = null;
@@ -269,6 +272,30 @@ class BrisPorte
         $this->liasseDocumentaire = $liasseDocumentaire;
 
         return $this;
+    }
+
+    /**
+     * @return Document[]|null
+     */
+    public function getDocuments(string $type): ?array
+    {
+        if (null === $this->documents) {
+            $this->documents = [];
+
+            foreach (Document::$types as $type => $libelle) {
+                if (in_array($type, [Document::TYPE_CARTE_IDENTITE, Document::TYPE_RIB])) {
+                    if ($this->requerant->getIsPersonneMorale()) {
+                        $this->documents[$type] = $this->requerant->getPersonneMorale()->getLiasseDocumentaire()?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
+                    } else {
+                        $this->documents[$type] = $this->requerant->getPersonnePhysique()->getLiasseDocumentaire()?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
+                    }
+                } else {
+                    $this->documents[$type] = $this->liasseDocumentaire?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
+                }
+            }
+        }
+
+        return $this->documents[$type] ?? null;
     }
 
     public function getNote(): ?string

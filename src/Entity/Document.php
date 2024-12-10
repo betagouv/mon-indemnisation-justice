@@ -20,6 +20,16 @@ class Document
     const TYPE_CONTRAT_LOCATION="contrat_location";
     const TYPE_SIGNATURE_DECISION="signature_decision";
 
+    public static $types = [
+        self::TYPE_ATTESTATION_INFORMATION => "Attestation informatique", // Dossier
+        self::TYPE_PHOTO_PREJUDICE => "Photos de la porte endommagée", // Dossier
+        self::TYPE_CARTE_IDENTITE => "Pièce d'identité", // Personne morale OU physique
+        self::TYPE_FACTURE => "Facture", // Dossier
+        self::TYPE_RIB => "RIB", // Personne morale OU physique
+        self::TYPE_TITRE_PROPRIETE => "Titre de propriété", // Dossier
+        self::TYPE_CONTRAT_LOCATION => "Contrat de location", // Dossier
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]

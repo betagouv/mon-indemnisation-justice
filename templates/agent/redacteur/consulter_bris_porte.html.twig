@@ -6,12 +6,6 @@
     {{ parent() }}
 
     <style>
-        main {
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-        }
-
-
         .fr-dossier-etat {
             display: flex;
             flex-direction: column;
@@ -19,10 +13,14 @@
             position: relative;
             border: 1px solid var(--border-default-grey);
             border-left: 10px solid #0a76f6;
-            border-radius: 10px 0 0 10px;
-            padding: 25px;
+            /*border-radius: 10px 0 0 10px;*/
+
         }
 
+
+        .fr-dossier-etat p {
+            text-wrap: wrap;
+        }
 
         .previsualisation-lettre * {
             all: revert;
@@ -104,24 +102,26 @@
 {% endblock modale %}
 
 {% block main %}
-<div class="fr-container fr-container--fluid">
-    <div class="fr-grid-row">
+<div class="fr-container fr-container--fluid fr-mt-2w">
+    <div class="fr-grid-row fr-grid-row--gutters">
 
         {% include 'agent/redacteur/_menu_lateral.html.twig' %}
 
-        <div class="fr-col-lg-9">
+        <div class="fr-col-lg-9 fr-p-3w">
 
             {#  Résumé de l'état + boutons #}
-            <div class="fr-dossier-etat fr-pl-5w">
+            <div class="fr-dossier-etat fr-p-4w">
 
                 <h3 class="">Dossier {{ dossier.reference }}</h3>
-
-                <p class="fr-m-1w">Déposé le {{ dossier.etatDossier.date|format_datetime(locale='fr',pattern="d MMMM YYYY") }}, à {{ dossier.etatDossier.date|format_datetime(locale='fr',pattern="HH'h'mm") }} par <u>{{ dossier.requerant.nomCourant(true)}}</u></p>
 
                 <div class="">
                     <p class="fr-badge fr-badge--info fr-badge--no-icon">À statuer</p>
                     <p class="fr-badge fr-badge--new fr-badge--no-icon">Nouveau dossier</p>
                 </div>
+
+                <p class="fr-m-1w">Déposé le {{ dossier.etatDossier.date|format_datetime(locale='fr',pattern="d MMMM YYYY") }}, à {{ dossier.etatDossier.date|format_datetime(locale='fr',pattern="HH'h'mm") }} par <u>{{ dossier.requerant.nomCourant(true)}}</u></p>
+
+                <p class="fr-m-1w">Ce dossier n'est <i>pas encore attribué</i> à un rédacteur.</p>
 
 
                 <ul class="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
@@ -182,9 +182,54 @@
 
                     <section class="fr-accordion">
                         <h3 class="fr-accordion__title">
-                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-115">Documents</button>
+                            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-115">Pièces jointes</button>
                         </h3>
                         <div class="fr-collapse" id="accordion-115">
+
+                            <div class="fr-tabs">
+                                <ul class="fr-tabs__list" role="tablist" aria-label="Pièces jointes">
+                                    {% for type, libelle in types_document() %}
+                                        <li role="presentation">
+                                            <button
+                                                id="tab-document-{{ type|to_kebab }}"
+                                                class="fr-tabs__tab"
+                                                tabindex="{{ loop.first ? 0 : -1 }}"
+                                                role="tab"
+                                                aria-selected="{{ loop.first ? 'true' : 'false' }}"
+                                                {% if dossier.documents(type)|length > 0 %}aria-controls="tab-document-{{ type|to_kebab }}-panel" {% else %}disabled{% endif %}
+                                            >
+                                                {{ libelle }} {% if dossier.documents(type)|length > 0 %}({{ dossier.documents(type)|length }}){% endif %}
+                                            </button>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+
+                                {% for type, libelle in types_document() %}
+                                    {% if dossier.documents(type)|length > 0 %}
+                                        <div
+                                            id="tab-document-{{ type|to_kebab }}-panel"
+                                            class="fr-tabs__panel{% if loop.first %} fr-tabs__panel--selected{% endif %}"
+                                            role="tabpanel"
+                                            aria-labelledby="tab-document-{{ type|to_kebab }}"
+                                            tabindex="0"
+                                        >
+                                            {% for document in dossier.documents(type) %}
+                                                <div class="fr-grid-row">
+                                                    <h6>{{ document.originalFilename }}</h6>
+                                                    {% if document.mime == 'application/pdf' %}
+                                                        <object data="{{ url('agent_document_download', {'id': document.id, 'filename': document.filename }) }}" type="application/pdf" style="width:100%;aspect-ratio: 210/297;"  ></object>
+                                                    {% else %}
+                                                        <img src="{{ url('agent_document_download', {'id': document.id, 'filename': document.filename }) }}" style="width:100%;max-height: 100vh;" />
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+
+                                {% endfor %}
+
+
+                            </div>
 
                         </div>
                     </section>
