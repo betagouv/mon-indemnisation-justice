@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Définition du mot de passe rédacteur{% endblock %}
+
+{% block main %}
+<div class="fr-container">
+
+    <h1>Définition du mot de passe rédacteur</h1>
+</div>
+<div class="fr-container">
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+        <div class="fr-col-lg-4 fr-col-12">
+            <form name="reinitialisation-mot-de-passe" action="{{ url('app_agent_securite_activation', {'jeton': agent.jetonVerification}) }}" method="POST">
+                <input type="hidden" name="_token" value="{{ form._token.vars.value }}">
+
+                <div class="fr-input-group">
+                    <label class="fr-label" for="mot-de-passe">Mot de passe:</label>
+                    <div class="fr-input-wrap">
+                        <input class="fr-input" type="password" id="mot-de-passe" name="motDePasse" required>
+                        {# Brouillon: champs mots de passe révélable
+                        <button role="button" class="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay" onclick="event.preventDefault();">
+                            <span class="fr-icon-eye-line" aria-hidden="true"></span>
+                        </button>
+                        #}
+                    </div>
+                </div>
+
+                <div class="fr-input-group">
+                    <label class="fr-label" for="confirmation">Confirmation du mot de passe:</label>
+                    <input class="fr-input" type="password" id="confirmation" name="confirmation" required>
+                    {# <p class="fr-error-text">
+                      Les deux mots de passe ne sont pas identiques.
+                    </p>
+                     #}
+                </div>
+
+                <button class="fr-btn" type="submit">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

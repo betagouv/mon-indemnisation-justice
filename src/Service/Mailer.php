@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Agent;
 use App\Entity\Document;
 use App\Entity\Requerant;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -30,6 +31,11 @@ class Mailer
     public function toRequerant(Requerant $requerant): self
     {
         return $this->to($requerant->getEmail());
+    }
+
+    public function toAgent(Agent $agent): self
+    {
+        return $this->to($agent->getEmail());
     }
 
     public function to(string $email): static

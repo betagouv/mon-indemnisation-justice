@@ -88,6 +88,7 @@ class SecurityController extends AbstractController
                     );
                     $requerant->supprimerJetonVerification();
 
+                    $this->em->persist($requerant);
                     $this->em->flush();
                     $this->addFlash('success', [
                         'title' => 'Mot de passe modifié',
