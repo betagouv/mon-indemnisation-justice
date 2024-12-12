@@ -9,10 +9,10 @@ const inscription = Object.assign(
         telephone: "",
         motDePasse: "",
         confirmation: "",
-        cguOk: true
     },
     JSON.parse(document.getElementById('input-inscription')?.textContent || "{}")
 );
+
 const erreurs = Object.assign({}, JSON.parse(document.getElementById('input-erreurs')?.textContent || "{}"));
 
 createApp({
@@ -83,18 +83,9 @@ createApp({
                     this.erreurs.confirmation = "Les deux mots de passe doivent être identiques";
                 }
             }
+        } else {
+            this.erreurs.motDePasse = null;
         }
-
-
-        /*
-        if (this.avant?.cguOk !== inscription.cguOk) {
-            if (!inscription.cguOk) {
-                this.erreurs.cguOk = "";
-            } else {
-                delete this.erreurs.cguOk;
-            }
-        }
-        */
 
         this.submissible = Object.keys(this.erreurs).length === 0;
 
