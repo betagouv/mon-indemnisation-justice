@@ -260,31 +260,7 @@
                                             </p>
                                         </div>
                                     </div>
-                                    {# CGU (désactivé tant que la page CGU n'existe pas) #}
-                                    <input type="hidden" name="cguOk" value="1">
-                                    {#
-                                    <div class="fr-col-12">
-                                        <fieldset class="fr-fieldset">
-                                            <div class="fr-fieldset__content">
-                                                <div class="fr-checkbox-group">
-                                                    <input type="checkbox"
-                                                           id="inscription-champs-cgu-ok"
-                                                           name="cguOk"
-                                                           value="{{ form.cguOk.vars.value }}"
-                                                           v-model.boolean="inscription.cguOk" />
-                                                    <label class="fr-label"
-                                                           for="inscription-champs-cgu-ok">
-                                                        Je certifie avoir lu et accepté les
-                                                        <a class="fr-link"
-                                                           href="/conditions-generales-d-utilisation"
-                                                           target="_blank">Conditions générales
-                                                            d'utilisation</a>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                     #}
+
                                     <div class="fr-col-12">
                                         <button class="fr-btn" :disabled="!submissible">Valider mon inscription et
                                             poursuivre ma demande
