@@ -1,6 +1,6 @@
 {% extends 'agent/redacteur/base_liste_dossiers.html.twig' %}
 
-{% block title %}Dossiers acceptés{% endblock title %}
+{% block title %}Nouveaux dossiers{% endblock title %}
 
 
 {% block contenu %}
@@ -30,7 +30,7 @@
                         <div class="fr-table__content">
                             <table id="prec-tableau-dossiers-nouveaux">
                                 <caption class="fr-hidden">
-                                    Dossiers acceptés
+                                    Liste de mes dossiers nouveaux
                                 </caption>
                                 <thead>
                                 <tr>
@@ -41,10 +41,10 @@
                                         Nom / Prénom
                                     </th>
                                     <th scope="col">
-                                        Adresse
+                                        État
                                     </th>
                                     <th scope="col">
-                                        Accepté
+                                        Déposé le
                                     </th>
                                     <th scope="col">
                                         <span class="fr-hidden">Action</span>
@@ -61,21 +61,21 @@
                                             {{ dossier.requerant.personnePhysique.prenom1 }} {{ dossier.requerant.personnePhysique.nom }}
                                         </td>
                                         <td>
-                                            {{ dossier.adresse.libelle }}
+                                            <p class="fr-badge fr-badge--info fr-badge--no-icon">À instruire</p>
                                         </td>
                                         <td>
-                                            {% set etat = dossier.etat(enum('App\\Entity\\EtatDossierType::DOSSIER_ACCEPTE')) %}
-                                            le {{ etat.date|format_datetime(locale='fr',pattern="d MMMM YYYY") }}
+                                            {{ dossier.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM YYYY") }}
                                         </td>
                                         <td>
-                                            <a href="{{ url('agent_bris_porte_consulter', {'id': dossier.id}) }}" class="fr-btn fr-btn--sm fr-btn--icon fr-icon-eye-line">Accéder
-                                                au dossier</a>
+                                            <a href="{{ url('agent_bris_porte_consulter', {'id': dossier.id}) }}" class="fr-btn fr-btn--icon fr-btn--icon-right fr-icon-eye-line fr-btn--sm">
+                                                Consulter
+                                            </a>
                                         </td>
                                     </tr>
                                 {% else %}
                                     <tr>
                                         <td colspan="5">
-                                            <p class="fr-p-2w">Toujours rien à l'horizon ici. Si vous en profitiez pour vous faire un petite ☕️ ?</p>
+                                            <p class="fr-p-2w">Aucun nouveau dossier à traiter, vous êtes à jour 😎</p>
                                         </td>
                                     </tr>
                                 {% endfor %}

@@ -47,7 +47,7 @@
                 <div class="fr-grid-row fr-grid-row--center">
                     <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                         <div class="fr-modal__body">
-                            <form action="{{ url('agent_dossier_statuer_pre_validation', {'id': dossier.id }) }}" method="post">
+                            <form  method="post">
 
                                 <div class="fr-modal__header">
                                     <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
@@ -110,9 +110,7 @@
 <div class="fr-container fr-container--fluid fr-mt-2w">
     <div class="fr-grid-row fr-grid-row--gutters">
 
-        {% include 'agent/redacteur/_menu_lateral.html.twig' %}
-
-        <div class="fr-col-lg-9 fr-p-3w">
+        <div class="fr-col-12 fr-p-3w">
 
             {#  Résumé de l'état + boutons #}
             <div class="fr-dossier-etat fr-p-4w">
