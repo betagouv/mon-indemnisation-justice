@@ -44,13 +44,18 @@ class TestEligibilite
     #[ORM\Column]
     public bool $estEligibleExperimentation = false;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    public \DateTimeInterface $dateSoumission;
+    #[ORM\Column(options: ['default' => true])]
+    public bool $estIssuAttestation = false;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    public ?\DateTimeInterface $dateSoumission = null;
 
     #[ORM\PrePersist]
     public function prePersist()
     {
-        $this->dateSoumission = new \DateTimeImmutable();
+        if (null === $this->dateSoumission) {
+            $this->dateSoumission = new \DateTime();
+        }
     }
 
     public static function fromArray(array $values): TestEligibilite
@@ -66,6 +71,7 @@ class TestEligibilite
         $testEligibilite->aContacteAssurance = $values['aContacteAssurance'] ?? null;
         $testEligibilite->aContacteBailleur = $values['aContacteBailleur'] ?? null;
         $testEligibilite->requerant = $values['requerant'] ?? null;
+        $testEligibilite->dateSoumission = $values['dateSoumission'] ?? null;
 
         return $testEligibilite;
     }
