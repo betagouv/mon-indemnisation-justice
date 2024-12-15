@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\BrisPorte;
+use App\Entity\EtatDossierType;
 use App\Entity\Requerant;
 use App\Service\PasswordGenerator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -23,31 +24,73 @@ class BrisPorteRepository extends ServiceEntityRepository
         parent::__construct($registry, BrisPorte::class);
     }
 
-    public function newInstance(Requerant $user): BrisPorte
+    public function save(BrisPorte $dossier, bool $flush = true): void
     {
-        $brisPorte = (new BrisPorte())
-            ->setRequerant($user);
-
-        $this->getEntityManager()->persist($brisPorte);
-        $this->getEntityManager()->flush();
-
-        return $brisPorte;
+        $this->getEntityManager()->persist($dossier);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 
     /**
-     * Retourne la liste des dossiers constitués (i.e. dont la valeur de `dateDeclaration` est non nulle).
+     * Retourne la liste des dossiers constitués (i.e. dont l'état actuel est `DOSSIER_DEPOSE`).
      *
      * @return BrisPorte[]
      */
     public function getDossiersConstitues(): array
     {
-        $qb = $this->createQueryBuilder('b');
+        return $this->getDossiersParEtat(EtatDossierType::DOSSIER_DEPOSE);
+    }
 
-        return $qb
-            ->from(BrisPorte::class, 'bp')
-            ->where($qb->expr()->isNotNull('bp.dateDeclaration'))
+    /**
+     * Retourne la liste des dossiers à valider par la personne chef•fe de service (i.e. dont l'état actuel est `DOSSIER_PRE_VALIDE` ou `DOSSIER_PRE_REFUSE`).
+     *
+     * @return BrisPorte[]
+     */
+    public function getDossiersAValider(): array
+    {
+        return $this->getDossiersParEtat(EtatDossierType::DOSSIER_PRE_VALIDE, EtatDossierType::DOSSIER_PRE_REFUSE);
+    }
+
+    /**
+     * @param EtatDossierType[] $etats
+     *
+     * @return BrisPorte[]
+     */
+    protected function getDossiersParEtat(...$etats): array
+    {
+        return $this->createQueryBuilder('b')
+            ->join('b.etatDossier', 'e')
+            ->where('e.etat in (:etats)')
+            ->setParameter('etats', $etats)
             ->getQuery()
             ->getResult();
+    }
+
+    public function decompteParEtat(): array
+    {
+        return array_merge(
+            ...array_map(
+                fn (array $row) => [
+                    $row['etat']->value => $row['nbDossiers'],
+                ],
+                $this->createQueryBuilder('b')
+                ->join('b.etatDossier', 'e')
+                ->select('e.etat', 'COUNT(b.id) AS nbDossiers')
+                ->groupBy('e.etat')
+                ->getQuery()
+                ->getArrayResult()
+            )
+        );
+    }
+
+    public function nouveauDossier(Requerant $requerant): BrisPorte
+    {
+        $dossier = (new BrisPorte())->setRequerant($requerant);
+
+        $dossier->changerStatut(EtatDossierType::DOSSIER_INITIE, requerant: true);
+
+        return $dossier;
     }
 
     public function generateRaccourci(int $length = 8): string

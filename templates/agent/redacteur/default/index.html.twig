@@ -1,9 +1,0 @@
-{% extends 'agent/base_agent_react.html.twig' %}
-
-{% block title %}Espace Rédacteur - Mes dossiers{% endblock %}
-
-{% block react %}
-  <div {{ stimulus_controller('prejudice_redacteur_list',{
-    prejudices: prejudices|serialize('json', {groups: 'prejudice:read'}),
-  }) }}></div>
-{% endblock react %}
