@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Patch;
 use App\Repository\BrisPorteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -23,6 +25,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     ]
 )]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'bris_porte')]
 class BrisPorte
 {
@@ -36,6 +39,15 @@ class BrisPorte
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist', 'remove'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected Requerant $requerant;
+
+    #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER')]
+    #[ORM\OrderBy(['dateEntree' => 'ASC'])]
+    /** @var Collection<EtatDossier> */
+    protected Collection $historiqueEtats;
+
+    #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
+    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?EtatDossier $etatDossier = null;
 
     #[Groups('dossier:lecture')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
@@ -53,6 +65,9 @@ class BrisPorte
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
+
+    /** @var Document[]|null */
+    protected ?array $documents = null;
 
     #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -140,6 +155,13 @@ class BrisPorte
         $this->dateCreation = new \DateTimeImmutable();
         $this->liasseDocumentaire = new LiasseDocumentaire();
         $this->adresse = new Adresse();
+        $this->historiqueEtats = new ArrayCollection([]);
+    }
+
+    #[ORM\PreRemove]
+    public function onPreRemove(): void
+    {
+        $this->etatDossier = null;
     }
 
     public function getPid(): ?int
@@ -169,15 +191,45 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups(['dossier:lecture'])]
-    public function getLastStatut(): BrisPorteStatut
+    public function changerStatut(EtatDossierType $type, bool $requerant = false, ?Agent $agent = null): self
     {
-        return null !== $this->dateDeclaration ? BrisPorteStatut::CONSTITUE : BrisPorteStatut::EN_COURS_DE_CONSTITUTION;
+        if ($requerant) {
+            $this->historiqueEtats->add(EtatDossier::creerRequerant($this, $type));
+        } elseif (null !== $agent) {
+            $this->historiqueEtats->add(EtatDossier::creerAgent($this, $type, $agent));
+        } else {
+            $this->historiqueEtats->add(EtatDossier::creer($this, $type));
+        }
+
+        $this->etatDossier = $this->historiqueEtats->last();
+
+        return $this;
+    }
+
+    #[Groups(['prejudice:read'])]
+    public function getLastStatut(): EtatDossier
+    {
+        return $this->getEtatDossier();
+    }
+
+    public function getEtatDossier(): ?EtatDossier
+    {
+        return $this->etatDossier;
+    }
+
+    public function getEtatPreValide(): ?EtatDossier
+    {
+        return $this->getEtat(EtatDossierType::DOSSIER_PRE_VALIDE) ?? $this->getEtat(EtatDossierType::DOSSIER_PRE_REFUSE);
+    }
+
+    public function getEtat(EtatDossierType $type): ?EtatDossier
+    {
+        return $this->historiqueEtats->findFirst(fn (int $index, EtatDossier $etat) => $etat->getEtat() === $type);
     }
 
     public function estConstitue(): bool
     {
-        return BrisPorteStatut::CONSTITUE === $this->getLastStatut();
+        return null !== $this->getDateDeclaration();
     }
 
     public function getDateCreation(): \DateTimeInterface
@@ -185,30 +237,17 @@ class BrisPorte
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): self
-    {
-        $this->dateCreation = $dateCreation;
-
-        return $this;
-    }
-
     public function getDateDeclaration(): ?\DateTimeInterface
     {
-        return $this->dateDeclaration;
-    }
-
-    public function setDateDeclaration(\DateTimeInterface $dateDeclaration): self
-    {
-        if (!$this->dateDeclaration) {
-            $this->dateDeclaration = $dateDeclaration;
-        }
-
-        return $this;
+        return $this->historiqueEtats
+            ->findFirst(fn (int $index, EtatDossier $etat) => EtatDossierType::DOSSIER_DEPOSE === $etat->getEtat()
+            )?->getDate();
     }
 
     public function setDeclare(): self
     {
-        return $this->setDateDeclaration(new \DateTimeImmutable());
+        return $this
+            ->changerStatut(EtatDossierType::DOSSIER_DEPOSE, requerant: true);
     }
 
     public function getReference(): ?string
@@ -233,6 +272,30 @@ class BrisPorte
         $this->liasseDocumentaire = $liasseDocumentaire;
 
         return $this;
+    }
+
+    /**
+     * @return Document[]|null
+     */
+    public function getDocuments(string $type): ?array
+    {
+        if (null === $this->documents) {
+            $this->documents = [];
+
+            foreach (Document::$types as $type => $libelle) {
+                if (in_array($type, [Document::TYPE_CARTE_IDENTITE, Document::TYPE_RIB])) {
+                    if ($this->requerant->getIsPersonneMorale()) {
+                        $this->documents[$type] = $this->requerant->getPersonneMorale()->getLiasseDocumentaire()?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
+                    } else {
+                        $this->documents[$type] = $this->requerant->getPersonnePhysique()->getLiasseDocumentaire()?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
+                    }
+                } else {
+                    $this->documents[$type] = $this->liasseDocumentaire?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
+                }
+            }
+        }
+
+        return $this->documents[$type] ?? null;
     }
 
     public function getNote(): ?string

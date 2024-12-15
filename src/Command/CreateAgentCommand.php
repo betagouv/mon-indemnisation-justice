@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Agent;
+use App\Repository\AgentRepository;
+use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -12,14 +14,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(name: 'precontentieux:agent:creer', description: 'Créer un agent')]
 class CreateAgentCommand extends Command
 {
     public function __construct(
-        protected readonly EntityManagerInterface $manager,
-        protected readonly UserPasswordHasherInterface $hasher
+        protected readonly AgentRepository $agentRepository,
+        protected readonly Mailer $mailer,
     ) {
         parent::__construct();
     }
@@ -30,7 +31,6 @@ class CreateAgentCommand extends Command
             ->addArgument('prenom', InputArgument::REQUIRED)
             ->addArgument('nom', InputArgument::REQUIRED)
             ->addArgument('email', InputArgument::REQUIRED)
-            ->addArgument('password', InputArgument::REQUIRED)
             ->addOption('est-gestionnaire', null, InputOption::VALUE_NONE)
             ->addOption('est-validateur', null, InputOption::VALUE_NONE)
         ;
@@ -53,18 +53,23 @@ class CreateAgentCommand extends Command
             $agent->addRole(Agent::ROLE_AGENT_VALIDATEUR);
         }
 
+        /*
         $agent
             ->setPassword($this->hasher->hashPassword($agent, $input->getArgument('password') ?? self::generatePassword(12)))
             ->setDateChangementMDP(new \DateTime());
+        */
 
-        $this->manager->persist($agent);
-        $this->manager->flush();
+        $agent->genererJetonVerification();
+        $this->mailer
+                ->toAgent($agent)
+                ->subject('Création de votre compte rédacteur sur Mon Indemnisation Justice')
+                ->htmlTemplate('email/agent/activation_reinitialisation.html.twig', [
+                    'agent' => $agent,
+                ])
+                ->send();
+
+        $this->agentRepository->save($agent);
 
         return Command::SUCCESS;
-    }
-
-    protected static function generatePassword($length = 10): string
-    {
-        return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', (int) ceil($length / strlen($x)))), 1, $length);
     }
 }

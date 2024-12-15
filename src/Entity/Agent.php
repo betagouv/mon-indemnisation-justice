@@ -39,18 +39,21 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     protected string $prenom;
 
     /**
-     * @var string[] la liste des rôles assignées à l'agent
+     * @var string[] la liste des rôles assignée à l'agent
      */
     #[ORM\Column(type: 'simple_array')]
     protected array $roles = [];
-    #[ORM\Column]
-    private string $motDePasse;
+    #[ORM\Column(nullable: true)]
+    protected ?string $motDePasse = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateChangementMDP = null;
+    protected ?\DateTimeInterface $dateChangementMDP = null;
+
+    #[ORM\Column(type: 'string', length: 12, nullable: true)]
+    protected ?string $jetonVerification;
 
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
-    private bool $estActif = true;
+    protected bool $estActif = true;
 
     public function __construct()
     {
@@ -205,6 +208,26 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         $this->dateChangementMDP = $dateChangementMDP;
 
         return $this;
+    }
+
+    public function getJetonVerification(): ?string
+    {
+        return $this->jetonVerification;
+    }
+
+    public function genererJetonVerification(): void
+    {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $this->jetonVerification = '';
+
+        for ($i = 0; $i < 12; ++$i) {
+            $this->jetonVerification .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        }
+    }
+
+    public function supprimerJetonVerification(): void
+    {
+        $this->jetonVerification = null;
     }
 
     public function isActive(): bool

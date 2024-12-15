@@ -6,9 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% block title %}{% endblock %}</title>
     {% block stylesheets %}
-    {% for path in vite_entry_css_files('app') %}
-    <link rel="stylesheet" href="{{ base_dir ~ path }}">
-    {% endfor %}
     <style type="text/css">
       table { border-collapse: collapse; }
       .fr-img {
@@ -68,10 +65,5 @@
   </head>
   <body>
   {% block body %}{% endblock %}
-  {% block javascripts %}
-    {% for path in vite_entry_js_files('app') %}
-    <script src="{{ base_dir ~ path }}"></script>
-    {% endfor %}
-  {% endblock %}
   </body>
 </html>

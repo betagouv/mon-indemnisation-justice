@@ -1,0 +1,28 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% set activation_url = url('app_agent_securite_activation', {'jeton': agent.jetonVerification }) %}
+
+{% block subject %}Mon indemnisation justice : création de votre compte rédacteur{% endblock subject %}
+
+{% block entete %}
+<b>Activation de votre compte rédacteur</b>
+{% endblock entete %}
+
+{% block contenu %}
+Bonjour {{ agent.nomComplet }},
+<br/>
+<br/>
+Vous avez été invité à collaborer sur l'espace rédacteur de l'application Mon Indemnisation Justice..
+<br/>
+<br/>
+Pour activer votre compte, il ne vous reste qu'à définir un mot de passe :
+<br/>
+<br/>
+{{ email.bouton("Définir mon mot de passe", activation_url) }}
+<br/>
+<br/>
+Cordialement,<br/>
+L'équipe Mon Indemnisation Justice
+{% endblock contenu %}

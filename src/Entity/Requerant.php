@@ -278,9 +278,9 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getNomCourant(): string
+    public function getNomCourant(bool $civilite = false): string
     {
-        return $this->getPersonnePhysique()?->getNomCourant();
+        return $this->getPersonnePhysique()?->getNomCourant($civilite);
     }
 
     public function getNomComplet(): ?string

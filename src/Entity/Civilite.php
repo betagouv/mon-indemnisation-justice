@@ -15,19 +15,12 @@ enum Civilite: string
         };
     }
 
-    public static function tryFromName(?string $name): ?Civilite
+    public function estFeminin(): bool
     {
-        if (null === $name) {
-            return null;
-        }
-
-        foreach (self::cases() as $case) {
-            if ($case->name === $name) {
-                return $case;
-            }
-        }
-
-        return null;
+        return match ($this) {
+            Civilite::M => false,
+            Civilite::MME => true,
+        };
     }
 
     public static function choices(): array
