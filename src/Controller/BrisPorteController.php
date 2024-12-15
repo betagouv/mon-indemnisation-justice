@@ -21,11 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-class TestContexte
-{
-    public ?TestEligibilite $testEligibilite = null;
-    public ?Requerant $requerant = null;
-}
 
 #[Route('/bris-de-porte')]
 class BrisPorteController extends AbstractController
@@ -63,17 +58,15 @@ class BrisPorteController extends AbstractController
     #[Route('/tester-mon-eligibilite', name: 'bris_porte_tester_eligibilite', methods: ['GET', 'POST'])]
     public function testerMonEligibilite(Request $request): Response
     {
-        $testEligibilite = $this->getTestEligibilite($request);
+        $testEligibilite = $this->getTestEligibilite($request) ?? new TestEligibilite();
 
-        if (null !== $testEligibilite?->requerant) {
-            return $this->redirectToRoute('bris_porte_finaliser_la_creation');
+        if ($request->getSession()->has(AtterrissageController::SESSION_KEY)) {
+            $testEligibilite->estIssuAttestation = true;
+
+            $request->getSession()->remove(AtterrissageController::SESSION_KEY);
         }
 
-        if (null !== $testEligibilite?->departement) {
-            return $this->redirectToRoute($testEligibilite->departement->estDeploye() ? 'bris_porte_creation_de_compte' : 'bris_porte_contactez_nous');
-        }
-
-        $form = $this->createForm(TestEligibiliteType::class, new TestEligibilite());
+        $form = $this->createForm(TestEligibiliteType::class, $testEligibilite);
 
         if (Request::METHOD_POST === $request->getMethod()) {
 
@@ -81,7 +74,9 @@ class BrisPorteController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var TestEligibilite $testEligibilite */
                 $testEligibilite = $form->getData();
+
                 $testEligibilite->estEligibleExperimentation = $testEligibilite->departement->estDeploye();
+                $testEligibilite->dateSoumission = new \DateTime();
 
                 $this->entityManager->persist($testEligibilite);
                 $this->entityManager->flush();
@@ -95,6 +90,10 @@ class BrisPorteController extends AbstractController
                     $this->entityManager->flush();
 
                     return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
+                }
+
+                if (null !== $testEligibilite->requerant) {
+                    return $this->redirectToRoute('bris_porte_finaliser_la_creation');
                 }
 
                 $this->setTestEligibilite($testEligibilite, $request);

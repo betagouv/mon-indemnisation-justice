@@ -31,6 +31,7 @@ class TestEligibiliteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('estIssuAttestation', LiteralBooleanType::class)
             ->add('departement', EntityType::class, ['class' => GeoDepartement::class])
             ->add('description', TextType::class)
             ->add('estVise', LiteralBooleanType::class, ['required' => false])

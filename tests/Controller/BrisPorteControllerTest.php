@@ -70,18 +70,21 @@ class BrisPorteControllerTest extends WebTestCase
             'departement' => $departementEnExperimentation,
             'estVise' => true,
             'requerant' => $requerant,
+            'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
         ]);
         $this->em->persist($testEnExperimentationComplet);
 
         $testEnExperimentationIncomplet = TestEligibilite::fromArray([
             'departement' => $departementEnExperimentation,
             'estVise' => true,
+            'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
         ]);
         $this->em->persist($testEnExperimentationIncomplet);
 
         $testHorsExperimentation = TestEligibilite::fromArray([
             'departement' => $departementHorsExperimentation,
             'estVise' => true,
+            'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
         ]);
         $this->em->persist($testHorsExperimentation);
         $this->em->flush();
@@ -110,10 +113,10 @@ class BrisPorteControllerTest extends WebTestCase
     public function donnesTesterMonEligibilite()
     {
         return [
-            'sans_test' => [],
+            'sans_test' => [null, '/bris-de-porte/creation-de-compte'],
             'test_en_xp_incomplet' => [self::REF_TEST_EN_EXPERIMENTATION_INCOMPLET, '/bris-de-porte/creation-de-compte'],
-            'test_en_xp_complet' => [self::REF_TEST_EN_EXPERIMENTATION_COMPLET, '/bris-de-porte/finaliser-la-creation'],
-            'test_hors_xp' => [self::REF_TEST_HORS_EXPERIMENTATION, '/bris-de-porte/contactez-nous'],
+            'test_en_xp_complet' => [self::REF_TEST_EN_EXPERIMENTATION_COMPLET, '/bris-de-porte/finaliser-la-creation', true],
+            'test_hors_xp' => [self::REF_TEST_HORS_EXPERIMENTATION, '/bris-de-porte/creation-de-compte'],
         ];
     }
 
@@ -129,7 +132,7 @@ class BrisPorteControllerTest extends WebTestCase
      *
      * @dataProvider donnesTesterMonEligibilite
      */
-    public function testTesterMonEligibilite(?string $refTestPrecedent = null, ?string $redirection = null): void
+    public function testTesterMonEligibilite(?string $refTestPrecedent = null, ?string $redirection = null, bool $aRequerant = false): void
     {
         if ($refTestPrecedent) {
             $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $this->testsEligibilite[$refTestPrecedent]]);
@@ -137,42 +140,47 @@ class BrisPorteControllerTest extends WebTestCase
 
         $this->client->request('GET', '/bris-de-porte/tester-mon-eligibilite');
 
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $form = $this->client->getCrawler()->selectButton("Commencer la demande d'indemnisation")->form();
+
+        $this->client->request($form->getMethod(), $form->getUri(), [
+            '_token' => $this->client->getCrawler()->filter('input[name="_token"]')->first()->attr('value'),
+            'estIssuAttestation' => 'false',
+            'departement' => '77',
+            'description' => 'Perquisition pendant mon absence, ce matin',
+            'estVise' => 'false',
+            'estHebergeant' => 'false',
+            'estProprietaire' => 'true',
+            'aContacteAssurance' => 'false',
+        ]);
+
         if ($redirection) {
             $this->assertTrue($this->client->getResponse()->isRedirect($redirection));
-        } else {
-            $this->assertTrue($this->client->getResponse()->isSuccessful());
-            $form = $this->client->getCrawler()->selectButton("Commencer la demande d'indemnisation")->form();
-
-            $this->client->request($form->getMethod(), $form->getUri(), [
-                '_token' => $this->client->getCrawler()->filter('input[name="_token"]')->first()->attr('value'),
-                'departement' => '77',
-                'description' => 'Perquisition pendant mon absence, ce matin',
-                'estVise' => 'false',
-                'estHebergeant' => 'false',
-                'estProprietaire' => 'true',
-                'aContacteAssurance' => 'false',
-            ]);
-
-            $this->assertResponseRedirects('/bris-de-porte/creation-de-compte', 302, 'À la soumission du formulaire, je dois être redirigé vers la page de création de compte');
-
-            /** @var TestEligibilite $testEligibilite */
-            $testEligibilite = $this->em->getRepository(TestEligibilite::class)
-                ->createQueryBuilder('t')
-                ->orderBy('t.dateSoumission', 'DESC')
-                ->setMaxResults(1)
-                ->getQuery()
-                ->getOneOrNullResult();
-            $this->assertNotNull($testEligibilite);
-            $this->assertEquals('77', $testEligibilite->departement->getCode());
-            $this->assertEquals('Perquisition pendant mon absence, ce matin', $testEligibilite->description);
-            $this->assertNotNull($testEligibilite->dateSoumission);
-            $this->assertFalse($testEligibilite->estVise);
-            $this->assertFalse($testEligibilite->estHebergeant);
-            $this->assertTrue($testEligibilite->estProprietaire);
-            $this->assertFalse($testEligibilite->aContacteAssurance);
-            $this->assertNull($testEligibilite->requerant);
-            $this->assertTrue($testEligibilite->estEligibleExperimentation);
         }
+        $this->em->clear();
+
+        /** @var TestEligibilite $testEligibilite */
+        $testEligibilite = $this->em->getRepository(TestEligibilite::class)
+            ->createQueryBuilder('t')
+            ->orderBy('t.dateSoumission', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+        $this->assertNotNull($testEligibilite);
+        $this->assertEquals('77', $testEligibilite->departement->getCode());
+        $this->assertEquals('Perquisition pendant mon absence, ce matin', $testEligibilite->description);
+        $this->assertNotNull($testEligibilite->dateSoumission);
+        $this->assertFalse($testEligibilite->estVise);
+        $this->assertFalse($testEligibilite->estHebergeant);
+        $this->assertTrue($testEligibilite->estProprietaire);
+        $this->assertFalse($testEligibilite->aContacteAssurance);
+        if ($aRequerant) {
+            $this->assertInstanceOf(Requerant::class, $testEligibilite->requerant);
+        } else {
+            $this->assertNull($testEligibilite->requerant);
+        }
+
+        $this->assertTrue($testEligibilite->estEligibleExperimentation);
     }
 
     public function donnesContactezNous()
