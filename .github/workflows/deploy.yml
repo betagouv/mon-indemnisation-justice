@@ -1,0 +1,32 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [ "Test" ]
+    types:
+      - completed
+    branches:
+      - prod
+      - develop
+
+env:
+   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch all history
+          fetch-depth: 0
+      - name: Install clever tools
+        run: npm install -g clever-tools
+
+      - name: Deploy to dev application
+        run: clever deploy --app $CC_APP_DEV_ID
+        if: ${{ (github.head_ref || github.ref_name) == 'develop' }}
+
+      - name: Deploy to prod application
+        run: clever deploy --app $CC_APP_PROD_ID
+        if: ${{ (github.head_ref || github.ref_name) == 'prod' }}
