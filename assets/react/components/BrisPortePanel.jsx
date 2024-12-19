@@ -88,105 +88,198 @@ const BrisPortePanel = function() {
             <div className="fr-col-12">
               <section className="pr-form-section">
                 <Document
-                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "attestation_information")}
-                  liasseDocumentaire={dossier.liasseDocumentaire}
-                  libelle="Attestation complétée par les forces de l'ordre"
-                  type={"attestation_information"}
-                  onRemoved={(document) => { patchDossier({ liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id)}, patch: false }) } }
-                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document]) }, patch: false})}
+                    documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "attestation_information")}
+                    liasseDocumentaire={dossier.liasseDocumentaire}
+                    libelle="Attestation complétée par les forces de l'ordre"
+                    type={"attestation_information"}
+                    onRemoved={(document) => {
+                      patchDossier({
+                        liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id)},
+                        patch: false
+                      })
+                    }}
+                    onUploaded={(document) => patchDossier({
+                      liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.concat([document])},
+                      patch: false
+                    })}
                 />
               </section>
             </div>
             <div className="fr-col-12">
               <section className="pr-form-section">
                 <Document
-                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "photo_prejudice")}
-                  liasseDocumentaire={dossier.liasseDocumentaire}
-                  libelle="Photos de la porte endommagée"
-                  type={"photo_prejudice"}
-                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id) }, patch: false }) }
-                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
+                    documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "photo_prejudice")}
+                    liasseDocumentaire={dossier.liasseDocumentaire}
+                    libelle="Photos de la porte endommagée"
+                    type={"photo_prejudice"}
+                    onRemoved={(document) => patchDossier({
+                      liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id !== document.id)},
+                      patch: false
+                    })}
+                    onUploaded={(document) => patchDossier({
+                      liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.concat([document])},
+                      patch: false
+                    })}
                 />
               </section>
             </div>
             <div className="fr-col-12">
               <section className="pr-form-section">
                 <Document
-                  documents={(dossier.requerant.isPersonneMorale ? dossier.requerant.personneMorale : dossier.requerant.personnePhysique).liasseDocumentaire.documents.filter((document) => document.type === "carte_identite")}
-                  liasseDocumentaire={(dossier.requerant.isPersonneMorale ? dossier.requerant.personneMorale : dossier.requerant.personnePhysique).liasseDocumentaire}
-                  libelle="Copie de votre pièce d'identité recto-verso"
-                  type={"carte_identite"}
-                  onRemoved={(document) => patchDossier({ requerant: { [dossier.requerant.isPersonneMorale ? 'personneMorale' :'personnePhysique']: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
-                  onUploaded={(document) => patchDossier({ requerant: { [dossier.requerant.isPersonneMorale ? 'personneMorale' :'personnePhysique']: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
+                    documents={(dossier.requerant.isPersonneMorale ? dossier.requerant.personneMorale : dossier.requerant.personnePhysique).liasseDocumentaire.documents.filter((document) => document.type === "carte_identite")}
+                    liasseDocumentaire={(dossier.requerant.isPersonneMorale ? dossier.requerant.personneMorale : dossier.requerant.personnePhysique).liasseDocumentaire}
+                    libelle="Copie de votre pièce d'identité recto-verso"
+                    type={"carte_identite"}
+                    onRemoved={(document) => patchDossier({
+                      requerant: {[dossier.requerant.isPersonneMorale ? 'personneMorale' : 'personnePhysique']: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id)}}},
+                      patch: false
+                    })}
+                    onUploaded={(document) => patchDossier({
+                      requerant: {[dossier.requerant.isPersonneMorale ? 'personneMorale' : 'personnePhysique']: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}},
+                      patch: false
+                    })}
                 />
               </section>
             </div>
             <div className="fr-col-12">
               <section className="pr-form-section">
                 <Document
-                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "preuve_paiement_facture")}
-                  liasseDocumentaire={dossier.liasseDocumentaire}
-                  libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
-                  type={"preuve_paiement_facture"}
-                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id) }, patch: false }) }
-                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
+                    documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "preuve_paiement_facture")}
+                    liasseDocumentaire={dossier.liasseDocumentaire}
+                    libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
+                    type={"preuve_paiement_facture"}
+                    onRemoved={(document) => patchDossier({
+                      liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id)},
+                      patch: false
+                    })}
+                    onUploaded={(document) => patchDossier({
+                      liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.concat([document])},
+                      patch: false
+                    })}
                 />
               </section>
             </div>
             {dossier.requerant.isPersonneMorale &&
-            <div className="fr-col-12">
-              <section className="pr-form-section">
-                <Document
-                  documents={dossier.requerant.personneMorale.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
-                  liasseDocumentaire={dossier.requerant.personneMorale.liasseDocumentaire}
-                  libelle="Relevé d'identité bancaire de votre société"
-                  type={"rib"}
-                  onRemoved={(document) => patchDossier({ requerant: { personneMorale: { liasseDocumentaire: { documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
-                  onUploaded={(document) => patchDossier({ requerant: { personneMorale: {liasseDocumentaire: {documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
-                />
-              </section>
-            </div>
+                <div className="fr-col-12">
+                  <section className="pr-form-section">
+                    <Document
+                        documents={dossier.requerant.personneMorale.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
+                        liasseDocumentaire={dossier.requerant.personneMorale.liasseDocumentaire}
+                        libelle="Relevé d'identité bancaire de votre société"
+                        type={"rib"}
+                        onRemoved={(document) => patchDossier({
+                          requerant: {personneMorale: {liasseDocumentaire: {documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.filter((d) => d.id === document.id)}}},
+                          patch: false
+                        })}
+                        onUploaded={(document) => patchDossier({
+                          requerant: {personneMorale: {liasseDocumentaire: {documents: dossier.requerant.personneMorale.liasseDocumentaire.documents.concat([document])}}},
+                          patch: false
+                        })}
+                    />
+                  </section>
+                </div>
             }
             {!dossier.requerant.isPersonneMorale &&
-            <div className="fr-col-12">
-              <section className="pr-form-section">
-                <Document
-                  documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
-                  liasseDocumentaire={dossier.requerant.personnePhysique.liasseDocumentaire}
-                  libelle="Votre relevé d'identité bancaire"
-                  type={"rib"}
-                  onRemoved={(document) => patchDossier({ requerant: { personnePhysique: { liasseDocumentaire: { documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id) }}}, patch: false }) }
-                  onUploaded={(document) => patchDossier({ requerant: { personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}}, patch: false})}
-                />
-              </section>
-            </div>
+                <div className="fr-col-12">
+                  <section className="pr-form-section">
+                    <Document
+                        documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
+                        liasseDocumentaire={dossier.requerant.personnePhysique.liasseDocumentaire}
+                        libelle="Votre relevé d'identité bancaire"
+                        type={"rib"}
+                        onRemoved={(document) => patchDossier({
+                          requerant: {personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((d) => d.id === document.id)}}},
+                          patch: false
+                        })}
+                        onUploaded={(document) => patchDossier({
+                          requerant: {personnePhysique: {liasseDocumentaire: {documents: dossier.requerant.personnePhysique.liasseDocumentaire.documents.concat([document])}}},
+                          patch: false
+                        })}
+                    />
+                  </section>
+                </div>
+            }
+            {/* Est propriétaire */}
+            {dossier.requerant.personnePhysique.qualiteRequerant === 'PRO' &&
+                <div className="fr-col-12">
+                  <section className="pr-form-section">
+                    <Document
+                        documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "titre_propriete")}
+                        liasseDocumentaire={dossier.liasseDocumentaire}
+                        libelle="Titre de propriété"
+                        type={"titre_propriete"}
+                        onRemoved={(document) => patchDossier({
+                          liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id)},
+                          patch: false
+                        })}
+                        onUploaded={(document) => patchDossier({
+                          liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.concat([document])},
+                          patch: false
+                        })}
+                    />
+                  </section>
+                </div>
+            }
+            {/* Est locataire */}
+            {dossier.requerant.personnePhysique.qualiteRequerant === 'LOC' &&
+                <div className="fr-col-12">
+                  <section className="pr-form-section">
+                    <Document
+                        documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "contrat_location")}
+                        liasseDocumentaire={dossier.liasseDocumentaire}
+                        libelle={"Contrat de location"}
+                        type={"contrat_location"}
+                        onRemoved={(document) => patchDossier({
+                          liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id)},
+                          patch: false
+                        })}
+                        onUploaded={(document) => patchDossier({
+                          liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.concat([document])},
+                          patch: false
+                        })}
+                    />
+                  </section>
+                </div>
+            }
+            {/* Est locataire */}
+            {dossier.requerant.personnePhysique.qualiteRequerant === 'LOC' &&
+                <div className="fr-col-12">
+                  <section className="pr-form-section">
+                    <Document
+                        documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "non_prise_en_charge_bailleur")}
+                        liasseDocumentaire={dossier.liasseDocumentaire}
+                        libelle={"Attestation de non prise en charge par le bailleur"}
+                        type={"non_prise_en_charge_bailleur"}
+                        onRemoved={(document) => patchDossier({
+                          liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id)},
+                          patch: false
+                        })}
+                        onUploaded={(document) => patchDossier({
+                          liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.concat([document])},
+                          patch: false
+                        })}
+                    />
+                  </section>
+                </div>
             }
             <div className="fr-col-12">
               <section className="pr-form-section">
                 <Document
-                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "titre_propriete")}
-                  liasseDocumentaire={dossier.liasseDocumentaire}
-                  libelle="Titre de propriété"
-                  type={"titre_propriete"}
-                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id) }, patch: false }) }
-                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
+                    documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "non_prise_en_charge_assurance")}
+                    liasseDocumentaire={dossier.liasseDocumentaire}
+                    libelle={"Attestation de non prise en charge par l'assurance habitation"}
+                    type={"non_prise_en_charge_assurance"}
+                    onRemoved={(document) => patchDossier({
+                      liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id)},
+                      patch: false
+                    })}
+                    onUploaded={(document) => patchDossier({
+                      liasseDocumentaire: {documents: dossier.liasseDocumentaire.documents.concat([document])},
+                      patch: false
+                    })}
                 />
               </section>
             </div>
-            {!dossier.requerant.isPersonneMorale &&
-            <div className="fr-col-12">
-              <section className="pr-form-section">
-                <Document
-                  documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "contrat_location")}
-                  liasseDocumentaire={dossier.liasseDocumentaire}
-                  libelle={"Contrat de location"}
-                  type={"contrat_location"}
-                  onRemoved={(document) => patchDossier({ liasseDocumentaire: { documents: dossier.liasseDocumentaire.documents.filter((d) => d.id === document.id)}, patch: false }) }
-                  onUploaded={(document) => patchDossier({ liasseDocumentaire: { documents : dossier.liasseDocumentaire.documents.concat([document])}, patch: false})}
-                />
-              </section>
-            </div>
-            }
             <div className="fr-col-12">
               <ul className="fr-btns-group fr-btns-group--inline-sm">
                 <li>
@@ -200,28 +293,28 @@ const BrisPortePanel = function() {
           </div>
         </>
         }
-        {(step===3) &&
-        <>
+      {(step === 3) &&
+          <>
 
-          <RecapitulatifBrisPorte
-            gotoFirstSection={gotoFirstSection}
-            gotoSecondSection={gotoSecondSection}
-            gotoThirdSection={gotoThirdSection}
-          />
-          <div className="fr-col-12">
-            <ul className="fr-btns-group fr-btns-group--inline-sm">
-              <li>
-                <Button
-                  linkProps={{
-                    // Route: app_requerant_update_statut_to_constitue
-                    href: `/requerant/bris-de-porte/passage-a-l-etat-constitue/${dossier.id}`
-                  }}
-                >
-                  {dossier.dateDeclaration ? "Mettre à jour mon dossier" : "Je déclare mon bris de porte"}
-                </Button>
-              </li>
-              <li>
-                <Button onClick={decrementStep} priority="secondary">Revenir à l'étape précédente</Button>
+            <RecapitulatifBrisPorte
+                gotoFirstSection={gotoFirstSection}
+                gotoSecondSection={gotoSecondSection}
+                gotoThirdSection={gotoThirdSection}
+            />
+            <div className="fr-col-12">
+              <ul className="fr-btns-group fr-btns-group--inline-sm">
+                <li>
+                  <Button
+                      linkProps={{
+                        // Route: app_requerant_update_statut_to_constitue
+                        href: `/requerant/bris-de-porte/passage-a-l-etat-constitue/${dossier.id}`
+                      }}
+                  >
+                    {dossier.dateDeclaration ? "Mettre à jour mon dossier" : "Je déclare mon bris de porte"}
+                  </Button>
+                </li>
+                <li>
+                  <Button onClick={decrementStep} priority="secondary">Revenir à l'étape précédente</Button>
               </li>
             </ul>
           </div>

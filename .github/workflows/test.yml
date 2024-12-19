@@ -1,0 +1,110 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - '**'
+
+env:
+  APP_ENV: test
+  APP_SECRET: bafc23a0315b735289c499a886798934
+  APP_DEBUG: false
+  DATABASE_URL: pgsql://precontentieux:precontentieux@localhost:5432/precontest?serverVersion=15
+  PRECONTENTIEUX_COURRIEL_EQUIPE: equipe@precontentieux.anje-justice.test
+  COMPOSER_ALLOW_SUPERUSER: 1
+  BASE_URL: precontentieux.test
+  MAILER_FROM: ne-pas-repondre@precontentieux.test
+  MAILER_DSN: smtp://localhost:1025
+  MAILPIT_URL: http://localhost:8025
+  CORS_ALLOW_ORIGIN: "*"
+  EMAIL_FROM: ne-pas-repondre@precontentieux.anje-justice.test
+  EMAIL_FROM_LABEL: "Mon Indemnisation Justice (test)"
+  SYMFONY_DEPRECATIONS_HELPER: disabled
+  PANTHER_ERROR_SCREENSHOT_DIR: public/screenshots
+  PANTHER_ERROR_SCREENSHOT_ATTACH: true
+
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: precontentieux
+          POSTGRES_DB: precontest
+          POSTGRES_HOST: postgres
+          POSTGRES_PASSWORD: precontentieux
+          POSTGRES_PORT: 5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mailpit:
+        image: axllent/mailpit
+        ports:
+          - 1025:1025
+          - 8025:8025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: browser-actions/setup-firefox@v1
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Cache composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Cache yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: yarn-${{ hashFiles('yarn.lock') }}
+
+      - name: Setup PHP and run tests
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: 'zip, intl, calendarn gd, pdo, pdo_pgsql, pgsql'
+
+      - name: Install yarn dependencies & build assets
+        run: |
+          sudo chown -R runner:runner .
+          composer install --no-interaction --optimize-autoloader
+          bin/console cache:clear
+          yarn install --no-progress --non-interactive
+          yarn build
+
+      - name: Run migration
+        run: bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
+
+      - name: Detect headless browser driver
+        run: vendor/bin/bdi detect drivers
+
+      - name: Running unit test
+        run: |
+          env | grep MAILPIT
+          bin/phpunit --log-junit test-result.xml
+
+      - name: Check test result file exists
+        id: check_test_result_file
+        uses: andstor/file-existence-action@v1
+        with:
+          files: test-result.xml
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: ${{ steps.check_test_result_file.outputs.files_exists == 'true' }}
+        with:
+          files: |
+            test-result.xml

@@ -3,3 +3,8 @@ controllers:
         path: ../src/Controller
         namespace: App\Controller
     type: attribute
+
+api_doc:
+  path: 'https://www.google.com'
+  schemes: [ 'https' ]
+  host: 'www.google.com'

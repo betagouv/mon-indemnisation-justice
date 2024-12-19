@@ -1,4 +1,4 @@
-# 🇫🇷 👩‍⚖️ 🤝 Précontentieux 
+# 🇫🇷 👩‍⚖️ 🤝 Mon Indemnisation Justice (ex Précontentieux)
 
 ## Installation
 

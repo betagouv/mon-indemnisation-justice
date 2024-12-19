@@ -19,7 +19,6 @@
         <!-- ###+ sentry/sentry-symfony ### -->
         <env name="SENTRY_DSN" value=""/>
         <env name="APP_ENV" value="test" force="true"/>
-        <env name="DATABASE_URL" value="pgsql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&amp;charset=utf8" force="true" />
         <env name="CORS_ALLOW_ORIGIN" value="*" force="true" />
         <!-- ###- sentry/sentry-symfony ### -->
     </php>
