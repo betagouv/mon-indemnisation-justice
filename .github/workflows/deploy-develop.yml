@@ -1,0 +1,31 @@
+name: Deploy to dev app
+
+on:
+  workflow_run:
+    workflows: [ "Test" ]
+    types:
+      - completed
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch all history
+          fetch-depth: 0
+      - name: Install clever tools
+        run: |
+          npm install -g clever-tools
+
+      - name: Deploy to dev application
+        env:
+          CC_APP_ID: ${{ secrets.CC_APP_DEV_ID }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+        run: |
+          echo $CC_APP_ID
+          clever link $CC_APP_ID
+          clever deploy --alias precontentieux-dev --force
