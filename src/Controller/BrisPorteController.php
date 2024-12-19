@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Dto\Inscription;
 use App\Entity\BrisPorte;
 use App\Entity\GeoDepartement;
+use App\Entity\QualiteRequerant;
 use App\Entity\Requerant;
 use App\Entity\TestEligibilite;
 use App\Forms\InscriptionType;
@@ -171,6 +172,7 @@ class BrisPorteController extends AbstractController
                     ;
                     $requerant->getPersonnePhysique()
                         ->setCivilite($inscription->civilite)
+                        ->setQualiteRequerant($testEligibilite->estProprietaire ? QualiteRequerant::PRO : QualiteRequerant::LOC)
                         ->setPrenom1($inscription->prenom)
                         ->setEmail($inscription->courriel)
                         ->setTelephone($inscription->telephone)

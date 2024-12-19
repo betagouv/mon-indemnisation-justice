@@ -52,6 +52,7 @@ services:
       - PANTHER_ERROR_SCREENSHOT_DIR=public/screenshots
       - PANTHER_ERROR_SCREENSHOT_ATTACH=true
       - PANTHER_FIREFOX_ARGUMENTS='-width=1200 -height=2000'
+      - MAILPIT_URL=http://mailpit:8025
     restart: always
     depends_on:
       - postgres

@@ -48,7 +48,7 @@ class EligibiliteBrisPorteTest extends AbstractFunctionalTestCase
 
         // Vider les boîtes courriel :
         // Doc API mailpit https://mailpit.axllent.org/docs/api-v1/view.html#delete-/api/v1/messages
-        $this->mailerClient = new HttpClient(['base_uri' => 'http://mailpit:8025']);
+        $this->mailerClient = new HttpClient(['base_uri' => $_ENV['MAILPIT_URL'] ?? $_SERVER['MAILPIT_URL']]);
         $this->mailerClient->delete('/api/v1/messages');
     }
 
