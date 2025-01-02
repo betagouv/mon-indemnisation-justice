@@ -19,7 +19,7 @@ if (import.meta.env.PROD) {
     disableReactDevTools();
 }
 
-const { dossier, router } = JSON.parse(document.getElementById('react-arguments').textContent);
+const { dossier } = JSON.parse(document.getElementById('react-arguments').textContent);
 
 const root = ReactDOM.createRoot(document.getElementById('react-app'));
 
@@ -64,7 +64,7 @@ function DossierApp({dossier}) {
             <PatchDossierContext.Provider value={_patchDossier} >
                 <div className="fr-container">
                     <h1>Déclarer un bris de porte</h1>
-                    <BrisPortePanel routes={ router }/>
+                    <BrisPortePanel />
                 </div>
             </PatchDossierContext.Provider>
         </DossierContext.Provider>

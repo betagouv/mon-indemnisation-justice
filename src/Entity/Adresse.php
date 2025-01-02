@@ -11,39 +11,27 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: AdresseRepository::class)]
 class Adresse
 {
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne1 = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne2 = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $ligne3 = null;
-
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $lieuDit = null;
-
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
 
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $localite = null;
-
-    #[Groups(['user:read','dossier:lecture','dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $pays = null;
 
     /**
      * @var Collection<int, BrisPorte>
@@ -60,7 +48,7 @@ class Adresse
     {
         return "{$this->getLigne1()} {$this->getCodePostal()} {$this->getLocalite()}";
     }
-    
+
     public function __construct()
     {
         $this->brisPortes = new ArrayCollection();
@@ -95,30 +83,6 @@ class Adresse
         return $this;
     }
 
-    public function getLigne3(): ?string
-    {
-        return $this->ligne3;
-    }
-
-    public function setLigne3(?string $ligne3): static
-    {
-        $this->ligne3 = $ligne3;
-
-        return $this;
-    }
-
-    public function getLieuDit(): ?string
-    {
-        return $this->lieuDit;
-    }
-
-    public function setLieuDit(?string $lieuDit): static
-    {
-        $this->lieuDit = $lieuDit;
-
-        return $this;
-    }
-
     public function getCodePostal(): ?string
     {
         return $this->codePostal;
@@ -139,18 +103,6 @@ class Adresse
     public function setLocalite(?string $localite): static
     {
         $this->localite = $localite;
-
-        return $this;
-    }
-
-    public function getPays(): ?string
-    {
-        return $this->pays;
-    }
-
-    public function setPays(?string $pays): static
-    {
-        $this->pays = $pays;
 
         return $this;
     }

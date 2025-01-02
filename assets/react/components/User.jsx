@@ -47,22 +47,38 @@ const User = function () {
                                     <PersonneMorale/>
 
                                     <div className="fr-grid-row fr-grid-row--gutters">
-                                        <div className="fr-col-12">
+                                        <div className="fr-col-lg-6 fr-col-12">
                                             <Input
-                                                label="Adresse complète"
+                                                label="Adresse"
                                                 nativeInputProps={{
                                                     value: dossier.requerant.adresse.ligne1 || "",
-                                                    onChange: (e) => patchDossier({requerant: {adresse: { ligne1: e.target.value }}}),
+                                                    placeholder: "Numéro de voie, rue",
+                                                    onChange: (e) => patchDossier({requerant: {adresse: {ligne1: e.target.value}}}),
                                                     maxLength: 255
                                                 }}
                                             />
                                         </div>
+
+                                        <div className="fr-col-lg-6 fr-col-12">
+                                            <Input
+                                                label="Complément d'adresse"
+                                                hintText={"Facultatif"}
+                                                nativeInputProps={{
+                                                    value: dossier.requerant.adresse.ligne2 || "",
+                                                    placeholder: "Étage, escalier",
+                                                    onChange: (e) => patchDossier({requerant: {adresse: {ligne2: e.target.value}}}),
+                                                    maxLength: 255
+                                                }}
+                                            />
+                                        </div>
+
+
                                         <div className="fr-col-lg-2 fr-col-4">
                                             <Input
                                                 label="Code postal"
                                                 nativeInputProps={{
                                                     value: dossier.requerant.adresse.codePostal || "",
-                                                    onChange: (e) => patchDossier({requerant: {adresse: { codePostal: e.target.value }}}),
+                                                    onChange: (e) => patchDossier({requerant: {adresse: {codePostal: e.target.value}}}),
                                                     maxLength: 5
                                                 }}
                                             />
@@ -72,7 +88,7 @@ const User = function () {
                                                 label="Ville"
                                                 nativeInputProps={{
                                                     value: dossier.requerant.adresse.localite || "",
-                                                    onChange: (e) => patchDossier({requerant: {adresse: { localite: e.target.value }}}),
+                                                    onChange: (e) => patchDossier({requerant: {adresse: {localite: e.target.value}}}),
                                                     maxLength: 255
                                                 }}
                                             />
@@ -152,12 +168,26 @@ const User = function () {
                                 <section className="pr-form-section fr-p-4w">
                                     <PersonnePhysique/>
                                     <div className="fr-grid-row fr-grid-row--gutters">
-                                        <div className="fr-col-12">
+                                        <div className="fr-col-lg-6 fr-col-12">
                                             <Input
-                                                label="Adresse complète"
+                                                label="Adresse"
                                                 nativeInputProps={{
                                                     value: dossier.requerant.adresse.ligne1 || "",
+                                                    placeholder: "Numéro de voie, rue",
                                                     onChange: (e) => patchDossier({requerant: {adresse: {ligne1: e.target.value}}}),
+                                                    maxLength: 255
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className="fr-col-lg-6 fr-col-12">
+                                            <Input
+                                                label="Complément d'adresse"
+                                                hintText={"Facultatif"}
+                                                nativeInputProps={{
+                                                    value: dossier.requerant.adresse.ligne2 || "",
+                                                    placeholder: "Étage, escalier",
+                                                    onChange: (e) => patchDossier({requerant: {adresse: {ligne2: e.target.value}}}),
                                                     maxLength: 255
                                                 }}
                                             />

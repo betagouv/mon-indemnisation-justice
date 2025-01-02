@@ -29,12 +29,25 @@ const BrisPorte = () => {
             <div className="fr-col-offset-8"></div>
               <div className="fr-col-12">
                   <div className="fr-grid-row fr-grid-row--gutters">
-                      <div className="fr-col-12">
+                      <div className="fr-col-6">
                           <Input
-                              label="Adresse complète du logement concerné par le bris de porte"
+                              label="Adresse du logement concerné par le bris de porte"
                               nativeInputProps={{
                                   value: dossier.adresse.ligne1 || "",
-                                  onChange: (e) => patchDossier({adresse: { ligne1: e.target.value}}),
+                                  placeholder: "Numéro de voie, rue",
+                                  onChange: (e) => patchDossier({adresse: {ligne1: e.target.value}}),
+                                  maxLength: 255
+                              }}
+                          />
+                      </div>
+                      <div className="fr-col-12">
+                          <Input
+                              label="Complément d'adresse"
+                              hintText={"Facultatif"}
+                              nativeInputProps={{
+                                  value: dossier.adresse.ligne2 || "",
+                                  placeholder: "Étage, escalier",
+                                  onChange: (e) => patchDossier({adresse: {ligne2: e.target.value}}),
                                   maxLength: 255
                               }}
                           />
@@ -44,7 +57,7 @@ const BrisPorte = () => {
                               label="Code postal"
                               nativeInputProps={{
                                   value: dossier.adresse.codePostal || "",
-                                  onChange: (e) => patchDossier({adresse: { codePostal: e.target.value}}),
+                                  onChange: (e) => patchDossier({adresse: {codePostal: e.target.value}}),
                                   maxLength: 5
                               }}
                           />
@@ -54,7 +67,7 @@ const BrisPorte = () => {
                               label="Ville"
                               nativeInputProps={{
                                   value: dossier.adresse.localite || "",
-                                  onChange: (e) => patchDossier({adresse: { localite: e.target.value}}),
+                                  onChange: (e) => patchDossier({adresse: {localite: e.target.value}}),
                                   maxLength: 255
                               }}
                           />
@@ -67,7 +80,8 @@ const BrisPorte = () => {
                       legend="S'agit-il d'une porte blindée ?"
                       orientation='horizontal'
                       options={[
-                          {label: "Oui",
+                          {
+                              label: "Oui",
                               nativeInputProps: {
                                   checked: (dossier.isPorteBlindee === true),
                                   onChange: () => patchDossier({isPorteBlindee: true})

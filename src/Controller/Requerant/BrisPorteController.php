@@ -7,7 +7,6 @@ use App\Entity\EtatDossierType;
 use App\Entity\Requerant;
 use App\Event\BrisPorteConstitueEvent;
 use App\Repository\BrisPorteRepository;
-use App\Repository\GeoDepartementRepository;
 use App\Service\Mailer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,7 +20,6 @@ class BrisPorteController extends RequerantController
 {
     public function __construct(
         protected readonly BrisPorteRepository $brisPorteRepository,
-        protected readonly GeoDepartementRepository $departementRepository,
         protected readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }

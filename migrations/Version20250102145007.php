@@ -14,7 +14,7 @@ final class Version20250102145007 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Correction des dossiers sans état initial';
     }
 
     public function up(Schema $schema): void
