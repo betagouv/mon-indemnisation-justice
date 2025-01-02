@@ -69,14 +69,6 @@ class PersonnePhysique
     private ?string $nomNaissance = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
-    protected ?QualiteRequerant $qualiteRequerant = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $precision = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
@@ -261,30 +253,6 @@ class PersonnePhysique
         }
 
         return implode(' ', [$civilite, $this->getPrenom1(), $nom]);
-    }
-
-    public function getQualiteRequerant(): ?QualiteRequerant
-    {
-        return $this->qualiteRequerant;
-    }
-
-    public function setQualiteRequerant(?QualiteRequerant $qualite): self
-    {
-        $this->qualiteRequerant = $qualite;
-
-        return $this;
-    }
-
-    public function getPrecision(): ?string
-    {
-        return $this->precision;
-    }
-
-    public function setPrecision(?string $precision): static
-    {
-        $this->precision = $precision;
-
-        return $this;
     }
 
     public function getLiasseDocumentaire(): ?LiasseDocumentaire
