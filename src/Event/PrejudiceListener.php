@@ -2,7 +2,6 @@
 
 namespace App\Event;
 
-use App\Entity\BasePrejudice;
 use App\Entity\BrisPorte;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -25,11 +24,11 @@ class PrejudiceListener
                 $entityManager = $args->getObjectManager();
                 $conn = $entityManager->getConnection();
 
-                $sql = "
-            SELECT count(*)+1 cpt
-            FROM public.bris_porte p
-            WHERE date_declaration = '".$entity->getDateDeclaration()->format('Y-m-d')."'";
-                $req = $conn->executeQuery($sql);
+                $req = $conn->executeQuery(<<<SQL
+SELECT count(p.id) + 1 cpt
+FROM bris_porte p
+    INNER JOIN public.dossier_etats ed ON ed.id = p.etat_actuel_id AND ed.etat <> 'DOSSIER_INITIE'
+SQL);
 
                 $cpt = $req->fetchOne() ?? 1;
 

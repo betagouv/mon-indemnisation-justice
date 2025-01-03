@@ -182,8 +182,7 @@ const User = function () {
 
                                         <div className="fr-col-lg-6 fr-col-12">
                                             <Input
-                                                label="Complément d'adresse"
-                                                hintText={"Facultatif"}
+                                                label="Complément d'adresse (facultatif)"
                                                 nativeInputProps={{
                                                     value: dossier.requerant.adresse.ligne2 || "",
                                                     placeholder: "Étage, escalier",

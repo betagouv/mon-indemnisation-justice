@@ -6,19 +6,17 @@
     {{ parent() }}
     {% set flash = app.flashes('dossier')|first %}
     {% if flash %}
-        <dialog aria-labelledby="fr-modal-flash-success" role="dialog" id="fr-modal-flash-success"
-                class="fr-modal fr-modal--opened">
+        <dialog aria-labelledby="fr-modal-flash-dossier--title" role="dialog" id="fr-modal-flash-dossier" class="fr-modal fr-modal--opened">
             <div class="fr-container fr-container--fluid fr-container-md">
                 <div class="fr-grid-row fr-grid-row--center">
                     <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                         <div class="fr-modal__body">
                             <div class="fr-modal__header">
-                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-flash-success">Fermer
-                                </button>
+                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-flash-dossier">Fermer</button>
                             </div>
                             <div class="fr-modal__content">
                                 <div class="fr-alert fr-alert--success">
-                                    <h3 class="fr-alert__title">
+                                    <h3 class="fr-alert__title" id="fr-modal-flash-dossier--title">
                                         Votre dossier {{ flash.dossier.reference }} a bien été déposé
                                     </h3>
                                     <p>
