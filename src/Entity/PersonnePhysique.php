@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PersonnePhysiqueRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,6 +12,7 @@ use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: PersonnePhysiqueRepository::class)]
+#[ApiResource]
 class PersonnePhysique
 {
     #[ApiProperty(identifier: true)]
@@ -56,8 +58,10 @@ class PersonnePhysique
     private ?string $communeNaissance = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $paysNaissance = null;
+    #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
+    #[ORM\ManyToOne(targetEntity: GeoPays::class)]
+    #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code')]
+    protected ?GeoPays $paysNaissance = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
@@ -192,19 +196,19 @@ class PersonnePhysique
         return $this->communeNaissance;
     }
 
-    public function setCommuneNaissance(?string $communeNaissance): static
+    public function setCommuneNaissance(?GeoPays $communeNaissance = null): static
     {
         $this->communeNaissance = $communeNaissance;
 
         return $this;
     }
 
-    public function getPaysNaissance(): ?string
+    public function getPaysNaissance(): ?GeoPays
     {
         return $this->paysNaissance;
     }
 
-    public function setPaysNaissance(?string $paysNaissance): static
+    public function setPaysNaissance(?GeoPays $paysNaissance = null): static
     {
         $this->paysNaissance = $paysNaissance;
 

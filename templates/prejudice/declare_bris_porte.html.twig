@@ -13,7 +13,8 @@
 {% block javascripts %}
   <script id="react-arguments" type="application/json">
     {
-        "dossier": {{ brisPorte|serialize('json', {groups: 'dossier:lecture'})|raw }}
+        "dossier": {{ brisPorte|serialize('json', {groups: 'dossier:lecture'})|raw }},
+        "pays": {{ pays|serialize('json')|raw }}
     }
   </script>
   {% if est_vite_server_actif() %}

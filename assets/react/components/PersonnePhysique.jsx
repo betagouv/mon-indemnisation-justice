@@ -2,10 +2,13 @@ import React, { useContext} from 'react';
 import Civilite from '@/react/components/Civilite';
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import {DossierContext,PatchDossierContext} from "@/react/contexts/DossierContext.ts";
+import {PaysContext} from "@/react/contexts/PaysContext.ts";
 import {randomId} from "@/react/services/Random.ts";
+import {Select} from "@codegouvfr/react-dsfr/Select";
 
 const PersonnePhysique = function() {
   const dossier = useContext(DossierContext);
+  const pays = useContext(PaysContext);
   const patchDossier = useContext(PatchDossierContext);
 
   return (
@@ -77,15 +80,17 @@ const PersonnePhysique = function() {
                 />
             </div>
             <div className="fr-col-lg-3 fr-col-12">
-                <Input
+                <Select
                     label="Pays de naissance"
-                    nativeInputProps={{
+                    nativeSelectProps={{
                         id: randomId(),
                         onChange: (e) => patchDossier({requerant: {personnePhysique: { paysNaissance: e.target.value }}}),
                         value: dossier.requerant.personnePhysique.paysNaissance || "",
-                        maxLength: 64
                     }}
-                />
+                >
+                    <option value="" disabled hidden>Sélectionnez un pays</option>
+                    {pays.map((p) => <option key={p.code} value={`/api/geo-pays/${p.code}`}>{ p.nom }</option>)}
+                </Select>
             </div>
             <div className="fr-col-lg-6 fr-col-12">
                 <div className="fr-grid-row fr-grid-row--gutters">

@@ -7,6 +7,7 @@ use App\Entity\EtatDossierType;
 use App\Entity\Requerant;
 use App\Event\BrisPorteConstitueEvent;
 use App\Repository\BrisPorteRepository;
+use App\Repository\GeoPaysRepository;
 use App\Service\Mailer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,6 +22,7 @@ class BrisPorteController extends RequerantController
     public function __construct(
         protected readonly BrisPorteRepository $brisPorteRepository,
         protected readonly EventDispatcherInterface $eventDispatcher,
+        protected readonly GeoPaysRepository $geoPaysRepository,
     ) {
     }
 
@@ -30,6 +32,7 @@ class BrisPorteController extends RequerantController
     {
         return $this->render('prejudice/declare_bris_porte.html.twig', [
             'brisPorte' => $brisPorte,
+            'pays' => $this->geoPaysRepository->getListeTriee(),
         ]);
     }
 

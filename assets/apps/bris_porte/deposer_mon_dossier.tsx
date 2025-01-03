@@ -3,8 +3,10 @@ import ReactDOM from "react-dom/client";
 import { disableReactDevTools } from '@/react/services/devtools.js';
 import BrisPortePanel from '@/react/components/BrisPortePanel.jsx';
 import { DossierContext, PatchDossierContext } from '@/react/contexts/DossierContext.ts';
+import {PaysContext} from "@/react/contexts/PaysContext.ts";
 import _ from "lodash";
 import {recursiveMerge, recursivePatch} from "@/react/services/Object.js";
+
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
@@ -19,7 +21,7 @@ if (import.meta.env.PROD) {
     disableReactDevTools();
 }
 
-const { dossier } = JSON.parse(document.getElementById('react-arguments').textContent);
+const { dossier, pays } = JSON.parse(document.getElementById('react-arguments').textContent);
 
 const root = ReactDOM.createRoot(document.getElementById('react-app'));
 
@@ -61,12 +63,14 @@ function DossierApp({dossier}) {
 
     return (
         <DossierContext.Provider value={_dossier} >
-            <PatchDossierContext.Provider value={_patchDossier} >
-                <div className="fr-container">
-                    <h1>Déclarer un bris de porte</h1>
-                    <BrisPortePanel />
-                </div>
-            </PatchDossierContext.Provider>
+            <PaysContext.Provider value={pays} >
+                <PatchDossierContext.Provider value={_patchDossier} >
+                    <div className="fr-container">
+                        <h1>Déclarer un bris de porte</h1>
+                        <BrisPortePanel />
+                    </div>
+                </PatchDossierContext.Provider>
+            </PaysContext.Provider>
         </DossierContext.Provider>
     )
 }
