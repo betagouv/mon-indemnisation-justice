@@ -16,6 +16,7 @@ jobs:
         with:
           # Fetch all history
           fetch-depth: 0
+          ref: develop
       - name: Install clever tools
         run: |
           npm install -g clever-tools
@@ -26,6 +27,6 @@ jobs:
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
         run: |
-          echo $CC_APP_ID
+          git rev-parse HEAD
           clever link $CC_APP_ID
           clever deploy --alias precontentieux-dev --force

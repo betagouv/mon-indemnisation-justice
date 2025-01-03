@@ -16,6 +16,7 @@ jobs:
         with:
           # Fetch all history
           fetch-depth: 0
+          ref: prod
       - name: Install clever tools
         run: |
           npm install -g clever-tools
