@@ -1,9 +1,12 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
+import { randomId } from "@/react/services/Random.ts";
 
-export const Uploader = ({liasseDocumentaire, onUploaded, type }) => {
+export const Uploader = ({liasseDocumentaire, libelle, onUploaded, type }) => {
 
   const MAX_SIZE=2048*1000*8;
   const [erreur,setErreur]=useState("");
+
+  const id = useRef(randomId());
 
   const handleFileInput = (ev) => {
     setErreur("");
@@ -24,11 +27,11 @@ export const Uploader = ({liasseDocumentaire, onUploaded, type }) => {
 
   return (
       <div className={`fr-my-2w fr-upload-group ${erreur ? 'fr-input-group--error' : ''}`}>
-        <label className="fr-label" htmlFor="file-upload">
-          <span className="fr-icon-upload-2-line fr-mr-1w" aria-hidden="true"></span>
-          Ajouter un document
+        <label className="fr-label" htmlFor={id}>
+            {/*<span className="fr-icon-upload-2-line fr-mr-1w" aria-hidden="true"></span>*/}
+            {libelle}
         </label>
-        <input className="fr-upload" type="file" onChange={handleFileInput}/>
+        <input id={id} className="fr-upload" type="file" onChange={handleFileInput}/>
         <span className="fr-hint-text">
             Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf.
           </span>

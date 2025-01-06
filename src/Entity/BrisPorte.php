@@ -95,8 +95,8 @@ class BrisPorte
     #[ORM\Column(options: ['default' => false])]
     private bool $isPorteBlindee = false;
 
-    #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     protected ?TestEligibilite $testEligibilite = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]

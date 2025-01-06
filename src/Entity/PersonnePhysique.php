@@ -196,7 +196,7 @@ class PersonnePhysique
         return $this->communeNaissance;
     }
 
-    public function setCommuneNaissance(?GeoPays $communeNaissance = null): static
+    public function setCommuneNaissance(?string $communeNaissance = null): static
     {
         $this->communeNaissance = $communeNaissance;
 

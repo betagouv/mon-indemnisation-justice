@@ -27,6 +27,5 @@ jobs:
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
         run: |
-          git rev-parse HEAD
           clever link $CC_APP_ID
           clever deploy --alias precontentieux-dev --force

@@ -28,8 +28,16 @@ const root = ReactDOM.createRoot(document.getElementById('react-app'));
 let queuedChanges = {};
 
 
+// Déclaration d'une variable globale indiquant si des opérations sont en attentes
+declare global {
+    interface Window { appPendingChanges: boolean; }
+}
+
+window.appPendingChanges = window.appPendingChanges || false;
+
 const apiPatch = () => {
     if (Object.keys(queuedChanges).length > 0) {
+        window.appPendingChanges = true;
         // Run a PATCH call and store the result as state
         fetch(`/api/requerant/dossier/${dossier.id}`, {
             method: 'PATCH',
@@ -39,6 +47,7 @@ const apiPatch = () => {
         }).then(
             (response) => {
                 queuedChanges = {};
+                window.appPendingChanges = false;
             }
         )//.catch((e) => alert(e))
     }
