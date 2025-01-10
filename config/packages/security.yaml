@@ -7,11 +7,11 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
         app_requerant_provider:
             entity:
-                class: App\Entity\Requerant
+                class: MonIndemnisationJustice\Entity\Requerant
                 property: email
         agent_provider:
             entity:
-                class: App\Entity\Agent
+                class: MonIndemnisationJustice\Entity\Agent
                 property: email
     role_hierarchy:
         ROLE_AGENT_GESTION_PERSONNEL: [ROLE_USER]
