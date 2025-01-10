@@ -49,8 +49,8 @@ class Document
     protected ?string $mime = null;
 
 
-    #[ORM\ManyToOne(inversedBy: 'documents')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'documents', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?LiasseDocumentaire $liasseDocumentaire = null;
 
     #[Groups(['dossier:lecture'])]

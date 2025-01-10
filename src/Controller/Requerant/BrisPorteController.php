@@ -3,11 +3,11 @@
 namespace App\Controller\Requerant;
 
 use App\Entity\BrisPorte;
+use App\Entity\EtatDossierType;
 use App\Entity\Requerant;
 use App\Event\BrisPorteConstitueEvent;
 use App\Repository\BrisPorteRepository;
-use App\Repository\GeoDepartementRepository;
-use App\Service\DocumentManager;
+use App\Repository\GeoPaysRepository;
 use App\Service\Mailer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,8 +21,8 @@ class BrisPorteController extends RequerantController
 {
     public function __construct(
         protected readonly BrisPorteRepository $brisPorteRepository,
-        protected readonly GeoDepartementRepository $departementRepository,
         protected readonly EventDispatcherInterface $eventDispatcher,
+        protected readonly GeoPaysRepository $geoPaysRepository,
     ) {
     }
 
@@ -32,26 +32,36 @@ class BrisPorteController extends RequerantController
     {
         return $this->render('prejudice/declare_bris_porte.html.twig', [
             'brisPorte' => $brisPorte,
+            'pays' => $this->geoPaysRepository->getListeTriee(),
         ]);
     }
 
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function redirection(BrisPorte $brisPorte, Mailer $mailer, DocumentManager $documentManager): RedirectResponse
+    public function redirection(BrisPorte $brisPorte, Mailer $mailer): RedirectResponse
     {
         $requerant = $this->getRequerant();
-        $brisPorte->setDeclare();
-        $this->brisPorteRepository->save($brisPorte);
 
-        $mailer
-           ->toRequerant($requerant)
-           ->subject('Votre déclaration de bris de porte a bien été prise en compte')
-           ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
-               'dossier' => $brisPorte,
-           ])
-           ->send()
-        ;
+        if (EtatDossierType::DOSSIER_INITIE === $brisPorte->getEtatDossier()->getEtat()) {
+            $brisPorte->setDeclare();
+            $this->brisPorteRepository->save($brisPorte);
 
-        $this->eventDispatcher->dispatch(new BrisPorteConstitueEvent($brisPorte));
+            $mailer
+               ->toRequerant($requerant)
+               ->subject('Votre déclaration de bris de porte a bien été prise en compte')
+               ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
+                   'dossier' => $brisPorte,
+               ])
+               ->send()
+            ;
+
+            $this->eventDispatcher->dispatch(new BrisPorteConstitueEvent($brisPorte));
+
+            $this->addFlash('dossier', [
+                'dossier' => $brisPorte,
+            ]);
+        } else {
+            $this->brisPorteRepository->save($brisPorte);
+        }
 
         return $this->redirectToRoute('requerant_home_index');
     }

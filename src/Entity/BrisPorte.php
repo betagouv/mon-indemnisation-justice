@@ -8,6 +8,7 @@ use App\Repository\BrisPorteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
@@ -54,10 +55,6 @@ class BrisPorte
     protected \DateTimeInterface $dateCreation;
 
     #[Groups('dossier:lecture')]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateDeclaration = null;
-
-    #[Groups('dossier:lecture')]
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $reference = null;
 
@@ -70,16 +67,8 @@ class BrisPorte
     protected ?array $documents = null;
 
     #[Groups('dossier:patch')]
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $note = null;
-
-    #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $propositionIndemnisation = null;
-
-    #[Groups('dossier:patch')]
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $motivationProposition = null;
 
     #[Groups('dossier:lecture')]
     #[ORM\Column(length: 20, nullable: true)]
@@ -106,23 +95,9 @@ class BrisPorte
     #[ORM\Column(options: ['default' => false])]
     private bool $isPorteBlindee = false;
 
-    #[ORM\Column(options: ['default' => false])]
-    private bool $isErreurPorte = false;
-
-    #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     protected ?TestEligibilite $testEligibilite = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $identitePersonneRecherchee = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $nomRemiseAttestation = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $prenomRemiseAttestation = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
@@ -133,22 +108,8 @@ class BrisPorte
     private ?string $precisionRequerant = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateAttestationInformation = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $numeroParquet = null;
-
-    // TODO supprimer définitivement ce champs
-    #[ORM\ManyToOne(cascade: ['persist'])]
-    #[ORM\JoinColumn]
-    private ?PersonnePhysique $receveurAttestation = null;
-
-    // TODO supprimer définitivement ce champs et la table
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn]
-    private ?ServiceEnqueteur $serviceEnqueteur = null;
 
     public function __construct()
     {
@@ -156,6 +117,12 @@ class BrisPorte
         $this->liasseDocumentaire = new LiasseDocumentaire();
         $this->adresse = new Adresse();
         $this->historiqueEtats = new ArrayCollection([]);
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(PrePersistEventArgs $args): void
+    {
+        $this->changerStatut(EtatDossierType::DOSSIER_INITIE, requerant: true);
     }
 
     #[ORM\PreRemove]
@@ -167,11 +134,6 @@ class BrisPorte
     public function getPid(): ?int
     {
         return $this->getId();
-    }
-
-    public function getPLiasseDocumentaire(): ?LiasseDocumentaire
-    {
-        return $this->getLiasseDocumentaire();
     }
 
     public function getId(): ?int
@@ -298,18 +260,6 @@ class BrisPorte
         return $this->documents[$type] ?? null;
     }
 
-    public function getNote(): ?string
-    {
-        return $this->note;
-    }
-
-    public function setNote(?string $note): self
-    {
-        $this->note = $note;
-
-        return $this;
-    }
-
     public function getPropositionIndemnisation(): ?string
     {
         return $this->propositionIndemnisation;
@@ -322,17 +272,6 @@ class BrisPorte
         return $this;
     }
 
-    public function getMotivationProposition(): ?string
-    {
-        return $this->motivationProposition;
-    }
-
-    public function setMotivationProposition(?string $motivationProposition): self
-    {
-        $this->motivationProposition = $motivationProposition;
-
-        return $this;
-    }
 
     public function getRaccourci(): ?string
     {
@@ -423,54 +362,6 @@ class BrisPorte
         return $this;
     }
 
-    public function isErreurPorte(): ?bool
-    {
-        return $this->isErreurPorte;
-    }
-
-    public function setErreurPorte(?bool $isErreurPorte): self
-    {
-        $this->isErreurPorte = $isErreurPorte;
-
-        return $this;
-    }
-
-    public function getIdentitePersonneRecherchee(): ?string
-    {
-        return $this->identitePersonneRecherchee;
-    }
-
-    public function setIdentitePersonneRecherchee(?string $identitePersonneRecherchee): self
-    {
-        $this->identitePersonneRecherchee = $identitePersonneRecherchee;
-
-        return $this;
-    }
-
-    public function getNomRemiseAttestation(): ?string
-    {
-        return $this->nomRemiseAttestation;
-    }
-
-    public function setNomRemiseAttestation(?string $nomRemiseAttestation): self
-    {
-        $this->nomRemiseAttestation = $nomRemiseAttestation;
-
-        return $this;
-    }
-
-    public function getPrenomRemiseAttestation(): ?string
-    {
-        return $this->prenomRemiseAttestation;
-    }
-
-    public function setPrenomRemiseAttestation(?string $prenomRemiseAttestation): self
-    {
-        $this->prenomRemiseAttestation = $prenomRemiseAttestation;
-
-        return $this;
-    }
-
     public function getAdressePlaintext(): string
     {
         return (string) $this->getAdresse();
@@ -488,17 +379,6 @@ class BrisPorte
         return $this;
     }
 
-    public function getDateAttestationInformation(): ?\DateTimeInterface
-    {
-        return $this->dateAttestationInformation;
-    }
-
-    public function setDateAttestationInformation(\DateTimeInterface $dateAttestationInformation): self
-    {
-        $this->dateAttestationInformation = $dateAttestationInformation;
-
-        return $this;
-    }
 
     public function getNumeroParquet(): ?string
     {
@@ -532,18 +412,6 @@ class BrisPorte
     public function setReceveurAttestation(?PersonnePhysique $receveurAttestation): self
     {
         $this->receveurAttestation = $receveurAttestation;
-
-        return $this;
-    }
-
-    public function getServiceEnqueteur(): ?ServiceEnqueteur
-    {
-        return $this->serviceEnqueteur;
-    }
-
-    public function setServiceEnqueteur(ServiceEnqueteur $serviceEnqueteur): self
-    {
-        $this->serviceEnqueteur = $serviceEnqueteur;
 
         return $this;
     }

@@ -172,7 +172,6 @@ class BrisPorteController extends AbstractController
                     ;
                     $requerant->getPersonnePhysique()
                         ->setCivilite($inscription->civilite)
-                        ->setQualiteRequerant($testEligibilite->estProprietaire ? QualiteRequerant::PRO : QualiteRequerant::LOC)
                         ->setPrenom1($inscription->prenom)
                         ->setEmail($inscription->courriel)
                         ->setTelephone($inscription->telephone)
@@ -191,6 +190,7 @@ class BrisPorteController extends AbstractController
 
                     $dossier = (new BrisPorte())
                         ->setRequerant($requerant)
+                        ->setQualiteRequerant($testEligibilite->estProprietaire ? QualiteRequerant::PRO : QualiteRequerant::LOC)
                         ->setTestEligibilite($testEligibilite)
                     ;
                     $this->entityManager->persist($dossier);

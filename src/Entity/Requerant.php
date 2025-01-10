@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\RequerantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -65,7 +66,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
     private ?PersonneMorale $personneMorale;
 
-    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'], )]
+    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
     /** @type Collection<BrisPorte> $brisPorte */
     protected Collection $dossiers;
@@ -293,7 +294,10 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->dossiers->isEmpty() ? null : $this->dossiers->last();
     }
 
-    public function getDossiers(): Collection
+    /**
+     * @return Collection|BrisPorte[]
+     */
+    public function getDossiers(): Collection|array
     {
         return $this->dossiers;
     }

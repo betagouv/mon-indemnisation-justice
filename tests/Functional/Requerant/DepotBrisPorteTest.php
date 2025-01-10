@@ -5,6 +5,7 @@ namespace App\Tests\Functional\Requerant;
 use App\Entity\Adresse;
 use App\Entity\BrisPorte;
 use App\Entity\Civilite;
+use App\Entity\Document;
 use App\Entity\GeoDepartement;
 use App\Entity\PersonnePhysique;
 use App\Entity\Requerant;
@@ -12,57 +13,33 @@ use App\Entity\TestEligibilite;
 use App\Tests\Functional\AbstractFunctionalTestCase;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
-use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverPoint;
 use GuzzleHttp\Client as HttpClient;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Panther\Client as PantherClient;
-use Symfony\Component\Panther\PantherTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DepotBrisPorteTest extends AbstractFunctionalTestCase
 {
-    protected PantherClient $client;
     protected EntityManagerInterface $em;
     protected UserPasswordHasherInterface $passwordHasher;
     protected HttpClient $mailerClient;
-    protected string $screenShotDir;
+
+    protected static function pathSuffix(): string
+    {
+        return 'requerant/depot-dossier';
+    }
 
     protected function setUp(): void
     {
-        // See config https://hacks.mozilla.org/2017/12/using-headless-mode-in-firefox/
-        $this->client = static::createPantherClient(
-            [
-                'browser' => PantherTestCase::FIREFOX,
-                'env' => [
-                    'APP_ENV' => 'test',
-                    'BASE_URL' => 'http://127.0.0.1:9080/',
-                ],
-            ],
-            [],
-            [
-                'capabilities' => [
-                    'goog:loggingPrefs' => [
-                        'browser' => 'ALL', // calls to console.* methods
-                        'performance' => 'ALL', // performance data
-                    ],
-                ],
-            ]
-        );
+        parent::setUp();
 
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
         $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
-        $this->screenShotDir = self::getContainer()->getParameter('kernel.project_dir').'/public/screenshots';
-        $finder = new Finder();
-        $filesystem = new Filesystem();
-        if ($filesystem->exists($this->screenShotDir)) {
-            $filesystem->remove($finder->directories()->in($this->screenShotDir));
-        }
 
+        // Création des données de test
         $requerant = $this->em
             ->getRepository(Requerant::class)
             ->findOneBy(['email' => 'raquel.randt@courriel.fr']);
@@ -110,38 +87,9 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         StaticDriver::beginTransaction();
     }
 
-    protected function getFieldByLabel(string $label, bool $exactMatch = false): ?WebDriverElement
-    {
-        $label = $this->client->getCrawler()->filter('label')
-                ->reduce(function (WebDriverElement $e) use ($label, $exactMatch) {
-                    if ($exactMatch) {
-                        return trim($e->getText()) === $label;
-                    }
-
-                    return str_contains($e->getText(), $label);
-                })
-                ->first() ?? null;
-
-        if ($label && $label->getAttribute('for')) {
-            $target = $this->client->getCrawler()->findElement(WebDriverBy::id($label->getAttribute('for'))) ?? null;
-
-            if (null === $target) {
-                throw new \LogicException("No form field found with id {$label->getAttribute('for')}");
-            }
-
-            if (!in_array($target->getTagName(), ['input', 'select', 'textarea'])) {
-                throw new \LogicException('Target element is not a form field (<input>, <select> or  <textarea>)');
-            }
-
-            return $target;
-        }
-
-        return null;
-    }
-
     protected function getButton(string $label): ?WebDriverElement
     {
-        return $this->client->getCrawler()->filter('button')
+        return $this->client->getCrawler()->filter('button,a.fr-btn')
                 ->reduce(function (WebDriverElement $e) use ($label) {
                     return trim($e->getText()) === $label;
                 })
@@ -168,46 +116,106 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
 
         $this->client->waitForVisibility('main', 1);
-        $this->client->takeScreenshot("$this->screenShotDir/$device/001-page-connexion.png");
+
+        $this->step('Page connexion')
+            ->screenshot($device);
+
         $this->assertSelectorTextContains('main h2', 'Me connecter à mon espace');
+
         $button = $this->client->getCrawler()->selectButton('Je me connecte à mon espace')->first();
         $form = $button->form([
             '_username' => 'raquel.randt@courriel.fr',
             '_password' => 'P4ssword',
         ]);
 
-        $this->client->takeScreenshot("$this->screenShotDir/$device/002-connexion-formulaire-rempli.png");
+        $this->screenshot($device, 'Formulaire rempli');
 
         $this->assertTrue($button->isEnabled());
+
         $this->client->submit($form);
-        $this->client->takeScreenshot("$this->screenShotDir/$device/003-connexion-formulaire-soumis.png");
 
         $this->client->waitForVisibility('main', 2);
-        $this->client->takeScreenshot("$this->screenShotDir/$device/004-page-accueil-requerant.png");
-
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Déclarer un bris de porte');
 
-        $input = $this->getFieldByLabel('Les 10 premiers chiffres de votre numéro de sécurité sociale');
+        $this
+            ->step('Page données personnelles')
+            ->screenshot($device)
+            ->setField('Les 10 premiers chiffres de votre numéro de sécurité sociale', '2790656123')
+            ->setField('Ville de naissance', 'Turenne')
+            ->setField('Pays de naissance', 'France')
+            ->setField('Date de naissance', '1979-06-17')
+            ->waitDataSaved()
+            ->screenshot($device, 'formulaire rempli');
 
-        $input->clear();
-        $input->sendKeys('2790656123');
-        // Astuce pour s'assurer que la requête xhr de `PATCH` ait bien été déclenchée :
-        // TODO voir pour observer les `queuedChanges` par exemple https://github.com/php-webdriver/php-webdriver/wiki/How-to-work-with-AJAX-(jQuery,-Prototype,-Dojo)
-        sleep(1);
-        // Attendre pour s'assurer que les données ont bien été transmises à l'API
-        $this->client->takeScreenshot("$this->screenShotDir/$device/005-page-donnees-personnelles.png");
+        $this->getButton("Valider et passer à l'étape suivante")->click();
+        $this->client->waitForVisibility('main', 2);
+
+        $this
+            ->step('Page bris de porte')
+            ->setField("Date de l'opération de police judiciaire", date('dmY', strtotime('-1 days')))
+            ->setField('Adresse du logement concerné par le bris de porte', '17 rue des oliviers')
+            ->setField("Complément d'adresse", 'Escalier B, 3è étage')
+            ->setField('Code postal', '13008')
+            ->setField('Ville', 'Marseille')
+            ->checkField("S'agit-il d'une porte blindée ?", 'Oui')
+            ->setField('Vous effectuez votre demande en qualité de', 'Propriétaire')
+            ->waitDataSaved()
+            ->screenshot($device);
 
         $this->getButton("Valider et passer à l'étape suivante")->click();
 
-        $this->client->takeScreenshot("$this->screenShotDir/$device/006-page-donnees-bris-de-porte.png");
+        $this
+            ->step('Page pièces jointes')
+            ->setField("Attestation complétée par les forces de l'ordre", __DIR__.'/../../ressources/attestation_completee_par_les_forces_de_l_ordre.pdf')
+            ->waitDataSaved()
+            ->screenshot($device);
 
-        // Il faut purger le cache Doctrine, afin de s'assurer que l'ORM rejoue une requête et récupère l'objet à jour
+        $this->getButton("Valider et passer à l'étape suivante")->click();
+
+        $this
+            ->step('Page récapitulatif')
+            ->screenshot($device);
+
+        $this->getButton('Je déclare mon bris de porte')->click();
+
+        $this
+            ->step('Page mes demandes')
+            ->screenshot($device);
+
+        // Il faut purger le cache Doctrine, afin de s'assurer que l'ORM rejoue une requête et récupère l'objet à jour.
         $this->em->clear();
         $requerant = $this->em
             ->getRepository(Requerant::class)
             ->findOneBy(['email' => 'raquel.randt@courriel.fr']);
         $this->assertNotNull($requerant);
+        /** @var BrisPorte $dossier */
+        $dossier = $requerant->getDossiers()->first();
+
         $this->assertEquals('2790656123', $requerant->getPersonnePhysique()?->getNumeroSecuriteSociale());
+        $this->assertEquals('France', $requerant->getPersonnePhysique()?->getPaysNaissance()->getNom());
+        $this->assertEquals('Turenne', $requerant->getPersonnePhysique()?->getCommuneNaissance());
+        $this->assertEquals('17-06-1979', $requerant->getPersonnePhysique()?->getDateNaissance()?->format('d-m-Y'));
+
+        $this->assertInstanceOf(BrisPorte::class, $dossier);
+        $this->assertCount(1, $dossier->getLiasseDocumentaire()->getDocuments());
+        $this->assertEquals(Document::TYPE_ATTESTATION_INFORMATION, $dossier->getLiasseDocumentaire()->getDocuments()->first()->getType());
+        $this->assertStringStartsWith('BRI/', $dossier->getReference());
+        $this->assertStringEndsWith('/001', $dossier->getReference());
+        $this->assertEquals(8, strlen($dossier->getRaccourci()));
+    }
+
+    protected function waitDataSaved(): static
+    {
+        $this->client->wait()->until(self::reactAppSavedChanges());
+
+        return $this;
+    }
+
+    private static function reactAppSavedChanges(): callable
+    {
+        return static function (WebDriver $driver): bool {
+            return $driver->executeScript('return !(window.appPendingChanges || false);');
+        };
     }
 }

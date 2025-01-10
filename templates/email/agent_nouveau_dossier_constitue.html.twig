@@ -41,7 +41,6 @@ déposé, avec les détails suivants :
     <li>
         Courriel : <a href="mailto:{{ dossier.requerant.email }}">{{ dossier.requerant.email }}</a>
     </li>
-
     <li>
         Numéro de téléphone : {{ dossier.requerant.personnePhysique.telephone }}
     </li>
@@ -91,43 +90,11 @@ déposé, avec les détails suivants :
             <i>non renseignée</i>
         {% endif %}
     </li>
-    {#
-    <li>
-        Attestation remise à : <b>{{ dossier.receveurAttestation.nomComplet }}</b>
-        {% if dossier.receveurAttestation.qualiteRequerant %}, en qualité de <b>{{ dossier.receveurAttestation.qualiteRequerant.libelle }}{% if dossier.receveurAttestation.qualiteRequerant == 'AUT' %}({{ dossier.receveurAttestation.precision }}){% endif %}</b>{% endif %}
-    </li>
-     #}
     <li>
         Porte blindée: <b>{% if dossier.isPorteBlindee %}Oui{% else %}non{% endif %}</b>
     </li>
 
 </ul>
-{#
-<h4>Service enquêteur</h4>
-<ul>
-    <li>
-        Nom : {% if dossier.serviceEnqueteur.nom|default('') is not empty %}<b>{{ dossier.serviceEnqueteur.nom }}</b>{% else %}<i>non renseigné</i>{% endif %}
-    </li>
-    <li>
-        Téléphone : {% if dossier.serviceEnqueteur.telephone|default('') is not empty %}<b>{{ dossier.serviceEnqueteur.telephone }}</b>{% else %}<i>non renseigné</i>{% endif %}
-    </li>
-    <li>
-        Courriel : {% if dossier.serviceEnqueteur.courriel|default('') is not empty %}<b>{{ dossier.serviceEnqueteur.courriel }}</b>{% else %}<i>non renseigné</i>{% endif %}
-    </li>
-    <li>
-        Numéro de PV : {% if dossier.serviceEnqueteur.numeroPV|default('') is not empty %}<b>{{ dossier.serviceEnqueteur.numeroPv }}</b>{% else %}<i>non renseigné</i>{% endif %}
-    </li>
-    <li>
-        Juridiction : {% if dossier.serviceEnqueteur.juridiction|default('') is not empty %}<b>{{ dossier.serviceEnqueteur.juridiction }}</b>{% else %}<i>non renseignée</i>{% endif %}
-    </li>
-    <li>
-        Magistrat : {% if dossier.serviceEnqueteur.magistrat|default('') is not empty %}<b>{{ dossier.serviceEnqueteur.magistrat }}</b>{% else %}<i>non renseigné</i>{% endif %}
-    </li>
-    <li>
-        Numéro de parquet : {% if dossier.serviceEnqueteur.numeroParquet|default('') is not empty %}<b>{{ dossier.serviceEnqueteur.numeroParquet }}</b>{% else %}<i>non renseigné</i>{% endif %}
-    </li>
-</ul>
- #}
 <h4>Documents transmis (<i>bientôt</i> consultables depuis l'espace rédacteur)</h4>
 <ul>
 {% for document in dossier.liasseDocumentaire.documents %}

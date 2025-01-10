@@ -37,8 +37,8 @@ class TestEligibilite
     #[ORM\Column(nullable: true)]
     public ?bool $aContacteBailleur = null;
 
-    #[ORM\OneToOne(targetEntity: Requerant::class)]
-    #[ORM\JoinColumn]
+    #[ORM\OneToOne(targetEntity: Requerant::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     public ?Requerant $requerant = null;
 
     #[ORM\Column]
