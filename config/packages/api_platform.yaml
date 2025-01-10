@@ -15,14 +15,14 @@ api_platform:
         extra_properties:
             standard_put: true
             rfc_7807_compliant_errors: true
-    event_listeners_backward_compatibility_layer: false
-    keep_legacy_inflector: false
     enable_swagger: false
     enable_swagger_ui: false
     enable_re_doc: false
     enable_entrypoint: false
     enable_docs: false
-    use_symfony_listeners: false
+    use_symfony_listeners: true
+    serializer:
+        hydra_prefix: true
 
 when@dev:
     api_platform:
@@ -31,3 +31,5 @@ when@dev:
 when@test:
     api_platform:
         http_cache: ~
+
+

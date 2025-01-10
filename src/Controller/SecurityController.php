@@ -62,7 +62,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/mon-mot-de-passe/mettre-a-jour/{jeton}', name: 'app_reset_password', methods: ['GET', 'POST'])]
-    public function reset_password(Request $request, RequerantRepository $ur, string $jeton): Response
+    public function reset_password(Request $request, string $jeton): Response
     {
         /** @var Requerant $requerant */
         $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);

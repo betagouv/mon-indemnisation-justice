@@ -9,6 +9,7 @@ use MonIndemnisationJustice\Event\BrisPorteConstitueEvent;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
 use MonIndemnisationJustice\Service\Mailer;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +29,8 @@ class BrisPorteController extends RequerantController
 
     #[IsGranted('edit', subject: 'brisPorte')]
     #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function edit(BrisPorte $brisPorte): Response
+    public function edit(
+        #[MapEntity(id: 'id')] BrisPorte $brisPorte): Response
     {
         return $this->render('prejudice/declare_bris_porte.html.twig', [
             'brisPorte' => $brisPorte,
@@ -37,7 +39,7 @@ class BrisPorteController extends RequerantController
     }
 
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function redirection(BrisPorte $brisPorte, Mailer $mailer): RedirectResponse
+    public function redirection(#[MapEntity(id: 'id')] BrisPorte $brisPorte, Mailer $mailer): RedirectResponse
     {
         $requerant = $this->getRequerant();
 

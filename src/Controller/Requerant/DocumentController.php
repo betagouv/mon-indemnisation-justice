@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Entity\LiasseDocumentaire;
 use MonIndemnisationJustice\Entity\Requerant;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -30,7 +31,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/{type}', name: 'document_upload', methods: ['POST'])]
-    public function upload(LiasseDocumentaire $liasseDocumentaire, Request $request, string $type): JsonResponse
+    public function upload(#[MapEntity(id: 'id')] LiasseDocumentaire $liasseDocumentaire, Request $request, string $type): JsonResponse
     {
         $files = $request->files->all();
 
@@ -61,7 +62,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/{filename}', name: 'document_remove', methods: ['DELETE'])]
-    public function remove(Document $document, string $filename): Response
+    public function remove(#[MapEntity(id: 'id')] Document $document, string $filename): Response
     {
         if ($document->getFilename() !== $filename) {
             throw new NotFoundHttpException('Document non trouvé');
@@ -81,7 +82,7 @@ class DocumentController extends AbstractController
      * @todo   Download à refaire proprement
      */
     #[Route('/{id}/{filename}', name: 'document_download', methods: ['GET'])]
-    public function download(Document $document, string $filename): Response
+    public function download(#[MapEntity(id: 'id')] Document $document, string $filename): Response
     {
         if ($document->getFilename() !== $filename) {
             throw new NotFoundHttpException('Document non trouvé');

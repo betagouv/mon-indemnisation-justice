@@ -116,7 +116,8 @@ doctrine:
                 prefix: 'MonIndemnisationJustice\Entity'
                 alias: MonIndemnisationJustice
         controller_resolver:
-            auto_mapping: true
+            enabled: false
+            auto_mapping: false
 
 when@test:
     doctrine:
