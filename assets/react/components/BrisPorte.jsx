@@ -29,12 +29,25 @@ const BrisPorte = () => {
             <div className="fr-col-offset-8"></div>
               <div className="fr-col-12">
                   <div className="fr-grid-row fr-grid-row--gutters">
-                      <div className="fr-col-12">
+                      <div className="fr-col-6">
                           <Input
-                              label="Adresse complète du logement concerné par le bris de porte"
+                              label="Adresse du logement concerné par le bris de porte"
                               nativeInputProps={{
                                   value: dossier.adresse.ligne1 || "",
-                                  onChange: (e) => patchDossier({adresse: { ligne1: e.target.value}}),
+                                  placeholder: "Numéro de voie, rue",
+                                  onChange: (e) => patchDossier({adresse: {ligne1: e.target.value}}),
+                                  maxLength: 255
+                              }}
+                          />
+                      </div>
+                      <div className="fr-col-12">
+                          <Input
+                              label="Complément d'adresse"
+                              hintText={"Facultatif"}
+                              nativeInputProps={{
+                                  value: dossier.adresse.ligne2 || "",
+                                  placeholder: "Étage, escalier",
+                                  onChange: (e) => patchDossier({adresse: {ligne2: e.target.value}}),
                                   maxLength: 255
                               }}
                           />
@@ -44,7 +57,7 @@ const BrisPorte = () => {
                               label="Code postal"
                               nativeInputProps={{
                                   value: dossier.adresse.codePostal || "",
-                                  onChange: (e) => patchDossier({adresse: { codePostal: e.target.value}}),
+                                  onChange: (e) => patchDossier({adresse: {codePostal: e.target.value}}),
                                   maxLength: 5
                               }}
                           />
@@ -54,7 +67,7 @@ const BrisPorte = () => {
                               label="Ville"
                               nativeInputProps={{
                                   value: dossier.adresse.localite || "",
-                                  onChange: (e) => patchDossier({adresse: { localite: e.target.value}}),
+                                  onChange: (e) => patchDossier({adresse: {localite: e.target.value}}),
                                   maxLength: 255
                               }}
                           />
@@ -67,7 +80,8 @@ const BrisPorte = () => {
                       legend="S'agit-il d'une porte blindée ?"
                       orientation='horizontal'
                       options={[
-                          {label: "Oui",
+                          {
+                              label: "Oui",
                               nativeInputProps: {
                                   checked: (dossier.isPorteBlindee === true),
                                   onChange: () => patchDossier({isPorteBlindee: true})
@@ -82,18 +96,6 @@ const BrisPorte = () => {
                       ]}
                   />
               </div>
-              {/*
-              <div className="fr-col-12">
-                  <Input
-                      label="Si vous la connaissez, précisez l'identité de la personne recherchée"
-                      nativeInputProps={{
-                          value: dossier.identitePersonneRecherchee || "",
-                          onChange: (e) => patchDossier({ identitePersonneRecherchee: e.target.value}),
-                          maxLength: 255
-                      }}
-              />
-              </div>
-              */}
             <div className="fr-col-12">
               <Requerant
                 qualiteRequerant={dossier.qualiteRequerant}
@@ -105,135 +107,6 @@ const BrisPorte = () => {
           </div>
         </section>
       </div>
-      {/*
-      <div className="fr-col-12">
-          <section className="pr-form-section fr-p-4w">
-              <h3>Attestation remise par les force de l'ordre à</h3>
-              <div className="fr-grid-row fr-grid-row--gutters">
-                  <div className="fr-col-lg-3 fr-col-4">
-                      <Civilite
-                          civilite={dossier.receveurAttestation.civilite}
-                          setCivilite={(civilite) => patchDossier({receveurAttestation: { civilite }})}
-                      />
-                  </div>
-                  <div className="fr-col-lg-9 fr-col-8">
-                      <Input
-                          label="Prénom(s)"
-                          nativeInputProps={{
-                              placeholder: "Prénom(s)",
-                              value: dossier.receveurAttestation.prenom1 || "",
-                              onChange: (e) => patchDossier({ receveurAttestation: { prenom1: e.target.value}}),
-                              maxLength: 255
-                          }}
-                      />
-                  </div>
-                  <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                          label="Nom de naissance"
-                          nativeInputProps={{
-                              value: dossier.receveurAttestation.nomNaissance || "",
-                              onChange: (e) => patchDossier({ receveurAttestation: { nomNaissance: e.target.value}}),
-                              maxLength: 255
-                          }}
-                      />
-                  </div>
-                  <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                          label={"Nom d'usage"}
-                          nativeInputProps={{
-                              value: dossier.receveurAttestation.nom || "",
-                              onChange: (e) => patchDossier({ receveurAttestation: { nom: e.target.value}}),
-                              maxLength: 255
-                          }}
-                      />
-                  </div>
-                  <div className="fr-col-12">
-                      <Requerant
-                          qualiteText={"Qualité"}
-                          precisionText={"Préciser sa qualité"}
-                          qualiteRequerant={dossier.receveurAttestation.qualiteRequerant}
-                          setQualiteRequerant={(qualiteRequerant) => patchDossier({ receveurAttestation:{ qualiteRequerant } })}
-                          precisionRequerant={dossier.receveurAttestation.precision}
-                          setPrecisionRequerant={(precisionRequerant) => patchDossier({ receveurAttestation:{ precision: precisionRequerant } })}
-                      />
-                  </div>
-              </div>
-          </section>
-      </div>
-      */}
-      {/*
-      <a name="service-enqueteur"></a>
-      <div className="fr-col-12">
-          <section className="pr-form-section fr-p-4w">
-              <h3>Service enquêteur</h3>
-              <div className="fr-grid-row fr-grid-row--gutters">
-                  <div className="fr-col-12">
-                      <Input
-                          label="Nom du service"
-                          nativeInputProps={{
-                              value: dossier.serviceEnqueteur.nom || "",
-                              onChange: (e) => patchDossier({ serviceEnqueteur: { nom: e.target.value}}),
-                        }}
-                      />
-                  </div>
-                  <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                          label="Téléphone"
-                          nativeInputProps={{
-                              value: dossier.serviceEnqueteur.telephone || "",
-                              onChange: (e) => patchDossier({ serviceEnqueteur: { telephone: e.target.value}}),
-                          }}
-                      />
-                  </div>
-                  <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                          label="Courriel"
-                          nativeInputProps={{
-                              value: dossier.serviceEnqueteur.courriel || "",
-                              onChange: (e) => patchDossier({ serviceEnqueteur: { courriel: e.target.value}}),
-                          }}
-                      />
-                  </div>
-                  <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                          label="Numéro de procès-verbal"
-                          nativeInputProps={{
-                              value: dossier.serviceEnqueteur.numeroPV || "",
-                              onChange: (e) => patchDossier({ serviceEnqueteur: {numeroPV: e.target.value}}),
-                          }}
-                      />
-                  </div>
-                  <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                          label="Juridiction"
-                          nativeInputProps={{
-                              value: dossier.serviceEnqueteur.juridiction || "",
-                              onChange: (e) => patchDossier({ serviceEnqueteur: { juridiction: e.target.value}}),
-                          }}
-                      />
-                  </div>
-                  <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                          label="Nom du magistrat"
-                          nativeInputProps={{
-                              value: dossier.serviceEnqueteur.magistrat || "",
-                              onChange: (e) => patchDossier({ serviceEnqueteur: { magistrat: e.target.value}}),
-                          }}
-                      />
-                  </div>
-                  <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                          label="Numéro de parquet ou d'instruction"
-                          nativeInputProps={{
-                              value: dossier.serviceEnqueteur.numeroParquet || "",
-                              onChange: (e) => patchDossier({ serviceEnqueteur: { numeroParquet: e.target.value}}),
-                          }}
-                      />
-                  </div>
-              </div>
-          </section>
-      </div>
-      */}
     </div>
   );
 }

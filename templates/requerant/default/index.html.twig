@@ -2,6 +2,42 @@
 
 {% block title %}Mes dossiers{% endblock %}
 
+{% block modale %}
+    {{ parent() }}
+    {% set flash = app.flashes('dossier')|first %}
+    {% if flash %}
+        <dialog aria-labelledby="fr-modal-flash-dossier--title" role="dialog" id="fr-modal-flash-dossier" class="fr-modal fr-modal--opened">
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                        <div class="fr-modal__body">
+                            <div class="fr-modal__header">
+                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-flash-dossier">Fermer</button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <div class="fr-alert fr-alert--success">
+                                    <h3 class="fr-alert__title" id="fr-modal-flash-dossier--title">
+                                        Votre dossier {{ flash.dossier.reference }} a bien été déposé
+                                    </h3>
+                                    <p>
+                                        Toutes vos informations ont bien été sauvegardées. Un courriel de confirmation
+                                        vous a été envoyé à l'instant.
+                                    </p>
+                                    <p>
+                                        Votre dossier sera traité par un agent du bureau dans les plus brefs délais. Vous
+                                        serez informés de son évolution par courriel mais pourrez aussi suivre son avancement
+                                        en vous connectant à votre espace personnel.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+    {% endif %}
+{% endblock modale %}
+
 {% block main %}
     <div class="fr-container">
         <div class="fr-grid-row">
