@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Controller;
+namespace MonIndemnisationJustice\Controller;
 
-use App\Dto\ModificationMotDePasse;
-use App\Dto\MotDePasseOublieDto;
-use App\Entity\Requerant;
-use App\Forms\ModificationMotDePasseType;
-use App\Repository\RequerantRepository;
-use App\Service\Mailer;
+use MonIndemnisationJustice\Dto\ModificationMotDePasse;
+use MonIndemnisationJustice\Dto\MotDePasseOublieDto;
+use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
+use MonIndemnisationJustice\Repository\RequerantRepository;
+use MonIndemnisationJustice\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;

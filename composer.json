@@ -62,12 +62,12 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "MonIndemnisationJustice\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "MonIndemnisationJustice\\Tests\\": "tests/"
         }
     },
     "replace": {

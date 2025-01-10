@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace MonIndemnisationJustice\Service;
 
 class PasswordGenerator {
   public static function new(int $length=16,bool $withSpecialChars=true): string {

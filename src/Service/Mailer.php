@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Service;
+namespace MonIndemnisationJustice\Service;
 
-use App\Entity\Agent;
-use App\Entity\Document;
-use App\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\TransportInterface;

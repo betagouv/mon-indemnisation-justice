@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Validation\Constraint;
+namespace MonIndemnisationJustice\Validation\Constraint;
 
-use App\Validation\Validator\UniqueRequerantCourrielValidator;
+use MonIndemnisationJustice\Validation\Validator\UniqueRequerantCourrielValidator;
 use Symfony\Component\Validator\Constraint;
 
 #[\Attribute]

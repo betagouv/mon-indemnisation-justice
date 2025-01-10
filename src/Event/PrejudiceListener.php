@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Event;
+namespace MonIndemnisationJustice\Event;
 
-use App\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;

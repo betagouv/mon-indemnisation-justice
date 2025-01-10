@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Forms;
+namespace MonIndemnisationJustice\Forms;
 
-use App\Dto\ModificationMotDePasse;
+use MonIndemnisationJustice\Dto\ModificationMotDePasse;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repository;
+namespace MonIndemnisationJustice\Repository;
 
-use App\Entity\BrisPorte;
-use App\Entity\EtatDossierType;
-use App\Entity\Requerant;
-use App\Service\PasswordGenerator;
+use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Service\PasswordGenerator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

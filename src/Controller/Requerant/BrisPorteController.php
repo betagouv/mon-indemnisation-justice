@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Controller\Requerant;
+namespace MonIndemnisationJustice\Controller\Requerant;
 
-use App\Entity\BrisPorte;
-use App\Entity\EtatDossierType;
-use App\Entity\Requerant;
-use App\Event\BrisPorteConstitueEvent;
-use App\Repository\BrisPorteRepository;
-use App\Repository\GeoPaysRepository;
-use App\Service\Mailer;
+use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Event\BrisPorteConstitueEvent;
+use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\GeoPaysRepository;
+use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;

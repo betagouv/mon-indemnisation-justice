@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Tests\Functional\Requerant;
+namespace MonIndemnisationJustice\Tests\Functional\Requerant;
 
-use App\Entity\Adresse;
-use App\Entity\BrisPorte;
-use App\Entity\Civilite;
-use App\Entity\Document;
-use App\Entity\GeoDepartement;
-use App\Entity\PersonnePhysique;
-use App\Entity\Requerant;
-use App\Entity\TestEligibilite;
-use App\Tests\Functional\AbstractFunctionalTestCase;
+use MonIndemnisationJustice\Entity\Adresse;
+use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\GeoDepartement;
+use MonIndemnisationJustice\Entity\PersonnePhysique;
+use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Tests\Functional\AbstractFunctionalTestCase;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
 use Facebook\WebDriver\WebDriver;

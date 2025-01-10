@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Validation\Validator;
+namespace MonIndemnisationJustice\Validation\Validator;
 
-use App\Repository\RequerantRepository;
-use App\Validation\Constraint\UniqueRequerantCourriel;
+use MonIndemnisationJustice\Repository\RequerantRepository;
+use MonIndemnisationJustice\Validation\Constraint\UniqueRequerantCourriel;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

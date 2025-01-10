@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Security\Voter;
+namespace MonIndemnisationJustice\Security\Voter;
 
-use App\Contracts\VoterInterface;
-use App\Entity\Agent;
-use App\Entity\BrisPorte;
-use App\Entity\Requerant;
+use MonIndemnisationJustice\Contracts\VoterInterface;
+use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter as SfVoter;
 use Symfony\Component\Security\Core\User\UserInterface;

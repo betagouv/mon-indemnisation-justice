@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller;
+namespace MonIndemnisationJustice\Controller;
 
-use App\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

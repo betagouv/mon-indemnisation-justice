@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Forms;
+namespace MonIndemnisationJustice\Forms;
 
-use App\Dto\Inscription;
-use App\Entity\Civilite;
+use MonIndemnisationJustice\Dto\Inscription;
+use MonIndemnisationJustice\Entity\Civilite;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;

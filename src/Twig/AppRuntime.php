@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Twig;
+namespace MonIndemnisationJustice\Twig;
 
-use App\Entity\Agent;
-use App\Entity\Document;
-use App\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\Requerant;
 use Pentatrion\ViteBundle\Exception\EntrypointNotFoundException;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;

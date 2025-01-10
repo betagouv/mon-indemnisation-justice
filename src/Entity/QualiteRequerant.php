@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace MonIndemnisationJustice\Entity;
 
 enum QualiteRequerant: string
 {
