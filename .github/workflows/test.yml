@@ -74,7 +74,7 @@ jobs:
       - name: Setup PHP and run tests
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           extensions: 'zip, intl, calendarn gd, pdo, pdo_pgsql, pgsql'
 
       - name: Install yarn dependencies & build assets
