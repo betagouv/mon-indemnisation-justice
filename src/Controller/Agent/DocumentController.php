@@ -8,6 +8,7 @@ use MonIndemnisationJustice\Entity\LiasseDocumentaire;
 use MonIndemnisationJustice\Entity\Requerant;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -19,7 +20,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
+//#[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
 #[Route('/agent/document')]
 class DocumentController extends AbstractController
 {
@@ -29,12 +30,13 @@ class DocumentController extends AbstractController
     ) {
     }
 
-    #[Route('/{id}/{filename}', name: 'agent_document_download', methods: ['GET'])]
-    public function download(Document $document, string $filename): Response
+    #[Route('/{id}/{hash}', name: 'agent_document_download', methods: ['GET'])]
+    public function download(#[MapEntity(id: 'id')] Document $document, string $hash): Response
     {
-        if ($document->getFilename() !== $filename) {
+        if (md5($document->getFilename()) !== $hash) {
             throw new NotFoundHttpException('Document non trouvé');
         }
+
         $stream = $this->storage->readStream($document->getFilename());
 
         return new StreamedResponse(

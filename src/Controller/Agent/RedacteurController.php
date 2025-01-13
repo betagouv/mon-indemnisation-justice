@@ -6,6 +6,7 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,7 +43,7 @@ class RedacteurController extends AbstractController
     }
 
     #[Route('/dossier/{id}/consulter', name: 'agent_bris_porte_consulter', methods: ['GET'])]
-    public function consulter(BrisPorte $dossier): Response
+    public function consulter(#[MapEntity(id: 'id')] BrisPorte $dossier): Response
     {
         return $this->render('agent/redacteur/consulter_bris_porte.html.twig', [
             'dossier' => $dossier,
