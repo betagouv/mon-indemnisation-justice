@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller\Agent;
+namespace MonIndemnisationJustice\Controller\Agent;
 
-use App\Entity\Agent;
-use App\Repository\AgentRepository;
+use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Repository\AgentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;

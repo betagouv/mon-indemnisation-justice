@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Event;
+namespace MonIndemnisationJustice\Event;
 
 use DeviceDetector\DeviceDetector;
 use DeviceDetector\Parser\Device\AbstractDeviceParser;

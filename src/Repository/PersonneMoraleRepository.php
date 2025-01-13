@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace MonIndemnisationJustice\Repository;
 
-use App\Entity\PersonneMorale;
+use MonIndemnisationJustice\Entity\PersonneMorale;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

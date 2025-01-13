@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace MonIndemnisationJustice\Entity;
 
-use App\Repository\AdresseRepository;
+use MonIndemnisationJustice\Repository\AdresseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

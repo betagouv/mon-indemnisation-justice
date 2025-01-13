@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Service;
+namespace MonIndemnisationJustice\Service;
 
-use App\Event\BrisPorteConstitueEvent;
+use MonIndemnisationJustice\Event\BrisPorteConstitueEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class BrisPorteManager implements EventSubscriberInterface

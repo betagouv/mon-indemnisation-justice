@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Agent;
+namespace MonIndemnisationJustice\Controller\Agent;
 
-use App\Dto\ModificationMotDePasse;
-use App\Forms\ModificationMotDePasseType;
-use App\Repository\AgentRepository;
+use MonIndemnisationJustice\Dto\ModificationMotDePasse;
+use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
+use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;

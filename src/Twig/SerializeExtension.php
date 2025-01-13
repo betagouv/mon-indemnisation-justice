@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Twig;
+namespace MonIndemnisationJustice\Twig;
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Twig\Extension\AbstractExtension;

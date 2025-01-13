@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace MonIndemnisationJustice\Entity;
 
-use App\Repository\AgentRepository;
+use MonIndemnisationJustice\Repository\AgentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;

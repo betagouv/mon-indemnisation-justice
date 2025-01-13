@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller\Requerant;
+namespace MonIndemnisationJustice\Controller\Requerant;
 
-use App\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 abstract class RequerantController extends AbstractController

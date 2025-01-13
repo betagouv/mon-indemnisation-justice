@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace MonIndemnisationJustice\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\PersonnePhysiqueRepository;
+use MonIndemnisationJustice\Repository\PersonnePhysiqueRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;

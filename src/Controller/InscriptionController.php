@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace MonIndemnisationJustice\Controller;
 
-use App\Entity\Requerant;
-use App\Repository\RequerantRepository;
+use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Repository\RequerantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

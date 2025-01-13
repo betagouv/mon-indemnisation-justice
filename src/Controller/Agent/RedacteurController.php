@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controller\Agent;
+namespace MonIndemnisationJustice\Controller\Agent;
 
-use App\Entity\Agent;
-use App\Entity\BrisPorte;
-use App\Entity\EtatDossierType;
-use App\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

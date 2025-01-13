@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Event;
+namespace MonIndemnisationJustice\Event;
 
-use App\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class BrisPorteConstitueEvent extends Event

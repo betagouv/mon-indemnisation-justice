@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Tests\Controller\Requerant;
+namespace MonIndemnisationJustice\Tests\Controller\Requerant;
 
-use App\Entity\Adresse;
-use App\Entity\Civilite;
-use App\Entity\PersonnePhysique;
-use App\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Adresse;
+use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Entity\PersonnePhysique;
+use MonIndemnisationJustice\Entity\Requerant;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

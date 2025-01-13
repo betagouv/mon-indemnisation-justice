@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace MonIndemnisationJustice\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\GeoPaysRepository;
+use MonIndemnisationJustice\Repository\GeoPaysRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 

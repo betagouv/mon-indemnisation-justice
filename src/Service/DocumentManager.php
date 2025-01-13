@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Service;
+namespace MonIndemnisationJustice\Service;
 
-use App\Entity\Document;
+use MonIndemnisationJustice\Entity\Document;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 

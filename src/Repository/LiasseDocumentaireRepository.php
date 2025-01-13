@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace MonIndemnisationJustice\Repository;
 
-use App\Entity\LiasseDocumentaire;
+use MonIndemnisationJustice\Entity\LiasseDocumentaire;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
