@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository;
+namespace MonIndemnisationJustice\Repository;
 
 use Doctrine\ORM\EntityRepository;
 

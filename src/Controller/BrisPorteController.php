@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace MonIndemnisationJustice\Controller;
 
-use App\Dto\Inscription;
-use App\Entity\BrisPorte;
-use App\Entity\GeoDepartement;
-use App\Entity\QualiteRequerant;
-use App\Entity\Requerant;
-use App\Entity\TestEligibilite;
-use App\Forms\InscriptionType;
-use App\Forms\TestEligibiliteType;
-use App\Service\Mailer;
+use MonIndemnisationJustice\Dto\Inscription;
+use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\GeoDepartement;
+use MonIndemnisationJustice\Entity\QualiteRequerant;
+use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Forms\InscriptionType;
+use MonIndemnisationJustice\Forms\TestEligibiliteType;
+use MonIndemnisationJustice\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

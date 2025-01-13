@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace MonIndemnisationJustice\Entity;
 
-use App\Repository\EtatDossierRepository;
+use MonIndemnisationJustice\Repository\EtatDossierRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 

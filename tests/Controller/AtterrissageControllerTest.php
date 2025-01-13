@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace MonIndemnisationJustice\Tests\Controller;
 
-use App\Controller\AtterrissageController;
+use MonIndemnisationJustice\Controller\AtterrissageController;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

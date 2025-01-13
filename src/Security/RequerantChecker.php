@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Security;
+namespace MonIndemnisationJustice\Security;
 
-use App\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Dto;
+namespace MonIndemnisationJustice\Dto;
 
 use Symfony\Component\Validator\Constraints as Assert;
 

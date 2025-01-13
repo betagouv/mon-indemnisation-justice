@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace MonIndemnisationJustice\Entity;
 
-use App\Repository\AgentRepository;
-use App\Repository\GeoDepartementRepository;
+use MonIndemnisationJustice\Repository\AgentRepository;
+use MonIndemnisationJustice\Repository\GeoDepartementRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;

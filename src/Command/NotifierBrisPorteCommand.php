@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace MonIndemnisationJustice\Command;
 
-use App\Entity\BrisPorte;
-use App\Event\BrisPorteConstitueEvent;
+use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Event\BrisPorteConstitueEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

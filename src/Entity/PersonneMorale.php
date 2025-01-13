@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace MonIndemnisationJustice\Entity;
 
-use App\Repository\PersonneMoraleRepository;
+use MonIndemnisationJustice\Repository\PersonneMoraleRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 

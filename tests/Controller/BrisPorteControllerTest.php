@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace MonIndemnisationJustice\Tests\Controller;
 
-use App\Controller\BrisPorteController;
-use App\Entity\Adresse;
-use App\Entity\Civilite;
-use App\Entity\GeoDepartement;
-use App\Entity\PersonnePhysique;
-use App\Entity\Requerant;
-use App\Entity\TestEligibilite;
+use MonIndemnisationJustice\Controller\BrisPorteController;
+use MonIndemnisationJustice\Entity\Adresse;
+use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Entity\GeoDepartement;
+use MonIndemnisationJustice\Entity\PersonnePhysique;
+use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\TestEligibilite;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

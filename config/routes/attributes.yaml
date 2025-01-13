@@ -1,0 +1,10 @@
+# config/routes/attributes.yaml
+controllers:
+    resource:
+        path: ../../src/Controller/
+        namespace: MonIndemnisationJustice\Controller
+    type: attribute
+
+kernel:
+    resource: MonIndemnisationJustice\Kernel
+    type: attribute

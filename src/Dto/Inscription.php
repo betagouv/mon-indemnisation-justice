@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Dto;
+namespace MonIndemnisationJustice\Dto;
 
-use App\Entity\Civilite;
-use App\Validation\Constraint\UniqueRequerantCourriel;
+use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Validation\Constraint\UniqueRequerantCourriel;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class Inscription

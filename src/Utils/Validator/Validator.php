@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace App\Utils\Validator;
+namespace MonIndemnisationJustice\Utils\Validator;
 
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 

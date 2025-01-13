@@ -1,5 +1,5 @@
 <?php
-namespace App\Contracts;
+namespace MonIndemnisationJustice\Contracts;
 
 interface EntityInterface {
   /**

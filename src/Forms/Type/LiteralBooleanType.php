@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Forms\Type;
+namespace MonIndemnisationJustice\Forms\Type;
 
-use App\Forms\Transformer\LiteralBooleanTransformer;
+use MonIndemnisationJustice\Forms\Transformer\LiteralBooleanTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

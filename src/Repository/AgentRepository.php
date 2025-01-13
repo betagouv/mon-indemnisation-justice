@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Repository;
+namespace MonIndemnisationJustice\Repository;
 
-use App\Entity\Agent;
-use App\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

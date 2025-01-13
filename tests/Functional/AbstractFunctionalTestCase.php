@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Functional;
+namespace MonIndemnisationJustice\Tests\Functional;
 
 use Facebook\WebDriver\Exception\ElementClickInterceptedException;
 use Facebook\WebDriver\Remote\LocalFileDetector;

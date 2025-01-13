@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controller\Agent;
+namespace MonIndemnisationJustice\Controller\Agent;
 
-use App\Entity\Agent;
-use App\Entity\Document;
-use App\Entity\LiasseDocumentaire;
-use App\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\LiasseDocumentaire;
+use MonIndemnisationJustice\Entity\Requerant;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

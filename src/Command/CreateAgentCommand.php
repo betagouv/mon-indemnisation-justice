@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace MonIndemnisationJustice\Command;
 
-use App\Entity\Agent;
-use App\Repository\AgentRepository;
-use App\Service\Mailer;
+use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Repository\AgentRepository;
+use MonIndemnisationJustice\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
