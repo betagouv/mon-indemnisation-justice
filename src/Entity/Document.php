@@ -21,8 +21,8 @@ class Document
     const TYPE_SIGNATURE_DECISION="signature_decision";
 
     public static $types = [
-        self::TYPE_ATTESTATION_INFORMATION => "Attestation informatique", // Dossier
-        self::TYPE_PHOTO_PREJUDICE => "Photos de la porte endommagée", // Dossier
+        self::TYPE_ATTESTATION_INFORMATION => "Attestation à remettre en cas d'erreur de porte", // Dossier
+        self::TYPE_PHOTO_PREJUDICE => "Photo de la porte endommagée", // Dossier
         self::TYPE_CARTE_IDENTITE => "Pièce d'identité", // Personne morale OU physique
         self::TYPE_FACTURE => "Facture", // Dossier
         self::TYPE_RIB => "RIB", // Personne morale OU physique
@@ -81,6 +81,11 @@ class Document
     public function getType(): ?string
     {
         return $this->type;
+    }
+
+    public function getTypeLibelle(): ?string
+    {
+        return self::$types[$this->type] ?? null;
     }
 
     public function setType(string $type): static
