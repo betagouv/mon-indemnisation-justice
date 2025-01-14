@@ -190,7 +190,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials(): void
     {
-        $this->password = null;
+        $this->motDePasse = null;
     }
 
     public function getUsername(): ?string

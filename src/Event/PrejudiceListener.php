@@ -2,10 +2,10 @@
 
 namespace MonIndemnisationJustice\Event;
 
-use MonIndemnisationJustice\Entity\BrisPorte;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
+use MonIndemnisationJustice\Entity\BrisPorte;
 
 #[AsDoctrineListener(event: Events::preUpdate, priority: 500, connection: 'default')]
 class PrejudiceListener
@@ -19,7 +19,6 @@ class PrejudiceListener
     {
         $entity = $args->getObject();
         if ($entity instanceof BrisPorte) {
-
             if (null !== $entity->getDateDeclaration() && null === $entity->getReference()) {
                 $entityManager = $args->getObjectManager();
                 $conn = $entityManager->getConnection();
@@ -27,8 +26,12 @@ class PrejudiceListener
                 $req = $conn->executeQuery(<<<SQL
 SELECT count(p.id) + 1 cpt
 FROM bris_porte p
-    INNER JOIN public.dossier_etats ed ON ed.id = p.etat_actuel_id AND ed.etat <> 'DOSSIER_INITIE'
-SQL);
+    INNER JOIN public.dossier_etats ed ON ed.id = p.etat_actuel_id AND ed.etat <> 'DOSSIER_INITIE' AND to_char(ed.date, 'yyyymmdd') = :date
+SQL,
+                    [
+                        'date' => (new \DateTime())->format('Ymd'),
+                    ]
+                );
 
                 $cpt = $req->fetchOne() ?? 1;
 

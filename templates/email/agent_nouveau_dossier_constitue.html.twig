@@ -98,10 +98,8 @@ déposé, avec les détails suivants :
 <h4>Documents transmis (<i>bientôt</i> consultables depuis l'espace rédacteur)</h4>
 <ul>
 {% for document in dossier.liasseDocumentaire.documents %}
-
-
     <li>
-        Nom: <b>{{ document.originalFilename }}</b>
+        {{ document.typeLibelle }}: <a href="{{ absolute_url(path('agent_document_download', {'hash': document.filename|md5, 'id': document.id})) }}" target="_blank">{{ document.originalFilename }}</a>
     </li>
 {% else %}
     <li>

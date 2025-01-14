@@ -168,7 +168,6 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups(['prejudice:read'])]
     public function getLastStatut(): EtatDossier
     {
         return $this->getEtatDossier();
@@ -199,6 +198,7 @@ class BrisPorte
         return $this->dateCreation;
     }
 
+    #[Groups('dossier:lecture')]
     public function getDateDeclaration(): ?\DateTimeInterface
     {
         return $this->historiqueEtats
@@ -400,18 +400,6 @@ class BrisPorte
     public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): BrisPorte
     {
         $this->qualiteRequerant = $qualiteRequerant;
-
-        return $this;
-    }
-
-    public function getReceveurAttestation(): ?PersonnePhysique
-    {
-        return $this->receveurAttestation;
-    }
-
-    public function setReceveurAttestation(?PersonnePhysique $receveurAttestation): self
-    {
-        $this->receveurAttestation = $receveurAttestation;
 
         return $this;
     }
