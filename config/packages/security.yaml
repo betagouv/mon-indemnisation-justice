@@ -10,9 +10,7 @@ security:
                 class: MonIndemnisationJustice\Entity\Requerant
                 property: email
         agent_provider:
-            entity:
-                class: MonIndemnisationJustice\Entity\Agent
-                property: email
+            id: MonIndemnisationJustice\Security\Provider\AgentProvider
     role_hierarchy:
         ROLE_AGENT_GESTION_PERSONNEL: [ROLE_USER]
         ROLE_AGENT_REDACTEUR: [ROLE_USER]
@@ -24,17 +22,17 @@ security:
             security: false
         agent:
             pattern: ^/agent/
-            user_checker: MonIndemnisationJustice\Security\AgentChecker
+            #user_checker: MonIndemnisationJustice\Security\AgentChecker
             lazy: true
             provider: agent_provider
-            form_login:
-                login_path: app_agent_securite_connexion
-                check_path: app_agent_securite_connexion
-                enable_csrf: true
+            oidc:
+                client: pro_connect
+                check_path: /agent/connexion
+                login_path: /agent/se-connecter
                 default_target_path: app_agent_redacteur_accueil
+                enable_remember_me: false
             logout:
-                path: app_agent_securite_deconnexion
-                target: app_agent_securite_connexion
+                target: /
         requerant:
             user_checker: MonIndemnisationJustice\Security\RequerantChecker
             lazy: true

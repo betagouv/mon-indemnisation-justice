@@ -67,6 +67,18 @@
             "migrations/.gitignore"
         ]
     },
+    "drenso/symfony-oidc-bundle": {
+        "version": "3.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "2.0",
+            "ref": "e2b975158d940a191f48e3ff2c59108a1d7225e6"
+        },
+        "files": [
+            "config/packages/drenso_oidc.yaml"
+        ]
+    },
     "friendsofphp/php-cs-fixer": {
         "version": "3.62",
         "recipe": {

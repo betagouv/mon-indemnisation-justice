@@ -13,6 +13,8 @@
         "doctrine/doctrine-bundle": "^2.12",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.1",
+        "drenso/symfony-oidc-bundle": "^3.5",
+        "firebase/php-jwt": "^6.10",
         "guzzlehttp/guzzle": "^7.9",
         "knplabs/knp-snappy-bundle": "^1.10",
         "league/flysystem-async-aws-s3": "^3.29",

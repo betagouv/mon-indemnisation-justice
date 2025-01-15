@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace MonIndemnisationJustice\Controller\Agent;
 
+use Drenso\OidcBundle\OidcClientInterface;
+use Drenso\OidcBundle\OidcClientLocator;
 use MonIndemnisationJustice\Dto\ModificationMotDePasse;
 use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 #[Route('/agent')]
@@ -22,16 +26,34 @@ class SecurityAgentController extends AbstractController
         protected readonly AuthenticationUtils $authenticationUtils,
         protected UserPasswordHasherInterface $userPasswordHasher,
         protected readonly AgentRepository $agentRepository,
+        #[Target('drenso.oidc.client.pro_connect')] protected readonly OidcClientInterface $proConnectClient
     ) {
     }
 
-    #[Route(path: '/connexion', name: 'app_agent_securite_connexion', methods: ['GET', 'POST'])]
-    public function connexionAgent(Request $request): Response
+    #[Route('/se-connecter', name: 'agent_securite_se_connecter', methods: ['GET', 'POST'])]
+    #[IsGranted('PUBLIC_ACCESS')]
+    public function seConnecter(Request $request, OidcClientLocator $oidcClientLocator): Response
+    {
+        if ($request->isMethod(Request::METHOD_POST)) {
+            return $this->proConnectClient->generateAuthorizationRedirect();
+        }
+
+        return $this->render('agent/connexion.html.twig', [
+            'title' => "Connexion à l'espace agent",
+            'last_username' => $this->authenticationUtils->getLastUsername(),
+            'error' => $this->authenticationUtils->getLastAuthenticationError(),
+        ]);
+    }
+
+
+    #[Route('/connexion', name: 'agent_securite_connexion', methods: ['GET'])]
+    #[IsGranted('PUBLIC_ACCESS')]
+    public function connexion(Request $request, OidcClientLocator $oidcClientLocator): Response
     {
         return $this->render('agent/connexion.html.twig', [
             'title' => "Connexion à l'espace agent",
             'last_username' => $this->authenticationUtils->getLastUsername(),
-            'has_error' => (bool) $this->authenticationUtils->getLastAuthenticationError(),
+            'error' => $this->authenticationUtils->getLastAuthenticationError(),
         ]);
     }
 
@@ -84,7 +106,7 @@ class SecurityAgentController extends AbstractController
         return $this->render('agent/activation.html.twig', [
             'agent' => $agent,
             'form' => $form,
-            'errors' => $errors
+            'errors' => $errors,
         ]);
     }
 }
