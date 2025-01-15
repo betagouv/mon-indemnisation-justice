@@ -20,4 +20,5 @@ return [
     DAMA\DoctrineTestBundle\DAMADoctrineTestBundle::class => ['test' => true],
     Pentatrion\ViteBundle\PentatrionViteBundle::class => ['all' => true],
     Acsiomatic\DeviceDetectorBundle\AcsiomaticDeviceDetectorBundle::class => ['all' => true],
+    Drenso\OidcBundle\DrensoOidcBundle::class => ['all' => true],
 ];
