@@ -1,0 +1,8 @@
+drenso_oidc:
+    clients:
+        pro_connect:
+            # Required OIDC client configuration
+            well_known_url: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
+            client_id: '%env(PRO_CONNECT_CLIENT_ID)%'
+            client_secret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
+            redirect_route: /agent/connexion
