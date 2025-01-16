@@ -12,26 +12,30 @@ security:
         agent_provider:
             id: MonIndemnisationJustice\Security\Provider\AgentProvider
     role_hierarchy:
-        ROLE_AGENT_GESTION_PERSONNEL: [ROLE_USER]
-        ROLE_AGENT_REDACTEUR: [ROLE_USER]
-        ROLE_AGENT_VALIDATEUR: [ROLE_USER]
+        ROLE_AGENT: [ROLE_USER]
+        ROLE_AGENT_GESTION_PERSONNEL: [ROLE_AGENT]
+        ROLE_AGENT_REDACTEUR: [ROLE_AGENT]
+        ROLE_AGENT_VALIDATEUR: [ROLE_REDACTEUR]
         ROLE_REQUERANT: [ROLE_USER]
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         agent:
-            pattern: ^/agent/
+            pattern: ^/agent
             #user_checker: MonIndemnisationJustice\Security\AgentChecker
             lazy: true
             provider: agent_provider
-            oidc:
-                client: pro_connect
-                check_path: /agent/connexion
-                login_path: /agent/se-connecter
-                default_target_path: app_agent_redacteur_accueil
-                enable_remember_me: false
+            custom_authenticators:
+                - MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator
+            #oidc:
+            #    client: pro_connect
+            #    check_path: /agent/connexion
+            #    login_path: /agent/se-connecter
+            #    default_target_path: app_agent_redacteur_accueil
+            #    enable_remember_me: false
             logout:
+                path: agent_securite_deconnexion
                 target: /
         requerant:
             user_checker: MonIndemnisationJustice\Security\RequerantChecker
@@ -52,7 +56,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-      - { path: ^/agent/!(connexion), roles: ROLE_AGENT_REDACTEUR }
+      - { path: ^/agent/!(connexion), roles: ROLE_AGENT }
       - { path: ^/(requerant|sinistre), roles: ROLE_REQUERANT }
 
 when@test:

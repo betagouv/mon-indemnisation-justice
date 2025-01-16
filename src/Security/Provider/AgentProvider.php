@@ -2,31 +2,21 @@
 
 namespace MonIndemnisationJustice\Security\Provider;
 
-use Drenso\OidcBundle\Model\OidcUserData;
-use Drenso\OidcBundle\Security\UserProvider\OidcUserProviderInterface;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class AgentProvider implements OidcUserProviderInterface
+class AgentProvider implements UserProviderInterface
 {
     public function __construct(protected readonly AgentRepository $agentRepository)
     {
     }
 
-    public function ensureUserExists(string $userIdentifier, OidcUserData $userData)
-    {
-        //dd($userIdentifier, $userData);
-    }
-
-    public function loadOidcUser(string $userIdentifier): Agent
-    {
-        return $this->loadUserByIdentifier($userIdentifier);
-    }
-
     public function refreshUser(UserInterface $user): UserInterface
     {
-        return $user;
+        return $this->agentRepository->findOneBy(['email' => $user->getUserIdentifier()]);
     }
 
     public function supportsClass(string $class): bool
@@ -34,9 +24,18 @@ class AgentProvider implements OidcUserProviderInterface
         return Agent::class === $class;
     }
 
-    public function loadUserByIdentifier(string $identifier): Agent
+    public function loadUserByIdentifier(?string $identifier): Agent
     {
-        //dd($identifier);
-        return $this->agentRepository->findOneBy(['email' => $identifier]);
+        if (null === $identifier) {
+            throw new UserNotFoundException('Missing identifier parameter');
+        }
+
+        $agent = $this->agentRepository->findOneBy(['email' => $identifier]);
+
+        if (null === $agent) {
+            throw new UserNotFoundException("No agent found for identifier $identifier");
+        }
+
+        return $agent;
     }
 }
