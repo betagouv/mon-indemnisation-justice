@@ -2,14 +2,22 @@
 
 namespace MonIndemnisationJustice\Security\Oidc;
 
-use Firebase\JWT\JWT;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Contracts\Cache\CacheInterface;
+
+final class OidcConnectionContext
+{
+    public string $code;
+    public string $nonce;
+    public ?string $token;
+}
 
 class OidcClient
 {
@@ -22,6 +30,7 @@ class OidcClient
         protected readonly string $clientSecret,
         protected readonly string $loginCheckRoute,
         protected readonly UrlGeneratorInterface $urlGenerator,
+        #[Target('oidc')] protected readonly CacheInterface $cache,
     ) {
         $this->client = new HttpClient([]);
     }
@@ -29,13 +38,15 @@ class OidcClient
     protected function configure(): void
     {
         if (null === $this->configuration) {
-            $response = $this->client->get($this->wellKnownUrl);
+            $this->configuration = $this->cache->get('oidc_well_known_configuration', function () {
+                try {
+                    $response = $this->client->get($this->wellKnownUrl);
 
-            if (200 !== $response->getStatusCode()) {
-                throw new AuthenticationException('Fetch of OIDC server well known configuration failed.');
-            }
-
-            $this->configuration = json_decode($response->getBody()->getContents(), true);
+                    return json_decode($response->getBody()->getContents(), true);
+                } catch (GuzzleException $e) {
+                    throw new AuthenticationException('Fetch of OIDC server well known configuration failed.');
+                }
+            });
         }
     }
 

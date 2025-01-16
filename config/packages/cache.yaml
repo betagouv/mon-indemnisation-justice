@@ -2,3 +2,6 @@ framework:
     cache:
         app: cache.adapter.filesystem
         system: cache.adapter.system
+        pools:
+            oidc:
+                adapter: cache.adapter.filesystem
