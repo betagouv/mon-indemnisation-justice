@@ -4,11 +4,9 @@ namespace MonIndemnisationJustice\Controller\Agent;
 
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -25,13 +23,7 @@ class RedacteurController extends AbstractController
     #[Route('/', name: 'app_agent_redacteur_accueil')]
     public function index(): Response
     {
-        /** @var $agent Agent */
-        $agent = $this->getUser();
-        if ($agent->hasRole(Agent::ROLE_AGENT_VALIDATEUR)) {
-            return $this->redirectToRoute('agent_redacteur_dossiers');
-        }
-
-        return $this->redirectToRoute('agent_redacteur_nouveaux_dossiers');
+        return $this->redirectToRoute('agent_redacteur_dossiers');
     }
 
     #[Route('/dossiers/tous', name: 'agent_redacteur_dossiers')]

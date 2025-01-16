@@ -15,6 +15,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['email'], message: 'Cet adresse courriel est déjà attribuée à un agent')]
 class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    // Le role ROLE_AGENT est donné à chaque agent de la fonction publique
+    public const ROLE_AGENT = 'ROLE_AGENT';
     // Le role ROLE_AGENT_REDACTEUR est donné au rédacteur du pôle précontentieux
     public const ROLE_AGENT_REDACTEUR = 'ROLE_AGENT_REDACTEUR';
     // Le rôle ROLE_AGENT_GESTION_PERSONNEL peut ajouter ou activer / désactiver un compte rédacteur
@@ -104,6 +106,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         if (
             !in_array($role, $roles)
             && in_array($role, [
+                self::ROLE_AGENT,
                 self::ROLE_AGENT_REDACTEUR,
                 self::ROLE_AGENT_GESTION_PERSONNEL,
                 self::ROLE_AGENT_VALIDATEUR,

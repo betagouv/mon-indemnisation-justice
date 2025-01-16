@@ -23,8 +23,17 @@ services:
       arguments:
         - '%env(DATABASE_URL)%'
 
-    Drenso\OidcBundle\OidcClientInterface:
-      class: MonIndemnisationJustice\Security\Oidc\JwtBasedOidcClient
+    MonIndemnisationJustice\Security\Oidc\OidcClient:
+      arguments:
+        $wellKnownUrl: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
+        $clientId: '%env(PRO_CONNECT_CLIENT_ID)%'
+        $clientSecret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
+        $loginCheckRoute: 'agent_securite_connexion'
+
+    MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator:
+      arguments:
+        $loginCheckRoute: 'agent_securite_connexion'
+        $loginSuccessRoute: 'agent_index'
 
     MonIndemnisationJustice\Controller\SecurityController:
         $baseUrl: '%env(BASE_URL)%'
