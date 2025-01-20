@@ -32,6 +32,7 @@ services:
 
     MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator:
       arguments:
+        $loginPageRoute: 'agent_securite_se_connecter'
         $loginCheckRoute: 'agent_securite_connexion'
         $loginSuccessRoute: 'agent_index'
 

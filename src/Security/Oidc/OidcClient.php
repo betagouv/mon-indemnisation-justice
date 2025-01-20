@@ -74,7 +74,7 @@ class OidcClient
                 'response_type' => 'code',
                 'client_id' => $this->clientId,
                 'redirect_uri' => $this->getRedirectUri(),
-                'scope' => implode(' ', ['openid', 'given_name', 'usual_name', 'email', 'uid']),
+                'scope' => implode(' ', ['openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id']),
                 'state' => $state,
                 'nonce' => $nonce,
             ])
@@ -84,6 +84,10 @@ class OidcClient
     public function authenticate(Request $request): string
     {
         $this->configure();
+
+        if (null !== $error = $request->query->get('error')) {
+            throw new AuthenticationException("$error - ".$request->query->get('error_description'));
+        }
 
         $state = $request->query->get('state');
         $code = $request->query->get('code');
@@ -108,7 +112,8 @@ class OidcClient
                 ],
             ]);
         } catch (RequestException $e) {
-            exit($e->getResponse()->getBody()->getContents());
+            $context = json_decode($e->getResponse()->getBody()->getContents());
+            throw new AuthenticationException("$context->error - $context->error_description", previous: $e);
         } catch (GuzzleException $e) {
             dump($e->getMessage(), $e->getTraceAsString());
             throw new AuthenticationException('Authorization failed.', previous: $e);

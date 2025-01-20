@@ -2,17 +2,16 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use MonIndemnisationJustice\Repository\AgentRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\Table(name: 'agents')]
-#[ORM\UniqueConstraint(name: 'uniq_agent_email', fields: ['email'])]
-#[UniqueEntity(fields: ['email'], message: 'Cet adresse courriel est déjà attribuée à un agent')]
+#[ORM\UniqueConstraint(name: 'uniq_agent_identifiant', fields: ['identifiant'])]
+#[UniqueEntity(fields: ['identifiant'], message: 'Cet identifiant correspond à un autre agent')]
 class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 {
     // Le role ROLE_AGENT est donné à chaque agent de la fonction publique
@@ -26,10 +25,26 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     // un dossier d'indemnisation et signe la lettre qui l'officialise.
     public const ROLE_AGENT_VALIDATEUR = 'ROLE_AGENT_VALIDATEUR';
 
+    public const ROLE_FORCES_DE_L_ORDRE = 'FORCES_DE_L_ORDRE';
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     protected ?int $id;
+
+    #[ORM\Column(nullable: false)]
+    protected string $identifiant;
+
+    #[ORM\Column(nullable: false)]
+    protected string $uid;
+
+    /**
+     * Correspond au champs `idp_id` de ProConnect.
+     *
+     * La liste des organisations est définie icihttps://grist.numerique.gouv.fr/o/docs/3kQ829mp7bTy/AgentConnect-Configuration-des-Fournisseurs-dIdentite
+     */
+    #[ORM\Column(nullable: false)]
+    protected string $fournisseurIdentite;
 
     #[ORM\Column(length: 180)]
     protected string $email;
@@ -40,22 +55,20 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 30)]
     protected string $prenom;
 
+    #[ORM\Column(type: 'string', nullable: true, enumType: CategorieAgent::class)]
+    protected ?CategorieAgent $categorieAgent;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $donnesAuthentification;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    protected bool $estValide = false;
+
     /**
      * @var string[] la liste des rôles assignée à l'agent
      */
     #[ORM\Column(type: 'simple_array')]
     protected array $roles = [];
-    #[ORM\Column(nullable: true)]
-    protected ?string $motDePasse = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateChangementMDP = null;
-
-    #[ORM\Column(type: 'string', length: 12, nullable: true)]
-    protected ?string $jetonVerification;
-
-    #[ORM\Column(type: 'boolean', options: ['default' => true])]
-    protected bool $estActif = true;
 
     public function __construct()
     {
@@ -64,6 +77,37 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getIdentifiant(): string
+    {
+        return $this->identifiant;
+    }
+
+    public function setIdentifiant(string $identifiant): Agent
+    {
+        $this->identifiant = $identifiant;
+
+        return $this;
+    }
+
+    public function getUid(): string
+    {
+        return $this->uid;
+    }
+
+    public function setUid(string $uid): Agent
+    {
+        $this->uid = $uid;
+
+        return $this;
+    }
+
+    public function setFournisseurIdentite(string $fournisseurIdentite): Agent
+    {
+        $this->fournisseurIdentite = $fournisseurIdentite;
+
+        return $this;
     }
 
     public function getEmail(): string
@@ -150,7 +194,45 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return $this->email;
+        return $this->identifiant;
+    }
+
+    public function getCategorieAgent(): ?CategorieAgent
+    {
+        return $this->categorieAgent;
+    }
+
+    public function setCategorieAgent(?CategorieAgent $categorieAgent): Agent
+    {
+        $this->categorieAgent = $categorieAgent;
+
+        return $this;
+    }
+
+    public function estValide(): bool
+    {
+        return $this->estValide;
+    }
+
+    public function setValide(bool $estValide): Agent
+    {
+        $this->estValide = $estValide;
+
+        return $this;
+    }
+
+    public function setDonnesAuthentification(array|string|null $donnesAuthentification): Agent
+    {
+        if (null !== $donnesAuthentification) {
+            $this->donnesAuthentification = (is_array($donnesAuthentification) ? (json_encode($donnesAuthentification) ?? '') : $donnesAuthentification);
+        }
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return null;
     }
 
     /**
@@ -174,75 +256,15 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): ?string
-    {
-        return $this->motDePasse;
-    }
-
-    public function setPassword(string $motDePasse): self
-    {
-        $this->motDePasse = $motDePasse;
-
-        return $this;
-    }
-
-    /**
      * @see UserInterface
      */
     public function eraseCredentials(): void
     {
-        $this->motDePasse = null;
     }
 
     public function getUsername(): ?string
     {
         return $this->email;
-    }
-
-    public function getDateChangementMDP(): ?\DateTimeInterface
-    {
-        return $this->dateChangementMDP;
-    }
-
-    public function setDateChangementMDP(?\DateTimeInterface $dateChangementMDP): self
-    {
-        $this->dateChangementMDP = $dateChangementMDP;
-
-        return $this;
-    }
-
-    public function getJetonVerification(): ?string
-    {
-        return $this->jetonVerification;
-    }
-
-    public function genererJetonVerification(): void
-    {
-        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $this->jetonVerification = '';
-
-        for ($i = 0; $i < 12; ++$i) {
-            $this->jetonVerification .= $alphabet[random_int(0, strlen($alphabet) - 1)];
-        }
-    }
-
-    public function supprimerJetonVerification(): void
-    {
-        $this->jetonVerification = null;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->estActif;
-    }
-
-    public function setActive(bool $active): static
-    {
-        $this->estActif = $active;
-
-        return $this;
     }
 
     public function getNomComplet(): ?string
