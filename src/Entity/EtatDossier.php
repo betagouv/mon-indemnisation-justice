@@ -2,9 +2,9 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use MonIndemnisationJustice\Repository\EtatDossierRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\EtatDossierRepository;
 
 #[ORM\Entity(repositoryClass: EtatDossierRepository::class)]
 #[ORM\Table(name: 'dossier_etats')]
@@ -25,13 +25,12 @@ class EtatDossier
     #[ORM\JoinColumn(nullable: false, name: 'dossier_id', referencedColumnName: 'id')]
     protected ?BrisPorte $dossier;
 
-
-    #[ORM\ManyToOne(targetEntity: Agent::class)]
-    #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: Agent::class, cascade: ['detach'])]
+    #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?Agent $agent;
 
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['detach'])]
-    #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id', )]
     protected ?Requerant $requerant;
 
     public function getEtat(): EtatDossierType

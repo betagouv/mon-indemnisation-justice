@@ -16,7 +16,7 @@ class AgentProvider implements UserProviderInterface
 
     public function refreshUser(UserInterface $user): UserInterface
     {
-        return $this->agentRepository->findOneBy(['email' => $user->getUserIdentifier()]);
+        return $this->agentRepository->findOneBy(['identifiant' => $user->getUserIdentifier()]);
     }
 
     public function supportsClass(string $class): bool
@@ -30,7 +30,7 @@ class AgentProvider implements UserProviderInterface
             throw new UserNotFoundException('Missing identifier parameter');
         }
 
-        $agent = $this->agentRepository->findOneBy(['email' => $identifier]);
+        $agent = $this->agentRepository->findOneBy(['identifiant' => $identifier]);
 
         if (null === $agent) {
             throw new UserNotFoundException("No agent found for identifier $identifier");

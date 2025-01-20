@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Security\Authenticator;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,11 +22,13 @@ class ProConnectAuthenticator extends AbstractAuthenticator
 {
     public function __construct(
         protected readonly HttpUtils $httpUtils,
+        protected readonly string $loginPageRoute,
         protected readonly string $loginCheckRoute,
         protected readonly string $loginSuccessRoute,
         protected readonly OidcClient $oidcClient,
         protected readonly AgentRepository $agentRepository,
         protected readonly UrlGeneratorInterface $urlGenerator,
+        protected readonly LoggerInterface $logger,
     ) {
     }
 
@@ -33,43 +36,45 @@ class ProConnectAuthenticator extends AbstractAuthenticator
     {
         return
             $this->httpUtils->checkRequestPath($request, $this->loginCheckRoute)
-            && $request->query->has('code')
             && $request->query->has('state')
+                && (
+                    $request->query->has('code')
+                    || $request->query->has('error')
+                )
         ;
     }
 
     public function authenticate(Request $request): Passport
     {
-        // Authenticate
-        $token = $this->oidcClient->authenticate($request);
+        try {
+            // Authenticate
+            $token = $this->oidcClient->authenticate($request);
 
-        // User info
-        $userInfo = $this->oidcClient->fetchUserInfo($token);
+            // User info
+            $userInfo = $this->oidcClient->fetchUserInfo($token);
 
-        /*
-         * "sub": "797ab77a-20e0-441f-a6bd-0a6974b02c82"
-         * "given_name": "Pierre"
-         * "usual_name": "Lemée"
-         * "email": "pierre.lemee@beta.gouv.fr"
-         * "uid": "7271"
-         *
-         */
+            $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo->sub]);
 
-        // TODO rechercher sur le `sub` (à créer) qui est immutable
-        $agent = $this->agentRepository->findOneBy(['email' => $userInfo->email]);
+            if (null === $agent) {
+                $agent = (new Agent())
+                ->setIdentifiant($userInfo->sub)
+                ->setEmail($userInfo->email)
+                ->setPrenom($userInfo->usual_name)
+                ->setNom($userInfo->given_name)
+                ->addRole(Agent::ROLE_AGENT)
+                ->setUid($userInfo->uid)
+                ->setFournisseurIdentite($userInfo->idp_id)
+                ->setDonnesAuthentification((array) $userInfo)
+                ;
 
-        if (null === $agent) {
-            $agent = (new Agent())
-            ->setEmail($userInfo->email)
-            ->setPrenom($userInfo->usual_name)
-            ->setNom($userInfo->given_name)
-            ->addRole(Agent::ROLE_AGENT)
-            ->setActive(true);
+                $this->agentRepository->save($agent);
+            }
 
-            $this->agentRepository->save($agent);
+            return new SelfValidatingPassport(new UserBadge($agent->getUserIdentifier()));
+        } catch (AuthenticationException $e) {
+            $this->logger->error($e->getMessage(), $e->getMessageData());
+            throw $e;
         }
-
-        return new SelfValidatingPassport(new UserBadge($agent->getUserIdentifier()));
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
@@ -79,6 +84,6 @@ class ProConnectAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return null;
+        return new RedirectResponse($this->urlGenerator->generate($this->loginPageRoute, ['erreur' => 'proconnect']));
     }
 }
