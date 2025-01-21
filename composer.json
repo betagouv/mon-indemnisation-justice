@@ -7,6 +7,7 @@
         "php": ">=8.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-openssl": "*",
         "acsiomatic/device-detector-bundle": "^0.6.0",
         "api-platform/core": "*",
         "doctrine/dbal": "^3",

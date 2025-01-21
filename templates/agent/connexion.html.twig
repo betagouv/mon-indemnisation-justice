@@ -25,7 +25,7 @@
 <div class="fr-container fr-my-3w">
     <h1>Connexion à l'espace agent</h1>
 
-    {% if erreur is not null %}
+    {% if erreur is defined and erreur is not null %}
         <div class="fr-grid-row fr-my-1w">
             <div class="fr-alert fr-alert--error">
                 <h3 class="fr-alert__title">{{ erreur }}</h3>

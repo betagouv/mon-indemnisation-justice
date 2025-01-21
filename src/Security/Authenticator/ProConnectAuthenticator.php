@@ -53,18 +53,18 @@ class ProConnectAuthenticator extends AbstractAuthenticator
             // User info
             $userInfo = $this->oidcClient->fetchUserInfo($token);
 
-            $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo->sub]);
+            $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);
 
             if (null === $agent) {
                 $agent = (new Agent())
-                ->setIdentifiant($userInfo->sub)
-                ->setEmail($userInfo->email)
-                ->setPrenom($userInfo->usual_name)
-                ->setNom($userInfo->given_name)
+                ->setIdentifiant($userInfo['sub'])
+                ->setEmail($userInfo['email'])
+                ->setPrenom($userInfo['usual_name'])
+                ->setNom($userInfo['given_name'])
                 ->addRole(Agent::ROLE_AGENT)
-                ->setUid($userInfo->uid)
-                ->setFournisseurIdentite($userInfo->idp_id)
-                ->setDonnesAuthentification((array) $userInfo)
+                ->setUid($userInfo['uid'])
+                ->setFournisseurIdentite($userInfo['idp_id'])
+                ->setDonnesAuthentification($userInfo)
                 ;
 
                 $this->agentRepository->save($agent);

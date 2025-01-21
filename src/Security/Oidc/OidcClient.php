@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Security\Oidc;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use MonIndemnisationJustice\Security\Jwt\Jwt;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ class OidcClient
 {
     protected HttpClient $client;
     protected ?array $configuration = null;
+    protected ?array $jwks = null;
 
     public function __construct(
         protected readonly string $wellKnownUrl,
@@ -45,6 +47,18 @@ class OidcClient
                     return json_decode($response->getBody()->getContents(), true);
                 } catch (GuzzleException $e) {
                     throw new AuthenticationException('Fetch of OIDC server well known configuration failed.');
+                }
+            });
+        }
+
+        if (null === $this->jwks) {
+            $this->jwks = $this->cache->get('oidc_jwks', function () {
+                try {
+                    $response = $this->client->get($this->configuration['jwks_uri']);
+
+                    return json_decode($response->getBody()->getContents(), true)['keys'];
+                } catch (GuzzleException $e) {
+                    throw new AuthenticationException('Fetch of OIDC JWKs failed.');
                 }
             });
         }
@@ -115,20 +129,25 @@ class OidcClient
             $context = json_decode($e->getResponse()->getBody()->getContents());
             throw new AuthenticationException("$context->error - $context->error_description", previous: $e);
         } catch (GuzzleException $e) {
-            dump($e->getMessage(), $e->getTraceAsString());
             throw new AuthenticationException('Authorization failed.', previous: $e);
         }
 
         $credentials = json_decode($response->getBody()->getContents());
         $accessToken = $credentials->access_token ?? null;
-        $idToken = $credentials->id_token ?? null;
+        $idToken = Jwt::parse($credentials->id_token);
 
-        // TODO verifier le JWT et le nonce
+        if (!$idToken->verify($this->jwks)) {
+            throw new AuthenticationException('Authorization failed (invalid id token).');
+        }
+
+        if ($idToken->getValue('nonce') !== $context['nonce']) {
+            throw new AuthenticationException('Authorization failed (nonce does not match).');
+        }
 
         return $accessToken;
     }
 
-    public function fetchUserInfo(string $token): object
+    public function fetchUserInfo(string $token): array
     {
         $this->configure();
 
@@ -142,10 +161,8 @@ class OidcClient
             throw new AuthenticationException('User info fetching failed.');
         }
 
-        $jwt = $response->getBody()->getContents();
+        $jwt = Jwt::parse($response->getBody()->getContents());
 
-        list($header, $payload, $signature) = explode('.', $jwt);
-
-        return json_decode(base64_decode($payload));
+        return $jwt->getPayload();
     }
 }
