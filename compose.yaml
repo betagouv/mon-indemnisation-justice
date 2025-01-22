@@ -9,6 +9,10 @@ services:
       - ./.docker/postgres/data:/var/lib/postgresql/data:rw
       # To run init scripts, wipe the data dir (`rm -Rf .docker/postgres/data/*`) first
       - ./.docker/postgres/scripts/:/docker-entrypoint-initdb.d
+    networks:
+      mijnet:
+        aliases:
+          - postgres
     ports:
       - "5432:5432"
 
@@ -22,6 +26,12 @@ services:
     volumes:
       # Ce partage, via un volume, est requis afin que Nginx puisse servir les fichiers statiques seul
       - ./public:/app/public
+    networks:
+      mijnet:
+        aliases:
+          - mon-indemnisation.anje-justice.dev
+          - mon-indemnisation.anje-justice.test
+          - proconnect.anje-justice.test
     ports:
       - "80:80"
       - "443:443"
@@ -29,6 +39,10 @@ services:
   # Mailpit: email SMTP + web UI to see trapped emails
   mailpit:
     image: axllent/mailpit
+    networks:
+      mijnet:
+        aliases:
+          - mailpit
     ports:
       - "1025"
       - "8025:8025"
@@ -44,7 +58,7 @@ services:
     tty: true
     # En attendant un accès à Harbor
     image: pierrelemee/precontentieux-full:latest
-    command: bash -c 'composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && php-fpm'
+    command: bash -c 'update-ca-certificates && composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && php-fpm'
     environment:
       - APP_ENV=${APP_ENV:-dev}
       - TS=Europe/Paris
@@ -64,6 +78,9 @@ services:
       - /app/drivers
       - /app/vendor
       - /app/node_modules
+      - ./.docker/nginx/ssl:/usr/local/share/ca-certificates
+    networks:
+      - mijnet
     ports:
       - "9000:9000"
 
@@ -79,3 +96,23 @@ services:
       - /app/node_modules
     ports:
       - "5173:5173"
+
+  proconnect:
+    image: node:22
+    hostname: proconnect
+    networks:
+      mijnet:
+        aliases:
+          - proconnect
+    command: bash -c 'yarn install && npx tsc -w & npx nodemon build/index.js'
+    ports:
+      - '9998:9998'
+    environment:
+      PORT: 9998
+    working_dir: /app
+    volumes:
+      - ./.docker/proconnect/mock-oidc-provider:/app
+
+
+networks:
+  mijnet:
