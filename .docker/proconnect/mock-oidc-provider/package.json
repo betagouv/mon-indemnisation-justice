@@ -1,0 +1,17 @@
+{
+  "name": "mock-oidc-provider",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Mock OIDC provider server",
+  "main": "dist/index.js",
+  "author": "Pierre LEMEÉ",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "oauth2-mock-server": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3"
+  }
+}

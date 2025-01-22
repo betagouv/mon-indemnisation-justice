@@ -17,13 +17,16 @@ cd .docker/nginx/ssl
 
 # Optionnel, si le certificat racine (i.e. le fichier `rootCA.pem` n'est pas encore présent)
 CAROOT=$(pwd) mkcert -install
+# Sous MacOSX, déclaré le certificat fiable
 sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$(pwd)/rootCA.pem"
+# Convertir le certificat racine au format .crt
+openssl x509 -inform PEM -in "$(pwd)/rootCA.pem" -out rootCA.crt
 
-for tld in dev test; do
+for domain in mon-indemnisation.anje-justice.dev mon-indemnisation.anje-justice.test proconnect.anje-justice.test; do
   # Génération
-  CAROOT=$(pwd) mkcert "mon-indemnisation.anje-justice.${tld}"
+  CAROOT=$(pwd) mkcert "${domain}"
   # Register domain as local domain
-  echo "127.0.0.1 mon-indemnisation.anje-justice.${tld}" | sudo tee -a /etc/hosts
+  echo "127.0.0.1 ${domain}" | sudo tee -a /etc/hosts
 done
 ````
 
