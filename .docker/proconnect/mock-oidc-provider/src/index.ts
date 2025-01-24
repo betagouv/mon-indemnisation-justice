@@ -33,7 +33,7 @@ server.service.once('beforeAuthorizeRedirect', (authorizeRedirectUri, req) => {
   console.log(authorizeRedirectUri);
 });
 
-server.service.once('beforeUserinfo', (userInfoResponse, req) => {
+server.service.addListener('beforeUserinfo', (userInfoResponse, req) => {
   userInfoResponse.body = {
     sub: 'c1722a03-4172-4015-9f0d-d1995d4cbe5c',
     email: 'redacteur@test.fr',

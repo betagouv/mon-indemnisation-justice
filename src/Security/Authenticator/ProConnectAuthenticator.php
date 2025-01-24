@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Security\Authenticator;
 
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
+use MonIndemnisationJustice\Repository\FournisseurIdentiteAgentRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -27,6 +28,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator
         protected readonly string $loginSuccessRoute,
         protected readonly OidcClient $oidcClient,
         protected readonly AgentRepository $agentRepository,
+        protected readonly FournisseurIdentiteAgentRepository $fournisseurIdentiteAgentRepository,
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected readonly LoggerInterface $logger,
     ) {
@@ -63,7 +65,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                 ->setNom($userInfo['given_name'])
                 ->addRole(Agent::ROLE_AGENT)
                 ->setUid($userInfo['uid'])
-                ->setFournisseurIdentite($userInfo['idp_id'])
+                ->setFournisseurIdentite($this->fournisseurIdentiteAgentRepository->find($userInfo['idp_id']))
                 ->setDonnesAuthentification($userInfo)
                 ;
 

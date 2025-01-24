@@ -38,14 +38,6 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: false)]
     protected string $uid;
 
-    /**
-     * Correspond au champs `idp_id` de ProConnect.
-     *
-     * La liste des organisations est définie icihttps://grist.numerique.gouv.fr/o/docs/3kQ829mp7bTy/AgentConnect-Configuration-des-Fournisseurs-dIdentite
-     */
-    #[ORM\Column(nullable: false)]
-    protected string $fournisseurIdentite;
-
     #[ORM\Column(length: 180)]
     protected string $email;
 
@@ -69,6 +61,15 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(type: 'simple_array')]
     protected array $roles = [];
+
+    /**
+     * Correspond au champs `idp_id` de ProConnect.
+     *
+     * La liste des organisations est définie ici https://grist.numerique.gouv.fr/o/docs/3kQ829mp7bTy/AgentConnect-Configuration-des-Fournisseurs-dIdentite
+     */
+    #[ORM\ManyToOne(targetEntity: FournisseurIdentiteAgent::class)]
+    #[ORM\JoinColumn(name: 'fournisseur_identite_uid', referencedColumnName: 'uid')]
+    protected ?FournisseurIdentiteAgent $fournisseurIdentite = null;
 
     public function __construct()
     {
@@ -103,9 +104,16 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function setFournisseurIdentite(string $fournisseurIdentite): Agent
+    public function getFournisseurIdentite(): FournisseurIdentiteAgent
     {
-        $this->fournisseurIdentite = $fournisseurIdentite;
+        return $this->fournisseurIdentite;
+    }
+
+    public function setFournisseurIdentite(?FournisseurIdentiteAgent $fournisseurIdentite): Agent
+    {
+        if (null !== $fournisseurIdentite) {
+            $this->fournisseurIdentite = $fournisseurIdentite;
+        }
 
         return $this;
     }
