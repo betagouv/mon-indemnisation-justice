@@ -9,6 +9,7 @@ doctrine:
             text[]: MartinGeorgiev\Doctrine\DBAL\Types\TextArray
             jsonb: MartinGeorgiev\Doctrine\DBAL\Types\Jsonb
             jsonb[]: MartinGeorgiev\Doctrine\DBAL\Types\JsonbArray
+            uuid: Ramsey\Uuid\Doctrine\UuidType
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
