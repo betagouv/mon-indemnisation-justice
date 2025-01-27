@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Security\Authenticator;
 
+use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\FournisseurIdentiteAgentRepository;
@@ -31,6 +32,10 @@ class ProConnectAuthenticator extends AbstractAuthenticator
         protected readonly FournisseurIdentiteAgentRepository $fournisseurIdentiteAgentRepository,
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected readonly LoggerInterface $logger,
+        /** @var $autoPromotionHashes array liste de _hashes_ d'adresses courriel pour lesquelles le rôle
+         * `ROLE_AGENT_GESTION_PERSONNEL` est automatiquement attribué
+         */
+        protected readonly ?array $autoPromotionHashes,
     ) {
     }
 
@@ -68,6 +73,11 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                 ->setFournisseurIdentite($this->fournisseurIdentiteAgentRepository->find($userInfo['idp_id']))
                 ->setDonnesAuthentification($userInfo)
                 ;
+
+                if (in_array(sha1($agent->getEmail()), $this->autoPromotionHashes ?? [])) {
+                    $agent->addRole(Agent::ROLE_AGENT_GESTION_PERSONNEL);
+                    $agent->setAdministration(Administration::MINISTERE_JUSTICE);
+                }
 
                 $this->agentRepository->save($agent);
             }

@@ -52,7 +52,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     protected string $prenom;
 
     #[ORM\Column(type: 'string', nullable: true, enumType: Administration::class)]
-    protected ?Administration $administration;
+    protected ?Administration $administration = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $donnesAuthentification;

@@ -42,7 +42,9 @@ server.service.addListener('beforeUserinfo', (userInfoResponse, req) => {
     given_name: "Redacteur",
     uid: '1234',
     idp_id: 'fce74da7-34d5-4b59-ba78-828a97d859cf'
-  };*/
+  };
+  */
+  /*
   userInfoResponse.body = {
     sub: 'e316bde4-3d37-4ed8-9001-c40d9b07fe06',
     email: 'police@test.fr',
@@ -50,6 +52,15 @@ server.service.addListener('beforeUserinfo', (userInfoResponse, req) => {
     given_name: "Policier",
     uid: '567',
     idp_id: 'e2f13a1f-9f43-4def-a5ed-06dce37d00e6'
+  };
+  */
+  userInfoResponse.body = {
+    sub: 'eeb5c5d6-88eb-4d1c-b870-01bb26a84a0a',
+    email: 'pierre.lemee@beta.gouv.fr',
+    usual_name: "Pierre",
+    given_name: "Lemée",
+    uid: '7654',
+    idp_id: '71144ab3-ee1a-4401-b7b3-79b44f7daeeb'
   };
 });
 
