@@ -35,6 +35,7 @@ services:
         $loginPageRoute: 'agent_securite_se_connecter'
         $loginCheckRoute: 'agent_securite_connexion'
         $loginSuccessRoute: 'agent_index'
+        $autoPromotionHashes: '%env(default::json:MIJ_AUTO_PROMOTION_HASHES)%'
 
     MonIndemnisationJustice\Controller\SecurityController:
         $baseUrl: '%env(BASE_URL)%'
@@ -45,7 +46,6 @@ services:
 
     MonIndemnisationJustice\Service\BrisPorteManager:
         $courrielEquipe: '%env(PRECONTENTIEUX_COURRIEL_EQUIPE)%'
-
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous

@@ -70,44 +70,7 @@
                         </fieldset>
 
                         <div>
-                            {% if app.user.administration.value == 'PN' %}
-                            <p>
-                                Vous êtes actuellement rattaché à la <b>Police Nationale</b>.
-                            </p>
-
-                            <p>
-                                Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
-                                guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
-                            </p>
-                            {% elseif app.user.administration.value == 'GN' %}
-                            <p>
-                                Vous êtes actuellement rattaché à la <b>Gendarmerie Nationale</b>.
-                            </p>
-
-                            <p>
-                                Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
-                                guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
-                            </p>
-                            {% elseif app.user.administration.value == 'MJ' %}
-                                <p>
-                                    Vous êtes actuellement rattaché au <b>Ministère de la Justice</b>.
-                                </p>
-
-
-                                {%  if app.user.rolePrimaire is null %}
-                                    <p>
-                                        Aucun rôle ne vous a encore été attribué.
-                                    </p>
-                                    <p>
-                                        Un agent administrateur examinera prochainement votre compte et, le cas échéant, activera
-                                        votre accès avec les permissions requises.
-                                    </p>
-                                {% else %}
-                                    <p>
-                                        Vous disposez d'un accès <b>{{ app.user.rolePrimaire }}</b>
-                                    </p>.
-                                {% endif %}
-                            {% else %}
+                            {% if app.user.administration is null %}
                             <p>
                                 Nous ne sommes pas parvenu à identifier votre administration de rattachement lors de votre
                                 connexion.
@@ -116,6 +79,45 @@
                                 Un agent administrateur examinera prochainement votre compte et, le cas échéant, activera
                                 votre accès avec les permissions requises.
                             </p>
+                            {% else %}
+                                {% if app.user.administration.value == 'PN' %}
+                                <p>
+                                    Vous êtes actuellement rattaché à la <b>Police Nationale</b>.
+                                </p>
+
+                                <p>
+                                    Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
+                                    guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
+                                </p>
+                                {% elseif app.user.administration.value == 'GN' %}
+                                <p>
+                                    Vous êtes actuellement rattaché à la <b>Gendarmerie Nationale</b>.
+                                </p>
+
+                                <p>
+                                    Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
+                                    guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
+                                </p>
+                                {% elseif app.user.administration.value == 'MJ' %}
+                                    <p>
+                                        Vous êtes actuellement rattaché au <b>Ministère de la Justice</b>.
+                                    </p>
+
+
+                                    {%  if app.user.rolePrimaire is null %}
+                                        <p>
+                                            Aucun rôle ne vous a encore été attribué.
+                                        </p>
+                                        <p>
+                                            Un agent administrateur examinera prochainement votre compte et, le cas échéant, activera
+                                            votre accès avec les permissions requises.
+                                        </p>
+                                    {% else %}
+                                        <p>
+                                            Vous disposez d'un accès <b>{{ app.user.rolePrimaire }}</b>
+                                        </p>.
+                                    {% endif %}
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>
