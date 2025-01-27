@@ -6,6 +6,7 @@ namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\FournisseurIdentiteAgent;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -43,20 +44,21 @@ class ImporterCatalogueFournisseurIdentiteAgentCommand extends Command
         if (($handle = fopen($path, 'r')) !== false) {
             while (($data = fgetcsv($handle, 1000, ',')) !== false) {
                 if ($index++ > 0) {
-                    dump($data);
                     list($reseau, $uid, $titre, $actif, $urlDecouverte, $listeFQDNs) = $data;
 
-                    /** @var FournisseurIdentiteAgent $fournisseurIdentite */
-                    $fournisseurIdentite = $this->em->getRepository(FournisseurIdentiteAgent::class)->findOneBy(['uid' => $uid]) ?? (new FournisseurIdentiteAgent())->setUid($uid);
+                    if (Uuid::isValid($uid)) {
+                        /** @var FournisseurIdentiteAgent $fournisseurIdentite */
+                        $fournisseurIdentite = $this->em->getRepository(FournisseurIdentiteAgent::class)->findOneBy(['uid' => $uid]) ?? (new FournisseurIdentiteAgent())->setUid($uid);
 
-                    $fournisseurIdentite
-                        ->setNom($titre)
-                        ->setActif(in_array(strtolower($actif), ['oui', 'true', 1]))
-                        ->setUrlDecouverte($urlDecouverte)
-                        ->setReseauInterne(FournisseurIdentiteAgent::RESEAU_INTERNE === $reseau)
-                        ->setDomaines(explode(',', $listeFQDNs))
-                    ;
-                    $this->em->persist($fournisseurIdentite);
+                        $fournisseurIdentite
+                            ->setNom($titre)
+                            ->setActif(in_array(strtolower($actif), ['oui', 'true', 1]))
+                            ->setUrlDecouverte($urlDecouverte)
+                            ->setReseauInterne(FournisseurIdentiteAgent::RESEAU_INTERNE === $reseau)
+                            ->setDomaines(explode(',', $listeFQDNs))
+                        ;
+                        $this->em->persist($fournisseurIdentite);
+                    }
                 }
             }
         }

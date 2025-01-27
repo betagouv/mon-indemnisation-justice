@@ -34,6 +34,7 @@ server.service.once('beforeAuthorizeRedirect', (authorizeRedirectUri, req) => {
 });
 
 server.service.addListener('beforeUserinfo', (userInfoResponse, req) => {
+  /*
   userInfoResponse.body = {
     sub: 'c1722a03-4172-4015-9f0d-d1995d4cbe5c',
     email: 'redacteur@test.fr',
@@ -41,6 +42,14 @@ server.service.addListener('beforeUserinfo', (userInfoResponse, req) => {
     given_name: "Redacteur",
     uid: '1234',
     idp_id: 'fce74da7-34d5-4b59-ba78-828a97d859cf'
+  };*/
+  userInfoResponse.body = {
+    sub: 'e316bde4-3d37-4ed8-9001-c40d9b07fe06',
+    email: 'police@test.fr',
+    usual_name: "Jerome",
+    given_name: "Policier",
+    uid: '567',
+    idp_id: 'e2f13a1f-9f43-4def-a5ed-06dce37d00e6'
   };
 });
 

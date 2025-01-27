@@ -3,13 +3,12 @@
 namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'agent_fournisseurs_identites')]
 class FournisseurIdentiteAgent
 {
-    public const RESEAU_INTERNE = 'RIE';
+    public const string RESEAU_INTERNE = 'RIE';
 
     #[ORM\Id]
     #[ORM\Column]
@@ -30,17 +29,17 @@ class FournisseurIdentiteAgent
     #[ORM\Column]
     protected array $domaines;
 
-    #[ORM\Column(type: 'string', nullable: true, enumType: CategorieAgent::class)]
-    protected ?CategorieAgent $categorieAgent;
+    #[ORM\Column(type: 'string', nullable: true, enumType: Administration::class)]
+    protected ?Administration $administration = null;
 
-    public function getUid(): Uuid
+    public function getUid(): string
     {
         return $this->uid;
     }
 
-    public function setUid(Uuid|string $uid): FournisseurIdentiteAgent
+    public function setUid(string $uid): FournisseurIdentiteAgent
     {
-        $this->uid = is_string($uid) ? Uuid::fromString($uid) : $uid;
+        $this->uid = $uid;
 
         return $this;
     }
@@ -102,6 +101,15 @@ class FournisseurIdentiteAgent
     {
         $this->domaines = $domaines;
 
+        if (null === $this->administration) {
+            $this->administration = Administration::fromDomaines($this->domaines);
+        }
+
         return $this;
+    }
+
+    public function getAdministration(): ?Administration
+    {
+        return $this->administration;
     }
 }

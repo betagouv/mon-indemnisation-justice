@@ -5,8 +5,7 @@
 
     <style>
         main {
-            margin-top: 2rem;
-            margin-bottom: 2rem;
+            margin: 2rem;
         }
     </style>
 {% endblock stylesheets %}
@@ -20,19 +19,23 @@
             <div class="fr-col-12">
                 <h1>Mon compte</h1>
 
-                <div class="fr-grid-row">
-                    <div class="fr-input-group fr-col-12 fr-col-lg-6">
+                <div class="fr-grid-row fr-grid-row--gutters">
+
+                    <div class="fr-input-group fr-col-12 fr-col-lg-4 fr-col-offset-1--right">
 
                         <fieldset class="fr-fieldset" aria-labelledby="legende-mon-compte">
                             <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="legende-mon-compte">
-                                À propos de moi
+                                <h5>
+                                    À propos de moi
+                                </h5>
                             </legend>
                             <div class="fr-fieldset__element">
                                 <div class="fr-input-group">
                                     <label class="fr-label" for="mon-prenom">
                                         Prénom {# <span class="fr-hint-text"></span> #}
                                     </label>
-                                    <input id="mon-prenom" class="fr-input" type="text" disabled value="{{ app.user.prenom }}">
+                                    <input id="mon-prenom" class="fr-input" type="text" disabled
+                                           value="{{ app.user.prenom }}">
                                 </div>
                             </div>
                             <div class="fr-fieldset__element">
@@ -40,7 +43,8 @@
                                     <label class="fr-label" for="mon-prenom">
                                         Nom
                                     </label>
-                                    <input id="mon-nom" class="fr-input" type="text" disabled value="{{ app.user.nom }}">
+                                    <input id="mon-nom" class="fr-input" type="text" disabled
+                                           value="{{ app.user.nom }}">
                                 </div>
                             </div>
                             <div class="fr-fieldset__element">
@@ -48,11 +52,72 @@
                                     <label class="fr-label" for="mon-courriel">
                                         Nom
                                     </label>
-                                    <input id="mon-courriel" class="fr-input" type="email" disabled value="{{ app.user.email }}">
+                                    <input id="mon-courriel" class="fr-input" type="email" disabled
+                                           value="{{ app.user.email }}">
                                 </div>
                             </div>
 
                         </fieldset>
+                    </div>
+
+                    <div class="fr-input-group fr-col-12 fr-col-lg-6">
+                        <fieldset class="fr-fieldset" aria-labelledby="legende-mes-permissions">
+                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="legende-mon-compte">
+                                <h5>
+                                    Mes accès
+                                </h5>
+                            </legend>
+                        </fieldset>
+
+                        <div>
+                            {% if app.user.administration.value == 'PN' %}
+                            <p>
+                                Vous êtes actuellement rattaché à la <b>Police Nationale</b>.
+                            </p>
+
+                            <p>
+                                Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
+                                guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
+                            </p>
+                            {% elseif app.user.administration.value == 'GN' %}
+                            <p>
+                                Vous êtes actuellement rattaché à la <b>Gendarmerie Nationale</b>.
+                            </p>
+
+                            <p>
+                                Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
+                                guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
+                            </p>
+                            {% elseif app.user.administration.value == 'MJ' %}
+                                <p>
+                                    Vous êtes actuellement rattaché au <b>Ministère de la Justice</b>.
+                                </p>
+
+
+                                {%  if app.user.rolePrimaire is null %}
+                                    <p>
+                                        Aucun rôle ne vous a encore été attribué.
+                                    </p>
+                                    <p>
+                                        Un agent administrateur examinera prochainement votre compte et, le cas échéant, activera
+                                        votre accès avec les permissions requises.
+                                    </p>
+                                {% else %}
+                                    <p>
+                                        Vous disposez d'un accès <b>{{ app.user.rolePrimaire }}</b>
+                                    </p>.
+                                {% endif %}
+                            {% else %}
+                            <p>
+                                Nous ne sommes pas parvenu à identifier votre administration de rattachement lors de votre
+                                connexion.
+                            </p>
+                            <p>
+                                Un agent administrateur examinera prochainement votre compte et, le cas échéant, activera
+                                votre accès avec les permissions requises.
+                            </p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 
