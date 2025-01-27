@@ -108,14 +108,15 @@ services:
       mijnet:
         aliases:
           - proconnect
-    command: bash -c 'yarn install && npx tsc -w & npx nodemon build/index.js'
+    command: bash -c 'yarn install && yarn dev'
     ports:
       - '9998:9998'
     environment:
       PORT: 9998
+      HOST: '0.0.0.0'
     working_dir: /app
     volumes:
-      - ./.docker/proconnect/mock-oidc-provider:/app
+      - ~/Perso/mock-oidc-server:/app
 
 
 networks:
