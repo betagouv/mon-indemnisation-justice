@@ -25,7 +25,11 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     // un dossier d'indemnisation et signe la lettre qui l'officialise.
     public const ROLE_AGENT_VALIDATEUR = 'ROLE_AGENT_VALIDATEUR';
 
-    public const ROLE_FORCES_DE_L_ORDRE = 'FORCES_DE_L_ORDRE';
+    public const ROLE_AGENT_ATTRIBUTEUR = 'ROLE_AGENT_ATTRIBUTEUR';
+
+    public const ROLE_AGENT_BUREAU_BUDGET = 'ROLE_AGENT_BUREAU_BUDGET';
+
+    public const ROLE_AGENT_FORCES_DE_L_ORDRE = 'ROLE_AGENT_FORCES_DE_L_ORDRE';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -47,8 +51,8 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 30)]
     protected string $prenom;
 
-    #[ORM\Column(type: 'string', nullable: true, enumType: CategorieAgent::class)]
-    protected ?CategorieAgent $categorieAgent;
+    #[ORM\Column(type: 'string', nullable: true, enumType: Administration::class)]
+    protected ?Administration $administration;
 
     #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $donnesAuthentification;
@@ -113,6 +117,10 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (null !== $fournisseurIdentite) {
             $this->fournisseurIdentite = $fournisseurIdentite;
+
+            if ($this->fournisseurIdentite->getAdministration()) {
+                $this->setAdministration($this->fournisseurIdentite->getAdministration());
+            }
         }
 
         return $this;
@@ -147,6 +155,35 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return ucfirst(implode(', ', $roles));
     }
 
+    public function getRolePrimaire(): ?string
+    {
+        if (null === $this->administration) {
+            return null;
+        }
+
+        if (Administration::MINISTERE_JUSTICE !== $this->administration) {
+            return "Forces de l'ordre";
+        }
+
+        if ($this->hasRole(self::ROLE_AGENT_BUREAU_BUDGET)) {
+            return 'Agent du bureau du budget';
+        }
+
+        if ($this->hasRole(self::ROLE_AGENT_VALIDATEUR)) {
+            return 'Agent validateur';
+        }
+
+        if ($this->hasRole(self::ROLE_AGENT_ATTRIBUTEUR)) {
+            return 'Agent attributeur';
+        }
+
+        if ($this->hasRole(self::ROLE_AGENT_GESTION_PERSONNEL)) {
+            return 'Agent gestion du personnel';
+        }
+
+        return 'rédacteur';
+    }
+
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->getRoles());
@@ -157,12 +194,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         $roles = $this->getRoles();
         if (
             !in_array($role, $roles)
-            && in_array($role, [
-                self::ROLE_AGENT,
-                self::ROLE_AGENT_REDACTEUR,
-                self::ROLE_AGENT_GESTION_PERSONNEL,
-                self::ROLE_AGENT_VALIDATEUR,
-            ])
+            && str_starts_with($role, 'ROLE_AGENT')
         ) {
             $roles[] = $role;
             $this->setRoles($roles);
@@ -205,14 +237,22 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->identifiant;
     }
 
-    public function getCategorieAgent(): ?CategorieAgent
+    public function getAdministration(): ?Administration
     {
-        return $this->categorieAgent;
+        return $this->administration;
     }
 
-    public function setCategorieAgent(?CategorieAgent $categorieAgent): Agent
+    public function setAdministration(?Administration $administration): Agent
     {
-        $this->categorieAgent = $categorieAgent;
+        if (null !== $administration) {
+            $this->administration = $administration;
+
+            foreach ($this->administration->getRoles() as $role) {
+                $this->addRole($role);
+            }
+
+            $this->setValide($this->administration->estAutoValide());
+        }
 
         return $this;
     }
@@ -224,7 +264,9 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setValide(bool $estValide): Agent
     {
-        $this->estValide = $estValide;
+        if (!$this->estValide) {
+            $this->estValide = $estValide;
+        }
 
         return $this;
     }
