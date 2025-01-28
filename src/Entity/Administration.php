@@ -17,12 +17,33 @@ enum Administration: string
         };
     }
 
-    public function estAutoValide(): bool
+    public function getRolesEligibles(): array
     {
-        return !empty($this->getRoles());
+        return match ($this) {
+            self::MINISTERE_JUSTICE => [
+                Agent::ROLE_AGENT_VALIDATEUR,
+                Agent::ROLE_AGENT_ATTRIBUTEUR,
+                Agent::ROLE_AGENT_REDACTEUR,
+                Agent::ROLE_AGENT_GESTION_PERSONNEL,
+                Agent::ROLE_AGENT_BUREAU_BUDGET,
+            ],
+            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
+        };
     }
 
-    public function getRoles(): array
+    /**
+     * Indique si un compte agent relié à cette administration est automatiquement validé. Et donc ne nécessité pas de
+     * validation de la part d'un agent disposant du rôle `ROLE_AGENT_GESTION_PERSONNEL`.
+     */
+    public function estAutoValide(): bool
+    {
+        return !empty($this->getRolesAutomatiques());
+    }
+
+    /**
+     * Liste des roles automatiquement octroyés à la première connexion.
+     */
+    public function getRolesAutomatiques(): array
     {
         return match ($this) {
             self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
@@ -39,5 +60,17 @@ enum Administration: string
         }
 
         return null;
+    }
+
+    public static function getRolesParAdministration(): array
+    {
+        return array_merge(
+            ...array_map(
+                fn (Administration $administration) => [
+                    $administration->value => $administration->getRolesEligibles(),
+                ],
+                self::cases()
+            )
+        );
     }
 }

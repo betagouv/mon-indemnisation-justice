@@ -2,10 +2,9 @@
 
 namespace MonIndemnisationJustice\Repository;
 
-use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use MonIndemnisationJustice\Entity\Agent;
 
 /**
  * @extends ServiceEntityRepository<Agent>
@@ -42,5 +41,20 @@ class AgentRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Retourne la liste des agents.
+     *
+     * @return Agent[]
+     */
+    public function getEnAttenteActivation(): array
+    {
+        return $this
+            ->createQueryBuilder('a')
+            ->where('a.estValide = false')
+            ->orderBy('a.dateCreation', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

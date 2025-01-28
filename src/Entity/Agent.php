@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -11,6 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\Table(name: 'agents')]
 #[ORM\UniqueConstraint(name: 'uniq_agent_identifiant', fields: ['identifiant'])]
+#[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['identifiant'], message: 'Cet identifiant correspond à un autre agent')]
 class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -67,7 +69,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     protected array $roles = [];
 
     /**
-     * Correspond au champs `idp_id` de ProConnect.
+     * Correspond à la propriété `idp_id` de ProConnect.
      *
      * La liste des organisations est définie ici https://grist.numerique.gouv.fr/o/docs/3kQ829mp7bTy/AgentConnect-Configuration-des-Fournisseurs-dIdentite
      */
@@ -75,8 +77,14 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(name: 'fournisseur_identite_uid', referencedColumnName: 'uid')]
     protected ?FournisseurIdentiteAgent $fournisseurIdentite = null;
 
-    public function __construct()
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
+    protected \DateTimeInterface $dateCreation;
+
+    #[ORM\PrePersist]
+    /** À la première sauvegarde, capturer la date de création */
+    public function onPrePersist(): void
     {
+        $this->dateCreation = new \DateTime();
     }
 
     public function getId(): ?int
@@ -157,7 +165,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRolePrimaire(): ?string
     {
-        if (null === $this->administration) {
+        if (null === $this->administration || !$this->estValide) {
             return null;
         }
 
@@ -247,7 +255,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         if (null !== $administration) {
             $this->administration = $administration;
 
-            foreach ($this->administration->getRoles() as $role) {
+            foreach ($this->administration->getRolesAutomatiques() as $role) {
                 $this->addRole($role);
             }
 
@@ -262,7 +270,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->estValide;
     }
 
-    public function setValide(bool $estValide): Agent
+    public function setValide(bool $estValide = true): Agent
     {
         if (!$this->estValide) {
             $this->estValide = $estValide;
@@ -320,6 +328,11 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     public function getNomComplet(): ?string
     {
         return "$this->prenom $this->nom";
+    }
+
+    public function getDateCreation(): \DateTimeInterface
+    {
+        return $this->dateCreation;
     }
 
     public function __toString(): string
