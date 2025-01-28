@@ -2,9 +2,10 @@
 
 namespace MonIndemnisationJustice\Controller\Agent;
 
+use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(Agent::ROLE_AGENT_GESTION_PERSONNEL)]
 #[Route('/agent/gestion')]
-class AdminController extends AbstractController
+class GestionAgentsController extends AbstractController
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
@@ -23,16 +24,13 @@ class AdminController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'app_admin_homepage')]
+    #[Route('/', name: 'gestion_agents_index', methods: ['GET'])]
     public function index(): Response
     {
-        $agents = $this->agentRepository->findByRoles([
-            Agent::ROLE_AGENT_VALIDATEUR,
-            Agent::ROLE_AGENT_REDACTEUR,
-        ]);
-
-        return $this->render('admin/default/index.html.twig', [
-            'agents' => $agents,
+        return $this->render('agent/gestion_agents/index.html.twig', [
+            'agents' => $this->agentRepository->getEnAttenteActivation(),
+            'administrations' => Administration::cases(),
+            'roles' => Administration::getRolesParAdministration(),
         ]);
     }
 

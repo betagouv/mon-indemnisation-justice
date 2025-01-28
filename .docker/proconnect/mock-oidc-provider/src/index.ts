@@ -37,7 +37,7 @@ server.service.addListener('beforeUserinfo', (userInfoResponse, req) => {
   /*
   userInfoResponse.body = {
     sub: 'c1722a03-4172-4015-9f0d-d1995d4cbe5c',
-    email: 'redacteur@test.fr',
+    email: 'redacteur@justice.gouv.fr',
     usual_name: "Chantal",
     given_name: "Redacteur",
     uid: '1234',
@@ -47,7 +47,7 @@ server.service.addListener('beforeUserinfo', (userInfoResponse, req) => {
   /*
   userInfoResponse.body = {
     sub: 'e316bde4-3d37-4ed8-9001-c40d9b07fe06',
-    email: 'police@test.fr',
+    email: 'policier@interieur.gouv.fr',
     usual_name: "Jerome",
     given_name: "Policier",
     uid: '567',

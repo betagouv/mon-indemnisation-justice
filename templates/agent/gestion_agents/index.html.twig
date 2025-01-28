@@ -1,0 +1,181 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration des utilisateurs{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .fr-select-group--error::before {
+            background-image:none;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block main %}
+    <div class="fr-container fr-mt-2w">
+        <div class="fr-grid-row">
+
+
+            <div class="fr-col-12">
+                <h2>Agents en attente de validation</h2>
+            </div>
+        </div>
+
+        <div class="fr-grid-row fr-grid-row--right fr-my-1w" style="align-items: center;">
+            <span class="fr-text--sm fr-mx-2w fr-my-0">Les changements ne sont pas encore sauvegardés</span>
+                <button class="fr-btn fr-btn--sm">
+                    Valider les 9 comptes
+                </button>
+        </div>
+
+        <div class="fr-grid-row fr-my-1w">
+            <div class="fr-col-12">
+
+
+                <div class="fr-table">
+                    <div class="fr-table__wrapper">
+                        <td class="fr-table__container">
+                            <t class="fr-table__content">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th class="fr-col-3">
+                                            Nom & adresse courriel
+                                        </th>
+                                        <th class="fr-col-4">
+                                            Administration
+                                        </th>
+                                        <th class="fr-col-4">
+                                            Niveau d'accès
+                                        </th>
+                                        <th class="fr-col-1"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="fr-col-3 fr-grid-row fr-grid-row--gutters" style="align-items: center;">
+                                            <p>
+                                                Jean MICHON
+                                                <br/>
+                                                <span class="fr-text--sm">jean.michon@interieur.gouv.fr</span>
+                                            </p>
+                                        </td>
+                                        <td class="fr-col-4 fr-grid-row fr-grid-row--gutters" style="align-items: center;">
+                                            <p>
+                                                Rattaché à la <b>Police Nationale</b>
+                                                <br/>
+                                                <span class="fr-text--sm">première connexion le 17 janvier 2025, 17h43</span>
+                                            </p>
+                                        </td>
+                                        <td class="fr-col-4 fr-grid-row fr-grid-row--right">
+
+                                                <div class="fr-select-group">
+                                                    <label class="fr-label" for="select">Permissions :</label>
+                                                    <select class="fr-select" id="select" name="select">
+                                                        <option value="" selected disabled hidden></option>
+                                                        {% for administration in administrations %}
+                                                            {% if administration.value == 'MJ' %}
+                                                                {% for role in administration.rolesEligibles %}
+                                                                    <option value="{{ role }}">{{ role }}</option>
+                                                                    {% endfor %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                        </td>
+                                        <td class="fr-col-1">
+                                            <div class="fr-grid-row fr-grid-row--right">
+                                                <span class="fr-icon-check-line fr-text-default--success" aria-hidden="true"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="fr-col-2 fr-grid-row fr-grid-row--gutters" style="align-items: center;">
+                                            <p>
+                                                Solène OLIVIER
+                                                <br/>
+                                                <span class="fr-text--sm">solene.olivier@beta.gouv.fr</span>
+                                            </p>
+                                        </td>
+                                        <td class="fr-col-4 fr-grid-row fr-grid-row--gutters" style="align-items: center;">
+                                            <div class="fr-select-group fr-select-group--error">
+                                                <label class="fr-label" for="select">Rattachement :</label>
+                                                <select class="fr-select" id="select" name="select">
+                                                    <option value="" selected disabled hidden></option>
+                                                    {% for administration in administrations %}
+                                                        <option value="{{ administration.value }}">{{ administration.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td class="fr-col-4 fr-grid-row fr-grid-row--right">
+
+                                                <div class="fr-select-group">
+                                                    <label class="fr-label" for="select">Permissions :</label>
+                                                    <select class="fr-select" id="select" name="select" disabled>
+                                                        <option value="" selected disabled hidden></option>
+                                                        {% for administration in administrations %}
+                                                            {% if administration.value == 'MJ' %}
+                                                                {% for role in administration.rolesEligibles %}
+                                                                    <option value="{{ role }}">{{ role }}</option>
+                                                                    {% endfor %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                        </td>
+                                        <td class="fr-col-1 ">
+                                            <div class="fr-grid-row fr-grid-row--right">
+                                                <span class="fr-icon-close-line fr-text-default--error" aria-hidden="true"></span>
+
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                    {#
+                                    {% if agents|length > 0 %}
+                                        {% set csrfToken =  csrf_token('activation_agent') %}
+                                        {% for agent in agents %}
+                                            <tr data-fr-js-table-row="true">
+                                                <td class="fr-col-6">{{ agent.email }}</td>
+                                                <td class="fr-col-5">{{ agent.plaintextRole }}</td>
+                                                <td class="fr-col-1">
+                                                    <form action="{{ url('agent_gestionnaire_activer_agent', { 'id' : agent.id}) }}" method="post">
+                                                        <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
+                                                        <div  class="fr-toggle">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="agentActif"
+                                                                class="fr-toggle__input"
+                                                                id="fr-toggle-agent-{{ agent.id }}"
+                                                                {% if agent.active %}checked{% endif %}
+                                                                {% if agent.id != app.user.id %}
+                                                                    onChange="this.form.submit()"
+                                                                {% else %}
+                                                                    disabled
+                                                                {% endif %}
+                                                            >
+                                                            <label
+                                                                class="fr-toggle__label"
+                                                                for="fr-toggle-agent-{{ agent.id }}"
+                                                                data-fr-checked-label="Activé"
+                                                                data-fr-unchecked-label="Désactivé"
+                                                            ></label>
+                                                        </div>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    #}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="fr-col-9"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
