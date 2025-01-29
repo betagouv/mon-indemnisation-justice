@@ -17,6 +17,23 @@ enum Administration: string
         };
     }
 
+    public function getLibelle(): string
+    {
+        return match ($this) {
+            self::MINISTERE_JUSTICE => 'Ministère de la Justice',
+            self::POLICE_NATIONALE => 'Police Nationale',
+            self::GENDARMERIE_NATIONALE => 'Gendarmerie Nationale',
+        };
+    }
+
+    public function estLibelleFeminin(): bool
+    {
+        return match ($this) {
+            self::MINISTERE_JUSTICE => false,
+            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => true,
+        };
+    }
+
     public function getRolesEligibles(): array
     {
         return match ($this) {
@@ -60,17 +77,5 @@ enum Administration: string
         }
 
         return null;
-    }
-
-    public static function getRolesParAdministration(): array
-    {
-        return array_merge(
-            ...array_map(
-                fn (Administration $administration) => [
-                    $administration->value => $administration->getRolesEligibles(),
-                ],
-                self::cases()
-            )
-        );
     }
 }
