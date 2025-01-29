@@ -28,6 +28,7 @@ security:
             provider: agent_provider
             custom_authenticators:
                 - MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator
+            entry_point: MonIndemnisationJustice\Security\EntryPoint\AgentAuthenticationEntryPoint
             #oidc:
             #    client: pro_connect
             #    check_path: /agent/connexion

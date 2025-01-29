@@ -21,10 +21,7 @@
 
 {% block javascripts %}
     <script id="react-arguments" type="application/json">
-    {
-        "administrations": {{ administrations|serialize('json')|raw }},
-        "agents": {{ agents|raw }}
-    }
+    {{ react|json_encode()|raw }}
   </script>
   {% if est_vite_server_actif() %}
       {% include '_vite_hmr_extra.html.twig' %}

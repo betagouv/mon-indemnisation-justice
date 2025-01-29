@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ReactDOM from "react-dom/client";
 import {disableReactDevTools} from '@/react/services/devtools.js';
 import {plainToInstance} from "class-transformer";
@@ -59,6 +59,7 @@ class Agent {
     public readonly courriel: string;
     public readonly administration: null | Administration;
     public readonly roles: string[];
+    public readonly datePremiereConnexion: Date;
 
     public nomComplet(): string {
         return `${this.prenom} ${this.nom.toUpperCase()}`;
@@ -83,7 +84,7 @@ class AgentValidation {
         })
     }
 
-    protected viderRoles() :void {
+    protected viderRoles(): void {
         // Vide la liste des rôles sans _muter_ la propriété roles
         this.roles.length = 0;
     }
@@ -148,6 +149,35 @@ class AgentValidationListe {
     get validationsValides(): AgentValidation[] {
         return this.validations.filter((v) => v.estValide());
     }
+
+    async sauvegarder() {
+        const response = await fetch(`${document.URL}.json`, {
+            method: 'POST',
+            body: JSON.stringify(
+                Object.fromEntries(
+                    this.validationsValides.map((validation) => [
+                        validation.agent.id,
+                        {
+                            administration: validation.administration.id,
+                            roles: validation.roles.concat('ROLE_AGENT')
+                        }
+                    ])
+                )
+            )
+        });
+
+        const { agents: _agts } = await response.json();
+
+        const agents: Agent[] = plainToInstance(Agent, (_agts as any[]).map((a) => {
+            return {
+                ...a,
+                datePremiereConnexion: new Date(a.datePremiereConnexion),
+                administration: administrations.find((adm) => adm.id == a.administration) ?? null
+            } as Agent
+        }))
+
+        this.validations = agents.map((agent) => new AgentValidation(agent));
+    }
 }
 
 const {administrations: _admins, agents: _agts} = JSON.parse(document.getElementById('react-arguments').textContent);
@@ -157,6 +187,7 @@ const administrations: Administration[] = plainToInstance(Administration, _admin
 const agents: Agent[] = plainToInstance(Agent, (_agts as any[]).map((a) => {
     return {
         ...a,
+        datePremiereConnexion: new Date(a.datePremiereConnexion),
         administration: administrations.find((adm) => adm.id == a.administration) ?? null
     } as Agent
 }))
@@ -209,7 +240,10 @@ const ValidationAgent = function ({agent: Agent}) {
 }
 */
 
-const ValidationAgentRow = observer(({validation}: { validation: AgentValidation }) => {
+const ValidationAgentRow = observer(({validation, editable = false}: {
+    validation: AgentValidation,
+    editable: boolean
+}) => {
     return (
         <tr key={`row-${validation.agent.id}`}>
             <td className="fr-col-3 fr-grid-row fr-grid-row--gutters">
@@ -232,7 +266,14 @@ const ValidationAgentRow = observer(({validation}: { validation: AgentValidation
                                    title="Changer"
                                    onClick={() => validation.reinitialiser()}></a>}
                             <br/>
-                            <span className="fr-text--sm">première connexion le 17 janvier 2025, 17h43</span>
+                            <span className="fr-text--sm">première connexion le {validation.agent.datePremiereConnexion.toLocaleString('fr-FR', {
+                                weekday: 'long',
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: 'numeric',
+                                minute: 'numeric',
+                            })}</span>
                         </p>
                     ) :
                     (
@@ -243,6 +284,7 @@ const ValidationAgentRow = observer(({validation}: { validation: AgentValidation
                             <select
                                 className="fr-select"
                                 defaultValue={""}
+                                disabled={!editable}
                                 id={`selection-administration-${validation.agent.id}`}
                                 onChange={(e) => validation.administration = e.target.value}
                             >
@@ -268,15 +310,18 @@ const ValidationAgentRow = observer(({validation}: { validation: AgentValidation
                         </legend>
 
                         {validation.administration?.roles.map((role: string) => (
-                            <div key={`permission-${validation.agent.id}-${role.toLowerCase()}`} className="fr-fieldset__element">
+                            <div key={`permission-${validation.agent.id}-${role.toLowerCase()}`}
+                                 className="fr-fieldset__element">
                                 <div className="fr-checkbox-group">
                                     <input
                                         id={`input-permission-${validation.agent.id}-${role.toLowerCase()}`}
                                         type="checkbox"
+                                        disabled={!editable}
                                         checked={validation.aRole(role)}
                                         onChange={(e) => validation.definirRole(role, e.target.checked)}
                                         aria-describedby="checkbox-53-messages"/>
-                                    <label className="fr-label" htmlFor={`input-permission-${validation.agent.id}-${role.toLowerCase()}`}>
+                                    <label className="fr-label"
+                                           htmlFor={`input-permission-${validation.agent.id}-${role.toLowerCase()}`}>
                                         {libelleRoles[role]?.libelle}
                                         <span className="fr-hint-text">{libelleRoles[role]?.description}</span>
                                     </label>
@@ -324,6 +369,14 @@ const ValidationAgentRow = observer(({validation}: { validation: AgentValidation
 });
 
 const ValidationAgentApp = observer(({liste}: { liste: AgentValidationListe }) => {
+    const [sauvegardeEnCours, setSauvegardeEnCours] = useState(false);
+
+    const sauvegarder = async () => {
+        setSauvegardeEnCours(true);
+        await liste.sauvegarder();
+        setSauvegardeEnCours(false);
+    }
+
     return (
         <>
             <div className="fr-grid-row">
@@ -335,8 +388,16 @@ const ValidationAgentApp = observer(({liste}: { liste: AgentValidationListe }) =
             </div>
 
             <div className="fr-grid-row fr-grid-row--right fr-my-1w fr-grid-row--middle">
-                <span className="fr-text--sm fr-mx-2w fr-my-0">Les changements ne sont pas encore sauvegardés</span>
-                <button className="fr-btn fr-btn--sm" disabled={liste.validationsValides.length == 0}>
+                <span className="fr-text--sm fr-mx-2w fr-my-0">
+                    {sauvegardeEnCours ? "Sauvegarde en cours..." :
+                        "Les changements ne sont pas encore sauvegardés"
+                    }
+                </span>
+                <button
+                    className="fr-btn fr-btn--sm"
+                    disabled={sauvegardeEnCours || (liste.validationsValides.length == 0)}
+                    onClick={async () => sauvegarder()}
+                >
                     {liste.validationsValides.length == 0 && "Valider"}
                     {liste.validationsValides.length == 1 && "Valider le compte"}
                     {liste.validationsValides.length > 1 && `Valider les ${liste.validationsValides.length} comptes`}
@@ -367,8 +428,12 @@ const ValidationAgentApp = observer(({liste}: { liste: AgentValidationListe }) =
                                         </thead>
                                         <tbody>
                                         {
-                                            liste.validations.map((validation) => <ValidationAgentRow
-                                                key={validation.agent.id} validation={validation}/>)
+                                            liste.validations.map((validation) =>
+                                                <ValidationAgentRow
+                                                    key={validation.agent.id}
+                                                    validation={validation}
+                                                    editable={!sauvegardeEnCours}
+                                                />)
                                         }
                                         </tbody>
                                     </table>
