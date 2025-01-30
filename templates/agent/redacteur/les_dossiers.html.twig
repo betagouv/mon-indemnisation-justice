@@ -1,0 +1,176 @@
+{% extends 'agent/redacteur/base_liste_dossiers.html.twig' %}
+
+{% block title %}Nouveaux dossiers{% endblock title %}
+
+
+{% block contenu %}
+    <div class="fr-container">
+    <div class="fr-grid-row">
+        <h3>Les dossiers</h3>
+    </div>
+
+    <div class="fr-grid-row fr-grid-row--gutters fr-p-2w fr-mb-2w"
+         style="border: 1px solid var(--grey-975-100-active);">
+        <div class="fr-col-12">
+            <h5 class="fr-m-0">Recherche</h5>
+        </div>
+        <!--
+        Champs
+        * type / code NAC (<select>)
+        * champs texte libre (<input type=search>)
+        * statut (<select>)
+        * rédacteur (<select>)
+        * date dépôt (2x <input type=date> OU segmented https://storybook.systeme-de-design.gouv.fr/?path=/story/segmented--segmented-story&globals=viewport:lg)
+        * date dernier statut (2x <input type=date> OU segmented https://storybook.systeme-de-design.gouv.fr/?path=/story/segmented--segmented-story&globals=viewport:lg)
+        -->
+
+        <div class="fr-col-4">
+
+            <div class="fr-input-group" id="input-group-168">
+                <label class="fr-label" for="input-47">Filtre <span class="fr-hint-text">Nom, prénom du requérant, adresse, etc...</span></label>
+                <input class="fr-input" aria-describedby="input-47-messages" name="input1" id="input-47" type="search">
+            </div>
+
+        </div>
+
+        <div class="fr-col-4">
+
+            <div class="fr-select-group">
+                <label class="fr-label" for="storybook-select-34">
+                    Statut du dossier
+                    <span class="fr-hint-text">&zwnj;</span>
+                </label>
+                <select class="fr-select" aria-describedby="storybook-select-34-messages" id="storybook-select-34"
+                        name="storybook-select-34">
+                    <option value="" selected disabled hidden>Sélectionnez une option</option>
+                    <option value="option1">
+                        À instruire
+                    </option>
+                    <option value="option1">
+                        À valider
+                    </option>
+                </select>
+                <div class="fr-messages-group" id="storybook-select-34-messages" aria-live="polite">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="fr-col-4">
+
+            <fieldset class="fr-fieldset" id="storybook-form"
+                      aria-labelledby="storybook-form-legend storybook-form-messages">
+                <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="storybook-form-legend">
+                    Rédacteur attribué
+                    <span class="fr-hint-text">&zwnj;</span>
+                </legend>
+                <div class="fr-fieldset__element">
+                    <div class="fr-checkbox-group">
+                        <input name="checkbox1" id="checkbox-73" type="checkbox"
+                               aria-describedby="checkbox-73-messages">
+                        <label class="fr-label" for="checkbox-73">Aucun <i class="fr-mx-1v">(non attribué)</i></label>
+                        <div class="fr-messages-group" id="checkbox-73-messages" aria-live="polite">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fr-fieldset__element">
+                    <div class="fr-checkbox-group">
+                        <input name="checkbox1" id="checkbox-73" type="checkbox"
+                               aria-describedby="checkbox-73-messages">
+                        <label class="fr-label" for="checkbox-73">Ingrid ROMARE</label>
+                        <div class="fr-messages-group" id="checkbox-73-messages" aria-live="polite">
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-fieldset__element">
+                    <div class="fr-checkbox-group">
+                        <input name="checkbox2" id="checkbox-74" type="checkbox"
+                               aria-describedby="checkbox-74-messages">
+                        <label class="fr-label" for="checkbox-74">Axel GUYON-PEGOROTTO</label>
+                        <div class="fr-messages-group" id="checkbox-74-messages" aria-live="polite">
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-fieldset__element">
+                    <div class="fr-checkbox-group">
+                        <input name="checkbox3" id="checkbox-75" type="checkbox"
+                               aria-describedby="checkbox-75-messages">
+                        <label class="fr-label" for="checkbox-75">Adama FAYE</label>
+                        <div class="fr-messages-group" id="checkbox-75-messages" aria-live="polite">
+                        </div>
+                    </div>
+                </div>
+                <div class="fr-messages-group" id="storybook-form-messages" aria-live="polite">
+                </div>
+            </fieldset>
+
+        </div>
+
+    </div>
+
+    <div class="fr-grid-row">
+        <!-- Tableau -->
+        <div class="fr-col-12">
+            <div class="fr-table" id="prec-tableau-dossiers-nouveauxs_container">
+                <div class="fr-table__wrapper">
+                    <div class="fr-table__container">
+                        <div class="fr-table__content">
+                            <table id="prec-tableau-dossiers-nouveaux">
+                                <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Référence
+                                    </th>
+                                    <th scope="col">
+                                        Nom / Prénom
+                                    </th>
+                                    <th scope="col">
+                                        État
+                                    </th>
+                                    <th scope="col">
+                                        Déposé le
+                                    </th>
+                                    <th scope="col">
+                                        <span class="fr-hidden">Action</span>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for dossier in dossiers %}
+                                    <tr>
+                                        <td>
+                                            {{ dossier.reference }}
+                                        </td>
+                                        <td>
+                                            {{ dossier.requerant.personnePhysique.prenom1 }} {{ dossier.requerant.personnePhysique.nom }}
+                                        </td>
+                                        <td>
+                                            <p class="fr-badge fr-badge--info fr-badge--no-icon">À instruire</p>
+                                        </td>
+                                        <td>
+                                            {{ dossier.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM YYYY") }}
+                                        </td>
+                                        <td>
+                                            <a class="fr-btn fr-btn--icon fr-btn--icon-right fr-icon-eye-line fr-btn--sm">
+                                                Consulter
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5">
+                                            <p class="fr-p-2w">Aucun dossier correspondant</p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock contenu %}
