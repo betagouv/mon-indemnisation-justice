@@ -13,6 +13,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -27,11 +28,14 @@ class BrisPorteController extends RequerantController
     ) {
     }
 
-    #[IsGranted('edit', subject: 'brisPorte')]
     #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function edit(
         #[MapEntity(id: 'id')] BrisPorte $brisPorte): Response
     {
+        if ($brisPorte->getRequerant() !== $this->getUser()) {
+            throw new AccessDeniedHttpException();
+        }
+
         return $this->render('prejudice/declare_bris_porte.html.twig', [
             'brisPorte' => $brisPorte,
             'pays' => $this->geoPaysRepository->getListeTriee(),
