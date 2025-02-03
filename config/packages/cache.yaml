@@ -5,3 +5,10 @@ framework:
         pools:
             oidc:
                 adapter: cache.adapter.filesystem
+
+when@dev:
+    framework:
+        cache:
+            pools:
+                oidc:
+                    adapter: cache.adapter.null
