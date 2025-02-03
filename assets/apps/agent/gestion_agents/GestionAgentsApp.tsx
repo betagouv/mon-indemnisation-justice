@@ -3,7 +3,12 @@ import ReactDOM from "react-dom/client";
 import {disableReactDevTools} from '@/react/services/devtools.js';
 import {plainToInstance} from "class-transformer";
 import {observer} from "mobx-react-lite"
-import {action, computed, makeObservable, observable} from "mobx";
+import {
+    Agent,
+    Administration,
+    RequeteAgentValidation,
+    RequeteAgentValidationListe
+} from "@/apps/agent/gestion_agents/models/index.ts";
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
@@ -45,154 +50,14 @@ const libelleRoles = {
     },
 }
 
-class Administration {
-    public readonly id: string;
-    public readonly libelle: string;
-    public readonly estLibelleFeminin: boolean;
-    public readonly roles: string[];
-}
 
-class Agent {
-    public readonly id: number;
-    public readonly nom: string;
-    public readonly prenom: string;
-    public readonly courriel: string;
-    public readonly administration: null | Administration;
-    public readonly roles: string[];
-    public readonly datePremiereConnexion: Date;
+const {administrations, agents: _agts} = JSON.parse(document.getElementById('react-arguments').textContent);
 
-    public nomComplet(): string {
-        return `${this.prenom} ${this.nom.toUpperCase()}`;
-    }
-}
+Administration.charger(administrations)
 
-class AgentValidation {
-    public readonly agent: Agent;
-    private _administration: null | Administration;
-    public roles: null | string[];
+const agents: Agent[] = plainToInstance(Agent, (_agts as any[]));
 
-    constructor(agent: Agent) {
-        this.agent = agent;
-        this._administration = null
-        this.roles = this.agent.roles.filter((role) => role !== 'ROLE_AGENT')
-        makeObservable(this, {
-            _administration: observable,
-            administration: computed,
-            roles: observable,
-            reinitialiser: action,
-            definirRole: action,
-        })
-    }
-
-    protected viderRoles(): void {
-        // Vide la liste des rôles sans _muter_ la propriété roles
-        this.roles.length = 0;
-    }
-
-    public reinitialiser(): void {
-        this._administration = null;
-        this.viderRoles();
-    }
-
-    aRole(role: string): boolean {
-        return this.roles.includes(role);
-    }
-
-    public definirRole(role: string, estOctroye: boolean = true): void {
-        if (estOctroye) {
-            this.ajouterRole(role);
-        } else {
-            this.retirerRole(role);
-        }
-    }
-
-    protected ajouterRole(role: string): void {
-        if (!this.aRole(role)) {
-            this.roles.push(role)
-        }
-    }
-
-    protected retirerRole(role: string): void {
-        // Suppression d'un élément de la liste de manière mutable
-        this.roles.splice(this.roles.indexOf(role), 1)
-    }
-
-    get administration(): Administration | null {
-        return this.agent.administration ?? this._administration;
-    }
-
-    set administration(value: string | null) {
-        this._administration = administrations.find((a) => a.id == value) ?? null;
-        this.viderRoles();
-        // Si l'administration ne permet qu'un seul rôle, on l'ajoute automatiquement
-        if (this._administration.roles.length == 1) {
-            this.ajouterRole(this._administration.roles.at(0))
-        }
-    }
-
-    public estValide(): boolean {
-        return this.administration && (this.agent.roles.filter((role) => role !== 'ROLE_AGENT').length > 0 || this.roles.length > 0);
-    }
-}
-
-class AgentValidationListe {
-    public validations: AgentValidation[] = [];
-
-    constructor(agents: Agent[]) {
-        makeObservable(this, {
-            validations: observable,
-            validationsValides: computed,
-        })
-        this.validations = agents.map((agent) => new AgentValidation(agent));
-    }
-
-    get validationsValides(): AgentValidation[] {
-        return this.validations.filter((v) => v.estValide());
-    }
-
-    async sauvegarder() {
-        const response = await fetch(`${document.URL}.json`, {
-            method: 'POST',
-            body: JSON.stringify(
-                Object.fromEntries(
-                    this.validationsValides.map((validation) => [
-                        validation.agent.id,
-                        {
-                            administration: validation.administration.id,
-                            roles: validation.roles.concat('ROLE_AGENT')
-                        }
-                    ])
-                )
-            )
-        });
-
-        const { agents: _agts } = await response.json();
-
-        const agents: Agent[] = plainToInstance(Agent, (_agts as any[]).map((a) => {
-            return {
-                ...a,
-                datePremiereConnexion: new Date(a.datePremiereConnexion),
-                administration: administrations.find((adm) => adm.id == a.administration) ?? null
-            } as Agent
-        }))
-
-        this.validations = agents.map((agent) => new AgentValidation(agent));
-    }
-}
-
-const {administrations: _admins, agents: _agts} = JSON.parse(document.getElementById('react-arguments').textContent);
-
-const administrations: Administration[] = plainToInstance(Administration, _admins)
-
-const agents: Agent[] = plainToInstance(Agent, (_agts as any[]).map((a) => {
-    return {
-        ...a,
-        datePremiereConnexion: new Date(a.datePremiereConnexion),
-        administration: administrations.find((adm) => adm.id == a.administration) ?? null
-    } as Agent
-}))
-
-const validations = new AgentValidationListe(agents)
+const validations = new RequeteAgentValidationListe(agents)
 
 const root = ReactDOM.createRoot(document.getElementById('react-app-agent-gestion-agents'));
 
@@ -241,7 +106,7 @@ const ValidationAgent = function ({agent: Agent}) {
 */
 
 const ValidationAgentRow = observer(({validation, editable = false}: {
-    validation: AgentValidation,
+    validation: RequeteAgentValidation,
     editable: boolean
 }) => {
     return (
@@ -286,7 +151,7 @@ const ValidationAgentRow = observer(({validation, editable = false}: {
                                 defaultValue={""}
                                 disabled={!editable}
                                 id={`selection-administration-${validation.agent.id}`}
-                                onChange={(e) => validation.administration = e.target.value}
+                                onChange={(e) => validation.administration = Administration.resoudre(e.target.value)}
                             >
                                 <option value="" disabled hidden></option>
                                 {administrations.map((administration) => <option
@@ -368,7 +233,7 @@ const ValidationAgentRow = observer(({validation, editable = false}: {
         ;
 });
 
-const ValidationAgentApp = observer(({liste}: { liste: AgentValidationListe }) => {
+const ValidationAgentApp = observer(({liste}: { liste: RequeteAgentValidationListe }) => {
     const [sauvegardeEnCours, setSauvegardeEnCours] = useState(false);
 
     const sauvegarder = async () => {
