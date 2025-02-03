@@ -102,21 +102,21 @@ services:
       - "5173:5173"
 
   proconnect:
-    image: node:22
+    image: pierrelemee/mock-oidc-server
     hostname: proconnect
     networks:
       mijnet:
         aliases:
           - proconnect
-    command: bash -c 'yarn install && yarn dev'
     ports:
       - '9998:9998'
     environment:
       PORT: 9998
       HOST: '0.0.0.0'
+      USERS: "/app/data/users.json"
     working_dir: /app
     volumes:
-      - ~/Perso/mock-oidc-server:/app
+      - ./.docker/proconnect:/app/data/
 
 
 networks:
