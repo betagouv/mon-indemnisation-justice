@@ -93,7 +93,6 @@ jobs:
 
       - name: Running unit test
         run: |
-          env | grep MAILPIT
           bin/phpunit --log-junit test-result.xml
 
       - name: Check test result file exists

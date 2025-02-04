@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration des utilisateurs{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .fr-select-group--error::before {
+            background-image:none;
+        }
+
+        a:not([href])[role=button] {
+            color: var(--text-action-high-blue-france);
+            cursor:pointer;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block main %}
+    <div id="react-app-agent-gestion-agents"></div>
+{% endblock %}
+
+{% block javascripts %}
+    <script id="react-arguments" type="application/json">
+    {{ react|json_encode()|raw }}
+  </script>
+  {% if est_vite_server_actif() %}
+      {% include '_vite_hmr_extra.html.twig' %}
+  {% endif %}
+
+    {{ vite_entry_script_tags('agent/gestion_agents') }}
+
+    {{ parent() }}
+{% endblock javascripts %}

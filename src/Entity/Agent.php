@@ -2,19 +2,22 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use MonIndemnisationJustice\Repository\AgentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\Table(name: 'agents')]
-#[ORM\UniqueConstraint(name: 'uniq_agent_email', fields: ['email'])]
-#[UniqueEntity(fields: ['email'], message: 'Cet adresse courriel est déjà attribuée à un agent')]
+#[ORM\UniqueConstraint(name: 'uniq_agent_identifiant', fields: ['identifiant'])]
+#[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(fields: ['identifiant'], message: 'Cet identifiant correspond à un autre agent')]
 class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    // Le role ROLE_AGENT est donné à chaque agent de la fonction publique
+    public const ROLE_AGENT = 'ROLE_AGENT';
     // Le role ROLE_AGENT_REDACTEUR est donné au rédacteur du pôle précontentieux
     public const ROLE_AGENT_REDACTEUR = 'ROLE_AGENT_REDACTEUR';
     // Le rôle ROLE_AGENT_GESTION_PERSONNEL peut ajouter ou activer / désactiver un compte rédacteur
@@ -24,10 +27,22 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     // un dossier d'indemnisation et signe la lettre qui l'officialise.
     public const ROLE_AGENT_VALIDATEUR = 'ROLE_AGENT_VALIDATEUR';
 
+    public const ROLE_AGENT_ATTRIBUTEUR = 'ROLE_AGENT_ATTRIBUTEUR';
+
+    public const ROLE_AGENT_BUREAU_BUDGET = 'ROLE_AGENT_BUREAU_BUDGET';
+
+    public const ROLE_AGENT_FORCES_DE_L_ORDRE = 'ROLE_AGENT_FORCES_DE_L_ORDRE';
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     protected ?int $id;
+
+    #[ORM\Column(nullable: false)]
+    protected string $identifiant;
+
+    #[ORM\Column(nullable: false)]
+    protected string $uid;
 
     #[ORM\Column(length: 180)]
     protected string $email;
@@ -38,30 +53,85 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 30)]
     protected string $prenom;
 
+    #[ORM\Column(type: 'string', nullable: true, enumType: Administration::class)]
+    protected ?Administration $administration = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $donnesAuthentification;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    protected bool $estValide = false;
+
     /**
      * @var string[] la liste des rôles assignée à l'agent
      */
     #[ORM\Column(type: 'simple_array')]
     protected array $roles = [];
-    #[ORM\Column(nullable: true)]
-    protected ?string $motDePasse = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateChangementMDP = null;
+    /**
+     * Correspond à la propriété `idp_id` de ProConnect.
+     *
+     * La liste des organisations est définie ici https://grist.numerique.gouv.fr/o/docs/3kQ829mp7bTy/AgentConnect-Configuration-des-Fournisseurs-dIdentite
+     */
+    #[ORM\ManyToOne(targetEntity: FournisseurIdentiteAgent::class)]
+    #[ORM\JoinColumn(name: 'fournisseur_identite_uid', referencedColumnName: 'uid')]
+    protected ?FournisseurIdentiteAgent $fournisseurIdentite = null;
 
-    #[ORM\Column(type: 'string', length: 12, nullable: true)]
-    protected ?string $jetonVerification;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
+    protected \DateTimeInterface $dateCreation;
 
-    #[ORM\Column(type: 'boolean', options: ['default' => true])]
-    protected bool $estActif = true;
-
-    public function __construct()
+    #[ORM\PrePersist]
+    /** À la première sauvegarde, capturer la date de création */
+    public function onPrePersist(): void
     {
+        $this->dateCreation = new \DateTime();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getIdentifiant(): string
+    {
+        return $this->identifiant;
+    }
+
+    public function setIdentifiant(string $identifiant): Agent
+    {
+        $this->identifiant = $identifiant;
+
+        return $this;
+    }
+
+    public function getUid(): string
+    {
+        return $this->uid;
+    }
+
+    public function setUid(string $uid): Agent
+    {
+        $this->uid = $uid;
+
+        return $this;
+    }
+
+    public function getFournisseurIdentite(): FournisseurIdentiteAgent
+    {
+        return $this->fournisseurIdentite;
+    }
+
+    public function setFournisseurIdentite(?FournisseurIdentiteAgent $fournisseurIdentite): Agent
+    {
+        if (null !== $fournisseurIdentite) {
+            $this->fournisseurIdentite = $fournisseurIdentite;
+
+            if ($this->fournisseurIdentite->getAdministration()) {
+                $this->setAdministration($this->fournisseurIdentite->getAdministration());
+            }
+        }
+
+        return $this;
     }
 
     public function getEmail(): string
@@ -93,6 +163,35 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return ucfirst(implode(', ', $roles));
     }
 
+    public function getRolePrimaire(): ?string
+    {
+        if (null === $this->administration || !$this->estValide) {
+            return null;
+        }
+
+        if (Administration::MINISTERE_JUSTICE !== $this->administration) {
+            return "Forces de l'ordre";
+        }
+
+        if ($this->hasRole(self::ROLE_AGENT_BUREAU_BUDGET)) {
+            return 'Agent du bureau du budget';
+        }
+
+        if ($this->hasRole(self::ROLE_AGENT_VALIDATEUR)) {
+            return 'Agent validateur';
+        }
+
+        if ($this->hasRole(self::ROLE_AGENT_ATTRIBUTEUR)) {
+            return 'Agent attributeur';
+        }
+
+        if ($this->hasRole(self::ROLE_AGENT_GESTION_PERSONNEL)) {
+            return 'Agent gestion du personnel';
+        }
+
+        return 'rédacteur';
+    }
+
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->getRoles());
@@ -103,11 +202,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         $roles = $this->getRoles();
         if (
             !in_array($role, $roles)
-            && in_array($role, [
-                self::ROLE_AGENT_REDACTEUR,
-                self::ROLE_AGENT_GESTION_PERSONNEL,
-                self::ROLE_AGENT_VALIDATEUR,
-            ])
+            && str_starts_with($role, 'ROLE_AGENT')
         ) {
             $roles[] = $role;
             $this->setRoles($roles);
@@ -147,7 +242,55 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return $this->email;
+        return $this->identifiant;
+    }
+
+    public function getAdministration(): ?Administration
+    {
+        return $this->administration;
+    }
+
+    public function setAdministration(?Administration $administration): Agent
+    {
+        if (null !== $administration) {
+            $this->administration = $administration;
+
+            foreach ($this->administration->getRolesAutomatiques() as $role) {
+                $this->addRole($role);
+            }
+
+            $this->setValide($this->administration->estAutoValide());
+        }
+
+        return $this;
+    }
+
+    public function estValide(): bool
+    {
+        return $this->estValide;
+    }
+
+    public function setValide(bool $estValide = true): Agent
+    {
+        if (!$this->estValide) {
+            $this->estValide = $estValide;
+        }
+
+        return $this;
+    }
+
+    public function setDonnesAuthentification(array|string|null $donnesAuthentification): Agent
+    {
+        if (null !== $donnesAuthentification) {
+            $this->donnesAuthentification = (is_array($donnesAuthentification) ? (json_encode($donnesAuthentification) ?? '') : $donnesAuthentification);
+        }
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return null;
     }
 
     /**
@@ -171,26 +314,10 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): ?string
-    {
-        return $this->motDePasse;
-    }
-
-    public function setPassword(string $motDePasse): self
-    {
-        $this->motDePasse = $motDePasse;
-
-        return $this;
-    }
-
-    /**
      * @see UserInterface
      */
     public function eraseCredentials(): void
     {
-        $this->motDePasse = null;
     }
 
     public function getUsername(): ?string
@@ -198,53 +325,14 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function getDateChangementMDP(): ?\DateTimeInterface
-    {
-        return $this->dateChangementMDP;
-    }
-
-    public function setDateChangementMDP(?\DateTimeInterface $dateChangementMDP): self
-    {
-        $this->dateChangementMDP = $dateChangementMDP;
-
-        return $this;
-    }
-
-    public function getJetonVerification(): ?string
-    {
-        return $this->jetonVerification;
-    }
-
-    public function genererJetonVerification(): void
-    {
-        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $this->jetonVerification = '';
-
-        for ($i = 0; $i < 12; ++$i) {
-            $this->jetonVerification .= $alphabet[random_int(0, strlen($alphabet) - 1)];
-        }
-    }
-
-    public function supprimerJetonVerification(): void
-    {
-        $this->jetonVerification = null;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->estActif;
-    }
-
-    public function setActive(bool $active): static
-    {
-        $this->estActif = $active;
-
-        return $this;
-    }
-
     public function getNomComplet(): ?string
     {
         return "$this->prenom $this->nom";
+    }
+
+    public function getDateCreation(): \DateTimeInterface
+    {
+        return $this->dateCreation;
     }
 
     public function __toString(): string

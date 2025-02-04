@@ -1,6 +1,36 @@
 # Installation
 
-Avant tout, éditez un fichier `.env.local` en reprenant les valeurs déclarées dans `.env.internet`.
+
+## Génération des certificats HTTPS
+
+Nous allons avoir besoin d'accéder au site via HTTPS, et ce même en développement. En effet, l'authentification se fait
+via ProConnect pour les agents ou FranceConnect pour les requérants. Aussi l'échange de données doit se faire de manière
+sécurisée.
+
+En local, on va utiliser l'outil `mkcert` qui permet de générer des **certificats locaux** (i.e. "self trusted').
+
+Pour cela, jouer les commandes suivantes, _avant_ de démarrer les conteneurs Docker (les certificats sont requis pour
+construire l'image du server web `nginx`):
+
+```bash
+cd .docker/nginx/ssl
+
+# Optionnel, si le certificat racine (i.e. le fichier `rootCA.pem` n'est pas encore présent)
+CAROOT=$(pwd) mkcert -install
+# Sous MacOSX, déclaré le certificat fiable
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$(pwd)/rootCA.pem"
+# Convertir le certificat racine au format .crt
+openssl x509 -inform PEM -in "$(pwd)/rootCA.pem" -out rootCA.crt
+
+for domain in mon-indemnisation.anje-justice.dev mon-indemnisation.anje-justice.test proconnect.anje-justice.test; do
+  # Génération
+  CAROOT=$(pwd) mkcert "${domain}"
+  # Register domain as local domain
+  echo "127.0.0.1 ${domain}" | sudo tee -a /etc/hosts
+done
+````
+
+Avant tout, éditez un fichier `.env.dev` en reprenant les valeurs déclarées dans `.env.dist`.
 
 Ensuite, démarrer le projet via `docker compose`:
 

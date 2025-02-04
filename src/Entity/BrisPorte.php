@@ -4,12 +4,12 @@ namespace MonIndemnisationJustice\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Patch;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -272,7 +272,6 @@ class BrisPorte
         return $this;
     }
 
-
     public function getRaccourci(): ?string
     {
         return $this->raccourci;
@@ -378,7 +377,6 @@ class BrisPorte
 
         return $this;
     }
-
 
     public function getNumeroParquet(): ?string
     {

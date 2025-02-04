@@ -28,4 +28,4 @@ jobs:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
         run: |
           clever link $CC_APP_ID
-          clever deploy --alias precontentieux-dev --force
+          clever deploy --alias precontentieux-dev --force --same-commit-policy restart
