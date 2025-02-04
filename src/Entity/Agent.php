@@ -325,9 +325,9 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function getNomComplet(): ?string
+    public function getNomComplet($capital = false): ?string
     {
-        return "$this->prenom $this->nom";
+        return sprintf('%s %s', $this->prenom, $capital ? strtoupper($this->nom) : $this->nom);
     }
 
     public function getDateCreation(): \DateTimeInterface

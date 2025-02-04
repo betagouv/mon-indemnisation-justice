@@ -44,6 +44,16 @@ class AgentRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne la liste des agents disposant explicitement du rôle 'ROLE_AGENT_REDACTEUR'.
+     *
+     * @return Agent[]
+     */
+    public function getRedacteurs(): array
+    {
+        return $this->findByRoles([Agent::ROLE_AGENT_REDACTEUR]);
+    }
+
+    /**
      * Retourne la liste des agents.
      *
      * @return Agent[]
