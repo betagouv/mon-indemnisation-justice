@@ -6,29 +6,31 @@ enum EtatDossierType: string
 {
     case DOSSIER_INITIE = 'DOSSIER_INITIE';
     case DOSSIER_DEPOSE = 'DOSSIER_DEPOSE';
-    case DOSSIER_PRE_VALIDE = 'DOSSIER_PRE_VALIDE';
-
-    case DOSSIER_PRE_REFUSE = 'DOSSIER_PRE_REFUSE';
     case DOSSIER_ACCEPTE = 'DOSSIER_ACCEPTE';
 
-    case DOSSIER_REFUSE = 'DOSSIER_REFUSE';
+    case DOSSIER_REJETE = 'DOSSIER_REJETE';
 
-    /*
-    case RENVOI_EN_CONSTITUTION = 'RENVOI_EN_CONSTITUTION';
-    case VALIDE = 'VALIDE';
-    case REJETE = 'REJETE';
-    case SIGNATURE_VALIDEE = 'SIGNATURE_VALIDEE';
-    case SIGNATURE_REJETEE = 'SIGNATURE_REJETEE';
-    case ACCORD_OFFRE = 'ACCORD_OFFRE';
-    case REFUS_OFFRE = 'REFUS_OFFRE';
-     */
+    public function slugAction(): string
+    {
+        return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $this->libelleAction())));
+    }
+
+    public function libelleAction(): string
+    {
+        return match ($this) {
+            self::DOSSIER_INITIE => 'À finaliser',
+            self::DOSSIER_DEPOSE => 'À instruire',
+            self::DOSSIER_ACCEPTE => 'À valider (accepté)',
+            self::DOSSIER_REJETE => 'À valider (rejeté)',
+        };
+    }
 
     public function getLibelle(): string
     {
         return match ($this) {
             self::DOSSIER_INITIE => "Demande d'indemnisation en cours de constitution",
             self::DOSSIER_DEPOSE => "Demande d'indemnisation déposée",
-            self::DOSSIER_PRE_VALIDE => "Demande d'indemnisation validée (en attente signature)",
+            self::DOSSIER_ACCEPTE => "Demande d'indemnisation validée (en attente signature)",
             /*
             self::RENVOI_EN_CONSTITUTION => "Demande de pièce(s) complémentaire(s) sur la demande d'indemnisation",
             self::VALIDE => "Demande d'indemnisation validée (en attente signature)",
@@ -40,6 +42,4 @@ enum EtatDossierType: string
             */
         };
     }
-
-
 }
