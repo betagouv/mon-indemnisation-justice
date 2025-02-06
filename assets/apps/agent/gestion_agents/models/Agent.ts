@@ -29,7 +29,6 @@ export class Agent {
         return this._administration;
     }
 
-    @Expose()
     set administration(value: Administration | string | null) {
         this._administration = typeof value === 'string' ? Administration.resoudre(value) : value;
     }

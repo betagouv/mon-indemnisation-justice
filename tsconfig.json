@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "bundler",
     "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": true,

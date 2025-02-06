@@ -2,12 +2,11 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use MonIndemnisationJustice\Repository\RequerantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Selectable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\RequerantRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -68,7 +67,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    /** @type Collection<BrisPorte> $brisPorte */
+    /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
 
     public function __construct()
@@ -276,12 +275,13 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPersonneMorale(?PersonneMorale $personneMorale): Requerant
     {
         $this->personneMorale = $personneMorale;
+
         return $this;
     }
 
-    public function getNomCourant(bool $civilite = false): string
+    public function getNomCourant(bool $civilite = false, bool $capital = false): string
     {
-        return $this->getPersonnePhysique()?->getNomCourant($civilite);
+        return $this->getPersonnePhysique()?->getNomCourant($civilite, $capital);
     }
 
     public function getNomComplet(): ?string

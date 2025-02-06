@@ -5,7 +5,7 @@ import {plainToInstance} from "class-transformer";
 
 export class RequeteAgentValidation {
     public readonly agent: Agent;
-    private _administration: null | Administration;
+    protected _administration: null | Administration;
     public roles: null | string[];
 
     constructor(agent: Agent) {
@@ -18,7 +18,7 @@ export class RequeteAgentValidation {
             roles: observable,
             reinitialiser: action,
             definirRole: action,
-        })
+        } as any)
     }
 
     protected viderRoles(): void {

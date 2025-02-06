@@ -48,13 +48,11 @@ SQL);
         $this->addSql('ALTER TABLE personne_physique DROP qualite_id');
         $this->addSql('DROP SEQUENCE qualite_requerant_id_seq CASCADE');
         $this->addSql('DROP TABLE qualite_requerant');
-
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE SCHEMA public');
         $this->addSql('CREATE SEQUENCE qualite_requerant_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE TABLE qualite_requerant (id SERIAL NOT NULL, code VARCHAR(50) NOT NULL, mnemo VARCHAR(50) DEFAULT NULL, libelle VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX uniq_37d0575f77153098 ON qualite_requerant (code)');

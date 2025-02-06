@@ -10,6 +10,7 @@
         "@codegouvfr/react-dsfr": "^1.14.1",
         "@gouvfr/dsfr": "^1.12.1",
         "@sentry/browser": "^8.37.1",
+        "@types/lodash": "^4.17.15",
         "@vitejs/plugin-legacy": "^5.4.2",
         "@vitejs/plugin-react": "^4.3.3",
         "class-transformer": "^0.5.1",

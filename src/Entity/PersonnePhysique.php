@@ -4,9 +4,9 @@ namespace MonIndemnisationJustice\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use MonIndemnisationJustice\Repository\PersonnePhysiqueRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\PersonnePhysiqueRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -239,10 +239,14 @@ class PersonnePhysique
         return $this;
     }
 
-    public function getNomCourant(bool $civilite = false): string
+    public function getNomCourant(bool $civilite = false, bool $capital = false): string
     {
-        return sprintf('%s%s %s',
-            $civilite ? ucfirst(strtolower($this->civilite->value)).'. ' : '', $this->prenom1, ucfirst($this->nom));
+        return sprintf(
+            '%s%s %s',
+            $civilite ? ucfirst(strtolower($this->civilite->value)).'. ' : '',
+            $this->prenom1,
+            $capital ? strtoupper($this->nom) : ucfirst($this->nom)
+        );
     }
 
     public function getNomComplet(): ?string
