@@ -16,8 +16,6 @@ class AgentAuthenticationEntryPoint implements AuthenticationEntryPointInterface
 
     public function start(Request $request, ?AuthenticationException $authException = null): RedirectResponse
     {
-        dump('Ici');
-
-        return new RedirectResponse($this->urlGenerator->generate('agent_securite_se_connecter'));
+        return new RedirectResponse($this->urlGenerator->generate('app_login'));
     }
 }

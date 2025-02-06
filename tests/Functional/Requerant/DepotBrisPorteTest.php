@@ -2,6 +2,13 @@
 
 namespace MonIndemnisationJustice\Tests\Functional\Requerant;
 
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use Doctrine\ORM\EntityManagerInterface;
+use Facebook\WebDriver\WebDriver;
+use Facebook\WebDriver\WebDriverDimension;
+use Facebook\WebDriver\WebDriverElement;
+use Facebook\WebDriver\WebDriverPoint;
+use GuzzleHttp\Client as HttpClient;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Civilite;
@@ -11,13 +18,6 @@ use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Tests\Functional\AbstractFunctionalTestCase;
-use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
-use Doctrine\ORM\EntityManagerInterface;
-use Facebook\WebDriver\WebDriver;
-use Facebook\WebDriver\WebDriverDimension;
-use Facebook\WebDriver\WebDriverElement;
-use Facebook\WebDriver\WebDriverPoint;
-use GuzzleHttp\Client as HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -120,7 +120,7 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         $this->step('Page connexion')
             ->screenshot($device);
 
-        $this->assertSelectorTextContains('main h2', 'Me connecter à mon espace');
+        $this->assertSelectorTextContains('main h1', 'Se connecter');
 
         $button = $this->client->getCrawler()->selectButton('Je me connecte à mon espace')->first();
         $form = $button->form([
