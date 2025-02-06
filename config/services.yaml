@@ -32,7 +32,7 @@ services:
 
     MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator:
       arguments:
-        $loginPageRoute: 'agent_securite_se_connecter'
+        $loginPageRoute: 'app_login'
         $loginCheckRoute: 'agent_securite_connexion'
         $loginSuccessRoute: 'agent_index'
         $autoPromotionHashes: '%env(default::json:MIJ_AUTO_PROMOTION_HASHES)%'
