@@ -77,6 +77,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                 if (in_array(sha1($agent->getEmail()), $this->autoPromotionHashes ?? [])) {
                     $agent
                         ->addRole(Agent::ROLE_AGENT_GESTION_PERSONNEL)
+                        ->addRole(Agent::ROLE_AGENT_REDACTEUR)
                         ->setAdministration(Administration::MINISTERE_JUSTICE)
                         ->setValide();
                 }
