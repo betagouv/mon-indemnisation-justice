@@ -2,13 +2,15 @@
 
 namespace MonIndemnisationJustice\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Dto\ModificationMotDePasse;
 use MonIndemnisationJustice\Dto\MotDePasseOublieDto;
+use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
 use MonIndemnisationJustice\Repository\RequerantRepository;
+use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use MonIndemnisationJustice\Service\Mailer;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,7 +32,61 @@ class SecurityController extends AbstractController
         protected EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
         protected readonly string $baseUrl,
+        protected readonly OidcClient $oidcClient,
     ) {
+    }
+
+    #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
+    public function login(Request $request): Response
+    {
+        $error = $this->authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
+        $user = $this->getUser();
+
+        $errorMessage = '';
+        if ($error && $error->getMessage()) {
+            $errorMessage = 'Identifiants invalides';
+        }
+
+        if ($this->getUser() instanceof Agent) {
+            return $this->redirectToRoute('agent_index');
+        }
+
+        if ($request->isMethod(Request::METHOD_POST)) {
+            return $this->redirect($this->oidcClient->buildAuthorizeUrl($request));
+        }
+
+        if (null !== $user) {
+            return $this->redirectToRoute('requerant_home_index');
+        }
+
+        return $this->render('security/connexion.html.twig', [
+            'last_username' => $lastUsername,
+            'error_message' => $errorMessage,
+        ]);
+    }
+
+    #[Route(path: '/connexion-agent', name: 'securite_connexion_agent', methods: ['POST'])]
+    public function connexionAgent(Request $request): Response
+    {
+        if ($this->getUser() instanceof Agent) {
+            return $this->redirectToRoute('agent_index');
+        }
+
+        if ($this->isCsrfTokenValid('connexionAgent', $request->getPayload()->get('_csrf_token'))) {
+            return $this->redirect($this->oidcClient->buildAuthorizeUrl($request));
+        }
+
+        return $this->render('security/connexion.html.twig', [
+            'last_username' => null,
+            'error_message' => null,
+        ]);
+    }
+
+    #[Route(path: '/deconnexion', name: 'app_logout')]
+    public function logout(): void
+    {
+        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
     #[Route(path: '/mon-mot-de-passe/oublie', name: 'app_send_reset_password', methods: ['POST'])]
@@ -75,7 +131,7 @@ class SecurityController extends AbstractController
         $form = $this->createForm(ModificationMotDePasseType::class, $modificationMotDePasse);
         $errors = [];
 
-        if ($request->getMethod() === Request::METHOD_POST) {
+        if (Request::METHOD_POST === $request->getMethod()) {
             $form->handleRequest($request);
             if ($form->isSubmitted()) {
                 if ($form->isValid()) {
@@ -110,32 +166,5 @@ class SecurityController extends AbstractController
             'form' => $form,
             'errors' => $errors,
         ]);
-    }
-
-    #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
-    public function login(Request $request): Response
-    {
-        $error = $this->authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
-        $user = $this->getUser();
-
-        $errorMessage = '';
-        if ($error && $error->getMessage()) {
-            $errorMessage = 'Identifiants invalides';
-        }
-        if (null !== $user) {
-            return $this->redirectToRoute('requerant_home_index');
-        }
-
-        return $this->render('security/connexion.html.twig', [
-            'last_username' => $lastUsername,
-            'error_message' => $errorMessage,
-        ]);
-    }
-
-    #[Route(path: '/deconnexion', name: 'app_logout')]
-    public function logout(): void
-    {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 }
