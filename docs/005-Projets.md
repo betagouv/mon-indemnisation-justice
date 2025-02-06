@@ -129,11 +129,11 @@ gantt
     dateFormat YYYY-MM-DD
     excludes weekends
     section Connexion agent via ProConnect
-        Implémentation  :active, proconnect-1, 2025-01-20, 5d
+        Implémentation  :done, proconnect-1, 2025-01-20, 5d
         Retours 1       :proconnect-2, after proconnect-1, 5d
         Retours 2       :proconnect-3, after proconnect-2, 5d
     section Recherche de dossier
-        Implémentation  :recherche-1, 2025-01-27, 5d
+        Implémentation  :active recherche-1, 2025-01-27, 5d
         Retours 1       :recherche-2, after recherche-1, 5d
         Retours 2       :recherche-3, after recherche-2, 5d
     section Consultation du dossier
