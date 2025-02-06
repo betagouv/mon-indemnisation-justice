@@ -44,7 +44,6 @@ final class Version20240830144005 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE SCHEMA public');
         $this->addSql('ALTER TABLE prejudice DROP CONSTRAINT FK_39465C1F4A93DAA5');
         $this->addSql('ALTER TABLE statut DROP CONSTRAINT FK_E564F0BF4A93DAA5');
         $this->addSql('CREATE SEQUENCE user_id_seq INCREMENT BY 1 MINVALUE 1 START 1');

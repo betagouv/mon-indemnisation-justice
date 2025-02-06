@@ -7,23 +7,27 @@ import {Redacteur} from "./Redacteur.ts";
  *
  */
 export class RechercheDossier {
-    protected _etatsDossier: Set<EtatDossier>;
+    protected _etatDossier: EtatDossier | null;
     protected _attributaires: Set<Redacteur | null>;
+    public motsClefs: string;
 
-    constructor(attributaires: Array<Redacteur | null> = [], etatsDossier: EtatDossier[] = []) {
+    constructor(attributaires: Array<Redacteur | null> = [], etatDossier: EtatDossier | null, motsClefs: string = "") {
         this._attributaires = new Set(attributaires)
-        this._etatsDossier = new Set(etatsDossier)
+        this._etatDossier = etatDossier
+        this.motsClefs = motsClefs
         makeObservable(this, {
             _attributaires: observable,
-            _etatsDossier: observable,
+            _etatDossier: observable,
+            motsClefs: observable,
+            setMotsClefs: action,
             setAttributaire: action,
             attributaires: computed,
-            etatsDossier: computed,
-            estActif: observable,
+            etatDossier: computed,
+            estSelectionneAttributaire: observable,
         } as any)
     }
 
-    estActif(attributaire: Redacteur | null): boolean {
+    estSelectionneAttributaire(attributaire: Redacteur | null): boolean {
         return this._attributaires.has(attributaire)
     }
 
@@ -31,8 +35,16 @@ export class RechercheDossier {
         return this._attributaires.values()
     }
 
-    get etatsDossier(): EtatDossier[] {
-        return this._etatsDossier.values().toArray()
+    get etatDossier(): EtatDossier|null {
+        return this._etatDossier
+    }
+
+    set etatDossier(etat: EtatDossier|null) {
+        this._etatDossier = etat
+    }
+
+    setMotsClefs(motsClefs: string) {
+        this.motsClefs = motsClefs
     }
 
     public setAttributaire(attributaire: Redacteur | null, actif: boolean = true) {
@@ -41,6 +53,18 @@ export class RechercheDossier {
         } else {
             this._attributaires.delete(attributaire)
         }
+    }
+
+    public buildURLParameters(): URLSearchParams
+    {
+        return new URLSearchParams({
+            // Attributaire (_ = non attribué)
+            ...(this._attributaires.size > 0 ? {a: this._attributaires.values().toArray().map((r: Redacteur | null) => r?.id ?? '_').sort().join('|') } : {}),
+            // État du dossier
+            ...(this._etatDossier ? {e: this._etatDossier.slug} : {}),
+            // Mots clefs (= filtre textuel de recherche libre)
+            ...(this.motsClefs.trim().length > 0 ? {r: this.motsClefs.split(' ').filter((f) => f.trim().length > 0).join('|')} : {}),
+        })
     }
 
     public toURL(): URL {
@@ -52,10 +76,16 @@ export class RechercheDossier {
             url.searchParams.delete('a');
         }
 
-        if (this._etatsDossier.size > 0) {
-            url.searchParams.set('e', this._etatsDossier.values().toArray().map((e: EtatDossier) => e.slug).sort().join('|'))
+        if (this._etatDossier) {
+            url.searchParams.set('e', this._etatDossier.slug)
         } else {
             url.searchParams.delete('e');
+        }
+
+        if (this.motsClefs.trim().length > 0) {
+            url.searchParams.set('r', this.motsClefs)
+        } else {
+            url.searchParams.delete('r');
         }
 
         return url;
@@ -71,10 +101,8 @@ export class RechercheDossier {
                     .split('|')
                     .map((a) => a == '_' ? null : Redacteur.resoudre(parseInt(a))) :
                 [],
-            query.has('e') ? query
-                    .get('e')
-                    .split('|')
-                .map((e) => EtatDossier.resoudre(e)) : []
+            query.has('e') ? EtatDossier.resoudreParSlug(query.get('e')) :null,
+            query.has('r') ? query.get('r') : "",
         );
     }
 }

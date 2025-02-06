@@ -50,7 +50,6 @@ final class Version20240909074057 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE SCHEMA public');
         $this->addSql('CREATE SEQUENCE categorie_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE prejudice_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE TABLE prejudice (id SERIAL NOT NULL, requerant_id INT NOT NULL, liasse_documentaire_id INT NOT NULL, date_declaration DATE DEFAULT NULL, reference VARCHAR(20) DEFAULT NULL, note TEXT DEFAULT NULL, proposition_indemnisation NUMERIC(10, 2) DEFAULT NULL, motivation_proposition TEXT DEFAULT NULL, raccourci VARCHAR(20) DEFAULT NULL, discr VARCHAR(255) NOT NULL, PRIMARY KEY(id))');

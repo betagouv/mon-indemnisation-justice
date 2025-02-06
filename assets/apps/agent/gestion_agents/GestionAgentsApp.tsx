@@ -198,20 +198,6 @@ const ValidationAgentRow = observer(({validation, editable = false}: {
                         </div>
                     </fieldset>
                 }
-
-                {/*
-                <div className="fr-select-group">
-                    <label className="fr-label" htmlFor={`selection-roles-${validation.agent.id}`}>Permissions
-                        :</label>
-                    <select className="fr-select" id={`selection-roles-${validation.agent.id}`}
-                            disabled={!validation.administration}>
-                        <option value="" defaultValue disabled hidden></option>
-                        {validation.administration?.roles.map((role: string) => <option key={role}
-                                                                                        value={role}>{libelleRoles[role]}</option>)}
-                    </select>
-                </div>
-                */
-                }
             </td>
             <td className="fr-col-1">
                 <div className="fr-grid-row fr-grid-row--right">

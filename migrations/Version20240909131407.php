@@ -43,7 +43,6 @@ SQL);
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE SCHEMA public');
         $this->addSql('CREATE SEQUENCE civilite_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE TABLE civilite (id SERIAL NOT NULL, code VARCHAR(50) NOT NULL, mnemo VARCHAR(50) DEFAULT NULL, libelle VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX uniq_2c4c1bd677153098 ON civilite (code)');

@@ -12,7 +12,12 @@ enum EtatDossierType: string
 
     public function slugAction(): string
     {
-        return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $this->libelleAction())));
+        return match ($this) {
+            self::DOSSIER_INITIE => 'a-finaliser',
+            self::DOSSIER_DEPOSE => 'a-instruire',
+            self::DOSSIER_ACCEPTE => 'a-valider-acc',
+            self::DOSSIER_REJETE => 'a-valider-rej',
+        };
     }
 
     public function libelleAction(): string
@@ -41,5 +46,16 @@ enum EtatDossierType: string
             self::REFUS_OFFRE => "Proposition d'indemnisation rejetée",
             */
         };
+    }
+
+    public static function fromSlug($slug): ?self
+    {
+        foreach (self::cases() as $etat) {
+            if ($etat->slugAction() === $slug) {
+                return $etat;
+            }
+        }
+
+        return null;
     }
 }
