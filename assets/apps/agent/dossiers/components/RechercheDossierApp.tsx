@@ -195,7 +195,7 @@ export const RechercheDossierApp = observer(({ recherche, dossiers = []}: { rech
                                                             </td>
                                                             <td className="fr-col-1">
                                                                 <div className="fr-btns-group fr-btns-group--right">
-                                                                    <a className="fr-btn fr-btn--tertiary fr-icon-eye-line fr-btn--sm"></a>
+                                                                    <a className="fr-btn fr-btn--tertiary fr-icon-eye-line fr-btn--sm" href={`/agent/redacteur/dossier/${dossier.id}`}></a>
                                                                 </div>
                                                             </td>
                                                         </tr>) :
