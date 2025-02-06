@@ -41,6 +41,10 @@ class BrisPorte
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected Requerant $requerant;
 
+    #[ORM\ManyToOne(targetEntity: Agent::class, cascade: ['persist', 'remove'], inversedBy: 'dossiers')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    protected ?Agent $redacteur = null;
+
     #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER')]
     #[ORM\OrderBy(['dateEntree' => 'ASC'])]
     /** @var Collection<EtatDossier> */
@@ -153,6 +157,18 @@ class BrisPorte
         return $this;
     }
 
+    public function getRedacteur(): ?Agent
+    {
+        return $this->redacteur;
+    }
+
+    public function setRedacteur(?Agent $redacteur): BrisPorte
+    {
+        $this->redacteur = $redacteur;
+
+        return $this;
+    }
+
     public function changerStatut(EtatDossierType $type, bool $requerant = false, ?Agent $agent = null): self
     {
         if ($requerant) {
@@ -176,11 +192,6 @@ class BrisPorte
     public function getEtatDossier(): ?EtatDossier
     {
         return $this->etatDossier;
-    }
-
-    public function getEtatPreValide(): ?EtatDossier
-    {
-        return $this->getEtat(EtatDossierType::DOSSIER_PRE_VALIDE) ?? $this->getEtat(EtatDossierType::DOSSIER_PRE_REFUSE);
     }
 
     public function getEtat(EtatDossierType $type): ?EtatDossier

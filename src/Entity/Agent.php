@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\AgentRepository;
@@ -67,6 +68,11 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(type: 'simple_array')]
     protected array $roles = [];
+
+    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'redacteur', cascade: ['detach'])]
+    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    /** @var Collection<BrisPorte> */
+    protected Collection $dossiers;
 
     /**
      * Correspond à la propriété `idp_id` de ProConnect.
@@ -327,7 +333,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getNomComplet($capital = false): ?string
     {
-        return sprintf('%s %s', $this->prenom, $capital ? strtoupper($this->nom) : $this->nom);
+        return sprintf('%s %s', $this->prenom, $capital ? strtoupper(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $this->nom)) : $this->nom);
     }
 
     public function getDateCreation(): \DateTimeInterface

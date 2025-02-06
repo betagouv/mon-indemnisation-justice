@@ -2,12 +2,13 @@
 
 namespace MonIndemnisationJustice\Repository;
 
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Service\PasswordGenerator;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<BrisPorte>
@@ -33,23 +34,52 @@ class BrisPorteRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne la liste des dossiers constitués (i.e. dont l'état actuel est `DOSSIER_DEPOSE`).
+     * @param EtatDossierType[] $etats
+     * @param Agent[]           $attributaires
      *
      * @return BrisPorte[]
      */
-    public function getDossiersConstitues(): array
+    public function rechercheDossiers(array $etats = [], array $attributaires = [], array $filtres = [], bool $nonAttribue = false)
     {
-        return $this->getDossiersParEtat(EtatDossierType::DOSSIER_DEPOSE);
-    }
+        $qb = $this
+            ->createQueryBuilder('d')
+            ->join('d.etatDossier', 'e')
+            ->join('d.adresse', 'a')
+            ->join('d.requerant', 'r')
+            ->join('r.personnePhysique', 'pp')
+        ;
 
-    /**
-     * Retourne la liste des dossiers à valider par la personne chef•fe de service (i.e. dont l'état actuel est `DOSSIER_PRE_VALIDE` ou `DOSSIER_PRE_REFUSE`).
-     *
-     * @return BrisPorte[]
-     */
-    public function getDossiersAValider(): array
-    {
-        return $this->getDossiersParEtat(EtatDossierType::DOSSIER_PRE_VALIDE, EtatDossierType::DOSSIER_PRE_REFUSE);
+        if (!empty($etats)) {
+            $qb
+                ->andWhere('e.etat in (:etats)')
+                ->setParameter('etats', $etats);
+        }
+
+        if (!empty($filtres)) {
+            $wheres = [];
+
+            foreach ($filtres as $index => $filtre) {
+                $wheres[] = "LOWER(a.codePostal) LIKE :filtre$index";
+                $wheres[] = "LOWER(a.ligne1) LIKE :filtre$index";
+                $wheres[] = "LOWER(a.localite) LIKE :filtre$index";
+                $wheres[] = "LOWER(pp.nom) LIKE :filtre$index";
+                $wheres[] = "LOWER(pp.prenom1) LIKE :filtre$index";
+                $qb->setParameter("filtre$index", strtolower("%$filtre%"));
+            }
+            $qb->andWhere($qb->expr()->orX(...$wheres));
+        }
+
+        if (!empty($attributaires)) {
+            $qb
+                ->andWhere(
+                    'd.redacteur in (:redacteurs)'.($nonAttribue ? ' or d.redacteur is null' : '')
+                )
+                ->setParameter('redacteurs', array_map(fn ($a) => $a->getId(), $attributaires));
+        } elseif ($nonAttribue) {
+            $qb->andWhere('d.redacteur is null');
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /**

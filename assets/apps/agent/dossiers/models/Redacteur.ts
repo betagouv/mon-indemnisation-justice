@@ -12,12 +12,9 @@ export class Redacteur {
 
     public static charger(data: any): void {
         const instance = plainToInstance(Redacteur, data)
-        console.log(instance)
 
         for (const redacteur of (instance instanceof Redacteur ? [instance] : instance as Redacteur[])) {
             this.catalog.set(redacteur.id, redacteur)
         }
-
-        console.log(this.catalog.values().toArray())
     }
 }

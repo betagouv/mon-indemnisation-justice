@@ -3,10 +3,13 @@
 namespace MonIndemnisationJustice\Controller\Agent;
 
 use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -40,7 +43,7 @@ class RedacteurController extends AbstractController
     }
 
     #[Route('/dossiers', name: 'agent_redacteur_dossiers')]
-    public function nouveauxDossiers(): Response
+    public function dossiers(): Response
     {
         return $this->render('agent/redacteur/recherche_dossiers.html.twig', [
             'react' => [
@@ -54,7 +57,47 @@ class RedacteurController extends AbstractController
                     [EtatDossierType::DOSSIER_DEPOSE, EtatDossierType::DOSSIER_ACCEPTE, EtatDossierType::DOSSIER_REJETE]
                 ),
             ],
-            'dossiers' => $this->brisPorteRepository->getDossiersConstitues(),
         ]);
+    }
+
+    #[Route('/dossiers.json', name: 'agent_redacteur_dossiers_json', methods: ['GET'])]
+    public function dossiersJson(Request $request): Response
+    {
+        return new JsonResponse(
+            array_map(
+                fn (BrisPorte $dossier) => [
+                    'id' => $dossier->getId(),
+                    'reference' => $dossier->getReference(),
+                    'etat' => $dossier->getEtatDossier()->getEtat()->value,
+                    'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
+                    'adresse' => $dossier->getAdresse()->getLibelle(),
+                    'dateDepot' => (int) $dossier->getDateDeclaration()?->format('Uv'),
+                    'attributaire' => $dossier->getRedacteur()?->getId(),
+                ],
+                $this->brisPorteRepository->rechercheDossiers(
+                    array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')),
+                    $this->agentRepository->findBy([
+                        'id' => array_filter(
+                            self::extraireCritereRecherche($request, 'a'),
+                            fn ($a) => is_numeric($a)
+                        ),
+                    ]),
+                    self::extraireCritereRecherche($request, 'r'),
+                    in_array('_', self::extraireCritereRecherche($request, 'a'))
+                )
+            )
+        );
+    }
+
+    private static function extraireCritereRecherche(Request $request, string $nom): array
+    {
+        if (!$request->query->has($nom)) {
+            return [];
+        }
+
+        return array_filter(
+            explode('|', $request->query->getString($nom, '')),
+            fn ($v) => !empty($v)
+        );
     }
 }

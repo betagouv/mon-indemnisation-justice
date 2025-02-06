@@ -1,8 +1,11 @@
 import {RechercheDossierApp} from "@/apps/agent/dossiers/components/RechercheDossierApp";
 import {EtatDossier, Redacteur} from "@/apps/agent/dossiers/models";
+import {Dossier} from "@/apps/agent/dossiers/models/Dossier";
 import {disableReactDevTools} from '@/react/services/devtools.js';
-import {autorun} from "mobx";
-import React from 'react';
+import {plainToInstance} from "class-transformer";
+import {autorun, observable, reaction, runInAction} from "mobx";
+import {IObservableArray} from "mobx/src/internal";
+import React  from 'react';
 import ReactDOM from "react-dom/client";
 import {RechercheDossier} from '@/apps/agent/dossiers/models/'
 
@@ -24,16 +27,23 @@ const args = JSON.parse(document.getElementById('react-arguments').textContent);
 Redacteur.charger(args.redacteurs ?? [])
 EtatDossier.charger(args.etats_dossier ?? [])
 
-console.log(EtatDossier.catalog)
-
 const recherche = RechercheDossier.fromURL();
+let dossiers: IObservableArray<Dossier> = observable([]);
+
+fetch(`${location.pathname}.json?${recherche.buildURLParameters()}` )
+    .then((response) => response.json())
+    .then((data: []) => runInAction(() => dossiers.replace(plainToInstance(Dossier, data))))
 
 autorun(() => {
     history.replaceState(null, '', recherche.toURL());
-})
+
+    fetch(`${location.pathname}.json?${recherche.buildURLParameters()}` )
+    .then((response) => response.json())
+    .then((data: []) => runInAction(() => dossiers.replace(plainToInstance(Dossier, data))))
+});
 
 ReactDOM
     .createRoot(document.getElementById('react-app-agent-recherche-dossiers'))
     .render(
-        <RechercheDossierApp recherche={recherche}></RechercheDossierApp>
+        <RechercheDossierApp recherche={recherche} dossiers={dossiers}></RechercheDossierApp>
     );
