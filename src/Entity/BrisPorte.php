@@ -258,7 +258,7 @@ class BrisPorte
             foreach (Document::$types as $type => $libelle) {
                 if (in_array($type, [Document::TYPE_CARTE_IDENTITE, Document::TYPE_RIB])) {
                     if ($this->requerant->getIsPersonneMorale()) {
-                        $this->documents[$type] = $this->requerant->getPersonneMorale()->getLiasseDocumentaire()?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
+                        $this->documents[$type] = $this->requerant->getPersonneMorale()?->getLiasseDocumentaire()?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
                     } else {
                         $this->documents[$type] = $this->requerant->getPersonnePhysique()->getLiasseDocumentaire()?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
                     }
