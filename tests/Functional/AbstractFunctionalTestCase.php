@@ -42,11 +42,6 @@ abstract class AbstractFunctionalTestCase extends PantherTestCase
             self::getContainer()->getParameter('kernel.project_dir'),
             static::pathSuffix()
         );
-
-        $filesystem = new Filesystem();
-        if ($filesystem->exists($this->screenShotDirectory)) {
-            $filesystem->remove((new Finder())->directories()->in($this->screenShotDirectory));
-        }
     }
 
     abstract protected static function pathSuffix(): string;
@@ -64,6 +59,14 @@ abstract class AbstractFunctionalTestCase extends PantherTestCase
         $this->steps[] = $label;
 
         return $this;
+    }
+
+    protected function clearScreenshots(string $device): void
+    {
+        $filesystem = new Filesystem();
+        if ($filesystem->exists("$this->screenShotDirectory/$device")) {
+            $filesystem->remove((new Finder())->files()->name('*.png')->in("$this->screenShotDirectory/$device"));
+        }
     }
 
     protected function screenshot(string $device, ?string $extra = null): static

@@ -73,17 +73,11 @@ class PersonnePhysique
     private ?string $nomNaissance = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?LiasseDocumentaire $liasseDocumentaire = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
     public function __construct()
     {
-        $this->liasseDocumentaire = new LiasseDocumentaire();
     }
 
     public function __toString()
@@ -261,18 +255,6 @@ class PersonnePhysique
         }
 
         return implode(' ', [$civilite, $this->getPrenom1(), $nom]);
-    }
-
-    public function getLiasseDocumentaire(): ?LiasseDocumentaire
-    {
-        return $this->liasseDocumentaire;
-    }
-
-    public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): static
-    {
-        $this->liasseDocumentaire = $liasseDocumentaire;
-
-        return $this;
     }
 
     public function getEmail(): ?string

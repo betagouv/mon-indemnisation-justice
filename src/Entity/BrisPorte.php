@@ -62,13 +62,12 @@ class BrisPorte
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $reference = null;
 
-    #[Groups('dossier:lecture')]
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?LiasseDocumentaire $liasseDocumentaire = null;
-
-    /** @var Document[]|null */
-    protected ?array $documents = null;
+    #[ORM\JoinTable(name: 'document_dossiers')]
+    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id')]
+    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'dossiers', cascade: ['persist'])]
+    /** @var Collection<Document> */
+    protected Collection $documents;
+    protected ?array $documentsParType = null;
 
     #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
@@ -118,8 +117,8 @@ class BrisPorte
     public function __construct()
     {
         $this->dateCreation = new \DateTimeImmutable();
-        $this->liasseDocumentaire = new LiasseDocumentaire();
         $this->adresse = new Adresse();
+        $this->documents = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
     }
 
@@ -133,6 +132,22 @@ class BrisPorte
     public function onPreRemove(): void
     {
         $this->etatDossier = null;
+    }
+
+    #[ORM\PostLoad]
+    public function onLoaded(): void
+    {
+        $this->documentsParType = $this->documents->reduce(
+            function (array $carry, Document $document) {
+                if (!isset($carry[$document->getType()])) {
+                    $carry[$document->getType()] = [];
+                }
+
+                $carry[$document->getType()][] = $document;
+
+                return $carry;
+            }, [Document::TYPE_ATTESTATION_INFORMATION => []]
+        );
     }
 
     public function getPid(): ?int
@@ -235,40 +250,25 @@ class BrisPorte
         return $this;
     }
 
-    public function getLiasseDocumentaire(): ?LiasseDocumentaire
+    public function ajouterDocument(Document $document): void
     {
-        return $this->liasseDocumentaire;
-    }
+        $this->documents->add($document);
 
-    public function setLiasseDocumentaire(LiasseDocumentaire $liasseDocumentaire): self
-    {
-        $this->liasseDocumentaire = $liasseDocumentaire;
-
-        return $this;
+        $this->documentsParType[$document->getType()][] = $document;
     }
 
     /**
      * @return Document[]|null
      */
-    public function getDocuments(string $type): ?array
+    #[Groups('dossier:lecture')]
+    public function getDocuments(): array
     {
-        if (null === $this->documents) {
-            $this->documents = [];
+        return $this->documentsParType;
+    }
 
-            foreach (Document::$types as $type => $libelle) {
-                if (in_array($type, [Document::TYPE_CARTE_IDENTITE, Document::TYPE_RIB])) {
-                    if ($this->requerant->getIsPersonneMorale()) {
-                        $this->documents[$type] = $this->requerant->getPersonneMorale()?->getLiasseDocumentaire()?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
-                    } else {
-                        $this->documents[$type] = $this->requerant->getPersonnePhysique()->getLiasseDocumentaire()?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
-                    }
-                } else {
-                    $this->documents[$type] = $this->liasseDocumentaire?->getDocuments()->filter(fn (Document $document) => $type === $document->getType())->toArray();
-                }
-            }
-        }
-
-        return $this->documents[$type] ?? null;
+    public function getDocumentsParType(string $type): array
+    {
+        return $this->documentsParType[$type] ?? [];
     }
 
     public function getPropositionIndemnisation(): ?string

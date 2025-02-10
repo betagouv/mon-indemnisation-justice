@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Uploader} from '@/react/components/Uploader';
+import { DossierContext } from "@/react/contexts/DossierContext.ts";
 
 
-export const Document = ({documents, libelle, lectureSeule, liasseDocumentaire, type, onRemoved, onUploaded}) => {
+export const Document = ({documents, libelle, lectureSeule, type, onRemoved, onUploaded}) => {
+
+    const dossier = useContext(DossierContext);
     
     const handleRemove = (document, e) => {
-        fetch(`/document/${document.id}/${document.filename}`,{ method: "DELETE" })
+        fetch(`/requerant/document/${document.id}/${document.filename}`,{ method: "DELETE" })
           .then(() => onRemoved(document))
           .catch(() => {});
     }
@@ -19,13 +22,13 @@ export const Document = ({documents, libelle, lectureSeule, liasseDocumentaire, 
                 <div className="fr-pl-3w">
                 {!lectureSeule &&
                     <Uploader
+                        dossier={dossier}
                         libelle={libelle}
                         type={type}
-                        liasseDocumentaire={liasseDocumentaire}
                         onUploaded={onUploaded}
                     />
                 }
-                {documents.map((document) =>
+                {(documents ?? []).map((document) =>
                     <div key={document.id} className="fr-grid-row fr-col-6">
                         {!lectureSeule &&
                             <button className="fr-btn fr-btn--sm fr-icon-delete-line fr-btn--tertiary-no-outline fr-mx-1w" onClick={() => handleRemove(document)}>
@@ -41,7 +44,7 @@ export const Document = ({documents, libelle, lectureSeule, liasseDocumentaire, 
                         </a>
                     </div>
                 )}
-                {documents.length === 0 &&
+                {documents?.length === 0 &&
                     <i>Aucun document</i>
                 }
                 </div>
