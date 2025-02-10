@@ -104,6 +104,7 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
      */
     public function testDepotDossierBrisPorte(string $device, int $width, int $height): void
     {
+        $this->clearScreenshots($device);
         $this->client->getCookieJar()->clear();
         $this->client->manage()->window()
             ->maximize()
@@ -198,8 +199,8 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         $this->assertEquals('17-06-1979', $requerant->getPersonnePhysique()?->getDateNaissance()?->format('d-m-Y'));
 
         $this->assertInstanceOf(BrisPorte::class, $dossier);
-        $this->assertCount(1, $dossier->getLiasseDocumentaire()->getDocuments());
-        $this->assertEquals(Document::TYPE_ATTESTATION_INFORMATION, $dossier->getLiasseDocumentaire()->getDocuments()->first()->getType());
+        $this->assertCount(1, $dossier->getDocumentsParType(Document::TYPE_ATTESTATION_INFORMATION));
+        $this->assertEquals(Document::TYPE_ATTESTATION_INFORMATION, $dossier->getDocumentsParType(Document::TYPE_ATTESTATION_INFORMATION)[0]->getType());
         $this->assertStringStartsWith('BRI/', $dossier->getReference());
         $this->assertStringEndsWith('/001', $dossier->getReference());
         $this->assertEquals(8, strlen($dossier->getRaccourci()));
