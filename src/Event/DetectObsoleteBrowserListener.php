@@ -17,7 +17,6 @@ use Twig\Environment;
  * La version du navigateur doit être supérieure ou égale aux versions:
  * - supportées par le DSFR https://www.systeme-de-design.gouv.fr/a-propos/configuration-minimale-requise-pour-utiliser-le-dsfr/
  * - prenant en charge les ESM https://caniuse.com/?search=ESM
- *
  */
 class DetectObsoleteBrowserListener implements EventSubscriberInterface
 {
@@ -30,7 +29,7 @@ class DetectObsoleteBrowserListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => ['onKernelRequest', 16],
+            KernelEvents::REQUEST => ['onKernelRequest', 1],
         ];
     }
 

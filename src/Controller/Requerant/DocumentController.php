@@ -2,11 +2,13 @@
 
 namespace MonIndemnisationJustice\Controller\Requerant;
 
-use MonIndemnisationJustice\Entity\Document;
-use MonIndemnisationJustice\Entity\LiasseDocumentaire;
-use MonIndemnisationJustice\Entity\Requerant;
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToReadFile;
+use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -20,7 +22,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
-#[Route('/document')]
+#[Route('/requerant/document')]
 class DocumentController extends AbstractController
 {
     public function __construct(
@@ -31,7 +33,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/{type}', name: 'document_upload', methods: ['POST'])]
-    public function upload(#[MapEntity(id: 'id')] LiasseDocumentaire $liasseDocumentaire, Request $request, string $type): JsonResponse
+    public function upload(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, string $type): JsonResponse
     {
         $files = $request->files->all();
 
@@ -45,9 +47,11 @@ class DocumentController extends AbstractController
                 ->setOriginalFilename($file->getClientOriginalName())
                 ->setSize($file->getSize())
                 ->setType($type)
-                ->setMime($file->getMimeType())
-                ->setLiasseDocumentaire($liasseDocumentaire);
-            $this->em->persist($document);
+                ->setMime($file->getMimeType());
+
+            $dossier->ajouterDocument($document);
+
+            $this->em->persist($dossier);
         }
 
         $this->em->flush();
@@ -76,31 +80,34 @@ class DocumentController extends AbstractController
         return JsonResponse::fromJsonString('', Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @author yanroussel
-     *
-     * @todo   Download à refaire proprement
-     */
     #[Route('/{id}/{filename}', name: 'document_download', methods: ['GET'])]
     public function download(#[MapEntity(id: 'id')] Document $document, string $filename): Response
     {
         if ($document->getFilename() !== $filename) {
             throw new NotFoundHttpException('Document non trouvé');
         }
-        $stream = $this->storage->readStream($document->getFilename());
 
-        return new StreamedResponse(
-            function () use ($stream) {
-                fpassthru($stream);
-                exit;
-            },
-            200,
-            [
-                'Content-Transfer-Encoding', 'binary',
-                'Content-Type' => $document->getMime() ?? 'application/octet-stream',
-                'Content-Disposition' => sprintf('attachment; filename="%s"', $document->getOriginalFilename()),
-                'Content-Length' => fstat($stream)['size'],
-            ]
-        );
+        try {
+            if (!$this->storage->has($document->getFilename())) {
+                return new Response('', Response::HTTP_NOT_FOUND);
+            }
+            $stream = $this->storage->readStream($document->getFilename());
+
+            return new StreamedResponse(
+                function () use ($stream) {
+                    fpassthru($stream);
+                    exit;
+                },
+                200,
+                [
+                    'Content-Transfer-Encoding', 'binary',
+                    'Content-Type' => $document->getMime() ?? 'application/octet-stream',
+                    'Content-Disposition' => sprintf('attachment; filename="%s"', $document->getOriginalFilename()),
+                    'Content-Length' => fstat($stream)['size'],
+                ]
+            );
+        } catch (UnableToReadFile|FilesystemException $e) {
+            return new Response('', Response::HTTP_NOT_FOUND);
+        }
     }
 }

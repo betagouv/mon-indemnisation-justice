@@ -164,7 +164,7 @@
                                         <b>Prénom(s): </b> {{ dossier.requerant.personnePhysique.prenoms }}
                                     </li>
                                     <li>
-                                        <b>Né{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %}: </b> le {{ dossier.requerant.personnePhysique.dateNaissance|format_date(locale='fr',pattern="d MMMM YYYY") }}, à {{ dossier.requerant.personnePhysique.communeNaissance}}{% if dossier.requerant.personnePhysique.paysNaissance is not empty %} , {{ dossier.requerant.personnePhysique.paysNaissance }}{% endif %}
+                                        <b>Né{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %}: </b> le {{ dossier.requerant.personnePhysique.dateNaissance|format_date(locale='fr',pattern="d MMMM YYYY") }}, à {{ dossier.requerant.personnePhysique.communeNaissance}}{% if dossier.requerant.personnePhysique.paysNaissance is not empty %} , {{ dossier.requerant.personnePhysique.paysNaissance.nom }}{% endif %}
                                     </li>
                                     {% if dossier.requerant.isPersonneMorale %}
                                         <li>
@@ -210,16 +210,16 @@
                                                 tabindex="{{ loop.first ? 0 : -1 }}"
                                                 role="tab"
                                                 aria-selected="{{ loop.first ? 'true' : 'false' }}"
-                                                {% if dossier.documents(type)|length > 0 %}aria-controls="tab-document-{{ type|to_kebab }}-panel" {% else %}disabled{% endif %}
+                                                {% if dossier.documentsParType(type)|length > 0 %}aria-controls="tab-document-{{ type|to_kebab }}-panel" {% else %}disabled{% endif %}
                                             >
-                                                {{ libelle }} {% if dossier.documents(type)|length > 0 %}({{ dossier.documents(type)|length }}){% endif %}
+                                                {{ libelle }} {% if dossier.documentsParType(type)|length > 0 %}({{ dossier.documentsParType(type)|length }}){% endif %}
                                             </button>
                                         </li>
                                     {% endfor %}
                                 </ul>
 
                                 {% for type, libelle in types_document() %}
-                                    {% if dossier.documents(type)|length > 0 %}
+                                    {% if dossier.documentsParType(type)|length > 0 %}
                                         <div
                                             id="tab-document-{{ type|to_kebab }}-panel"
                                             class="fr-tabs__panel{% if loop.first %} fr-tabs__panel--selected{% endif %}"
@@ -227,7 +227,7 @@
                                             aria-labelledby="tab-document-{{ type|to_kebab }}"
                                             tabindex="0"
                                         >
-                                            {% for document in dossier.documents(type) %}
+                                            {% for document in dossier.documentsParType(type) %}
                                                 <div class="fr-grid-row">
                                                     <h6>{{ document.originalFilename }}</h6>
                                                     {% if document.mime == 'application/pdf' %}

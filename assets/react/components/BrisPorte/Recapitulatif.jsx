@@ -133,21 +133,21 @@ const Recapitulatif = ({ gotoFirstSection = null, gotoSecondSection = null, }) =
                     <h3>Documents à joindre obligatoirement à votre demande</h3>
 
                     <Document
-                        documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "attestation_information")}
+                        documents={dossier.documents.attestation_information}
                         lectureSeule={true}
                         libelle="Attestation complétée par les forces de l'ordre"
                         type={"attestation_information"}
                     />
 
                     <Document
-                        documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "photo_prejudice")}
+                        documents={dossier.documents.photo_prejudice}
                         lectureSeule={true}
                         libelle="Photos de la porte endommagée"
                         type={"photo_prejudice"}
                     />
                     {!dossier.requerant.isPersonneMorale &&
                         <Document
-                            documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "carte_identite")}
+                            documents={dossier.documents.carte_identite}
                             lectureSeule={true}
                             libelle="Copie de votre pièce d'identité recto-verso"
                             type={"carte_identite"}
@@ -155,43 +155,42 @@ const Recapitulatif = ({ gotoFirstSection = null, gotoSecondSection = null, }) =
                     }
 
                     <Document
-                        documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "preuve_paiement_facture")}
+                        documents={dossier.documents.preuve_paiement_facture}
                         lectureSeule={true}
                         libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
                         type={"preuve_paiement_facture"}
                     />
-                    {dossier.requerant.isPersonneMorale &&
-                        <Document
-                            documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
-                            lectureSeule={true}
-                            libelle="Relevé d'identité bancaire de votre société"
-                            type={"rib"}
-                        />
-                    }
-                    {!dossier.requerant.isPersonneMorale &&
-                        <Document
-                            documents={dossier.requerant.personnePhysique.liasseDocumentaire.documents.filter((document) => document.type === "rib")}
-                            lectureSeule={true}
-                            libelle="Votre relevé d'identité bancaire"
-                            type={"rib"}
-                        />
-                    }
+                    <Document
+                        documents={dossier.documents.rib}
+                        lectureSeule={true}
+                        libelle={dossier.requerant.isPersonneMorale ? "Relevé d'identité bancaire de votre société": "Votre relevé d'identité bancaire"}
+                        type={"rib"}
+                    />
 
-                    {!dossier.requerant.qualiteRequerant === 'PRO' &&
+                    {dossier.requerant.qualiteRequerant === 'PRO' &&
                         <Document
+                            documents={dossier.documents.titre_de_propriete}
                             lectureSeule={true}
-                            liasseDocumentaireIri={prejudice.liasseDocumentaire}
                             label="Titre de propriété"
                             type={"titre_propriete"}
                         />
                     }
 
-                    {!dossier.requerant.qualiteRequerant === 'LOC' &&
+                    {dossier.requerant.qualiteRequerant === 'LOC' &&
                         <Document
-                            documents={dossier.liasseDocumentaire.documents.filter((document) => document.type === "contrat_location")}
+                            documents={dossier.documents.contrat_location}
                             lectureSeule={true}
                             libelle={"Contrat de location"}
                             type={"contrat_location"}
+                        />
+                    }
+
+                    {dossier.requerant.qualiteRequerant === 'LOC' &&
+                        <Document
+                            documents={dossier.documents.non_prise_en_charge_assurance}
+                            lectureSeule={true}
+                            libelle={"Attestation de non prise en charge par l'assurance habitation"}
+                            type={"non_prise_en_charge_assurance"}
                         />
                     }
 

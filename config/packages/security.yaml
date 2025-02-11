@@ -57,8 +57,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-      - { path: ^/agent/!(connexion), roles: ROLE_AGENT }
-      - { path: ^/(requerant|sinistre), roles: ROLE_REQUERANT }
+      - { path: ^/requerant/, roles: ROLE_REQUERANT }
+      - { path: ^/agent/, roles: ROLE_AGENT }
 
 when@test:
     security:
