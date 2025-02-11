@@ -79,6 +79,7 @@ class GestionAgentsController extends AbstractController
                 ->setValide()
                 ->setAdministration($administration)
                 ->setRoles($roles);
+
             $this->agentRepository->save($agent);
         }
 
