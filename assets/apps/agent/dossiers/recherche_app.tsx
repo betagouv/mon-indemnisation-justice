@@ -30,10 +30,6 @@ EtatDossier.charger(args.etats_dossier ?? [])
 const recherche = RechercheDossier.fromURL();
 let dossiers: IObservableArray<Dossier> = observable([]);
 
-fetch(`${location.pathname}.json?${recherche.buildURLParameters()}` )
-    .then((response) => response.json())
-    .then((data: []) => runInAction(() => dossiers.replace(plainToInstance(Dossier, data))))
-
 autorun(() => {
     history.replaceState(null, '', recherche.toURL());
 
