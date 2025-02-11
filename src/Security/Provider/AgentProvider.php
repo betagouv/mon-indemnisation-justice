@@ -22,7 +22,7 @@ class AgentProvider implements UserProviderInterface
             throw new UserNotFoundException($user->getUserIdentifier());
         }
 
-        return $user;
+        return $agent;
     }
 
     public function supportsClass(string $class): bool

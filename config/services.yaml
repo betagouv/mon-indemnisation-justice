@@ -37,15 +37,16 @@ services:
         $loginSuccessRoute: 'agent_index'
         $autoPromotionHashes: '%env(default::json:MIJ_AUTO_PROMOTION_HASHES)%'
 
-    MonIndemnisationJustice\Controller\SecurityController:
-        $baseUrl: '%env(BASE_URL)%'
-
     MonIndemnisationJustice\Service\Mailer:
         $emailFrom: '%env(EMAIL_FROM)%'
         $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
 
     MonIndemnisationJustice\Service\BrisPorteManager:
         $courrielEquipe: '%env(PRECONTENTIEUX_COURRIEL_EQUIPE)%'
+
+    MonIndemnisationJustice\Event\DomaineRedirecteurListener:
+      arguments:
+        $domainePrimaire: '%env(default::MIJ_DOMAINE_PRIMAIRE)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous
