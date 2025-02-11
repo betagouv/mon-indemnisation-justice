@@ -279,7 +279,7 @@
 
 
                         <form method="post" action="{{ absolute_url(path('securite_connexion_agent')) }}">
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('connexionAgent') }}">
+                            <input type="hidden" name="_csrf_token_agent" value="{{ csrf_token('connexionAgent') }}">
                             <div class="fr-connect-group">
                                 <button class="fr-connect" type="submit">
                                     <span class="fr-connect__login">S’identifier avec</span>

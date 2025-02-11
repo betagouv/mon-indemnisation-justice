@@ -40,7 +40,6 @@ class SecurityController extends AbstractController
     {
         $error = $this->authenticationUtils->getLastAuthenticationError();
         $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
-        $user = $this->getUser();
 
         $errorMessage = '';
         if ($error && $error->getMessage()) {
@@ -51,11 +50,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('agent_index');
         }
 
-        if ($request->isMethod(Request::METHOD_POST)) {
-            return $this->redirect($this->oidcClient->buildAuthorizeUrl($request));
-        }
-
-        if (null !== $user) {
+        if ($this->getUser() instanceof Requerant) {
             return $this->redirectToRoute('requerant_home_index');
         }
 
@@ -72,7 +67,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('agent_index');
         }
 
-        if ($this->isCsrfTokenValid('connexionAgent', $request->getPayload()->get('_csrf_token'))) {
+        if ($this->isCsrfTokenValid('connexionAgent', $request->getPayload()->get('_csrf_token_agent'))) {
             return $this->redirect($this->oidcClient->buildAuthorizeUrl($request));
         }
 
@@ -83,9 +78,9 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/deconnexion', name: 'app_logout')]
-    public function logout(): void
+    public function logout(): Response
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        return $this->redirectToRoute('requerant_home_index');
     }
 
     #[Route(path: '/mon-mot-de-passe/oublie', name: 'app_send_reset_password', methods: ['POST'])]

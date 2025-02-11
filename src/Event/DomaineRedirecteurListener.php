@@ -17,7 +17,7 @@ final class DomaineRedirecteurListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => ['onKernelRequest', 32],
+            KernelEvents::REQUEST => ['onKernelRequest', 2],
         ];
     }
 
