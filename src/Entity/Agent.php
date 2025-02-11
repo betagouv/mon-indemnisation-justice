@@ -7,7 +7,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
@@ -15,7 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\UniqueConstraint(name: 'uniq_agent_identifiant', fields: ['identifiant'])]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['identifiant'], message: 'Cet identifiant correspond à un autre agent')]
-class Agent implements UserInterface, PasswordAuthenticatedUserInterface
+class Agent implements UserInterface
 {
     // Le role ROLE_AGENT est donné à chaque agent de la fonction publique
     public const ROLE_AGENT = 'ROLE_AGENT';

@@ -31,7 +31,7 @@ services:
         aliases:
           - mon-indemnisation.anje-justice.dev
           - mon-indemnisation.anje-justice.test
-          - proconnect.anje-justice.test
+          - proconnect.gouv.test
     ports:
       - "80:80"
       - "443:443"

@@ -31,7 +31,6 @@ class SecurityController extends AbstractController
         protected Mailer $mailer,
         protected EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
-        protected readonly string $baseUrl,
         protected readonly OidcClient $oidcClient,
     ) {
     }
