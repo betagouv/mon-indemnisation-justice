@@ -1,7 +1,7 @@
-import {Agent} from "@/apps/agent/gestion_agents/models/Agent.js";
 import {Administration} from "@/apps/agent/gestion_agents/models/Administration.js";
-import {action, computed, makeObservable, observable} from "mobx";
+import {Agent} from "@/apps/agent/gestion_agents/models/Agent.js";
 import {plainToInstance} from "class-transformer";
+import {action, computed, makeObservable, observable} from "mobx";
 
 export class RequeteAgentValidation {
     public readonly agent: Agent;
@@ -67,8 +67,14 @@ export class RequeteAgentValidation {
         }
     }
 
+    public estInchange(): boolean {
+        return null === this._administration &&
+            (new Set(this.roles)).difference(new Set(this.agent.roles.filter((role) => role !== 'ROLE_AGENT'))).size == 0 &&
+            (new Set(this.agent.roles.filter((role) => role !== 'ROLE_AGENT'))).difference(new Set(this.roles)).size == 0;
+    }
+
     public estValide(): boolean {
-        return this.administration && (this.agent.roles.filter((role) => role !== 'ROLE_AGENT').length > 0 || this.roles.length > 0);
+        return this.administration && this.roles.length > 0;
     }
 }
 
@@ -89,11 +95,11 @@ export class RequeteAgentValidationListe {
     }
 
     get validationsValides(): RequeteAgentValidation[] {
-        return this.validations.filter((v) => v.estValide());
+        return this.validations.filter((v) => !v.estInchange() && v.estValide());
     }
 
     async sauvegarder() {
-        const response = await fetch(`${document.URL}.json`, {
+        const response = await fetch(`/agent/gestion/role-agents.json`, {
             method: 'POST',
             body: JSON.stringify(
                 Object.fromEntries(
@@ -108,7 +114,7 @@ export class RequeteAgentValidationListe {
             )
         });
 
-        const { agents: _agts } = await response.json();
+        const {agents: _agts} = await response.json();
 
         const agents: Agent[] = plainToInstance(Agent, (_agts as any[]));
 

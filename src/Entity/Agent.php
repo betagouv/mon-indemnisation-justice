@@ -12,11 +12,15 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\Table(name: 'agents')]
 #[ORM\UniqueConstraint(name: 'uniq_agent_identifiant', fields: ['identifiant'])]
-#[UniqueEntity(fields: ['identifiant'], message: 'Cet identifiant correspond à un autre agent')]
+#[ORM\UniqueConstraint(name: 'uniq_agent_email', fields: ['email'])]
+#[UniqueEntity(fields: ['identifiant'])]
 class Agent implements UserInterface
 {
     // Le role ROLE_AGENT est donné à chaque agent de la fonction publique
     public const ROLE_AGENT = 'ROLE_AGENT';
+    // Le role ROLE_AGENT_DOSSIER permet de chercher et consulter un dossier
+    public const ROLE_AGENT_DOSSIER = 'ROLE_AGENT_DOSSIER';
+
     // Le role ROLE_AGENT_REDACTEUR est donné au rédacteur du pôle précontentieux
     public const ROLE_AGENT_REDACTEUR = 'ROLE_AGENT_REDACTEUR';
     // Le rôle ROLE_AGENT_GESTION_PERSONNEL peut ajouter ou activer / désactiver un compte rédacteur

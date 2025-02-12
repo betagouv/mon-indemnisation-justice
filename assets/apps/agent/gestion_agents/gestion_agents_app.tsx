@@ -22,7 +22,7 @@ if (import.meta.env.PROD) {
     disableReactDevTools();
 }
 
-const {administrations, agents: _agts} = JSON.parse(document.getElementById('react-arguments').textContent);
+const {administrations, agents: _agts, preDeclaration = false, titre = "Gestion des agents"} = JSON.parse(document.getElementById('react-arguments').textContent);
 
 Administration.charger(administrations)
 
@@ -34,7 +34,7 @@ const root = ReactDOM.createRoot(document.getElementById('react-app-agent-gestio
 
 
 root.render(
-    <div className="fr-container fr-mt-2w">
-        <ValidationAgentApp liste={validations}/>
+    <div className="fr-container fr-my-5w">
+        <ValidationAgentApp liste={validations} preDeclaration={preDeclaration} titre={titre} />
     </div>
 );

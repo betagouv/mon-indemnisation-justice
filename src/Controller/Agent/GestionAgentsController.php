@@ -15,7 +15,6 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 #[IsGranted(Agent::ROLE_AGENT_GESTION_PERSONNEL)]
 #[Route('/agent/gestion')]
@@ -64,11 +63,31 @@ class GestionAgentsController extends AbstractController
     }
 
     #[Route('', name: 'gestion_agents_index', methods: ['GET'])]
-    public function index(SerializerInterface $serializer): Response
+    public function index(): Response
+    {
+        return $this->redirectToRoute('gestion_agents_en_attente');
+    }
+
+    #[Route('/en-attente', name: 'gestion_agents_en_attente', methods: ['GET'])]
+    public function agentsEnAttente(): Response
     {
         return $this->render('agent/gestion_agents/index.html.twig', [
             'react' => [
-                'agents' => $this->normalizeAgents($this->agentRepository->getEnAttenteActivation()),
+                'titre' => 'Agents en attente de validation',
+                'agents' => $this->normalizeAgents($this->agentRepository->getEnAttenteValidation()),
+                'administrations' => $this->normalizeAdministration(Administration::cases()),
+                'preDeclaration' => true,
+            ],
+        ]);
+    }
+
+    #[Route('/actifs', name: 'gestion_agents_actifs', methods: ['GET'])]
+    public function agentsActifs(): Response
+    {
+        return $this->render('agent/gestion_agents/index.html.twig', [
+            'react' => [
+                'titre' => 'Agents actifs',
+                'agents' => $this->normalizeAgents($this->agentRepository->getActifs()),
                 'administrations' => $this->normalizeAdministration(Administration::cases()),
             ],
         ]);
@@ -98,7 +117,7 @@ class GestionAgentsController extends AbstractController
         return new JsonResponse($this->normalizeAgent($agent), Response::HTTP_CREATED);
     }
 
-    #[Route('.json', name: 'gestion_agents_submit_json', methods: ['POST'])]
+    #[Route('/role-agents.json', name: 'gestion_agents_role_agent_json', methods: ['POST'])]
     public function submit(Request $request, NormalizerInterface $normalizer): Response
     {
         foreach ($request->getPayload() as $id => $config) {
@@ -115,7 +134,7 @@ class GestionAgentsController extends AbstractController
         }
 
         return new JsonResponse([
-            'agents' => $this->normalizeAgents($this->agentRepository->getEnAttenteActivation()),
+            'agents' => $this->normalizeAgents($this->agentRepository->getEnAttenteValidation()),
         ]);
     }
 }

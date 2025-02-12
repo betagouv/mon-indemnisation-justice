@@ -71,7 +71,7 @@ export default defineConfig(({command, mode}) => {
                             "bris_porte_tester_mon_eligibilite": "./assets/apps/bris_porte/tester_mon_eligibilite.ts",
                             "bris_porte_creation_de_compte": "./assets/apps/bris_porte/creation_de_compte.ts",
                             "bris_porte_deposer_mon_dossier": "./assets/apps/bris_porte/deposer_mon_dossier.tsx",
-                            "agent/gestion_agents": "./assets/apps/agent/gestion_agents/agents_a_valider_app.tsx",
+                            "agent/gestion_agents": "./assets/apps/agent/gestion_agents/gestion_agents_app.tsx",
                             "agent/dossiers": "./assets/apps/agent/dossiers/recherche_app.tsx",
                         },
                         ...(import.meta.env?.VITE_SENTRY_DSN && {

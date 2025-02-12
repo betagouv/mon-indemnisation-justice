@@ -1,12 +1,17 @@
-import {ValidationAgentRow, DeclarationNouvelAgentRow} from "@/apps/agent/gestion_agents/components";
+import {DeclarationNouvelAgentRow, ValidationAgentRow} from "@/apps/agent/gestion_agents/components";
 import {Agent, RequeteAgentValidationListe} from "@/apps/agent/gestion_agents/models";
 import {observer} from "mobx-react-lite";
 import React, {useState} from "react";
 
-export const ValidationAgentApp = observer(({liste}: { liste: RequeteAgentValidationListe }) => {
+export const ValidationAgentApp = observer(({liste, preDeclaration = false, titre}: {
+    liste: RequeteAgentValidationListe,
+    preDeclaration: boolean,
+    titre: string
+}) => {
     const [sauvegardeEnCours, setSauvegardeEnCours] = useState(false);
+    console.log(liste.validationsValides)
 
-    let nouvelAgent= new Agent()
+    let nouvelAgent = new Agent()
 
     const sauvegarder = async () => {
         setSauvegardeEnCours(true);
@@ -17,10 +22,8 @@ export const ValidationAgentApp = observer(({liste}: { liste: RequeteAgentValida
     return (
         <>
             <div className="fr-grid-row">
-
-
                 <div className="fr-col-12">
-                    <h2>Agents en attente de validation</h2>
+                    <h2>{ titre }</h2>
                 </div>
             </div>
 
@@ -72,12 +75,14 @@ export const ValidationAgentApp = observer(({liste}: { liste: RequeteAgentValida
                                                     editable={!sauvegardeEnCours}
                                                 />)
                                         }
-                                        <DeclarationNouvelAgentRow
-                                            agent={nouvelAgent}
-                                            onSaved={(agent) => {
-                                                liste.ajouterAgentValidation(agent)
-                                            }}
-                                        />
+                                        {preDeclaration &&
+                                            <DeclarationNouvelAgentRow
+                                                agent={nouvelAgent}
+                                                onSaved={(agent) => {
+                                                    liste.ajouterAgentValidation(agent)
+                                                }}
+                                            />
+                                        }
                                         </tbody>
                                     </table>
                                 </div>
