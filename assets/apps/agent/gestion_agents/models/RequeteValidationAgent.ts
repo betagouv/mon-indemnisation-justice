@@ -79,8 +79,13 @@ export class RequeteAgentValidationListe {
         makeObservable(this, {
             validations: observable,
             validationsValides: computed,
+            ajouterAgentValidation: action,
         })
         this.validations = agents.map((agent) => new RequeteAgentValidation(agent));
+    }
+
+    ajouterAgentValidation(agent: Agent) {
+        this.validations.push(new RequeteAgentValidation(agent))
     }
 
     get validationsValides(): RequeteAgentValidation[] {

@@ -12,7 +12,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\Table(name: 'agents')]
 #[ORM\UniqueConstraint(name: 'uniq_agent_identifiant', fields: ['identifiant'])]
-#[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['identifiant'], message: 'Cet identifiant correspond à un autre agent')]
 class Agent implements UserInterface
 {
@@ -82,15 +81,8 @@ class Agent implements UserInterface
     #[ORM\JoinColumn(name: 'fournisseur_identite_uid', referencedColumnName: 'uid')]
     protected ?FournisseurIdentiteAgent $fournisseurIdentite = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
-    protected \DateTimeInterface $dateCreation;
-
-    #[ORM\PrePersist]
-    /** À la première sauvegarde, capturer la date de création */
-    public function onPrePersist(): void
-    {
-        $this->dateCreation = new \DateTime();
-    }
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTimeInterface $dateCreation = null;
 
     public function getId(): ?int
     {
@@ -335,9 +327,16 @@ class Agent implements UserInterface
         return sprintf('%s %s', $this->prenom, $capital ? strtoupper(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $this->nom)) : $this->nom);
     }
 
-    public function getDateCreation(): \DateTimeInterface
+    public function getDateCreation(): ?\DateTimeInterface
     {
         return $this->dateCreation;
+    }
+
+    public function setCree(): static
+    {
+        $this->dateCreation = new \DateTime();
+
+        return $this;
     }
 
     public function __toString(): string
