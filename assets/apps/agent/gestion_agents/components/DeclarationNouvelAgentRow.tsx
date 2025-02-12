@@ -15,7 +15,7 @@ export const DeclarationNouvelAgentRow = observer(
         const [erreur, setErreur] = useState(null)
         const save = async () => {
             try {
-                const response = await fetch(`${document.URL}/nouvel-agent.json`, {
+                const response = await fetch('/agent/gestion/nouvel-agent.json', {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json',

@@ -101,17 +101,16 @@ export const ValidationAgentRow = observer(({validation, editable = false}: {
             </td>
             <td className="fr-col-1">
                 <div className="fr-grid-row fr-grid-row--right">
-                    {validation.estValide() ? (
+                    {!validation.estValide() ? (
+                        <span
+                            className="fr-icon-close-line fr-text-default--error"
+                            aria-hidden="true"></span>
+                    ) : (!validation.estInchange() &&
                         <span
                             className="fr-icon-check-line fr-text-default--success"
                             aria-hidden="true"
                         ></span>
-                    ) : (
-                        <span
-                            className="fr-icon-close-line fr-text-default--error"
-                            aria-hidden="true"></span>
-                    )
-                    }
+                    )}
                 </div>
             </td>
         </tr>

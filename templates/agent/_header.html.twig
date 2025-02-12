@@ -75,8 +75,29 @@
                         {% endif %}
 
                         {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}
+
+
                             <li class="fr-nav__item">
-                                <a href="{{ url('gestion_agents_index') }}" class="fr-nav__link">Gestion des agents</a>
+                                <button aria-expanded="false" aria-controls="menu-gestion-agents" type="menu" class="fr-nav__btn">Gestion des agents</button>
+                                <div class="fr-collapse fr-menu" id="menu-gestion-agents">
+                                    <ul class="fr-menu__list">
+
+                                        <li>
+                                          <a href="{{ url('gestion_agents_en_attente') }}" class="fr-nav__link">
+                                              Agents en attente de validation
+                                          </a>
+                                        </li>
+
+                                        <li>
+                                          <a href="{{ url('gestion_agents_actifs') }}" class="fr-nav__link">
+                                              Agents actifs
+                                          </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+
+
                             </li>
                         {% endif %}
                     </ul>
