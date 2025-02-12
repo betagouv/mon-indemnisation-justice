@@ -19,6 +19,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/agent/redacteur')]
 class RedacteurController extends AbstractController
 {
+    private const ETATS_DOSSIERS_ELIGIBLES = [EtatDossierType::DOSSIER_DEPOSE, EtatDossierType::DOSSIER_ACCEPTE, EtatDossierType::DOSSIER_REJETE];
+
     public function __construct(
         protected readonly BrisPorteRepository $brisPorteRepository,
         protected readonly AgentRepository $agentRepository,
@@ -55,7 +57,7 @@ class RedacteurController extends AbstractController
                         'slug' => $etat->slugAction(),
                         'libelle' => $etat->libelleAction(),
                     ],
-                    [EtatDossierType::DOSSIER_DEPOSE, EtatDossierType::DOSSIER_ACCEPTE, EtatDossierType::DOSSIER_REJETE]
+                    self::ETATS_DOSSIERS_ELIGIBLES
                 ),
             ],
         ]);
@@ -78,11 +80,16 @@ class RedacteurController extends AbstractController
                     'etat' => $dossier->getEtatDossier()->getEtat()->value,
                     'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
                     'adresse' => $dossier->getAdresse()->getLibelle(),
-                    'dateDepot' => (int) $dossier->getDateDeclaration()?->format('Uv'),
+                    'dateDepot' => $dossier->getDateDeclaration() ? (int) $dossier->getDateDeclaration()->format('Uv') : null,
                     'attributaire' => $dossier->getRedacteur()?->getId(),
                 ],
                 $this->brisPorteRepository->rechercheDossiers(
-                    array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')),
+                    $request->query->has('e') ?
+                        array_filter(
+                            array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')),
+                            fn (EtatDossierType $etat) => in_array($etat, self::ETATS_DOSSIERS_ELIGIBLES)
+                        ) :
+                        self::ETATS_DOSSIERS_ELIGIBLES,
                     $this->agentRepository->findBy([
                         'id' => array_filter(
                             self::extraireCritereRecherche($request, 'a'),

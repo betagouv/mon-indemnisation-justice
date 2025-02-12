@@ -47,6 +47,7 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->join('d.adresse', 'a')
             ->join('d.requerant', 'r')
             ->join('r.personnePhysique', 'pp')
+            ->orderBy('e.dateEntree', 'DESC')
         ;
 
         if (!empty($etats)) {
