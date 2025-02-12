@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Controller\Agent;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Dto\NouvelAgentDto;
 use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
@@ -10,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -25,21 +27,26 @@ class GestionAgentsController extends AbstractController
     ) {
     }
 
+    protected function normalizeAgent(Agent $agent): array
+    {
+        return [
+            'id' => $agent->getId(),
+            'nom' => $agent->getNom(),
+            'prenom' => $agent->getPrenom(),
+            'courriel' => $agent->getEmail(),
+            'administration' => $agent->getAdministration()?->value,
+            'roles' => $agent->getRoles(),
+            'datePremiereConnexion' => $agent->getDateCreation() ? (int) $agent->getDateCreation()->format('Uv') : null,
+        ];
+    }
+
     /**
      * @param Agent[] ...$agents
      */
-    protected function normalizeAgent(...$agents): array
+    protected function normalizeAgents(...$agents): array
     {
         return array_map(
-            fn (Agent $agent) => [
-                'id' => $agent->getId(),
-                'nom' => $agent->getNom(),
-                'prenom' => $agent->getPrenom(),
-                'courriel' => $agent->getEmail(),
-                'administration' => $agent->getAdministration()?->value,
-                'roles' => $agent->getRoles(),
-                'datePremiereConnexion' => (int) $agent->getDateCreation()->format('Uv'),
-            ], ...$agents);
+            fn (Agent $agent) => $this->normalizeAgent($agent), ...$agents);
     }
 
     /**
@@ -61,10 +68,34 @@ class GestionAgentsController extends AbstractController
     {
         return $this->render('agent/gestion_agents/index.html.twig', [
             'react' => [
-                'agents' => $this->normalizeAgent($this->agentRepository->getEnAttenteActivation()),
+                'agents' => $this->normalizeAgents($this->agentRepository->getEnAttenteActivation()),
                 'administrations' => $this->normalizeAdministration(Administration::cases()),
             ],
         ]);
+    }
+
+    #[Route('/nouvel-agent.json', name: 'gestion_agents_nouvel_agent_json', methods: ['POST'])]
+    public function nouvelAgent(
+        #[MapRequestPayload(acceptFormat: 'json')] NouvelAgentDto $nouvelAgentDto,
+    ) {
+        if (null !== $this->agentRepository->findOneBy(['email' => $nouvelAgentDto->courriel])) {
+            return new JsonResponse([
+                'courriel' => 'Cette adresse est déjà attribuée à un agent',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $agent = (new Agent())
+            ->setPrenom($nouvelAgentDto->prenom ?? '')
+            ->setNom($nouvelAgentDto->nom ?? '')
+            ->setEmail($nouvelAgentDto->courriel)
+            ->setIdentifiant($nouvelAgentDto->courriel)
+            ->setUid($nouvelAgentDto->courriel)
+            ->setRoles([Agent::ROLE_AGENT])
+        ;
+
+        $this->agentRepository->save($agent);
+
+        return new JsonResponse($this->normalizeAgent($agent), Response::HTTP_CREATED);
     }
 
     #[Route('.json', name: 'gestion_agents_submit_json', methods: ['POST'])]
@@ -84,7 +115,7 @@ class GestionAgentsController extends AbstractController
         }
 
         return new JsonResponse([
-            'agents' => $this->normalizeAgent($this->agentRepository->getEnAttenteActivation()),
+            'agents' => $this->normalizeAgents($this->agentRepository->getEnAttenteActivation()),
         ]);
     }
 }
