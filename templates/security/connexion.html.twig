@@ -46,38 +46,51 @@
                                     data-fr-js-modal-button="true">Fermer
                             </button>
                         </div>
-                        <div class="fr-modal__content"><h1 id="fr-modal-title-fr-modal-motdepasse-oublie"
-                                                           class="fr-modal__title">J'ai
-                                oublié mon mot de passe</h1>
-                            <div class="fr-grid-row fr-grid-row--gutters">
-                                <div class="fr-col-12">
-                                    <div id="fr-alert-:r9:" class="fr-alert fr-alert--info fr-alert--sm"><p>Saisissez
-                                            votre email ici, vous recevrez à cette adresse un courriel pour
-                                            réinitialiser votre mot de passe</p></div>
-                                </div>
-                                <div class="fr-col-12">
-                                    <div class="fr-input-group">
-                                        <label class="fr-label" for="input-:rb:">
-                                            Adresse courriel</label>
-                                        <input
-                                                placeholder="Format attendu : nom@domaine.fr"
-                                                class="fr-input"
-                                                aria-describedby="input-:rb:-desc-error"
-                                                type="text"
-                                                id="input-:rb:"
-                                                value=""
-                                        >
-                                        <div id="input-:rb:-messages-group" class="fr-messages-group"
-                                             aria-live="polite"></div>
-                                    </div>
+                        <div class="fr-modal__content">
+                            <h1
+                                    id="fr-modal-title-fr-modal-motdepasse-oublie"
+                                    class="fr-modal__title"
+                            >
+                                J'ai oublié mon mot de passe
+                            </h1>
+                            <form action="{{ absolute_url(path('app_send_reset_password')) }}" method="post">
+                                <input type="hidden" name="_token" value="{{ mdp_oublie_form._token.vars.value }}">
 
+                                <div class="fr-grid-row fr-grid-row--gutters">
+
+                                    <div class="fr-col-12">
+                                        <p>
+                                            Saisissez votre adresse ici, vous recevrez un courriel vous invitant à
+                                            réinitialiser votre mot de passe
+                                        </p>
+                                    </div>
+                                    <div class="fr-col-12">
+                                        <div class="fr-input-group">
+                                            <label
+                                                    class="fr-label"
+                                                    for="mdp-oublie-email"
+                                            >
+                                                Adresse courriel
+                                            </label>
+                                            <input
+                                                    placeholder="Format attendu : nom@domaine.fr"
+                                                    class="fr-input"
+                                                    aria-describedby="mdp-oublie-email-erreur"
+                                                    type="email"
+                                                    name="email"
+                                                    value=""
+                                                    id="mdp-oublie-email"
+                                            >
+                                        </div>
+
+                                    </div>
+                                    <div class="fr-col-12">
+                                        <button type="submit" class="fr-btn">
+                                            Recevoir un courriel pour mettre à jour votre mot de passe
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="fr-col-12">
-                                    <button id="fr-button-:rd:" class="fr-btn">Recevoir un courriel pour mettre à jour
-                                        votre mot de passe
-                                    </button>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -304,13 +317,22 @@
 {% endblock %}
 
 {% block javascripts %}
-    {#
-    {% if est_vite_server_actif() %}
-        {% include '_vite_hmr_extra.html.twig' %}
-    {% endif %}
-    {{ vite_entry_script_tags('react_security_login') }}
-    #}
-
     {{ parent() }}
+    <script type="text/javascript">
+        const motDePasseOublieChamps = document.getElementById('mdp-oublie-email');
+        console.log(motDePasseOublieChamps)
+        const motDePasseOublieErreur = document.getElementById(motDePasseOublieChamps.getAttribute('aria-describedby'));
+
+        motDePasseOublieChamps.addEventListener("input", function (e) {
+            const button = e.target.closest('form')?.querySelector('button[type=submit');
+
+            if (button) {
+                button.toggleAttribute("disabled", !e.target.value.match(
+                    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                ));
+            }
+        });
+
+    </script>
 
 {% endblock %}

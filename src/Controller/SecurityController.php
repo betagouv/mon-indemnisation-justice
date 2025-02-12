@@ -8,15 +8,14 @@ use MonIndemnisationJustice\Dto\MotDePasseOublieDto;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
+use MonIndemnisationJustice\Forms\MotDePasseOublieType;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -57,6 +56,7 @@ class SecurityController extends AbstractController
         return $this->render('security/connexion.html.twig', [
             'last_username' => $lastUsername,
             'error_message' => $errorMessage,
+            'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
         ]);
     }
 
@@ -74,6 +74,7 @@ class SecurityController extends AbstractController
         return $this->render('security/connexion.html.twig', [
             'last_username' => null,
             'error_message' => null,
+            'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
         ]);
     }
 
@@ -84,31 +85,43 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/mon-mot-de-passe/oublie', name: 'app_send_reset_password', methods: ['POST'])]
-    public function motDePasseOublie(#[MapRequestPayload(acceptFormat: 'json')] MotDePasseOublieDto $motDePasseOublieDto): JsonResponse
+    public function motDePasseOublie(Request $request): Response
     {
-        $requerant = $this->em->getRepository(Requerant::class)->findOneBy([
-            'email' => $motDePasseOublieDto->email,
-            'estVerifieCourriel' => true,
-        ]);
+        $form = $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto());
 
-        if ($requerant && $requerant->hasRole(Requerant::ROLE_REQUERANT)) {
-            // Génération d'un jeton de vérification
-            $requerant->genererJetonVerification();
+        $form->handleRequest($request);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $requerant = $this->em->getRepository(Requerant::class)->findOneBy([
+                    'email' => $form->getData()->email,
+                    'estVerifieCourriel' => true,
+                ]);
 
-            $this->em->persist($requerant);
-            $this->em->flush();
+                if ($requerant) {
+                    // Génération d'un jeton de vérification
+                    $requerant->genererJetonVerification();
 
-            // Envoi du mail de confirmation.
-            $this->mailer
-                ->toRequerant($requerant)
-                ->subject('Mon Indemnisation Justice: réinitialisation de votre mot de passe')
-                ->htmlTemplate('email/mot_de_passe_oublie.html.twig', [
-                    'requerant' => $requerant,
-                ])
-                ->send();
+                    $this->em->persist($requerant);
+                    $this->em->flush();
+
+                    // Envoi du mail de confirmation.
+                    $this->mailer
+                        ->toRequerant($requerant)
+                        ->subject('Mon Indemnisation Justice: réinitialisation de votre mot de passe')
+                        ->htmlTemplate('email/mot_de_passe_oublie.html.twig', [
+                            'requerant' => $requerant,
+                        ])
+                        ->send();
+                }
+
+                $this->addFlash('success', [
+                    'title' => 'Demande bien reçue',
+                    'message' => "Si l'adresse fournie correspond à un compte actif, vous recevrez dans quelques instants un courriel vous invitant à saisir un nouveau mot de passe.",
+                ]);
+            }
         }
 
-        return new JsonResponse();
+        return $this->redirectToRoute('app_login');
     }
 
     #[Route(path: '/mon-mot-de-passe/mettre-a-jour/{jeton}', name: 'app_reset_password', methods: ['GET', 'POST'])]
