@@ -15,7 +15,7 @@ export const ValidationAgentApp = observer(({liste, preDeclaration = false, titr
 
     const sauvegarder = async () => {
         setSauvegardeEnCours(true);
-        await liste.sauvegarder();
+        await liste.sauvegarder(!preDeclaration);
         setSauvegardeEnCours(false);
     }
 

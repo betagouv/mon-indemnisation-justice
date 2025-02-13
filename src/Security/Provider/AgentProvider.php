@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Security\Provider;
 
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -16,10 +17,14 @@ class AgentProvider implements UserProviderInterface
 
     public function refreshUser(UserInterface $user): UserInterface
     {
-        $agent = $this->agentRepository->findOneBy(['identifiant' => $user->getUserIdentifier()]);
+        if (!$user instanceof Agent) {
+            throw new UnsupportedUserException($user::class);
+        }
+
+        $agent = $this->agentRepository->findOneBy(['identifiant' => $user->getIdentifiant()]);
 
         if (null === $agent) {
-            throw new UserNotFoundException($user->getUserIdentifier());
+            throw new UserNotFoundException($user->getIdentifiant());
         }
 
         return $agent;

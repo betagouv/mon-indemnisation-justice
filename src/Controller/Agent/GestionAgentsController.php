@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -23,6 +25,7 @@ class GestionAgentsController extends AbstractController
     public function __construct(
         protected readonly EntityManagerInterface $em,
         protected readonly AgentRepository $agentRepository,
+        protected readonly TokenStorageInterface $tokenStorage,
     ) {
     }
 
@@ -120,7 +123,11 @@ class GestionAgentsController extends AbstractController
     #[Route('/role-agents.json', name: 'gestion_agents_role_agent_json', methods: ['POST'])]
     public function submit(Request $request, NormalizerInterface $normalizer): Response
     {
-        foreach ($request->getPayload() as $id => $config) {
+        $payload = $request->getPayload()->all();
+        $agents = $payload['agents'];
+        $actifs = $payload['actifs'];
+
+        foreach ($agents as $id => $config) {
             $agent = $this->agentRepository->find($id);
             $administration = Administration::from($config['administration']);
             $roles = $config['roles'];
@@ -130,11 +137,16 @@ class GestionAgentsController extends AbstractController
                 ->setAdministration($administration)
                 ->setRoles($roles);
 
+            if ($agent === $this->getUser()) {
+                // Rafraichir le token pour éviter à l'utilisateur de se faire déconnecter
+                $this->tokenStorage->setToken(new UsernamePasswordToken($this->tokenStorage->getToken()->getUser(), 'agents', $agent->getRoles()));
+            }
+
             $this->agentRepository->save($agent);
         }
 
         return new JsonResponse([
-            'agents' => $this->normalizeAgents($this->agentRepository->getEnAttenteValidation()),
+            'agents' => $this->normalizeAgents($actifs ? $this->agentRepository->getActifs() : $this->agentRepository->getEnAttenteValidation()),
         ]);
     }
 }
