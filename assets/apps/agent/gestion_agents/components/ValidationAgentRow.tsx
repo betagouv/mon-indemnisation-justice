@@ -81,7 +81,8 @@ export const ValidationAgentRow = observer(({validation, editable = false}: {
                                     <input
                                         id={`input-permission-${validation.agent.id}-${role.toLowerCase()}`}
                                         type="checkbox"
-                                        disabled={!editable}
+                                        // TODO utiliser des classes pour les rôles et mieux gérer les impositions
+                                        disabled={!editable || (role == 'ROLE_AGENT_DOSSIER' && validation.aRole('ROLE_AGENT_REDACTEUR'))}
                                         checked={validation.aRole(role)}
                                         onChange={(e) => validation.definirRole(role, e.target.checked)}
                                         aria-describedby="checkbox-53-messages"/>

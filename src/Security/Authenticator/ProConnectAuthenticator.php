@@ -86,7 +86,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                 $this->agentRepository->save($agent);
             }
 
-            return new SelfValidatingPassport(new UserBadge($agent->getUserIdentifier()));
+            return new SelfValidatingPassport(new UserBadge($agent->getIdentifiant()));
         } catch (AuthenticationException $e) {
             $this->logger->error($e->getMessage(), $e->getMessageData());
             throw $e;

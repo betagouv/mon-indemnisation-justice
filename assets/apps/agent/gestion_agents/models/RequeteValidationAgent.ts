@@ -46,6 +46,9 @@ export class RequeteAgentValidation {
     protected ajouterRole(role: string): void {
         if (!this.aRole(role)) {
             this.roles.push(role)
+            if (role == 'ROLE_AGENT_REDACTEUR') {
+                this.ajouterRole('ROLE_AGENT_DOSSIER')
+            }
         }
     }
 
@@ -98,19 +101,22 @@ export class RequeteAgentValidationListe {
         return this.validations.filter((v) => !v.estInchange() && v.estValide());
     }
 
-    async sauvegarder() {
+    async sauvegarder(actifs: boolean = false) {
         const response = await fetch(`/agent/gestion/role-agents.json`, {
             method: 'POST',
             body: JSON.stringify(
-                Object.fromEntries(
-                    this.validationsValides.map((validation) => [
-                        validation.agent.id,
-                        {
-                            administration: validation.administration.id,
-                            roles: validation.roles.concat('ROLE_AGENT')
-                        }
-                    ])
-                )
+                {
+                    agents: Object.fromEntries(
+                        this.validationsValides.map((validation) => [
+                            validation.agent.id,
+                            {
+                                administration: validation.administration.id,
+                                roles: validation.roles.concat('ROLE_AGENT')
+                            }
+                        ])
+                    ),
+                    actifs
+                }
             )
         });
 

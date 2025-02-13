@@ -243,7 +243,7 @@ class Agent implements UserInterface
      */
     public function getUserIdentifier(): string
     {
-        return $this->identifiant;
+        return $this->getNomComplet(true);
     }
 
     public function getAdministration(): ?Administration
