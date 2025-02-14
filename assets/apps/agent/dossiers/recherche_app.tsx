@@ -1,6 +1,7 @@
+import "reflect-metadata";
 import {RechercheDossierApp} from "@/apps/agent/dossiers/components/RechercheDossierApp";
 import {EtatDossier, Redacteur} from "@/apps/agent/dossiers/models";
-import {Dossier} from "@/apps/agent/dossiers/models/Dossier";
+import {DossierApercu} from "@/apps/agent/dossiers/models/Dossier";
 import {disableReactDevTools} from '@/react/services/devtools.js';
 import {plainToInstance} from "class-transformer";
 import {autorun, observable, reaction, runInAction} from "mobx";
@@ -28,14 +29,14 @@ Redacteur.charger(args.redacteurs ?? [])
 EtatDossier.charger(args.etats_dossier ?? [])
 
 const recherche = RechercheDossier.fromURL();
-let dossiers: IObservableArray<Dossier> = observable([]);
+let dossiers: IObservableArray<DossierApercu> = observable([]);
 
 autorun(() => {
     history.replaceState(null, '', recherche.toURL());
 
     fetch(`${location.pathname}.json?${recherche.buildURLParameters()}` )
     .then((response) => response.json())
-    .then((data: []) => runInAction(() => dossiers.replace(plainToInstance(Dossier, data))))
+    .then((data: []) => runInAction(() => dossiers.replace(plainToInstance(DossierApercu, data))))
 });
 
 ReactDOM
