@@ -23,7 +23,7 @@ class DossierController extends AbstractController
     private const ETATS_DOSSIERS_ELIGIBLES = [EtatDossierType::DOSSIER_DEPOSE, EtatDossierType::DOSSIER_ACCEPTE, EtatDossierType::DOSSIER_REJETE];
 
     public function __construct(
-        protected readonly BrisPorteRepository $brisPorteRepository,
+        protected readonly BrisPorteRepository $dossierRepository,
         protected readonly AgentRepository $agentRepository,
     ) {
     }
@@ -48,6 +48,7 @@ class DossierController extends AbstractController
                 'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
                 'adresse' => $dossier->getAdresse()->getLibelle(),
             ] : [
+                'redacteur' => $dossier->getRedacteur()?->getId(),
                 'requerant' => [
                     'civilite' => $dossier->getRequerant()->getPersonnePhysique()->getCivilite()->value,
                     'nom' => $dossier->getRequerant()->getPersonnePhysique()->getNom(),
@@ -130,8 +131,24 @@ class DossierController extends AbstractController
             'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
             'react' => [
                 'dossier' => $this->normalizeDossier($dossier, 'detail'),
+                'redacteurs' => $this->normalizeRedacteur($this->agentRepository->getRedacteurs()),
             ],
         ]);
+    }
+
+    #[Route('/dossier/{id}/attribuer.json', name: 'agent_redacteur_attribuer_dossier', methods: ['POST'])]
+    public function attribuerDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $agent = $this->agentRepository->find($request->getPayload()->getInt('redacteur_id', 0));
+
+        if (null === $agent || !$agent->hasRole(Agent::ROLE_AGENT_REDACTEUR)) {
+            return new JsonResponse(['error' => "Cet agent n'est pas rédacteur"], Response::HTTP_BAD_REQUEST);
+        }
+
+        $dossier->setRedacteur($agent);
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/dossiers.json', name: 'agent_redacteur_dossiers_json', methods: ['GET'])]
@@ -140,7 +157,7 @@ class DossierController extends AbstractController
         return new JsonResponse(
             array_map(
                 fn (BrisPorte $dossier) => $this->normalizeDossier($dossier),
-                $this->brisPorteRepository->rechercheDossiers(
+                $this->dossierRepository->rechercheDossiers(
                     $request->query->has('e') ?
                         array_filter(
                             array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')),

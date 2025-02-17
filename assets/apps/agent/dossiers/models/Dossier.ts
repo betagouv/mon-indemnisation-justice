@@ -1,5 +1,6 @@
 import {Adresse, Document, DocumentType, EtatDossier, Redacteur, Requerant} from "@/apps/agent/dossiers/models";
 import {Expose, Transform, Type} from "class-transformer";
+import {action, makeObservable, observable} from "mobx";
 
 export abstract class BaseDossier {
     public readonly id: number;
@@ -33,12 +34,14 @@ export class DossierApercu extends BaseDossier {
 }
 
 export class DossierDetail extends BaseDossier {
-
-
-
     @Expose()
     @Type(() => Requerant)
     public readonly requerant: Requerant;
+
+    @Expose()
+    @Transform(({ value }: {value: number}) => Redacteur.resoudre(value))
+    public redacteur: Redacteur | null = null;
+
     @Expose()
     @Type(() => Adresse)
     public readonly adresse: Adresse;
@@ -50,5 +53,17 @@ export class DossierDetail extends BaseDossier {
 
     @Transform(({ value }: {value: object}) => new Map(Object.entries(value)))
     public documents: Map<string, Document[]>;
+
+
+    constructor() {
+        super();
+        makeObservable(this, {
+            attribuer: action
+        });
+    }
+
+    attribuer(redacteur: Redacteur): void {
+        this.redacteur = redacteur
+    }
 
 }
