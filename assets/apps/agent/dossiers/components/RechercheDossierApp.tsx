@@ -1,10 +1,10 @@
 import {EtatDossier, RechercheDossier, Redacteur} from "@/apps/agent/dossiers/models";
-import {Dossier} from "@/apps/agent/dossiers/models/Dossier";
+import {DossierApercu} from "@/apps/agent/dossiers/models/Dossier";
 import {observer} from "mobx-react-lite";
 import _ from "lodash";
 import React from 'react';
 
-export const RechercheDossierApp = observer(({ recherche, dossiers = []}: { recherche: RechercheDossier, dossiers: Dossier[] }) => {
+export const RechercheDossierApp = observer(({ recherche, dossiers = []}: { recherche: RechercheDossier, dossiers: DossierApercu[] }) => {
 
     return (
         <div className="fr-container fr-container--fluid fr-my-3w">
@@ -160,7 +160,7 @@ export const RechercheDossierApp = observer(({ recherche, dossiers = []}: { rech
                                                 <tbody>
 
                                                 {dossiers.length > 0 ?
-                                                    dossiers.map((dossier: Dossier) =>
+                                                    dossiers.map((dossier: DossierApercu) =>
                                                         <tr key={dossier.id}>
                                                             <td className="fr-col-2">
                                                                 <p className="fr-badge fr-badge--info fr-badge--no-icon fr-mb-1v">À
