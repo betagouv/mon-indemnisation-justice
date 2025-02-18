@@ -82,9 +82,13 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                         ->setAdministration(Administration::MINISTERE_JUSTICE)
                         ->setValide();
                 }
-
-                $this->agentRepository->save($agent);
+            } else {
+                $agent->setEmail($userInfo['email'])
+                ->setPrenom($userInfo['usual_name'])
+                ->setNom($userInfo['given_name']);
             }
+
+            $this->agentRepository->save($agent);
 
             return new SelfValidatingPassport(new UserBadge($agent->getIdentifiant()));
         } catch (AuthenticationException $e) {

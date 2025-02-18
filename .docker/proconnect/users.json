@@ -1,12 +1,12 @@
 [
     {
-        "_title": "Rédactrice",
+        "_title": "Rédacteur",
         "sub": "c1722a03-4172-4015-9f0d-d1995d4cbe5c",
         "email": "redacteur@justice.gouv.fr",
-        "usual_name": "Chantal",
-        "given_name": "Redacteur",
+        "usual_name": "Red",
+        "given_name": "Acteur",
         "uid": "1234",
-        "idp_id": "fce74da7-34d5-4b59-ba78-828a97d859cf"
+        "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
     },
     {
         "_title": "Policier",
@@ -16,6 +16,24 @@
         "given_name": "Policier",
         "uid": "567",
         "idp_id": "e2f13a1f-9f43-4def-a5ed-06dce37d00e6"
+    },
+    {
+        "_title": "Attributeur",
+        "sub": "14ea0686-9179-447a-a0b0-cdff4419befc",
+        "email": "attributeur@justice.gouv.fr",
+        "usual_name": "Hat",
+        "given_name": "Tributeur",
+        "uid": "7301",
+        "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
+    },
+    {
+        "_title": "Validateur",
+        "sub": "dda38b83-bca4-4a25-8e2a-d2eb4947f02d",
+        "email": "validateur@justice.gouv.fr",
+        "usual_name": "Walid",
+        "given_name": "Hateur",
+        "uid": "551",
+        "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
     },
     {
         "_title": "Pierre (beta)",

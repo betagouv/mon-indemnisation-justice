@@ -58,6 +58,7 @@ export class DossierDetail extends BaseDossier {
     constructor() {
         super();
         makeObservable(this, {
+            redacteur: observable,
             attribuer: action
         });
     }
@@ -65,5 +66,4 @@ export class DossierDetail extends BaseDossier {
     attribuer(redacteur: Redacteur): void {
         this.redacteur = redacteur
     }
-
 }

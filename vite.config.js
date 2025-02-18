@@ -36,7 +36,7 @@ export default defineConfig(({command, mode}) => {
                     renderLegacyChunks: false, // Pas besoin puisqu'on est ESM **only**
                 }),
                 symfonyPlugin({
-                    originOverride: 'https://mon-indemnisation.anje-justice.dev',
+                    originOverride: 'https://mon-indemnisation.justice.gouv.dev',
                     stimulus: false,
                     build: {
                         manifest: true,
@@ -83,7 +83,7 @@ export default defineConfig(({command, mode}) => {
             },
             server: {
                 host: '0.0.0.0',
-
+                allowedHosts: true
             }
         }
     }
