@@ -9,7 +9,6 @@ use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
 #[Route('/agent/redacteur')]
-class DossierController extends AbstractController
+class DossierController extends AgentController
 {
     private const ETATS_DOSSIERS_ELIGIBLES = [EtatDossierType::DOSSIER_DEPOSE, EtatDossierType::DOSSIER_ACCEPTE, EtatDossierType::DOSSIER_REJETE];
 
@@ -130,12 +129,19 @@ class DossierController extends AbstractController
         return $this->render('agent/dossier/consulter_bris_porte.html.twig', [
             'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
             'react' => [
+                'agent' => [
+                    'id' => $this->getAgent()->getId(),
+                    'permissions' => array_merge(
+                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR) ? ['ATTRIBUTEUR'] : [],
+                    ),
+                ],
                 'dossier' => $this->normalizeDossier($dossier, 'detail'),
                 'redacteurs' => $this->normalizeRedacteur($this->agentRepository->getRedacteurs()),
             ],
         ]);
     }
 
+    #[IsGranted(Agent::ROLE_AGENT_ATTRIBUTEUR)]
     #[Route('/dossier/{id}/attribuer.json', name: 'agent_redacteur_attribuer_dossier', methods: ['POST'])]
     public function attribuerDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {

@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import {ConsultationDossierApp} from "@/apps/agent/dossiers/components/ConsultationDossierApp";
-import { Redacteur } from "@/apps/agent/dossiers/models";
+import {Agent, Redacteur} from "@/apps/agent/dossiers/models";
 import {DossierDetail} from "@/apps/agent/dossiers/models/Dossier";
 import {disableReactDevTools} from '@/react/services/devtools.js';
 import {plainToInstance} from "class-transformer";
@@ -22,12 +22,14 @@ if (import.meta.env.PROD) {
 
 const args = JSON.parse(document.getElementById('react-arguments').textContent);
 
-const dossier = plainToInstance(DossierDetail, args.dossier, {enableImplicitConversion: true})
-
 Redacteur.charger(args.redacteurs ?? [])
+
+const agent = plainToInstance(Agent, args.agent);
+
+const dossier = plainToInstance(DossierDetail, args.dossier, {enableImplicitConversion: true})
 
 ReactDOM
     .createRoot(document.getElementById('react-app-agent-consultation-dossiers'))
     .render(
-        <ConsultationDossierApp dossier={dossier} />
+        <ConsultationDossierApp dossier={dossier} agent={agent}/>
     );

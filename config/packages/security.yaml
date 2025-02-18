@@ -37,7 +37,7 @@ security:
             #    enable_remember_me: false
             logout:
                 path: agent_securite_deconnexion
-                target: /
+                target: app_login
         requerant:
             user_checker: MonIndemnisationJustice\Security\RequerantChecker
             lazy: true
