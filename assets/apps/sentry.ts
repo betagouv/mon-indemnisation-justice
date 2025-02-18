@@ -16,13 +16,14 @@ if (import.meta.env?.VITE_SENTRY_DSN) {
         namePlaceholder: "Votre prénom",
         isRequiredLabel: "(requis)",
         messageLabel: "Description du problème",
-        messagePlaceholder: "Coquille sur le titre \"Machin\" / Le bouton \"Valider\" ne marche pas",
+        messagePlaceholder:
+          'Coquille sur le titre "Machin" / Le bouton "Valider" ne marche pas',
         triggerLabel: "Remonter une erreur / coquille",
         addScreenshotButtonLabel: "Faire une capture d'écran",
         submitButtonLabel: "Remonter",
         cancelButtonLabel: "Annuler",
         confirmButtonLabel: "Confirmer",
-        successMessageText: "C'est transmis à l'équipe tech!"
+        successMessageText: "C'est transmis à l'équipe tech!",
       }),
     ],
   });
