@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Security\Oidc;
 
+use Firebase\JWT\BeforeValidException;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -145,7 +146,7 @@ class OidcClient
         $accessToken = $credentials->access_token ?? null;
         try {
             $idToken = JWT::decode($credentials->id_token, $this->jwks);
-        } catch (SignatureInvalidException) {
+        } catch (SignatureInvalidException|BeforeValidException) {
             throw new AuthenticationException('Authorization failed (invalid id token).');
         }
 
