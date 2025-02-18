@@ -1,6 +1,6 @@
 import React from "react";
 import { Select } from "@codegouvfr/react-dsfr/Select";
-import { randomId } from "@/react/services/Random.ts";
+import { randomId } from "@/apps/requerant/dossier/services/Random.ts";
 
 const Civilite = ({ civilite, setCivilite, defaultOptionText = null }) => {
   const civilites = {

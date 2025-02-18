@@ -36,7 +36,7 @@ class BrisPorteController extends RequerantController
             throw new AccessDeniedHttpException();
         }
 
-        return $this->render('prejudice/declare_bris_porte.html.twig', [
+        return $this->render('requerant/dossier/declare_bris_porte.html.twig', [
             'brisPorte' => $brisPorte,
             'pays' => $this->geoPaysRepository->getListeTriee(),
         ]);

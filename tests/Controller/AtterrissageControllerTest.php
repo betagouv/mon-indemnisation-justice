@@ -15,12 +15,11 @@ class AtterrissageControllerTest extends WebTestCase
         $this->client = self::createClient(['debug' => 0]);
     }
 
-
     /**
      * ETQ visiteur, si je scanne le QR code je dois atterrir sur une page dédiée qui me renvoie vers la page d'accueil,
      * avec le drapeau idoine défini en session.
      */
-    public function testBrisDePorte(?string $refTestPrecedent = null, ?string $redirection = null, bool $aRequerant = false): void
+    public function testBrisDePorte(): void
     {
         $this->client->request('GET', '/atterrissage/bris-de-porte');
 

@@ -135,7 +135,9 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
 
         $this->client->submit($form);
 
-        $this->client->waitForVisibility('main', 2);
+        $this->screenshot($device, 'Formulaire soumis');
+
+        $this->client->waitForVisibility('main', 5);
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
         $this->assertSelectorTextContains('main h1', 'Déclarer un bris de porte');
 

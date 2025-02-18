@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
-import Civilite from "@/react/components/Civilite";
+import Civilite from "@/apps/requerant/dossier/components/Civilite.jsx";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import {
   DossierContext,
   PatchDossierContext,
-} from "@/react/contexts/DossierContext.ts";
-import { PaysContext } from "@/react/contexts/PaysContext.ts";
-import { randomId } from "@/react/services/Random.ts";
+} from "@/apps/requerant/dossier/contexts/DossierContext.ts";
+import { PaysContext } from "@/apps/requerant/dossier/contexts/PaysContext.ts";
+import { randomId } from "@/apps/requerant/dossier/services/Random.ts";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 
 const PersonnePhysique = function () {

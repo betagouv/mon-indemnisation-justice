@@ -1,8 +1,8 @@
 import React from "react";
-import Referentiel from "@/react/components/Referentiel";
+import Referentiel from "@/apps/requerant/dossier/components/Referentiel.jsx";
 
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import QualiteRequerant from "@/react/types/QualiteRequerant";
+import QualiteRequerant from "@/apps/requerant/dossier/models/QualiteRequerant.ts";
 
 const Requerant = function ({
   qualiteText = null,

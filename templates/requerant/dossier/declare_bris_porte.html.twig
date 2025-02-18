@@ -3,7 +3,7 @@
 {% block title %}Déclarer un bris de porte{% endblock %}
 
 {% block stylesheets %}
-  {{ vite_entry_link_tags('bris_porte_deposer_mon_dossier') }}
+  {{ vite_entry_link_tags('requerant/dossier/deposer_mon_dossier') }}
 {% endblock stylesheets %}
 
 {% block main %}
@@ -21,7 +21,7 @@
       {% include '_vite_hmr_extra.html.twig' %}
   {% endif %}
 
-  {{ vite_entry_script_tags('bris_porte_deposer_mon_dossier') }}
+  {{ vite_entry_script_tags('requerant/dossier/deposer_mon_dossier') }}
 
   {{ parent() }}
 
