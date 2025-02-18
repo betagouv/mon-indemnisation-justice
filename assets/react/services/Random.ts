@@ -1,17 +1,15 @@
-
-const alphabet = 'abcdefghijklmnopqrstuvwxyz'
-const allowedCharacters = `${alphabet}ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`
-
+const alphabet = "abcdefghijklmnopqrstuvwxyz";
+const allowedCharacters = `${alphabet}ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`;
 
 function randomPick(value: string): string {
-    return value.charAt(Math.floor(Math.random() * (value.length - 1)));
+  return value.charAt(Math.floor(Math.random() * (value.length - 1)));
 }
 
 function randomString(length: number = 10): string {
-    if (length <= 0) {
-        return "";
-    }
-    return randomPick(allowedCharacters).concat(randomString(length - 1));
+  if (length <= 0) {
+    return "";
+  }
+  return randomPick(allowedCharacters).concat(randomString(length - 1));
 }
 
 /**
@@ -20,10 +18,10 @@ function randomString(length: number = 10): string {
  * @param length
  */
 function randomId(length: number = 10): string {
-    if (length <= 0) {
-        return "";
-    }
-    return randomPick(alphabet) + randomString(length - 1);
+  if (length <= 0) {
+    return "";
+  }
+  return randomPick(alphabet) + randomString(length - 1);
 }
 
 export { randomId };

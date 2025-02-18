@@ -9,7 +9,7 @@ export function disableReactDevTools() {
       // initialise this with an empty `Map`,
       // else it will throw an error in console
 
-      window.__REACT_DEVTOOLS_GLOBAL_HOOK__[prop] = new Map()
+      window.__REACT_DEVTOOLS_GLOBAL_HOOK__[prop] = new Map();
     } else {
       // Replace all of its properties with a no-op function or a null value
       // depending on their types

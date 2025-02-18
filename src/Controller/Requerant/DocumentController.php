@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Controller\Requerant;
 
+use AsyncAws\S3\Exception\NoSuchKeyException;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
@@ -106,7 +107,7 @@ class DocumentController extends AbstractController
                     'Content-Length' => fstat($stream)['size'],
                 ]
             );
-        } catch (UnableToReadFile|FilesystemException $e) {
+        } catch (UnableToReadFile|FilesystemException|NoSuchKeyException $e) {
             return new Response('', Response::HTTP_NOT_FOUND);
         }
     }

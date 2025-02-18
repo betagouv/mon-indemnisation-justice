@@ -2,7 +2,10 @@
 
 namespace MonIndemnisationJustice\Controller\Agent;
 
+use AsyncAws\S3\Exception\NoSuchKeyException;
+use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Document;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,20 +32,28 @@ class DocumentController extends AbstractController
             throw new NotFoundHttpException('Document non trouvé');
         }
 
-        $stream = $this->storage->readStream($document->getFilename());
+        try {
+            if (!$this->storage->has($document->getFilename())) {
+                return new Response('', Response::HTTP_NOT_FOUND);
+            }
 
-        return new StreamedResponse(
-            function () use ($stream) {
-                fpassthru($stream);
-                exit;
-            },
-            200,
-            [
-                'Content-Transfer-Encoding', 'binary',
-                'Content-Type' => $document->getMime() ?? 'application/octet-stream',
-                'Content-Disposition' => sprintf('attachment; filename="%s"', $document->getOriginalFilename()),
-                'Content-Length' => fstat($stream)['size'],
-            ]
-        );
+            $stream = $this->storage->readStream($document->getFilename());
+
+            return new StreamedResponse(
+                function () use ($stream) {
+                    fpassthru($stream);
+                    exit;
+                },
+                200,
+                [
+                    'Content-Transfer-Encoding', 'binary',
+                    'Content-Type' => $document->getMime() ?? 'application/octet-stream',
+                    'Content-Disposition' => sprintf('attachment; filename="%s"', $document->getOriginalFilename()),
+                    'Content-Length' => fstat($stream)['size'],
+                ]
+            );
+        } catch (UnableToReadFile|FilesystemException|NoSuchKeyException $e) {
+            return new Response('', Response::HTTP_NOT_FOUND);
+        }
     }
 }

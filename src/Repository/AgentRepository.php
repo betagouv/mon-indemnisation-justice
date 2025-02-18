@@ -54,15 +54,30 @@ class AgentRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne la liste des agents.
+     * Retourne la liste des agents en attente d'être validés.
      *
      * @return Agent[]
      */
-    public function getEnAttenteActivation(): array
+    public function getEnAttenteValidation(): array
     {
         return $this
             ->createQueryBuilder('a')
             ->where('a.estValide = false')
+            ->orderBy('a.dateCreation', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Retourne la liste des agents validés.
+     *
+     * @return Agent[]
+     */
+    public function getActifs(): array
+    {
+        return $this
+            ->createQueryBuilder('a')
+            ->where('a.estValide = true')
             ->orderBy('a.dateCreation', 'DESC')
             ->getQuery()
             ->getResult();

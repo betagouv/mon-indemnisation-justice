@@ -63,7 +63,7 @@ class BrisPorte
     private ?string $reference = null;
 
     #[ORM\JoinTable(name: 'document_dossiers')]
-    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'dossiers', cascade: ['persist'])]
     /** @var Collection<Document> */
     protected Collection $documents;

@@ -63,13 +63,14 @@ class ProConnectAuthenticator extends AbstractAuthenticator
             $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);
 
             if (null === $agent) {
-                $agent = (new Agent())
+                $agent = ($this->agentRepository->findOneBy(['email' => $userInfo['email']]) ?? new Agent())
                 ->setIdentifiant($userInfo['sub'])
                 ->setEmail($userInfo['email'])
                 ->setPrenom($userInfo['usual_name'])
                 ->setNom($userInfo['given_name'])
                 ->addRole(Agent::ROLE_AGENT)
                 ->setUid($userInfo['uid'])
+                ->setCree()
                 ->setFournisseurIdentite($this->fournisseurIdentiteAgentRepository->find($userInfo['idp_id']))
                 ->setDonnesAuthentification($userInfo)
                 ;
@@ -81,11 +82,15 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                         ->setAdministration(Administration::MINISTERE_JUSTICE)
                         ->setValide();
                 }
-
-                $this->agentRepository->save($agent);
+            } else {
+                $agent->setEmail($userInfo['email'])
+                ->setPrenom($userInfo['usual_name'])
+                ->setNom($userInfo['given_name']);
             }
 
-            return new SelfValidatingPassport(new UserBadge($agent->getUserIdentifier()));
+            $this->agentRepository->save($agent);
+
+            return new SelfValidatingPassport(new UserBadge($agent->getIdentifiant()));
         } catch (AuthenticationException $e) {
             $this->logger->error($e->getMessage(), $e->getMessageData());
             throw $e;

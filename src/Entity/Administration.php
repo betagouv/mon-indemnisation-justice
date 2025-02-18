@@ -38,9 +38,10 @@ enum Administration: string
     {
         return match ($this) {
             self::MINISTERE_JUSTICE => [
-                Agent::ROLE_AGENT_VALIDATEUR,
-                Agent::ROLE_AGENT_ATTRIBUTEUR,
                 Agent::ROLE_AGENT_REDACTEUR,
+                Agent::ROLE_AGENT_DOSSIER,
+                Agent::ROLE_AGENT_ATTRIBUTEUR,
+                Agent::ROLE_AGENT_VALIDATEUR,
                 Agent::ROLE_AGENT_GESTION_PERSONNEL,
                 Agent::ROLE_AGENT_BUREAU_BUDGET,
             ],

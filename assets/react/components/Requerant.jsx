@@ -1,18 +1,17 @@
-import React from 'react';
-import Referentiel from '@/react/components/Referentiel';
+import React from "react";
+import Referentiel from "@/react/components/Referentiel";
 
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import QualiteRequerant from "@/react/types/QualiteRequerant";
 
-const Requerant = function({
-  qualiteText=null,
-  precisionText=null,
+const Requerant = function ({
+  qualiteText = null,
+  precisionText = null,
   qualiteRequerant,
   setQualiteRequerant,
   precisionRequerant,
-  setPrecisionRequerant
+  setPrecisionRequerant,
 }) {
-
   return (
     <>
       <div className="fr-grid-row fr-grid-row--gutters">
@@ -25,20 +24,20 @@ const Requerant = function({
           />
         </div>
         <div className="fr-col-lg-6 fr-col-12">
-          {qualiteRequerant === "AUT" &&
-          <Input
-            label={precisionText ?? "Précisez votre qualité"}
-            nativeInputProps={{
-              value: precisionRequerant,
-              onChange: ev=> setPrecisionRequerant(ev.target.value),
-              maxLength: 255
-            }}
-          />
-          }
+          {qualiteRequerant === "AUT" && (
+            <Input
+              label={precisionText ?? "Précisez votre qualité"}
+              nativeInputProps={{
+                value: precisionRequerant,
+                onChange: (ev) => setPrecisionRequerant(ev.target.value),
+                maxLength: 255,
+              }}
+            />
+          )}
         </div>
       </div>
     </>
   );
-}
+};
 
 export default Requerant;

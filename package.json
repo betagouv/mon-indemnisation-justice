@@ -32,5 +32,8 @@
     "resolutions": {
         "rollup": "npm:@rollup/wasm-node"
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "eslint-config-prettier": "^10.0.1",
+        "prettier": "3.5.1"
+    }
 }
