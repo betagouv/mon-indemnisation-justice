@@ -18,10 +18,10 @@
     }
   </script>
   {% if est_vite_server_actif() %}
-      {% include '_vite_hmr_extra.html.twig' %}
+      {% include '../../_vite_hmr_extra.html.twig' %}
   {% endif %}
 
-  {{ vite_entry_script_tags('bris_porte_deposer_mon_dossier') }}
+  {{ vite_entry_script_tags('requerant/dossier/deposer_mon_dossier') }}
 
   {{ parent() }}
 

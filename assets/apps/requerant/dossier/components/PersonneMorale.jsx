@@ -3,7 +3,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import {
   DossierContext,
   PatchDossierContext,
-} from "../contexts/DossierContext.ts";
+} from "@/apps/requerant/dossier/contexts/DossierContext.ts";
 
 const PersonneMorale = () => {
   const dossier = useContext(DossierContext);

@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { RechercheDossierApp } from "@/apps/agent/dossiers/components/RechercheDossierApp";
 import { EtatDossier, Redacteur } from "@/apps/agent/dossiers/models";
 import { DossierApercu } from "@/apps/agent/dossiers/models/Dossier";
-import { disableReactDevTools } from "@/react/services/devtools.js";
+import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import { plainToInstance } from "class-transformer";
 import { autorun, observable, reaction, runInAction } from "mobx";
 import { IObservableArray } from "mobx/src/internal";

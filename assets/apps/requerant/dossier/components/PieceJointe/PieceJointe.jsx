@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import { Uploader } from "@/react/components/Uploader";
-import { DossierContext } from "@/react/contexts/DossierContext.ts";
+import { Uploader } from "@/apps/requerant/dossier/components/Uploader.jsx";
+import { DossierContext } from "@/apps/requerant/dossier/contexts/DossierContext.ts";
 
 export const Document = ({
   documents,

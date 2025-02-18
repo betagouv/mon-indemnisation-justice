@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { randomId } from "@/react/services/Random.ts";
+import { randomId } from "@/apps/requerant/dossier/services/Random.ts";
 
 export const Uploader = ({ dossier, libelle, onUploaded, type }) => {
   const MAX_SIZE = 2048 * 1000 * 8;
