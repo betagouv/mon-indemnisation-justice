@@ -1,40 +1,47 @@
-import {ValidationAgentApp} from "@/apps/agent/gestion_agents/components";
+import { ValidationAgentApp } from "@/apps/agent/gestion_agents/components";
 import {
-    Administration,
-    Agent,
-    RequeteAgentValidationListe
+  Administration,
+  Agent,
+  RequeteAgentValidationListe,
 } from "@/apps/agent/gestion_agents/models/index.ts";
-import {disableReactDevTools} from '@/react/services/devtools.js';
-import {plainToInstance} from "class-transformer";
-import React from 'react';
+import { disableReactDevTools } from "@/react/services/devtools.js";
+import { plainToInstance } from "class-transformer";
+import React from "react";
 import ReactDOM from "react-dom/client";
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
-    import.meta.hot.on(
-        "vite:beforeUpdate",
-        () => console.clear()
-    );
+  import.meta.hot.on("vite:beforeUpdate", () => console.clear());
 }
 
 // En production, désactivation de React devtools
 if (import.meta.env.PROD) {
-    disableReactDevTools();
+  disableReactDevTools();
 }
 
-const {administrations, agents: _agts, preDeclaration = false, titre = "Gestion des agents"} = JSON.parse(document.getElementById('react-arguments').textContent);
+const {
+  administrations,
+  agents: _agts,
+  preDeclaration = false,
+  titre = "Gestion des agents",
+} = JSON.parse(document.getElementById("react-arguments").textContent);
 
-Administration.charger(administrations)
+Administration.charger(administrations);
 
-const agents: Agent[] = plainToInstance(Agent, (_agts as any[]));
+const agents: Agent[] = plainToInstance(Agent, _agts as any[]);
 
-const validations = new RequeteAgentValidationListe(agents)
+const validations = new RequeteAgentValidationListe(agents);
 
-const root = ReactDOM.createRoot(document.getElementById('react-app-agent-gestion-agents'));
-
+const root = ReactDOM.createRoot(
+  document.getElementById("react-app-agent-gestion-agents"),
+);
 
 root.render(
-    <div className="fr-container fr-my-5w">
-        <ValidationAgentApp liste={validations} preDeclaration={preDeclaration} titre={titre} />
-    </div>
+  <div className="fr-container fr-my-5w">
+    <ValidationAgentApp
+      liste={validations}
+      preDeclaration={preDeclaration}
+      titre={titre}
+    />
+  </div>,
 );

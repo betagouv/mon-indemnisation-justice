@@ -1,33 +1,36 @@
-import {Redacteur} from "@/apps/agent/dossiers/models/Redacteur";
-import {Transform} from "class-transformer";
+import { Redacteur } from "@/apps/agent/dossiers/models/Redacteur";
+import { Transform } from "class-transformer";
 
 export enum AgentPermissionType {
-    REDACTEUR = 'REDACTEUR',
-    ATTRIBUTEUR = 'ATTRIBUTEUR',
-    VALIDATEUR = 'VALIDATEUR'
-};
+  REDACTEUR = "REDACTEUR",
+  ATTRIBUTEUR = "ATTRIBUTEUR",
+  VALIDATEUR = "VALIDATEUR",
+}
 
-export type AgentPermission = AgentPermissionType.REDACTEUR | AgentPermissionType.ATTRIBUTEUR| AgentPermissionType.VALIDATEUR;
+export type AgentPermission =
+  | AgentPermissionType.REDACTEUR
+  | AgentPermissionType.ATTRIBUTEUR
+  | AgentPermissionType.VALIDATEUR;
 
 export class Agent {
-    public id: number;
+  public id: number;
 
-    @Transform( ({ value } : { value: string[] }) => new Set(value))
-    protected permissions: Set<AgentPermission>;
+  @Transform(({ value }: { value: string[] }) => new Set(value))
+  protected permissions: Set<AgentPermission>;
 
-    public estAttributeur(): boolean {
-        return this.permissions.has(AgentPermissionType.ATTRIBUTEUR)
-    }
+  public estAttributeur(): boolean {
+    return this.permissions.has(AgentPermissionType.ATTRIBUTEUR);
+  }
 
-    public estValidateur(): boolean {
-        return this.permissions.has(AgentPermissionType.VALIDATEUR)
-    }
+  public estValidateur(): boolean {
+    return this.permissions.has(AgentPermissionType.VALIDATEUR);
+  }
 
-    public estRedacteur(): boolean {
-        return this.permissions.has(AgentPermissionType.REDACTEUR)
-    }
+  public estRedacteur(): boolean {
+    return this.permissions.has(AgentPermissionType.REDACTEUR);
+  }
 
-    equals(redacteur: Redacteur | null): boolean {
-        return redacteur?.id == this.id;
-    }
+  equals(redacteur: Redacteur | null): boolean {
+    return redacteur?.id == this.id;
+  }
 }
