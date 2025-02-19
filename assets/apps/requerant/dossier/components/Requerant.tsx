@@ -1,16 +1,24 @@
+import qualiteRequerant from "@/apps/requerant/dossier/models/QualiteRequerant.ts";
 import React from "react";
-import Referentiel from "@/react/components/Referentiel";
+import Referentiel from "@/apps/requerant/dossier/components/Referentiel";
 
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import QualiteRequerant from "@/react/types/QualiteRequerant";
+import QualiteRequerant from "@/apps/requerant/dossier/models/QualiteRequerant.ts";
 
-const Requerant = function ({
+export const Requerant = function ({
   qualiteText = null,
   precisionText = null,
   qualiteRequerant,
   setQualiteRequerant,
   precisionRequerant,
   setPrecisionRequerant,
+}: {
+  qualiteText?: string;
+  precisionText?: string;
+  qualiteRequerant: string;
+  setQualiteRequerant: (qualiteRequerant: string) => void;
+  precisionRequerant: string;
+  setPrecisionRequerant: (precisionRequerant: string) => void;
 }) {
   return (
     <>
@@ -39,5 +47,3 @@ const Requerant = function ({
     </>
   );
 };
-
-export default Requerant;

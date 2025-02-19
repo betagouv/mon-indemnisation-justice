@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MonIndemnisationJustice\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use MonIndemnisationJustice\Dto\Inscription;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\GeoDepartement;
@@ -13,15 +15,12 @@ use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Forms\InscriptionType;
 use MonIndemnisationJustice\Forms\TestEligibiliteType;
 use MonIndemnisationJustice\Service\Mailer;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Exception\ORMException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-
 
 #[Route('/bris-de-porte')]
 class BrisPorteController extends AbstractController
@@ -45,7 +44,6 @@ class BrisPorteController extends AbstractController
             } catch (ORMException $exception) {
                 $request->getSession()->remove(self::SESSION_CONTEXT_KEY);
             }
-
         }
 
         return null;
@@ -70,7 +68,6 @@ class BrisPorteController extends AbstractController
         $form = $this->createForm(TestEligibiliteType::class, $testEligibilite);
 
         if (Request::METHOD_POST === $request->getMethod()) {
-
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
                 /** @var TestEligibilite $testEligibilite */
@@ -107,7 +104,7 @@ class BrisPorteController extends AbstractController
             }
         }
 
-        return $this->render('bris_porte/tester_mon_eligibilite.html.twig', [
+        return $this->render('brisPorte/tester_mon_eligibilite.html.twig', [
             'form' => $form,
             'departements' => $this->entityManager->getRepository(GeoDepartement::class)->getListeTriee()]
         );
@@ -130,7 +127,7 @@ class BrisPorteController extends AbstractController
             return $this->redirectToRoute('bris_porte_creation_de_compte');
         }
 
-        return $this->render('bris_porte/contactez_nous.html.twig', [
+        return $this->render('brisPorte/contactez_nous.html.twig', [
             'testEligibilite' => $testEligibilite,
         ]);
     }
@@ -222,7 +219,7 @@ class BrisPorteController extends AbstractController
             }
         }
 
-        return $this->render('bris_porte/creation_de_compte.html.twig', [
+        return $this->render('brisPorte/creation_de_compte.html.twig', [
             'inscription' => $inscription,
             'form' => $form,
             'errors' => $errors,
@@ -246,6 +243,6 @@ class BrisPorteController extends AbstractController
             }
         }
 
-        return $this->render('bris_porte/finaliser_la_creation.html.twig', ['email' => $testEligibilite->requerant->getEmail()]);
+        return $this->render('brisPorte/finaliser_la_creation.html.twig', ['email' => $testEligibilite->requerant->getEmail()]);
     }
 }

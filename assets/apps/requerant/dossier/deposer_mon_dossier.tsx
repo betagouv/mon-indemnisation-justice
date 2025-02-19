@@ -1,14 +1,17 @@
 import React, { useReducer } from "react";
 import ReactDOM from "react-dom/client";
-import { disableReactDevTools } from "@/react/services/devtools.js";
-import BrisPortePanel from "@/react/components/BrisPortePanel.jsx";
+import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
+import BrisPortePanel from "@/apps/requerant/dossier/components/BrisPortePanel";
 import {
   DossierContext,
   PatchDossierContext,
-} from "@/react/contexts/DossierContext.ts";
-import { PaysContext } from "@/react/contexts/PaysContext.ts";
+} from "@/apps/requerant/dossier/contexts/DossierContext.ts";
+import { PaysContext } from "@/apps/requerant/dossier/contexts/PaysContext.ts";
 import _ from "lodash";
-import { recursiveMerge, recursivePatch } from "@/react/services/Object.js";
+import {
+  recursiveMerge,
+  recursivePatch,
+} from "@/apps/requerant/dossier/services/Object";
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
