@@ -4,7 +4,7 @@ import {
   Agent,
   RequeteAgentValidationListe,
 } from "@/apps/agent/gestion_agents/models/index.ts";
-import { disableReactDevTools } from "@/react/services/devtools.js";
+import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import { plainToInstance } from "class-transformer";
 import React from "react";
 import ReactDOM from "react-dom/client";

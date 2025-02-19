@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { ConsultationDossierApp } from "@/apps/agent/dossiers/components/ConsultationDossierApp";
 import { Agent, Redacteur } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
-import { disableReactDevTools } from "@/react/services/devtools.js";
+import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import { plainToInstance } from "class-transformer";
 import React from "react";
 import ReactDOM from "react-dom/client";

@@ -133,19 +133,19 @@ gantt
         Retours 1       :proconnect-2, after proconnect-1, 5d
         Retours 2       :proconnect-3, after proconnect-2, 5d
     section Recherche de dossier
-        Implémentation  :active recherche-1, 2025-01-27, 5d
+        Implémentation  :done recherche-1, 2025-01-27, 5d
         Retours 1       :recherche-2, after recherche-1, 5d
         Retours 2       :recherche-3, after recherche-2, 5d
     section Consultation du dossier
-        Implémentation :consultation-1, 2025-02-03, 5d
+        Implémentation :done consultation-1, 2025-02-03, 5d
         Retours 1    :consultation-2, after consultation-1, 5d
         Retours 2    :consultation-3, after consultation-2, 5d
     section Attribution des dossiers
-        Implémentation :attribution-1, 2025-02-10, 5d
+        Implémentation :done attribution-1, 2025-02-10, 5d
         Retours 1    :attribution-2, after attribution-1, 5d
         Retours 2    :attribution-3, after attribution-2, 5d
     section Décision
-        Implémentation :decision-1, 2025-02-17, 5d
+        Implémentation :active decision-1, 2025-02-17, 5d
         Retours 1    :decision-2, after decision-1, 5d
         Retours 2    :decision-3, after decision-2, 5d
     section Validation

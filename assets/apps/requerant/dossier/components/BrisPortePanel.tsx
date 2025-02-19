@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Document } from "@/react/components/PieceJointe/PieceJointe";
-import { default as RecapitulatifBrisPorte } from "./BrisPorte/Recapitulatif";
+import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe.tsx";
+import { default as RecapitulatifBrisPorte } from "./BrisPorte/Recapitulatif.tsx";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import BrisPorte from "@/react/components/BrisPorte";
-import User from "./User";
+import BrisPorte from "@/apps/requerant/dossier/components/BrisPorte.tsx";
+import User from "./User.tsx";
 import {
   DossierContext,
   PatchDossierContext,
-} from "@/react/contexts/DossierContext.ts";
+} from "@/apps/requerant/dossier/contexts/DossierContext.ts";
 
 const BrisPortePanel = function () {
   const dossier = useContext(DossierContext);

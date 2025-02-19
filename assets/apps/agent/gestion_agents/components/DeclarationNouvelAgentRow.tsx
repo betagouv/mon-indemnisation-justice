@@ -115,27 +115,30 @@ export const DeclarationNouvelAgentRow = observer(
                     </div>
                     <div className="fr-col-4">
                       <div className="fr-fieldset__element">
-                        <div className="fr-input-group" id="input-group-82">
-                          <label className="fr-label" htmlFor="input-67">
+                        <div className="fr-input-group">
+                          <label
+                            className="fr-label"
+                            htmlFor="declarer-nouvel-agent-champs-courriel"
+                          >
                             Adresse courriel
                             <span className="fr-hint-text">Requis</span>
                           </label>
                           <input
+                            id="declarer-nouvel-agent-champs-courriel"
                             className="fr-input"
-                            aria-describedby="input-67-messages"
+                            aria-describedby="declarer-nouvel-agent-message-courriel"
                             placeholder="red.acteur@justice.gouv.fr"
                             defaultValue={""}
                             onInput={(e) => {
                               agent.courriel = e.target.value;
                               setErreur(null);
                             }}
-                            id="input-67"
                             type="text"
                           />
                           {erreur && (
                             <div
                               className="fr-messages-group fr-message--error"
-                              id="input-67-messages"
+                              id="declarer-nouvel-agent-message-courriel"
                               aria-live="polite"
                             >
                               {erreur}
