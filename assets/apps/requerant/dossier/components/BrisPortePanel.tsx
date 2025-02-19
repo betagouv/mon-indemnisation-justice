@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe.jsx";
-import { default as RecapitulatifBrisPorte } from "./BrisPorte/Recapitulatif.jsx";
+import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe.tsx";
+import { default as RecapitulatifBrisPorte } from "./BrisPorte/Recapitulatif.tsx";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import BrisPorte from "@/apps/requerant/dossier/components/BrisPorte.jsx";
-import User from "./User.jsx";
+import BrisPorte from "@/apps/requerant/dossier/components/BrisPorte.tsx";
+import User from "./User.tsx";
 import {
   DossierContext,
   PatchDossierContext,

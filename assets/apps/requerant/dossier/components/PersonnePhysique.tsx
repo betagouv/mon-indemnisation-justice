@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import Civilite from "@/apps/requerant/dossier/components/Civilite.jsx";
+import Civilite from "@/apps/requerant/dossier/components/Civilite";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import {
   DossierContext,

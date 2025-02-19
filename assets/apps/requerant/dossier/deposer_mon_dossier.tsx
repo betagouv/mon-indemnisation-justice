@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import ReactDOM from "react-dom/client";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
-import BrisPortePanel from "@/apps/requerant/dossier/components/BrisPortePanel.jsx";
+import BrisPortePanel from "@/apps/requerant/dossier/components/BrisPortePanel";
 import {
   DossierContext,
   PatchDossierContext,

@@ -1,6 +1,16 @@
 import React from "react";
 import { Select } from "@codegouvfr/react-dsfr/Select";
-const Referentiel = ({ label, options, content, setContent }) => {
+const Referentiel = ({
+  label,
+  options,
+  content = null,
+  setContent,
+}: {
+  label: string;
+  options: [string, any][];
+  content?: string;
+  setContent: (content: string) => void;
+}) => {
   return (
     <>
       <Select

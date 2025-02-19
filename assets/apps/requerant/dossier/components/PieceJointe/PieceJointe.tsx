@@ -1,18 +1,26 @@
+import { string } from "prop-types";
 import React, { useContext } from "react";
-import { Uploader } from "@/apps/requerant/dossier/components/Uploader.jsx";
+import { Uploader } from "@/apps/requerant/dossier/components/Uploader";
 import { DossierContext } from "@/apps/requerant/dossier/contexts/DossierContext.ts";
 
 export const Document = ({
   documents,
   libelle,
-  lectureSeule,
+  lectureSeule = false,
   type,
-  onRemoved,
-  onUploaded,
+  onRemoved = null,
+  onUploaded = null,
+}: {
+  documents: any[];
+  libelle: string;
+  lectureSeule: boolean;
+  type: string;
+  onRemoved?: (document: any) => void;
+  onUploaded?: (document: any) => void;
 }) => {
   const dossier = useContext(DossierContext);
 
-  const handleRemove = (document, e) => {
+  const handleRemove = async (document) => {
     fetch(`/requerant/document/${document.id}/${document.filename}`, {
       method: "DELETE",
     })

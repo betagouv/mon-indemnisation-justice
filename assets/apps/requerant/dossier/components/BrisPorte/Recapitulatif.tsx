@@ -2,11 +2,14 @@ import React, { useContext } from "react";
 import { format as dateFormat } from "date-fns";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { DossierContext } from "@/apps/requerant/dossier/contexts/DossierContext.ts";
-import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe.jsx";
+import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe";
 
 const Recapitulatif = ({
   gotoFirstSection = null,
   gotoSecondSection = null,
+}: {
+  gotoFirstSection: () => void | null;
+  gotoSecondSection: () => void | null;
 }) => {
   const dossier = useContext(DossierContext);
 
@@ -72,42 +75,6 @@ const Recapitulatif = ({
           )}
         </section>
       </div>
-      {/*
-            <div className="fr-col-lg-6 fr-col-12">
-                <section className="pr-form-section fr-p-4w">
-                    <h3>Service enquêteur</h3>
-                    <ul className="fr-mb-2w">
-                        <li>
-                            <u>Nom</u>: {dossier.serviceEnqueteur.nom? <strong>{dossier.serviceEnqueteur.nom}</strong> : <i>non renseigné</i>}
-                        </li>
-                        <li>
-                            <u>Numéro de téléphone</u>: {dossier.serviceEnqueteur.telephone ? <strong>{dossier.serviceEnqueteur.telephone}</strong> : <i>non renseigné</i>}
-                        </li>
-                        <li>
-                            <u>Courriel</u>: {dossier.serviceEnqueteur.courriel ? <strong>{dossier.serviceEnqueteur.courriel}</strong> : <i>non renseigné</i>}
-                        </li>
-                        <li>
-                            <u>Numéro de procès-verbal</u> : {dossier.serviceEnqueteur.numeroPV ? <strong>{dossier.serviceEnqueteur.numeroPV}</strong> : <i>non renseigné</i>}
-                        </li>
-                        <li>
-                            <u>Juridiction</u> : {dossier.serviceEnqueteur.juridiction ? <strong>{dossier.serviceEnqueteur.juridiction}</strong> : <i>non renseignée</i>}
-                        </li>
-                        <li>
-                            <u>Numéro de parquet ou d'instruction</u> : {dossier.serviceEnqueteur.numeroParquet ? <strong>{dossier.serviceEnqueteur.numeroParquet}</strong> : <i>non renseigné</i>}
-                        </li>
-                        <li>
-                            <u>Nom du magistrat</u> : {dossier.serviceEnqueteur.magistrat ? <strong>{dossier.serviceEnqueteur.magistrat}</strong> : <i>non renseigné</i>}
-                        </li>
-                    </ul>
-                    {gotoSecondSection &&
-                        <Button
-                            onClick={gotoSecondSection}
-                            priority="secondary"
-                        >Corriger la saisie</Button>
-                    }
-                </section>
-            </div>
-            */}
       <div className="fr-col-12">
         <section className="pr-form-section fr-p-4w">
           <h3>Bris de porte</h3>
@@ -142,14 +109,6 @@ const Recapitulatif = ({
               <strong>{dossier.qualiteRequerant}</strong>
             </label>
           </div>
-          {/*
-                    <dl className="fr-mb-2w">
-                        <dd>Attestation remise à
-                            : <strong>{dossier.receveurAttestation.civilite} {dossier.receveurAttestation.prenom1} {dossier.receveurAttestation.nom}</strong>
-                        </dd>
-                        <dd>En qualité de <strong>{dossier.receveurAttestation.qualite}</strong></dd>
-                    </dl>
-                    */}
           {gotoSecondSection && (
             <Button onClick={gotoSecondSection} priority="secondary">
               Corriger la saisie
@@ -204,7 +163,7 @@ const Recapitulatif = ({
             <Document
               documents={dossier.documents.titre_de_propriete}
               lectureSeule={true}
-              label="Titre de propriété"
+              libelle="Titre de propriété"
               type={"titre_propriete"}
             />
           )}
