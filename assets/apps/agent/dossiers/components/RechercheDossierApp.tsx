@@ -81,10 +81,7 @@ export const RechercheDossierApp = observer(
                         <option value="" disabled hidden>
                           Sélectionnez une option
                         </option>
-                        {EtatDossier.catalog
-                          .values()
-                          .toArray()
-                          .map((etat) => (
+                        {EtatDossier.liste.filter((etat) => etat.estDisponibleRecherche).map((etat) => (
                             <option value={etat.id} key={etat.id}>
                               {etat.libelle}
                             </option>
@@ -197,7 +194,7 @@ export const RechercheDossierApp = observer(
                                 <tr key={dossier.id}>
                                   <td className="fr-col-2">
                                     <p className="fr-badge fr-badge--info fr-badge--no-icon fr-mb-1v">
-                                      À instruire
+                                      {dossier.etat.libelle}
                                     </p>
                                     <br />
                                     {dossier.reference}

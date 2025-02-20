@@ -111,14 +111,6 @@ class DossierController extends AgentController
         return $this->render('agent/dossier/recherche_dossiers.html.twig', [
             'react' => [
                 'redacteurs' => $this->normalizeRedacteur($this->agentRepository->getRedacteurs()),
-                'etats_dossier' => array_map(
-                    fn (EtatDossierType $etat) => [
-                        'id' => $etat->value,
-                        'slug' => $etat->slugAction(),
-                        'libelle' => $etat->libelleAction(),
-                    ],
-                    self::ETATS_DOSSIERS_ELIGIBLES
-                ),
             ],
         ]);
     }
