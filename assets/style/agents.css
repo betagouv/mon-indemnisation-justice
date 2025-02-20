@@ -1,0 +1,79 @@
+/**
+ * Styles pour l'espace agent.
+ */
+
+
+a:not([href])[role="button"] {
+    color: var(--text-action-high-blue-france);
+    cursor:pointer;
+}
+
+
+:root {
+    /* À finaliser, = 'beige-gris-galet' */
+    --var-couleur-pp-a-finaliser: #6a6156;
+    --var-couleur-ap-a-finaliser: #f3ede5;
+    /* À statuer, = 'info' */
+    --var-couleur-pp-a-instruire: #0063cb;
+    --var-couleur-ap-a-instruire: #e8edff;
+    /* À valider (accepté), = 'green-tilleul-verveine' */
+    --var-couleur-pp-a-valider-acc: #66673d;
+    --var-couleur-ap-a-valider-acc: #fceeac;
+    /* À valider (rejeté), = 'pink-macaron' */
+    --var-couleur-pp-a-valider-rej: #8d533e;
+    --var-couleur-ap-a-valider-rej: #fee9e6;
+    /* Accepté, = 'success' */
+    --var-couleur-pp-valide: #18753c;
+    --var-couleur-ap-valide: #b8fec9;
+    /* Rejeté, = 'error' */
+    --var-couleur-pp-rejete: #ce0500;
+    --var-couleur-ap-rejete: #ffe9e9;
+}
+
+.fr-dossier-etat {
+    --left-padding: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    border: 1px solid var(--border-default-grey);
+    border-left: calc(2* var(--left-padding)) solid;
+    border-radius: var(--left-padding) 0 0 0;
+    
+    &--a-finaliser {
+        border-left-color: var(--var-couleur-pp-a-finaliser);
+
+        .fr-badge--statut {
+            color: var(--var-couleur-pp-a-finaliser);
+            background-color: var(--var-couleur-ap-a-finaliser);
+        }
+    }
+
+    &--a-instruire {
+        border-left-color: var(--var-couleur-pp-a-instruire);
+
+        .fr-badge--statut {
+            color: var(--var-couleur-pp-a-instruire);
+            background-color: var(--var-couleur-ap-a-instruire);
+        }
+    }
+
+    &--a-valider-acc {
+        border-left-color: var(--var-couleur-pp-a-valider-acc);
+
+        .fr-badge--statut {
+            color: var(--var-couleur-pp-a-valider-acc);
+            background-color: var(--var-couleur-ap-a-valider-acc);
+        }
+    }
+    
+    &--a-valider-rej {
+        border-left-color: var(--var-couleur-pp-a-valider-rej);
+
+        .fr-badge--statut {
+            color: var(--var-couleur-pp-a-valider-rej);
+            background-color: var(--var-couleur-ap-a-valider-rej);
+        }
+    }
+}

@@ -1,3 +1,4 @@
+import { BaseDossier } from "@/apps/agent/dossiers/models/Dossier";
 import { Redacteur } from "@/apps/agent/dossiers/models/Redacteur";
 import { Transform } from "class-transformer";
 
@@ -28,6 +29,10 @@ export class Agent {
 
   public estRedacteur(): boolean {
     return this.permissions.has(AgentPermissionType.REDACTEUR);
+  }
+
+  public estAttribue(dossier: BaseDossier): boolean {
+    return this.equals(dossier.attributaire);
   }
 
   equals(redacteur: Redacteur | null): boolean {

@@ -5,42 +5,8 @@
 {% block stylesheets %}
     {{ parent() }}
 
-    <style>
-        .fr-dossier-etat {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            border: 1px solid var(--border-default-grey);
-            border-left: 10px solid #0a76f6;
-            /*border-radius: 10px 0 0 10px;*/
+    {{ vite_entry_link_tags('agent/dossiers/consulter') }}
 
-        }
-
-        a:not([href])[role=button] {
-            color: var(--text-action-high-blue-france);
-            cursor:pointer;
-        }
-        
-        .fr-grid-column {
-            display:flex;
-            flex-direction:column;
-        }
-
-
-        .fr-dossier-etat p {
-            text-wrap: wrap;
-        }
-
-        .previsualisation-lettre * {
-            all: revert;
-        }
-
-        .row {
-          display: inline-block;
-          width: 100%;
-        }
-    </style>
 {% endblock stylesheets %}
 
 {% block modale %}
