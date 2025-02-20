@@ -1,78 +1,88 @@
-import {
-  Adresse,
-  Document,
-  DocumentType,
-  EtatDossier,
-  Redacteur,
-  Requerant,
-} from "@/apps/agent/dossiers/models";
-import { Expose, Transform, Type } from "class-transformer";
-import { action, makeObservable, observable } from "mobx";
+import {Adresse, Document, EtatDossier, Redacteur, Requerant,} from "@/apps/agent/dossiers/models";
+import {EtatDossierType} from "@/apps/agent/dossiers/models/EtatDossier";
+import {Expose, Transform, Type} from "class-transformer";
+import {action, computed, makeObservable, observable} from "mobx";
 
 export abstract class BaseDossier {
-  public readonly id: number;
-  public readonly reference: string;
-  public readonly etat: EtatDossier;
-  protected _dateDepot: Date | null;
-  protected _attributaire: Redacteur | null;
+    public readonly id: number;
+    public readonly reference: string;
 
-  @Expose()
-  get dateDepot(): null | Date {
-    return this._dateDepot;
-  }
+    @Transform(({value}: { value: string }) => EtatDossier.resoudre(value))
+    public etat: EtatDossier = null;
+    protected _dateDepot: Date | null;
+    protected _attributaire: Redacteur | null;
 
-  set dateDepot(value: Date | number) {
-    this._dateDepot = typeof value === "number" ? new Date(value) : value;
-  }
+    @Expose()
+    get dateDepot(): null | Date {
+        return this._dateDepot;
+    }
 
-  @Expose()
-  get attributaire(): Redacteur | null {
-    return this._attributaire;
-  }
+    set dateDepot(value: Date | number) {
+        this._dateDepot = typeof value === "number" ? new Date(value) : value;
+    }
 
-  set attributaire(value: Redacteur | number | null) {
-    this._attributaire =
-      typeof value == "number" ? Redacteur.resoudre(value) : value;
-  }
+    @Expose()
+    get attributaire(): Redacteur | null {
+        return this._attributaire;
+    }
+
+    set attributaire(value: Redacteur | number | null) {
+        this._attributaire =
+            typeof value == "number" ? Redacteur.resoudre(value) : value;
+    }
+
+    get enAttenteDecision(): boolean {
+        return EtatDossierType.DOSSIER_DEPOSE == this.etat.id;
+    }
+
+    changerEtat(etat: EtatDossier | EtatDossierType): void {
+        this.etat = etat instanceof EtatDossier ? etat : EtatDossier.resoudre(etat);
+    }
 }
 
 export class DossierApercu extends BaseDossier {
-  public readonly requerant: string; // Prénom NOM
-  public readonly adresse: string;
+    public readonly requerant: string; // Prénom NOM
+    public readonly adresse: string;
 }
 
 export class DossierDetail extends BaseDossier {
-  @Expose()
-  @Type(() => Requerant)
-  public readonly requerant: Requerant;
+    @Expose()
+    @Type(() => Requerant)
+    public readonly requerant: Requerant;
 
-  @Expose()
-  @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
-  public redacteur: Redacteur | null = null;
+    @Expose()
+    @Transform(({value}: { value: number }) => Redacteur.resoudre(value))
+    public redacteur: Redacteur | null = null;
 
-  @Expose()
-  @Type(() => Adresse)
-  public readonly adresse: Adresse;
+    @Expose()
+    @Type(() => Adresse)
+    public readonly adresse: Adresse;
 
-  @Transform(({ value }) =>
-    typeof value === "number" ? new Date(value) : value,
-  )
-  public dateOperation: Date | null;
+    @Transform(({value}) => {
+        if (!value) {
+            return null;
+        }
+        typeof value === "number" ? new Date(value) : value;
+    })
+    public dateOperation: Date | null;
 
-  public estPorteBlindee: boolean | null;
+    public estPorteBlindee: boolean | null;
 
-  @Transform(({ value }: { value: object }) => new Map(Object.entries(value)))
-  public documents: Map<string, Document[]>;
+    @Transform(({value}: { value: object }) => new Map(Object.entries(value)))
+    public documents: Map<string, Document[]>;
 
-  constructor() {
-    super();
-    makeObservable(this, {
-      redacteur: observable,
-      attribuer: action,
-    });
-  }
+    constructor() {
+        super();
+        makeObservable(this, {
+            redacteur: observable,
+            attribuer: action,
+            enAttenteDecision: computed,
+            etat: observable,
+            changerEtat: action,
+        });
+    }
 
-  attribuer(redacteur: Redacteur): void {
-    this.redacteur = redacteur;
-  }
+    attribuer(redacteur: Redacteur): void {
+        this.redacteur = redacteur;
+    }
 }
