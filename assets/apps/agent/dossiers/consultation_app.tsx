@@ -1,4 +1,7 @@
 import "reflect-metadata";
+
+import "@/style/agents.css"
+
 import { ConsultationDossierApp } from "@/apps/agent/dossiers/components/ConsultationDossierApp";
 import { Agent, Redacteur } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
