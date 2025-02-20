@@ -23,7 +23,6 @@ if (import.meta.env.PROD) {
 const args = JSON.parse(document.getElementById("react-arguments").textContent);
 
 Redacteur.charger(args.redacteurs ?? []);
-EtatDossier.charger(args.etats_dossier ?? []);
 
 const recherche = RechercheDossier.fromURL();
 let dossiers: IObservableArray<DossierApercu> = observable([]);
