@@ -5,7 +5,7 @@
 
 a:not([href])[role="button"] {
     color: var(--text-action-high-blue-france);
-    cursor:pointer;
+    cursor: pointer;
 }
 
 
@@ -17,11 +17,11 @@ a:not([href])[role="button"] {
     --var-couleur-pp-a-instruire: #0063cb;
     --var-couleur-ap-a-instruire: #e8edff;
     /* À valider (accepté), = 'green-tilleul-verveine' */
-    --var-couleur-pp-a-valider-acc: #66673d;
-    --var-couleur-ap-a-valider-acc: #fceeac;
-    /* À valider (rejeté), = 'pink-macaron' */
-    --var-couleur-pp-a-valider-rej: #8d533e;
-    --var-couleur-ap-a-valider-rej: #fee9e6;
+    --var-couleur-pp-ok-a-valider: #66673d;
+    --var-couleur-ap-ok-a-valider: #fceeac;
+    /* Rejeté - à valider, = 'pink-macaron' */
+    --var-couleur-pp-ko-a-valider: #8d533e;
+    --var-couleur-ap-ko-a-valider: #fee9e6;
     /* Accepté, = 'success' */
     --var-couleur-pp-valide: #18753c;
     --var-couleur-ap-valide: #b8fec9;
@@ -38,42 +38,47 @@ a:not([href])[role="button"] {
     justify-content: space-between;
     position: relative;
     border: 1px solid var(--border-default-grey);
-    border-left: calc(2* var(--left-padding)) solid;
+    border-left: calc(2 * var(--left-padding)) solid;
     border-radius: var(--left-padding) 0 0 0;
-    
+
     &--a-finaliser {
         border-left-color: var(--var-couleur-pp-a-finaliser);
-
-        .fr-badge--statut {
-            color: var(--var-couleur-pp-a-finaliser);
-            background-color: var(--var-couleur-ap-a-finaliser);
-        }
     }
 
     &--a-instruire {
         border-left-color: var(--var-couleur-pp-a-instruire);
-
-        .fr-badge--statut {
-            color: var(--var-couleur-pp-a-instruire);
-            background-color: var(--var-couleur-ap-a-instruire);
-        }
     }
 
-    &--a-valider-acc {
-        border-left-color: var(--var-couleur-pp-a-valider-acc);
-
-        .fr-badge--statut {
-            color: var(--var-couleur-pp-a-valider-acc);
-            background-color: var(--var-couleur-ap-a-valider-acc);
-        }
+    &--ok-a-valider {
+        border-left-color: var(--var-couleur-pp-ok-a-valider);
     }
-    
-    &--a-valider-rej {
-        border-left-color: var(--var-couleur-pp-a-valider-rej);
 
-        .fr-badge--statut {
-            color: var(--var-couleur-pp-a-valider-rej);
-            background-color: var(--var-couleur-ap-a-valider-rej);
-        }
+    &--ko-a-valider {
+        border-left-color: var(--var-couleur-pp-ko-a-valider);
+    }
+}
+
+.fr-badge--dossier-etat {
+    &--a-finaliser {
+        color: var(--var-couleur-pp-a-finaliser);
+        background-color: var(--var-couleur-ap-a-finaliser);
+    }
+
+    &--a-instruire {
+
+        color: var(--var-couleur-pp-a-instruire);
+        background-color: var(--var-couleur-ap-a-instruire);
+    }
+
+    &--ok-a-valider {
+
+        color: var(--var-couleur-pp-ok-a-valider);
+        background-color: var(--var-couleur-ap-ok-a-valider);
+    }
+
+    &--ko-a-valider {
+
+        color: var(--var-couleur-pp-ko-a-valider);
+        background-color: var(--var-couleur-ap-ko-a-valider);
     }
 }

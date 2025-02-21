@@ -145,7 +145,7 @@ gantt
         Retours 1    :attribution-2, after attribution-1, 5d
         Retours 2    :attribution-3, after attribution-2, 5d
     section Décision
-        Implémentation :active decision-1, 2025-02-17, 5d
+        Implémentation :done decision-1, 2025-02-17, 5d
         Retours 1    :decision-2, after decision-1, 5d
         Retours 2    :decision-3, after decision-2, 5d
     section Validation
