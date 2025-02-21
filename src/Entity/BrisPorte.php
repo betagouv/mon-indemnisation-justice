@@ -71,7 +71,7 @@ class BrisPorte
 
     #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    private ?string $propositionIndemnisation = null;
+    private ?float $propositionIndemnisation = null;
 
     #[Groups('dossier:lecture')]
     #[ORM\Column(length: 20, nullable: true)]
@@ -125,7 +125,7 @@ class BrisPorte
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
     {
-        $this->changerStatut(EtatDossierType::DOSSIER_INITIE, requerant: true);
+        $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
     }
 
     #[ORM\PreRemove]
@@ -189,14 +189,14 @@ class BrisPorte
         return $this;
     }
 
-    public function changerStatut(EtatDossierType $type, bool $requerant = false, ?Agent $agent = null): self
+    public function changerStatut(EtatDossierType $type, bool $requerant = false, ?Agent $agent = null, ?array $contexte = null): self
     {
         if ($requerant) {
-            $this->historiqueEtats->add(EtatDossier::creerRequerant($this, $type));
+            $this->historiqueEtats->add(EtatDossier::creerRequerant($this, $type, $contexte));
         } elseif (null !== $agent) {
-            $this->historiqueEtats->add(EtatDossier::creerAgent($this, $type, $agent));
+            $this->historiqueEtats->add(EtatDossier::creerAgent($this, $type, $agent, $contexte));
         } else {
-            $this->historiqueEtats->add(EtatDossier::creer($this, $type));
+            $this->historiqueEtats->add(EtatDossier::creer($this, $type, $contexte));
         }
 
         $this->etatDossier = $this->historiqueEtats->last();
@@ -233,14 +233,14 @@ class BrisPorte
     public function getDateDeclaration(): ?\DateTimeInterface
     {
         return $this->historiqueEtats
-            ->findFirst(fn (int $index, EtatDossier $etat) => EtatDossierType::DOSSIER_DEPOSE === $etat->getEtat()
+            ->findFirst(fn (int $index, EtatDossier $etat) => EtatDossierType::DOSSIER_A_INSTRUIRE === $etat->getEtat()
             )?->getDate();
     }
 
     public function setDeclare(): self
     {
         return $this
-            ->changerStatut(EtatDossierType::DOSSIER_DEPOSE, requerant: true);
+            ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, requerant: true);
     }
 
     public function getReference(): ?string
