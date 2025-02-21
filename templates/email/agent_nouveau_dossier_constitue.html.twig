@@ -97,7 +97,7 @@ déposé, avec les détails suivants :
 </ul>
 <h4>Documents transmis (<i>bientôt</i> consultables depuis l'espace rédacteur)</h4>
 <ul>
-{% for type, documents in dossier.documentsParType %}
+{% for type, documents in dossier.documents %}
     {% for document in documents %}
     <li>
         {{ document.typeLibelle }}: <a href="{{ absolute_url(path('agent_document_download', {'hash': document.filename|md5, 'id': document.id})) }}" target="_blank">{{ document.originalFilename }}</a>
