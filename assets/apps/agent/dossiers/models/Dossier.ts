@@ -1,5 +1,4 @@
 import {Adresse, Document, EtatDossier, Redacteur, Requerant,} from "@/apps/agent/dossiers/models";
-import {EtatDossierType} from "@/apps/agent/dossiers/models/EtatDossier";
 import {Expose, Transform, Type} from "class-transformer";
 import {action, computed, makeObservable, observable} from "mobx";
 
@@ -32,10 +31,10 @@ export abstract class BaseDossier {
     }
 
     get enAttenteDecision(): boolean {
-        return EtatDossierType.DOSSIER_DEPOSE == this.etat.id;
+        return this.etat == EtatDossier.A_INSTRUIRE;
     }
 
-    changerEtat(etat: EtatDossier | EtatDossierType): void {
+    changerEtat(etat: EtatDossier): void {
         this.etat = etat instanceof EtatDossier ? etat : EtatDossier.resoudre(etat);
     }
 }

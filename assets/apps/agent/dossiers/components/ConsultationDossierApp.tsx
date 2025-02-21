@@ -1,27 +1,30 @@
-import {Agent, Document, DocumentType, EtatDossier} from "@/apps/agent/dossiers/models";
+import { Agent, Document, DocumentType } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import {
   AttributionDossier,
   DecisionDossier,
 } from "@/apps/agent/dossiers/components/consultation";
-import {EtatDossierType} from "@/apps/agent/dossiers/models/EtatDossier";
+
 import { observer } from "mobx-react-lite";
 import React from "react";
 
 export const ConsultationDossierApp = observer(
   ({ dossier, agent }: { dossier: DossierDetail; agent: Agent }) => {
-
     return (
       <>
         <div className="fr-container fr-container--fluid fr-mt-2w">
           <div className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-12 fr-p-3w">
               {/*  Résumé de l'état + boutons */}
-              <div className={`fr-dossier-etat  fr-dossier-etat--${dossier.etat.slug} fr-p-4w`}>
+              <div
+                className={`fr-dossier-etat fr-dossier-etat--${dossier.etat.slug} fr-p-4w`}
+              >
                 <h3 className="">Dossier {dossier.reference}</h3>
 
                 <div>
-                  <p className="fr-badge fr-badge--statut fr-badge--no-icon fr-py-1w fr-px-2w">
+                  <p
+                    className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.slug} fr-py-1w fr-px-2w`}
+                  >
                     {dossier.etat.libelle}
                   </p>
                 </div>
@@ -45,11 +48,12 @@ export const ConsultationDossierApp = observer(
                 {/* Attribution du rédacteur */}
                 <AttributionDossier dossier={dossier} agent={agent} />
 
-
                 {/* Action sur le dossier */}
-                {dossier.enAttenteDecision && agent.estAttribue(dossier) &&
-                  <DecisionDossier dossier={dossier} agent={agent} />
-                }
+                {dossier.enAttenteDecision &&
+                  agent.estRedacteur() &&
+                  agent.estAttribue(dossier) && (
+                    <DecisionDossier dossier={dossier} agent={agent} />
+                  )}
               </div>
 
               {/* Accordéon de section */}
