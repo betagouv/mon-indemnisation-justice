@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\EtatDossierType;
 
 #[AsDoctrineListener(event: Events::preUpdate, priority: 500, connection: 'default')]
 class PrejudiceListener
@@ -18,6 +19,7 @@ class PrejudiceListener
     public function preUpdate(PreUpdateEventArgs $args): void
     {
         $entity = $args->getObject();
+
         if ($entity instanceof BrisPorte) {
             if (null !== $entity->getDateDeclaration() && null === $entity->getReference()) {
                 $entityManager = $args->getObjectManager();
@@ -26,10 +28,11 @@ class PrejudiceListener
                 $req = $conn->executeQuery(<<<SQL
 SELECT count(p.id) + 1 cpt
 FROM bris_porte p
-    INNER JOIN public.dossier_etats ed ON ed.id = p.etat_actuel_id AND ed.etat <> 'DOSSIER_INITIE' AND to_char(ed.date, 'yyyymmdd') = :date
+    INNER JOIN public.dossier_etats ed ON ed.id = p.etat_actuel_id AND ed.etat = :etat AND to_char(ed.date, 'yyyymmdd') = :date
 SQL,
                     [
                         'date' => (new \DateTime())->format('Ymd'),
+                        'etat' => EtatDossierType::DOSSIER_A_INSTRUIRE->value,
                     ]
                 );
 

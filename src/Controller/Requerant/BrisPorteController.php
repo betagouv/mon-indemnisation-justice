@@ -47,7 +47,7 @@ class BrisPorteController extends RequerantController
     {
         $requerant = $this->getRequerant();
 
-        if (EtatDossierType::DOSSIER_INITIE === $brisPorte->getEtatDossier()->getEtat()) {
+        if (EtatDossierType::DOSSIER_A_FINALISER === $brisPorte->getEtatDossier()->getEtat()) {
             $brisPorte->setDeclare();
             $this->brisPorteRepository->save($brisPorte);
 
