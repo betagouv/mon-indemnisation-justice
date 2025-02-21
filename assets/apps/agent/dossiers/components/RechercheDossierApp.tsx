@@ -1,4 +1,5 @@
 import {
+  Agent,
   EtatDossier,
   RechercheDossier,
   Redacteur,
@@ -11,9 +12,11 @@ import React from "react";
 export const RechercheDossierApp = observer(
   ({
     recherche,
+    agent,
     dossiers = [],
   }: {
     recherche: RechercheDossier;
+    agent: Agent;
     dossiers: DossierApercu[];
   }) => {
     return (
@@ -52,7 +55,6 @@ export const RechercheDossierApp = observer(
                         type="search"
                         defaultValue={recherche.motsClefs}
                         onChange={_.debounce((e) => {
-                          console.log(e.target.value);
                           recherche.setMotsClefs(e.target.value);
                         }, 500)}
                       />
@@ -81,7 +83,9 @@ export const RechercheDossierApp = observer(
                         <option value="" disabled hidden>
                           Sélectionnez une option
                         </option>
-                        {EtatDossier.liste.filter((etat) => etat.estDisponibleRecherche).map((etat) => (
+                        {EtatDossier.liste
+                          .filter((etat) => etat.estDisponibleRecherche)
+                          .map((etat) => (
                             <option value={etat.id} key={etat.id}>
                               {etat.libelle}
                             </option>
@@ -148,7 +152,11 @@ export const RechercheDossierApp = observer(
                                 className="fr-label"
                                 htmlFor={`recherche-filtres-attributaire-${redacteur.id}`}
                               >
-                                {redacteur.nom}
+                                {agent.equals(redacteur) ? (
+                                  <b>Moi</b>
+                                ) : (
+                                  redacteur.nom
+                                )}
                               </label>
                             </div>
                           </div>
@@ -193,7 +201,9 @@ export const RechercheDossierApp = observer(
                               dossiers.map((dossier: DossierApercu) => (
                                 <tr key={dossier.id}>
                                   <td className="fr-col-2">
-                                    <p className="fr-badge fr-badge--info fr-badge--no-icon fr-mb-1v">
+                                    <p
+                                      className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.slug} fr-mb-1v`}
+                                    >
                                       {dossier.etat.libelle}
                                     </p>
                                     <br />

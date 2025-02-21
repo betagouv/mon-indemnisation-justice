@@ -19,7 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/agent/redacteur')]
 class DossierController extends AgentController
 {
-    private const ETATS_DOSSIERS_ELIGIBLES = [EtatDossierType::DOSSIER_DEPOSE, EtatDossierType::DOSSIER_ACCEPTE, EtatDossierType::DOSSIER_REJETE];
+    private const ETATS_DOSSIERS_ELIGIBLES = [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_OK_A_VALIDER, EtatDossierType::DOSSIER_KO_A_VALIDER];
 
     public function __construct(
         protected readonly BrisPorteRepository $dossierRepository,
@@ -110,6 +110,14 @@ class DossierController extends AgentController
     {
         return $this->render('agent/dossier/recherche_dossiers.html.twig', [
             'react' => [
+                'agent' => [
+                    'id' => $this->getAgent()->getId(),
+                    'permissions' => array_merge(
+                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR) ? ['ATTRIBUTEUR'] : [],
+                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? ['REDACTEUR'] : [],
+                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_VALIDATEUR) ? ['VALIDATEUR'] : [],
+                    ),
+                ],
                 'redacteurs' => $this->normalizeRedacteur($this->agentRepository->getRedacteurs()),
             ],
         ]);
@@ -144,6 +152,49 @@ class DossierController extends AgentController
         }
 
         $dossier->setRedacteur($agent);
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse('', Response::HTTP_NO_CONTENT);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
+    #[Route('/dossier/{id}/decider/accepter.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
+    public function deciderAccepterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $agent = $this->getAgent();
+        $montant = $request->getPayload()->getInt('montant');
+
+        if ($agent !== $dossier->getRedacteur()) {
+            return new JsonResponse(['error' => "Vous n'êtes pas attribué à l'instruction de ce dossier"], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_OK_A_VALIDER, agent: $agent, contexte: $montant ? [
+                'montant' => $montant,
+            ] : null)
+            ->setPropositionIndemnisation($montant);
+
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse('', Response::HTTP_NO_CONTENT);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
+    #[Route('/dossier/{id}/decider/rejeter.json', name: 'agent_redacteur_decider_rejeter_dossier', methods: ['POST'])]
+    public function deciderRejeterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $agent = $this->getAgent();
+        $motif = $request->getPayload()->getString('motif');
+
+        if ($agent !== $dossier->getRedacteur()) {
+            return new JsonResponse(['error' => "Vous n'êtes pas attribué à l'instruction de ce dossier"], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_KO_A_VALIDER, agent: $agent, contexte: $motif ? [
+                'motif' => $motif,
+            ] : null);
+
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
