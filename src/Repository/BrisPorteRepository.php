@@ -119,7 +119,7 @@ class BrisPorteRepository extends ServiceEntityRepository
     {
         $dossier = (new BrisPorte())->setRequerant($requerant);
 
-        $dossier->changerStatut(EtatDossierType::DOSSIER_INITIE, requerant: true);
+        $dossier->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
 
         return $dossier;
     }
