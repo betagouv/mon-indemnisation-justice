@@ -13,7 +13,7 @@ export const Document = ({
 }: {
   documents: any[];
   libelle: string;
-  lectureSeule: boolean;
+  lectureSeule?: boolean;
   type: string;
   onRemoved?: (document: any) => void;
   onUploaded?: (document: any) => void;
@@ -54,7 +54,7 @@ export const Document = ({
               <a
                 className="fr-link"
                 target="_blank"
-                href={`/document/${document.id}/${document.filename}`}
+                href={`/requerant/document/${document.id}/${document.filename}`}
               >
                 {document.originalFilename}
               </a>

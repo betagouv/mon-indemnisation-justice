@@ -411,7 +411,6 @@ const BrisPortePanel = function () {
           <RecapitulatifBrisPorte
             gotoFirstSection={gotoFirstSection}
             gotoSecondSection={gotoSecondSection}
-            gotoThirdSection={gotoThirdSection}
           />
           <div className="fr-col-12">
             <ul className="fr-btns-group fr-btns-group--inline-sm">
