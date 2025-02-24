@@ -41,6 +41,11 @@ class EtatDossier
         return $this->etat;
     }
 
+    public function aValider(): bool
+    {
+        return in_array($this->etat, [EtatDossierType::DOSSIER_OK_A_VALIDER, EtatDossierType::DOSSIER_KO_A_VALIDER]);
+    }
+
     public function getLibelle(): string
     {
         return $this->etat->getLibelle();
@@ -69,6 +74,11 @@ class EtatDossier
     public function getContexte(): array
     {
         return $this->contexte;
+    }
+
+    public function addContexte(array $contexte): array
+    {
+        return $this->contexte = array_merge_recursive($this->contexte, $contexte);
     }
 
     final public static function creer(BrisPorte $dossier, EtatDossierType $etat, ?array $contexte = null): static

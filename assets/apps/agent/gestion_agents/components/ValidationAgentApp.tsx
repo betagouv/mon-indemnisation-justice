@@ -20,7 +20,6 @@ export const ValidationAgentApp = observer(
     titre: string;
   }) => {
     const [sauvegardeEnCours, setSauvegardeEnCours] = useState(false);
-    console.log(liste.validationsValides);
 
     let nouvelAgent = new Agent();
 
