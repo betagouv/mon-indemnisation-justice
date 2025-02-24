@@ -19,9 +19,15 @@ a:not([href])[role="button"] {
     /* À valider (accepté), = 'green-tilleul-verveine' */
     --var-couleur-pp-ok-a-valider: #66673d;
     --var-couleur-ap-ok-a-valider: #fceeac;
+    /* Accepté - à signer, = 'green-bourgeon-hover' */
+    --var-couleur-pp-ok-a-signer: var(--text-label-green-bourgeon);
+    --var-couleur-ap-ok-a-signer: var(--background-contrast-green-bourgeon);
     /* Rejeté - à valider, = 'pink-macaron' */
     --var-couleur-pp-ko-a-valider: #8d533e;
     --var-couleur-ap-ko-a-valider: #fee9e6;
+    /* Rejeté - à signer, = 'pink-tuile' */
+    --var-couleur-pp-ko-a-signer: var(--text-label-pink-tuile);
+    --var-couleur-ap-ko-a-signer: var(--background-contrast-pink-tuile);
     /* Accepté, = 'success' */
     --var-couleur-pp-valide: #18753c;
     --var-couleur-ap-valide: #b8fec9;
@@ -53,8 +59,16 @@ a:not([href])[role="button"] {
         border-left-color: var(--var-couleur-pp-ok-a-valider);
     }
 
+    &--ok-a-signer {
+        border-left-color: var(--var-couleur-pp-ok-a-signer);
+    }
+
     &--ko-a-valider {
         border-left-color: var(--var-couleur-pp-ko-a-valider);
+    }
+
+    &--ko-a-signer {
+        border-left-color: var(--var-couleur-pp-ko-a-signer);
     }
 }
 
@@ -71,14 +85,22 @@ a:not([href])[role="button"] {
     }
 
     &--ok-a-valider {
-
         color: var(--var-couleur-pp-ok-a-valider);
         background-color: var(--var-couleur-ap-ok-a-valider);
     }
 
-    &--ko-a-valider {
+    &--ok-a-signer {
+        color: var(--var-couleur-pp-ok-a-signer);
+        background-color: var(--var-couleur-ap-ok-a-signer);
+    }
 
+    &--ko-a-valider {
         color: var(--var-couleur-pp-ko-a-valider);
         background-color: var(--var-couleur-ap-ko-a-valider);
+    }
+
+    &--ko-a-signer {
+        color: var(--var-couleur-pp-ko-a-signer);
+        background-color: var(--var-couleur-ap-ko-a-signer);
     }
 }
