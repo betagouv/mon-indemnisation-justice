@@ -3,7 +3,7 @@ import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 
-export const DecisionDossier = observer(function DecisionDossierComponent({
+export const ValidationDossier = observer(function ValidationDossierComponent({
   dossier,
 }: {
   dossier: DossierDetail;
@@ -18,7 +18,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
   const [montantIndemnisation, setMontantIndemnisation]: [
     number,
     (montant: number) => void,
-  ] = useState(100);
+  ] = useState(dossier.montantIndemnisation);
 
   // Mémorise le motif de rejet
   const [motifRejet, setMotifRejet]: [
@@ -32,11 +32,11 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
     (mode: boolean) => void,
   ] = useState(false);
 
-  const valider = async (montant: number) => {
+  const valider = async (montant?: number, motif?: string) => {
     setSauvegarderEnCours(true);
 
     const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/decider/accepter.json`,
+      `/agent/redacteur/dossier/${dossier.id}/valider/confirmer.json`,
       {
         method: "POST",
         headers: {
@@ -44,14 +44,20 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
           Accept: "application/json",
         },
         body: JSON.stringify({
-          montant,
+          ...(montant ? { montant } : {}),
+          ...(motif ? { motif } : {}),
         }),
       },
     );
 
     if (response.ok) {
       dossier.montantIndemnisation = montant;
-      dossier.changerEtat(EtatDossier.OK_A_VALIDER);
+
+      dossier.changerEtat(
+        dossier.estAccepte()
+          ? EtatDossier.OK_A_SIGNER
+          : EtatDossier.KO_A_SIGNER,
+      );
     } // TODO afficher un message en cas d'erreur
 
     setSauvegarderEnCours(false);
@@ -62,7 +68,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
     setSauvegarderEnCours(true);
 
     const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/decider/rejeter.json`,
+      `/agent/redacteur/dossier/${dossier.id}/valider/decliner.json`,
       {
         method: "POST",
         headers: {
@@ -94,7 +100,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                 type="button"
                 onClick={() => decider(false)}
               >
-                Rejeter
+                Décliner
               </button>
             </li>
             <li>
@@ -103,7 +109,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                 type="button"
                 onClick={() => decider(true)}
               >
-                Accepter
+                Valider la décision
               </button>
             </li>
           </ul>
@@ -111,42 +117,63 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
       )}
       {decision == true && (
         <>
-          <div className="fr-input-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
-            <label
-              className="fr-label"
-              htmlFor="dossier-decision-acceptation-indemnisation-champs"
-            >
-              Montant de l'indemnisation
-            </label>
-            <div className="fr-input-wrap fr-icon-money-euro-circle-line">
-              <input
-                className="fr-input"
-                pattern="[0-9]*"
-                inputMode="numeric"
-                value={montantIndemnisation}
-                onKeyDown={(e: KeyboardEvent) => {
-                  if (e.key.length == 1 && !e.key.match(/\d/)) {
-                    e.preventDefault();
-                  }
-                }}
-                onInput={(e) =>
-                  setMontantIndemnisation(parseInt(e.target.value))
-                }
-                aria-describedby="dossier-decision-acceptation-indemnisation-messages"
-                id="dossier-decision-acceptation-indemnisation-champs"
-                type="number"
-              />
-            </div>
-            {!montantIndemnisation && (
-              <div
-                className="fr-messages-group fr-message--error fr-my-1w"
-                id="dossier-decision-acceptation-indemnisation-messages"
-                aria-live="polite"
+          {dossier.estAccepte() && (
+            <div className="fr-input-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
+              <label
+                className="fr-label"
+                htmlFor="dossier-decision-acceptation-indemnisation-champs"
               >
-                <span>Vous devez définir un montant d'indemnisation</span>
+                Montant de l'indemnisation
+              </label>
+              <div className="fr-input-wrap fr-icon-money-euro-circle-line">
+                <input
+                  className="fr-input"
+                  pattern="[0-9]*"
+                  inputMode="numeric"
+                  value={montantIndemnisation}
+                  onKeyDown={(e: KeyboardEvent) => {
+                    if (e.key.length == 1 && !e.key.match(/\d/)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onInput={(e) =>
+                    setMontantIndemnisation(parseInt(e.target.value))
+                  }
+                  aria-describedby="dossier-decision-acceptation-indemnisation-messages"
+                  id="dossier-decision-acceptation-indemnisation-champs"
+                  type="number"
+                />
               </div>
-            )}
-          </div>
+              {!montantIndemnisation && (
+                <div
+                  className="fr-messages-group fr-message--error fr-my-1w"
+                  id="dossier-decision-acceptation-indemnisation-messages"
+                  aria-live="polite"
+                >
+                  <span>Vous devez définir un montant d'indemnisation</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {dossier.estRejete() && (
+            <div className="fr-input-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
+              <label
+                className="fr-label"
+                htmlFor="dossier-decision-acceptation-motif-champs"
+              >
+                Motif du refus
+              </label>
+              <div className="fr-input-wrap">
+                <input
+                  className="fr-input"
+                  id="dossier-decision-acceptation-motif-champs"
+                  type="text"
+                  onInput={(e) => setMotifRejet(e.target.value || null)}
+                />
+              </div>
+            </div>
+          )}
 
           <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
             <li>
@@ -167,10 +194,17 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
               <button
                 className="fr-btn fr-btn--sm fr-btn--primary"
                 type="button"
-                onClick={() => valider(montantIndemnisation)}
-                disabled={!montantIndemnisation || sauvegarderEnCours}
+                onClick={() => valider(montantIndemnisation, motifRejet)}
+                disabled={
+                  (dossier.estAccepte() && !montantIndemnisation) ||
+                  sauvegarderEnCours
+                }
               >
-                Confirmer l'indemnisation
+                {dossier.estAccepte() ? (
+                  <>Valider l'indemnisation</>
+                ) : (
+                  <>Confirmer le rejet</>
+                )}
               </button>
             </li>
           </ul>
@@ -178,23 +212,6 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
       )}
       {decision == false && (
         <>
-          <div className="fr-input-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
-            <label
-              className="fr-label"
-              htmlFor="dossier-decision-acceptation-motif-champs"
-            >
-              Motif du refus
-            </label>
-            <div className="fr-input-wrap">
-              <input
-                className="fr-input"
-                id="dossier-decision-acceptation-motif-champs"
-                type="text"
-                onInput={(e) => setMotifRejet(e.target.value || null)}
-              />
-            </div>
-          </div>
-
           <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
             <li>
               <button

@@ -70,7 +70,7 @@ class BrisPorte
     protected ?array $documentsParType = null;
 
     #[Groups('dossier:patch')]
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
 
     #[Groups('dossier:lecture')]

@@ -19,7 +19,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/agent/redacteur')]
 class DossierController extends AgentController
 {
-    private const ETATS_DOSSIERS_ELIGIBLES = [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_OK_A_VALIDER, EtatDossierType::DOSSIER_KO_A_VALIDER];
+    private const ETATS_DOSSIERS_ELIGIBLES = [
+        EtatDossierType::DOSSIER_A_INSTRUIRE,
+        EtatDossierType::DOSSIER_OK_A_VALIDER,
+        EtatDossierType::DOSSIER_OK_A_SIGNER,
+        EtatDossierType::DOSSIER_KO_A_VALIDER,
+        EtatDossierType::DOSSIER_KO_A_SIGNER,
+    ];
 
     public function __construct(
         protected readonly BrisPorteRepository $dossierRepository,
@@ -57,7 +63,7 @@ class DossierController extends AgentController
                         $dossier->getRequerant()->getPersonnePhysique()->getPrenom3(),
                     ],
                     'nomNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getNomNaissance(),
-                    'dateNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance() ? (int) $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance()->format('Uv') : null,
+                    'dateNaissance' => ($dossier->getRequerant()->getPersonnePhysique()->getDateNaissance()?->getTimestamp() * 1000) ?? null,
                     'communeNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getCommuneNaissance(),
                     'paysNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getPaysNaissance()?->getNom(),
                     'raisonSociale' => $dossier->getRequerant()->getIsPersonneMorale() ? $dossier->getRequerant()->getPersonneMorale()->getRaisonSociale() : null,
@@ -71,6 +77,7 @@ class DossierController extends AgentController
                 ],
                 'dateOperation' => ($dossier->getDateOperationPJ()?->getTimestamp() * 1000) ?? null,
                 'estPorteBlindee' => $dossier->getIsPorteBlindee(),
+                'montantIndemnisation' => $dossier->getPropositionIndemnisation(),
                 'documents' => array_merge(
                     /* @var Document[] $documents */
                     ...array_map(
@@ -133,6 +140,8 @@ class DossierController extends AgentController
                     'id' => $this->getAgent()->getId(),
                     'permissions' => array_merge(
                         $this->getAgent()->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR) ? ['ATTRIBUTEUR'] : [],
+                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? ['REDACTEUR'] : [],
+                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_VALIDATEUR) ? ['VALIDATEUR'] : [],
                     ),
                 ],
                 'dossier' => $this->normalizeDossier($dossier, 'detail'),
@@ -196,6 +205,58 @@ class DossierController extends AgentController
             ] : null);
 
         $this->dossierRepository->save($dossier);
+
+        return new JsonResponse('', Response::HTTP_NO_CONTENT);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
+    #[Route('/dossier/{id}/valider/confirmer.json', name: 'agent_redacteur_valider_confirmer_dossier', methods: ['POST'])]
+    public function validerConfirmerDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        if (!$dossier->getEtatDossier()->aValider()) {
+            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
+        }
+        $montant = $request->getPayload()->getInt('montant');
+        $motif = $request->getPayload()->getString('motif');
+
+        // Validation de l'indemnisation, avec montant
+        if (EtatDossierType::DOSSIER_OK_A_VALIDER === $dossier->getEtatDossier()) {
+            $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_OK_A_SIGNER, agent: $this->getAgent(), contexte: $montant ? [
+                'montant' => $montant,
+            ] : null)
+            ->setPropositionIndemnisation($montant);
+        }
+        // Confirmation du rejet
+        else {
+            $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_KO_A_SIGNER, agent: $this->getAgent(), contexte: $motif ? [
+                'motif' => $motif,
+            ] : null);
+        }
+
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse('', Response::HTTP_NO_CONTENT);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
+    #[Route('/dossier/{id}/valider/decliner.json', name: 'agent_redacteur_valider_decliner_dossier', methods: ['POST'])]
+    public function validerDeclinerDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        if (!$dossier->getEtatDossier()->aValider()) {
+            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
+        }
+
+        $message = $request->getPayload()->getString('message');
+
+        if ($message) {
+            $dossier->getEtatDossier()->addContexte([
+                'messages' => [$message],
+            ]);
+
+            $this->dossierRepository->save($dossier);
+        }
 
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }

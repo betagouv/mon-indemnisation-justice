@@ -1,3 +1,4 @@
+import { ValidationDossier } from "@/apps/agent/dossiers/components/consultation/ValidationDossier";
 import { Agent, Document, DocumentType } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import {
@@ -48,12 +49,17 @@ export const ConsultationDossierApp = observer(
                 {/* Attribution du rédacteur */}
                 <AttributionDossier dossier={dossier} agent={agent} />
 
-                {/* Action sur le dossier */}
+                {/* Décision du rédacteur sur le dossier */}
                 {dossier.enAttenteDecision &&
                   agent.estRedacteur() &&
                   agent.estAttribue(dossier) && (
-                    <DecisionDossier dossier={dossier} agent={agent} />
+                    <DecisionDossier dossier={dossier} />
                   )}
+
+                {/* Validation du validateur sur le dossier */}
+                {dossier.enAttenteValidation && agent.estValidateur() && (
+                  <ValidationDossier dossier={dossier} />
+                )}
               </div>
 
               {/* Accordéon de section */}
