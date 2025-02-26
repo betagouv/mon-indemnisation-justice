@@ -45,6 +45,26 @@ enum EtatDossierType: string
         };
     }
 
+    public function estASigner(): bool
+    {
+        return str_ends_with($this->value, 'A_SIGNER');
+    }
+
+    public function estDecide(): bool
+    {
+        return $this->estASigner();
+    }
+
+    public function estAccepte(): bool
+    {
+        return str_starts_with($this->value, 'KO');
+    }
+
+    public function estRejete(): bool
+    {
+        return str_starts_with($this->value, 'OK');
+    }
+
     public static function fromSlug($slug): ?self
     {
         foreach (self::cases() as $etat) {

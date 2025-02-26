@@ -214,6 +214,26 @@ class BrisPorte
         return $this->etatDossier;
     }
 
+    public function estASigner(): bool
+    {
+        return $this->etatDossier->estASigner();
+    }
+
+    public function estDecide(): bool
+    {
+        return $this->etatDossier->estDecide();
+    }
+
+    public function estAccepte(): bool
+    {
+        return $this->etatDossier->estAccepte();
+    }
+
+    public function estRejete(): bool
+    {
+        return $this->etatDossier->estRejete();
+    }
+
     public function getEtat(EtatDossierType $type): ?EtatDossier
     {
         return $this->historiqueEtats->findFirst(fn (int $index, EtatDossier $etat) => $etat->getEtat() === $type);

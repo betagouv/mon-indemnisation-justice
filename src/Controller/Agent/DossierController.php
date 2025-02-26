@@ -261,6 +261,17 @@ class DossierController extends AgentController
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/dossier/{id}/courrier', name: 'agent_redacteur_courrier_dossier', methods: ['GET'], condition: "env('APP_DEBUG')")]
+    public function courrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier): Response
+    {
+        return $this->render('courrier/dossier_accepte.html.twig', [
+            'dossier' => $dossier,
+            'formulaire' => false,
+            'edition' => true,
+        ]);
+    }
+
     #[Route('/dossiers.json', name: 'agent_redacteur_dossiers_json', methods: ['GET'])]
     public function dossiersJson(Request $request): Response
     {
