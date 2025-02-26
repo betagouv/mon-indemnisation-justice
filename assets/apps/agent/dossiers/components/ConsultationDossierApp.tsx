@@ -175,6 +175,7 @@ export const ConsultationDossierApp = observer(
                     </div>
                   </section>
 
+                  {/* Section pièces jointes */}
                   <section className="fr-accordion">
                     <h3 className="fr-accordion__title">
                       <button
@@ -261,16 +262,45 @@ export const ConsultationDossierApp = observer(
                     </div>
                   </section>
 
+                  {/* Section lettre de synthèse */}
                   <section className="fr-accordion">
                     <h3 className="fr-accordion__title">
                       <button
                         className="fr-accordion__btn"
                         aria-expanded="false"
-                        aria-controls="accordion-116"
-                        disabled
+                        aria-controls="dossier-section-courrier"
+                        disabled={!dossier.estDecide()}
                       >
-                        Lettre de synthèse
+                        Décision et courrier
                       </button>
+
+                      <div
+                        className="fr-collapse"
+                        id="dossier-section-courrier"
+                      >
+                        <div className="fr-grid-column">
+                          <h5>Courrier</h5>
+
+                          <object
+                            id="preview"
+                            type="text/html"
+                            style={{
+                              width: "100%",
+                              height: "720px",
+                            }}
+                            onLoad={() => {
+                              const preview = document.getElementById(
+                                "preview",
+                              ) as HTMLObjectElement;
+
+                              console.log(preview.contentWindow.outerHeight);
+
+                              preview.style.height = `${preview.contentWindow.outerHeight}px`;
+                            }}
+                            data={`/agent/redacteur/dossier/${dossier.id}/courrier`}
+                          ></object>
+                        </div>
+                      </div>
                     </h3>
                   </section>
                 </div>
