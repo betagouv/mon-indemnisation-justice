@@ -5,6 +5,13 @@
     <title>Courrier</title>
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('dsfr/core/core.css') }}"/>
+    {% if edition|default(false) %}
+        <link
+                href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
+                rel="stylesheet"
+        />
+    {% endif %}
+
     <style>
         body {
             margin: 0;
@@ -31,6 +38,10 @@
             border-radius: 5px;
             background: white;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+
+            @media screen {
+                max-height: 100cm;
+            }
         }
 
         .subpage {
@@ -85,7 +96,6 @@
             }
 
             .subpage {
-                display: none;
                 position: absolute;
                 bottom: 0;
 
@@ -125,6 +135,15 @@
             }
 
             #courrier-decision-courrier {
+                @media screen {
+                    display:flex;
+                    flex-direction: column;
+
+                    main {
+                        margin-bottom: 2cm;
+                    }
+                }
+
                 main {
                     a {
                         color: #5e95d6;;
@@ -141,13 +160,16 @@
                         margin: 0 0 30pt 0;
 
                         p {
+                            &:first-child {
+                                margin-top: 0 !important;
+                            }
+
                             margin: 10pt 0;
                             font-size: 10pt;
                             line-height: 13pt;
                         }
 
                         .contact-bureau {
-                            line-height: 11pt;
                         }
 
                         .section-a-gauche {
@@ -166,6 +188,7 @@
                     #courrier-decision-courrier-contenu {
                         p {
                             margin: 12pt 0;
+                            letter-spacing: 0;
                             font-size: 11pt;
                             line-height: 13pt;
                         }
@@ -222,10 +245,15 @@
                         }
 
                         input {
-                            border-bottom: 2px dotted #000;
+                            border-bottom: 2px dotted var(--text-default-grey);
                         }
                     }
                 }
+            }
+
+            #ql-editor {
+                border: 0;
+                outline: none;
             }
         }
 
@@ -281,7 +309,8 @@
                     </p>
 
                     <p>
-                        <u>Affaire suivie par</u> : <span class="texte-majuscule">G. Bourzicot</span>
+                        <u>Affaire suivie par</u> : <span
+                                class="texte-majuscule">{{ dossier.redacteur.nomCourt }}</span>
                     </p>
 
                     <p>
@@ -295,19 +324,21 @@
 
                     <p class="contact-bureau">
                         <a href="mailto:precontentieux.dsj-fip6@justice.gouv.fr">precontentieux.dsj-fip6@justice.gouv.fr</a><br/>
-                        <b><u>Référence à rappeler</u></b> : FIP/GB/24-0973/SECO
+                        <b><u>Référence à rappeler</u></b> : {{ dossier.reference }}
                     </p>
                 </div>
 
                 <div class="section-a-droite">
-                    Paris, le 21 octobre 2024
+                    Paris, le {{ "now"|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
                 </div>
 
 
                 <div class="section-a-droite section-flottante">
                     <p>
-                        Madame SECO Sylvana<br/>
-                        Courriel: <a href="mailto:secosylvi04@gmail.com">secosylvi04@gmail.com</a>
+                        {{ dossier.requerant.personnePhysique.civilite.libelle }} {{ dossier.requerant.personnePhysique.nom|upper }} {{ dossier.requerant.personnePhysique.prenom1|capitalize }}{% if dossier.requerant.email != null %}
+                            <br/>
+                            Courriel: <a href="mailto:{{ dossier.requerant.email }}">{{ dossier.requerant.email }}</a>
+                        {% endif %}
                     </p>
                 </div>
 
@@ -315,28 +346,34 @@
 
             <div id="courrier-decision-courrier-contenu">
 
+                {% if edition|default(false) %}
+                <div id="courrier-decision-courrier-champs-contenu">
+                {% endif %}
                 <p>
-                    Madame,
+                    {{ dossier.requerant.personnePhysique.civilite.libelle }},
                 </p>
-                <p>J’accuse réception de votre requête par laquelle vous sollicitez en qualité de propriétaire bailleur,
+                <p>
+                    J’accuse réception de votre requête par laquelle vous sollicitez{% if dossier.qualiteRequerant != 'AUT' or not dossier.precisionRequerant %}, en qualité de {{ dossier.qualiteRequerant != 'AUT' ? dossier.qualiteRequerant.libelle|lower : dossier.precisionRequerant|lower }},{% endif %}
                     l’indemnisation du préjudice subi en raison de la détérioration de la porte d’entrée du logement sis
-                    13 rue
-                    du Bel Air à LILLE (59). Cette dégradation aurait été occasionnée au cours d’une opération de police
-                    judiciaire menée le 20 mars 2024.</p>
+                    {{ dossier.adresse.ligne1 }}{{ dossier.adresse.ligne2 }} à {{ dossier.adresse.localite }} ({{ dossier.adresse.codeDepartemental }}).
+                    Cette dégradation aurait été occasionnée au cours d’une opération de police judiciaire menée le
+                    {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}.
+                </p>
 
-                <p>Il résulte de l’examen de votre dossier, qu’eu égard aux circonstances et dans la mesure où vous êtes
-                    tiers à
-                    l'opération de police judiciaire, il appartient au ministère de la Justice de prendre en charge les
-                    frais de
-                    réparation au titre de la responsabilité sans faute de l'État pour rupture d'égalité devant les
-                    charges
-                    publiques.</p>
+                {% if dossier.etatDossier.estAccepte() %}
 
-                <p>En conséquence, je propose de vous allouer une indemnité définitive de <b>quatre mille cinq cent
-                        soixante-huit
-                        euros et quarante-deux centimes (4 568,42 EUR)</b> toutes causes de préjudices confondues. Cette
-                    proposition
-                    tient compte de la facture transmise.</p>
+                <p>
+                    Il résulte de l’examen de votre dossier, qu’eu égard aux circonstances et dans la mesure où vous êtes
+                    tiers à l'opération de police judiciaire, il appartient au ministère de la Justice de prendre en
+                    charge les frais de réparation au titre de la responsabilité sans faute de l'État pour rupture
+                    d'égalité devant les charges publiques.
+                </p>
+
+                <p>
+                    En conséquence, je propose de vous allouer une indemnité définitive de <b>{{ dossier.propositionIndemnisation|montant_litteral }}
+                    ({{ dossier.propositionIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
+                    préjudices confondues. Cette proposition tient compte de la facture transmise.
+                </p>
 
                 <p>Je vous saurais gré de bien vouloir m’indiquer si cette proposition recueille votre assentiment et,
                     dans
@@ -351,7 +388,33 @@
                     rapprocher
                     des services d’un avocat.</p>
 
-                <p>Je vous prie de croire, Madame, à l’expression de ma considération distinguée.</p>
+                {% elseif dossier.etatDossier.estRejete() %}
+                    <p>La prise en charge par le ministère de la Justice des préjudices matériels résultant d'une opération de police judiciaire est soumise aux principes de la mise en œuvre de la responsabilité sans faute de l'État pour rupture d’égalité devant les charges publiques.</p>
+
+                    <p>Aussi, le droit à indemnisation est ouvert aux personnes qui ne sont pas concernées par la procédure judiciaire et qui subissent un préjudice anormal et spécial. <b>Les personnes recherchées par l'autorité judiciaire</b>, celles qui en ont la responsabilité civile (notamment pour les enfants mineurs) ou celles qui les hébergent, <b>ne sont pas éligibles à l’indemnisation</b>.</p>
+
+                    <p>Dès lors, vous ne remplissez pas les conditions posées par la jurisprudence du Conseil d’État suivant laquelle le régime de la responsabilité sans faute <b>bénéficie aux tiers non liés aux personnes dont le comportement a justifié l’intervention des forces de l’ordre</b> (CE, ass, - 6 juillet 2016 req, 398234 AJDA2016).</p>
+
+                    <p>En conséquence, j'ai le regret de vous informer qu'il ne peut être réservé une suite favorable à votre requête, la responsabilité de l’Etat ne pouvant être engagée, en l’espèce, en l’absence d’erreur des forces de l’ordre.</p>
+
+                    <p>Par ailleurs, l'instruction de votre demande n'a pas permis de mettre en évidence un dysfonctionnement du service public de la justice au sens de l'article L 141-1 du code de l'organisation judiciaire.</p>
+
+                    <p>Je vous précise qu’en cas de désaccord avec cette position, vous pouvez engager une action contentieuse en assignant l’agent judiciaire de l’État devant le tribunal judiciaire territorialement compétent. S’agissant d’une procédure avec représentation obligatoire, il vous appartient de vous rapprocher des services d’un avocat</p>
+                {% endif %}
+
+                <p>Je vous prie de croire, {{ dossier.requerant.personnePhysique.civilite.libelle }}, à l’expression de ma considération distinguée.</p>
+
+                {% if edition|default(false) %}
+                    </div>
+
+                    <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+                    <!-- Initialize Quill editor -->
+                    <script>
+                        const quill = new Quill("#courrier-decision-courrier-champs-contenu", {
+                            theme: "snow",
+                        });
+                    </script>
+                {% endif %}
 
                 <p class="text-flottant-droite">Sylvie VOKO</p>
 
@@ -371,68 +434,85 @@
 
     </div>
 
-    <div id="courrier-decision-formulaire" class="page">
-        <p class="formulaire-titre">
-            <b class="texte-majuscule">Déclaration d’acceptation</b>
-        </p>
+    {% if formulaire|default(false) %}
+        <div id="courrier-decision-formulaire" class="page">
+            <p class="formulaire-titre">
+                <b class="texte-majuscule">Déclaration d’acceptation</b>
+            </p>
 
-        <p>Je soussigné(e), …………………..………………………, déclare accepter l’indemnité définitive de <b>quatre mille cinq cent
-                soixante-huit euros et quarante-deux centimes (4 568,42 EUR)</b> toutes causes de préjudice confondues
-            qui m’est proposée par le garde des Sceaux, ministre de la Justice, en réparation du préjudice subi en
-            raison de la détérioration de la porte d’entrée d’un logement m’appartenant sis 13 rue du Bel Air à LILLE
-            (59) ;</p>
+            <p>
+                Je soussigné{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %},
+                …………………..………………………, déclare accepter l’indemnité définitive de
+                <b>{{ dossier.propositionIndemnisation|montant_litteral }}
+                    ({{ dossier.propositionIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
+                préjudice
+                confondues qui m’est proposée par le garde des Sceaux, ministre de la Justice, en réparation du
+                préjudice
+                subi en raison de la détérioration de la porte d’entrée d’un logement m’appartenant
+                sis {{ dossier.adresse.ligne1 }}
+                {{ dossier.adresse.ligne2 }} à {{ dossier.adresse.localite }} ({{ dossier.adresse.codeDepartemental }})
+                ;
+            </p>
 
-        <p>Je reconnais que, moyennant le versement de cette somme, je serai intégralement désintéressé(e) du préjudice
-            subi au cours de l’opération de police judiciaire intervenue le 20 mars 2024 à l’adresse susmentionnée ;</p>
+            <p>
+                Je reconnais que, moyennant le versement de cette somme, je serai intégralement
+                désintéressé{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %} du préjudice
+                subi au cours de l’opération de police judiciaire intervenue le 20 mars 2024 à l’adresse susmentionnée
+                ;</p>
 
-        <p>Je déclare renoncer à exercer toute action ultérieure à raison de ces faits contre l’État.</p>
+            <p>
+                Je déclare renoncer à exercer toute action ultérieure à raison de ces faits contre l’État.
+            </p>
 
-        <p>Je demande que l’indemnité soit versée sur le compte référencé ci-dessous :</p>
+            <p>
+                Je demande que l’indemnité soit versée sur le compte référencé ci-dessous :</p>
 
-        <ul class="formulaire">
-            <li>
-                <label for="courrier-decision-formulaire-champs-etablissement">Établissement :</label><input
-                        id="courrier-decision-formulaire-champs-etablissement" type="text"/>
-            </li>
-            <li>
-                <label for="courrier-decision-formulaire-champs-code-banque">Code banque :</label><input
-                        id="courrier-decision-formulaire-champs-code-banque" type="text"/>
-            </li>
-            <li>
-                <label for="courrier-decision-formulaire-champs-code-guichet">Code guichet :</label><input
-                        id="courrier-decision-formulaire-champs-code-guichet" type="text"/>
-            </li>
-            <li>
-                <label for="courrier-decision-formulaire-champs-numero-compte">Numéro de compte :</label><input
-                        id="courrier-decision-formulaire-champs-numero-compte" type="text"/>
-            </li>
-            <li>
-                <label for="courrier-decision-formulaire-champs-cle-rib">Clé RIB :</label><input
-                        id="courrier-decision-formulaire-champs-cle-rib" type="text"/>
-            </li>
+            <ul class="formulaire">
+                <li>
+                    <label for="courrier-decision-formulaire-champs-etablissement">Établissement :</label><input
+                            id="courrier-decision-formulaire-champs-etablissement" type="text"/>
+                </li>
+                <li>
+                    <label for="courrier-decision-formulaire-champs-code-banque">Code banque :</label><input
+                            id="courrier-decision-formulaire-champs-code-banque" type="text"/>
+                </li>
+                <li>
+                    <label for="courrier-decision-formulaire-champs-code-guichet">Code guichet :</label><input
+                            id="courrier-decision-formulaire-champs-code-guichet" type="text"/>
+                </li>
+                <li>
+                    <label for="courrier-decision-formulaire-champs-numero-compte">Numéro de compte :</label><input
+                            id="courrier-decision-formulaire-champs-numero-compte" type="text"/>
+                </li>
+                <li>
+                    <label for="courrier-decision-formulaire-champs-cle-rib">Clé RIB :</label><input
+                            id="courrier-decision-formulaire-champs-cle-rib" type="text"/>
+                </li>
 
-            <li class="formulaire-section">
-                <label for="courrier-decision-formulaire-champs-numero-ss">Numéro de sécurité sociale :</label><input
-                        id="courrier-decision-formulaire-champs-numero-ss" type="text"/>
-            </li>
-            <li>
-                <label for="courrier-decision-formulaire-champs-naissance">Date et lieu de naissance :</label><input
-                        id="courrier-decision-formulaire-champs-naissance" type="text"/>
-            </li>
-        </ul>
+                <li class="formulaire-section">
+                    <label for="courrier-decision-formulaire-champs-numero-ss">Numéro de sécurité sociale
+                        :</label><input
+                            id="courrier-decision-formulaire-champs-numero-ss" type="text"/>
+                </li>
+                <li>
+                    <label for="courrier-decision-formulaire-champs-naissance">Date et lieu de naissance :</label><input
+                            id="courrier-decision-formulaire-champs-naissance" type="text"/>
+                </li>
+            </ul>
 
-        {# Formulaire ici #}
+            {# Formulaire ici #}
 
-        <p>Fait à le</p>
+            <p>Fait à le</p>
 
-        <p class="marge-plus">Signature (précédée de la mention « lu et approuvé »)</p>
+            <p class="marge-plus">Signature (précédée de la mention « lu et approuvé »)</p>
 
-        <p class="marge-plus">La déclaration d’acceptation doit être retournée via votre espace personnel</p>
+            <p class="marge-plus">La déclaration d’acceptation doit être retournée via votre espace personnel</p>
 
-        <p class="marge-plus-plus"><b><u>Référence à rappeler</u> : FIP6/GB/23-0973/SECO</b></p>
+            <p class="marge-plus-plus"><b><u>Référence à rappeler</u> : FIP6/GB/23-0973/SECO</b></p>
 
 
-    </div>
+        </div>
+    {% endif %}
 
 </div>
 

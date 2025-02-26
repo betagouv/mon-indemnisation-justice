@@ -50,6 +50,10 @@ export abstract class BaseDossier {
     this.etat = etat instanceof EtatDossier ? etat : EtatDossier.resoudre(etat);
   }
 
+  public estDecide(): boolean {
+    return this.etat.estDecide();
+  }
+
   public estAccepte(): boolean {
     return this.etat.estAccepte();
   }

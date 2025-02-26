@@ -43,6 +43,14 @@ export class EtatDossier {
     EtatDossier.KO_A_SIGNER,
   ];
 
+  public estASigner(): boolean {
+    return this.id.endsWith("A_SIGNER");
+  }
+
+  public estDecide(): boolean {
+    return this.estASigner();
+  }
+
   public estAccepte(): boolean {
     return this.id.startsWith("OK");
   }

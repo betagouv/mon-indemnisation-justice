@@ -11,7 +11,7 @@ class AppExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('spellout', [AppRuntime::class, 'spellout']),
+            new TwigFilter('montant_litteral', [AppRuntime::class, 'montantLitteral']),
             new TwigFilter('est_agent', [AppRuntime::class, 'estAgent']),
             new TwigFilter('est_requerant', [AppRuntime::class, 'estRequerant']),
             new TwigFilter('md5', 'md5'),

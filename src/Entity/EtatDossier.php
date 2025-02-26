@@ -41,6 +41,26 @@ class EtatDossier
         return $this->etat;
     }
 
+    public function estASigner(): bool
+    {
+        return $this->etat->estASigner();
+    }
+
+    public function estDecide(): bool
+    {
+        return $this->etat->estDecide();
+    }
+
+    public function estAccepte(): bool
+    {
+        return $this->etat->estAccepte();
+    }
+
+    public function estRejete(): bool
+    {
+        return $this->etat->estRejete();
+    }
+
     public function aValider(): bool
     {
         return in_array($this->etat, [EtatDossierType::DOSSIER_OK_A_VALIDER, EtatDossierType::DOSSIER_KO_A_VALIDER]);
