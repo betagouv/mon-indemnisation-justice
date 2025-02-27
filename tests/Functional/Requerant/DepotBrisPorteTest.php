@@ -85,6 +85,11 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         // Obligatoire pour contourner le DoctrineTestBundle https://github.com/dmaicher/doctrine-test-bundle?tab=readme-ov-file#debugging
         StaticDriver::commit();
         StaticDriver::beginTransaction();
+
+        // Vider les boîtes courriel :
+        // Doc API mailpit https://mailpit.axllent.org/docs/api-v1/view.html#delete-/api/v1/messages
+        $this->mailerClient = new HttpClient(['base_uri' => $_ENV['MAILPIT_URL'] ?? $_SERVER['MAILPIT_URL']]);
+        $this->mailerClient->delete('/api/v1/messages');
     }
 
     protected function getButton(string $label): ?WebDriverElement
@@ -185,6 +190,22 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         $this
             ->step('Page mes demandes')
             ->screenshot($device);
+
+        // Je dois être redirigé sur ma page dossier
+        $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
+        $this->assertEquals('/requerant', parse_url($this->client->getCurrentURL(), PHP_URL_PATH));
+
+        // Je dois avoir reçu un courrier de confirmation
+        // S'assurer que le requérant a bien reçu un email
+        $response = $this->mailerClient->get('/api/v1/search', [
+            'query' => [
+                'query' => 'to:raquel.randt@courriel.fr subject:"Votre déclaration de bris de porte a bien été prise en compte"',
+            ],
+        ]);
+        $result = json_decode($response->getBody()->getContents(), true);
+
+        $this->assertEquals(2, $result['total']);
+        $this->assertEquals(1, $result['count']);
 
         // Il faut purger le cache Doctrine, afin de s'assurer que l'ORM rejoue une requête et récupère l'objet à jour.
         $this->em->clear();
