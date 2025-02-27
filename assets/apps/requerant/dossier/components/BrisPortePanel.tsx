@@ -193,16 +193,15 @@ const BrisPortePanel = function () {
             <div className="fr-col-12">
               <section className="pr-form-section">
                 <Document
-                  documents={dossier.documents.preuve_paiement_facture}
+                  documents={dossier.documents.facture}
                   libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
-                  type={"preuve_paiement_facture"}
+                  type={"facture"}
                   onRemoved={(document) =>
                     patchDossier({
                       documents: {
-                        preuve_paiement_facture:
-                          dossier.documents.preuve_paiement_facture.filter(
-                            (d) => d.id === document.id,
-                          ),
+                        facture: dossier.documents.facture.filter(
+                          (d) => d.id === document.id,
+                        ),
                       },
                       patch: false,
                     })
@@ -210,10 +209,7 @@ const BrisPortePanel = function () {
                   onUploaded={(document) =>
                     patchDossier({
                       documents: {
-                        preuve_paiement_facture:
-                          dossier.documents.preuve_paiement_facture.concat([
-                            document,
-                          ]),
+                        facture: dossier.documents.facture.concat([document]),
                       },
                       patch: false,
                     })

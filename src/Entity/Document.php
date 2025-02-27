@@ -20,6 +20,9 @@ class Document
     public const TYPE_TITRE_PROPRIETE = 'titre_propriete';
     public const TYPE_CONTRAT_LOCATION = 'contrat_location';
     public const TYPE_SIGNATURE_DECISION = 'signature_decision';
+    public const TYPE_ATTESTATION_NON_PRISE_EN_CHARGE_BAILLEUR = 'non_prise_en_charge_bailleur';
+
+    public const TYPE_ATTESTATION_NON_PRISE_EN_CHARGE_ASSURANCE = 'non_prise_en_charge_assurance';
 
     public static $types = [
         self::TYPE_ATTESTATION_INFORMATION => "Attestation à remettre en cas d'erreur de porte", // Dossier
@@ -29,6 +32,8 @@ class Document
         self::TYPE_RIB => 'RIB', // Personne morale OU physique
         self::TYPE_TITRE_PROPRIETE => 'Titre de propriété', // Dossier
         self::TYPE_CONTRAT_LOCATION => 'Contrat de location', // Dossier
+        self::TYPE_ATTESTATION_NON_PRISE_EN_CHARGE_BAILLEUR => 'Attestation de non prise en charge par le bailleur',
+        self::TYPE_ATTESTATION_NON_PRISE_EN_CHARGE_ASSURANCE => "Attestation de non prise en charge par l'assurance habitation",
     ];
 
     #[ORM\Id]

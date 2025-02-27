@@ -146,7 +146,12 @@ class BrisPorte
                 $carry[$document->getType()][] = $document;
 
                 return $carry;
-            }, [Document::TYPE_ATTESTATION_INFORMATION => []]
+            }, array_merge(
+                ...array_map(
+                    fn (string $type) => [$type => []],
+                    array_keys(Document::$types)
+                )
+            )
         );
     }
 
