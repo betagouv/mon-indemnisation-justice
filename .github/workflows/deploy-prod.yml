@@ -24,11 +24,8 @@ jobs:
       - name: Deploy to prod application
         env:
           CC_APP_ID: ${{ secrets.CC_APP_PROD_ID }}
-          CC_APP_LEGACY_ID: ${{ secrets.CC_APP_PROD_LEGACY_ID }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
         run: |
           clever link $CC_APP_ID
           clever deploy --alias mij-prod --force --same-commit-policy restart
-          clever link $CC_APP_LEGACY_ID
-          clever deploy --alias precontentieux-prod --force --same-commit-policy restart
