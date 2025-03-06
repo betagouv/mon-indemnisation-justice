@@ -36,6 +36,14 @@ a:not([href])[role="button"] {
     --var-couleur-ap-rejete: #ffe9e9;
 }
 
+a:not([href]) {
+    color: initial;
+
+    &:not([disabled]) {
+        cursor:pointer;
+    }
+}
+
 .fr-dossier-etat {
     --left-padding: 1rem;
 
@@ -102,5 +110,52 @@ a:not([href])[role="button"] {
     &--ko-a-signer {
         color: var(--var-couleur-pp-ko-a-signer);
         background-color: var(--var-couleur-ap-ko-a-signer);
+    }
+}
+
+
+.mij-dossier-documents {
+    .mij-dossier-documents-liste {
+        border-right: 1px solid var(--border-default-grey);
+        padding-right: 1.5rem;
+
+        ul {
+            list-style: outside none;
+
+            li {
+
+                &[data-section-vide] {
+                    color: var(--text-mention-grey);
+                    opacity: 0.6;
+
+                }
+
+                &[data-section-active] {
+                    font-weight: bolder;
+                }
+
+                &[data-document-selectionne] {
+                    font-weight: bold;
+
+                    a {
+                        color: var(--text-default-info);
+                    }
+
+                }
+
+                a {
+                    padding: 0;
+                    text-decoration: none;
+                }
+            }
+        }
+
+        > ul {
+            font-size: .9rem;
+
+            > ul {
+                font-size: .8rem;
+            }
+        }
     }
 }

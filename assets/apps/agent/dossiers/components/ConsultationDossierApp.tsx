@@ -5,12 +5,26 @@ import {
   AttributionDossier,
   DecisionDossier,
 } from "@/apps/agent/dossiers/components/consultation";
+import { data } from "autoprefixer";
 
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useState } from "react";
 
 export const ConsultationDossierApp = observer(
-  ({ dossier, agent }: { dossier: DossierDetail; agent: Agent }) => {
+  function ConsultationDossierAppComponent({
+    dossier,
+    agent,
+  }: {
+    dossier: DossierDetail;
+    agent: Agent;
+  }) {
+    const [pieceJointe, selectionnerPieceJointe] = useState(
+      dossier.getDocumentParIndex(0),
+    );
+
+    const consulterDocument = (pieceJointe: Document) =>
+      selectionnerPieceJointe(pieceJointe);
+
     return (
       <>
         <div className="fr-container fr-container--fluid fr-mt-2w">
@@ -62,22 +76,64 @@ export const ConsultationDossierApp = observer(
                 )}
               </div>
 
-              {/* Accordéon de section */}
               <div className="fr-my-2w">
-                <div className="fr-accordions-group">
-                  {/* Section informations sur le dossier */}
-                  <section className="fr-accordion">
-                    <h3 className="fr-accordion__title">
-                      <button
-                        className="fr-accordion__btn"
-                        aria-expanded="true"
-                        aria-controls="accordion-114"
+                <div className="fr-tabs">
+                  <ul
+                    className="fr-tabs__list"
+                    role="tablist"
+                    aria-label="Détails du dossier"
+                  >
+                    <li role="presentation">
+                      <a
+                        href="#infos"
+                        id="tab-infos"
+                        className="fr-tabs__tab"
+                        tabIndex="0"
+                        role="tab"
+                        aria-selected={document.location.hash == "#infos"}
+                        aria-controls="tab-panel-infos"
                       >
-                        Informations sur le dossier
-                      </button>
-                    </h3>
-                    <div className="fr-collapse" id="accordion-114">
+                        Informations du dossier
+                      </a>
+                    </li>
+                    <li role="presentation">
+                      <a
+                        href="#pieces-jointes"
+                        id="tab-pieces-jointes"
+                        className="fr-tabs__tab"
+                        tabIndex="-1"
+                        role="tab"
+                        aria-selected={
+                          document.location.hash == "#pieces-jointes"
+                        }
+                        aria-controls="tab-panel-pieces-jointes"
+                      >
+                        Pièces jointes
+                      </a>
+                    </li>
+                    <li role="presentation">
+                      <a
+                        type="button"
+                        id="tab-courrier"
+                        className="fr-tabs__tab"
+                        tabIndex="-1"
+                        role="tab"
+                        disabled={!dossier.estDecide()}
+                      >
+                        Décision et courrier
+                      </a>
+                    </li>
+                  </ul>
+                  <div
+                    id="tab-panel-infos"
+                    className={`fr-tabs__panel ${document.location.hash == "#infos" ? "fr-tabs__panel--selected" : ""}`}
+                    role="tabpanel"
+                    aria-labelledby="tab-infos"
+                    tabIndex="0"
+                  >
+                    <section>
                       <div className="fr-grid-column">
+                        <h3>Informations sur le dossier </h3>
                         <h5>Requérant</h5>
 
                         <ul className="fr-list">
@@ -122,7 +178,9 @@ export const ConsultationDossierApp = observer(
                           )}
                         </ul>
                       </div>
-                      {/* Sous-section "Bris de porte" */}
+                      {
+                        // Sous-section "Bris de porte"
+                      }
                       <div className="fr-grid-column">
                         <h5>Bris de porte</h5>
 
@@ -172,137 +230,108 @@ export const ConsultationDossierApp = observer(
                           </li>
                         </ul>
                       </div>
-                    </div>
-                  </section>
-
-                  {/* Section pièces jointes */}
-                  <section className="fr-accordion">
-                    <h3 className="fr-accordion__title">
-                      <button
-                        className="fr-accordion__btn"
-                        aria-expanded="false"
-                        aria-controls="accordion-115"
-                      >
-                        Pièces jointes
-                      </button>
-                    </h3>
-                    <div className="fr-collapse" id="accordion-115">
-                      <div className="fr-tabs">
-                        <ul
-                          className="fr-tabs__list"
-                          role="tablist"
-                          aria-label="Pièces jointes"
-                        >
-                          {Document.types.map(
-                            (type: DocumentType, index: number) => (
-                              <li role="presentation" key={type.type}>
-                                <button
-                                  id={`tab-document-${type.type}`}
-                                  className="fr-tabs__tab"
-                                  tabIndex={index == 0 ? 0 : -1}
-                                  role="tab"
-                                  aria-selected={index == 0}
-                                  aria-controls={`tab-document-${type.type}-panel`}
-                                  disabled={!dossier.documents.has(type.type)}
+                    </section>
+                  </div>
+                  <div
+                    id="tab-panel-pieces-jointes"
+                    className={`fr-tabs__panel ${document.location.hash == "#pieces-jointes" ? "fr-tabs__panel--selected" : ""}`}
+                    role="tabpanel"
+                    aria-labelledby="tab-pieces-jointes"
+                    tabIndex="0"
+                  >
+                    <section className="mij-dossier-documents">
+                      <h3>Pièces jointes</h3>
+                      <div className="fr-grid-row">
+                        <div className="fr-col-3 mij-dossier-documents-liste">
+                          <ul>
+                            {Document.types.map((type: DocumentType) => (
+                              <React.Fragment key={type.type}>
+                                <li
+                                  {...(dossier.getDocumentsType(type).length ==
+                                  0
+                                    ? { "data-section-vide": "" }
+                                    : {})}
+                                  {...(pieceJointe?.type === type.type
+                                    ? { "data-section-active": true }
+                                    : {})}
                                 >
                                   {type.libelle}{" "}
-                                  {dossier.documents.has(type.type)
-                                    ? `(${dossier.documents.get(type.type)?.length})`
+                                  {dossier.getDocumentsType(type).length > 0
+                                    ? `(${dossier.getDocumentsType(type).length})`
                                     : ""}
-                                </button>
-                              </li>
-                            ),
-                          )}
-                        </ul>
-                        {Document.types.map(
-                          (type: DocumentType, index: number) => (
-                            <div
-                              key={`document-tab-${type.type}`}
-                              id={`tab-document-${type.type}-panel`}
-                              className={`fr-tabs__panel ${index == 0 ? "fr-tabs__panel--selected" : ""}`}
-                              role="tabpanel"
-                              aria-labelledby={`tab-document-${type.type}`}
-                              tabIndex={0}
-                            >
-                              <h4>{type.libelle}</h4>
+                                </li>
 
-                              {dossier.documents.has(type.type) &&
-                                dossier.documents
-                                  .get(type.type)
-                                  .map((document: Document) => (
-                                    <div
-                                      className="fr-grid-row"
-                                      key={document.id}
-                                    >
-                                      <h6>{document.originalFilename}</h6>
-                                      {document.mime == "application/pdf" ? (
-                                        <object
-                                          data={document.url}
-                                          type="application/pdf"
-                                          style={{
-                                            width: "100%",
-                                            aspectRatio: "210/297",
-                                          }}
-                                        ></object>
-                                      ) : (
-                                        <img
-                                          src={document.url}
-                                          style={{
-                                            width: "100%",
-                                            maxHeight: "100vh",
-                                          }}
-                                        />
-                                      )}
-                                    </div>
-                                  ))}
+                                {dossier.getDocumentsType(type).length > 0 && (
+                                  <ul>
+                                    {dossier
+                                      .getDocumentsType(type)
+                                      .map((doc: Document) => (
+                                        <li
+                                          key={doc.id}
+                                          {...(pieceJointe == doc
+                                            ? {
+                                                "data-document-selectionne":
+                                                  true,
+                                              }
+                                            : {})}
+                                        >
+                                          <a
+                                            href={void 0}
+                                            onClick={() =>
+                                              selectionnerPieceJointe(doc)
+                                            }
+                                          >
+                                            {doc.originalFilename}
+                                          </a>
+                                        </li>
+                                      ))}
+                                  </ul>
+                                )}
+                              </React.Fragment>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="fr-col-9 fr-px-4w">
+                          {pieceJointe ? (
+                            <div className="fr-grid-row">
+                              <h6>{pieceJointe.originalFilename}</h6>
+                              {pieceJointe.mime == "application/pdf" ? (
+                                <object
+                                  data={pieceJointe.url}
+                                  type="application/pdf"
+                                  style={{
+                                    width: "100%",
+                                    aspectRatio: "210/297",
+                                  }}
+                                ></object>
+                              ) : (
+                                <img
+                                  src={pieceJointe.url}
+                                  alt={pieceJointe.originalFilename}
+                                  style={{
+                                    width: "100%",
+                                    maxHeight: "100vh",
+                                  }}
+                                />
+                              )}
                             </div>
-                          ),
-                        )}
-                      </div>
-                    </div>
-                  </section>
-
-                  {/* Section lettre de synthèse */}
-                  <section className="fr-accordion">
-                    <h3 className="fr-accordion__title">
-                      <button
-                        className="fr-accordion__btn"
-                        aria-expanded="false"
-                        aria-controls="dossier-section-courrier"
-                        disabled={!dossier.estDecide()}
-                      >
-                        Décision et courrier
-                      </button>
-
-                      <div
-                        className="fr-collapse"
-                        id="dossier-section-courrier"
-                      >
-                        <div className="fr-grid-column">
-                          <h5>Courrier</h5>
-
-                          <object
-                            id="preview"
-                            type="text/html"
-                            style={{
-                              width: "100%",
-                              height: "720px",
-                            }}
-                            onLoad={() => {
-                              const preview = document.getElementById(
-                                "preview",
-                              ) as HTMLObjectElement;
-
-                              console.log(preview.contentWindow.outerHeight);
-
-                              preview.style.height = `${preview.contentWindow.outerHeight}px`;
-                            }}
-                            data={`/agent/redacteur/dossier/${dossier.id}/courrier`}
-                          ></object>
+                          ) : (
+                            <i>Aucune pièce jointe sélectionnée</i>
+                          )}
                         </div>
                       </div>
-                    </h3>
-                  </section>
+                    </section>
+                  </div>
+
+                  {dossier.estDecide() && (
+                    <div
+                      id="tab-panel-courrier"
+                      className={`fr-tabs__panel ${document.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
+                      role="tabpanel"
+                      aria-labelledby="tab-courrier"
+                      tabIndex="0"
+                    ></div>
+                  )}
                 </div>
               </div>
             </div>
