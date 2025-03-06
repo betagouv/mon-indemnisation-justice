@@ -69,6 +69,9 @@ class BrisPorte
     protected Collection $documents;
     protected ?array $documentsParType = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $corpsCourrier = null;
+
     #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
@@ -304,6 +307,18 @@ class BrisPorte
     public function setPropositionIndemnisation(?string $propositionIndemnisation): self
     {
         $this->propositionIndemnisation = $propositionIndemnisation;
+
+        return $this;
+    }
+
+    public function getCorpsCourrier(): ?string
+    {
+        return $this->corpsCourrier;
+    }
+
+    public function setCorpsCourrier(?string $corpsCourrier): BrisPorte
+    {
+        $this->corpsCourrier = $corpsCourrier;
 
         return $this;
     }

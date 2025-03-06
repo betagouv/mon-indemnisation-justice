@@ -13,7 +13,7 @@ a:not([href])[role="button"] {
     /* À finaliser, = 'beige-gris-galet' */
     --var-couleur-pp-a-finaliser: #6a6156;
     --var-couleur-ap-a-finaliser: #f3ede5;
-    /* À statuer, = 'info' */
+    /* À instruite, = 'info' */
     --var-couleur-pp-a-instruire: #0063cb;
     --var-couleur-ap-a-instruire: #e8edff;
     /* À valider (accepté), = 'green-tilleul-verveine' */
@@ -40,7 +40,7 @@ a:not([href]) {
     color: initial;
 
     &:not([disabled]) {
-        cursor:pointer;
+        cursor: pointer;
     }
 }
 
@@ -157,5 +157,28 @@ a:not([href]) {
                 font-size: .8rem;
             }
         }
+    }
+}
+
+/* Quill editor */
+
+.ql-editor {
+    * {
+        font: 1rem arial !important;
+    }
+
+    a {
+        color: #5e95d6;;
+    }
+
+    strong {
+        font-weight: bold !important;
+    }
+
+    p {
+        margin: 12pt 0 !important;
+        letter-spacing: 0;
+        font-size: 11pt;
+        line-height: 13pt;
     }
 }

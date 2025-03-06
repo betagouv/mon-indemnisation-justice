@@ -168,46 +168,40 @@ class DossierController extends AgentController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
-    #[Route('/dossier/{id}/decider/accepter.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
+    #[Route('/dossier/{id}/decider.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
     public function deciderAccepterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
         $agent = $this->getAgent();
-        $montant = $request->getPayload()->getInt('montant');
 
         if ($agent !== $dossier->getRedacteur()) {
             return new JsonResponse(['error' => "Vous n'êtes pas attribué à l'instruction de ce dossier"], Response::HTTP_UNAUTHORIZED);
         }
 
-        $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_OK_A_VALIDER, agent: $agent, contexte: $montant ? [
-                'montant' => $montant,
-            ] : null)
-            ->setPropositionIndemnisation($montant);
-
-        $this->dossierRepository->save($dossier);
-
-        return new JsonResponse('', Response::HTTP_NO_CONTENT);
-    }
-
-    #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
-    #[Route('/dossier/{id}/decider/rejeter.json', name: 'agent_redacteur_decider_rejeter_dossier', methods: ['POST'])]
-    public function deciderRejeterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
-    {
-        $agent = $this->getAgent();
+        $indemnisation = floatval($request->getPayload()->getBoolean('indemnisation'));
+        $montantIndemnisation = floatval($request->getPayload()->get('montantIndemnisation'));
+        $corpsCourrier = $request->getPayload()->get('corpsCourrier');
         $motif = $request->getPayload()->getString('motif');
 
-        if ($agent !== $dossier->getRedacteur()) {
-            return new JsonResponse(['error' => "Vous n'êtes pas attribué à l'instruction de ce dossier"], Response::HTTP_UNAUTHORIZED);
-        }
-
-        $dossier
+        if ($indemnisation) {
+            $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_OK_A_VALIDER, agent: $agent, contexte: $montantIndemnisation ? [
+                'montant' => $montantIndemnisation,
+            ] : null)
+            ->setPropositionIndemnisation($montantIndemnisation)
+            ->setCorpsCourrier($corpsCourrier);
+        } else {
+            $dossier
             ->changerStatut(EtatDossierType::DOSSIER_KO_A_VALIDER, agent: $agent, contexte: $motif ? [
                 'motif' => $motif,
-            ] : null);
+            ] : null)
+            ->setCorpsCourrier($corpsCourrier);
+        }
 
         $this->dossierRepository->save($dossier);
 
-        return new JsonResponse('', Response::HTTP_NO_CONTENT);
+        return new JsonResponse([
+            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+        ], Response::HTTP_OK);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
@@ -263,13 +257,30 @@ class DossierController extends AgentController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/dossier/{id}/courrier/generer.html', name: 'agent_redacteur_generer_courrier_dossier', methods: ['POST'])]
+    public function genererCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $indemnisation = $request->getPayload()->getBoolean('indemnisation');
+
+        if ($indemnisation) {
+            return $this->render('courrier/_corps_accepte.html.twig', [
+                'dossier' => $dossier,
+                'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
+            ]);
+        }
+
+        return $this->render('courrier/_corps_rejete.html.twig', [
+            'dossier' => $dossier,
+        ]);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
     #[Route('/dossier/{id}/courrier', name: 'agent_redacteur_courrier_dossier', methods: ['GET'], condition: "env('APP_DEBUG')")]
     public function courrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
         return $this->render('courrier/dossier_accepte.html.twig', [
             'dossier' => $dossier,
-            'formulaire' => $request->query->getBoolean('f', false),
-            'edition' => $request->query->getBoolean('e', true),
+            'formulaire' => $request->query->getBoolean('f', true),
         ]);
     }
 

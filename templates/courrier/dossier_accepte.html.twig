@@ -5,12 +5,6 @@
     <title>Courrier</title>
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('dsfr/core/core.css') }}"/>
-    {% if edition|default(false) %}
-        <link
-                href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
-                rel="stylesheet"
-        />
-    {% endif %}
 
     <style>
         body {
@@ -305,13 +299,15 @@
 
                 <div class="section-a-gauche">
                     <p>
-                        <b>L'Adjointe au chef du bureau</b>
+                        <b>Chef de bureau / Adjointe au chef du bureau</b>
                     </p>
 
+                    {% if dossier.redacteur is not null %}
                     <p>
                         <u>Affaire suivie par</u> : <span
                                 class="texte-majuscule">{{ dossier.redacteur.nomCourt }}</span>
                     </p>
+                    {% endif %}
 
                     <p>
                         <b class="texte-majuscule">
@@ -345,10 +341,6 @@
             </div>
 
             <div id="courrier-decision-courrier-contenu">
-
-                {% if edition|default(false) %}
-                <div id="courrier-decision-courrier-champs-contenu">
-                {% endif %}
                 <p>
                     {{ dossier.requerant.personnePhysique.civilite.libelle }},
                 </p>
@@ -360,65 +352,15 @@
                     {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}.
                 </p>
 
-                {% if dossier.etatDossier.estAccepte() %}
-
-                <p>
-                    Il résulte de l’examen de votre dossier, qu’eu égard aux circonstances et dans la mesure où vous êtes
-                    tiers à l'opération de police judiciaire, il appartient au ministère de la Justice de prendre en
-                    charge les frais de réparation au titre de la responsabilité sans faute de l'État pour rupture
-                    d'égalité devant les charges publiques.
-                </p>
-
-                <p>
-                    En conséquence, je propose de vous allouer une indemnité définitive de <b>{{ dossier.propositionIndemnisation|montant_litteral }}
-                    ({{ dossier.propositionIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
-                    préjudices confondues. Cette proposition tient compte de la facture transmise.
-                </p>
-
-                <p>Je vous saurais gré de bien vouloir m’indiquer si cette proposition recueille votre assentiment et,
-                    dans
-                    l’affirmative, me renvoyer la déclaration d’acceptation ci-jointe - dûment renseignée et signée –
-                    via votre
-                    espace personnel - en rappelant la référence précitée.</p>
-
-                <p>Enfin, je vous précise qu’en cas de désaccord avec cette proposition, vous pouvez engager une action
-                    contentieuse en assignant l’agent judiciaire de l’État devant le tribunal judiciaire
-                    territorialement
-                    compétent. S’agissant d’une procédure avec représentation obligatoire, il vous appartient de vous
-                    rapprocher
-                    des services d’un avocat.</p>
-
-                {% elseif dossier.etatDossier.estRejete() %}
-                    <p>La prise en charge par le ministère de la Justice des préjudices matériels résultant d'une opération de police judiciaire est soumise aux principes de la mise en œuvre de la responsabilité sans faute de l'État pour rupture d’égalité devant les charges publiques.</p>
-
-                    <p>Aussi, le droit à indemnisation est ouvert aux personnes qui ne sont pas concernées par la procédure judiciaire et qui subissent un préjudice anormal et spécial. <b>Les personnes recherchées par l'autorité judiciaire</b>, celles qui en ont la responsabilité civile (notamment pour les enfants mineurs) ou celles qui les hébergent, <b>ne sont pas éligibles à l’indemnisation</b>.</p>
-
-                    <p>Dès lors, vous ne remplissez pas les conditions posées par la jurisprudence du Conseil d’État suivant laquelle le régime de la responsabilité sans faute <b>bénéficie aux tiers non liés aux personnes dont le comportement a justifié l’intervention des forces de l’ordre</b> (CE, ass, - 6 juillet 2016 req, 398234 AJDA2016).</p>
-
-                    <p>En conséquence, j'ai le regret de vous informer qu'il ne peut être réservé une suite favorable à votre requête, la responsabilité de l’Etat ne pouvant être engagée, en l’espèce, en l’absence d’erreur des forces de l’ordre.</p>
-
-                    <p>Par ailleurs, l'instruction de votre demande n'a pas permis de mettre en évidence un dysfonctionnement du service public de la justice au sens de l'article L 141-1 du code de l'organisation judiciaire.</p>
-
-                    <p>Je vous précise qu’en cas de désaccord avec cette position, vous pouvez engager une action contentieuse en assignant l’agent judiciaire de l’État devant le tribunal judiciaire territorialement compétent. S’agissant d’une procédure avec représentation obligatoire, il vous appartient de vous rapprocher des services d’un avocat</p>
+                {% if dossier.corpsCourrier %}
+                    {{ dossier.corpsCourrier|raw }}
+                {% else %}
+                    {% if dossier.etatDossier.estAccepte() %}
+                        {% include 'courrier/_corps_accepte.html.twig' with {montantIndemnisation: dossier.propositionIndemnisation } %}
+                    {% elseif dossier.etatDossier.estRejete() %}
+                        {% include 'courrier/_corps_rejete.html.twig' %}
+                    {% endif %}
                 {% endif %}
-
-                <p>Je vous prie de croire, {{ dossier.requerant.personnePhysique.civilite.libelle }}, à l’expression de ma considération distinguée.</p>
-
-                {% if edition|default(false) %}
-                    </div>
-
-                    <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
-                    <!-- Initialize Quill editor -->
-                    <script>
-                        const quill = new Quill("#courrier-decision-courrier-champs-contenu", {
-                            theme: "snow",
-                        });
-                    </script>
-                {% endif %}
-
-                <p class="text-flottant-droite">Sylvie VOKO</p>
-
-
             </div>
 
 
