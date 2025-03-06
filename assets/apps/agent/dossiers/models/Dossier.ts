@@ -1,11 +1,12 @@
 import {
   Adresse,
   Document,
+  DocumentType,
   EtatDossier,
   Redacteur,
   Requerant,
 } from "@/apps/agent/dossiers/models";
-import { Expose, Transform, Type } from "class-transformer";
+import { Exclude, Expose, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";
 
 export abstract class BaseDossier {
@@ -96,6 +97,8 @@ export class DossierDetail extends BaseDossier {
   @Transform(({ value }: { value: object }) => new Map(Object.entries(value)))
   public documents: Map<string, Document[]>;
 
+  protected listeDocuments?: Document[];
+
   constructor() {
     super();
     makeObservable(this, {
@@ -109,5 +112,25 @@ export class DossierDetail extends BaseDossier {
 
   attribuer(redacteur: Redacteur): void {
     this.redacteur = redacteur;
+  }
+
+  public getDocumentParIndex(index: number): Document | null {
+    if (!this.listeDocuments) {
+      this.listeDocuments =
+        this.documents
+          ?.values()
+          .reduce((pre: Document[], cur: Document[]) => pre.concat(cur), []) ??
+        [];
+    }
+
+    return this.listeDocuments?.at(index % this.listeDocuments.length) ?? null;
+  }
+
+  public getDocumentIndex(document: Document): number {
+    return this.listeDocuments.indexOf(document);
+  }
+
+  public getDocumentsType(type: DocumentType): Document[] {
+    return this.documents.get(type.type) ?? [];
   }
 }

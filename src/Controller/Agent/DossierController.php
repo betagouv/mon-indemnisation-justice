@@ -88,6 +88,7 @@ class DossierController extends AgentController
                                     'mime' => $document->getMime(),
                                     'originalFilename' => $document->getOriginalFilename(),
                                     'url' => $this->generateUrl('agent_document_download', ['id' => $document->getId(), 'hash' => md5($document->getFilename())]),
+                                    'type' => $document->getType(),
                                 ],
                                 $documents
                             ),
@@ -263,12 +264,12 @@ class DossierController extends AgentController
 
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
     #[Route('/dossier/{id}/courrier', name: 'agent_redacteur_courrier_dossier', methods: ['GET'], condition: "env('APP_DEBUG')")]
-    public function courrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier): Response
+    public function courrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
         return $this->render('courrier/dossier_accepte.html.twig', [
             'dossier' => $dossier,
-            'formulaire' => false,
-            'edition' => true,
+            'formulaire' => $request->query->getBoolean('f', false),
+            'edition' => $request->query->getBoolean('e', true),
         ]);
     }
 

@@ -1,13 +1,13 @@
 import "reflect-metadata";
 
-import "@/style/agents.css"
+import "@/style/agents.css";
 
 import { ConsultationDossierApp } from "@/apps/agent/dossiers/components/ConsultationDossierApp";
 import { Agent, Redacteur } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import { plainToInstance } from "class-transformer";
-import React from "react";
+import React, { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
@@ -32,4 +32,8 @@ const dossier = plainToInstance(DossierDetail, args.dossier, {
 
 ReactDOM.createRoot(
   document.getElementById("react-app-agent-consultation-dossiers"),
-).render(<ConsultationDossierApp dossier={dossier} agent={agent} />);
+).render(
+  <StrictMode>
+    <ConsultationDossierApp dossier={dossier} agent={agent} />
+  </StrictMode>,
+);
