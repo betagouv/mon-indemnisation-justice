@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>Courrier</title>
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-    <link rel="stylesheet" href="{{ asset('dsfr/core/core.css') }}"/>
+    {% if web|default(false) %}
+        <link rel="stylesheet" href="{{ asset('dsfr/core/core.css') }}"/>
+    {% else %}
+        <link rel="stylesheet" href="{{ absolute_asset_path('dsfr/core/core.css') }}"/>
+    {% endif %}
 
     <style>
         body {
@@ -33,9 +37,6 @@
             background: white;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 
-            @media screen {
-                max-height: 100cm;
-            }
         }
 
         .subpage {
@@ -66,16 +67,14 @@
         }
 
         @media print {
-
-
             .page {
+                width: 21cm;
+                height: 29.7cm;
                 position: relative;
                 margin: 0;
                 padding: 0;
                 border: initial;
                 border-radius: initial;
-                width: initial;
-                min-height: initial;
                 box-shadow: initial;
                 background: initial;
                 page-break-after: always;
@@ -99,7 +98,6 @@
                     font-size: 8pt;
                     line-height: 10pt;
                 }
-
             }
         }
 
@@ -244,11 +242,6 @@
                     }
                 }
             }
-
-            #ql-editor {
-                border: 0;
-                outline: none;
-            }
         }
 
     </style>
@@ -376,7 +369,7 @@
 
     </div>
 
-    {% if formulaire|default(false) %}
+    {% if formulaire|default(true) %}
         <div id="courrier-decision-formulaire" class="page">
             <p class="formulaire-titre">
                 <b class="texte-majuscule">Déclaration d’acceptation</b>
