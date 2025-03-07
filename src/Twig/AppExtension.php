@@ -29,6 +29,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('vite_entree_existe', [AppRuntime::class, 'viteEntreeExiste']),
             new TwigFunction('base_64_image', [AppRuntime::class, 'base64Image']),
             new TwigFunction('types_document', [AppRuntime::class, 'typesDocument']),
+            new TwigFunction('absolute_asset_path', [AppRuntime::class, 'absoluteAssetPath']),
         ];
     }
 }

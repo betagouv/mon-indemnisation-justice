@@ -6,20 +6,19 @@ namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Event\BrisPorteConstitueEvent;
+use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-#[AsCommand(name: 'mon_indemnisation:dossier:notifier', description: "Notifier les agents d'un dépôt de dossier de pris de porte")]
-class NotifierBrisPorteCommand extends Command
+#[AsCommand(name: 'mon_indemnisation:dossier:imprimer', description: "Imprimer le courrier d'un dossier")]
+class ImprimerDossierCourrierCommand extends Command
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly EventDispatcherInterface $eventDispatcher,
+        protected readonly ImprimanteCourrier $imprimante,
     ) {
         parent::__construct();
     }
@@ -41,11 +40,9 @@ class NotifierBrisPorteCommand extends Command
             throw new \LogicException("Aucun bris de porte d'id $id");
         }
 
-        if (!$brisPorte->getDateDeclaration()) {
-            throw new \LogicException("Le dossier de bris de porte d'id $id n'a pas encore été constitué");
-        }
+        $path = $this->imprimante->imprimerCourrier($brisPorte);
 
-        $this->eventDispatcher->dispatch(new BrisPorteConstitueEvent($brisPorte));
+        $output->writeln($path);
 
         return Command::SUCCESS;
     }

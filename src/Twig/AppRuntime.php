@@ -59,6 +59,11 @@ class AppRuntime implements RuntimeExtensionInterface
         return Document::$types;
     }
 
+    public function absoluteAssetPath(string $path): string
+    {
+        return "file://$this->publicDirectory/$path";
+    }
+
     public function estViteServerActif(): bool
     {
         return null !== $this->entrypointLookup->getViteServer();

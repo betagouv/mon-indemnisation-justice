@@ -230,7 +230,14 @@ class DossierController extends AgentController
             ] : null);
         }
 
-        $this->dossierRepository->save($dossier);
+        $temp = tmpfile();
+        fwrite($temp, $this->renderBlockView('courrier/dossier_accepte.html.twig', [
+            'dossier' => $dossier]));
+        fclose($temp);
+
+        exec("firefox -headless -screenshot $temp");
+
+        // $this->dossierRepository->save($dossier);
 
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
@@ -280,6 +287,7 @@ class DossierController extends AgentController
     {
         return $this->render('courrier/dossier_accepte.html.twig', [
             'dossier' => $dossier,
+            'web' => $request->query->getBoolean('w', true),
             'formulaire' => $request->query->getBoolean('f', true),
         ]);
     }
