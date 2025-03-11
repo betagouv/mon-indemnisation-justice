@@ -1,29 +1,30 @@
 #!/usr/bin/env node
 
 import puppeteer from "puppeteer";
-import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const source = process.argv.at(-2);
+const destination = process.argv.at(-1);
+
+console.dir({ source, destination });
 
 (async () => {
   const browser = await puppeteer.launch({
     args: ["--no-sandbox"],
+    headless: "new",
+    timeout: 5000,
+    executablePath: process.env.CHROMIUM_PATH,
+    browser: "chrome",
   });
   const page = await browser.newPage();
 
-  console.log(process.argv.at(-2), process.argv.at(-1));
-
-  //await page.setContent(fs.readFileSync(process.argv.at(-2), "utf8"));
-
-  await page.goto(`file://${process.argv.at(-2)}`, {
-    waitUntil: "networkidle0",
+  await page.goto(`file://${source}`, {
+    waitUntil: "domcontentloaded",
+    timeout: 0,
   });
 
-  await page.pdf({
-    path: process.argv.at(-1),
+  const res = await page.pdf({
+    path: destination,
     displayHeaderFooter: false,
     headerTemplate: "",
     footerTemplate: "",
@@ -36,6 +37,13 @@ const __dirname = path.dirname(__filename);
       top: 0,
     },
   });
+
   await page.close();
   await browser.close();
+
+  if (!fs.existsSync(destination)) {
+    throw new Error(`No such file ${destination}`);
+  }
+
+  return 0;
 })();

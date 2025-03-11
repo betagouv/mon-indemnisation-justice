@@ -57,12 +57,12 @@ enum EtatDossierType: string
 
     public function estAccepte(): bool
     {
-        return str_starts_with($this->value, 'KO');
+        return str_starts_with($this->value, 'OK');
     }
 
     public function estRejete(): bool
     {
-        return str_starts_with($this->value, 'OK');
+        return str_starts_with($this->value, 'KO');
     }
 
     public static function fromSlug($slug): ?self

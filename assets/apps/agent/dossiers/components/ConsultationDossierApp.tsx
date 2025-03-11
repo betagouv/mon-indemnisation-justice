@@ -8,6 +8,7 @@ import {
 import { data } from "autoprefixer";
 
 import { observer } from "mobx-react-lite";
+import { element } from "prop-types";
 import React, { useState } from "react";
 
 export const ConsultationDossierApp = observer(
@@ -21,9 +22,6 @@ export const ConsultationDossierApp = observer(
     const [pieceJointe, selectionnerPieceJointe] = useState(
       dossier.getDocumentParIndex(0),
     );
-
-    const consulterDocument = (pieceJointe: Document) =>
-      selectionnerPieceJointe(pieceJointe);
 
     return (
       <>
@@ -67,7 +65,10 @@ export const ConsultationDossierApp = observer(
                 {dossier.enAttenteDecision &&
                   agent.estRedacteur() &&
                   agent.estAttribue(dossier) && (
-                    <DecisionDossier dossier={dossier} />
+                    <DecisionDossier
+                      dossier={dossier}
+                      onDecide={() => (window.location.hash = "courrier")}
+                    />
                   )}
 
                 {/* Validation du validateur sur le dossier */}
@@ -118,7 +119,13 @@ export const ConsultationDossierApp = observer(
                         className="fr-tabs__tab"
                         tabIndex="-1"
                         role="tab"
-                        disabled={!dossier.estDecide()}
+                        {...(dossier.estDecide() || null !== dossier.courrier
+                          ? {
+                              "aria-controls": "tab-panel-courrier",
+                              "aria-selected":
+                                document.location.hash == "#courrier",
+                            }
+                          : { disabled: true })}
                       >
                         Décision et courrier
                       </a>
@@ -323,14 +330,28 @@ export const ConsultationDossierApp = observer(
                     </section>
                   </div>
 
-                  {dossier.estDecide() && (
+                  {(dossier.estDecide() || null !== dossier.courrier) && (
                     <div
                       id="tab-panel-courrier"
                       className={`fr-tabs__panel ${document.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
                       role="tabpanel"
                       aria-labelledby="tab-courrier"
                       tabIndex="0"
-                    ></div>
+                    >
+                      <section>
+                        <h3>Courrier</h3>
+                        <div className="fr-grid-row">
+                          <object
+                            data={dossier.courrier.url}
+                            type="application/pdf"
+                            style={{
+                              width: "100%",
+                              aspectRatio: "210/297",
+                            }}
+                          ></object>
+                        </div>
+                      </section>
+                    </div>
                   )}
                 </div>
               </div>

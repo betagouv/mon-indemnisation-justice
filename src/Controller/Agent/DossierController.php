@@ -2,13 +2,17 @@
 
 namespace MonIndemnisationJustice\Controller\Agent;
 
+use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\CourrierDossier;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,6 +34,8 @@ class DossierController extends AgentController
     public function __construct(
         protected readonly BrisPorteRepository $dossierRepository,
         protected readonly AgentRepository $agentRepository,
+        #[Target('default.storage')] protected readonly FilesystemOperator $storage,
+        protected readonly ImprimanteCourrier $imprimanteCourrier,
     ) {
     }
 
@@ -97,6 +103,11 @@ class DossierController extends AgentController
                         $dossier->getDocuments()
                     ),
                 ),
+                'courrier' => $dossier->getCourrier() ? [
+                    'id' => $dossier->getCourrier()->getId(),
+                    'filename' => $dossier->getCourrier()->getFilename(),
+                    'url' => $this->generateUrl('agent_redacteur_courrier_dossier', ['id' => $dossier->getId(), 'hash' => md5($dossier->getCourrier()->getFilename())]),
+                ] : [],
             ]
         );
     }
@@ -184,23 +195,37 @@ class DossierController extends AgentController
 
         if ($indemnisation) {
             $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_OK_A_VALIDER, agent: $agent, contexte: $montantIndemnisation ? [
+            ->changerStatut(EtatDossierType::DOSSIER_OK_A_SIGNER, agent: $agent, contexte: $montantIndemnisation ? [
                 'montant' => $montantIndemnisation,
             ] : null)
             ->setPropositionIndemnisation($montantIndemnisation)
             ->setCorpsCourrier($corpsCourrier);
         } else {
             $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_KO_A_VALIDER, agent: $agent, contexte: $motif ? [
+            ->changerStatut(EtatDossierType::DOSSIER_KO_A_SIGNER, agent: $agent, contexte: $motif ? [
                 'motif' => $motif,
             ] : null)
             ->setCorpsCourrier($corpsCourrier);
         }
 
+        $destination = $this->imprimanteCourrier->imprimerCourrier($dossier);
+        $dossier->setCourrier(
+            (new CourrierDossier())
+                ->setDossier($dossier)
+                ->setAgent($agent)
+                ->setDateCreation(new \DateTimeImmutable())
+                ->setFilename($destination)
+        );
+
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
             'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'courrier' => $dossier->getCourrier() ? [
+                'id' => $dossier->getCourrier()->getId(),
+                'filename' => $dossier->getCourrier()->getFilename(),
+                'url' => $this->generateUrl('agent_redacteur_courrier_dossier', ['id' => $dossier->getId(), 'hash' => md5($dossier->getCourrier()->getFilename())]),
+            ] : [],
         ], Response::HTTP_OK);
     }
 
@@ -229,13 +254,6 @@ class DossierController extends AgentController
                 'motif' => $motif,
             ] : null);
         }
-
-        $temp = tmpfile();
-        fwrite($temp, $this->renderBlockView('courrier/dossier_accepte.html.twig', [
-            'dossier' => $dossier]));
-        fclose($temp);
-
-        exec("firefox -headless -screenshot $temp");
 
         // $this->dossierRepository->save($dossier);
 
@@ -278,17 +296,6 @@ class DossierController extends AgentController
 
         return $this->render('courrier/_corps_rejete.html.twig', [
             'dossier' => $dossier,
-        ]);
-    }
-
-    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
-    #[Route('/dossier/{id}/courrier', name: 'agent_redacteur_courrier_dossier', methods: ['GET'], condition: "env('APP_DEBUG')")]
-    public function courrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
-    {
-        return $this->render('courrier/dossier_accepte.html.twig', [
-            'dossier' => $dossier,
-            'web' => $request->query->getBoolean('w', true),
-            'formulaire' => $request->query->getBoolean('f', true),
         ]);
     }
 

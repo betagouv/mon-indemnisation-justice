@@ -1,12 +1,13 @@
 import {
   Adresse,
+  Courrier,
   Document,
   DocumentType,
   EtatDossier,
   Redacteur,
   Requerant,
 } from "@/apps/agent/dossiers/models";
-import { Exclude, Expose, Transform, Type } from "class-transformer";
+import { Expose, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";
 
 export abstract class BaseDossier {
@@ -97,6 +98,8 @@ export class DossierDetail extends BaseDossier {
   @Transform(({ value }: { value: object }) => new Map(Object.entries(value)))
   public documents: Map<string, Document[]>;
 
+  public courrier?: Courrier;
+
   protected listeDocuments?: Document[];
 
   constructor() {
@@ -107,6 +110,7 @@ export class DossierDetail extends BaseDossier {
       enAttenteDecision: computed,
       etat: observable,
       changerEtat: action,
+      setCourrier: action,
     });
   }
 
@@ -124,6 +128,10 @@ export class DossierDetail extends BaseDossier {
     }
 
     return this.listeDocuments?.at(index % this.listeDocuments.length) ?? null;
+  }
+
+  setCourrier(courrier: Courrier) {
+    this.courrier = courrier;
   }
 
   public getDocumentIndex(document: Document): number {

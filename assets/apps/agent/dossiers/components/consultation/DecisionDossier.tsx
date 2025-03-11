@@ -1,14 +1,17 @@
-import { EtatDossier } from "@/apps/agent/dossiers/models";
+import { Courrier } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
+import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import React, { useState } from "react";
 
 export const DecisionDossier = observer(function DecisionDossierComponent({
   dossier,
+  onDecide,
 }: {
   dossier: DossierDetail;
+  onDecide: null | (() => void);
 }) {
   // Mémorise la décision en cours
   const [decision, decider]: [
@@ -117,11 +120,16 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
 
     if (response.ok) {
       dossier.montantIndemnisation = montant;
-      dossier.changerEtat((await response.json()).etat);
+      const data = await response.json();
+      dossier.changerEtat(data.etat);
+      dossier.setCourrier(plainToInstance(Courrier, data.courrier));
     }
 
     setSauvegarderEnCours(false);
     decider(null);
+    if (onDecide) {
+      onDecide();
+    }
   };
 
   return (
@@ -154,7 +162,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
         role="dialog"
         id="modale-dossier-decision"
         data-fr-concealing-backdrop="true"
-        className={`fr-modal fr-modal-- ${decision !== null && "fr-modal--opened"}`}
+        className={`fr-modal ${decision !== null && "fr-modal--opened"}`}
       >
         <div className="fr-container fr-container--fluid fr-container-md">
           <div className="fr-grid-row fr-grid-row--center">
@@ -165,7 +173,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                     className="fr-btn--close fr-btn"
                     title="Fermer la fenêtre modale"
                     aria-controls="modale-dossier-decision"
-                    onClick={() => decider(null)}
+                    onClick={() => fermerModaleDecision()}
                   >
                     Fermer
                   </button>
@@ -289,7 +297,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                                 !courrier.trim().length || sauvegarderEnCours
                               }
                             >
-                              Valider la décision
+                              Confirmer l'indemnisation
                             </button>
                           </li>
                         )}
@@ -297,31 +305,71 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                     </>
                   ) : (
                     <>
-                      <div className="fr-input-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
-                        <label
-                          className="fr-label"
-                          htmlFor="dossier-decision-acceptation-motif-champs"
-                        >
-                          Motif du refus
-                        </label>
-                        <div className="fr-input-wrap">
-                          <input
-                            className="fr-input"
-                            id="dossier-decision-acceptation-motif-champs"
-                            type="text"
-                            onInput={(e) =>
-                              setMotifRejet(e.target.value || null)
-                            }
+                      {!courrier && (
+                        <div className="fr-input-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
+                          <label
+                            className="fr-label"
+                            htmlFor="dossier-decision-acceptation-motif-champs"
+                          >
+                            Motif du refus
+                          </label>
+                          <div className="fr-input-wrap">
+                            <input
+                              className="fr-input"
+                              id="dossier-decision-acceptation-motif-champs"
+                              type="text"
+                              defaultValue={motifRejet}
+                              onInput={(e) =>
+                                setMotifRejet(e.target.value || null)
+                              }
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {courrier && (
+                        <div className="fr-col-12">
+                          <ReactQuill
+                            theme="snow"
+                            value={courrier}
+                            modules={{
+                              toolbar: [
+                                [
+                                  "bold",
+                                  "italic",
+                                  "underline",
+                                  "strike",
+                                  "blockquote",
+                                ],
+                                [
+                                  { list: "ordered" },
+                                  { list: "bullet" },
+                                  { indent: "-1" },
+                                  { indent: "+1" },
+                                ],
+                                ["link"],
+                              ],
+                            }}
+                            formats={[
+                              "bold",
+                              "italic",
+                              "underline",
+                              "strike",
+                              "blockquote",
+                              "list",
+                              "indent",
+                              "link",
+                            ]}
+                            onChange={editerCourrier}
+                            readOnly={sauvegarderEnCours}
                           />
                         </div>
-                      </div>
-
+                      )}
                       <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
                         <li>
                           <button
                             className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
                             type="button"
-                            onClick={() => decider(null)}
+                            onClick={() => fermerModaleDecision()}
                             disabled={sauvegarderEnCours}
                           >
                             {sauvegarderEnCours ? (
@@ -331,22 +379,41 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                             )}
                           </button>
                         </li>
-                        <li>
-                          <button
-                            className="fr-btn fr-btn--sm fr-btn--primary"
-                            type="button"
-                            onClick={() =>
-                              deciderDossier({
-                                indemnisation: false,
-                                courrier,
-                                motif: motifRejet,
-                              })
-                            }
-                            disabled={sauvegarderEnCours}
-                          >
-                            Confirmer le rejet
-                          </button>
-                        </li>
+                        {null === courrier ? (
+                          <li>
+                            <button
+                              className="fr-btn fr-btn--sm fr-btn--primary"
+                              type="button"
+                              onClick={() =>
+                                genererCourrier({
+                                  indemnisation: false,
+                                })
+                              }
+                              disabled={!motifRejet || sauvegarderEnCours}
+                            >
+                              Rédiger le courrier
+                            </button>
+                          </li>
+                        ) : (
+                          <li>
+                            <button
+                              className="fr-btn fr-btn--sm fr-btn--primary"
+                              type="button"
+                              onClick={() =>
+                                deciderDossier({
+                                  indemnisation: false,
+                                  courrier,
+                                  motif: motifRejet,
+                                })
+                              }
+                              disabled={
+                                !courrier.trim().length || sauvegarderEnCours
+                              }
+                            >
+                              Confirmer le rejet
+                            </button>
+                          </li>
+                        )}
                       </ul>
                     </>
                   )}
