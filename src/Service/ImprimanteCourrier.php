@@ -2,11 +2,15 @@
 
 namespace MonIndemnisationJustice\Service;
 
+use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use Symfony\Component\Panther\Client;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 use Twig\Environment;
 
 /**
@@ -15,15 +19,20 @@ use Twig\Environment;
 class ImprimanteCourrier
 {
     protected readonly Filesystem $filesystem;
-    protected readonly Client $browser;
+    protected readonly string $projectDirectory;
+    protected readonly string $binDirectory;
 
-    public function __construct(protected readonly Environment $twig)
-    {
+    public function __construct(
+        protected readonly Environment $twig,
+        #[Autowire(param: 'kernel.project_dir')] string $projectDirectory,
+        #[Target('default.storage')] protected readonly FilesystemOperator $storage,
+    ) {
         $this->filesystem = new Filesystem();
-        $this->browser = Client::createFirefoxClient();
+        $this->projectDirectory = $projectDirectory;
+        $this->binDirectory = "$projectDirectory/bin";
     }
 
-    public function imprimerCourrier(BrisPorte $dossier, ?string $destination = null): string
+    public function imprimerCourrier(BrisPorte $dossier): string
     {
         $path = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
 
@@ -32,14 +41,29 @@ class ImprimanteCourrier
         try {
             // Générer le contenu de la page HTML statique
             $this->filesystem->dumpFile("$path/courrier_$dossier->id.html",
-                $this->twig->render('courrier/dossier_accepte.html.twig', [
+                $this->twig->render('courrier/dossier.html.twig', [
                     'dossier' => $dossier,
                 ])
             );
 
-            exec("/app/bin/print.js $path/courrier_$dossier->id.html $path/courrier_$dossier->id.pdf");
+            $impression = new Process([$this->binDirectory.'/print.js', "$path/courrier_$dossier->id.html", "$path/courrier_$dossier->id.pdf"], $this->projectDirectory);
 
-            return "$path/courrier_$dossier->id.pdf";
+            $impression->run();
+
+            // executes after the command finishes
+            if (!$impression->isSuccessful()) {
+                throw new ProcessFailedException($impression);
+            }
+
+            if (!$this->filesystem->exists("$path/courrier_$dossier->id.pdf")) {
+                throw new \LogicException("Le fichier '$path/courrier_$dossier->id.pdf' n'a pas été créé");
+            }
+
+            $destination = hash('sha256', file_get_contents("$path/courrier_$dossier->id.pdf")).'.pdf';
+
+            $this->storage->write($destination, file_get_contents("$path/courrier_$dossier->id.pdf"));
+
+            return $destination;
         } catch (\Exception $e) {
             $this->filesystem->remove($path);
 

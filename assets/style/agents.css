@@ -165,6 +165,7 @@ a:not([href]) {
 .ql-editor {
     * {
         font: 1rem arial !important;
+        cursor: text;
     }
 
     a {

@@ -45,14 +45,23 @@ class BrisPorte
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     protected ?Agent $redacteur = null;
 
+    #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
+    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?EtatDossier $etatDossier = null;
+
     #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER')]
     #[ORM\OrderBy(['dateEntree' => 'ASC'])]
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
-    #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
-    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    protected ?EtatDossier $etatDossier = null;
+    #[ORM\OneToOne(targetEntity: CourrierDossier::class, inversedBy: null, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'courrier_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?CourrierDossier $courrier = null;
+
+    #[ORM\OneToMany(targetEntity: CourrierDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'LAZY')]
+    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    /** @var Collection<CourrierDossier> */
+    protected Collection $historiqueCourriers;
 
     #[Groups('dossier:lecture')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
@@ -113,16 +122,13 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $numeroParquet = null;
-
     public function __construct()
     {
         $this->dateCreation = new \DateTimeImmutable();
         $this->adresse = new Adresse();
         $this->documents = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
+        $this->historiqueCourriers = new ArrayCollection([]);
     }
 
     #[ORM\PrePersist]
@@ -264,6 +270,18 @@ class BrisPorte
     {
         return $this
             ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, requerant: true);
+    }
+
+    public function getCourrier(): ?CourrierDossier
+    {
+        return $this->courrier;
+    }
+
+    public function setCourrier(?CourrierDossier $courrier): BrisPorte
+    {
+        $this->courrier = $courrier;
+
+        return $this;
     }
 
     public function getReference(): ?string
@@ -425,18 +443,6 @@ class BrisPorte
     public function setPrecisionRequerant(?string $precisionRequerant): self
     {
         $this->precisionRequerant = $precisionRequerant;
-
-        return $this;
-    }
-
-    public function getNumeroParquet(): ?string
-    {
-        return $this->numeroParquet;
-    }
-
-    public function setNumeroParquet(?string $numeroParquet): self
-    {
-        $this->numeroParquet = $numeroParquet;
 
         return $this;
     }

@@ -19,13 +19,13 @@ flysystem:
                 client: 'scaleway_spaces_client'
                 bucket: '%env(resolve:SCW_BUCKET)%'
 
-#when@dev:
-#    flysystem:
-#        storages:
-#            default.storage:
-#                adapter: 'local'
-#                options:
-#                    directory: '%kernel.project_dir%/documents/dev'
+when@dev:
+    flysystem:
+        storages:
+            default.storage:
+                adapter: 'local'
+                options:
+                    directory: '%kernel.project_dir%/fichiers/dev'
 
 when@test:
     flysystem:
@@ -33,4 +33,4 @@ when@test:
             default.storage:
                 adapter: 'local'
                 options:
-                    directory: '%kernel.project_dir%/documents/test'
+                    directory: '%kernel.project_dir%/fichiers/test'

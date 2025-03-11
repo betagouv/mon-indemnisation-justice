@@ -31,7 +31,7 @@
             width: 21cm;
             min-height: 29.7cm;
             padding: 1.2cm;
-            margin: 1cm auto;
+            margin: 0 auto;
             border: 1px #D3D3D3 solid;
             border-radius: 5px;
             background: white;
@@ -67,6 +67,10 @@
         }
 
         @media print {
+            html,body {
+                margin: 0;
+                padding: 0;
+            }
             .page {
                 width: 21cm;
                 height: 29.7cm;
@@ -183,6 +187,7 @@
                             letter-spacing: 0;
                             font-size: 11pt;
                             line-height: 13pt;
+                              word-wrap: break-word;
                         }
 
                     }
@@ -369,7 +374,7 @@
 
     </div>
 
-    {% if formulaire|default(true) %}
+    {% if formulaire|default(dossier.estAccepte) %}
         <div id="courrier-decision-formulaire" class="page">
             <p class="formulaire-titre">
                 <b class="texte-majuscule">Déclaration d’acceptation</b>
@@ -443,7 +448,7 @@
 
             <p class="marge-plus">La déclaration d’acceptation doit être retournée via votre espace personnel</p>
 
-            <p class="marge-plus-plus"><b><u>Référence à rappeler</u> : FIP6/GB/23-0973/SECO</b></p>
+            <p class="marge-plus-plus"><b><u>Référence à rappeler</u> :{{ dossier.reference }}</b></p>
 
 
         </div>
