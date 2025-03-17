@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Controller\Agent;
 
+use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
@@ -13,6 +14,7 @@ use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,10 +27,12 @@ class DossierController extends AgentController
 {
     private const ETATS_DOSSIERS_ELIGIBLES = [
         EtatDossierType::DOSSIER_A_INSTRUIRE,
-        EtatDossierType::DOSSIER_OK_A_VALIDER,
         EtatDossierType::DOSSIER_OK_A_SIGNER,
-        EtatDossierType::DOSSIER_KO_A_VALIDER,
+        EtatDossierType::DOSSIER_OK_A_APPROUVER,
+        EtatDossierType::DOSSIER_OK_A_INDEMNISER,
+        EtatDossierType::DOSSIER_OK_INDEMNISE,
         EtatDossierType::DOSSIER_KO_A_SIGNER,
+        EtatDossierType::DOSSIER_KO_REJETE,
     ];
 
     public function __construct(
@@ -36,6 +40,8 @@ class DossierController extends AgentController
         protected readonly AgentRepository $agentRepository,
         #[Target('default.storage')] protected readonly FilesystemOperator $storage,
         protected readonly ImprimanteCourrier $imprimanteCourrier,
+        // A supprimer
+        protected readonly EntityManagerInterface $em,
     ) {
     }
 
@@ -83,7 +89,7 @@ class DossierController extends AgentController
                 ],
                 'dateOperation' => ($dossier->getDateOperationPJ()?->getTimestamp() * 1000) ?? null,
                 'estPorteBlindee' => $dossier->getIsPorteBlindee(),
-                'montantIndemnisation' => $dossier->getPropositionIndemnisation(),
+                'montantIndemnisation' => floatval($dossier->getPropositionIndemnisation()),
                 'documents' => array_merge(
                     /* @var Document[] $documents */
                     ...array_map(
@@ -103,6 +109,7 @@ class DossierController extends AgentController
                         $dossier->getDocuments()
                     ),
                 ),
+                'corpsCourrier' => $dossier->getCorpsCourrier(),
                 'courrier' => $dossier->getCourrier() ? [
                     'id' => $dossier->getCourrier()->getId(),
                     'filename' => $dossier->getCourrier()->getFilename(),
@@ -229,58 +236,6 @@ class DossierController extends AgentController
         ], Response::HTTP_OK);
     }
 
-    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
-    #[Route('/dossier/{id}/valider/confirmer.json', name: 'agent_redacteur_valider_confirmer_dossier', methods: ['POST'])]
-    public function validerConfirmerDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
-    {
-        if (!$dossier->getEtatDossier()->aValider()) {
-            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
-        }
-        $montant = $request->getPayload()->getInt('montant');
-        $motif = $request->getPayload()->getString('motif');
-
-        // Validation de l'indemnisation, avec montant
-        if (EtatDossierType::DOSSIER_OK_A_VALIDER === $dossier->getEtatDossier()) {
-            $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_OK_A_SIGNER, agent: $this->getAgent(), contexte: $montant ? [
-                'montant' => $montant,
-            ] : null)
-            ->setPropositionIndemnisation($montant);
-        }
-        // Confirmation du rejet
-        else {
-            $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_KO_A_SIGNER, agent: $this->getAgent(), contexte: $motif ? [
-                'motif' => $motif,
-            ] : null);
-        }
-
-        // $this->dossierRepository->save($dossier);
-
-        return new JsonResponse('', Response::HTTP_NO_CONTENT);
-    }
-
-    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
-    #[Route('/dossier/{id}/valider/decliner.json', name: 'agent_redacteur_valider_decliner_dossier', methods: ['POST'])]
-    public function validerDeclinerDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
-    {
-        if (!$dossier->getEtatDossier()->aValider()) {
-            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
-        }
-
-        $message = $request->getPayload()->getString('message');
-
-        if ($message) {
-            $dossier->getEtatDossier()->addContexte([
-                'messages' => [$message],
-            ]);
-
-            $this->dossierRepository->save($dossier);
-        }
-
-        return new JsonResponse('', Response::HTTP_NO_CONTENT);
-    }
-
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
     #[Route('/dossier/{id}/courrier/generer.html', name: 'agent_redacteur_generer_courrier_dossier', methods: ['POST'])]
     public function genererCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
@@ -297,6 +252,96 @@ class DossierController extends AgentController
         return $this->render('courrier/_corps_rejete.html.twig', [
             'dossier' => $dossier,
         ]);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
+    #[Route('/dossier/{id}/courrier/editer.json', name: 'agent_redacteur_editer_courrier_dossier', methods: ['POST'])]
+    public function editerCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        if (!$dossier->getEtatDossier()->estASigner()) {
+            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
+        }
+
+        $montantIndemnisation = floatval($request->getPayload()->get('montantIndemnisation'));
+        $corpsCourrier = $request->getPayload()->get('corpsCourrier');
+
+        $dossier->setPropositionIndemnisation($montantIndemnisation)
+            ->setCorpsCourrier($corpsCourrier);
+        $destination = $this->imprimanteCourrier->imprimerCourrier($dossier);
+        $dossier->setCourrier(
+            (new CourrierDossier())
+                ->setDossier($dossier)
+                ->setAgent($this->getAgent())
+                ->setDateCreation(new \DateTimeImmutable())
+                ->setFilename($destination)
+        );
+
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse([
+            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'courrier' => $dossier->getCourrier() ? [
+                'id' => $dossier->getCourrier()->getId(),
+                'filename' => $dossier->getCourrier()->getFilename(),
+                'url' => $this->generateUrl('agent_redacteur_courrier_dossier', ['id' => $dossier->getId(), 'hash' => md5($dossier->getCourrier()->getFilename())]),
+            ] : [],
+        ], Response::HTTP_OK);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
+    #[Route('/dossier/{id}/courrier/signer.json', name: 'agent_redacteur_signer_courrier_dossier', methods: ['POST'])]
+    public function signerCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        if (!$dossier->getEtatDossier()->estASigner()) {
+            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
+        }
+
+        $agent = $this->getAgent();
+
+        /** @var UploadedFile $file */
+        $file = $request->files->get('fichierSigne');
+
+        $content = $file->getContent();
+        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+        $this->storage->write($filename, $content);
+        $document = (new Document())
+                ->setFilename($filename)
+                ->setOriginalFilename($file->getClientOriginalName())
+                ->setSize($file->getSize())
+                ->setType(Document::TYPE_COURRIER_MINISTERE)
+                ->setMime($file->getMimeType());
+
+        $this->em->persist($document);
+        $this->em->flush();
+
+        $dossier->ajouterDocument($document);
+
+        if ($dossier->estAccepte()) {
+            $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent);
+        } else {
+            $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent);
+        }
+
+        $this->dossierRepository->save($dossier);
+
+        // TODO faire partir le courriel notifiant le requérant
+
+        return new JsonResponse([
+            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'documents' => [
+                Document::TYPE_COURRIER_MINISTERE => [
+                    [
+                        'id' => $document->getId(),
+                        'mime' => $document->getMime(),
+                        'originalFilename' => $document->getOriginalFilename(),
+                        'url' => $this->generateUrl('agent_document_download', ['id' => $document->getId(), 'hash' => md5($document->getFilename())]),
+                        'type' => $document->getType(),
+                    ],
+                ],
+            ],
+        ], Response::HTTP_OK);
     }
 
     #[Route('/dossiers.json', name: 'agent_redacteur_dossiers_json', methods: ['GET'])]

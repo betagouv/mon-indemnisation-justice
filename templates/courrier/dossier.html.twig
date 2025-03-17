@@ -108,8 +108,6 @@
 
         body {
 
-            padding: 10mm;
-
             header {
                 display: flex;
                 flex-direction: row;
@@ -163,6 +161,7 @@
                             margin: 10pt 0;
                             font-size: 10pt;
                             line-height: 13pt;
+                            text-wrap: wrap;
                         }
 
                         .contact-bureau {
@@ -245,6 +244,10 @@
                             border-bottom: 2px dotted var(--text-default-grey);
                         }
                     }
+                }
+
+                #courrier-decision-formulaire-champs-lieu-signature, courrier-decision-formulaire-champs-date-signature {
+                    margin: 0 1rem;
                 }
             }
         }
@@ -442,7 +445,9 @@
 
             {# Formulaire ici #}
 
-            <p>Fait à le</p>
+            <p><label for="courrier-decision-formulaire-champs-lieu-signature">Fait à</label> <input id="courrier-decision-formulaire-champs-lieu-signature" type="text" />
+                <label for="courrier-decision-formulaire-champs-date-signature">le</label> <input id="courrier-decision-formulaire-champs-date-signature" type="text" />
+            </p>
 
             <p class="marge-plus">Signature (précédée de la mention « lu et approuvé »)</p>
 

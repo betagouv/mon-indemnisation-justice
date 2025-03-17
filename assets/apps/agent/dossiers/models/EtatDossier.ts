@@ -6,22 +6,30 @@ export class EtatDossier {
 
   public static A_FINALISER = new EtatDossier("A_FINALISER", "À finaliser");
   public static A_INSTRUIRE = new EtatDossier("A_INSTRUIRE", "À instruire");
-  public static OK_A_VALIDER = new EtatDossier(
-    "OK_A_VALIDER",
-    "Accepté - à valider",
-  );
+
   public static OK_A_SIGNER = new EtatDossier(
     "OK_A_SIGNER",
     "Accepté - à signer",
   );
-  public static KO_A_VALIDER = new EtatDossier(
-    "KO_A_VALIDER",
-    "Rejeté - à valider",
+
+  public static OK_A_APPROUVER = new EtatDossier(
+    "OK_A_APPROUVER",
+    "Accepté - à approuver requérant",
   );
+
+  public static OK_A_INDEMNISER = new EtatDossier(
+    "OK_A_INDEMNISER",
+    "Accepté - à indemniser",
+  );
+
+  public static OK_INDEMNISE = new EtatDossier("OK_INDEMNISE", "Indemnisé");
+
   public static KO_A_SIGNER = new EtatDossier(
     "KO_A_SIGNER",
     "Rejeté - à signer",
   );
+
+  public static KO_REJETE = new EtatDossier("KO_REJETE", "Rejeté");
 
   protected constructor(
     id: string,
@@ -37,10 +45,12 @@ export class EtatDossier {
   protected static _catalog: EtatDossier[] = [
     EtatDossier.A_FINALISER,
     EtatDossier.A_INSTRUIRE,
-    EtatDossier.OK_A_VALIDER,
     EtatDossier.OK_A_SIGNER,
-    EtatDossier.KO_A_VALIDER,
+    EtatDossier.OK_A_APPROUVER,
+    EtatDossier.OK_A_INDEMNISER,
+    EtatDossier.OK_INDEMNISE,
     EtatDossier.KO_A_SIGNER,
+    EtatDossier.KO_REJETE,
   ];
 
   public estASigner(): boolean {

@@ -4,6 +4,8 @@ export class DocumentType {
   private constructor(
     public readonly type: string,
     public readonly libelle: string,
+    // Indique si les documents de ce type sont à transmettre par le requérant
+    public readonly estRequerant: boolean = true,
   ) {}
 
   public static readonly TYPE_ATTESTATION_INFORMATION = new DocumentType(
@@ -32,9 +34,10 @@ export class DocumentType {
     "contrat_location",
     "Contrat de location",
   );
-  public static readonly TYPE_SIGNATURE_DECISION = new DocumentType(
-    "signature_decision",
-    "Signature décision",
+
+  public static readonly TYPE_COURRIER_MINISTERE = new DocumentType(
+    "courrier_ministere",
+    "Courrier signé de décision du Ministere",
   );
 }
 
@@ -57,6 +60,6 @@ export class Document {
     DocumentType.TYPE_RIB,
     DocumentType.TYPE_TITRE_PROPRIETE,
     DocumentType.TYPE_CONTRAT_LOCATION,
-    DocumentType.TYPE_SIGNATURE_DECISION,
+    DocumentType.TYPE_COURRIER_MINISTERE,
   ];
 }

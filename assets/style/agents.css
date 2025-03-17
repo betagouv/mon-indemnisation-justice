@@ -10,30 +10,33 @@ a:not([href])[role="button"] {
 
 
 :root {
-    /* À finaliser, = 'beige-gris-galet' */
+    /* A_FINALISER = 'beige-gris-galet' */
     --var-couleur-pp-a-finaliser: #6a6156;
     --var-couleur-ap-a-finaliser: #f3ede5;
-    /* À instruite, = 'info' */
+    /* A_INSTRUIRE = 'info' */
     --var-couleur-pp-a-instruire: #0063cb;
     --var-couleur-ap-a-instruire: #e8edff;
-    /* À valider (accepté), = 'green-tilleul-verveine' */
-    --var-couleur-pp-ok-a-valider: #66673d;
-    --var-couleur-ap-ok-a-valider: #fceeac;
-    /* Accepté - à signer, = 'green-bourgeon-hover' */
-    --var-couleur-pp-ok-a-signer: var(--text-label-green-bourgeon);
-    --var-couleur-ap-ok-a-signer: var(--background-contrast-green-bourgeon);
-    /* Rejeté - à valider, = 'pink-macaron' */
-    --var-couleur-pp-ko-a-valider: #8d533e;
-    --var-couleur-ap-ko-a-valider: #fee9e6;
-    /* Rejeté - à signer, = 'pink-tuile' */
-    --var-couleur-pp-ko-a-signer: var(--text-label-pink-tuile);
-    --var-couleur-ap-ko-a-signer: var(--background-contrast-pink-tuile);
-    /* Accepté, = 'success' */
-    --var-couleur-pp-valide: #18753c;
-    --var-couleur-ap-valide: #b8fec9;
+    /* TODO prévoir À reprendre (= À ré-instruire) 'blue-cumulus' */
+    --var-couleur-pp-a-reinstruire: #3558a2;
+    --var-couleur-ap-a-reinstruire: #e6eefe;
+    /* OK_A_SIGNER, = 'green-menthe' */
+    --var-couleur-pp-ok-a-signer: #66673d;
+    --var-couleur-ap-ok-a-signer: #fceeac;
+    /* OK_A_APPROUVER, = 'green-bourgeon' */
+    --var-couleur-pp-ok-a-approuver: #447049;
+    --var-couleur-ap-ok-a-approuver: #c9fcac;
+    /* OK_A_INDEMNISER = 'green-emeraude' */
+    --var-couleur-pp-ok-a-indemniser: #297254;
+    --var-couleur-ap-ok-a-indemniser: #c3fad5;
+    /* OK_INDEMNISE = 'success' */
+    --var-couleur-pp-ok-indemnise: #18753c;
+    --var-couleur-ap-ok-indemnise: #b8fec9;
+    /* KO_A_SIGNER, = 'pink-tuile' */
+    --var-couleur-pp-ko-a-signer: #a94645;
+    --var-couleur-ap-ko-a-signer: #fee9e7;
     /* Rejeté, = 'error' */
-    --var-couleur-pp-rejete: #ce0500;
-    --var-couleur-ap-rejete: #ffe9e9;
+    --var-couleur-pp-ko-rejete: #ce0500;
+    --var-couleur-ap-ko-rejete: #ffe9e9;
 }
 
 a:not([href]) {
@@ -63,20 +66,28 @@ a:not([href]) {
         border-left-color: var(--var-couleur-pp-a-instruire);
     }
 
-    &--ok-a-valider {
-        border-left-color: var(--var-couleur-pp-ok-a-valider);
-    }
-
     &--ok-a-signer {
         border-left-color: var(--var-couleur-pp-ok-a-signer);
     }
 
-    &--ko-a-valider {
-        border-left-color: var(--var-couleur-pp-ko-a-valider);
+    &--ok-a-approuver {
+        border-left-color: var(--var-couleur-pp-ok-a-approuver);
+    }
+
+    &--ok-a-indemniser {
+        border-left-color: var(--var-couleur-pp-ok-a-indemniser);
+    }
+
+    &--ok-indemnise {
+        border-left-color: var(--var-couleur-pp-ok-indemnise);
     }
 
     &--ko-a-signer {
         border-left-color: var(--var-couleur-pp-ko-a-signer);
+    }
+
+    &--ko-rejete {
+        border-left-color: var(--var-couleur-pp-ko-rejete);
     }
 }
 
@@ -87,14 +98,8 @@ a:not([href]) {
     }
 
     &--a-instruire {
-
         color: var(--var-couleur-pp-a-instruire);
         background-color: var(--var-couleur-ap-a-instruire);
-    }
-
-    &--ok-a-valider {
-        color: var(--var-couleur-pp-ok-a-valider);
-        background-color: var(--var-couleur-ap-ok-a-valider);
     }
 
     &--ok-a-signer {
@@ -102,14 +107,29 @@ a:not([href]) {
         background-color: var(--var-couleur-ap-ok-a-signer);
     }
 
-    &--ko-a-valider {
-        color: var(--var-couleur-pp-ko-a-valider);
-        background-color: var(--var-couleur-ap-ko-a-valider);
+    &--ok-a-approuver {
+        color: var(--var-couleur-pp-ok-a-approuver);
+        background-color: var(--var-couleur-ap-ok-a-approuver);
+    }
+
+    &--ok-a-indemniser {
+        color: var(--var-couleur-pp-ok-a-indemniser);
+        background-color: var(--var-couleur-ap-ok-a-indemniser);
+    }
+
+    &--ok-indemnise {
+        color: var(--var-couleur-pp-ok-indemnise);
+        background-color: var(--var-couleur-ap-ok-indemnise);
     }
 
     &--ko-a-signer {
         color: var(--var-couleur-pp-ko-a-signer);
         background-color: var(--var-couleur-ap-ko-a-signer);
+    }
+
+    &--ko-rejete {
+        color: var(--var-couleur-pp-ko-rejete);
+        background-color: var(--var-couleur-ap-ko-rejete);
     }
 }
 

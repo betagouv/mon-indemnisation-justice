@@ -13,7 +13,7 @@ RUN echo "export LANG='fr_FR.UTF8'" >> /root/.bashrc
 # Generic utils
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y vim wget git
+    apt-get install -y vim wget git openssl ca-certificates
 
 # PHP extensions
 RUN apt-get install -y libzip-dev zip && docker-php-ext-install zip
