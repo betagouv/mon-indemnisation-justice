@@ -8,18 +8,18 @@ enum EtatDossierType: string
     case DOSSIER_A_FINALISER = 'A_FINALISER';
     // Le requérant a finalisé et déposé son dossier
     case DOSSIER_A_INSTRUIRE = 'A_INSTRUIRE';
-    case DOSSIER_OK_A_VALIDER = 'OK_A_VALIDER';
-    case DOSSIER_OK_A_SIGNER = 'OK_A_SIGNER';
 
+    // Le rédacteur a approuvé l'indemnisation
+    case DOSSIER_OK_A_SIGNER = 'OK_A_SIGNER';
+    // Le validateur a signé le courrier d'indemnisation, c'est au tour du requérant d'approuver
+    case DOSSIER_OK_A_APPROUVER = 'OK_A_APPROUVER';
+    // Le requérant a accepté la proposition d'indemnisation
     case DOSSIER_OK_A_INDEMNISER = 'OK_A_INDEMNISER';
 
-    case DOSSIER_OK_REFUSE = 'OK_REFUSE';
-    case DOSSIER_KO_A_VALIDER = 'KO_A_VALIDER';
+    case DOSSIER_OK_INDEMNISE = 'OK_INDEMNISE';
+
     case DOSSIER_KO_A_SIGNER = 'KO_A_SIGNER';
-
-    case DOSSIER_REJETE = 'REJETE';
-
-    case DOSSIER_ACCEPTE = 'ACCEPTE';
+    case DOSSIER_KO_REJETE = 'KO_REJETE';
 
     public function slugAction(): string
     {
@@ -31,7 +31,8 @@ enum EtatDossierType: string
         return match ($this) {
             self::DOSSIER_A_FINALISER => "Demande d'indemnisation en cours de constitution",
             self::DOSSIER_A_INSTRUIRE => "Demande d'indemnisation déposée",
-            self::DOSSIER_OK_A_VALIDER => "Demande d'indemnisation validée (en attente validation)",
+            self::DOSSIER_OK_A_SIGNER => "Demande d'indemnisation validée (en attente de signature)",
+            self::DOSSIER_KO_A_SIGNER => "Demande d'indemnisation rejetée (en attente de signature)",
             default => $this->value,
             /*
             self::RENVOI_EN_CONSTITUTION => "Demande de pièce(s) complémentaire(s) sur la demande d'indemnisation",

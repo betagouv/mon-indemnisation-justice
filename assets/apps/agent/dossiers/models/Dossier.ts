@@ -43,7 +43,7 @@ export abstract class BaseDossier {
   }
 
   get enAttenteValidation(): boolean {
-    return [EtatDossier.OK_A_VALIDER, EtatDossier.KO_A_VALIDER].includes(
+    return [EtatDossier.OK_A_SIGNER, EtatDossier.KO_A_SIGNER].includes(
       this.etat,
     );
   }
@@ -96,9 +96,10 @@ export class DossierDetail extends BaseDossier {
   public montantIndemnisation: number | null = null;
 
   @Transform(({ value }: { value: object }) => new Map(Object.entries(value)))
-  public documents: Map<string, Document[]>;
+  public documents: Map<string, Document[]> = new Map();
 
-  public courrier?: Courrier;
+  public corpsCourrier?: string;
+  public courrier?: Courrier = null;
 
   protected listeDocuments?: Document[];
 
@@ -110,7 +111,10 @@ export class DossierDetail extends BaseDossier {
       enAttenteDecision: computed,
       etat: observable,
       changerEtat: action,
+      courrier: observable,
       setCourrier: action,
+      documents: observable,
+      addDocument: action,
     });
   }
 
@@ -140,5 +144,13 @@ export class DossierDetail extends BaseDossier {
 
   public getDocumentsType(type: DocumentType): Document[] {
     return this.documents.get(type.type) ?? [];
+  }
+
+  public addDocument(document: Document): void {
+    if (!this.documents.has(document.type.type)) {
+      this.documents.set(document.type.type, []);
+    }
+
+    this.documents.get(document.type.type).push(document);
   }
 }

@@ -73,7 +73,13 @@ export const ConsultationDossierApp = observer(
 
                 {/* Validation du validateur sur le dossier */}
                 {dossier.enAttenteValidation && agent.estValidateur() && (
-                  <ValidationDossier dossier={dossier} />
+                  <ValidationDossier
+                    dossier={dossier}
+                    onEdite={() => {
+                      window.location.hash = "courrier";
+                    }}
+                    onSigne={() => (window.location.hash = "courrier")}
+                  />
                 )}
               </div>
 
@@ -342,7 +348,11 @@ export const ConsultationDossierApp = observer(
                         <h3>Courrier</h3>
                         <div className="fr-grid-row">
                           <object
-                            data={dossier.courrier.url}
+                            data={
+                              dossier.documents
+                                .get(DocumentType.TYPE_COURRIER_MINISTERE.type)
+                                ?.at(0)?.url ?? dossier.courrier.url
+                            }
                             type="application/pdf"
                             style={{
                               width: "100%",

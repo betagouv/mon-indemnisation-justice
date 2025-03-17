@@ -53,7 +53,7 @@ class OidcClient
 
                     return json_decode($response->getBody()->getContents(), true);
                 } catch (GuzzleException $e) {
-                    throw new AuthenticationException('Fetch of OIDC server well known configuration failed.');
+                    throw new AuthenticationException('Fetch of OIDC server well known configuration failed.', previous: $e);
                 }
             });
         }

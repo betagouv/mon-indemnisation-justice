@@ -127,9 +127,8 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
 
     setSauvegarderEnCours(false);
     decider(null);
-    if (onDecide) {
-      onDecide();
-    }
+    // Déclencher le _hook_ onDecide s'il est défini
+    onDecide?.();
   };
 
   return (

@@ -58,7 +58,7 @@ services:
     tty: true
     # En attendant un accès à Harbor
     image: pierrelemee/precontentieux-full:latest
-    command: bash -c 'update-ca-certificate && composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && yarn install && php-fpm'
+    command: bash -c 'update-ca-certificates && composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && yarn install && php-fpm'
     environment:
       - APP_ENV=${APP_ENV:-dev}
       - TS=Europe/Paris
