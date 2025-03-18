@@ -21,7 +21,11 @@ const PersonneMorale = () => {
               onChange: (e) =>
                 patchDossier({
                   requerant: {
-                    personneMorale: { raisonSociale: e.target.value },
+                    personneMorale: {
+                      raisonSociale: e.target.value,
+                      sirenSiret:
+                        dossier.requerant.personneMorale?.sirenSiret || "",
+                    },
                   },
                 }),
               maxLength: 255,
@@ -35,7 +39,13 @@ const PersonneMorale = () => {
               value: dossier.requerant.personneMorale?.sirenSiret || "",
               onChange: (e) =>
                 patchDossier({
-                  requerant: { personneMorale: { sirenSiret: e.target.value } },
+                  requerant: {
+                    personneMorale: {
+                      raisonSociale:
+                        dossier.requerant.personneMorale?.raisonSociale || "",
+                      sirenSiret: e.target.value,
+                    },
+                  },
                 }),
               maxLength: 255,
             }}
