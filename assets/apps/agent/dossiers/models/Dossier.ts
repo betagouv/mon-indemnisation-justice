@@ -84,6 +84,8 @@ export class DossierDetail extends BaseDossier {
   @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
   public redacteur: Redacteur | null = null;
 
+  public notes?: string = null;
+
   @Expose()
   @Type(() => Adresse)
   public readonly adresse: Adresse;
@@ -122,6 +124,8 @@ export class DossierDetail extends BaseDossier {
       setCourrier: action,
       documents: observable,
       addDocument: action,
+      notes: observable,
+      annoter: action,
     });
   }
 
@@ -143,6 +147,10 @@ export class DossierDetail extends BaseDossier {
 
   setCourrier(courrier: Courrier) {
     this.courrier = courrier;
+  }
+
+  annoter(notes: string): void {
+    this.notes = notes;
   }
 
   public getDocumentIndex(document: Document): number {

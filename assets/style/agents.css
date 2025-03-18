@@ -182,6 +182,11 @@ a:not([href]) {
 
 /* Quill editor */
 
+.quill {
+    width: 100%;
+    padding-bottom: 3rem;
+}
+
 .ql-editor {
     * {
         font: 1rem arial !important;

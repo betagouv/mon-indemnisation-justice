@@ -149,8 +149,8 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
     } finally {
       setSauvegarderEnCours(false);
       decider(null);
-      // Déclencher le _hook_ onEdite s'il est défini
-      onEdite?.();
+      // Déclencher le _hook_ onSigne s'il est défini
+      onSigne?.();
     }
   };
 

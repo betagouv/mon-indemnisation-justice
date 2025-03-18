@@ -4,14 +4,17 @@ import {
   Document,
   DossierDetail,
   DocumentType,
+  Courrier,
 } from "@/apps/agent/dossiers/models";
 import {
   AttributionDossier,
   DecisionDossier,
 } from "@/apps/agent/dossiers/components/consultation";
+import { plainToInstance } from "class-transformer";
 
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
+import ReactQuill from "react-quill-new";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -24,6 +27,38 @@ export const ConsultationDossierApp = observer(
     const [pieceJointe, selectionnerPieceJointe] = useState(
       dossier.getDocumentParIndex(0),
     );
+
+    // Modélise la prise de notes de suivi en cours
+    const [notes, setNotes]: [string, (notes: string) => void] = useState(
+      dossier.notes,
+    );
+
+    // Indique si la sauvegarde des notes de suivi est en cours
+    const [sauvegarderEnCours, setSauvegarderEnCours]: [
+      boolean,
+      (mode: boolean) => void,
+    ] = useState(false);
+
+    const annoterCourrier = async () => {
+      setSauvegarderEnCours(true);
+
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/annoter.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            notes,
+          }),
+        },
+      );
+
+      setSauvegarderEnCours(false);
+      dossier.annoter(notes);
+    };
 
     return (
       <>
@@ -103,6 +138,19 @@ export const ConsultationDossierApp = observer(
                         aria-controls="tab-panel-infos"
                       >
                         Informations du dossier
+                      </a>
+                    </li>
+                    <li role="presentation">
+                      <a
+                        href="#suivi"
+                        id="tab-suivi"
+                        className="fr-tabs__tab"
+                        tabIndex="-1"
+                        role="tab"
+                        aria-selected={document.location.hash == "#suivi"}
+                        aria-controls="tab-panel-suivi"
+                      >
+                        Notes de suivi
                       </a>
                     </li>
                     <li role="presentation">
@@ -304,6 +352,48 @@ export const ConsultationDossierApp = observer(
                       </div>
                     </section>
                   </div>
+
+                  <div
+                    id="tab-panel-suivi"
+                    className={`fr-tabs__panel ${document.location.hash == "#suivi" ? "fr-tabs__panel--selected" : ""}`}
+                    role="tabpanel"
+                    aria-labelledby="tab-suivi"
+                    tabIndex="0"
+                  >
+                    <section>
+                      <h3>Notes de suivi</h3>
+
+                      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                        <li>
+                          <button
+                            className="fr-btn fr-btn--sm fr-btn--primary"
+                            type="button"
+                            disabled={
+                              sauvegarderEnCours ||
+                              !notes.trim() ||
+                              dossier.notes == notes
+                            }
+                            onClick={() => annoterCourrier()}
+                          >
+                            {sauvegarderEnCours ? (
+                              <>Sauvegarde en cours ...</>
+                            ) : (
+                              <>Enregistrer les changements</>
+                            )}
+                          </button>
+                        </li>
+                      </ul>
+
+                      <div className="fr-grid-row fr-col-12">
+                        <ReactQuill
+                          theme="snow"
+                          value={notes}
+                          onChange={(value) => setNotes(value)}
+                        />
+                      </div>
+                    </section>
+                  </div>
+
                   <div
                     id="tab-panel-pieces-jointes"
                     className={`fr-tabs__panel ${document.location.hash == "#pieces-jointes" ? "fr-tabs__panel--selected" : ""}`}

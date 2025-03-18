@@ -45,6 +45,9 @@ class BrisPorte
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     protected ?Agent $redacteur = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $notes = null;
+
     #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
     #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ?EtatDossier $etatDossier = null;
@@ -194,6 +197,18 @@ class BrisPorte
     public function setRedacteur(?Agent $redacteur): BrisPorte
     {
         $this->redacteur = $redacteur;
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): BrisPorte
+    {
+        $this->notes = $notes;
 
         return $this;
     }

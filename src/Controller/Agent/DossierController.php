@@ -81,6 +81,7 @@ class DossierController extends AgentController
                     'raisonSociale' => $dossier->getRequerant()->getIsPersonneMorale() ? $dossier->getRequerant()->getPersonneMorale()->getRaisonSociale() : null,
                     'siren' => $dossier->getRequerant()->getIsPersonneMorale() ? $dossier->getRequerant()->getPersonneMorale()->getSirenSiret() : null,
                 ],
+                'notes' => $dossier->getNotes(),
                 'testEligibilite' => $dossier->getTestEligibilite() ? [
                     'estVise' => $dossier->getTestEligibilite()->estVise,
                     'estHebergeant' => $dossier->getTestEligibilite()->estHebergeant,
@@ -376,6 +377,15 @@ class DossierController extends AgentController
                 )
             )
         );
+    }
+
+    #[Route('/dossier/{id}/annoter.json', name: 'agent_redacteur_annoter_dossier', methods: ['POST'])]
+    public function annoterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $dossier->setNotes($request->getPayload()->get('notes'));
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
     private static function extraireCritereRecherche(Request $request, string $nom): array
