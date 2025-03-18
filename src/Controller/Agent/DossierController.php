@@ -114,7 +114,7 @@ class DossierController extends AgentController
                     'id' => $dossier->getCourrier()->getId(),
                     'filename' => $dossier->getCourrier()->getFilename(),
                     'url' => $this->generateUrl('agent_redacteur_courrier_dossier', ['id' => $dossier->getId(), 'hash' => md5($dossier->getCourrier()->getFilename())]),
-                ] : [],
+                ] : null,
             ]
         );
     }

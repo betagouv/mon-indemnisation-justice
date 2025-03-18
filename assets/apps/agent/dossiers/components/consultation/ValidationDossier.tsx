@@ -2,7 +2,7 @@ import { Courrier, Document } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import ReactQuill from "react-quill-new";
 
 export const ValidationDossier = observer(function ValidationDossierComponent({
@@ -14,11 +14,23 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
   onEdite: null | (() => void);
   onSigne: null | (() => void);
 }) {
+  //
+  const refModale = useRef(null);
+
   // Mémorise la décision en cours
   const [decision, decider]: [
     boolean | null,
     (decision: boolean | null) => void,
   ] = useState(null);
+
+  const ouvrirModale = (decision: boolean) => {
+    decider(decision);
+    refModale.current?.classList.add("fr-modal--opened");
+  };
+
+  const fermerModale = () => {
+    refModale.current?.classList.remove("fr-modal--opened");
+  };
 
   // Mémorise le montant de l'indemnisation
   const [montantIndemnisation, setMontantIndemnisation]: [
@@ -151,7 +163,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
               className="fr-btn fr-btn--sm fr-btn--secondary"
               type="button"
               onClick={() => {
-                decider(false);
+                ouvrirModale(false);
               }}
             >
               Éditer la proposition d'indemnisation
@@ -161,7 +173,9 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
             <button
               className="fr-btn fr-btn--sm fr-btn--primary"
               type="button"
-              onClick={() => decider(true)}
+              onClick={() => {
+                ouvrirModale(true);
+              }}
             >
               Signer le courrier
             </button>
@@ -173,8 +187,9 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
         aria-labelledby="modale-dossier-decision-titre"
         role="dialog"
         id="modale-dossier-decision"
+        ref={refModale}
         data-fr-concealing-backdrop="true"
-        className={`fr-modal ${decision !== null && "fr-modal--opened"}`}
+        className="fr-modal"
       >
         <div className="fr-container fr-container--fluid fr-container-md">
           <div className="fr-grid-row fr-grid-row--center">
@@ -185,7 +200,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                     className="fr-btn--close fr-btn"
                     title="Fermer la fenêtre modale"
                     aria-controls="modale-dossier-decision"
-                    onClick={() => decider(null)}
+                    onClick={() => fermerModale()}
                   >
                     Fermer
                   </button>
@@ -260,7 +275,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                           <button
                             className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
                             type="button"
-                            onClick={() => decider(null)}
+                            onClick={() => fermerModale()}
                             disabled={sauvegarderEnCours}
                           >
                             {sauvegarderEnCours ? (
@@ -403,7 +418,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                           <button
                             className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
                             type="button"
-                            onClick={() => decider(null)}
+                            onClick={() => fermerModale()}
                             disabled={sauvegarderEnCours}
                           >
                             {sauvegarderEnCours ? (

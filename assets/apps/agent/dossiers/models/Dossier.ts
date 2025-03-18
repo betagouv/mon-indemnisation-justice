@@ -99,6 +99,8 @@ export class DossierDetail extends BaseDossier {
   public documents: Map<string, Document[]> = new Map();
 
   public corpsCourrier?: string;
+  @Expose()
+  @Type(() => Courrier)
   public courrier?: Courrier = null;
 
   protected listeDocuments?: Document[];
@@ -140,6 +142,10 @@ export class DossierDetail extends BaseDossier {
 
   public getDocumentIndex(document: Document): number {
     return this.listeDocuments.indexOf(document);
+  }
+
+  public hasDocumentsType(type: DocumentType): boolean {
+    return this.getDocumentsType(type).length > 0;
   }
 
   public getDocumentsType(type: DocumentType): Document[] {

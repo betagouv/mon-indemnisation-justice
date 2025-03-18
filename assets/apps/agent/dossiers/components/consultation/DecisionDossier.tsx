@@ -4,7 +4,7 @@ import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 export const DecisionDossier = observer(function DecisionDossierComponent({
   dossier,
@@ -13,6 +13,8 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
   dossier: DossierDetail;
   onDecide: null | (() => void);
 }) {
+  const refModale = useRef(null);
+
   // Mémorise la décision en cours
   const [decision, decider]: [
     boolean | null,
@@ -46,10 +48,11 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
   const ouvrirModaleDecision = (dec: boolean) => {
     decider(dec);
     editerCourrier(null);
+    refModale.current?.classList.add("fr-modal--opened");
   };
 
   const fermerModaleDecision = () => {
-    decider(null);
+    refModale.current?.classList.remove("fr-modal--opened");
     editerCourrier(null);
   };
 
@@ -159,9 +162,10 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
       <dialog
         aria-labelledby="modale-dossier-decision-titre"
         role="dialog"
+        ref={refModale}
         id="modale-dossier-decision"
         data-fr-concealing-backdrop="true"
-        className={`fr-modal ${decision !== null && "fr-modal--opened"}`}
+        className="fr-modal"
       >
         <div className="fr-container fr-container--fluid fr-container-md">
           <div className="fr-grid-row fr-grid-row--center">
