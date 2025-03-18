@@ -256,11 +256,25 @@ class DossierController extends AgentController
                 'dossier' => $dossier,
                 'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
             ]);
-        }
+        } else {
+            $motifRefus = $request->getPayload()->get('motifRefus');
 
-        return $this->render('courrier/_corps_rejete.html.twig', [
-            'dossier' => $dossier,
-        ]);
+            if ('est_vise' === $motifRefus) {
+                return $this->render('courrier/_corps_rejete_est_vise.html.twig', [
+                    'dossier' => $dossier,
+                ]);
+            }
+
+            if ('est_hebergeant' === $motifRefus) {
+                return $this->render('courrier/_corps_rejete_est_hebergeant.html.twig', [
+                    'dossier' => $dossier,
+                ]);
+            }
+
+            return $this->render('courrier/_corps_rejete.html.twig', [
+                'dossier' => $dossier,
+            ]);
+        }
     }
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]

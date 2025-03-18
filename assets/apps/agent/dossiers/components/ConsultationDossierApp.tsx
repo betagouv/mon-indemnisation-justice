@@ -29,7 +29,7 @@ export const ConsultationDossierApp = observer(
     );
 
     // Modélise la prise de notes de suivi en cours
-    const [notes, setNotes]: [string, (notes: string) => void] = useState(
+    const [notes, setNotes]: [string, (notes?: string) => void] = useState(
       dossier.notes,
     );
 
@@ -370,7 +370,7 @@ export const ConsultationDossierApp = observer(
                             type="button"
                             disabled={
                               sauvegarderEnCours ||
-                              !notes.trim() ||
+                              !notes?.trim() ||
                               dossier.notes == notes
                             }
                             onClick={() => annoterCourrier()}
