@@ -6,6 +6,7 @@ import {
   EtatDossier,
   Redacteur,
   Requerant,
+  TestEligibilite,
 } from "@/apps/agent/dossiers/models";
 import { Expose, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";
@@ -74,6 +75,10 @@ export class DossierDetail extends BaseDossier {
   @Expose()
   @Type(() => Requerant)
   public readonly requerant: Requerant;
+
+  @Expose()
+  @Type(() => TestEligibilite)
+  public readonly testEligibilite?: TestEligibilite = null;
 
   @Expose()
   @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))

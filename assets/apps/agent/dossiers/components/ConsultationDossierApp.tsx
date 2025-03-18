@@ -1,14 +1,16 @@
 import { ValidationDossier } from "@/apps/agent/dossiers/components/consultation/ValidationDossier";
-import { Agent, Document, DocumentType } from "@/apps/agent/dossiers/models";
-import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
+import {
+  Agent,
+  Document,
+  DossierDetail,
+  DocumentType,
+} from "@/apps/agent/dossiers/models";
 import {
   AttributionDossier,
   DecisionDossier,
 } from "@/apps/agent/dossiers/components/consultation";
-import { data } from "autoprefixer";
 
 import { observer } from "mobx-react-lite";
-import { element } from "prop-types";
 import React, { useState } from "react";
 
 export const ConsultationDossierApp = observer(
@@ -162,34 +164,43 @@ export const ConsultationDossierApp = observer(
                               .filter((p) => !!p)
                               .join(", ")}
                           </li>
-                          {dossier.requerant.dateNaissance && (
-                            <li>
-                              <b>
-                                Né{dossier.requerant.estFeminin() ? "e" : ""}
-                              </b>{" "}
-                              le{" "}
-                              {dossier.requerant.dateNaissance.toLocaleString(
-                                "fr-FR",
-                                {
-                                  //weekday: 'long',
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                },
-                              )}
-                              , à {dossier.requerant.communeNaissance}{" "}
-                              {dossier.requerant.paysNaissance
-                                ? `(${dossier.requerant.paysNaissance})`
-                                : ""}
-                            </li>
-                          )}
+                          <li>
+                            <b>Né{dossier.requerant.estFeminin() ? "e" : ""}</b>{" "}
+                            le{" "}
+                            {dossier.requerant.dateNaissance ? (
+                              <>
+                                {dossier.requerant.dateNaissance.toLocaleString(
+                                  "fr-FR",
+                                  {
+                                    //weekday: 'long',
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                  },
+                                )}
+                              </>
+                            ) : (
+                              <i>non renseigné</i>
+                            )}
+                            , à{" "}
+                            {dossier.requerant.communeNaissance ? (
+                              <>
+                                {dossier.requerant.communeNaissance}{" "}
+                                {dossier.requerant.paysNaissance
+                                  ? `(${dossier.requerant.paysNaissance})`
+                                  : ""}
+                              </>
+                            ) : (
+                              <i>non renseigné</i>
+                            )}
+                          </li>
                           {dossier.requerant.estPersonneMorale() && (
                             <li>
                               Représentant
                               {dossier.requerant.estFeminin() ? "e" : ""} légal
                               {dossier.requerant.estFeminin() ? "e" : ""} de la
                               société <b>{dossier.requerant.raisonSociale}</b>{" "}
-                              (SIREN: {dossier.requerant.siren})
+                              (SIREN: <b>{dossier.requerant.siren}</b>)
                             </li>
                           )}
                         </ul>
@@ -244,6 +255,51 @@ export const ConsultationDossierApp = observer(
                               <i>non renseigné</i>
                             )}
                           </li>
+                          <li>
+                            <b>
+                              Était visé
+                              {dossier.requerant.estFeminin() ? "e" : ""} par
+                              l'opération des Forces de l'ordre ?{" "}
+                            </b>{" "}
+                            <>
+                              {dossier.testEligibilite.estVise ? "Oui" : "Non"}
+                            </>
+                          </li>
+                          <li>
+                            <b>Hébergeait la personne recherchée ?</b>{" "}
+                            <>
+                              {dossier.testEligibilite.estHebergeant
+                                ? "Oui"
+                                : "Non"}
+                            </>
+                          </li>
+                          <li>
+                            <b>Situation par rapport au logement ?</b>{" "}
+                            <>
+                              {dossier.testEligibilite.estProprietaire
+                                ? "Propriétaire"
+                                : "Locataire"}
+                            </>
+                          </li>
+                          <li>
+                            <b>A contacté l'assurance ?</b>{" "}
+                            <>
+                              {dossier.testEligibilite.aContacteAssurance
+                                ? "Oui"
+                                : "Non"}
+                            </>
+                          </li>
+                          {null !==
+                            dossier.testEligibilite.aContacteBailleur && (
+                            <li>
+                              <b>A contacté le bailleur ?</b>{" "}
+                              <>
+                                {dossier.testEligibilite.aContacteBailleur
+                                  ? "Oui"
+                                  : "Non"}
+                              </>
+                            </li>
+                          )}
                         </ul>
                       </div>
                     </section>
