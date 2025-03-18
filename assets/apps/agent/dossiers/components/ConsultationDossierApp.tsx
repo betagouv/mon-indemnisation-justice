@@ -125,7 +125,10 @@ export const ConsultationDossierApp = observer(
                         className="fr-tabs__tab"
                         tabIndex="-1"
                         role="tab"
-                        {...(dossier.estDecide() || null !== dossier.courrier
+                        {...(null !== dossier.courrier ||
+                        dossier.hasDocumentsType(
+                          DocumentType.TYPE_COURRIER_MINISTERE,
+                        )
                           ? {
                               "aria-controls": "tab-panel-courrier",
                               "aria-selected":
@@ -336,7 +339,10 @@ export const ConsultationDossierApp = observer(
                     </section>
                   </div>
 
-                  {(dossier.estDecide() || null !== dossier.courrier) && (
+                  {(null !== dossier.courrier ||
+                    dossier.hasDocumentsType(
+                      DocumentType.TYPE_COURRIER_MINISTERE,
+                    )) && (
                     <div
                       id="tab-panel-courrier"
                       className={`fr-tabs__panel ${document.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
