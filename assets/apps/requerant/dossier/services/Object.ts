@@ -2,18 +2,16 @@ export function recursivePatch(original: object, patch: object): object {
   return Object.fromEntries(
     Object.entries(original).map(([key, value]) => {
       if (patch.hasOwnProperty(key)) {
-        if (Array.isArray(patch[key])) {
+        if (Array.isArray(patch[key]) || null == value) {
           return [key, patch[key]];
         }
         if (value instanceof Object) {
           return patch[key] instanceof Object
             ? [key, recursivePatch(value, patch[key])]
-            : [key, value];
+            : [key, patch[key]];
         }
 
-        if (value !== patch[key]) {
-          return [key, patch[key]];
-        }
+        return [key, patch[key]];
       }
 
       return [key, value];

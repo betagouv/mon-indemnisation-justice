@@ -2,14 +2,14 @@
 
 namespace MonIndemnisationJustice\Tests\Functional\Requerant;
 
-use MonIndemnisationJustice\Entity\Requerant;
-use MonIndemnisationJustice\Tests\Functional\AbstractFunctionalTestCase;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
 use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverPoint;
 use GuzzleHttp\Client as HttpClient;
+use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Tests\Functional\AbstractFunctionalTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 class EligibiliteBrisPorteTest extends AbstractFunctionalTestCase
@@ -94,7 +94,7 @@ class EligibiliteBrisPorteTest extends AbstractFunctionalTestCase
             ->checkField("Êtes-vous la personne visée par l'intervention des forces de l'ordre ?", 'Non')
             ->wait()
             ->screenshot($device, 'question est visé')
-            ->checkField('Est-ce que la personne recherchée réside ou est hébergée à votre adresse ?', 'Non')
+            ->checkField("Est-ce que la personne recherchée réside ou est hébergée à l'adresse du logement ayant subi le bris de porte ?", 'Non')
             ->wait()
             ->screenshot($device, 'question est hébergeant')
             ->checkField('Quel est votre statut par rapport au logement ?', 'Propriétaire')
