@@ -6,6 +6,7 @@ import {
   EtatDossier,
   Redacteur,
   Requerant,
+  TestEligibilite,
 } from "@/apps/agent/dossiers/models";
 import { Expose, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";
@@ -76,8 +77,14 @@ export class DossierDetail extends BaseDossier {
   public readonly requerant: Requerant;
 
   @Expose()
+  @Type(() => TestEligibilite)
+  public readonly testEligibilite?: TestEligibilite = null;
+
+  @Expose()
   @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
   public redacteur: Redacteur | null = null;
+
+  public notes?: string = null;
 
   @Expose()
   @Type(() => Adresse)
@@ -117,6 +124,9 @@ export class DossierDetail extends BaseDossier {
       setCourrier: action,
       documents: observable,
       addDocument: action,
+      viderDocumentParType: action,
+      notes: observable,
+      annoter: action,
     });
   }
 
@@ -140,6 +150,10 @@ export class DossierDetail extends BaseDossier {
     this.courrier = courrier;
   }
 
+  annoter(notes: string): void {
+    this.notes = notes;
+  }
+
   public getDocumentIndex(document: Document): number {
     return this.listeDocuments.indexOf(document);
   }
@@ -158,5 +172,9 @@ export class DossierDetail extends BaseDossier {
     }
 
     this.documents.get(document.type.type).push(document);
+  }
+
+  public viderDocumentParType(type: DocumentType): void {
+    this.documents.set(type.type, []);
   }
 }

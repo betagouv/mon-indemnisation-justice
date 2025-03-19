@@ -75,12 +75,21 @@ class DossierController extends AgentController
                         $dossier->getRequerant()->getPersonnePhysique()->getPrenom3(),
                     ],
                     'nomNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getNomNaissance(),
-                    'dateNaissance' => ($dossier->getRequerant()->getPersonnePhysique()->getDateNaissance()?->getTimestamp() * 1000) ?? null,
+                    'dateNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance() ? $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance()->getTimestamp() * 1000 : null,
                     'communeNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getCommuneNaissance(),
                     'paysNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getPaysNaissance()?->getNom(),
                     'raisonSociale' => $dossier->getRequerant()->getIsPersonneMorale() ? $dossier->getRequerant()->getPersonneMorale()->getRaisonSociale() : null,
                     'siren' => $dossier->getRequerant()->getIsPersonneMorale() ? $dossier->getRequerant()->getPersonneMorale()->getSirenSiret() : null,
                 ],
+                'notes' => $dossier->getNotes(),
+                'testEligibilite' => $dossier->getTestEligibilite() ? [
+                    'estVise' => $dossier->getTestEligibilite()->estVise,
+                    'estHebergeant' => $dossier->getTestEligibilite()->estHebergeant,
+                    'estProprietaire' => $dossier->getTestEligibilite()->estProprietaire,
+                    'aContacteAssurance' => $dossier->getTestEligibilite()->aContacteAssurance,
+                    'aContacteBailleur' => $dossier->getTestEligibilite()->aContacteBailleur,
+                    'description' => $dossier->getTestEligibilite()->description,
+                ] : null,
                 'adresse' => [
                     'ligne1' => $dossier->getAdresse()->getLigne1(),
                     'ligne2' => $dossier->getAdresse()->getLigne2(),
@@ -247,11 +256,25 @@ class DossierController extends AgentController
                 'dossier' => $dossier,
                 'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
             ]);
-        }
+        } else {
+            $motifRefus = $request->getPayload()->get('motifRefus');
 
-        return $this->render('courrier/_corps_rejete.html.twig', [
-            'dossier' => $dossier,
-        ]);
+            if ('est_vise' === $motifRefus) {
+                return $this->render('courrier/_corps_rejete_est_vise.html.twig', [
+                    'dossier' => $dossier,
+                ]);
+            }
+
+            if ('est_hebergeant' === $motifRefus) {
+                return $this->render('courrier/_corps_rejete_est_hebergeant.html.twig', [
+                    'dossier' => $dossier,
+                ]);
+            }
+
+            return $this->render('courrier/_corps_rejete.html.twig', [
+                'dossier' => $dossier,
+            ]);
+        }
     }
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
@@ -275,6 +298,8 @@ class DossierController extends AgentController
                 ->setDateCreation(new \DateTimeImmutable())
                 ->setFilename($destination)
         );
+        // Suppression d'un éventuel courrier signé, désormais considéré caduc
+        $dossier->supprimerDocumentsParType(Document::TYPE_COURRIER_MINISTERE);
 
         $this->dossierRepository->save($dossier);
 
@@ -296,8 +321,6 @@ class DossierController extends AgentController
             return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
         }
 
-        $agent = $this->getAgent();
-
         /** @var UploadedFile $file */
         $file = $request->files->get('fichierSigne');
 
@@ -316,20 +339,11 @@ class DossierController extends AgentController
 
         $dossier->ajouterDocument($document);
 
-        if ($dossier->estAccepte()) {
-            $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent);
-        } else {
-            $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent);
-        }
-
         $this->dossierRepository->save($dossier);
 
         // TODO faire partir le courriel notifiant le requérant
 
         return new JsonResponse([
-            'etat' => $dossier->getEtatDossier()->getEtat()->value,
             'documents' => [
                 Document::TYPE_COURRIER_MINISTERE => [
                     [
@@ -341,6 +355,27 @@ class DossierController extends AgentController
                     ],
                 ],
             ],
+        ], Response::HTTP_OK);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
+    #[Route('/dossier/{id}/envoyer.json', name: 'agent_redacteur_envoyer_dossier', methods: ['POST'])]
+    public function envoyer(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $agent = $this->getAgent();
+
+        if ($dossier->estAccepte()) {
+            $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent);
+        } else {
+            $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent);
+        }
+
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse([
+            'etat' => $dossier->getEtatDossier()->getEtat()->value,
         ], Response::HTTP_OK);
     }
 
@@ -368,6 +403,15 @@ class DossierController extends AgentController
                 )
             )
         );
+    }
+
+    #[Route('/dossier/{id}/annoter.json', name: 'agent_redacteur_annoter_dossier', methods: ['POST'])]
+    public function annoterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $dossier->setNotes($request->getPayload()->get('notes'));
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
     private static function extraireCritereRecherche(Request $request, string $nom): array

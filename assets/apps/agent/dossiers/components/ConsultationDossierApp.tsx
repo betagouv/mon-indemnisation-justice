@@ -1,15 +1,20 @@
 import { ValidationDossier } from "@/apps/agent/dossiers/components/consultation/ValidationDossier";
-import { Agent, Document, DocumentType } from "@/apps/agent/dossiers/models";
-import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
+import {
+  Agent,
+  Document,
+  DossierDetail,
+  DocumentType,
+  Courrier,
+} from "@/apps/agent/dossiers/models";
 import {
   AttributionDossier,
   DecisionDossier,
 } from "@/apps/agent/dossiers/components/consultation";
-import { data } from "autoprefixer";
+import { plainToInstance } from "class-transformer";
 
 import { observer } from "mobx-react-lite";
-import { element } from "prop-types";
 import React, { useState } from "react";
+import ReactQuill from "react-quill-new";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -22,6 +27,38 @@ export const ConsultationDossierApp = observer(
     const [pieceJointe, selectionnerPieceJointe] = useState(
       dossier.getDocumentParIndex(0),
     );
+
+    // Modélise la prise de notes de suivi en cours
+    const [notes, setNotes]: [string, (notes?: string) => void] = useState(
+      dossier.notes,
+    );
+
+    // Indique si la sauvegarde des notes de suivi est en cours
+    const [sauvegarderEnCours, setSauvegarderEnCours]: [
+      boolean,
+      (mode: boolean) => void,
+    ] = useState(false);
+
+    const annoterCourrier = async () => {
+      setSauvegarderEnCours(true);
+
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/annoter.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            notes,
+          }),
+        },
+      );
+
+      setSauvegarderEnCours(false);
+      dossier.annoter(notes);
+    };
 
     return (
       <>
@@ -67,7 +104,9 @@ export const ConsultationDossierApp = observer(
                   agent.estAttribue(dossier) && (
                     <DecisionDossier
                       dossier={dossier}
-                      onDecide={() => (window.location.hash = "courrier")}
+                      onDecide={() => {
+                        window.location.hash = "courrier";
+                      }}
                     />
                   )}
 
@@ -97,10 +136,23 @@ export const ConsultationDossierApp = observer(
                         className="fr-tabs__tab"
                         tabIndex="0"
                         role="tab"
-                        aria-selected={document.location.hash == "#infos"}
+                        aria-selected={window.location.hash == "#infos"}
                         aria-controls="tab-panel-infos"
                       >
                         Informations du dossier
+                      </a>
+                    </li>
+                    <li role="presentation">
+                      <a
+                        href="#suivi"
+                        id="tab-suivi"
+                        className="fr-tabs__tab"
+                        tabIndex="-1"
+                        role="tab"
+                        aria-selected={window.location.hash == "#suivi"}
+                        aria-controls="tab-panel-suivi"
+                      >
+                        Notes de suivi
                       </a>
                     </li>
                     <li role="presentation">
@@ -111,7 +163,7 @@ export const ConsultationDossierApp = observer(
                         tabIndex="-1"
                         role="tab"
                         aria-selected={
-                          document.location.hash == "#pieces-jointes"
+                          window.location.hash == "#pieces-jointes"
                         }
                         aria-controls="tab-panel-pieces-jointes"
                       >
@@ -132,7 +184,7 @@ export const ConsultationDossierApp = observer(
                           ? {
                               "aria-controls": "tab-panel-courrier",
                               "aria-selected":
-                                document.location.hash == "#courrier",
+                                window.location.hash == "#courrier",
                             }
                           : { disabled: true })}
                       >
@@ -142,7 +194,7 @@ export const ConsultationDossierApp = observer(
                   </ul>
                   <div
                     id="tab-panel-infos"
-                    className={`fr-tabs__panel ${document.location.hash == "#infos" ? "fr-tabs__panel--selected" : ""}`}
+                    className={`fr-tabs__panel ${window.location.hash == "#infos" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-infos"
                     tabIndex="0"
@@ -162,34 +214,43 @@ export const ConsultationDossierApp = observer(
                               .filter((p) => !!p)
                               .join(", ")}
                           </li>
-                          {dossier.requerant.dateNaissance && (
-                            <li>
-                              <b>
-                                Né{dossier.requerant.estFeminin() ? "e" : ""}
-                              </b>{" "}
-                              le{" "}
-                              {dossier.requerant.dateNaissance.toLocaleString(
-                                "fr-FR",
-                                {
-                                  //weekday: 'long',
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                },
-                              )}
-                              , à {dossier.requerant.communeNaissance}{" "}
-                              {dossier.requerant.paysNaissance
-                                ? `(${dossier.requerant.paysNaissance})`
-                                : ""}
-                            </li>
-                          )}
+                          <li>
+                            <b>Né{dossier.requerant.estFeminin() ? "e" : ""}</b>{" "}
+                            le{" "}
+                            {dossier.requerant.dateNaissance ? (
+                              <>
+                                {dossier.requerant.dateNaissance.toLocaleString(
+                                  "fr-FR",
+                                  {
+                                    //weekday: 'long',
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                  },
+                                )}
+                              </>
+                            ) : (
+                              <i>non renseigné</i>
+                            )}
+                            , à{" "}
+                            {dossier.requerant.communeNaissance ? (
+                              <>
+                                {dossier.requerant.communeNaissance}{" "}
+                                {dossier.requerant.paysNaissance
+                                  ? `(${dossier.requerant.paysNaissance})`
+                                  : ""}
+                              </>
+                            ) : (
+                              <i>non renseigné</i>
+                            )}
+                          </li>
                           {dossier.requerant.estPersonneMorale() && (
                             <li>
                               Représentant
                               {dossier.requerant.estFeminin() ? "e" : ""} légal
                               {dossier.requerant.estFeminin() ? "e" : ""} de la
                               société <b>{dossier.requerant.raisonSociale}</b>{" "}
-                              (SIREN: {dossier.requerant.siren})
+                              (SIREN: <b>{dossier.requerant.siren}</b>)
                             </li>
                           )}
                         </ul>
@@ -244,13 +305,100 @@ export const ConsultationDossierApp = observer(
                               <i>non renseigné</i>
                             )}
                           </li>
+                          <li>
+                            <b>
+                              Était visé
+                              {dossier.requerant.estFeminin() ? "e" : ""} par
+                              l'opération des Forces de l'ordre ?{" "}
+                            </b>{" "}
+                            <>
+                              {dossier.testEligibilite.estVise ? "Oui" : "Non"}
+                            </>
+                          </li>
+                          <li>
+                            <b>Hébergeait la personne recherchée ?</b>{" "}
+                            <>
+                              {dossier.testEligibilite.estHebergeant
+                                ? "Oui"
+                                : "Non"}
+                            </>
+                          </li>
+                          <li>
+                            <b>Situation par rapport au logement ?</b>{" "}
+                            <>
+                              {dossier.testEligibilite.estProprietaire
+                                ? "Propriétaire"
+                                : "Locataire"}
+                            </>
+                          </li>
+                          <li>
+                            <b>A contacté l'assurance ?</b>{" "}
+                            <>
+                              {dossier.testEligibilite.aContacteAssurance
+                                ? "Oui"
+                                : "Non"}
+                            </>
+                          </li>
+                          {null !==
+                            dossier.testEligibilite.aContacteBailleur && (
+                            <li>
+                              <b>A contacté le bailleur ?</b>{" "}
+                              <>
+                                {dossier.testEligibilite.aContacteBailleur
+                                  ? "Oui"
+                                  : "Non"}
+                              </>
+                            </li>
+                          )}
                         </ul>
                       </div>
                     </section>
                   </div>
+
+                  <div
+                    id="tab-panel-suivi"
+                    className={`fr-tabs__panel ${window.location.hash == "#suivi" ? "fr-tabs__panel--selected" : ""}`}
+                    role="tabpanel"
+                    aria-labelledby="tab-suivi"
+                    tabIndex="0"
+                  >
+                    <section>
+                      <h3>Notes de suivi</h3>
+
+                      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                        <li>
+                          <button
+                            className="fr-btn fr-btn--sm fr-btn--primary"
+                            type="button"
+                            disabled={
+                              sauvegarderEnCours ||
+                              !notes?.trim() ||
+                              dossier.notes == notes
+                            }
+                            onClick={() => annoterCourrier()}
+                          >
+                            {sauvegarderEnCours ? (
+                              <>Sauvegarde en cours ...</>
+                            ) : (
+                              <>Enregistrer les changements</>
+                            )}
+                          </button>
+                        </li>
+                      </ul>
+
+                      <div className="fr-grid-row fr-col-12">
+                        <ReactQuill
+                          theme="snow"
+                          value={notes}
+                          onChange={(value) => setNotes(value)}
+                        />
+                      </div>
+                    </section>
+                  </div>
+
                   <div
                     id="tab-panel-pieces-jointes"
-                    className={`fr-tabs__panel ${document.location.hash == "#pieces-jointes" ? "fr-tabs__panel--selected" : ""}`}
+                    className={`fr-tabs__panel ${window.location.hash == "#pieces-jointes" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-pieces-jointes"
                     tabIndex="0"
@@ -345,7 +493,7 @@ export const ConsultationDossierApp = observer(
                     )) && (
                     <div
                       id="tab-panel-courrier"
-                      className={`fr-tabs__panel ${document.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
+                      className={`fr-tabs__panel ${window.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
                       role="tabpanel"
                       aria-labelledby="tab-courrier"
                       tabIndex="0"

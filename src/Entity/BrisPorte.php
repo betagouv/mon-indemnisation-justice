@@ -45,6 +45,9 @@ class BrisPorte
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     protected ?Agent $redacteur = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $notes = null;
+
     #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
     #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ?EtatDossier $etatDossier = null;
@@ -198,6 +201,18 @@ class BrisPorte
         return $this;
     }
 
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): BrisPorte
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
     public function changerStatut(EtatDossierType $type, bool $requerant = false, ?Agent $agent = null, ?array $contexte = null): self
     {
         if ($requerant) {
@@ -301,6 +316,15 @@ class BrisPorte
         $this->documents->add($document);
 
         $this->documentsParType[$document->getType()][] = $document;
+    }
+
+    public function supprimerDocumentsParType(string $type): void
+    {
+        foreach ($this->documents->filter(fn (Document $d) => $d->getType() === $type) as $document) {
+            $this->documents->removeElement($document);
+        }
+
+        $this->documentsParType[$type] = [];
     }
 
     /**

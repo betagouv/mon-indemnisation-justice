@@ -1,10 +1,13 @@
 import { Courrier } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
+import { Administration } from "@/apps/agent/gestion_agents/models";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import React, { useRef, useState } from "react";
+
+type MotifRefus = "est_vise" | "est_hebergeant" | "autre";
 
 export const DecisionDossier = observer(function DecisionDossierComponent({
   dossier,
@@ -29,9 +32,15 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
 
   // Mémorise le motif de rejet
   const [motifRejet, setMotifRejet]: [
-    string | null,
-    (motif: string | null) => void,
-  ] = useState();
+    MotifRefus | null,
+    (motif?: MotifRefus) => void,
+  ] = useState(
+    dossier.testEligibilite.estVise
+      ? "est_vise"
+      : dossier.testEligibilite.estHebergeant
+        ? "est_hebergeant"
+        : "autre",
+  );
 
   // Corps du courrier
   const [courrier, editerCourrier]: [
@@ -59,11 +68,11 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
   const genererCourrier = async ({
     indemnisation,
     montant,
-    motif,
+    motifRefus,
   }: {
     indemnisation: boolean;
     montant?: number;
-    motif?: string;
+    motifRefus?: MotifRefus;
   }) => {
     setSauvegarderEnCours(true);
 
@@ -78,7 +87,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
         body: JSON.stringify({
           indemnisation,
           ...(montant ? { montantIndemnisation: montant } : {}),
-          ...(motif ? { motif } : {}),
+          ...(motifRefus ? { motifRefus } : {}),
         }),
       },
     );
@@ -128,10 +137,11 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
       dossier.setCourrier(plainToInstance(Courrier, data.courrier));
     }
 
-    setSauvegarderEnCours(false);
-    decider(null);
     // Déclencher le _hook_ onDecide s'il est défini
     onDecide?.();
+
+    setSauvegarderEnCours(false);
+    decider(null);
   };
 
   return (
@@ -244,6 +254,34 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                         <div className="fr-col-12">
                           <ReactQuill
                             theme="snow"
+                            modules={{
+                              toolbar: [
+                                [
+                                  "bold",
+                                  "italic",
+                                  "underline",
+                                  "strike",
+                                  "blockquote",
+                                ],
+                                [
+                                  { list: "ordered" },
+                                  { list: "bullet" },
+                                  { indent: "-1" },
+                                  { indent: "+1" },
+                                ],
+                                ["link"],
+                              ],
+                            }}
+                            formats={[
+                              "bold",
+                              "italic",
+                              "underline",
+                              "strike",
+                              "blockquote",
+                              "list",
+                              "indent",
+                              "link",
+                            ]}
                             value={courrier}
                             onChange={editerCourrier}
                             readOnly={sauvegarderEnCours}
@@ -309,24 +347,28 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                   ) : (
                     <>
                       {!courrier && (
-                        <div className="fr-input-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
+                        <div className="fr-select-group fr-col-offset-3 fr-col-lg-9 fr-mb-0">
                           <label
                             className="fr-label"
                             htmlFor="dossier-decision-acceptation-motif-champs"
                           >
                             Motif du refus
                           </label>
-                          <div className="fr-input-wrap">
-                            <input
-                              className="fr-input"
-                              id="dossier-decision-acceptation-motif-champs"
-                              type="text"
-                              defaultValue={motifRejet}
-                              onInput={(e) =>
-                                setMotifRejet(e.target.value || null)
-                              }
-                            />
-                          </div>
+
+                          <select
+                            className="fr-select"
+                            defaultValue={motifRejet}
+                            onChange={(e) => setMotifRejet(e.target.value)}
+                          >
+                            <option value="est_vise">
+                              Le requérant était visé par l'opération
+                            </option>
+                            <option value="est_hebergeant">
+                              Le requérant hébergeait la personne visé par
+                              l'opération
+                            </option>
+                            <option value="autre">Autre raison</option>
+                          </select>
                         </div>
                       )}
                       {courrier && (
@@ -390,6 +432,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                               onClick={() =>
                                 genererCourrier({
                                   indemnisation: false,
+                                  motifRefus: motifRejet,
                                 })
                               }
                               disabled={!motifRejet || sauvegarderEnCours}
