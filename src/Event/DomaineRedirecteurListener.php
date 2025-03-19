@@ -23,10 +23,13 @@ final class DomaineRedirecteurListener implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
+        /*
         if (null !== $this->domainePrimaire) {
+
             if ($event->getRequest()->getHost() !== $this->domainePrimaire) {
                 $event->setResponse(new RedirectResponse(str_replace($event->getRequest()->getHost(), $this->domainePrimaire, $event->getRequest()->getUri())));
             }
         }
+        */
     }
 }

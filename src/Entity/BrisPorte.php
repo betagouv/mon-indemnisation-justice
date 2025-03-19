@@ -45,14 +45,26 @@ class BrisPorte
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     protected ?Agent $redacteur = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $notes = null;
+
+    #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
+    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?EtatDossier $etatDossier = null;
+
     #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER')]
     #[ORM\OrderBy(['dateEntree' => 'ASC'])]
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
-    #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
-    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    protected ?EtatDossier $etatDossier = null;
+    #[ORM\OneToOne(targetEntity: CourrierDossier::class, inversedBy: null, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'courrier_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    protected ?CourrierDossier $courrier = null;
+
+    #[ORM\OneToMany(targetEntity: CourrierDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'LAZY')]
+    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    /** @var Collection<CourrierDossier> */
+    protected Collection $historiqueCourriers;
 
     #[Groups('dossier:lecture')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
@@ -69,9 +81,12 @@ class BrisPorte
     protected Collection $documents;
     protected ?array $documentsParType = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $corpsCourrier = null;
+
     #[Groups('dossier:patch')]
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    private ?string $propositionIndemnisation = null;
+    #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
+    private ?float $propositionIndemnisation = null;
 
     #[Groups('dossier:lecture')]
     #[ORM\Column(length: 20, nullable: true)]
@@ -110,22 +125,19 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $numeroParquet = null;
-
     public function __construct()
     {
         $this->dateCreation = new \DateTimeImmutable();
         $this->adresse = new Adresse();
         $this->documents = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
+        $this->historiqueCourriers = new ArrayCollection([]);
     }
 
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
     {
-        $this->changerStatut(EtatDossierType::DOSSIER_INITIE, requerant: true);
+        $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
     }
 
     #[ORM\PreRemove]
@@ -189,14 +201,26 @@ class BrisPorte
         return $this;
     }
 
-    public function changerStatut(EtatDossierType $type, bool $requerant = false, ?Agent $agent = null): self
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): BrisPorte
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function changerStatut(EtatDossierType $type, bool $requerant = false, ?Agent $agent = null, ?array $contexte = null): self
     {
         if ($requerant) {
-            $this->historiqueEtats->add(EtatDossier::creerRequerant($this, $type));
+            $this->historiqueEtats->add(EtatDossier::creerRequerant($this, $type, $contexte));
         } elseif (null !== $agent) {
-            $this->historiqueEtats->add(EtatDossier::creerAgent($this, $type, $agent));
+            $this->historiqueEtats->add(EtatDossier::creerAgent($this, $type, $agent, $contexte));
         } else {
-            $this->historiqueEtats->add(EtatDossier::creer($this, $type));
+            $this->historiqueEtats->add(EtatDossier::creer($this, $type, $contexte));
         }
 
         $this->etatDossier = $this->historiqueEtats->last();
@@ -212,6 +236,26 @@ class BrisPorte
     public function getEtatDossier(): ?EtatDossier
     {
         return $this->etatDossier;
+    }
+
+    public function estASigner(): bool
+    {
+        return $this->etatDossier->estASigner();
+    }
+
+    public function estDecide(): bool
+    {
+        return $this->etatDossier->estDecide();
+    }
+
+    public function estAccepte(): bool
+    {
+        return $this->etatDossier->estAccepte();
+    }
+
+    public function estRejete(): bool
+    {
+        return $this->etatDossier->estRejete();
     }
 
     public function getEtat(EtatDossierType $type): ?EtatDossier
@@ -233,14 +277,26 @@ class BrisPorte
     public function getDateDeclaration(): ?\DateTimeInterface
     {
         return $this->historiqueEtats
-            ->findFirst(fn (int $index, EtatDossier $etat) => EtatDossierType::DOSSIER_DEPOSE === $etat->getEtat()
+            ->findFirst(fn (int $index, EtatDossier $etat) => EtatDossierType::DOSSIER_A_INSTRUIRE === $etat->getEtat()
             )?->getDate();
     }
 
     public function setDeclare(): self
     {
         return $this
-            ->changerStatut(EtatDossierType::DOSSIER_DEPOSE, requerant: true);
+            ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, requerant: true);
+    }
+
+    public function getCourrier(): ?CourrierDossier
+    {
+        return $this->courrier;
+    }
+
+    public function setCourrier(?CourrierDossier $courrier): BrisPorte
+    {
+        $this->courrier = $courrier;
+
+        return $this;
     }
 
     public function getReference(): ?string
@@ -260,6 +316,15 @@ class BrisPorte
         $this->documents->add($document);
 
         $this->documentsParType[$document->getType()][] = $document;
+    }
+
+    public function supprimerDocumentsParType(string $type): void
+    {
+        foreach ($this->documents->filter(fn (Document $d) => $d->getType() === $type) as $document) {
+            $this->documents->removeElement($document);
+        }
+
+        $this->documentsParType[$type] = [];
     }
 
     /**
@@ -284,6 +349,18 @@ class BrisPorte
     public function setPropositionIndemnisation(?string $propositionIndemnisation): self
     {
         $this->propositionIndemnisation = $propositionIndemnisation;
+
+        return $this;
+    }
+
+    public function getCorpsCourrier(): ?string
+    {
+        return $this->corpsCourrier;
+    }
+
+    public function setCorpsCourrier(?string $corpsCourrier): BrisPorte
+    {
+        $this->corpsCourrier = $corpsCourrier;
 
         return $this;
     }
@@ -390,18 +467,6 @@ class BrisPorte
     public function setPrecisionRequerant(?string $precisionRequerant): self
     {
         $this->precisionRequerant = $precisionRequerant;
-
-        return $this;
-    }
-
-    public function getNumeroParquet(): ?string
-    {
-        return $this->numeroParquet;
-    }
-
-    public function setNumeroParquet(?string $numeroParquet): self
-    {
-        $this->numeroParquet = $numeroParquet;
 
         return $this;
     }

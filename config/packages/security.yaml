@@ -39,6 +39,7 @@ security:
                 path: agent_securite_deconnexion
                 target: app_login
         requerant:
+            #pattern: ^/requerant
             user_checker: MonIndemnisationJustice\Security\RequerantChecker
             lazy: true
             provider: app_requerant_provider

@@ -34,3 +34,11 @@ docker compose rm --stop --force postgres
 rm -Rf .docker/postgres/data/*
 docker compose up -d postgres
 ```
+
+Pour récupérer également une copie des fichiers afin de les utiliser sur l'environnement de développement local, on peut
+utiliser l'outil _command-line_ `aws`, avec la configuration idoine selon le prestataire de stockage S3
+(ex: [avec Scaleway](https://www.scaleway.com/en/docs/object-storage/api-cli/object-storage-aws-cli/) 🇫🇷):
+
+```bash
+aws [--profile <nom_profil>] s3 sync s3://<nom_bucket>/ fichiers/dev/
+```

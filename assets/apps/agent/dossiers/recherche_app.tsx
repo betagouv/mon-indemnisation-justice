@@ -1,6 +1,9 @@
 import "reflect-metadata";
+
+import "@/style/agents.css";
+
 import { RechercheDossierApp } from "@/apps/agent/dossiers/components/RechercheDossierApp";
-import { EtatDossier, Redacteur } from "@/apps/agent/dossiers/models";
+import { Agent, Redacteur } from "@/apps/agent/dossiers/models";
 import { DossierApercu } from "@/apps/agent/dossiers/models/Dossier";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import { plainToInstance } from "class-transformer";
@@ -23,7 +26,8 @@ if (import.meta.env.PROD) {
 const args = JSON.parse(document.getElementById("react-arguments").textContent);
 
 Redacteur.charger(args.redacteurs ?? []);
-EtatDossier.charger(args.etats_dossier ?? []);
+
+const agent = plainToInstance(Agent, args.agent);
 
 const recherche = RechercheDossier.fromURL();
 let dossiers: IObservableArray<DossierApercu> = observable([]);
@@ -43,6 +47,7 @@ ReactDOM.createRoot(
 ).render(
   <RechercheDossierApp
     recherche={recherche}
+    agent={agent}
     dossiers={dossiers}
   ></RechercheDossierApp>,
 );

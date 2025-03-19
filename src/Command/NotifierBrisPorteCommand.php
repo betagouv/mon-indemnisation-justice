@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace MonIndemnisationJustice\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Event\BrisPorteConstitueEvent;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-#[AsCommand(name: 'precontentieux:notifier:bris-porte', description: "Notifier les agents d'un dépôt de dossier de pris de porte")]
+#[AsCommand(name: 'mon_indemnisation:dossier:notifier', description: "Notifier les agents d'un dépôt de dossier de pris de porte")]
 class NotifierBrisPorteCommand extends Command
 {
     public function __construct(

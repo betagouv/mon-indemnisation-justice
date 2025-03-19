@@ -29,15 +29,15 @@ class DocumentController extends AbstractController
     public function download(#[MapEntity(id: 'id')] Document $document, string $hash): Response
     {
         if (md5($document->getFilename()) !== $hash) {
-            throw new NotFoundHttpException('Document non trouvé');
+            throw new NotFoundHttpException('Document inconnu');
         }
 
         try {
-            if (!$this->storage->has($document->getFilename())) {
-                return new Response('', Response::HTTP_NOT_FOUND);
+            if (!$this->storage->has(addslashes($document->getFilename()))) {
+                throw new NotFoundHttpException('Document non trouvé');
             }
 
-            $stream = $this->storage->readStream($document->getFilename());
+            $stream = $this->storage->readStream(addslashes($document->getFilename()));
 
             return new StreamedResponse(
                 function () use ($stream) {

@@ -1,0 +1,210 @@
+/**
+ * Styles pour l'espace agent.
+ */
+
+
+a:not([href])[role="button"] {
+    color: var(--text-action-high-blue-france);
+    cursor: pointer;
+}
+
+
+:root {
+    /* A_FINALISER = 'beige-gris-galet' */
+    --var-couleur-pp-a-finaliser: #6a6156;
+    --var-couleur-ap-a-finaliser: #f3ede5;
+    /* A_INSTRUIRE = 'info' */
+    --var-couleur-pp-a-instruire: #0063cb;
+    --var-couleur-ap-a-instruire: #e8edff;
+    /* TODO prévoir À reprendre (= À ré-instruire) 'blue-cumulus' */
+    --var-couleur-pp-a-reinstruire: #3558a2;
+    --var-couleur-ap-a-reinstruire: #e6eefe;
+    /* OK_A_SIGNER, = 'green-menthe' */
+    --var-couleur-pp-ok-a-signer: #66673d;
+    --var-couleur-ap-ok-a-signer: #fceeac;
+    /* OK_A_APPROUVER, = 'green-bourgeon' */
+    --var-couleur-pp-ok-a-approuver: #447049;
+    --var-couleur-ap-ok-a-approuver: #c9fcac;
+    /* OK_A_INDEMNISER = 'green-emeraude' */
+    --var-couleur-pp-ok-a-indemniser: #297254;
+    --var-couleur-ap-ok-a-indemniser: #c3fad5;
+    /* OK_INDEMNISE = 'success' */
+    --var-couleur-pp-ok-indemnise: #18753c;
+    --var-couleur-ap-ok-indemnise: #b8fec9;
+    /* KO_A_SIGNER, = 'pink-tuile' */
+    --var-couleur-pp-ko-a-signer: #a94645;
+    --var-couleur-ap-ko-a-signer: #fee9e7;
+    /* Rejeté, = 'error' */
+    --var-couleur-pp-ko-rejete: #ce0500;
+    --var-couleur-ap-ko-rejete: #ffe9e9;
+}
+
+a:not([href]) {
+    color: initial;
+
+    &:not([disabled]) {
+        cursor: pointer;
+    }
+}
+
+.fr-dossier-etat {
+    --left-padding: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    border: 1px solid var(--border-default-grey);
+    border-left: calc(2 * var(--left-padding)) solid;
+    border-radius: var(--left-padding) 0 0 0;
+
+    &--a-finaliser {
+        border-left-color: var(--var-couleur-pp-a-finaliser);
+    }
+
+    &--a-instruire {
+        border-left-color: var(--var-couleur-pp-a-instruire);
+    }
+
+    &--ok-a-signer {
+        border-left-color: var(--var-couleur-pp-ok-a-signer);
+    }
+
+    &--ok-a-approuver {
+        border-left-color: var(--var-couleur-pp-ok-a-approuver);
+    }
+
+    &--ok-a-indemniser {
+        border-left-color: var(--var-couleur-pp-ok-a-indemniser);
+    }
+
+    &--ok-indemnise {
+        border-left-color: var(--var-couleur-pp-ok-indemnise);
+    }
+
+    &--ko-a-signer {
+        border-left-color: var(--var-couleur-pp-ko-a-signer);
+    }
+
+    &--ko-rejete {
+        border-left-color: var(--var-couleur-pp-ko-rejete);
+    }
+}
+
+.fr-badge--dossier-etat {
+    &--a-finaliser {
+        color: var(--var-couleur-pp-a-finaliser);
+        background-color: var(--var-couleur-ap-a-finaliser);
+    }
+
+    &--a-instruire {
+        color: var(--var-couleur-pp-a-instruire);
+        background-color: var(--var-couleur-ap-a-instruire);
+    }
+
+    &--ok-a-signer {
+        color: var(--var-couleur-pp-ok-a-signer);
+        background-color: var(--var-couleur-ap-ok-a-signer);
+    }
+
+    &--ok-a-approuver {
+        color: var(--var-couleur-pp-ok-a-approuver);
+        background-color: var(--var-couleur-ap-ok-a-approuver);
+    }
+
+    &--ok-a-indemniser {
+        color: var(--var-couleur-pp-ok-a-indemniser);
+        background-color: var(--var-couleur-ap-ok-a-indemniser);
+    }
+
+    &--ok-indemnise {
+        color: var(--var-couleur-pp-ok-indemnise);
+        background-color: var(--var-couleur-ap-ok-indemnise);
+    }
+
+    &--ko-a-signer {
+        color: var(--var-couleur-pp-ko-a-signer);
+        background-color: var(--var-couleur-ap-ko-a-signer);
+    }
+
+    &--ko-rejete {
+        color: var(--var-couleur-pp-ko-rejete);
+        background-color: var(--var-couleur-ap-ko-rejete);
+    }
+}
+
+
+.mij-dossier-documents {
+    .mij-dossier-documents-liste {
+        border-right: 1px solid var(--border-default-grey);
+        padding-right: 1.5rem;
+
+        ul {
+            list-style: outside none;
+
+            li {
+
+                &[data-section-vide] {
+                    color: var(--text-mention-grey);
+                    opacity: 0.6;
+
+                }
+
+                &[data-section-active] {
+                    font-weight: bolder;
+                }
+
+                &[data-document-selectionne] {
+                    font-weight: bold;
+
+                    a {
+                        color: var(--text-default-info);
+                    }
+
+                }
+
+                a {
+                    padding: 0;
+                    text-decoration: none;
+                }
+            }
+        }
+
+        > ul {
+            font-size: .9rem;
+
+            > ul {
+                font-size: .8rem;
+            }
+        }
+    }
+}
+
+/* Quill editor */
+
+.quill {
+    width: 100%;
+    padding-bottom: 3rem;
+}
+
+.ql-editor {
+    * {
+        font: 1rem arial !important;
+        cursor: text;
+    }
+
+    a {
+        color: #5e95d6;;
+    }
+
+    strong {
+        font-weight: bold !important;
+    }
+
+    p {
+        margin: 12pt 0 !important;
+        letter-spacing: 0;
+        font-size: 11pt;
+        line-height: 13pt;
+    }
+}

@@ -326,6 +326,11 @@ class Agent implements UserInterface
         return $this->email;
     }
 
+    public function getNomCourt(): ?string
+    {
+        return sprintf('%s. %s', $this->prenom[0], $this->nom);
+    }
+
     public function getNomComplet($capital = false): ?string
     {
         return sprintf('%s %s', $this->prenom, $capital ? strtoupper(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $this->nom)) : $this->nom);

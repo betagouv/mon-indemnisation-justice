@@ -71,7 +71,8 @@
         {% block javascripts %}
             <script>
                 window.dsfr = {
-                    production: {% if app.environment == 'dev' %}false{% else %}true{% endif %},
+                    verbose: false,
+                    production: true,
                 };
             </script>
             <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>

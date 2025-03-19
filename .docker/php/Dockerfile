@@ -13,7 +13,7 @@ RUN echo "export LANG='fr_FR.UTF8'" >> /root/.bashrc
 # Generic utils
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y vim wget git
+    apt-get install -y vim wget git openssl ca-certificates
 
 # PHP extensions
 RUN apt-get install -y libzip-dev zip && docker-php-ext-install zip
@@ -32,25 +32,16 @@ RUN apt-get install -y nodejs
 RUN npm update -g
 RUN npm install --force -g yarn
 
-# WKhtmltopdf
-
-RUN apt-get install -y openssl build-essential libssl-dev libxrender-dev git-core libx11-dev libxext-dev libfontconfig1-dev libfreetype6-dev fontconfig libjpeg62-turbo xfonts-75dpi  xfonts-base
-RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb -O /tmp/wkhtml2pdf.deb \
-    && dpkg -i /tmp/wkhtml2pdf.deb \
-    && ln -sn /usr/local/bin/wkhtmltopdf /bin/wkhtmltopdf \
-    && rm -f /tmp/wkhtml2pdf.deb
-
 # Firefox
 
-RUN apt-get install -y firefox-esr
+RUN apt install -y firefox-esr
 
-# Chromium
+# Chrome
 
-RUN apt-get install -y chromium
-
-# Libreoffice
-
-RUN apt-get install -y libreoffice
+RUN apt install -y libvulkan1 fonts-liberation libgbm1 xdg-utils \
+    && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/google-chrome-stable_current_amd64.deb \
+    && dpkg -i /tmp/google-chrome-stable_current_amd64.deb \
+    && rm -f /tmp/google-chrome-stable_current_amd64.deb
 
 # Cleanups
 
