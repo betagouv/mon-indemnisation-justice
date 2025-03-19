@@ -298,6 +298,8 @@ class DossierController extends AgentController
                 ->setDateCreation(new \DateTimeImmutable())
                 ->setFilename($destination)
         );
+        // Suppression d'un éventuel courrier signé, désormais considéré caduc
+        $dossier->supprimerDocumentsParType(Document::TYPE_COURRIER_MINISTERE);
 
         $this->dossierRepository->save($dossier);
 
@@ -319,8 +321,6 @@ class DossierController extends AgentController
             return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
         }
 
-        $agent = $this->getAgent();
-
         /** @var UploadedFile $file */
         $file = $request->files->get('fichierSigne');
 
@@ -339,20 +339,11 @@ class DossierController extends AgentController
 
         $dossier->ajouterDocument($document);
 
-        if ($dossier->estAccepte()) {
-            $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent);
-        } else {
-            $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent);
-        }
-
         $this->dossierRepository->save($dossier);
 
         // TODO faire partir le courriel notifiant le requérant
 
         return new JsonResponse([
-            'etat' => $dossier->getEtatDossier()->getEtat()->value,
             'documents' => [
                 Document::TYPE_COURRIER_MINISTERE => [
                     [
@@ -364,6 +355,27 @@ class DossierController extends AgentController
                     ],
                 ],
             ],
+        ], Response::HTTP_OK);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
+    #[Route('/dossier/{id}/envoyer.json', name: 'agent_redacteur_envoyer_dossier', methods: ['POST'])]
+    public function envoyer(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $agent = $this->getAgent();
+
+        if ($dossier->estAccepte()) {
+            $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent);
+        } else {
+            $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent);
+        }
+
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse([
+            'etat' => $dossier->getEtatDossier()->getEtat()->value,
         ], Response::HTTP_OK);
     }
 

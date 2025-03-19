@@ -104,7 +104,9 @@ export const ConsultationDossierApp = observer(
                   agent.estAttribue(dossier) && (
                     <DecisionDossier
                       dossier={dossier}
-                      onDecide={() => (window.location.hash = "courrier")}
+                      onDecide={() => {
+                        window.location.hash = "courrier";
+                      }}
                     />
                   )}
 
@@ -134,7 +136,7 @@ export const ConsultationDossierApp = observer(
                         className="fr-tabs__tab"
                         tabIndex="0"
                         role="tab"
-                        aria-selected={document.location.hash == "#infos"}
+                        aria-selected={window.location.hash == "#infos"}
                         aria-controls="tab-panel-infos"
                       >
                         Informations du dossier
@@ -147,7 +149,7 @@ export const ConsultationDossierApp = observer(
                         className="fr-tabs__tab"
                         tabIndex="-1"
                         role="tab"
-                        aria-selected={document.location.hash == "#suivi"}
+                        aria-selected={window.location.hash == "#suivi"}
                         aria-controls="tab-panel-suivi"
                       >
                         Notes de suivi
@@ -161,7 +163,7 @@ export const ConsultationDossierApp = observer(
                         tabIndex="-1"
                         role="tab"
                         aria-selected={
-                          document.location.hash == "#pieces-jointes"
+                          window.location.hash == "#pieces-jointes"
                         }
                         aria-controls="tab-panel-pieces-jointes"
                       >
@@ -182,7 +184,7 @@ export const ConsultationDossierApp = observer(
                           ? {
                               "aria-controls": "tab-panel-courrier",
                               "aria-selected":
-                                document.location.hash == "#courrier",
+                                window.location.hash == "#courrier",
                             }
                           : { disabled: true })}
                       >
@@ -192,7 +194,7 @@ export const ConsultationDossierApp = observer(
                   </ul>
                   <div
                     id="tab-panel-infos"
-                    className={`fr-tabs__panel ${document.location.hash == "#infos" ? "fr-tabs__panel--selected" : ""}`}
+                    className={`fr-tabs__panel ${window.location.hash == "#infos" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-infos"
                     tabIndex="0"
@@ -355,7 +357,7 @@ export const ConsultationDossierApp = observer(
 
                   <div
                     id="tab-panel-suivi"
-                    className={`fr-tabs__panel ${document.location.hash == "#suivi" ? "fr-tabs__panel--selected" : ""}`}
+                    className={`fr-tabs__panel ${window.location.hash == "#suivi" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-suivi"
                     tabIndex="0"
@@ -396,7 +398,7 @@ export const ConsultationDossierApp = observer(
 
                   <div
                     id="tab-panel-pieces-jointes"
-                    className={`fr-tabs__panel ${document.location.hash == "#pieces-jointes" ? "fr-tabs__panel--selected" : ""}`}
+                    className={`fr-tabs__panel ${window.location.hash == "#pieces-jointes" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-pieces-jointes"
                     tabIndex="0"
@@ -491,7 +493,7 @@ export const ConsultationDossierApp = observer(
                     )) && (
                     <div
                       id="tab-panel-courrier"
-                      className={`fr-tabs__panel ${document.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
+                      className={`fr-tabs__panel ${window.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
                       role="tabpanel"
                       aria-labelledby="tab-courrier"
                       tabIndex="0"

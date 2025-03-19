@@ -318,6 +318,15 @@ class BrisPorte
         $this->documentsParType[$document->getType()][] = $document;
     }
 
+    public function supprimerDocumentsParType(string $type): void
+    {
+        foreach ($this->documents->filter(fn (Document $d) => $d->getType() === $type) as $document) {
+            $this->documents->removeElement($document);
+        }
+
+        $this->documentsParType[$type] = [];
+    }
+
     /**
      * @return Document[]|null
      */

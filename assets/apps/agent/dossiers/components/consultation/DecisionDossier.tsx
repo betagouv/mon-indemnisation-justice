@@ -137,10 +137,11 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
       dossier.setCourrier(plainToInstance(Courrier, data.courrier));
     }
 
-    setSauvegarderEnCours(false);
-    decider(null);
     // Déclencher le _hook_ onDecide s'il est défini
     onDecide?.();
+
+    setSauvegarderEnCours(false);
+    decider(null);
   };
 
   return (
@@ -362,7 +363,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                             <option value="est_vise">
                               Le requérant était visé par l'opération
                             </option>
-                            <option value="est_vise">
+                            <option value="est_hebergeant">
                               Le requérant hébergeait la personne visé par
                               l'opération
                             </option>

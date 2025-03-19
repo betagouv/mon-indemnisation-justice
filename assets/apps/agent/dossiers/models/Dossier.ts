@@ -124,6 +124,7 @@ export class DossierDetail extends BaseDossier {
       setCourrier: action,
       documents: observable,
       addDocument: action,
+      viderDocumentParType: action,
       notes: observable,
       annoter: action,
     });
@@ -171,5 +172,9 @@ export class DossierDetail extends BaseDossier {
     }
 
     this.documents.get(document.type.type).push(document);
+  }
+
+  public viderDocumentParType(type: DocumentType): void {
+    this.documents.set(type.type, []);
   }
 }

@@ -1,4 +1,4 @@
-import { Courrier, Document } from "@/apps/agent/dossiers/models";
+import { Courrier, Document, DocumentType } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
@@ -54,6 +54,12 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
     (fichierSigne: File) => void,
   ] = useState(null);
 
+  // Fichier signé à téléverser
+  const [estFichierSigne, marquerFichierSigne]: [
+    boolean,
+    (estFichierSigne: boolean) => void,
+  ] = useState(false);
+
   const estTailleFichierOk = (fichier?: File) =>
     fichier && fichier.size < 10 * 1024 * 1024;
   const estTypeFichierOk = (fichier?: File) =>
@@ -67,8 +73,8 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
 
   // Actions
 
-  const detecterMontantIndemnisation = () => {
-    const montantBrut = courrier
+  const detecterMontantIndemnisation = (texte: string) => {
+    const montantBrut = texte
       .match(new RegExp("(\\s?\\d)+(,[0-9]{1,2})\\s*EUR", "g"))
       ?.at(0);
 
@@ -106,9 +112,12 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
     if (response.ok) {
       const data = await response.json();
       dossier.setCourrier(plainToInstance(Courrier, data.courrier));
+      dossier.viderDocumentParType(DocumentType.TYPE_COURRIER_MINISTERE);
     }
 
+    fermerModale();
     setSauvegarderEnCours(false);
+    marquerFichierSigne(false);
     setFichierSigne(null);
     decider(null);
     // Déclencher le _hook_ onEdite s'il est défini
@@ -137,7 +146,6 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
 
       if (response.ok) {
         const data = await response.json();
-        dossier.changerEtat(data.etat);
         if (data.documents.courrier_ministere?.length) {
           dossier.addDocument(
             plainToInstance(Document, data.documents.courrier_ministere?.at(0)),
@@ -147,7 +155,38 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
     } catch (e) {
       console.error(e);
     } finally {
+      fermerModale();
       setSauvegarderEnCours(false);
+      marquerFichierSigne(true);
+      decider(null);
+      // Déclencher le _hook_ onSigne s'il est défini
+      onSigne?.();
+    }
+  };
+
+  const envoyerAuRequerant = async () => {
+    setSauvegarderEnCours(true);
+
+    try {
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/envoyer.json`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        dossier.changerEtat(data.etat);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSauvegarderEnCours(false);
+      marquerFichierSigne(true);
       decider(null);
       // Déclencher le _hook_ onSigne s'il est défini
       onSigne?.();
@@ -176,8 +215,21 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
               onClick={() => {
                 ouvrirModale(true);
               }}
+              disabled={estFichierSigne}
             >
               Signer le courrier
+            </button>
+          </li>
+          <li>
+            <button
+              className="fr-btn fr-btn--sm fr-btn--primary"
+              type="button"
+              disabled={!estFichierSigne}
+              onClick={() => {
+                ouvrirModale(true);
+              }}
+            >
+              Envoyer au requérant
             </button>
           </li>
         </ul>
@@ -205,115 +257,17 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                     Fermer
                   </button>
                 </div>
-                <div className="fr-modal__content">
-                  <h1
-                    id="modale-dossier-decision-titre"
-                    className="fr-modal__title"
-                  >
-                    {decision ? (
-                      <>
-                        <span className="fr-icon-edit-box-line fr-icon--lg fr-mr-1w"></span>
-                        Signer le courrier
-                      </>
-                    ) : (
-                      <>
+                {
+                  // Édition du corps du courrier
+                  !decision && (
+                    <div className="fr-modal__content">
+                      <h1
+                        id="modale-dossier-decision-titre"
+                        className="fr-modal__title"
+                      >
                         <span className="fr-icon-edit-box-line fr-icon--lg fr-mr-1w"></span>
                         Éditer la proposition d'indemnisation
-                      </>
-                    )}
-                  </h1>
-
-                  {decision ? (
-                    <>
-                      <div className="fr-input-group fr-mb-3w">
-                        <a
-                          className="fr-link fr-link--download"
-                          download={`Lettre décision dossier ${dossier.reference}`}
-                          href={dossier.courrier.url}
-                        >
-                          Télécharger le courrier
-                          <span className="fr-link__detail">PDF</span>
-                        </a>
-                      </div>
-
-                      <div className="fr-upload-group">
-                        <label className="fr-label" htmlFor="file-upload">
-                          Téléverser le fichier pour signature
-                          <span className="fr-hint-text">
-                            <span
-                              className={`${!estTailleFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
-                            >
-                              Taille maximale : 10 Mo.&nbsp;
-                            </span>
-                            <span
-                              className={`${!estTypeFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
-                            >
-                              Format pdf uniquement.&nbsp;
-                            </span>
-                            Une fois téléversé, le requérant sera notifié de
-                            {dossier.estAccepte() ? (
-                              <> la proposition</>
-                            ) : (
-                              <> la décision</>
-                            )}
-                            .
-                          </span>
-                        </label>{" "}
-                        <input
-                          className="fr-upload"
-                          type="file"
-                          id="file-upload"
-                          name="file-upload"
-                          accept="application/pdf"
-                          onChange={(e) => {
-                            setFichierSigne(e.target.files[0] ?? null);
-                          }}
-                        />
-                      </div>
-                      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-                        <li>
-                          <button
-                            className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                            type="button"
-                            onClick={() => fermerModale()}
-                            disabled={sauvegarderEnCours}
-                          >
-                            {sauvegarderEnCours ? (
-                              <i>Sauvegarde en cours ...</i>
-                            ) : (
-                              <>Annuler</>
-                            )}
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className="fr-btn fr-btn--sm fr-btn--secondary"
-                            type="button"
-                            onClick={() => decider(false)}
-                            disabled={sauvegarderEnCours}
-                          >
-                            Éditer le courrier
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className="fr-btn fr-btn--sm fr-btn--primary"
-                            type="button"
-                            disabled={
-                              !fichierSigne ||
-                              !estTypeFichierOk(fichierSigne) ||
-                              !estTailleFichierOk(fichierSigne) ||
-                              sauvegarderEnCours
-                            }
-                            onClick={() => signerCourrier(fichierSigne)}
-                          >
-                            Téléverser et signer
-                          </button>
-                        </li>
-                      </ul>
-                    </>
-                  ) : (
-                    <>
+                      </h1>
                       {dossier.estAccepte() && (
                         <div
                           className="fr-input-group fr-my-2w fr-grid-row"
@@ -339,7 +293,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                                 );
 
                                 if (dossier.estAccepte()) {
-                                  detecterMontantIndemnisation();
+                                  detecterMontantIndemnisation(courrier);
                                 }
                               }}
                               aria-describedby="dossier-decision-acceptation-indemnisation-messages"
@@ -370,7 +324,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                           onChange={(value) => {
                             setCourrier(value);
                             if (dossier.estAccepte()) {
-                              detecterMontantIndemnisation();
+                              detecterMontantIndemnisation(value);
                             }
                           }}
                           readOnly={sauvegarderEnCours}
@@ -440,9 +394,164 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                           </button>
                         </li>
                       </ul>
-                    </>
-                  )}
-                </div>
+                    </div>
+                  )
+                }
+                {
+                  // Téléversement, pour signature, du courrier
+                  decision && !estFichierSigne && (
+                    <div className="fr-modal__content">
+                      <h1
+                        id="modale-dossier-decision-titre"
+                        className="fr-modal__title"
+                      >
+                        <span className="fr-icon-edit-box-line fr-icon--lg fr-mr-1w"></span>
+                        Signer le courrier
+                      </h1>
+
+                      <div className="fr-input-group fr-mb-3w">
+                        <a
+                          className="fr-link fr-link--download"
+                          download={`Lettre décision dossier ${dossier.reference}`}
+                          href={dossier.courrier.url}
+                        >
+                          Télécharger le courrier
+                          <span className="fr-link__detail">PDF</span>
+                        </a>
+                      </div>
+
+                      <div className="fr-upload-group">
+                        <label className="fr-label" htmlFor="file-upload">
+                          Téléverser le fichier pour signature
+                          <span className="fr-hint-text">
+                            <span
+                              className={`${!estTailleFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
+                            >
+                              Taille maximale : 10 Mo.&nbsp;
+                            </span>
+                            <span
+                              className={`${!estTypeFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
+                            >
+                              Format pdf uniquement.&nbsp;
+                            </span>
+                          </span>
+                        </label>{" "}
+                        <input
+                          className="fr-upload"
+                          type="file"
+                          id="file-upload"
+                          name="file-upload"
+                          accept="application/pdf"
+                          onChange={(e) => {
+                            setFichierSigne(e.target.files[0] ?? null);
+                          }}
+                        />
+                      </div>
+                      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                        <li>
+                          <button
+                            className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                            type="button"
+                            onClick={() => fermerModale()}
+                            disabled={sauvegarderEnCours}
+                          >
+                            {sauvegarderEnCours ? (
+                              <i>Sauvegarde en cours ...</i>
+                            ) : (
+                              <>Annuler</>
+                            )}
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="fr-btn fr-btn--sm fr-btn--secondary"
+                            type="button"
+                            onClick={() => decider(false)}
+                            disabled={sauvegarderEnCours}
+                          >
+                            Éditer le courrier
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="fr-btn fr-btn--sm fr-btn--primary"
+                            type="button"
+                            disabled={
+                              !fichierSigne ||
+                              !estTypeFichierOk(fichierSigne) ||
+                              !estTailleFichierOk(fichierSigne) ||
+                              sauvegarderEnCours
+                            }
+                            onClick={() => signerCourrier(fichierSigne)}
+                          >
+                            Téléverser et signer
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )
+                }
+                {
+                  // Envoi au requérant
+                  decision && estFichierSigne && (
+                    <div className="fr-modal__content">
+                      <h1
+                        id="modale-dossier-decision-titre"
+                        className="fr-modal__title"
+                      >
+                        <span className="fr-icon-edit-box-line fr-icon--lg fr-mr-1w"></span>
+                        Envoyer le courrier au requérant
+                      </h1>
+
+                      <div className="fr-alert fr-alert--info">
+                        <h3 className="fr-alert__title">Envoi imminent</h3>
+                        <p>
+                          Vous vous apprêtez à faire part de votre décision au
+                          requérant via l'envoi du courrier dûment signé.
+                        </p>
+                        <p>
+                          Cette action est définitive: une fois le courrier
+                          transmis, vous n'aurez plus la possibilité d'éditer
+                          votre réponse.
+                        </p>
+                        <p>
+                          Aussi,{" "}
+                          <span className="fr-text--bold">
+                            veillez à bien relire le document
+                          </span>{" "}
+                          afin de vous assurer que tout est conforme.
+                        </p>
+                      </div>
+
+                      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                        <li>
+                          <button
+                            className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                            type="button"
+                            onClick={() => fermerModale()}
+                            disabled={sauvegarderEnCours}
+                          >
+                            {sauvegarderEnCours ? (
+                              <i>Sauvegarde en cours ...</i>
+                            ) : (
+                              <>Annuler</>
+                            )}
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="fr-btn fr-btn--sm fr-btn--primary"
+                            type="button"
+                            disabled={sauvegarderEnCours}
+                            onClick={() => envoyerAuRequerant()}
+                          >
+                            Envoyer au requérant
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )
+                }
               </div>
             </div>
           </div>
