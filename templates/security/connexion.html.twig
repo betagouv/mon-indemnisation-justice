@@ -291,7 +291,7 @@
                     <div class="fr-grow fr-column fr-column--centered">
 
 
-                        <form method="post" action="{{ absolute_url(path('securite_connexion_agent')) }}">
+                        <form method="post" action="{{ path('securite_connexion_agent') }}">
                             <input type="hidden" name="_csrf_token_agent" value="{{ csrf_token('connexionAgent') }}">
                             <div class="fr-connect-group">
                                 <button class="fr-connect" type="submit">
@@ -320,7 +320,6 @@
     {{ parent() }}
     <script type="text/javascript">
         const motDePasseOublieChamps = document.getElementById('mdp-oublie-email');
-        console.log(motDePasseOublieChamps)
         const motDePasseOublieErreur = document.getElementById(motDePasseOublieChamps.getAttribute('aria-describedby'));
 
         motDePasseOublieChamps.addEventListener("input", function (e) {

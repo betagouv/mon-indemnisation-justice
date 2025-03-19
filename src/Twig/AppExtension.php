@@ -11,7 +11,7 @@ class AppExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('spellout', [AppRuntime::class, 'spellout']),
+            new TwigFilter('montant_litteral', [AppRuntime::class, 'montantLitteral']),
             new TwigFilter('est_agent', [AppRuntime::class, 'estAgent']),
             new TwigFilter('est_requerant', [AppRuntime::class, 'estRequerant']),
             new TwigFilter('md5', 'md5'),
@@ -29,6 +29,7 @@ class AppExtension extends AbstractExtension
             new TwigFunction('vite_entree_existe', [AppRuntime::class, 'viteEntreeExiste']),
             new TwigFunction('base_64_image', [AppRuntime::class, 'base64Image']),
             new TwigFunction('types_document', [AppRuntime::class, 'typesDocument']),
+            new TwigFunction('absolute_asset_path', [AppRuntime::class, 'absoluteAssetPath']),
         ];
     }
 }

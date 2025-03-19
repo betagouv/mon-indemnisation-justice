@@ -2,10 +2,10 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use MonIndemnisationJustice\Repository\AdresseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\AdresseRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AdresseRepository::class)]
@@ -86,6 +86,11 @@ class Adresse
     public function getCodePostal(): ?string
     {
         return $this->codePostal;
+    }
+
+    public function getCodeDepartemental(): ?string
+    {
+        return substr($this->codePostal, 0, strlen($this->codePostal) - 3);
     }
 
     public function setCodePostal(?string $codePostal): static

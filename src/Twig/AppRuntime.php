@@ -43,7 +43,7 @@ class AppRuntime implements RuntimeExtensionInterface
         return preg_replace('/_/', '-', $this->toSnake($string));
     }
 
-    public function spellout(float $amount, string $locale = 'fr'): string
+    public function montantLitteral(float $amount, string $locale = 'fr'): string
     {
         $t = new \NumberFormatter($locale, \NumberFormatter::SPELLOUT);
         $numberParsing = explode('.', number_format(round($amount, 2, PHP_ROUND_HALF_DOWN), 2, '.', ''));
@@ -57,6 +57,11 @@ class AppRuntime implements RuntimeExtensionInterface
     public function typesDocument(): array
     {
         return Document::$types;
+    }
+
+    public function absoluteAssetPath(string $path): string
+    {
+        return "file://$this->publicDirectory/$path";
     }
 
     public function estViteServerActif(): bool
