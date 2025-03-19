@@ -2,6 +2,11 @@
 
 {% block title %}Nouveaux dossiers{% endblock title %}
 
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ vite_entry_link_tags('agent/dossiers/recherche') }}
+{% endblock stylesheets %}
 
 {% block main %}
     <div id="react-app-agent-recherche-dossiers"></div>
