@@ -413,7 +413,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                         <a
                           className="fr-link fr-link--download"
                           download={`Lettre décision dossier ${dossier.reference}`}
-                          href={dossier.courrier.url}
+                          href={`${dossier.courrier.url}?download`}
                         >
                           Télécharger le courrier
                           <span className="fr-link__detail">PDF</span>
