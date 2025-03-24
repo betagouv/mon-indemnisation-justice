@@ -4,10 +4,10 @@ export class Redacteur {
   public readonly id: number;
   public readonly nom: string;
 
-  public static catalog: Map<number, Redacteur> = new Map();
+  protected static _catalog: Map<number, Redacteur> = new Map();
 
   public static resoudre(id: number): null | Redacteur {
-    return this.catalog.get(id) ?? null;
+    return this._catalog.get(id) ?? null;
   }
 
   public static charger(data: any): void {
@@ -16,8 +16,12 @@ export class Redacteur {
     for (const redacteur of instance instanceof Redacteur
       ? [instance]
       : (instance as Redacteur[])) {
-      this.catalog.set(redacteur.id, redacteur);
+      this._catalog.set(redacteur.id, redacteur);
     }
+  }
+
+  public static catalog(): Redacteur[] {
+    return Array.from(Redacteur._catalog.values());
   }
 
   public equals(other: Redacteur | null): boolean {
