@@ -18,7 +18,9 @@ export abstract class BaseDossier {
   @Transform(({ value }: { value: string }) => EtatDossier.resoudre(value))
   public etat: EtatDossier = null;
   protected _dateDepot: Date | null;
-  protected _attributaire: Redacteur | null;
+  @Expose()
+  @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
+  public redacteur: Redacteur | null = null;
 
   @Expose()
   get dateDepot(): null | Date {
@@ -29,14 +31,12 @@ export abstract class BaseDossier {
     this._dateDepot = typeof value === "number" ? new Date(value) : value;
   }
 
-  @Expose()
-  get attributaire(): Redacteur | null {
-    return this._attributaire;
+  public estAAttribuer(): boolean {
+    return this.etat.egal(EtatDossier.A_INSTRUIRE) && null === this.redacteur;
   }
 
-  set attributaire(value: Redacteur | number | null) {
-    this._attributaire =
-      typeof value == "number" ? Redacteur.resoudre(value) : value;
+  attribuer(redacteur: Redacteur): void {
+    this.redacteur = redacteur;
   }
 
   get enAttenteDecision(): boolean {
@@ -79,10 +79,6 @@ export class DossierDetail extends BaseDossier {
   @Expose()
   @Type(() => TestEligibilite)
   public readonly testEligibilite?: TestEligibilite = null;
-
-  @Expose()
-  @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
-  public redacteur: Redacteur | null = null;
 
   public notes?: string = null;
 
@@ -128,10 +124,6 @@ export class DossierDetail extends BaseDossier {
       notes: observable,
       annoter: action,
     });
-  }
-
-  attribuer(redacteur: Redacteur): void {
-    this.redacteur = redacteur;
   }
 
   public getDocumentParIndex(index: number): Document | null {

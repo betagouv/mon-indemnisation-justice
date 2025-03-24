@@ -1,4 +1,4 @@
-import { Agent, Redacteur } from "@/apps/agent/dossiers/models";
+import { Agent, EtatDossier, Redacteur } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
@@ -56,6 +56,28 @@ export const AttributionDossier = observer(
       setModeAttribution(false);
     };
 
+    const marquerDoublonPapier = async () => {
+      setSauvegarderEnCours(true);
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/marquer/doublon.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        dossier.changerEtat(data.etat);
+      }
+
+      attribuer(null);
+      setModeAttribution(false);
+    };
+
     return (
       <div>
         {modeAttribution ? (
@@ -107,7 +129,7 @@ export const AttributionDossier = observer(
                   className="fr-btn fr-btn--sm"
                   type="button"
                   disabled={sauvegarderEnCours || !attributaire}
-                  onClick={validerAttribution}
+                  onClick={() => validerAttribution()}
                 >
                   Attribuer
                 </button>
@@ -134,21 +156,35 @@ export const AttributionDossier = observer(
                 {" "}
                 n'est <i>pas encore attribué</i> à un rédacteur{" "}
               </>
-            )}{" "}
-            {agent.estAttributeur() && (
-              <a
-                role="button"
-                className="fr-link"
-                onClick={() => {
-                  setModeAttribution(true);
-                  attribuer(null);
-                }}
-              >
-                <span className="fr-icon-pencil-line" aria-hidden="true"></span>
-              </a>
             )}
           </p>
         )}
+        {!modeAttribution &&
+          agent.estAttributeur() &&
+          dossier.estAAttribuer() && (
+            <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+              <li>
+                <button
+                  className="fr-btn fr-btn--sm fr-btn--tertiary"
+                  type="button"
+                  disabled={sauvegarderEnCours}
+                  onClick={() => marquerDoublonPapier()}
+                >
+                  Marquer doublon papier
+                </button>
+              </li>
+              <li>
+                <button
+                  className="fr-btn fr-btn--sm"
+                  type="button"
+                  disabled={sauvegarderEnCours}
+                  onClick={() => setModeAttribution(true)}
+                >
+                  Attribuer
+                </button>
+              </li>
+            </ul>
+          )}
       </div>
     );
   },

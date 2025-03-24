@@ -35,6 +35,10 @@ export class RequeteAgentValidation {
     return this.roles.includes(role);
   }
 
+  aRoleParmi(...roles: string[]): boolean {
+    return roles.some((role) => this.aRole(role));
+  }
+
   public definirRole(role: string, estOctroye: boolean = true): void {
     if (estOctroye) {
       this.ajouterRole(role);
@@ -46,7 +50,13 @@ export class RequeteAgentValidation {
   protected ajouterRole(role: string): void {
     if (!this.aRole(role)) {
       this.roles.push(role);
-      if (role == "ROLE_AGENT_REDACTEUR") {
+      if (
+        [
+          "ROLE_AGENT_REDACTEUR",
+          "ROLE_AGENT_ATTRIBUTEUR",
+          "ROLE_AGENT_VALIDATEUR",
+        ].includes(role)
+      ) {
         this.ajouterRole("ROLE_AGENT_DOSSIER");
       }
     }
