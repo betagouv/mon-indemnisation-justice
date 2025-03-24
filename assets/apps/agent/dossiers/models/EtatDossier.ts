@@ -74,10 +74,10 @@ export class EtatDossier {
   }
 
   public static resoudreParSlug(slug: string): null | EtatDossier {
-    return this._catalog.values().find((e) => e.slug == slug) ?? null;
+    return this._catalog.find((e) => e.slug == slug) ?? null;
   }
 
   public static resoudre(id: string): null | EtatDossier {
-    return this._catalog.values().find((e) => e.id == id) ?? null;
+    return this._catalog.find((e) => e.id == id) ?? null;
   }
 }
