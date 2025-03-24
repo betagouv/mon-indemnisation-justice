@@ -77,14 +77,11 @@ export const AttributionDossier = observer(
                 <option value="" disabled hidden>
                   Sélectionnez un rédacteur
                 </option>
-                {Redacteur.catalog
-                  .values()
-                  .toArray()
-                  .map((redacteur: Redacteur) => (
-                    <option value={redacteur.id} key={redacteur.id}>
-                      {redacteur.nom}
-                    </option>
-                  ))}
+                {Redacteur.catalog().map((redacteur: Redacteur) => (
+                  <option value={redacteur.id} key={redacteur.id}>
+                    {redacteur.nom}
+                  </option>
+                ))}
               </select>
             </div>
 

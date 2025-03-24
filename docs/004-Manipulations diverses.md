@@ -24,7 +24,7 @@ pg_dump $DATABASE_URL --schema=public --if-exists --clean --no-owner --no-privil
 On note ici que pour éliminer le bruit autour des extensions, on filtre à la volée les clauses qui les concernent.
 
 Pareillement, on élimine toutes les requêtes préliminaires, de type `DROP table/sequence`, qui sont superflues ici
-puisqu'en Docker on peut supprimer le conteneur et le recréer _à vide_ à notre guise. 
+puisqu'en Docker, on peut supprimer le conteneur et le recréer _à vide_ à notre guise. 
 
 Il reste à redémarrer le conteneur docker pour PostgreSQL :
 

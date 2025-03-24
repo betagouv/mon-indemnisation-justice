@@ -126,41 +126,38 @@ export const RechercheDossierApp = observer(
                         </div>
                       </div>
 
-                      {Redacteur.catalog
-                        .values()
-                        .toArray()
-                        .map((redacteur) => (
-                          <div
-                            className="fr-fieldset__element"
-                            key={redacteur.id}
-                          >
-                            <div className="fr-checkbox-group">
-                              <input
-                                id={`recherche-filtres-attributaire-${redacteur.id}`}
-                                type="checkbox"
-                                onChange={(e) =>
-                                  recherche.setAttributaire(
-                                    redacteur,
-                                    e.target.checked,
-                                  )
-                                }
-                                checked={recherche.estSelectionneAttributaire(
+                      {Redacteur.catalog().map((redacteur) => (
+                        <div
+                          className="fr-fieldset__element"
+                          key={redacteur.id}
+                        >
+                          <div className="fr-checkbox-group">
+                            <input
+                              id={`recherche-filtres-attributaire-${redacteur.id}`}
+                              type="checkbox"
+                              onChange={(e) =>
+                                recherche.setAttributaire(
                                   redacteur,
-                                )}
-                              />
-                              <label
-                                className="fr-label"
-                                htmlFor={`recherche-filtres-attributaire-${redacteur.id}`}
-                              >
-                                {agent.equals(redacteur) ? (
-                                  <b>Moi</b>
-                                ) : (
-                                  redacteur.nom
-                                )}
-                              </label>
-                            </div>
+                                  e.target.checked,
+                                )
+                              }
+                              checked={recherche.estSelectionneAttributaire(
+                                redacteur,
+                              )}
+                            />
+                            <label
+                              className="fr-label"
+                              htmlFor={`recherche-filtres-attributaire-${redacteur.id}`}
+                            >
+                              {agent.equals(redacteur) ? (
+                                <b>Moi</b>
+                              ) : (
+                                redacteur.nom
+                              )}
+                            </label>
                           </div>
-                        ))}
+                        </div>
+                      ))}
                     </fieldset>
                   </div>
                 </div>
