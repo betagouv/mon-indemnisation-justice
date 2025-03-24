@@ -63,7 +63,7 @@ class EtatDossier
 
     public function aValider(): bool
     {
-        return in_array($this->etat, [EtatDossierType::DOSSIER_OK_A_VALIDER, EtatDossierType::DOSSIER_KO_A_VALIDER]);
+        return $this->estASigner();
     }
 
     public function getLibelle(): string

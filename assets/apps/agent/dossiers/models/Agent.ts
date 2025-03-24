@@ -32,7 +32,7 @@ export class Agent {
   }
 
   public estAttribue(dossier: BaseDossier): boolean {
-    return this.equals(dossier.attributaire);
+    return this.equals(dossier.redacteur);
   }
 
   equals(redacteur: Redacteur | null): boolean {
