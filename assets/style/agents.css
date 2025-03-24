@@ -16,6 +16,9 @@ a:not([href])[role="button"] {
     /* A_INSTRUIRE = 'info' */
     --var-couleur-pp-a-instruire: #0063cb;
     --var-couleur-ap-a-instruire: #e8edff;
+    /* DOUBLON_PAPIER = 'beige-gris-galet' */
+    --var-couleur-pp-doublon-papier: #6a6156;
+    --var-couleur-ap-doublon-papier: #eee4d9;
     /* TODO prévoir À reprendre (= À ré-instruire) 'blue-cumulus' */
     --var-couleur-pp-a-reinstruire: #3558a2;
     --var-couleur-ap-a-reinstruire: #e6eefe;
@@ -66,6 +69,10 @@ a:not([href]) {
         border-left-color: var(--var-couleur-pp-a-instruire);
     }
 
+    &--doublon-papier {
+        border-left-color: var(--var-couleur-pp-doublon-papier);
+    }
+
     &--ok-a-signer {
         border-left-color: var(--var-couleur-pp-ok-a-signer);
     }
@@ -100,6 +107,11 @@ a:not([href]) {
     &--a-instruire {
         color: var(--var-couleur-pp-a-instruire);
         background-color: var(--var-couleur-ap-a-instruire);
+    }
+
+    &--doublon-papier {
+        color: var(--var-couleur-pp-doublon-papier);
+        background-color: var(--var-couleur-ap-doublon-papier);
     }
 
     &--ok-a-signer {

@@ -48,7 +48,7 @@ export class Requerant {
 
   nomComplet(): string {
     return (
-      `${this.civiliteComplete()} ${this.nom} ` +
+      `${this.civiliteComplete()} ${this.nom}` +
       (this.nomNaissance
         ? `, né${this.estFeminin() ? "e" : ""} ${this.nomNaissance}`
         : "")

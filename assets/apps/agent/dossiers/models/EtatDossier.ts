@@ -7,6 +7,11 @@ export class EtatDossier {
   public static A_FINALISER = new EtatDossier("A_FINALISER", "À finaliser");
   public static A_INSTRUIRE = new EtatDossier("A_INSTRUIRE", "À instruire");
 
+  public static DOUBLON_PAPIER = new EtatDossier(
+    "DOUBLON_PAPIER",
+    "Doublon papier",
+  );
+
   public static OK_A_SIGNER = new EtatDossier(
     "OK_A_SIGNER",
     "Accepté - à signer",
@@ -45,6 +50,7 @@ export class EtatDossier {
   protected static _catalog: EtatDossier[] = [
     EtatDossier.A_FINALISER,
     EtatDossier.A_INSTRUIRE,
+    EtatDossier.DOUBLON_PAPIER,
     EtatDossier.OK_A_SIGNER,
     EtatDossier.OK_A_APPROUVER,
     EtatDossier.OK_A_INDEMNISER,
@@ -79,5 +85,9 @@ export class EtatDossier {
 
   public static resoudre(id: string): null | EtatDossier {
     return this._catalog.find((e) => e.id == id) ?? null;
+  }
+
+  public egal(etat: EtatDossier): boolean {
+    return this.id === etat.id;
   }
 }

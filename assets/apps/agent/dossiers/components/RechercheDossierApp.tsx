@@ -229,9 +229,9 @@ export const RechercheDossierApp = observer(
                                     )}
                                   </td>
                                   <td className="fr-col-2">
-                                    {dossier.attributaire ? (
+                                    {dossier.redacteur ? (
                                       <span className="fr-text--bold">
-                                        {dossier.attributaire.nom}
+                                        {dossier.redacteur.nom}
                                       </span>
                                     ) : (
                                       <i>non attribué</i>

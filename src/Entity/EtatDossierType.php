@@ -9,6 +9,9 @@ enum EtatDossierType: string
     // Le requérant a finalisé et déposé son dossier
     case DOSSIER_A_INSTRUIRE = 'A_INSTRUIRE';
 
+    // Le dossier existait d'abord en version papier
+    case DOSSIER_DOUBLON_PAPIER = 'DOUBLON_PAPIER';
+
     // Le rédacteur a approuvé l'indemnisation
     case DOSSIER_OK_A_SIGNER = 'OK_A_SIGNER';
     // Le validateur a signé le courrier d'indemnisation, c'est au tour du requérant d'approuver

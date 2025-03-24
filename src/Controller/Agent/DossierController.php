@@ -28,6 +28,7 @@ class DossierController extends AgentController
     private const ETATS_DOSSIERS_ELIGIBLES = [
         EtatDossierType::DOSSIER_A_INSTRUIRE,
         EtatDossierType::DOSSIER_OK_A_SIGNER,
+        EtatDossierType::DOSSIER_DOUBLON_PAPIER,
         EtatDossierType::DOSSIER_OK_A_APPROUVER,
         EtatDossierType::DOSSIER_OK_A_INDEMNISER,
         EtatDossierType::DOSSIER_OK_INDEMNISE,
@@ -192,6 +193,18 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_ATTRIBUTEUR)]
+    #[Route('/dossier/{id}/marquer/doublon.json', name: 'agent_redacteur_marquer_doublon_papier_dossier', methods: ['POST'])]
+    public function marquerDoublonPapier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $dossier->changerStatut(EtatDossierType::DOSSIER_DOUBLON_PAPIER, agent: $this->getAgent());
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse([
+            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+        ], Response::HTTP_OK);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
