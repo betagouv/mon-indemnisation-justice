@@ -114,7 +114,11 @@ export const ValidationAgentRow = observer(
                       disabled={
                         !editable ||
                         (role == "ROLE_AGENT_DOSSIER" &&
-                          validation.aRole("ROLE_AGENT_REDACTEUR"))
+                          validation.aRoleParmi(
+                            "ROLE_AGENT_REDACTEUR",
+                            "ROLE_AGENT_ATTRIBUTEUR",
+                            "ROLE_AGENT_VALIDATEUR",
+                          ))
                       }
                       checked={validation.aRole(role)}
                       onChange={(e) =>
