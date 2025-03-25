@@ -106,8 +106,6 @@ export class DossierDetail extends BaseDossier {
   @Type(() => Courrier)
   public courrier?: Courrier = null;
 
-  protected listeDocuments?: Document[];
-
   constructor() {
     super();
     makeObservable(this, {
@@ -118,24 +116,12 @@ export class DossierDetail extends BaseDossier {
       changerEtat: action,
       courrier: observable,
       setCourrier: action,
-      documents: observable,
+      //documents: observable,
       addDocument: action,
       viderDocumentParType: action,
       notes: observable,
       annoter: action,
     });
-  }
-
-  public getDocumentParIndex(index: number): Document | null {
-    if (!this.listeDocuments) {
-      this.listeDocuments =
-        this.documents
-          ?.values()
-          .reduce((pre: Document[], cur: Document[]) => pre.concat(cur), []) ??
-        [];
-    }
-
-    return this.listeDocuments?.at(index % this.listeDocuments.length) ?? null;
   }
 
   setCourrier(courrier: Courrier) {
@@ -144,10 +130,6 @@ export class DossierDetail extends BaseDossier {
 
   annoter(notes: string): void {
     this.notes = notes;
-  }
-
-  public getDocumentIndex(document: Document): number {
-    return this.listeDocuments.indexOf(document);
   }
 
   public hasDocumentsType(type: DocumentType): boolean {

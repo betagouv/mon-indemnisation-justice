@@ -4,13 +4,11 @@ import {
   Document,
   DossierDetail,
   DocumentType,
-  Courrier,
 } from "@/apps/agent/dossiers/models";
 import {
   AttributionDossier,
   DecisionDossier,
 } from "@/apps/agent/dossiers/components/consultation";
-import { plainToInstance } from "class-transformer";
 
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
@@ -25,7 +23,10 @@ export const ConsultationDossierApp = observer(
     agent: Agent;
   }) {
     const [pieceJointe, selectionnerPieceJointe] = useState(
-      dossier.getDocumentParIndex(0),
+      dossier.documents
+        .values()
+        .find((documents) => documents.length > 0)
+        .at(0),
     );
 
     // Modélise la prise de notes de suivi en cours

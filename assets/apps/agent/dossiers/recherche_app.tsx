@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "@/common/polyfill";
 
 import "@/style/agents.css";
 
