@@ -390,6 +390,7 @@ export const ConsultationDossierApp = observer(
                       <div className="fr-grid-row fr-col-12">
                         <ReactQuill
                           theme="snow"
+                          readOnly={dossier.enAttenteInstruction()}
                           value={notes}
                           onChange={(value) => setNotes(value)}
                         />
