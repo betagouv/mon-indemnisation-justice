@@ -1,3 +1,4 @@
+import "@/common/polyfill";
 import { ValidationAgentApp } from "@/apps/agent/gestion_agents/components";
 import {
   Administration,

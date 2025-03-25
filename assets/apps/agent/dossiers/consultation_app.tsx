@@ -1,3 +1,4 @@
+import "@/common/polyfill";
 import "reflect-metadata";
 
 import "@/style/agents.css";

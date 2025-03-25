@@ -35,7 +35,7 @@ export default defineConfig(({ command, mode }) => {
         //targets: ['defaults', 'not IE 11'],
         modernTargets: ["firefox>=60, chrome>=61"],
         polyfills: ["es.promise.finally", "es/map", "es/set", ""],
-        modernPolyfills: ["es.promise.finally"],
+        modernPolyfills: true,
         renderLegacyChunks: false, // Pas besoin puisqu'on est ESM **only**
       }),
       symfonyPlugin({

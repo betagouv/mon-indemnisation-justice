@@ -21,7 +21,7 @@ export class Redacteur {
   }
 
   public static catalog(): Redacteur[] {
-    return Array.from(Redacteur._catalog.values());
+    return Redacteur._catalog.values().toArray();
   }
 
   public equals(other: Redacteur | null): boolean {

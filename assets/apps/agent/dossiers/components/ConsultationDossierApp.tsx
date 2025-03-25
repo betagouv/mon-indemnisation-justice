@@ -23,7 +23,10 @@ export const ConsultationDossierApp = observer(
     agent: Agent;
   }) {
     const [pieceJointe, selectionnerPieceJointe] = useState(
-      [].concat(...Array.from(dossier.documents.values())).at(0) ?? null,
+      dossier.documents
+        .values()
+        .find((documents) => documents.length > 0)
+        .at(0),
     );
 
     // Modélise la prise de notes de suivi en cours
