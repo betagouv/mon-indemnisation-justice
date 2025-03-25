@@ -254,6 +254,46 @@ export const ConsultationDossierApp = observer(
                               (SIREN: <b>{dossier.requerant.siren}</b>)
                             </li>
                           )}
+                          <li>
+                            <b>Adresse courriel: </b>{" "}
+                            {dossier.enAttenteInstruction() ? (
+                              <>
+                                <span aria-describedby="tooltip-requerant-courriel">{`${dossier.requerant.courriel.substring(0, 2)}${"*".repeat(dossier.requerant.courriel.length - 2)}`}</span>
+                                <span
+                                  class="fr-tooltip fr-placement"
+                                  id="tooltip-requerant-courriel"
+                                  role="tooltip"
+                                  aria-hidden="true"
+                                >
+                                  Démarrer l'instruction pour révéler
+                                </span>
+                              </>
+                            ) : (
+                              <span>{dossier.requerant.courriel}</span>
+                            )}
+                          </li>
+                          <li>
+                            <b>N° téléphone: </b>
+                            {dossier.requerant.telephone ? (
+                              dossier.enAttenteInstruction() ? (
+                                <>
+                                  <span aria-describedby="tooltip-requerant-telephone">{`${dossier.requerant.telephone.substring(0, 2)}${"*".repeat(dossier.requerant.telephone.length - 2)}`}</span>
+                                  <span
+                                    class="fr-tooltip fr-placement"
+                                    id="tooltip-requerant-telephone"
+                                    role="tooltip"
+                                    aria-hidden="true"
+                                  >
+                                    Démarrer l'instruction pour révéler
+                                  </span>
+                                </>
+                              ) : (
+                                <>{dossier.requerant.telephone}</>
+                              )
+                            ) : (
+                              <i>non renseigné</i>
+                            )}
+                          </li>
                         </ul>
                       </div>
                       {

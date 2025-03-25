@@ -77,6 +77,8 @@ class DossierController extends AgentController
                         $dossier->getRequerant()->getPersonnePhysique()->getPrenom3(),
                     ],
                     'nomNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getNomNaissance(),
+                    'courriel' => $dossier->getRequerant()->getPersonnePhysique()->getEmail(),
+                    'telephone' => !empty($dossier->getRequerant()->getPersonnePhysique()->getTelephone()) ? $dossier->getRequerant()->getPersonnePhysique()->getTelephone() : null,
                     'dateNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance() ? $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance()->getTimestamp() * 1000 : null,
                     'communeNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getCommuneNaissance(),
                     'paysNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getPaysNaissance()?->getNom(),

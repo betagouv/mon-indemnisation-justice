@@ -8,6 +8,8 @@ export class Requerant {
   public readonly nom: string;
   public readonly nomNaissance: string | null;
   public readonly prenoms: string[];
+  public readonly courriel: string;
+  public readonly telephone?: string;
   protected _dateNaissance: Date | null;
   public readonly communeNaissance: string | null;
   public readonly paysNaissance: string | null;
