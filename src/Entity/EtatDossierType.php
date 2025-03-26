@@ -8,6 +8,7 @@ enum EtatDossierType: string
     case DOSSIER_A_FINALISER = 'A_FINALISER';
     // Le requérant a finalisé et déposé son dossier
     case DOSSIER_A_INSTRUIRE = 'A_INSTRUIRE';
+    case DOSSIER_EN_INSTRUCTION = 'EN_INSTRUCTION';
 
     // Le dossier existait d'abord en version papier
     case DOSSIER_DOUBLON_PAPIER = 'DOUBLON_PAPIER';

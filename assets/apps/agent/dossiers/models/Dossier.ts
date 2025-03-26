@@ -39,8 +39,18 @@ export abstract class BaseDossier {
     this.redacteur = redacteur;
   }
 
+  enAttenteInstruction(): boolean {
+    return this.etat.egal(EtatDossier.A_INSTRUIRE);
+  }
+
+  enInstruction(): boolean {
+    return this.etat.egal(EtatDossier.EN_INSTRUCTION);
+  }
+
   get enAttenteDecision(): boolean {
-    return this.etat == EtatDossier.A_INSTRUIRE;
+    return [EtatDossier.A_INSTRUIRE, EtatDossier.EN_INSTRUCTION].includes(
+      this.etat,
+    );
   }
 
   get enAttenteValidation(): boolean {

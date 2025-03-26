@@ -1,4 +1,4 @@
-import { Courrier } from "@/apps/agent/dossiers/models";
+import { Courrier, EtatDossier } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { Administration } from "@/apps/agent/gestion_agents/models";
 import { plainToInstance } from "class-transformer";
@@ -53,6 +53,28 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
     boolean,
     (mode: boolean) => void,
   ] = useState(false);
+
+  const demarrerInstruction = async () => {
+    setSauvegarderEnCours(true);
+
+    const response = await fetch(
+      `/agent/redacteur/dossier/${dossier.id}/instruction/demarrer.json`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      dossier.changerEtat(data.etat);
+    }
+
+    setSauvegarderEnCours(false);
+  };
 
   const ouvrirModaleDecision = (dec: boolean) => {
     decider(dec);
@@ -148,24 +170,39 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
     <>
       <div>
         <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-          <li>
-            <button
-              className="fr-btn fr-btn--sm fr-btn--secondary"
-              type="button"
-              onClick={() => ouvrirModaleDecision(false)}
-            >
-              Rejeter
-            </button>
-          </li>
-          <li>
-            <button
-              className="fr-btn fr-btn--sm fr-btn--primary"
-              type="button"
-              onClick={() => ouvrirModaleDecision(true)}
-            >
-              Accepter
-            </button>
-          </li>
+          {dossier.enInstruction() ? (
+            <>
+              <li>
+                <button
+                  className="fr-btn fr-btn--sm fr-btn--secondary"
+                  type="button"
+                  onClick={() => ouvrirModaleDecision(false)}
+                >
+                  Rejeter
+                </button>
+              </li>
+              <li>
+                <button
+                  className="fr-btn fr-btn--sm fr-btn--primary"
+                  type="button"
+                  onClick={() => ouvrirModaleDecision(true)}
+                >
+                  Accepter
+                </button>
+              </li>
+            </>
+          ) : (
+            <li>
+              <button
+                className="fr-btn fr-btn--sm fr-btn--primary"
+                type="button"
+                disabled={sauvegarderEnCours}
+                onClick={() => demarrerInstruction()}
+              >
+                Démarrer l'instruction
+              </button>
+            </li>
+          )}
         </ul>
       </div>
 

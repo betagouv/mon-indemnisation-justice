@@ -27,6 +27,7 @@ class DossierController extends AgentController
 {
     private const ETATS_DOSSIERS_ELIGIBLES = [
         EtatDossierType::DOSSIER_A_INSTRUIRE,
+        EtatDossierType::DOSSIER_EN_INSTRUCTION,
         EtatDossierType::DOSSIER_OK_A_SIGNER,
         EtatDossierType::DOSSIER_DOUBLON_PAPIER,
         EtatDossierType::DOSSIER_OK_A_APPROUVER,
@@ -60,7 +61,7 @@ class DossierController extends AgentController
                 'reference' => $dossier->getReference(),
                 'etat' => $dossier->getEtatDossier()->getEtat()->value,
                 'dateDepot' => $dossier->getDateDeclaration() ? (int) $dossier->getDateDeclaration()->format('Uv') : null,
-                'attributaire' => $dossier->getRedacteur()?->getId(),
+                'redacteur' => $dossier->getRedacteur()?->getId(),
             ],
             'apercu' === $format ? [
                 'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
@@ -76,6 +77,8 @@ class DossierController extends AgentController
                         $dossier->getRequerant()->getPersonnePhysique()->getPrenom3(),
                     ],
                     'nomNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getNomNaissance(),
+                    'courriel' => $dossier->getRequerant()->getPersonnePhysique()->getEmail(),
+                    'telephone' => !empty($dossier->getRequerant()->getPersonnePhysique()->getTelephone()) ? $dossier->getRequerant()->getPersonnePhysique()->getTelephone() : null,
                     'dateNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance() ? $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance()->getTimestamp() * 1000 : null,
                     'communeNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getCommuneNaissance(),
                     'paysNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getPaysNaissance()?->getNom(),
@@ -205,6 +208,30 @@ class DossierController extends AgentController
         return new JsonResponse([
             'etat' => $dossier->getEtatDossier()->getEtat()->value,
         ], Response::HTTP_OK);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
+    #[Route('/dossier/{id}/instruction/demarrer.json', name: 'agent_redacteur_instruction_demarrer_dossier', methods: ['POST'])]
+    public function demarrerInstruction(#[MapEntity(id: 'id')] BrisPorte $dossier): Response
+    {
+        if (EtatDossierType::DOSSIER_A_INSTRUIRE !== $dossier->getEtatDossier()->getEtat()) {
+            return new JsonResponse(['error' => "Ce dossier n'est pas à instruire"], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $agent = $this->getAgent();
+
+        if ($agent !== $dossier->getRedacteur()) {
+            return new JsonResponse(['error' => "Vous n'êtes pas attribué à l'instruction de ce dossier"], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_EN_INSTRUCTION, agent: $agent);
+
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse([
+            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+        ]);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]

@@ -13,15 +13,18 @@ a:not([href])[role="button"] {
     /* A_FINALISER = 'beige-gris-galet' */
     --var-couleur-pp-a-finaliser: #6a6156;
     --var-couleur-ap-a-finaliser: #f3ede5;
-    /* A_INSTRUIRE = 'info' */
-    --var-couleur-pp-a-instruire: #0063cb;
-    --var-couleur-ap-a-instruire: #e8edff;
+
+    /* A_INSTRUIRE = 'blue-ecume' */
+    --var-couleur-pp-a-instruire: #2f4077;
+    --var-couleur-ap-a-instruire: #f4f6fe;
+
+    /* EN_INSTRUCTION = 'info' */
+    --var-couleur-pp-en-instruction: #0063cb;
+    --var-couleur-ap-en-instruction: #e8edff;
     /* DOUBLON_PAPIER = 'beige-gris-galet' */
     --var-couleur-pp-doublon-papier: #6a6156;
     --var-couleur-ap-doublon-papier: #eee4d9;
-    /* TODO prévoir À reprendre (= À ré-instruire) 'blue-cumulus' */
-    --var-couleur-pp-a-reinstruire: #3558a2;
-    --var-couleur-ap-a-reinstruire: #e6eefe;
+
     /* OK_A_SIGNER, = 'green-menthe' */
     --var-couleur-pp-ok-a-signer: #66673d;
     --var-couleur-ap-ok-a-signer: #fceeac;
@@ -69,6 +72,10 @@ a:not([href]) {
         border-left-color: var(--var-couleur-pp-a-instruire);
     }
 
+    &--en-instruction {
+        border-left-color: var(--var-couleur-pp-en-instruction)
+    }
+
     &--doublon-papier {
         border-left-color: var(--var-couleur-pp-doublon-papier);
     }
@@ -107,6 +114,11 @@ a:not([href]) {
     &--a-instruire {
         color: var(--var-couleur-pp-a-instruire);
         background-color: var(--var-couleur-ap-a-instruire);
+    }
+
+    &--en-instruction {
+        color: var(--var-couleur-pp-en-instruction);
+        background-color: var(--var-couleur-ap-en-instruction);
     }
 
     &--doublon-papier {
