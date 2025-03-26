@@ -10,8 +10,7 @@ import nested from "postcss-nested";
 
 // Vite will ignore native environment variables, unless they're declared in local `.env` file
 // (see https://github.com/vitejs/vite/issues/562)
-// Here we had them dynamically
-
+// Here we load them dynamically
 import.meta.env = import.meta.env ?? {};
 
 Object.entries(process.env)
@@ -86,9 +85,6 @@ export default defineConfig(({ command, mode }) => {
             "agent/dossiers/consulter":
               "./assets/apps/agent/dossiers/consultation_app.tsx",
           },
-          ...(import.meta.env?.VITE_SENTRY_DSN && {
-            sentry: "./assets/apps/sentry.ts",
-          }),
         },
       },
     },

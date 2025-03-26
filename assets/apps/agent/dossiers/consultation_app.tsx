@@ -1,4 +1,5 @@
 import "@/common/polyfill";
+import { Sentry } from "@/apps/sentry";
 import "reflect-metadata";
 
 import "@/style/agents.css";
@@ -40,6 +41,19 @@ const dossier = plainToInstance(DossierDetail, args.dossier, {
 
 ReactDOM.createRoot(
   document.getElementById("react-app-agent-consultation-dossiers"),
+  {
+    ...(import.meta.env?.VITE_SENTRY_DSN
+      ? {
+          onUncaughtError: Sentry.reactErrorHandler((error, errorInfo) => {
+            console.warn("Uncaught error", error, errorInfo.componentStack);
+          }),
+          // Callback called when React catches an error in an ErrorBoundary.
+          onCaughtError: Sentry.reactErrorHandler(),
+          // Callback called when React automatically recovers from errors.
+          onRecoverableError: Sentry.reactErrorHandler(),
+        }
+      : {}),
+  },
 ).render(
   <StrictMode>
     <ConsultationDossierApp dossier={dossier} agent={agent} />
