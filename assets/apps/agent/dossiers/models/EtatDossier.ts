@@ -6,6 +6,10 @@ export class EtatDossier {
 
   public static A_FINALISER = new EtatDossier("A_FINALISER", "À finaliser");
   public static A_INSTRUIRE = new EtatDossier("A_INSTRUIRE", "À instruire");
+  public static EN_INSTRUCTION = new EtatDossier(
+    "EN_INSTRUCTION",
+    "EN cours d'instruction",
+  );
 
   public static DOUBLON_PAPIER = new EtatDossier(
     "DOUBLON_PAPIER",
@@ -50,6 +54,7 @@ export class EtatDossier {
   protected static _catalog: EtatDossier[] = [
     EtatDossier.A_FINALISER,
     EtatDossier.A_INSTRUIRE,
+    EtatDossier.EN_INSTRUCTION,
     EtatDossier.DOUBLON_PAPIER,
     EtatDossier.OK_A_SIGNER,
     EtatDossier.OK_A_APPROUVER,
