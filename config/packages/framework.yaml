@@ -27,9 +27,9 @@ when@test:
         session:
             storage_factory_id: session.storage.factory.mock_file
 
-when@develop:
-    framework:
-        trusted_proxies: '127.0.0.1,%env(CC_REVERSE_PROXY_IPS)%'
+#when@develop:
+#    framework:
+#        trusted_proxies: '127.0.0.1,%env(CC_REVERSE_PROXY_IPS)%'
 
 when@prod:
     framework:
