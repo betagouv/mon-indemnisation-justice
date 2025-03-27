@@ -126,7 +126,7 @@ export class DossierDetail extends BaseDossier {
       changerEtat: action,
       courrier: observable,
       setCourrier: action,
-      //documents: observable,
+      documents: observable,
       addDocument: action,
       viderDocumentParType: action,
       notes: observable,

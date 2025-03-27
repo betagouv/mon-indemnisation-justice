@@ -9,9 +9,11 @@ import {
   AttributionDossier,
   DecisionDossier,
 } from "@/apps/agent/dossiers/components/consultation";
+import { data } from "autoprefixer";
+import { plainToInstance } from "class-transformer";
 
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import ReactQuill from "react-quill-new";
 
 export const ConsultationDossierApp = observer(
@@ -22,6 +24,57 @@ export const ConsultationDossierApp = observer(
     dossier: DossierDetail;
     agent: Agent;
   }) {
+    // Référence vers la modale d'ajout de pièce jointe
+    const refModalePJ = useRef(null);
+
+    // Type de document associé à la pièce jointe téléversée
+    const [typePJ, setTypePj]: [DocumentType, (typePJ?: DocumentType) => void] =
+      useState(null);
+
+    // Pièce jointe à téléverser
+    const [nouvellePieceJointe, setNouvellePieceJointe]: [
+      File | null,
+      (nouvellePieceJointe: File) => void,
+    ] = useState(null);
+
+    const ouvrirModalePieceJointe = () =>
+      refModalePJ.current?.classList.add("fr-modal--opened");
+    const fermerModalePieceJointe = () =>
+      refModalePJ.current?.classList.remove("fr-modal--opened");
+
+    const ajouterPieceJointe = async () => {
+      setSauvegarderEnCours(true);
+
+      const payload = new FormData();
+      payload.append("file", nouvellePieceJointe);
+      payload.append("type", typePJ.type);
+
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/piece-jointe/ajouter.json`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: payload,
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const document = plainToInstance(Document, data);
+        dossier.addDocument(document);
+        selectionnerPieceJointe(document);
+        fermerModalePieceJointe();
+        setTypePj(null);
+        setNouvellePieceJointe(null);
+      }
+
+      setSauvegarderEnCours(false);
+      dossier.annoter(notes);
+    };
+
+    // Pièce jointe en cours de visualisation
     const [pieceJointe, selectionnerPieceJointe] = useState(
       dossier.documents
         .values()
@@ -449,6 +502,150 @@ export const ConsultationDossierApp = observer(
                       <h3>Pièces jointes</h3>
                       <div className="fr-grid-row">
                         <div className="fr-col-3 mij-dossier-documents-liste">
+                          {/* Ajout d'une pièce jointe */}
+                          <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline">
+                            <li>
+                              <button
+                                className="fr-btn fr-btn--sm fr-btn--primary"
+                                type="button"
+                                disabled={!dossier.enInstruction()}
+                                onClick={() => ouvrirModalePieceJointe()}
+                              >
+                                Ajouter une pièce jointe
+                              </button>
+                            </li>
+                          </ul>
+
+                          <dialog
+                            ref={refModalePJ}
+                            className="fr-modal"
+                            aria-labelledby="modale-ajout-pj-titre"
+                            data-fr-concealing-backdrop="true"
+                          >
+                            <div className="fr-container fr-container--fluid fr-container-md">
+                              <div className="fr-grid-row fr-grid-row--center">
+                                <div className="fr-col-8">
+                                  <div className="fr-modal__body">
+                                    <div className="fr-modal__header">
+                                      <button
+                                        title="Fermer"
+                                        type="button"
+                                        className="fr-btn--close fr-btn"
+                                        onClick={() =>
+                                          fermerModalePieceJointe()
+                                        }
+                                      >
+                                        Fermer
+                                      </button>
+                                    </div>
+                                    <div className="fr-modal__content">
+                                      <h1
+                                        id="modale-ajout-pj-titre"
+                                        className="fr-modal__title"
+                                      >
+                                        <span
+                                          className="fr-icon-upload-2-line fr-mx-1w"
+                                          aria-hidden="true"
+                                        ></span>{" "}
+                                        Ajouter une pièce jointe au dossier
+                                      </h1>
+
+                                      <div className="fr-select-group">
+                                        <label
+                                          className="fr-label"
+                                          htmlFor="storybook-select-171"
+                                        >
+                                          {" "}
+                                          Type de pièce jointe{" "}
+                                        </label>
+                                        <select
+                                          className="fr-select"
+                                          aria-describedby="storybook-select-171-messages"
+                                          id="storybook-select-171"
+                                          name="storybook-select-171"
+                                          defaultValue={""}
+                                          onChange={(e) =>
+                                            setTypePj(
+                                              Document.types.find(
+                                                (type: DocumentType) =>
+                                                  type.type == e.target.value,
+                                              ),
+                                            )
+                                          }
+                                        >
+                                          <option value="" disabled hidden>
+                                            Sélectionnez un type
+                                          </option>
+                                          {Document.types.map(
+                                            (type: DocumentType) => (
+                                              <option
+                                                value={type.type}
+                                                key={type.type}
+                                              >
+                                                {type.libelle}
+                                              </option>
+                                            ),
+                                          )}
+                                        </select>
+                                        <div
+                                          className="fr-messages-group"
+                                          id="storybook-select-171-messages"
+                                          aria-live="polite"
+                                        ></div>
+                                      </div>
+
+                                      {typePJ && (
+                                        <div className="fr-upload-group">
+                                          <label
+                                            className="fr-label"
+                                            htmlFor="file-upload"
+                                          >
+                                            Document à joindre
+                                            <span className="fr-hint-text">
+                                              Taille maximale : 10
+                                              Mo.&nbsp;Format pdf
+                                              uniquement.&nbsp;
+                                            </span>
+                                          </label>{" "}
+                                          <input
+                                            className="fr-upload"
+                                            type="file"
+                                            id="file-upload"
+                                            name="file-upload"
+                                            accept="application/pdf"
+                                            onChange={(e) =>
+                                              setNouvellePieceJointe(
+                                                e.target.files[0],
+                                              )
+                                            }
+                                          />
+                                        </div>
+                                      )}
+
+                                      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                                        <li>
+                                          <button
+                                            className="fr-btn fr-btn--sm fr-btn--primary"
+                                            type="button"
+                                            disabled={
+                                              sauvegarderEnCours ||
+                                              !typePJ ||
+                                              !nouvellePieceJointe
+                                            }
+                                            onClick={() => ajouterPieceJointe()}
+                                          >
+                                            Ajouter
+                                          </button>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </dialog>
+
+                          {/* Menu latéral des pièces jointes */}
                           <ul>
                             {Document.types.map((type: DocumentType) => (
                               <React.Fragment key={type.type}>
