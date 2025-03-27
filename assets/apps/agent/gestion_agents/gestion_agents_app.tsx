@@ -1,4 +1,7 @@
+import "reflect-metadata";
+import { sentryOptions } from "@/apps/sentry";
 import "@/common/polyfill";
+
 import { ValidationAgentApp } from "@/apps/agent/gestion_agents/components";
 import {
   Administration,
@@ -35,6 +38,7 @@ const validations = new RequeteAgentValidationListe(agents);
 
 const root = ReactDOM.createRoot(
   document.getElementById("react-app-agent-gestion-agents"),
+  sentryOptions,
 );
 
 root.render(
