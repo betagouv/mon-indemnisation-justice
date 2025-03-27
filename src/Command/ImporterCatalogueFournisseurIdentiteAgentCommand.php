@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-#[AsCommand(name: 'mon_indemnisation:agent:importer_catalogue_fournisseur_identite', description: 'Hello PhpStorm')]
+#[AsCommand(name: 'mij:agent:importer_catalogue_fournisseur_identite', description: 'Hello PhpStorm')]
 class ImporterCatalogueFournisseurIdentiteAgentCommand extends Command
 {
     public function __construct(
