@@ -9,6 +9,8 @@ import {
   AttributionDossier,
   DecisionDossier,
 } from "@/apps/agent/dossiers/components/consultation";
+import { data } from "autoprefixer";
+import { plainToInstance } from "class-transformer";
 
 import { observer } from "mobx-react-lite";
 import React, { useRef, useState } from "react";
@@ -40,6 +42,39 @@ export const ConsultationDossierApp = observer(
     const fermerModalePieceJointe = () =>
       refModalePJ.current?.classList.remove("fr-modal--opened");
 
+    const ajouterPieceJointe = async () => {
+      setSauvegarderEnCours(true);
+
+      const payload = new FormData();
+      payload.append("file", nouvellePieceJointe);
+      payload.append("type", typePJ.type);
+
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/piece-jointe/ajouter.json`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: payload,
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const document = plainToInstance(Document, data);
+        dossier.addDocument(document);
+        selectionnerPieceJointe(document);
+        fermerModalePieceJointe();
+        setTypePj(null);
+        setNouvellePieceJointe(null);
+      }
+
+      setSauvegarderEnCours(false);
+      dossier.annoter(notes);
+    };
+
+    // Pièce jointe en cours de visualisation
     const [pieceJointe, selectionnerPieceJointe] = useState(
       dossier.documents
         .values()
@@ -473,6 +508,7 @@ export const ConsultationDossierApp = observer(
                               <button
                                 className="fr-btn fr-btn--sm fr-btn--primary"
                                 type="button"
+                                disabled={!dossier.enInstruction()}
                                 onClick={() => ouvrirModalePieceJointe()}
                               >
                                 Ajouter une pièce jointe
@@ -529,7 +565,12 @@ export const ConsultationDossierApp = observer(
                                           name="storybook-select-171"
                                           defaultValue={""}
                                           onChange={(e) =>
-                                            setTypePj(e.target.value)
+                                            setTypePj(
+                                              Document.types.find(
+                                                (type: DocumentType) =>
+                                                  type.type == e.target.value,
+                                              ),
+                                            )
                                           }
                                         >
                                           <option value="" disabled hidden>
@@ -538,7 +579,7 @@ export const ConsultationDossierApp = observer(
                                           {Document.types.map(
                                             (type: DocumentType) => (
                                               <option
-                                                value={type}
+                                                value={type.type}
                                                 key={type.type}
                                               >
                                                 {type.libelle}
@@ -587,8 +628,11 @@ export const ConsultationDossierApp = observer(
                                             className="fr-btn fr-btn--sm fr-btn--primary"
                                             type="button"
                                             disabled={
-                                              !typePJ || !nouvellePieceJointe
+                                              sauvegarderEnCours ||
+                                              !typePJ ||
+                                              !nouvellePieceJointe
                                             }
+                                            onClick={() => ajouterPieceJointe()}
                                           >
                                             Ajouter
                                           </button>
