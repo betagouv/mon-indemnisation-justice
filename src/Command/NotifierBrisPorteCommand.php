@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-#[AsCommand(name: 'mon_indemnisation:dossier:notifier', description: "Notifier les agents d'un dépôt de dossier de pris de porte")]
+#[AsCommand(name: 'mij:dossier:notifier', description: "Notifier les agents d'un dépôt de dossier de pris de porte")]
 class NotifierBrisPorteCommand extends Command
 {
     public function __construct(

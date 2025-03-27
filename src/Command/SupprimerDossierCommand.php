@@ -6,43 +6,37 @@ namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'mij:dossier:imprimer', description: "Imprimer le courrier d'un dossier")]
-class ImprimerDossierCourrierCommand extends Command
+#[AsCommand(name: 'mij:dossier:supprimer', description: 'Supprimer requérant')]
+class SupprimerDossierCommand extends Command
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly ImprimanteCourrier $imprimante,
     ) {
         parent::__construct();
     }
 
-    protected function configure(): void
+    protected function configure()
     {
-        $this
-            ->addArgument('id', InputArgument::REQUIRED)
-        ;
+        $this->addArgument('id', InputArgument::REQUIRED);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('id');
-        /** @var BrisPorte $brisPorte */
-        $brisPorte = $this->em->find(BrisPorte::class, $id);
+        $dossier = $this->em->find(BrisPorte::class, $id);
 
-        if (null === $brisPorte) {
-            throw new \LogicException("Aucun bris de porte d'id $id");
+        if (null == $dossier) {
+            throw new \LogicException("Aucun dossier trouve pour l'id $id");
         }
 
-        $path = $this->imprimante->imprimerCourrier($brisPorte);
-
-        $output->writeln($path);
+        $this->em->remove($dossier);
+        $this->em->flush();
 
         return Command::SUCCESS;
     }
