@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { sentryOptions } from "@/apps/sentry";
 import "@/common/polyfill";
 
 import "@/style/agents.css";
@@ -45,6 +46,7 @@ autorun(() => {
 
 ReactDOM.createRoot(
   document.getElementById("react-app-agent-recherche-dossiers"),
+  sentryOptions,
 ).render(
   <RechercheDossierApp
     recherche={recherche}
