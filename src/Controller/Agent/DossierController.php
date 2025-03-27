@@ -211,6 +211,39 @@ class DossierController extends AgentController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
+    #[Route('/dossier/{id}/piece-jointe/ajouter.json', name: 'agent_redacteur_ajouter_piece_jointe_dossier', methods: ['POST'])]
+    public function ajouterPieceJointe(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        $type = $request->request->get('type');
+        /** @var UploadedFile $file */
+        $file = $request->files->get('file');
+
+        $content = $file->getContent();
+        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+        $this->storage->write($filename, $content);
+        $document = (new Document())
+            ->setFilename($filename)
+            ->setOriginalFilename($file->getClientOriginalName())
+            ->setSize($file->getSize())
+            ->setType($type)
+            ->setMime($file->getMimeType());
+
+        $dossier->ajouterDocument($document);
+
+        $this->em->persist($document);
+
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse([
+            'id' => $document->getId(),
+            'mime' => $document->getMime(),
+            'originalFilename' => $document->getOriginalFilename(),
+            'url' => $this->generateUrl('agent_document_download', ['id' => $document->getId(), 'hash' => md5($document->getFilename())]),
+            'type' => $document->getType(),
+        ], Response::HTTP_OK);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
     #[Route('/dossier/{id}/instruction/demarrer.json', name: 'agent_redacteur_instruction_demarrer_dossier', methods: ['POST'])]
     public function demarrerInstruction(#[MapEntity(id: 'id')] BrisPorte $dossier): Response
     {
