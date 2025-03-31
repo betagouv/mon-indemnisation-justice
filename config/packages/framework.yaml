@@ -29,7 +29,7 @@ when@test:
 
 when@develop:
     framework:
-        trusted_proxies: '127.0.0.1,%env(CC_REVERSE_PROXY_IPS)%'
+        trusted_proxies: '127.0.0.1,REMOTE_ADDR'
 
 when@prod:
     framework:
