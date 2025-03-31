@@ -2,12 +2,12 @@
 
 namespace MonIndemnisationJustice\Controller\Requerant;
 
+use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
 use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant')]
