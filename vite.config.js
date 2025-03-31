@@ -78,6 +78,8 @@ export default defineConfig(({ command, mode }) => {
               "./assets/apps/requerant/dossier/creation_de_compte.ts",
             "requerant/dossier/deposer_mon_dossier":
               "./assets/apps/requerant/dossier/deposer_mon_dossier.tsx",
+            "requerant/dossier/consulter_la_decision":
+              "./assets/apps/requerant/dossier/consulter_la_decision.tsx",
             "agent/gestion_agents":
               "./assets/apps/agent/gestion_agents/gestion_agents_app.tsx",
             "agent/dossiers/recherche":
