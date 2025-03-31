@@ -51,6 +51,11 @@ class EtatDossier
         return $this->etat->estDecide();
     }
 
+    public function estSigne(): bool
+    {
+        return $this->etat->estSigne();
+    }
+
     public function estAccepte(): bool
     {
         return $this->etat->estAccepte();

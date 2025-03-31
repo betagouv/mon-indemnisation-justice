@@ -243,6 +243,11 @@ class BrisPorte
         return $this->etatDossier->estASigner();
     }
 
+    public function estSigne(): bool
+    {
+        return $this->etatDossier->estSigne();
+    }
+
     public function estDecide(): bool
     {
         return $this->etatDossier->estDecide();

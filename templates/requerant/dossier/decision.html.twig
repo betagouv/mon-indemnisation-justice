@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Consulter la décision{% endblock %}
+
+{% block stylesheets %}
+  {{ vite_entry_link_tags('requerant/dossier/consulter_la_decision') }}
+{% endblock stylesheets %}
+
+{% block main %}
+  <div id="react-app"></div>
+{% endblock %}
+
+{% block javascripts %}
+  <script id="react-arguments" type="application/json">
+    {}
+  </script>
+  {% if est_vite_server_actif() %}
+      {% include '_vite_hmr_extra.html.twig' %}
+  {% endif %}
+
+  {{ vite_entry_script_tags('requerant/dossier/consulter_la_decision') }}
+
+  {{ parent() }}
+
+{% endblock javascripts %}

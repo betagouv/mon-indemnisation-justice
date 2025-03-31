@@ -50,7 +50,7 @@
                         <thead>
                             <tr>
                                 <th scope="col" class="fr-col-1">Référence</th>
-                                <th scope="col" class="fr-col-5">Statut du dossier</th>
+                                <th scope="col" class="fr-col-5">Statut de la demande d'indemnisation</th>
                                 <th scope="col" class="fr-col-3">Date du dernier statut</th>
                                 <th scope="col" class="fr-col-1">Code suivi</th>
                                 <th scope="col" class="fr-col-2"></th>
@@ -59,12 +59,17 @@
                         <tbody>
                             {# @var dossiers App\Entity\BrisPorte[] #}
                             {% for dossier in dossiers %}
+                                {% set dateDernierStatut = dossier.estSigne ? dossier.etatDossier.date : dossier.dateDeclaration| default(dossier.dateCreation) %}
                             <tr>
                                 <td>{{ dossier.reference }}</td>
                                 <td>
-                                    {% if dossier.estConstitue %}
-                                        <p class="fr-badge fr-badge fr-badge--blue-cumulus">
-                                            Demande d'indemnisation déposée&nbsp;
+                                    {% if dossier.estSigne %}
+                                        <p class="fr-badge fr-badge--{{ dossier.estAccepte ? 'success' : 'error' }}">
+                                            {{ dossier|etat_requerant }}
+                                        </p>
+                                    {% elseif dossier.estConstitue %}
+                                        <p class="fr-badge fr-badge--blue-cumulus">
+                                            Dossier déposé&nbsp;
                                             <span class="fr-icon-send-plane-line" aria-hidden="true"></span>
                                         </p>
                                     {% else %}
@@ -75,30 +80,27 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {{ dossier.dateDeclaration| default(dossier.dateCreation)|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY", timezone='Europe/Paris') }}<br/>
-                                    ({{ dossier.dateDeclaration| default(dossier.dateCreation)|format_datetime(locale='fr',pattern="HH'h'mm", timezone='Europe/Paris') }})
+                                    {{ dateDernierStatut|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY", timezone='Europe/Paris') }}<br/>
+                                    ({{ dateDernierStatut|format_datetime(locale='fr',pattern="HH'h'mm", timezone='Europe/Paris') }})
                                 </td>
                                 <td>{{ dossier.raccourci }}</td>
                                 <td>
                                     <a
-                                        href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
-                                        class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left"
+                                        {% if dossier.estSigne %}
+                                            href="{{ url('requerant_dossier_consulter_decision', { 'id' : dossier.id }) }}"
+                                            class="fr-btn fr-btn--sm fr-icon-eye-line fr-btn--icon-left"
+                                        {% else %}
+                                            href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
+                                            class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left"
+                                        {% endif %}
+
+
                                     >
-                                        {% if dossier.estConstitue %}Modifier{% else %}Compléter{% endif %}
+                                        {% if dossier.estSigne %}Consulter{% elseif dossier.estConstitue %}Modifier{% else %}Compléter{% endif %}
                                     </a>
                                 </td>
                             </tr>
                             {% endfor %}
-                            <tr>
-                                <td colspan="5" style="text-align:right;">
-                                    <a
-                                        href="{{ url('bris_porte_tester_eligibilite') }}"
-                                        class="fr-btn fr-btn--icon-left fr-icon-add-line"
-                                    >
-                                        Déposer une nouvelle demande
-                                    </a>
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>

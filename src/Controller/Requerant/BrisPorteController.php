@@ -71,4 +71,14 @@ class BrisPorteController extends RequerantController
 
         return $this->redirectToRoute('requerant_home_index');
     }
+
+    #[Route('/{id}/consulter-la-decision', name: 'requerant_dossier_consulter_decision', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function consulterDecision(#[MapEntity(id: 'id')] BrisPorte $dossier): Response
+    {
+        if (!$dossier->estSigne()) {
+            return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
+        }
+
+        return $this->render('requerant/dossier/decision.html.twig', []);
+    }
 }

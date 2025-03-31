@@ -3,7 +3,9 @@
 namespace MonIndemnisationJustice\Twig;
 
 use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
 use Pentatrion\ViteBundle\Exception\EntrypointNotFoundException;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
@@ -26,6 +28,30 @@ class AppRuntime implements RuntimeExtensionInterface
     public function estRequerant(?UserInterface $user = null): bool
     {
         return $user instanceof Requerant;
+    }
+
+    public function etatDossierRequerant(BrisPorte $dossier): string
+    {
+        switch ($dossier->getEtatDossier()->getEtat()) {
+            case EtatDossierType::DOSSIER_A_FINALISER:
+                return 'Dossier à compléter';
+            case EtatDossierType::DOSSIER_A_INSTRUIRE:
+            case EtatDossierType::DOSSIER_EN_INSTRUCTION:
+            case EtatDossierType::DOSSIER_DOUBLON_PAPIER:
+            case EtatDossierType::DOSSIER_OK_A_SIGNER:
+            case EtatDossierType::DOSSIER_KO_A_SIGNER:
+                return 'Dossier déposé';
+            case EtatDossierType::DOSSIER_OK_A_APPROUVER:
+                return 'Indemnisation à accepter';
+            case EtatDossierType::DOSSIER_OK_A_INDEMNISER:
+                return 'En attente d\'indemnisation';
+            case EtatDossierType::DOSSIER_OK_INDEMNISE:
+                return 'Indemnisé';
+            case EtatDossierType::DOSSIER_KO_REJETE:
+                return 'Dossier rejeté';
+        }
+
+        return '';
     }
 
     public function estAgent(?UserInterface $user = null): bool
