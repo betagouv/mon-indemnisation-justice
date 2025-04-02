@@ -5,15 +5,16 @@ import fs from "fs";
 
 const source = process.argv.at(-2);
 const destination = process.argv.at(-1);
+const chromePath = process.env.CHROMIUM_PATH;
 
-console.dir({ source, destination });
+console.dir({ source, destination, chromePath });
 
 (async () => {
   const browser = await puppeteer.launch({
     args: ["--no-sandbox"],
     headless: "new",
     timeout: 5000,
-    executablePath: process.env.CHROMIUM_PATH,
+    executablePath: chromePath,
     browser: "chrome",
   });
   const page = await browser.newPage();
