@@ -11,9 +11,14 @@ console.dir({ source, destination, chromePath });
 
 (async () => {
   const browser = await puppeteer.launch({
-    args: ["--no-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-gpu",
+      "--disable-translate",
+      "--disable-extensions",
+    ],
     headless: "new",
-    timeout: 10000,
+    timeout: 30000,
     executablePath: chromePath,
     browser: "chrome",
   });
