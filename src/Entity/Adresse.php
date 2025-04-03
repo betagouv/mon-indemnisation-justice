@@ -90,7 +90,7 @@ class Adresse
 
     public function getCodeDepartemental(): ?string
     {
-        return substr($this->codePostal, 0, strlen($this->codePostal) - 3);
+        return $this->codePostal ? substr($this->codePostal, 0, strlen($this->codePostal) - 3) : null;
     }
 
     public function setCodePostal(?string $codePostal): static

@@ -65,7 +65,9 @@ class ImprimanteCourrier
 
             return $destination;
         } catch (\Exception $e) {
-            $this->filesystem->remove($path);
+            if (false) { // TODO changer pour un check sur APP_DEBUG
+                $this->filesystem->remove($path);
+            }
 
             throw new \LogicException($e->getMessage(), previous: $e);
         }
