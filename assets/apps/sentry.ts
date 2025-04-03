@@ -1,8 +1,6 @@
 import * as Sentry from "@sentry/react";
 import { RootOptions } from "react-dom/client";
 
-console.dir(import.meta.env?.VITE_SENTRY_DSN);
-
 let sentryOptions: RootOptions = {};
 
 if (import.meta.env?.VITE_SENTRY_DSN) {

@@ -62,7 +62,7 @@ class CourrierController extends AbstractController
                 [
                     'Content-Transfer-Encoding', 'binary',
                     'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => sprintf('attachment; filename="Lettre décision dossier %s"', addslashes($dossier->getReference())),
+                    'Content-Disposition' => sprintf('filename="Lettre décision dossier %s.pdf"', addslashes($dossier->getReference())),
                     'Content-Length' => fstat($stream)['size'],
                 ]
             );
