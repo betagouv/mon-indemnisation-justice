@@ -6,14 +6,17 @@ import fs from "fs";
 const source = process.argv.at(-2);
 const destination = process.argv.at(-1);
 
-console.dir({ source, destination });
-
 (async () => {
   const browser = await puppeteer.launch({
-    args: ["--no-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-gpu",
+      "--disable-translate",
+      "--disable-extensions",
+    ],
     headless: "new",
-    timeout: 5000,
-    executablePath: process.env.CHROMIUM_PATH,
+    timeout: 30000,
+    executablePath: chromePath,
     browser: "chrome",
   });
   const page = await browser.newPage();

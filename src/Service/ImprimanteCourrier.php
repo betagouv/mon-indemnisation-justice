@@ -32,7 +32,15 @@ class ImprimanteCourrier
         $this->binDirectory = "$projectDirectory/bin";
     }
 
-    public function imprimerCourrier(BrisPorte $dossier): string
+    /**
+     * Imprime, i.e. génère un fichier PDF, le courrier d'un dossier.
+     *
+     * @param BrisPorte $dossier        le dossier pour lequel imprimer le courrier
+     * @param bool      $garderFichiers garder ou non les fichiers temporaires sur le disque (utile en cas de débogage)
+     *
+     * @throws \League\Flysystem\FilesystemException
+     */
+    public function imprimerCourrier(BrisPorte $dossier, bool $garderFichiers = false): string
     {
         $path = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
 
@@ -65,7 +73,10 @@ class ImprimanteCourrier
 
             return $destination;
         } catch (\Exception $e) {
-            $this->filesystem->remove($path);
+            // Sauf si explicitement demandé, supprimer les fichiers temporaires
+            if (!$garderFichiers) {
+                $this->filesystem->remove($path);
+            }
 
             throw new \LogicException($e->getMessage(), previous: $e);
         }

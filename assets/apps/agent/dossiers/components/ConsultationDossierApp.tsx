@@ -9,11 +9,10 @@ import {
   AttributionDossier,
   DecisionDossier,
 } from "@/apps/agent/dossiers/components/consultation";
-import { data } from "autoprefixer";
 import { plainToInstance } from "class-transformer";
 
 import { observer } from "mobx-react-lite";
-import React, { useRef, useState } from "react";
+import React, { useRef, useLayoutEffect, useState } from "react";
 import ReactQuill from "react-quill-new";
 
 export const ConsultationDossierApp = observer(
@@ -113,6 +112,15 @@ export const ConsultationDossierApp = observer(
       setSauvegarderEnCours(false);
       dossier.annoter(notes);
     };
+
+    const refSectionCourrier = useRef(null);
+    const [largeurSectionCourrier, setLargeurSectionCourrier] = useState(0);
+
+    useLayoutEffect(() => {
+      if (refSectionCourrier.current) {
+        setLargeurSectionCourrier(refSectionCourrier.current.offsetWidth);
+      }
+    }, []);
 
     return (
       <>
@@ -313,7 +321,7 @@ export const ConsultationDossierApp = observer(
                               <>
                                 <span aria-describedby="tooltip-requerant-courriel">{`${dossier.requerant.courriel.substring(0, 2)}${"*".repeat(dossier.requerant.courriel.length - 2)}`}</span>
                                 <span
-                                  class="fr-tooltip fr-placement"
+                                  className="fr-tooltip fr-placement"
                                   id="tooltip-requerant-courriel"
                                   role="tooltip"
                                   aria-hidden="true"
@@ -332,7 +340,7 @@ export const ConsultationDossierApp = observer(
                                 <>
                                   <span aria-describedby="tooltip-requerant-telephone">{`${dossier.requerant.telephone.substring(0, 2)}${"*".repeat(dossier.requerant.telephone.length - 2)}`}</span>
                                   <span
-                                    class="fr-tooltip fr-placement"
+                                    className="fr-tooltip fr-placement"
                                     id="tooltip-requerant-telephone"
                                     role="tooltip"
                                     aria-hidden="true"
@@ -739,7 +747,7 @@ export const ConsultationDossierApp = observer(
                     >
                       <section>
                         <h3>Courrier</h3>
-                        <div className="fr-grid-row">
+                        <div className="fr-grid-row" ref={refSectionCourrier}>
                           <object
                             data={
                               dossier.documents
@@ -747,8 +755,11 @@ export const ConsultationDossierApp = observer(
                                 ?.at(0)?.url ?? dossier.courrier.url
                             }
                             type="application/pdf"
+                            width={largeurSectionCourrier}
+                            height={Math.floor(
+                              (297 * largeurSectionCourrier) / 210,
+                            )}
                             style={{
-                              width: "100%",
                               aspectRatio: "210/297",
                             }}
                           ></object>

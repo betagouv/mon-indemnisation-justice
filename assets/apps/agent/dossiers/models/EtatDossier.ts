@@ -8,7 +8,7 @@ export class EtatDossier {
   public static A_INSTRUIRE = new EtatDossier("A_INSTRUIRE", "À instruire");
   public static EN_INSTRUCTION = new EtatDossier(
     "EN_INSTRUCTION",
-    "EN cours d'instruction",
+    "En cours d'instruction",
   );
 
   public static DOUBLON_PAPIER = new EtatDossier(

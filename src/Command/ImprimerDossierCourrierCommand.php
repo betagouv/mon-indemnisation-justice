@@ -11,6 +11,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'mij:dossier:imprimer', description: "Imprimer le courrier d'un dossier")]
@@ -27,13 +28,16 @@ class ImprimerDossierCourrierCommand extends Command
     {
         $this
             ->addArgument('id', InputArgument::REQUIRED)
+            ->addOption('garder-fichiers', 'g', InputOption::VALUE_NONE, description: 'Garder les fichiers temporaires')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('id');
-        /** @var BrisPorte $brisPorte */
+        $garderFichiers = $input->getOption('garder-fichiers');
+
+        /* @var BrisPorte $brisPorte */
         $brisPorte = $this->em->find(BrisPorte::class, $id);
 
         if (null === $brisPorte) {
