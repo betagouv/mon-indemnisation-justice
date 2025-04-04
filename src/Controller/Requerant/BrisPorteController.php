@@ -30,14 +30,17 @@ class BrisPorteController extends RequerantController
 
     #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function edit(
-        #[MapEntity(id: 'id')] BrisPorte $brisPorte): Response
+        #[MapEntity(id: 'id')] BrisPorte $dossier): Response
     {
-        if ($brisPorte->getRequerant() !== $this->getUser()) {
+        if ($dossier->getRequerant() !== $this->getUser()) {
             throw new AccessDeniedHttpException();
         }
 
+        if (!$dossier->estSigne()) {
+        }
+
         return $this->render('requerant/dossier/declare_bris_porte.html.twig', [
-            'brisPorte' => $brisPorte,
+            'dossier' => $dossier,
             'pays' => $this->geoPaysRepository->getListeTriee(),
         ]);
     }

@@ -101,6 +101,9 @@
             "var/storage/.gitignore"
         ]
     },
+    "liip/test-fixtures-bundle": {
+        "version": "3.3.0"
+    },
     "nelmio/cors-bundle": {
         "version": "2.4",
         "recipe": {

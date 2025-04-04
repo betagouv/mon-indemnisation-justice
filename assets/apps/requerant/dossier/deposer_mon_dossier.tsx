@@ -23,9 +23,29 @@ if (import.meta.env.PROD) {
   disableReactDevTools();
 }
 
-const { dossier, pays } = JSON.parse(
-  document.getElementById("react-arguments").textContent,
-);
+const { dossier, pays } = {
+  ...{
+    // Pré-population des listes de documents par type
+    dossier: {
+      documents: {
+        attestation_information: [],
+        photo_prejudice: [],
+        carte_identite: [],
+        facture: [],
+        rib: [],
+        titre_propriete: [],
+        contrat_location: [],
+        non_prise_en_charge_bailleur: [],
+        non_prise_en_charge_assurance: [],
+        courrier_ministere: [],
+        courrier_requerant: [],
+      },
+    },
+    ...JSON.parse(document.getElementById("react-arguments").textContent),
+  },
+};
+
+console.dir(dossier);
 
 const root = ReactDOM.createRoot(document.getElementById("react-app"));
 

@@ -109,7 +109,9 @@ export class DossierDetail extends BaseDossier {
   public montantIndemnisation: number | null = null;
 
   @Transform(({ value }: { value: object }) => new Map(Object.entries(value)))
-  public documents: Map<string, Document[]> = new Map();
+  public documents: Map<string, Document[]> = new Map(
+    Document.types.map((type: DocumentType) => [type.type, []]),
+  );
 
   public corpsCourrier?: string;
   @Expose()
