@@ -103,3 +103,4 @@ jobs:
         if: success() || failure()
         with:
           report_paths: reports/*-result.xml
+          job_name: 'Backend tests results'

@@ -1,4 +1,3 @@
-import { DocumentType } from "@/apps/agent/dossiers/models";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
