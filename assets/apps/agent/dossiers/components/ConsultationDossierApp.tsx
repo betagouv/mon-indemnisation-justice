@@ -722,6 +722,7 @@ export const ConsultationDossierApp = observer(
                                   style={{
                                     width: "100%",
                                     maxHeight: "100vh",
+                                    objectFit: "contain",
                                   }}
                                 />
                               )}
