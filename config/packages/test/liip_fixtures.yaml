@@ -1,0 +1,5 @@
+# config/packages/test/liip_fixtures.yaml
+liip_test_fixtures:
+    keep_database_and_schema: true
+    cache_metadata: true
+    cache_db: ~

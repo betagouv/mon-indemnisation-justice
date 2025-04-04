@@ -158,12 +158,7 @@ class BrisPorte
                 $carry[$document->getType()][] = $document;
 
                 return $carry;
-            }, array_merge(
-                ...array_map(
-                    fn (string $type) => [$type => []],
-                    array_keys(Document::$types)
-                )
-            )
+            }, []
         );
     }
 
