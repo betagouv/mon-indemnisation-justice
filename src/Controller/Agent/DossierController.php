@@ -11,6 +11,7 @@ use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Service\DateConvertisseur;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -67,7 +68,6 @@ class DossierController extends AgentController
                 'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
                 'adresse' => $dossier->getAdresse()->getLibelle(),
             ] : [
-                'redacteur' => $dossier->getRedacteur()?->getId(),
                 'requerant' => [
                     'civilite' => $dossier->getRequerant()->getPersonnePhysique()->getCivilite()->value,
                     'nom' => $dossier->getRequerant()->getPersonnePhysique()->getNom(),
@@ -100,9 +100,9 @@ class DossierController extends AgentController
                     'codePostal' => $dossier->getAdresse()->getCodePostal(),
                     'localite' => $dossier->getAdresse()->getLocalite(),
                 ],
-                'dateOperation' => ($dossier->getDateOperationPJ()?->getTimestamp() * 1000) ?? null,
+                'dateOperation' => DateConvertisseur::enMillisecondes($dossier->getDateOperationPJ()),
                 'estPorteBlindee' => $dossier->getIsPorteBlindee(),
-                'montantIndemnisation' => floatval($dossier->getPropositionIndemnisation()),
+                'montantIndemnisation' => $dossier->getPropositionIndemnisation() ? floatval($dossier->getPropositionIndemnisation()) : null,
                 'documents' => array_merge(
                     /* @var Document[] $documents */
                     ...array_map(
