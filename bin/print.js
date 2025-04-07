@@ -5,6 +5,7 @@ import fs from "fs";
 
 const source = process.argv.at(-2);
 const destination = process.argv.at(-1);
+const chromePath = process.env.CHROMIUM_PATH;
 
 (async () => {
   const browser = await puppeteer.launch({

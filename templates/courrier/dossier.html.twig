@@ -400,7 +400,7 @@
             <p>
                 Je reconnais que, moyennant le versement de cette somme, je serai intégralement
                 désintéressé{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %} du préjudice
-                subi au cours de l’opération de police judiciaire intervenue le 20 mars 2024 à l’adresse susmentionnée
+                subi au cours de l’opération de police judiciaire intervenue le {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }} à l’adresse susmentionnée
                 ;</p>
 
             <p>

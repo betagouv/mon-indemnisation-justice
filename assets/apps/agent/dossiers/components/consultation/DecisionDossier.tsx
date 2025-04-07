@@ -71,9 +71,8 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
     if (response.ok) {
       const data = await response.json();
       dossier.changerEtat(data.etat);
+      setSauvegarderEnCours(false);
     }
-
-    setSauvegarderEnCours(false);
   };
 
   const ouvrirModaleDecision = (dec: boolean) => {
@@ -157,10 +156,12 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
       const data = await response.json();
       dossier.changerEtat(data.etat);
       dossier.setCourrier(plainToInstance(Courrier, data.courrier));
+
+      // Déclencher le _hook_ onDecide s'il est défini
+      onDecide?.();
     }
 
-    // Déclencher le _hook_ onDecide s'il est défini
-    onDecide?.();
+    fermerModaleDecision();
 
     setSauvegarderEnCours(false);
     decider(null);
