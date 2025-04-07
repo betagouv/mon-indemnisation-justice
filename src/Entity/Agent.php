@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\Table(name: 'agents')]
@@ -36,6 +38,7 @@ class Agent implements UserInterface
 
     public const ROLE_AGENT_FORCES_DE_L_ORDRE = 'ROLE_AGENT_FORCES_DE_L_ORDRE';
 
+    #[Groups('agent:resume')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
@@ -331,6 +334,8 @@ class Agent implements UserInterface
         return sprintf('%s. %s', $this->prenom[0], $this->nom);
     }
 
+    #[Groups('agent:resume')]
+    #[SerializedName('nom')]
     public function getNomComplet($capital = false): ?string
     {
         return sprintf('%s %s', $this->prenom, $capital ? strtoupper(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $this->nom)) : $this->nom);

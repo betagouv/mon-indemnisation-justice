@@ -2,19 +2,21 @@
 
 namespace MonIndemnisationJustice\DataFixtures;
 
-use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\ORMFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\TestEligibilite;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class DossierFixture extends Fixture
+class DossierFixture implements ORMFixtureInterface
 {
     public function __construct(
         protected readonly UserPasswordHasherInterface $passwordHasher,
@@ -60,7 +62,20 @@ class DossierFixture extends Fixture
         $dossier = (new BrisPorte())
             ->setReference('BRI/20250101/001')
             ->setRequerant($requerant)
-            ->setRedacteur($redacteur);
+            ->setRedacteur($redacteur)
+            ->setTestEligibilite(
+                TestEligibilite::fromArray([
+                    'departement' => $manager->find(GeoDepartement::class, '13'),
+                    'description' => 'Porte fracturée tôt ce matin',
+                    'estVise' => false,
+                    'estHebergeant' => false,
+                    'estProprietaire' => true,
+                    'aContacteAssurance' => false,
+                    'requerant' => $requerant,
+                    'dateSoumission' => new \DateTime('-30 seconds'),
+                ])
+            )
+        ;
 
         $manager->persist($dossier);
         $manager->flush();

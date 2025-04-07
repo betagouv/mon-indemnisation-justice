@@ -39,7 +39,7 @@ class BrisPorteRepository extends ServiceEntityRepository
      *
      * @return BrisPorte[]
      */
-    public function rechercheDossiers(array $etats = [], array $attributaires = [], array $filtres = [], bool $nonAttribue = false)
+    public function rechercheDossiers(array $etats = [], array $attributaires = [], array $filtres = [], bool $nonAttribue = false): array
     {
         $qb = $this
             ->createQueryBuilder('d')

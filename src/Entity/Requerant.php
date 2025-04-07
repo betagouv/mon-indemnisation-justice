@@ -7,10 +7,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\RequerantRepository;
+use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: RequerantRepository::class)]
 #[ORM\Table(name: 'requerants')]
@@ -88,6 +90,8 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
+    #[Groups('agent:detail')]
+    #[SerializedName('courriel')]
     public function getEmail(): ?string
     {
         return $this->email;
@@ -267,6 +271,62 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[Groups('agent:detail')]
+    #[SerializedName('civilite')]
+    public function getCivilite(): string
+    {
+        return $this->personnePhysique->getCivilite()->value;
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('nom')]
+    public function getNom(): string
+    {
+        return $this->personnePhysique->getNom();
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('prenoms')]
+    public function getPrenoms(): array
+    {
+        return [$this->personnePhysique->getPrenom1(), $this->personnePhysique->getPrenom2(), $this->personnePhysique->getPrenom3()];
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('nomNaissance')]
+    public function getNomNaissance(): ?string
+    {
+        return $this->personnePhysique->getNomNaissance();
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('telephone')]
+    public function getTelephone(): ?string
+    {
+        return $this->personnePhysique->getTelephone();
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('dateNaissance')]
+    public function getDateNaissance(): ?int
+    {
+        return DateConvertisseur::enMillisecondes($this->personnePhysique->getDateNaissance());
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('communeNaissance')]
+    public function getCommuneNaissance(): ?string
+    {
+        return $this->personnePhysique->getCommuneNaissance();
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('paysNaissance')]
+    public function getPaysNaissance(): ?string
+    {
+        return $this->personnePhysique->getPaysNaissance()?->getNom();
+    }
+
     public function getPersonneMorale(): ?PersonneMorale
     {
         return $this->personneMorale;
@@ -277,6 +337,20 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         $this->personneMorale = $personneMorale;
 
         return $this;
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('raisonSociale')]
+    public function getRaisonSociale(): ?string
+    {
+        return $this->isPersonneMorale ? $this->personneMorale?->getRaisonSociale() : null;
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('siren')]
+    public function getSiren(): ?string
+    {
+        return $this->isPersonneMorale ? $this->getPersonneMorale()?->getRaisonSociale() : null;
     }
 
     public function getNomCourant(bool $civilite = false, bool $capital = false): string
