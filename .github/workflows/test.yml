@@ -61,7 +61,7 @@ jobs:
       - uses: browser-actions/setup-firefox@v1
       - uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 22.x
       - name: Cache composer dependencies
         uses: actions/cache@v3
         with:
@@ -80,11 +80,9 @@ jobs:
           php-version: '8.3'
           extensions: 'zip, intl, calendarn gd, pdo, pdo_pgsql, pgsql'
 
-      - name: Install yarn dependencies & build assets
+      - name: Install dependencies & build assets
         run: |
-          sudo chown -R runner:runner .
           composer install --no-interaction --optimize-autoloader
-          bin/console cache:clear
           yarn install --no-progress --non-interactive
           yarn build
 
@@ -97,13 +95,17 @@ jobs:
       - name: Detect headless browser driver
         run: vendor/bin/bdi detect drivers
 
+      - name: Run backend unit test
+        run: |
+          bin/phpunit --log-junit test-result-phpunit.xml
+
       - name: Run unit test
         run: |
-          bin/phpunit --log-junit reports/phpunit-result.xml
+          yarn vitest run --reporter=junit --outputFile=test-result-vitest.xml
 
-      - name: Publish test Report
+      - name: Publish test reports
         uses: mbeccati/test-reporter@phpunit-support
         with:
-          name: PHPUnit Test results
-          path: reports/*-result.xml
+          name: Publish test reports
+          path: test-result-*.xml
           reporter: java-junit
