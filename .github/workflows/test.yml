@@ -91,6 +91,9 @@ jobs:
       - name: Run migration
         run: bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
 
+      - name: Load data fixtures
+        run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate --purge-exclusions=geo_departements --purge-exclusions=geo_regions --purge-exclusions=geo_pays
+
       - name: Detect headless browser driver
         run: vendor/bin/bdi detect drivers
 

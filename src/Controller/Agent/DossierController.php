@@ -11,7 +11,6 @@ use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
-use MonIndemnisationJustice\Service\DateConvertisseur;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -21,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
 #[Route('/agent/redacteur')]
@@ -54,98 +54,8 @@ class DossierController extends AgentController
         return $this->redirectToRoute('agent_redacteur_dossiers');
     }
 
-    protected function normalizeDossier(BrisPorte $dossier, $format = 'apercu'): array
-    {
-        return array_merge(
-            [
-                'id' => $dossier->getId(),
-                'reference' => $dossier->getReference(),
-                'etat' => $dossier->getEtatDossier()->getEtat()->value,
-                'dateDepot' => $dossier->getDateDeclaration() ? (int) $dossier->getDateDeclaration()->format('Uv') : null,
-                'redacteur' => $dossier->getRedacteur()?->getId(),
-            ],
-            'apercu' === $format ? [
-                'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
-                'adresse' => $dossier->getAdresse()->getLibelle(),
-            ] : [
-                'requerant' => [
-                    'civilite' => $dossier->getRequerant()->getPersonnePhysique()->getCivilite()->value,
-                    'nom' => $dossier->getRequerant()->getPersonnePhysique()->getNom(),
-                    'prenoms' => [
-                        $dossier->getRequerant()->getPersonnePhysique()->getPrenom1(),
-                        $dossier->getRequerant()->getPersonnePhysique()->getPrenom2(),
-                        $dossier->getRequerant()->getPersonnePhysique()->getPrenom3(),
-                    ],
-                    'nomNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getNomNaissance(),
-                    'courriel' => $dossier->getRequerant()->getPersonnePhysique()->getEmail(),
-                    'telephone' => !empty($dossier->getRequerant()->getPersonnePhysique()->getTelephone()) ? $dossier->getRequerant()->getPersonnePhysique()->getTelephone() : null,
-                    'dateNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance() ? $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance()->getTimestamp() * 1000 : null,
-                    'communeNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getCommuneNaissance(),
-                    'paysNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getPaysNaissance()?->getNom(),
-                    'raisonSociale' => $dossier->getRequerant()->getIsPersonneMorale() ? $dossier->getRequerant()->getPersonneMorale()->getRaisonSociale() : null,
-                    'siren' => $dossier->getRequerant()->getIsPersonneMorale() ? $dossier->getRequerant()->getPersonneMorale()->getSirenSiret() : null,
-                ],
-                'notes' => $dossier->getNotes(),
-                'testEligibilite' => $dossier->getTestEligibilite() ? [
-                    'estVise' => $dossier->getTestEligibilite()->estVise,
-                    'estHebergeant' => $dossier->getTestEligibilite()->estHebergeant,
-                    'estProprietaire' => $dossier->getTestEligibilite()->estProprietaire,
-                    'aContacteAssurance' => $dossier->getTestEligibilite()->aContacteAssurance,
-                    'aContacteBailleur' => $dossier->getTestEligibilite()->aContacteBailleur,
-                    'description' => $dossier->getTestEligibilite()->description,
-                ] : null,
-                'adresse' => [
-                    'ligne1' => $dossier->getAdresse()->getLigne1(),
-                    'ligne2' => $dossier->getAdresse()->getLigne2(),
-                    'codePostal' => $dossier->getAdresse()->getCodePostal(),
-                    'localite' => $dossier->getAdresse()->getLocalite(),
-                ],
-                'dateOperation' => DateConvertisseur::enMillisecondes($dossier->getDateOperationPJ()),
-                'estPorteBlindee' => $dossier->getIsPorteBlindee(),
-                'montantIndemnisation' => $dossier->getPropositionIndemnisation() ? floatval($dossier->getPropositionIndemnisation()) : null,
-                'documents' => array_merge(
-                    /* @var Document[] $documents */
-                    ...array_map(
-                        fn (string $type, array $documents) => [
-                            $type => array_map(
-                                fn (Document $document) => [
-                                    'id' => $document->getId(),
-                                    'mime' => $document->getMime(),
-                                    'originalFilename' => $document->getOriginalFilename(),
-                                    'url' => $this->generateUrl('agent_document_download', ['id' => $document->getId(), 'hash' => md5($document->getFilename())]),
-                                    'type' => $document->getType(),
-                                ],
-                                $documents
-                            ),
-                        ],
-                        array_keys($dossier->getDocuments()),
-                        $dossier->getDocuments()
-                    ),
-                ),
-                'corpsCourrier' => $dossier->getCorpsCourrier(),
-                'courrier' => $dossier->getCourrier() ? [
-                    'id' => $dossier->getCourrier()->getId(),
-                    'filename' => $dossier->getCourrier()->getFilename(),
-                    'url' => $this->generateUrl('agent_redacteur_courrier_dossier', ['id' => $dossier->getId(), 'hash' => md5($dossier->getCourrier()->getFilename())]),
-                ] : null,
-            ]
-        );
-    }
-
-    /**
-     * @param Agent[] ...$agents
-     */
-    protected function normalizeRedacteur(...$agents): array
-    {
-        return array_map(
-            fn (Agent $agent) => [
-                'id' => $agent->getId(),
-                'nom' => $agent->getNomComplet(true),
-            ], ...$agents);
-    }
-
     #[Route('/dossiers', name: 'agent_redacteur_dossiers')]
-    public function dossiers(): Response
+    public function dossiers(NormalizerInterface $normalizer): Response
     {
         return $this->render('agent/dossier/recherche_dossiers.html.twig', [
             'react' => [
@@ -157,13 +67,13 @@ class DossierController extends AgentController
                         $this->getAgent()->hasRole(Agent::ROLE_AGENT_VALIDATEUR) ? ['VALIDATEUR'] : [],
                     ),
                 ],
-                'redacteurs' => $this->normalizeRedacteur($this->agentRepository->getRedacteurs()),
+                'redacteurs' => $normalizer->normalize($this->agentRepository->getRedacteurs(), 'json', ['groups' => 'agent:resume']),
             ],
         ]);
     }
 
     #[Route('/dossier/{id}', name: 'agent_redacteur_consulter_dossier')]
-    public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier): Response
+    public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {
         return $this->render('agent/dossier/consulter_bris_porte.html.twig', [
             'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
@@ -176,8 +86,8 @@ class DossierController extends AgentController
                         $this->getAgent()->hasRole(Agent::ROLE_AGENT_VALIDATEUR) ? ['VALIDATEUR'] : [],
                     ),
                 ],
-                'dossier' => $this->normalizeDossier($dossier, 'detail'),
-                'redacteurs' => $this->normalizeRedacteur($this->agentRepository->getRedacteurs()),
+                'dossier' => $normalizer->normalize($dossier, 'json', ['groups' => 'agent:detail']),
+                'redacteurs' => $normalizer->normalize($this->agentRepository->getRedacteurs(), 'json', ['groups' => 'agent:resume']),
             ],
         ]);
     }
@@ -453,11 +363,10 @@ class DossierController extends AgentController
     }
 
     #[Route('/dossiers.json', name: 'agent_redacteur_dossiers_json', methods: ['GET'])]
-    public function dossiersJson(Request $request): Response
+    public function dossiersJson(Request $request, NormalizerInterface $normalizer): Response
     {
         return new JsonResponse(
-            array_map(
-                fn (BrisPorte $dossier) => $this->normalizeDossier($dossier),
+            $normalizer->normalize(
                 $this->dossierRepository->rechercheDossiers(
                     $request->query->has('e') ?
                         array_filter(
@@ -473,7 +382,8 @@ class DossierController extends AgentController
                     ]),
                     self::extraireCritereRecherche($request, 'r'),
                     in_array('_', self::extraireCritereRecherche($request, 'a'))
-                )
+                ),
+                'json', ['groups' => 'agent:liste']
             )
         );
     }

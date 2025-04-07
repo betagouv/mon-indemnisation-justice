@@ -17,19 +17,19 @@ class Adresse
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne1 = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne2 = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $localite = null;
 

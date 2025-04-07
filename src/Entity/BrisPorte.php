@@ -10,8 +10,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ApiResource(
@@ -30,13 +32,13 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 #[ORM\Table(name: 'bris_porte')]
 class BrisPorte
 {
-    #[Groups('dossier:lecture')]
+    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     public ?int $id = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected Requerant $requerant;
@@ -45,6 +47,7 @@ class BrisPorte
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     protected ?Agent $redacteur = null;
 
+    #[Groups('agent:detail')]
     #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $notes = null;
 
@@ -57,6 +60,7 @@ class BrisPorte
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
+    #[Groups('agent:detail')]
     #[ORM\OneToOne(targetEntity: CourrierDossier::class, inversedBy: null, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'courrier_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ?CourrierDossier $courrier = null;
@@ -70,7 +74,7 @@ class BrisPorte
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateCreation;
 
-    #[Groups('dossier:lecture')]
+    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail'])]
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $reference = null;
 
@@ -81,6 +85,7 @@ class BrisPorte
     protected Collection $documents;
     protected ?array $documentsParType = null;
 
+    #[Groups('agent:detail')]
     #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $corpsCourrier = null;
 
@@ -100,7 +105,7 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     protected ?string $numeroPV = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste'])]
     #[ORM\ManyToOne(inversedBy: 'brisPortes', cascade: ['persist'])]
     private ?Adresse $adresse;
 
@@ -109,10 +114,12 @@ class BrisPorte
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateOperationPJ = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
+    #[SerializedName('estPorteBlindee')]
     #[ORM\Column(options: ['default' => false])]
     private bool $isPorteBlindee = false;
 
+    #[Groups(['agent:detail'])]
     #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     protected ?TestEligibilite $testEligibilite = null;
@@ -172,6 +179,13 @@ class BrisPorte
         return $this->id;
     }
 
+    #[Groups(['agent:liste'])]
+    #[SerializedName('requerant')]
+    public function getReferenceRequerant(): ?string
+    {
+        return $this->requerant->getNomCourant(capital: true);
+    }
+
     public function getRequerant(): ?Requerant
     {
         return $this->requerant;
@@ -182,6 +196,13 @@ class BrisPorte
         $this->requerant = $requerant;
 
         return $this;
+    }
+
+    #[Groups(['agent:detail', 'agent:liste'])]
+    #[SerializedName('redacteur')]
+    public function getReferenceRedacteur(): ?int
+    {
+        return $this->redacteur?->getId();
     }
 
     public function getRedacteur(): ?Agent
@@ -228,6 +249,13 @@ class BrisPorte
         return $this->getEtatDossier();
     }
 
+    #[Groups(['agent:detail', 'agent:liste'])]
+    #[SerializedName('etat')]
+    public function getEtatActuel(): ?string
+    {
+        return $this->getEtatDossier()?->getEtat()->value;
+    }
+
     public function getEtatDossier(): ?EtatDossier
     {
         return $this->etatDossier;
@@ -271,6 +299,13 @@ class BrisPorte
     public function getDateCreation(): \DateTimeInterface
     {
         return $this->dateCreation;
+    }
+
+    #[Groups(['agent:detail', 'agent:liste'])]
+    #[SerializedName('dateDepot')]
+    public function getDateDepotMillis(): ?int
+    {
+        return DateConvertisseur::enMillisecondes($this->getDateDeclaration());
     }
 
     #[Groups('dossier:lecture')]
@@ -330,7 +365,7 @@ class BrisPorte
     /**
      * @return Document[]|null
      */
-    #[Groups('dossier:lecture')]
+    #[Groups(['dossier:lecture', 'agent:detail'])]
     public function getDocuments(): array
     {
         return $this->documentsParType;
@@ -344,6 +379,13 @@ class BrisPorte
     public function getPropositionIndemnisation(): ?string
     {
         return $this->propositionIndemnisation;
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('montantIndemnisation')]
+    public function getMontantIndemnisation(): ?float
+    {
+        return $this->propositionIndemnisation ? floatval($this->propositionIndemnisation) : null;
     }
 
     public function setPropositionIndemnisation(?string $propositionIndemnisation): self
@@ -394,6 +436,13 @@ class BrisPorte
         return $this;
     }
 
+    #[Groups('agent:liste')]
+    #[SerializedName('adresse')]
+    public function getReferenceAdresse(): string
+    {
+        return $this->adresse->getLibelle();
+    }
+
     public function getAdresse(): ?Adresse
     {
         return $this->adresse;
@@ -409,6 +458,13 @@ class BrisPorte
     public function getDateOperationPJ(): ?\DateTimeInterface
     {
         return $this->dateOperationPJ;
+    }
+
+    #[Groups('agent:detail')]
+    #[SerializedName('dateOperation')]
+    public function getDateOperationPJMillis(): ?int
+    {
+        return DateConvertisseur::enMillisecondes($this->dateOperationPJ);
     }
 
     public function setDateOperationPJ(?\DateTimeInterface $dateOperationPJ): self
