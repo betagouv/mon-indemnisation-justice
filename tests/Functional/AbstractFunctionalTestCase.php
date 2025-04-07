@@ -19,8 +19,8 @@ abstract class AbstractFunctionalTestCase extends PantherTestCase
 
     protected SluggerInterface $slugger;
 
-    /** @var string[] */
-    protected array $steps = [];
+    protected int $screenshotIndex = 1;
+    protected string $step = 'Préparation';
 
     protected function setUp(): void
     {
@@ -56,7 +56,7 @@ abstract class AbstractFunctionalTestCase extends PantherTestCase
 
     protected function step(string $label): static
     {
-        $this->steps[] = $label;
+        $this->step = $label;
 
         return $this;
     }
@@ -76,8 +76,8 @@ abstract class AbstractFunctionalTestCase extends PantherTestCase
                 '%s/%s/%s-%s.png',
                 $this->screenShotDirectory,
                 $device,
-                str_pad(count($this->steps), 3, '0', STR_PAD_LEFT),
-                $this->slugger->slug($this->steps[count($this->steps) - 1].($extra ? ' '.$extra : ''))
+                str_pad($this->screenshotIndex++, 3, '0', STR_PAD_LEFT),
+                $this->slugger->slug($this->step.($extra ? ' '.$extra : ''))
             )
         );
 

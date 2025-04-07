@@ -45,8 +45,6 @@ const { dossier, pays } = {
   },
 };
 
-console.dir(dossier);
-
 const root = ReactDOM.createRoot(document.getElementById("react-app"));
 
 let queuedChanges = {};

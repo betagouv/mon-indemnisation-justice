@@ -4,7 +4,6 @@ namespace MonIndemnisationJustice\Tests\Functional\Requerant;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
-use Facebook\WebDriver\WebDriver;
 use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverPoint;
@@ -115,7 +114,6 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
             ->maximize()
             ->setPosition(new WebDriverPoint(0, 0))
             ->setSize(new WebDriverDimension($width, $height))
-
         ;
 
         $this->client->get('/connexion');
@@ -229,17 +227,13 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         $this->assertEquals(8, strlen($dossier->getRaccourci()));
     }
 
-    protected function waitDataSaved(): static
+    protected function waitDataSaved(): self
     {
-        $this->client->wait()->until(self::reactAppSavedChanges());
+        $driver = $this->client->getWebDriver();
+        $this->client->wait()->until(function () use ($driver): bool {
+            return $driver->executeScript('return !(window.appPendingChanges || false);');
+        });
 
         return $this;
-    }
-
-    private static function reactAppSavedChanges(): callable
-    {
-        return static function (WebDriver $driver): bool {
-            return $driver->executeScript('return !(window.appPendingChanges || false);');
-        };
     }
 }
