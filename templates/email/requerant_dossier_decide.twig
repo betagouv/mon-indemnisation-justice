@@ -1,0 +1,34 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% set consultation_url = url('requerant_dossier_consulter_decision', {'id': dossier.id }) %}
+
+{% block subject %}Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse{% endblock subject %}
+
+{% block entete %}
+<b>Votre demande d'indemnisation a obtenu une réponse</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+Bonjour {{ dossier.requerant.nomCourant }},
+<br/>
+<br/>
+<p>
+Le dossier de demande d'indemnisation, de référence {{ dossier.reference }}, que vous avez déposé le {{ dossier.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+a été étudié par les équipes du bureau du précontentieux.
+</p>
+<p>
+Vous pouvez dès maintenant consulter la décision en cliquant sur le bouton ci-dessous, ou en vous rendant sur votre espace personnel à
+l'adresse suivante : <a href="{{ consultation_url }}" title="Consulter la décision">{{ consultation_url }}</a>
+</p>
+<br/>
+<p>
+{{ email.bouton("Consulter la décision", consultation_url) }}
+<br/>
+</p>
+<br/>
+Cordialement,<br/>
+L'équipe Mon Indemnisation Justice
+{% endblock contenu %}

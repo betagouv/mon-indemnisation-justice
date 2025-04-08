@@ -6,7 +6,7 @@ namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Event\BrisPorteConstitueEvent;
+use MonIndemnisationJustice\Event\DossierConstitueEvent;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -45,7 +45,7 @@ class NotifierBrisPorteCommand extends Command
             throw new \LogicException("Le dossier de bris de porte d'id $id n'a pas encore été constitué");
         }
 
-        $this->eventDispatcher->dispatch(new BrisPorteConstitueEvent($brisPorte));
+        $this->eventDispatcher->dispatch(new DossierConstitueEvent($brisPorte));
 
         return Command::SUCCESS;
     }

@@ -5,7 +5,7 @@ namespace MonIndemnisationJustice\Controller\Requerant;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
-use MonIndemnisationJustice\Event\BrisPorteConstitueEvent;
+use MonIndemnisationJustice\Event\DossierConstitueEvent;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
 use MonIndemnisationJustice\Service\Mailer;
@@ -37,7 +37,8 @@ class BrisPorteController extends RequerantController
             throw new AccessDeniedHttpException();
         }
 
-        if (!$dossier->estSigne()) {
+        if ($dossier->estSigne()) {
+            return $this->redirectToRoute('requerant_dossier_consulter_decision');
         }
 
         return $this->render('requerant/dossier/declare_bris_porte.html.twig', [
@@ -64,7 +65,7 @@ class BrisPorteController extends RequerantController
                ->send()
             ;
 
-            $this->eventDispatcher->dispatch(new BrisPorteConstitueEvent($brisPorte));
+            $this->eventDispatcher->dispatch(new DossierConstitueEvent($brisPorte));
 
             $this->addFlash('dossier', [
                 'dossier' => $brisPorte,

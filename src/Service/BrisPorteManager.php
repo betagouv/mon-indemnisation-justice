@@ -2,7 +2,8 @@
 
 namespace MonIndemnisationJustice\Service;
 
-use MonIndemnisationJustice\Event\BrisPorteConstitueEvent;
+use MonIndemnisationJustice\Event\DossierConstitueEvent;
+use MonIndemnisationJustice\Event\DossierDecideEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class BrisPorteManager implements EventSubscriberInterface
@@ -17,11 +18,12 @@ class BrisPorteManager implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            BrisPorteConstitueEvent::class => 'onDossierConstitue',
+            DossierConstitueEvent::class => 'onDossierConstitue',
+            DossierDecideEvent::class => 'onDossierDecide',
         ];
     }
 
-    public function onDossierConstitue(BrisPorteConstitueEvent $event): void
+    public function onDossierConstitue(DossierConstitueEvent $event): void
     {
         $this->mailer
             ->to($this->courrielEquipe)
@@ -29,15 +31,18 @@ class BrisPorteManager implements EventSubscriberInterface
             ->htmlTemplate('email/agent_nouveau_dossier_constitue.html.twig', [
                 'dossier' => $event->brisPorte,
             ]);
-        // Pièces jointes non
-        /*
-        foreach ($event->brisPorte->getLiasseDocumentaire()->getDocuments() as $document) {
-            $this->mailer->addAttachment(
-                $this->documentManager->getDocumentBody($document),
-                $document
-            );
-        }
-        */
+
+        $this->mailer->send();
+    }
+
+    public function onDossierDecide(DossierDecideEvent $event): void
+    {
+        $this->mailer
+            ->to($event->dossier->getRequerant()->getEmail(), $event->dossier->getRequerant()->getNomCourant())
+            ->subject("Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse")
+            ->htmlTemplate('email/requerant_dossier_decide.twig', [
+                'dossier' => $event->dossier,
+            ]);
 
         $this->mailer->send();
     }
