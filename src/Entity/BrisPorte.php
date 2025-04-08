@@ -32,7 +32,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 #[ORM\Table(name: 'bris_porte')]
 class BrisPorte
 {
-    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail'])]
+    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
@@ -74,7 +74,7 @@ class BrisPorte
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateCreation;
 
-    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail'])]
+    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $reference = null;
 
@@ -105,7 +105,7 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     protected ?string $numeroPV = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste', 'requerant:detail'])]
     #[ORM\ManyToOne(inversedBy: 'brisPortes', cascade: ['persist'])]
     private ?Adresse $adresse;
 
@@ -114,12 +114,12 @@ class BrisPorte
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateOperationPJ = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail'])]
     #[SerializedName('estPorteBlindee')]
     #[ORM\Column(options: ['default' => false])]
     private bool $isPorteBlindee = false;
 
-    #[Groups(['agent:detail'])]
+    #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     protected ?TestEligibilite $testEligibilite = null;
@@ -249,7 +249,7 @@ class BrisPorte
         return $this->getEtatDossier();
     }
 
-    #[Groups(['agent:detail', 'agent:liste'])]
+    #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
     #[SerializedName('etat')]
     public function getEtatActuel(): ?string
     {
@@ -301,7 +301,7 @@ class BrisPorte
         return $this->dateCreation;
     }
 
-    #[Groups(['agent:detail', 'agent:liste'])]
+    #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
     #[SerializedName('dateDepot')]
     public function getDateDepotMillis(): ?int
     {
@@ -365,7 +365,7 @@ class BrisPorte
     /**
      * @return Document[]|null
      */
-    #[Groups(['dossier:lecture', 'agent:detail'])]
+    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     public function getDocuments(): array
     {
         return $this->documentsParType;
@@ -381,7 +381,7 @@ class BrisPorte
         return $this->propositionIndemnisation;
     }
 
-    #[Groups('agent:detail')]
+    #[Groups(['agent:detail', 'requerant:detail'])]
     #[SerializedName('montantIndemnisation')]
     public function getMontantIndemnisation(): ?float
     {
@@ -460,7 +460,7 @@ class BrisPorte
         return $this->dateOperationPJ;
     }
 
-    #[Groups('agent:detail')]
+    #[Groups(['agent:detail', 'requerant:detail'])]
     #[SerializedName('dateOperation')]
     public function getDateOperationPJMillis(): ?int
     {
