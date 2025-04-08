@@ -222,11 +222,13 @@ export const RechercheDossierApp = observer(
                                           day: "numeric",
                                           month: "long",
                                           year: "numeric",
-                                          hour: "numeric",
-                                          minute: "numeric",
                                         },
                                       ),
                                     )}
+                                    <br />à {dossier.dateDepot?.getHours()}h
+                                    {String(
+                                      dossier.dateDepot?.getMinutes(),
+                                    ).padStart(2, "0")}
                                   </td>
                                   <td className="fr-col-2">
                                     {dossier.redacteur ? (

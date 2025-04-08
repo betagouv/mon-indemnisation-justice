@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant/bris-de-porte')]
@@ -76,12 +77,16 @@ class BrisPorteController extends RequerantController
     }
 
     #[Route('/{id}/consulter-la-decision', name: 'requerant_dossier_consulter_decision', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function consulterDecision(#[MapEntity(id: 'id')] BrisPorte $dossier): Response
+    public function consulterDecision(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {
         if (!$dossier->estSigne()) {
             return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
         }
 
-        return $this->render('requerant/dossier/decision.html.twig', []);
+        return $this->render('requerant/dossier/decision.html.twig', [
+            'react' => [
+                'dossier' => $normalizer->normalize($dossier, 'json', ['groups' => 'requerant:detail']),
+            ],
+        ]);
     }
 }

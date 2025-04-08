@@ -322,6 +322,8 @@ class DossierController extends AgentController
 
         $dossier->ajouterDocument($document);
 
+        $dossier->changerStatut($dossier->getEtatDossier()->estAccepte() ? EtatDossierType::DOSSIER_OK_A_APPROUVER : EtatDossierType::DOSSIER_KO_REJETE, agent: $this->getAgent());
+
         $this->dossierRepository->save($dossier);
 
         // TODO faire partir le courriel notifiant le requérant
@@ -338,6 +340,7 @@ class DossierController extends AgentController
                     ],
                 ],
             ],
+            'etat' => $dossier->getEtatDossier()->getEtat()->value,
         ], Response::HTTP_OK);
     }
 

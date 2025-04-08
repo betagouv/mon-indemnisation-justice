@@ -23,7 +23,7 @@ export class EtatDossier {
 
   public static OK_A_APPROUVER = new EtatDossier(
     "OK_A_APPROUVER",
-    "Accepté - à approuver requérant",
+    "Accepté - à approuver",
   );
 
   public static OK_A_INDEMNISER = new EtatDossier(

@@ -151,6 +151,9 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
             plainToInstance(Document, data.documents.courrier_ministere?.at(0)),
           );
         }
+        if (data.etat) {
+          dossier.changerEtat(data.etat);
+        }
       }
     } catch (e) {
       console.error(e);

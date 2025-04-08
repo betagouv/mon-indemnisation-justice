@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\DocumentRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 class Document
@@ -44,18 +45,18 @@ class Document
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
-    #[Groups(['dossier:lecture'])]
+    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['dossier:lecture'])]
     private ?string $filename = null;
 
-    #[Groups(['dossier:lecture'])]
+    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(length: 40)]
     private ?string $type = null;
 
-    #[Groups(['dossier:lecture'])]
+    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(length: 64, nullable: true)]
     protected ?string $mime = null;
 
@@ -63,7 +64,7 @@ class Document
     #[ORM\Column(nullable: true)]
     private ?string $size = null;
 
-    #[Groups(['dossier:lecture'])]
+    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $originalFilename = null;
 
@@ -156,5 +157,26 @@ class Document
     public function getContentId(): string
     {
         return "$this->type+$this->filename";
+    }
+
+    public function getFileHash(): string
+    {
+        return md5($this->filename);
+    }
+
+    #[Groups(['agent:detail'])]
+    #[SerializedName('url')]
+    public function getAgentUrl(): ?string
+    {
+        // URL pointant sur la route "agent_document_download"
+        return "/agent/document/$this->id/{$this->getFileHash()}";
+    }
+
+    #[Groups(['requerant:detail'])]
+    #[SerializedName('url')]
+    public function getRequerantUrl(): ?string
+    {
+        // URL pointant sur la route "agent_document_download"
+        return "/requerant/document/$this->id/{$this->filename}";
     }
 }
