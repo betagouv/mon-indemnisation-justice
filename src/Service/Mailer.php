@@ -38,11 +38,11 @@ class Mailer
         return $this->to($agent->getEmail());
     }
 
-    public function to(string $email): static
+    public function to(string $email, ?string $nom = null): static
     {
         $this->email = new TemplatedEmail();
         $this->email->from(new Address($this->emailFrom, $this->emailFromLabel));
-        $this->email->to($email);
+        $this->email->to($nom ? new Address($email, $nom) : $email);
 
         return $this;
     }

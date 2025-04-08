@@ -9,11 +9,13 @@ use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\CourrierDossier;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Event\DossierDecideEvent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -287,7 +289,6 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
-            'etat' => $dossier->getEtatDossier()->getEtat()->value,
             'courrier' => $dossier->getCourrier() ? [
                 'id' => $dossier->getCourrier()->getId(),
                 'filename' => $dossier->getCourrier()->getFilename(),
@@ -298,7 +299,7 @@ class DossierController extends AgentController
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/courrier/signer.json', name: 'agent_redacteur_signer_courrier_dossier', methods: ['POST'])]
-    public function signerCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function signerCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, EventDispatcherInterface $eventDispatcher): Response
     {
         if (!$dossier->getEtatDossier()->estASigner()) {
             return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
@@ -326,7 +327,7 @@ class DossierController extends AgentController
 
         $this->dossierRepository->save($dossier);
 
-        // TODO faire partir le courriel notifiant le requérant
+        $eventDispatcher->dispatch(new DossierDecideEvent($dossier));
 
         return new JsonResponse([
             'documents' => [
