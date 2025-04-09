@@ -69,6 +69,7 @@
         {% endblock modale %}
 
         {% block javascripts %}
+            {% block dsfrjs %}
             <script>
                 window.dsfr = {
                     verbose: false,
@@ -77,6 +78,7 @@
             </script>
             <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
             <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
+            {% endblock dsfrjs %}
         {% endblock %}
 
         {# Sentry browser #}

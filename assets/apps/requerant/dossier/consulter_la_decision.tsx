@@ -1,10 +1,21 @@
 import "reflect-metadata";
-import { DocumentType, DossierDetail } from "@/apps/agent/dossiers/models";
+import {
+  Document,
+  DocumentType,
+  DossierDetail,
+} from "@/apps/agent/dossiers/models";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
+import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
+
+startReactDsfr({ defaultColorScheme: "system" });
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
@@ -27,13 +38,84 @@ const dossier = plainToInstance(DossierDetail, args.dossier, {
   enableImplicitConversion: true,
 });
 
-console.dir(dossier.documents);
+const signatureModal = createModal({
+  id: "modale-signature-dossier",
+  isOpenedByDefault: false,
+});
 
 const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
   dossier,
 }: {
   dossier: DossierDetail;
 }) {
+  // Références vers les conteneurs DOM de chacune des étapes du formulaire de signature
+  const refEtapes = [useRef(null), useRef(null), useRef(null)];
+  // Numéro de l'étape active sur le formulaire de signature
+  const [etape, setEtape] = useState(0);
+
+  // Fichier signé à téléverser
+  const [fichierSigne, setFichierSigne]: [
+    File | null,
+    (fichierSigne: File) => void,
+  ] = useState(null);
+
+  const estTailleFichierOk = () =>
+    fichierSigne && fichierSigne.size < 10 * 1024 * 1024;
+  const estTypeFichierOk = () =>
+    fichierSigne && ["application/pdf"].includes(fichierSigne.type);
+
+  // Indique si l'envoi du fichier, via l'API, est en cours
+  const [sauvegarderEnCours, setSauvegarderEnCours]: [
+    boolean,
+    (mode: boolean) => void,
+  ] = useState(false);
+
+  const signerCourrier = async (fichier: File) => {
+    /*
+    setSauvegarderEnCours(true);
+
+    try {
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/courrier/signer.json`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: (() => {
+            const data = new FormData();
+            data.append("fichierSigne", fichier);
+
+            return data;
+          })(),
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.documents.courrier_ministere?.length) {
+          dossier.addDocument(
+            plainToInstance(Document, data.documents.courrier_ministere?.at(0)),
+          );
+        }
+        if (data.etat) {
+          dossier.changerEtat(data.etat);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      fermerModale();
+      setSauvegarderEnCours(false);
+      marquerFichierSigne(true);
+      decider(null);
+      // Déclencher le _hook_ onSigne s'il est défini
+      onSigne?.();
+    }
+
+     */
+  };
+
   return (
     <div className="fr-container">
       <div className="fr-grid-row">
@@ -90,13 +172,230 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
         </div>
 
         {dossier.estAccepte() && (
-          <div className="fr-col-lg-3 fr-col-offset-lg-9">
-            <ul className="fr-btns-group fr-btns-group--right">
-              <li>
-                <button className="fr-btn">Accepter la proposition</button>
-              </li>
-            </ul>
-          </div>
+          <>
+            <div className="fr-col-lg-3 fr-col-offset-lg-9">
+              <ul className="fr-btns-group fr-btns-group--right">
+                <li>
+                  <button
+                    className="fr-btn"
+                    onClick={() => signatureModal.open()}
+                  >
+                    Accepter la proposition
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <signatureModal.Component
+              title="Signature du dossier"
+              iconId={"fr-icon-ball-pen-line"}
+              children={null}
+              size={"large"}
+            >
+              <Stepper
+                currentStep={etape + 1}
+                stepCount={refEtapes.length}
+                title={refEtapes.at(etape).current?.getAttribute("data-titre")}
+              />
+
+              <div
+                hidden={etape != 0}
+                ref={refEtapes.at(0)}
+                data-titre="Récupérer le document"
+              >
+                <p>
+                  Pour accepter la proposition d'indemnisation, vous allez
+                  devoir signer <i>électroniquement</i> la déclaration
+                  d'acceptation, figurant en annexe du courrier. Pour cela nous
+                  recommandons d'utiliser un ordinateur.
+                </p>
+
+                <p>
+                  La première étape consiste à enregistrer le document sur votre
+                  disque-dur en cliquant sur le bouton "Télécharger le courrier"
+                  ci-dessous, avant de pouvoir passer à l'étape suivante.
+                </p>
+
+                <div className="fr-input-group fr-mb-3w">
+                  <a
+                    className="fr-link fr-link--download"
+                    download={`Lettre décision dossier ${dossier.reference}`}
+                    href={``}
+                  >
+                    Télécharger le courrier
+                  </a>
+                </div>
+
+                <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                  <li>
+                    <button
+                      className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                      type="button"
+                      onClick={() => {
+                        signatureModal.close();
+                        setEtape(0);
+                      }}
+                    >
+                      Annuler
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="fr-btn fr-btn--sm fr-btn--primary"
+                      type="button"
+                      onClick={() => setEtape(1)}
+                    >
+                      Étape suivante
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              <div
+                hidden={etape != 1}
+                className={""}
+                ref={refEtapes.at(1)}
+                data-titre="Remplir et signer le formulaire"
+              >
+                <p>
+                  La déclaration d'acceptation doit être remplie avec l'ajout
+                  d'informations concernant votre état civil, de vos coordonnées
+                  bancaires <i>à jour</i> ainsi qu'une signature manuscrite,
+                  directement sur le document PDF que vous avez récupéré.
+                </p>
+
+                <p>
+                  Il existe plusieurs logiciels qui permettent de le faire, mais
+                  nous vous invitons à suivre{" "}
+                  <a
+                    href="https://lesbases.anct.gouv.fr/ressources/remplir-et-signer-un-fichier-pdf"
+                    title="Comment remplir et signer un fichier PDF, procédure expliquée et recommandée par l'ANCT"
+                  >
+                    la démarche recommandée par l'ANCT
+                  </a>
+                  . Vous pouvez aussi utiliser{" "}
+                  <a
+                    href="https://www.ilovepdf.com/fr/modifier-pdf"
+                    title="Modifier et signer un PDF avec le site iLovePDF"
+                  >
+                    la fonctionnalité "Modifier un PDF" depuis le site iLovePDF
+                  </a>
+                  .
+                </p>
+
+                <p>
+                  Une fois que vous avez modifié et <b>sauvegardé</b> le
+                  document, passez à l'étape suivante.
+                </p>
+
+                <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                  <li>
+                    <button
+                      className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                      type="button"
+                      onClick={() => {
+                        signatureModal.close();
+                        setEtape(0);
+                      }}
+                    >
+                      Annuler
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="fr-btn fr-btn--sm fr-btn--secondary"
+                      type="button"
+                      onClick={() => setEtape(0)}
+                    >
+                      Étape précédente
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="fr-btn fr-btn--sm fr-btn--primary"
+                      type="button"
+                      onClick={() => setEtape(2)}
+                    >
+                      Étape suivante
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div
+                hidden={etape != 2}
+                className={""}
+                ref={refEtapes.at(2)}
+                data-titre="Transmettre le document signé"
+              >
+                <p>
+                  Maintenant que la déclaration est dûment remplie et signée, il
+                  ne vous reste plus qu'à la transmettre au bureau du
+                  précontentieux en la téléversant sur la plateforme.
+                </p>
+                <p>
+                  Sélectionnez ci-dessous le fichier que vous venez d'éditer,
+                  puis validez en cliquant sur le bouton "Envoyer".
+                </p>
+                <Upload
+                  label="Téléverser le fichier pour accepter la proposition et être
+                    indémnisé"
+                  hint="Taille maximale : 10 Mo, format pdf uniquement."
+                  state={
+                    !fichierSigne ||
+                    (estTypeFichierOk() && estTailleFichierOk())
+                      ? "default"
+                      : "error"
+                  }
+                  stateRelatedMessage={
+                    !estTailleFichierOk()
+                      ? "Le fichier dépasse les 10 Mo"
+                      : "Le fichier n'est pas au format PDF"
+                  }
+                  nativeInputProps={{
+                    accept: "application/pdf",
+                    onChange: (e) => setFichierSigne(e.target.files[0]),
+                  }}
+                  multiple={false}
+                />
+                <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                  <li>
+                    <button
+                      className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                      type="button"
+                      onClick={() => {
+                        signatureModal.close();
+                        setEtape(0);
+                      }}
+                    >
+                      Annuler
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="fr-btn fr-btn--sm fr-btn--secondary"
+                      type="button"
+                      onClick={() => setEtape(1)}
+                    >
+                      Étape précédente
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="fr-btn fr-btn--sm fr-btn--primary"
+                      type="button"
+                      disabled={
+                        sauvegarderEnCours ||
+                        !fichierSigne ||
+                        !estTailleFichierOk() ||
+                        !estTypeFichierOk()
+                      }
+                    >
+                      Envoyer
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </signatureModal.Component>
+          </>
         )}
 
         <div className="fr-col-12">

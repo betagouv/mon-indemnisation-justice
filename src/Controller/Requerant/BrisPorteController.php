@@ -11,7 +11,9 @@ use MonIndemnisationJustice\Repository\GeoPaysRepository;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -89,5 +91,18 @@ class BrisPorteController extends RequerantController
                 'dossier' => $normalizer->normalize($dossier, 'json', ['groups' => 'requerant:detail']),
             ],
         ]);
+    }
+
+    #[Route('/{id}/accepter-la-decision.json', name: 'requerant_dossier_accepter_decision', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function accepterDecision(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        if (EtatDossierType::DOSSIER_OK_A_APPROUVER == !$dossier->getEtatDossier()->getEtat()->value) {
+            return new JsonResponse([
+                'error' => "Ce dossier n'est pas en attente d'approbation",
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        return new JsonResponse([
+        ], Response::HTTP_OK);
     }
 }

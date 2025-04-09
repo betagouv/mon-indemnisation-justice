@@ -16,6 +16,10 @@
   <div id="react-app"></div>
 {% endblock %}
 
+
+{% block dsfrjs %}
+{% endblock dsfrjs %}
+
 {% block javascripts %}
   <script id="react-arguments" type="application/json">
     {{ react|default({})|json_encode()|raw }}
