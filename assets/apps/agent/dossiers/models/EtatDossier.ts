@@ -76,6 +76,17 @@ export class EtatDossier {
     return this.id.startsWith("OK");
   }
 
+  public estAccepteRequerant(): boolean {
+    return [
+      EtatDossier.OK_A_INDEMNISER.id,
+      EtatDossier.OK_INDEMNISE.id,
+    ].includes(this.id);
+  }
+
+  public estIndemnise(): boolean {
+    return EtatDossier.OK_INDEMNISE == this;
+  }
+
   public estRejete(): boolean {
     return this.id.startsWith("KO");
   }

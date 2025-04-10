@@ -37,7 +37,12 @@ export class DocumentType {
 
   public static readonly TYPE_COURRIER_MINISTERE = new DocumentType(
     "courrier_ministere",
-    "Courrier signé de décision du Ministere",
+    "Courrier de décision signé du Ministere",
+  );
+
+  public static readonly TYPE_COURRIER_REQUERANT = new DocumentType(
+    "courrier_requerant",
+    "Courrier de décision signé du requérant",
   );
 }
 

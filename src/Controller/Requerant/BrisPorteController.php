@@ -2,7 +2,10 @@
 
 namespace MonIndemnisationJustice\Controller\Requerant;
 
+use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Event\DossierConstitueEvent;
@@ -10,7 +13,9 @@ use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +33,9 @@ class BrisPorteController extends RequerantController
         protected readonly BrisPorteRepository $brisPorteRepository,
         protected readonly EventDispatcherInterface $eventDispatcher,
         protected readonly GeoPaysRepository $geoPaysRepository,
+        #[Target('default.storage')] protected readonly FilesystemOperator $storage,
+        // A supprimer
+        protected readonly EntityManagerInterface $em,
     ) {
     }
 
@@ -94,7 +102,7 @@ class BrisPorteController extends RequerantController
     }
 
     #[Route('/{id}/accepter-la-decision.json', name: 'requerant_dossier_accepter_decision', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function accepterDecision(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function accepterDecision(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, NormalizerInterface $normalizer): Response
     {
         if (EtatDossierType::DOSSIER_OK_A_APPROUVER == !$dossier->getEtatDossier()->getEtat()->value) {
             return new JsonResponse([
@@ -102,7 +110,32 @@ class BrisPorteController extends RequerantController
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        /** @var UploadedFile $file */
+        $file = $request->files->get('fichierSigne');
+
+        $content = $file->getContent();
+        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+        $this->storage->write($filename, $content);
+        $document = (new Document())
+                ->setFilename($filename)
+                ->setOriginalFilename($file->getClientOriginalName())
+                ->setSize($file->getSize())
+                ->setType(Document::TYPE_COURRIER_REQUERANT)
+                ->setMime($file->getMimeType());
+
+        $this->em->persist($document);
+
+        $dossier->ajouterDocument($document);
+
+        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
+        $this->em->persist($dossier);
+        $this->em->flush();
+
         return new JsonResponse([
+            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'documents' => [
+                Document::TYPE_COURRIER_MINISTERE => $normalizer->normalize($dossier->getDocumentsParType(Document::TYPE_COURRIER_REQUERANT), 'json', ['groups' => 'requerant:detail']),
+            ],
         ], Response::HTTP_OK);
     }
 }

@@ -4,6 +4,7 @@ import {
   DocumentType,
   DossierDetail,
 } from "@/apps/agent/dossiers/models";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { plainToInstance } from "class-transformer";
@@ -70,13 +71,12 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
     (mode: boolean) => void,
   ] = useState(false);
 
-  const signerCourrier = async (fichier: File) => {
-    /*
+  const signerCourrier = async () => {
     setSauvegarderEnCours(true);
 
     try {
       const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/courrier/signer.json`,
+        `/requerant/bris-de-porte/${dossier.id}/accepter-la-decision.json`,
         {
           method: "POST",
           headers: {
@@ -84,7 +84,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
           },
           body: (() => {
             const data = new FormData();
-            data.append("fichierSigne", fichier);
+            data.append("fichierSigne", fichierSigne);
 
             return data;
           })(),
@@ -93,9 +93,9 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
 
       if (response.ok) {
         const data = await response.json();
-        if (data.documents.courrier_ministere?.length) {
+        if (data.documents.courrier_requerant?.length) {
           dossier.addDocument(
-            plainToInstance(Document, data.documents.courrier_ministere?.at(0)),
+            plainToInstance(Document, data.documents.courrier_requerant?.at(0)),
           );
         }
         if (data.etat) {
@@ -105,15 +105,9 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
     } catch (e) {
       console.error(e);
     } finally {
-      fermerModale();
+      signatureModal.close();
       setSauvegarderEnCours(false);
-      marquerFichierSigne(true);
-      decider(null);
-      // Déclencher le _hook_ onSigne s'il est défini
-      onSigne?.();
     }
-
-     */
   };
 
   return (
@@ -171,238 +165,268 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
           )}
         </div>
 
-        {dossier.estAccepte() && (
-          <>
-            <div className="fr-col-lg-3 fr-col-offset-lg-9">
-              <ul className="fr-btns-group fr-btns-group--right">
-                <li>
-                  <button
-                    className="fr-btn"
-                    onClick={() => signatureModal.open()}
-                  >
-                    Accepter la proposition
-                  </button>
-                </li>
-              </ul>
-            </div>
-            <signatureModal.Component
-              title="Signature du dossier"
-              iconId={"fr-icon-ball-pen-line"}
-              children={null}
-              size={"large"}
-            >
-              <Stepper
-                currentStep={etape + 1}
-                stepCount={refEtapes.length}
-                title={refEtapes.at(etape).current?.getAttribute("data-titre")}
-              />
-
-              <div
-                hidden={etape != 0}
-                ref={refEtapes.at(0)}
-                data-titre="Récupérer le document"
-              >
-                <p>
-                  Pour accepter la proposition d'indemnisation, vous allez
-                  devoir signer <i>électroniquement</i> la déclaration
-                  d'acceptation, figurant en annexe du courrier. Pour cela nous
-                  recommandons d'utiliser un ordinateur.
-                </p>
-
-                <p>
-                  La première étape consiste à enregistrer le document sur votre
-                  disque-dur en cliquant sur le bouton "Télécharger le courrier"
-                  ci-dessous, avant de pouvoir passer à l'étape suivante.
-                </p>
-
-                <div className="fr-input-group fr-mb-3w">
-                  <a
-                    className="fr-link fr-link--download"
-                    download={`Lettre décision dossier ${dossier.reference}`}
-                    href={``}
-                  >
-                    Télécharger le courrier
-                  </a>
-                </div>
-
-                <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-                  <li>
-                    <button
-                      className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                      type="button"
-                      onClick={() => {
-                        signatureModal.close();
-                        setEtape(0);
-                      }}
-                    >
-                      Annuler
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      className="fr-btn fr-btn--sm fr-btn--primary"
-                      type="button"
-                      onClick={() => setEtape(1)}
-                    >
-                      Étape suivante
-                    </button>
-                  </li>
-                </ul>
-              </div>
-
-              <div
-                hidden={etape != 1}
-                className={""}
-                ref={refEtapes.at(1)}
-                data-titre="Remplir et signer le formulaire"
-              >
-                <p>
-                  La déclaration d'acceptation doit être remplie avec l'ajout
-                  d'informations concernant votre état civil, de vos coordonnées
-                  bancaires <i>à jour</i> ainsi qu'une signature manuscrite,
-                  directement sur le document PDF que vous avez récupéré.
-                </p>
-
-                <p>
-                  Il existe plusieurs logiciels qui permettent de le faire, mais
-                  nous vous invitons à suivre{" "}
-                  <a
-                    href="https://lesbases.anct.gouv.fr/ressources/remplir-et-signer-un-fichier-pdf"
-                    title="Comment remplir et signer un fichier PDF, procédure expliquée et recommandée par l'ANCT"
-                  >
-                    la démarche recommandée par l'ANCT
-                  </a>
-                  . Vous pouvez aussi utiliser{" "}
-                  <a
-                    href="https://www.ilovepdf.com/fr/modifier-pdf"
-                    title="Modifier et signer un PDF avec le site iLovePDF"
-                  >
-                    la fonctionnalité "Modifier un PDF" depuis le site iLovePDF
-                  </a>
-                  .
-                </p>
-
-                <p>
-                  Une fois que vous avez modifié et <b>sauvegardé</b> le
-                  document, passez à l'étape suivante.
-                </p>
-
-                <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-                  <li>
-                    <button
-                      className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                      type="button"
-                      onClick={() => {
-                        signatureModal.close();
-                        setEtape(0);
-                      }}
-                    >
-                      Annuler
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      className="fr-btn fr-btn--sm fr-btn--secondary"
-                      type="button"
-                      onClick={() => setEtape(0)}
-                    >
-                      Étape précédente
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      className="fr-btn fr-btn--sm fr-btn--primary"
-                      type="button"
-                      onClick={() => setEtape(2)}
-                    >
-                      Étape suivante
-                    </button>
-                  </li>
-                </ul>
-              </div>
-              <div
-                hidden={etape != 2}
-                className={""}
-                ref={refEtapes.at(2)}
-                data-titre="Transmettre le document signé"
-              >
-                <p>
-                  Maintenant que la déclaration est dûment remplie et signée, il
-                  ne vous reste plus qu'à la transmettre au bureau du
-                  précontentieux en la téléversant sur la plateforme.
-                </p>
-                <p>
-                  Sélectionnez ci-dessous le fichier que vous venez d'éditer,
-                  puis validez en cliquant sur le bouton "Envoyer".
-                </p>
-                <Upload
-                  label="Téléverser le fichier pour accepter la proposition et être
-                    indémnisé"
-                  hint="Taille maximale : 10 Mo, format pdf uniquement."
-                  state={
-                    !fichierSigne ||
-                    (estTypeFichierOk() && estTailleFichierOk())
-                      ? "default"
-                      : "error"
-                  }
-                  stateRelatedMessage={
-                    !estTailleFichierOk()
-                      ? "Le fichier dépasse les 10 Mo"
-                      : "Le fichier n'est pas au format PDF"
-                  }
-                  nativeInputProps={{
-                    accept: "application/pdf",
-                    onChange: (e) => setFichierSigne(e.target.files[0]),
-                  }}
-                  multiple={false}
+        {dossier.estAccepte() &&
+          (dossier.estAccepteRequerant() ? (
+            <>
+              <div className="fr-col-12 fr-my-2w">
+                <Alert
+                  severity="info"
+                  title="Indemnisation acceptée"
+                  description="Vous avez accepté la proposition d'indemnisation. Le virement du montant correspondant vers vore compte bancaire devrait être exécuté prochainement"
+                  closable={false}
                 />
-                <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="fr-col-lg-3 fr-col-offset-lg-9">
+                <ul className="fr-btns-group fr-btns-group--right">
                   <li>
                     <button
-                      className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                      type="button"
-                      onClick={() => {
-                        signatureModal.close();
-                        setEtape(0);
-                      }}
+                      className="fr-btn"
+                      onClick={() => signatureModal.open()}
                     >
-                      Annuler
+                      Accepter la proposition
                     </button>
                   </li>
-                  <li>
-                    <button
-                      className="fr-btn fr-btn--sm fr-btn--secondary"
-                      type="button"
-                      onClick={() => setEtape(1)}
-                    >
-                      Étape précédente
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      className="fr-btn fr-btn--sm fr-btn--primary"
-                      type="button"
-                      disabled={
-                        sauvegarderEnCours ||
-                        !fichierSigne ||
-                        !estTailleFichierOk() ||
-                        !estTypeFichierOk()
+                </ul>
+              </div>
+              <signatureModal.Component
+                title="Signature du dossier"
+                iconId={"fr-icon-ball-pen-line"}
+                children={null}
+                size={"large"}
+              >
+                <Stepper
+                  currentStep={etape + 1}
+                  stepCount={refEtapes.length}
+                  title={refEtapes
+                    .at(etape)
+                    .current?.getAttribute("data-titre")}
+                />
+
+                <div
+                  hidden={etape != 0}
+                  ref={refEtapes.at(0)}
+                  data-titre="Récupérer le document"
+                >
+                  <p>
+                    Pour accepter la proposition d'indemnisation, vous allez
+                    devoir signer <i>électroniquement</i> la déclaration
+                    d'acceptation, figurant en annexe du courrier. Pour cela
+                    nous recommandons d'utiliser un ordinateur.
+                  </p>
+
+                  <p>
+                    La première étape consiste à enregistrer le document sur
+                    votre disque-dur en cliquant sur le bouton "Télécharger le
+                    courrier" ci-dessous, avant de pouvoir passer à l'étape
+                    suivante.
+                  </p>
+
+                  <div className="fr-input-group fr-mb-3w">
+                    <a
+                      className="fr-link fr-link--download"
+                      download={`Lettre décision dossier ${dossier.reference}`}
+                      href={
+                        dossier
+                          .getDocumentsType(
+                            DocumentType.TYPE_COURRIER_MINISTERE,
+                          )
+                          .at(0)?.url
                       }
                     >
-                      Envoyer
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </signatureModal.Component>
-          </>
-        )}
+                      Télécharger le courrier
+                    </a>
+                  </div>
+
+                  <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                    <li>
+                      <button
+                        className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                        type="button"
+                        onClick={() => {
+                          signatureModal.close();
+                          setEtape(0);
+                        }}
+                      >
+                        Annuler
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="fr-btn fr-btn--sm fr-btn--primary"
+                        type="button"
+                        onClick={() => setEtape(1)}
+                      >
+                        Étape suivante
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+                <div
+                  hidden={etape != 1}
+                  className={""}
+                  ref={refEtapes.at(1)}
+                  data-titre="Remplir et signer le formulaire"
+                >
+                  <p>
+                    La déclaration d'acceptation doit être remplie avec l'ajout
+                    d'informations concernant votre état civil, de vos
+                    coordonnées bancaires <i>à jour</i> ainsi qu'une signature
+                    manuscrite, directement sur le document PDF que vous avez
+                    récupéré.
+                  </p>
+
+                  <p>
+                    Il existe plusieurs logiciels qui permettent de le faire,
+                    mais nous vous invitons à suivre{" "}
+                    <a
+                      href="https://lesbases.anct.gouv.fr/ressources/remplir-et-signer-un-fichier-pdf"
+                      title="Comment remplir et signer un fichier PDF, procédure expliquée et recommandée par l'ANCT"
+                    >
+                      la démarche recommandée par l'ANCT
+                    </a>
+                    . Vous pouvez aussi utiliser{" "}
+                    <a
+                      href="https://www.ilovepdf.com/fr/modifier-pdf"
+                      title="Modifier et signer un PDF avec le site iLovePDF"
+                    >
+                      la fonctionnalité "Modifier un PDF" depuis le site
+                      iLovePDF
+                    </a>
+                    .
+                  </p>
+
+                  <p>
+                    Une fois que vous avez modifié et <b>sauvegardé</b> le
+                    document, passez à l'étape suivante.
+                  </p>
+
+                  <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                    <li>
+                      <button
+                        className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                        type="button"
+                        onClick={() => {
+                          signatureModal.close();
+                          setEtape(0);
+                        }}
+                      >
+                        Annuler
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="fr-btn fr-btn--sm fr-btn--secondary"
+                        type="button"
+                        onClick={() => setEtape(0)}
+                      >
+                        Étape précédente
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="fr-btn fr-btn--sm fr-btn--primary"
+                        type="button"
+                        onClick={() => setEtape(2)}
+                      >
+                        Étape suivante
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  hidden={etape != 2}
+                  className={""}
+                  ref={refEtapes.at(2)}
+                  data-titre="Transmettre le document signé"
+                >
+                  <p>
+                    Maintenant que la déclaration est dûment remplie et signée,
+                    il ne vous reste plus qu'à la transmettre au bureau du
+                    précontentieux en la téléversant sur la plateforme.
+                  </p>
+                  <p>
+                    Sélectionnez ci-dessous le fichier que vous venez d'éditer,
+                    puis validez en cliquant sur le bouton "Envoyer".
+                  </p>
+                  <Upload
+                    label="Téléverser le fichier pour accepter la proposition et être
+                    indémnisé"
+                    hint="Taille maximale : 10 Mo, format pdf uniquement."
+                    state={
+                      !fichierSigne ||
+                      (estTypeFichierOk() && estTailleFichierOk())
+                        ? "default"
+                        : "error"
+                    }
+                    stateRelatedMessage={
+                      !estTailleFichierOk()
+                        ? "Le fichier dépasse les 10 Mo"
+                        : "Le fichier n'est pas au format PDF"
+                    }
+                    nativeInputProps={{
+                      accept: "application/pdf",
+                      onChange: (e) => setFichierSigne(e.target.files[0]),
+                    }}
+                    multiple={false}
+                  />
+                  <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                    <li>
+                      <button
+                        className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+                        type="button"
+                        disabled={sauvegarderEnCours}
+                        onClick={() => {
+                          signatureModal.close();
+                          setEtape(0);
+                        }}
+                      >
+                        Annuler
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="fr-btn fr-btn--sm fr-btn--secondary"
+                        type="button"
+                        onClick={() => setEtape(1)}
+                        disabled={sauvegarderEnCours}
+                      >
+                        Étape précédente
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="fr-btn fr-btn--sm fr-btn--primary"
+                        type="button"
+                        onClick={() => signerCourrier()}
+                        disabled={
+                          sauvegarderEnCours ||
+                          !fichierSigne ||
+                          !estTailleFichierOk() ||
+                          !estTypeFichierOk()
+                        }
+                      >
+                        Envoyer
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </signatureModal.Component>
+            </>
+          ))}
 
         <div className="fr-col-12">
           <object
             data={
               dossier
-                .getDocumentsType(DocumentType.TYPE_COURRIER_MINISTERE)
+                .getDocumentsType(
+                  dossier.estAccepteRequerant()
+                    ? DocumentType.TYPE_COURRIER_REQUERANT
+                    : DocumentType.TYPE_COURRIER_MINISTERE,
+                )
                 .at(0)?.url
             }
             type="application/pdf"

@@ -71,6 +71,14 @@ export abstract class BaseDossier {
     return this.etat.estAccepte();
   }
 
+  public estAccepteRequerant(): boolean {
+    return this.etat.estAccepteRequerant();
+  }
+
+  public estIndemnise(): boolean {
+    return this.etat.estIndemnise();
+  }
+
   public estRejete(): boolean {
     return this.etat.estRejete();
   }
