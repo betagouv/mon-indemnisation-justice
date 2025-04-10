@@ -156,12 +156,12 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
       const data = await response.json();
       dossier.changerEtat(data.etat);
       dossier.setCourrier(plainToInstance(Courrier, data.courrier));
-
-      // Déclencher le _hook_ onDecide s'il est défini
-      onDecide?.();
     }
 
     fermerModaleDecision();
+
+    // Déclencher le _hook_ onDecide s'il est défini
+    onDecide?.();
 
     setSauvegarderEnCours(false);
     decider(null);

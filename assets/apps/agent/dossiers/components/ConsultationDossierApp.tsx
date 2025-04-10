@@ -167,6 +167,11 @@ export const ConsultationDossierApp = observer(
                     <DecisionDossier
                       dossier={dossier}
                       onDecide={() => {
+                        if (refSectionCourrier.current) {
+                          setLargeurSectionCourrier(
+                            refSectionCourrier.current.offsetWidth,
+                          );
+                        }
                         window.location.hash = "courrier";
                       }}
                     />
@@ -177,9 +182,21 @@ export const ConsultationDossierApp = observer(
                   <ValidationDossier
                     dossier={dossier}
                     onEdite={() => {
+                      if (refSectionCourrier.current) {
+                        setLargeurSectionCourrier(
+                          refSectionCourrier.current.offsetWidth,
+                        );
+                      }
                       window.location.hash = "courrier";
                     }}
-                    onSigne={() => (window.location.hash = "courrier")}
+                    onSigne={() => {
+                      if (refSectionCourrier.current) {
+                        setLargeurSectionCourrier(
+                          refSectionCourrier.current.offsetWidth,
+                        );
+                      }
+                      window.location.hash = "courrier";
+                    }}
                   />
                 )}
               </div>
@@ -738,6 +755,9 @@ export const ConsultationDossierApp = observer(
                   {(null !== dossier.courrier ||
                     dossier.hasDocumentsType(
                       DocumentType.TYPE_COURRIER_MINISTERE,
+                    ) ||
+                    dossier.hasDocumentsType(
+                      DocumentType.TYPE_COURRIER_REQUERANT,
                     )) && (
                     <div
                       id="tab-panel-courrier"
@@ -756,10 +776,14 @@ export const ConsultationDossierApp = observer(
                                 ?.at(0)?.url ?? dossier.courrier.url
                             }
                             type="application/pdf"
-                            width={largeurSectionCourrier}
-                            height={Math.floor(
-                              (297 * largeurSectionCourrier) / 210,
-                            )}
+                            width={largeurSectionCourrier || "100%"}
+                            height={
+                              largeurSectionCourrier
+                                ? Math.floor(
+                                    (297 * largeurSectionCourrier) / 210,
+                                  )
+                                : undefined
+                            }
                             style={{
                               aspectRatio: "210/297",
                             }}

@@ -19,7 +19,11 @@ enum EtatDossierType: string
     // Le validateur a signé le courrier d'indemnisation, c'est au tour du requérant d'approuver
     case DOSSIER_OK_A_APPROUVER = 'OK_A_APPROUVER';
 
-    // Le requérant a accepté la proposition d'indemnisation
+    // Le requérant a accepté la proposition d'indemnisation...
+
+    // ... il faut vérifier le courrier signé
+    case DOSSIER_OK_A_VERIFIER = 'OK_A_VERIFIER';
+    // ... le courrier est vérifié, on génère l'arrêté de paiement qu'on transmet au bureau du paiement
     case DOSSIER_OK_A_INDEMNISER = 'OK_A_INDEMNISER';
 
     case DOSSIER_OK_INDEMNISE = 'OK_INDEMNISE';
@@ -65,7 +69,7 @@ enum EtatDossierType: string
     public function estSigne(): bool
     {
         return in_array($this, [
-            self::DOSSIER_OK_A_APPROUVER, self::DOSSIER_OK_A_INDEMNISER, self::DOSSIER_OK_INDEMNISE, self::DOSSIER_KO_REJETE,
+            self::DOSSIER_OK_A_APPROUVER, self::DOSSIER_OK_A_VERIFIER, self::DOSSIER_OK_A_INDEMNISER, self::DOSSIER_OK_INDEMNISE, self::DOSSIER_KO_REJETE,
         ]);
     }
 

@@ -34,6 +34,7 @@ class DossierController extends AgentController
         EtatDossierType::DOSSIER_OK_A_SIGNER,
         EtatDossierType::DOSSIER_DOUBLON_PAPIER,
         EtatDossierType::DOSSIER_OK_A_APPROUVER,
+        EtatDossierType::DOSSIER_OK_A_VERIFIER,
         EtatDossierType::DOSSIER_OK_A_INDEMNISER,
         EtatDossierType::DOSSIER_OK_INDEMNISE,
         EtatDossierType::DOSSIER_KO_A_SIGNER,

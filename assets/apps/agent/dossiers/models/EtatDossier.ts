@@ -26,6 +26,11 @@ export class EtatDossier {
     "Accepté - à approuver",
   );
 
+  public static OK_A_VERIFIER = new EtatDossier(
+    "OK_A_VERIFIER",
+    "Accepté - à vérifier",
+  );
+
   public static OK_A_INDEMNISER = new EtatDossier(
     "OK_A_INDEMNISER",
     "Accepté - à indemniser",
@@ -58,6 +63,7 @@ export class EtatDossier {
     EtatDossier.DOUBLON_PAPIER,
     EtatDossier.OK_A_SIGNER,
     EtatDossier.OK_A_APPROUVER,
+    EtatDossier.OK_A_VERIFIER,
     EtatDossier.OK_A_INDEMNISER,
     EtatDossier.OK_INDEMNISE,
     EtatDossier.KO_A_SIGNER,
@@ -78,6 +84,7 @@ export class EtatDossier {
 
   public estAccepteRequerant(): boolean {
     return [
+      EtatDossier.OK_A_VERIFIER.id,
       EtatDossier.OK_A_INDEMNISER.id,
       EtatDossier.OK_INDEMNISE.id,
     ].includes(this.id);
