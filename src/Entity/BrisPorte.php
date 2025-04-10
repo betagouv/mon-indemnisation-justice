@@ -261,6 +261,15 @@ class BrisPorte
         return $this->etatDossier;
     }
 
+    public function revenirEtatPrecedent(): static
+    {
+        if ($this->historiqueEtats->count() > 1) {
+            $this->etatDossier = $this->historiqueEtats->get($this->historiqueEtats->count() - 2);
+        }
+
+        return $this->etatDossier;
+    }
+
     public function estASigner(): bool
     {
         return $this->etatDossier->estASigner();

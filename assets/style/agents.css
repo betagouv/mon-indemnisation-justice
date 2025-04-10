@@ -28,6 +28,10 @@ a:not([href])[role="button"] {
     /* OK_A_SIGNER, = 'green-menthe' */
     --var-couleur-pp-ok-a-signer: #66673d;
     --var-couleur-ap-ok-a-signer: #fceeac;
+
+    /* OK_A_VALIDER, = 'green-bourgeon' */
+    --var-couleur-pp-ok-a-verifier: #447049;
+    --var-couleur-ap-ok-a-verifier: #c9fcac;
     /* OK_A_APPROUVER, = 'green-bourgeon' */
     --var-couleur-pp-ok-a-approuver: #447049;
     --var-couleur-ap-ok-a-approuver: #c9fcac;
@@ -84,6 +88,10 @@ a:not([href]) {
         border-left-color: var(--var-couleur-pp-ok-a-signer);
     }
 
+    &--ok-a-verifier {
+        border-left-color: var(--var-couleur-pp-ok-a-verifier);
+    }
+
     &--ok-a-approuver {
         border-left-color: var(--var-couleur-pp-ok-a-approuver);
     }
@@ -129,6 +137,11 @@ a:not([href]) {
     &--ok-a-signer {
         color: var(--var-couleur-pp-ok-a-signer);
         background-color: var(--var-couleur-ap-ok-a-signer);
+    }
+
+    &--ok-a-verifier {
+        color: var(--var-couleur-pp-ok-a-verifier);
+        background-color: var(--var-couleur-ap-ok-a-verifier);
     }
 
     &--ok-a-approuver {

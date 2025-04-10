@@ -44,7 +44,8 @@ class AppRuntime implements RuntimeExtensionInterface
             case EtatDossierType::DOSSIER_OK_A_APPROUVER:
                 return 'Indemnisation à accepter';
             case EtatDossierType::DOSSIER_OK_A_INDEMNISER:
-                return 'En attente d\'indemnisation';
+            case EtatDossierType::DOSSIER_OK_A_VERIFIER:
+                return "En attente d'indemnisation";
             case EtatDossierType::DOSSIER_OK_INDEMNISE:
                 return 'Indemnisé';
             case EtatDossierType::DOSSIER_KO_REJETE:

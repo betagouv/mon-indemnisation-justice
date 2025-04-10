@@ -127,7 +127,7 @@ class BrisPorteController extends RequerantController
 
         $dossier->ajouterDocument($document);
 
-        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
+        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
         $this->em->persist($dossier);
         $this->em->flush();
 
