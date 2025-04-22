@@ -2,8 +2,8 @@
 
 namespace MonIndemnisationJustice\Controller;
 
-use MonIndemnisationJustice\Entity\BrisPorte;
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,6 +48,12 @@ class HomeController extends AbstractController
             'raccourci' => $raccourci,
             'dossier' => $dossier,
         ]);
+    }
+
+    #[Route('/mentions-legales', name: 'public_mentions_legales')]
+    public function mentionsLegales(): Response
+    {
+        return $this->render('mentions-legales.html.twig');
     }
 
     /*
