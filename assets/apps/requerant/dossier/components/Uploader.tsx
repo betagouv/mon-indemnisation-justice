@@ -13,33 +13,42 @@ export const Uploader = ({
   type: string;
 }) => {
   const MAX_SIZE = 2048 * 1000 * 8;
-  const [erreur, setErreur] = useState("");
+  const [erreur, setErreur]: [string | null, (erreur: string | null) => void] =
+    useState(null);
 
   const id = useRef(randomId());
 
   const handleFileInput = (ev) => {
     setErreur("");
-    const file = ev.target.files[0];
-    if (file.size > MAX_SIZE) {
+    const file: File = ev.target.files[0];
+    if (
+      ![
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "application/pdf",
+      ].includes(file.type)
+    ) {
+      setErreur("Type de fichier nom accepté");
+    } else if (file.size > MAX_SIZE) {
       setErreur("Taille de fichier supérieure à 2Mo");
       return;
+    } else {
+      const data = new FormData();
+      data.append("file", ev.target.files[0]);
+      fetch(`/requerant/document/${dossier.id}/${type}`, {
+        method: "POST",
+        body: data,
+      })
+        .then((response) => response.json())
+        .then((document) => onUploaded(document))
+        .catch(() => {});
     }
-
-    const data = new FormData();
-    data.append("file", ev.target.files[0]);
-    fetch(`/requerant/document/${dossier.id}/${type}`, {
-      method: "POST",
-      body: data,
-    })
-      .then((response) => response.json())
-      .then((document) => onUploaded(document))
-      .catch(() => {});
   };
 
   return (
-    <div
-      className={`fr-my-2w fr-upload-group ${erreur ? "fr-input-group--error" : ""}`}
-    >
+    <div className="fr-my-2w fr-upload-group">
       <label className="fr-label" htmlFor={id}>
         {/*<span className="fr-icon-upload-2-line fr-mr-1w" aria-hidden="true"></span>*/}
         {libelle}

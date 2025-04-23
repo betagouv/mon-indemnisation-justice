@@ -9,6 +9,7 @@ const inscription = Object.assign(
     telephone: "",
     motDePasse: "",
     confirmation: "",
+    cguOk: false,
   },
   JSON.parse(document.getElementById("input-inscription")?.textContent || "{}"),
 );
@@ -101,6 +102,12 @@ createApp({
       }
     } else {
       this.erreurs.motDePasse = null;
+    }
+
+    if (!inscription.cguOk) {
+      this.erreurs.cguOk = "";
+    } else {
+      delete this.erreurs.cguOk;
     }
 
     this.submissible = Object.keys(this.erreurs).length === 0;

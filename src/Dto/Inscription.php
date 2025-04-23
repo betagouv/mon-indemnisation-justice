@@ -32,4 +32,6 @@ class Inscription
 
     #[Assert\Expression(expression: 'this.motDePasse == this.confirmation', message: 'Les deux mots de passe doivent être identiques')]
     public string $confirmation = '';
+
+    public ?bool $cguOk = false;
 }

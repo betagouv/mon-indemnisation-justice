@@ -126,6 +126,7 @@ class EligibiliteBrisPorteTest extends AbstractFunctionalTestCase
             'telephone' => '0612345678',
             'motDePasse' => 'P4ssword',
             'confirmation' => 'P4ssword',
+            'cguOk' => true,
         ]);
 
         $this

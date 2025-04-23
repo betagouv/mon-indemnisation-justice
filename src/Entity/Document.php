@@ -57,7 +57,7 @@ class Document
     private ?string $type = null;
 
     #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
-    #[ORM\Column(length: 64, nullable: true)]
+    #[ORM\Column(nullable: true)]
     protected ?string $mime = null;
 
     #[Groups(['dossier:lecture'])]

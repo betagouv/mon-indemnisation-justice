@@ -2,8 +2,8 @@
 
 namespace MonIndemnisationJustice\Controller;
 
-use MonIndemnisationJustice\Entity\BrisPorte;
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,11 +50,21 @@ class HomeController extends AbstractController
         ]);
     }
 
-    /*
-    #[Route('/conditions-generales-d-utilisation', name: 'app_cgu')]
+    #[Route('/mentions-legales', name: 'public_mentions_legales')]
+    public function mentionsLegales(): Response
+    {
+        return $this->render('mentions-legales.html.twig');
+    }
+
+    #[Route('/politique-de-confidentialite', name: 'public_politique_de_confidentialite')]
+    public function politiqueDeConfidentialite(): Response
+    {
+        return $this->render('politique-de-confidentialite.html.twig');
+    }
+
+    #[Route('/conditions-generales-d-utilisation', name: 'public_cgu')]
     public function cgu(): Response
     {
         return $this->render('cgu.html.twig');
     }
-    */
 }
