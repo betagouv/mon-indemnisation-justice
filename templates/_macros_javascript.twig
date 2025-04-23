@@ -1,0 +1,14 @@
+{% macro revelerCourriel() %}
+    <script type="application/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('*[data-courriel]').forEach((node) => {
+                console.log(node.tagName)
+                const [utilisateur, domaine] = node.getAttribute("data-courriel")?.split(',');
+                node.textContent = `${utilisateur}@${domaine}`;
+                if (node.tagName.toLowerCase() === 'a') {
+                    node.href = `mailto:${utilisateur}@${domaine}`;
+                }
+            })
+        }, false);
+    </script>
+{% endmacro %}

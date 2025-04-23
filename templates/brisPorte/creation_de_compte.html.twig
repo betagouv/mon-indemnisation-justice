@@ -283,7 +283,6 @@
                                             </div>
                                         </div>
 
-                                        {# CGU (désactivé tant que la page CGU n'existe pas) #}
                                         <div class="fr-col-12">
                                             <fieldset class="fr-fieldset">
                                                 <div class="fr-fieldset__content">
@@ -291,8 +290,8 @@
                                                         <input type="checkbox"
                                                                id="inscription-champs-cgu-ok"
                                                                name="cguOk"
-                                                               v-model.boolean="inscription.cguOk"
-                                                        />
+                                                               value="{{ form.cguOk.vars.value }}"
+                                                               v-model="inscription.cguOk"/>
                                                         <label class="fr-label"
                                                                for="inscription-champs-cgu-ok">
                                                             Je certifie avoir lu et accepté les

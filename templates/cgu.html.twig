@@ -1,3 +1,5 @@
+{% from '_macros_javascript.twig' import revelerCourriel %}
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Mentions légales{% endblock %}
@@ -56,7 +58,7 @@
                     d’éligibilité. Si la personne est éligible mais que son département n’est pas encore pris en compte
                     dans
                     le cadre du dispositif, elle peut contacter l’équipe de la Plateforme par voie électronique :
-                    precontentieux.dsj-fip6@justice.gouv.fr</p>
+                    <a data-courriel="precontentieux.dsj-fip6,justice.gouv.fr"></a></p>
 
                 <p>L’Utilisateur éligible doit alors se créer un compte en renseignant ses informations
                     personnelles.</p>
@@ -170,3 +172,9 @@
         </div>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {{ revelerCourriel() }}
+{% endblock javascripts %}
