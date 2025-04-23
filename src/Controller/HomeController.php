@@ -62,11 +62,9 @@ class HomeController extends AbstractController
         return $this->render('politique-de-confidentialite.html.twig');
     }
 
-    /*
-    #[Route('/conditions-generales-d-utilisation', name: 'app_cgu')]
+    #[Route('/conditions-generales-d-utilisation', name: 'public_cgu')]
     public function cgu(): Response
     {
         return $this->render('cgu.html.twig');
     }
-    */
 }
