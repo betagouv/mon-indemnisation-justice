@@ -272,36 +272,24 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                   data-titre="Remplir et signer le formulaire"
                 >
                   <p>
-                    La déclaration d'acceptation doit être remplie avec l'ajout
-                    d'informations concernant votre état civil, de vos
-                    coordonnées bancaires <i>à jour</i> ainsi qu'une signature
-                    manuscrite, directement sur le document PDF que vous avez
-                    récupéré.
+                    Pour compléter le formulaire, imprimez le document que vous
+                    venez de télécharger, remplissez le avec les informations
+                    concernant votre état civil ainsi que vos coordonnées
+                    bancaires *à jour* et signez-le.
                   </p>
 
                   <p>
-                    Il existe plusieurs logiciels qui permettent de le faire,
-                    mais nous vous invitons à suivre{" "}
+                    Une fois dûment complété, scannez-le pour récupérer la
+                    version électronique sous forme de fichier au format PDF et
+                    passez à l'étape suivante. Nous vous conseillons{" "}
                     <a
-                      href="https://lesbases.anct.gouv.fr/ressources/remplir-et-signer-un-fichier-pdf"
-                      title="Comment remplir et signer un fichier PDF, procédure expliquée et recommandée par l'ANCT"
+                      href="https://leclaireur.fnac.com/article/cp64397-comment-scanner-un-document-avec-votre-imprimante-ou-votre-telephone/"
+                      target="_blank"
+                      title="Article sur le site de la Fnac: comment scanner un document ?"
                     >
-                      la démarche recommandée par l'ANCT
+                      ce petit guide proposé par la Fnac
                     </a>
-                    . Vous pouvez aussi utiliser{" "}
-                    <a
-                      href="https://www.ilovepdf.com/fr/modifier-pdf"
-                      title="Modifier et signer un PDF avec le site iLovePDF"
-                    >
-                      la fonctionnalité "Modifier un PDF" depuis le site
-                      iLovePDF
-                    </a>
-                    .
-                  </p>
-
-                  <p>
-                    Une fois que vous avez modifié et <b>sauvegardé</b> le
-                    document, passez à l'étape suivante.
+                    &nbsp;si vous souhaitez en savoir plus sur comment faire.
                   </p>
 
                   <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
