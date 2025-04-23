@@ -1,3 +1,5 @@
+{% from '_macros_javascript.twig' import revelerCourriel %}
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Politique de confidentialité{% endblock %}
@@ -113,14 +115,17 @@
                     <li>D’un droit à la limitation du traitement de vos données.</li>
                 </ul>
 
-                <p>Pour exercer vos droits, vous pouvez nous contacter : dpd@justice.gouv.fr</p>
+                <p>Pour exercer vos droits, vous pouvez nous contacter : <a data-courriel="dpd,justice.gouv.fr"></a>
+                </p>
 
                 <p>Puisque ce sont des droits personnels, nous ne traiterons votre demande que si nous sommes en mesure
                     de vous identifier. Dans le cas où nous ne parvenons pas à vous identifier, nous pouvons être amenés
                     à vous demander une preuve de votre identité.</p>
 
                 <p>Pour vous aider dans votre démarche, vous trouverez un modèle de courrier élaboré par la CNIL ici :
-                    https://www.cnil.fr/fr/modele/courrier/exercer-son-droit-dacces</p>
+                    <a href="https://www.cnil.fr/fr/modele/courrier/exercer-son-droit-dacces"
+                       title="CNIL: modèle de courrier pour exercer son droit d'accès">https://www.cnil.fr/fr/modele/courrier/exercer-son-droit-dacces</a>
+                </p>
 
                 <p>Nous nous engageons à vous répondre dans un délai raisonnable qui ne saurait dépasser 1 mois à
                     compter de la réception de votre demande.</p>
@@ -236,3 +241,9 @@
         </div>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {{ revelerCourriel() }}
+{% endblock javascripts %}
