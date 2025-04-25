@@ -374,11 +374,20 @@ class DossierController extends AgentController
             $normalizer->normalize(
                 $this->dossierRepository->rechercheDossiers(
                     $request->query->has('e') ?
-                        array_filter(
-                            array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')),
-                            fn (EtatDossierType $etat) => in_array($etat, self::ETATS_DOSSIERS_ELIGIBLES)
-                        ) :
-                        self::ETATS_DOSSIERS_ELIGIBLES,
+                        array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')) :
+                        [
+                            // EtatDossierType::DOSSIER_DOUBLON_PAPIER,
+                            // EtatDossierType::DOSSIER_A_FINALISER,
+                            EtatDossierType::DOSSIER_A_INSTRUIRE,
+                            EtatDossierType::DOSSIER_EN_INSTRUCTION,
+                            EtatDossierType::DOSSIER_OK_A_SIGNER,
+                            EtatDossierType::DOSSIER_OK_A_APPROUVER,
+                            EtatDossierType::DOSSIER_OK_A_VERIFIER,
+                            EtatDossierType::DOSSIER_OK_A_INDEMNISER,
+                            EtatDossierType::DOSSIER_OK_INDEMNISE,
+                            EtatDossierType::DOSSIER_KO_A_SIGNER,
+                            EtatDossierType::DOSSIER_KO_REJETE,
+                        ],
                     $this->agentRepository->findBy([
                         'id' => array_filter(
                             self::extraireCritereRecherche($request, 'a'),

@@ -488,6 +488,13 @@ class BrisPorte
         return $this->testEligibilite;
     }
 
+    #[Groups(['agent:liste'])]
+    #[SerializedName('estEligible')]
+    public function getEstEligible(): ?bool
+    {
+        return $this->testEligibilite?->estEligible();
+    }
+
     public function setTestEligibilite(?TestEligibilite $testEligibilite): BrisPorte
     {
         $this->testEligibilite = $testEligibilite;
