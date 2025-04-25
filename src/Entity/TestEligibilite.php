@@ -65,6 +65,11 @@ class TestEligibilite
         }
     }
 
+    public function estEligible(): bool
+    {
+        return !$this->estVise && !$this->estHebergeant;
+    }
+
     public static function fromArray(array $values): TestEligibilite
     {
         $testEligibilite = new TestEligibilite();

@@ -46,6 +46,7 @@ class DossierControllerTest extends WebTestCase
             'redacteur' => $dossier->getRedacteur()?->getId(),
             'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
             'adresse' => $dossier->getAdresse()->getLibelle(),
+            'estEligible' => true,
         ], $dossiers[0]);
     }
 

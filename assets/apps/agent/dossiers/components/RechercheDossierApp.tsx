@@ -185,11 +185,14 @@ export const RechercheDossierApp = observer(
                               <th scope="col" className="fr-col-2">
                                 Référence / état
                               </th>
-                              <th scope="col" className="fr-col-4">
+                              <th scope="col" className="fr-col-3">
                                 Idéntité et adresse du requérant
                               </th>
                               <th scope="col" className="fr-col-3">
                                 Déposé le
+                              </th>
+                              <th scope="col" className="fr-col-1">
+                                Éligible ?
                               </th>
                               <th scope="col" className="fr-col-2">
                                 Attribué à
@@ -212,7 +215,7 @@ export const RechercheDossierApp = observer(
                                     <br />
                                     {dossier.reference}
                                   </td>
-                                  <td className="fr-col-4">
+                                  <td className="fr-col-3">
                                     <span className="fr-text--lg fr-text--bold">
                                       {dossier.requerant}
                                     </span>
@@ -236,6 +239,17 @@ export const RechercheDossierApp = observer(
                                       dossier.dateDepot?.getMinutes(),
                                     ).padStart(2, "0")}
                                   </td>
+                                  <td className="fr-col-1">
+                                    {dossier.estEligible ? (
+                                      <p class="fr-badge fr-badge--success fr-badge--no-icon">
+                                        Oui
+                                      </p>
+                                    ) : (
+                                      <p class="fr-badge fr-badge--warning">
+                                        Non
+                                      </p>
+                                    )}
+                                  </td>
                                   <td className="fr-col-2">
                                     {dossier.redacteur ? (
                                       <span className="fr-text--bold">
@@ -245,6 +259,7 @@ export const RechercheDossierApp = observer(
                                       <i>non attribué</i>
                                     )}
                                   </td>
+
                                   <td className="fr-col-1">
                                     <div className="fr-btns-group fr-btns-group--right">
                                       <a

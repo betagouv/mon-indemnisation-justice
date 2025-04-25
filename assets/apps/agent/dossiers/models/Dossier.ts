@@ -87,6 +87,7 @@ export abstract class BaseDossier {
 export class DossierApercu extends BaseDossier {
   public readonly requerant: string; // Prénom NOM
   public readonly adresse: string;
+  public readonly estEligible: boolean;
 }
 
 export class DossierDetail extends BaseDossier {
