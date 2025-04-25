@@ -61,8 +61,11 @@ export const RechercheDossierApp = observer(
                     </div>
                   </div>
 
-                  <div className="fr-col-4">
-                    <div className="fr-select-group">
+                  <div className="fr-col-4" style={{ justifySelf: "stretch" }}>
+                    <div
+                      className="fr-select-group"
+                      style={{ minHeight: "100%" }}
+                    >
                       <label
                         className="fr-label"
                         htmlFor="recherche-filtres-etat-dossier"
@@ -73,23 +76,26 @@ export const RechercheDossierApp = observer(
                       <select
                         className="fr-select"
                         id="recherche-filtres-etat-dossier"
-                        defaultValue={null}
-                        onChange={(e) =>
-                          (recherche.etatDossier = EtatDossier.resoudre(
-                            e.target.value,
-                          ))
-                        }
+                        defaultValue={recherche
+                          .getEtatsDossierSelectionnes()
+                          .map((etat) => etat.id)}
+                        multiple={true}
+                        style={{ height: "100%" }}
+                        size={EtatDossier.liste.length}
+                        onChange={(e) => {
+                          recherche.changerEtatsDossier(
+                            Array.from(e.target.selectedOptions).map(
+                              (option: HTMLOptionElement) =>
+                                EtatDossier.resoudre(option.value),
+                            ),
+                          );
+                        }}
                       >
-                        <option value="" disabled hidden>
-                          Sélectionnez une option
-                        </option>
-                        {EtatDossier.liste
-                          .filter((etat) => etat.estDisponibleRecherche)
-                          .map((etat) => (
-                            <option value={etat.id} key={etat.id}>
-                              {etat.libelle}
-                            </option>
-                          ))}
+                        {EtatDossier.liste.map((etat) => (
+                          <option value={etat.id} key={etat.id}>
+                            {etat.libelle}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>

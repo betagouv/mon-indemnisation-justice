@@ -7,27 +7,33 @@ import { Redacteur } from "./Redacteur.ts";
  *
  */
 export class RechercheDossier {
-  protected _etatDossier: EtatDossier | null;
+  protected _etatsDossier: Map<EtatDossier, boolean>;
   protected _attributaires: Set<Redacteur | null>;
   public motsClefs: string;
 
   constructor(
     attributaires: Array<Redacteur | null> = [],
-    etatDossier: EtatDossier | null,
+    etatsSelectionnes: EtatDossier[],
     motsClefs: string = "",
   ) {
     this._attributaires = new Set(attributaires);
-    this._etatDossier = etatDossier;
+    this._etatsDossier = new Map(
+      EtatDossier.liste.map((etatDossier) => [
+        etatDossier,
+        etatsSelectionnes.includes(etatDossier),
+      ]),
+    );
     this.motsClefs = motsClefs;
     makeObservable(this, {
       _attributaires: observable,
-      _etatDossier: observable,
+      _etatsDossier: observable,
       motsClefs: observable,
       setMotsClefs: action,
       setAttributaire: action,
       attributaires: computed,
-      etatDossier: computed,
+      etatsDossier: computed,
       estSelectionneAttributaire: observable,
+      changerEtatsDossier: action,
     } as any);
   }
 
@@ -39,12 +45,32 @@ export class RechercheDossier {
     return this._attributaires.values();
   }
 
-  get etatDossier(): EtatDossier | null {
-    return this._etatDossier;
+  get etatsDossier(): Map<EtatDossier, boolean> {
+    return this._etatsDossier;
   }
 
-  set etatDossier(etat: EtatDossier | null) {
-    this._etatDossier = etat;
+  estEtatDossierSelectionne(etatDossier: EtatDossier): boolean {
+    return this._etatsDossier.get(etatDossier);
+  }
+
+  getEtatsDossierSelectionnes(): EtatDossier[] {
+    return this._etatsDossier
+      .entries()
+      .filter(([_, selectionne]) => selectionne)
+      .map(([etat, _]) => etat)
+      .toArray();
+  }
+
+  changerEtatsDossier(etats: EtatDossier[]) {
+    for (const etat of EtatDossier.liste) {
+      this._etatsDossier.set(etat, etats.includes(etat));
+    }
+  }
+
+  protected serialiserURLEtatsDossier(): string {
+    return this.getEtatsDossierSelectionnes()
+      .map((etat) => etat.slug)
+      .join("|");
   }
 
   setMotsClefs(motsClefs: string) {
@@ -75,8 +101,10 @@ export class RechercheDossier {
               .join("|"),
           }
         : {}),
-      // État du dossier
-      ...(this._etatDossier ? { e: this._etatDossier.slug } : {}),
+      // États du dossier
+      ...(this.getEtatsDossierSelectionnes()
+        ? { e: this.serialiserURLEtatsDossier() }
+        : {}),
       // Mots clefs (= filtre textuel de recherche libre)
       ...(this.motsClefs.trim().length > 0
         ? {
@@ -106,8 +134,8 @@ export class RechercheDossier {
       url.searchParams.delete("a");
     }
 
-    if (this._etatDossier) {
-      url.searchParams.set("e", this._etatDossier.slug);
+    if (this.getEtatsDossierSelectionnes().length > 0) {
+      url.searchParams.set("e", this.serialiserURLEtatsDossier());
     } else {
       url.searchParams.delete("e");
     }
@@ -131,7 +159,23 @@ export class RechercheDossier {
             .split("|")
             .map((a) => (a == "_" ? null : Redacteur.resoudre(parseInt(a))))
         : [],
-      query.has("e") ? EtatDossier.resoudreParSlug(query.get("e")) : null,
+      query.has("e")
+        ? query
+            .get("e")
+            .split("|")
+            .map((e) => EtatDossier.resoudreParSlug(e))
+            .filter((e) => !!e)
+        : [
+            EtatDossier.A_INSTRUIRE,
+            EtatDossier.EN_INSTRUCTION,
+            EtatDossier.OK_A_SIGNER,
+            EtatDossier.OK_A_APPROUVER,
+            EtatDossier.OK_A_VERIFIER,
+            EtatDossier.OK_A_INDEMNISER,
+            EtatDossier.OK_INDEMNISE,
+            EtatDossier.KO_A_SIGNER,
+            EtatDossier.KO_REJETE,
+          ],
       query.has("r") ? query.get("r") : "",
     );
   }

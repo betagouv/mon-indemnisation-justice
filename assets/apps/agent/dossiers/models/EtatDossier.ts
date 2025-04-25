@@ -2,7 +2,6 @@ export class EtatDossier {
   public readonly id: string;
   public readonly slug: string;
   public readonly libelle: string;
-  public readonly estDisponibleRecherche: boolean;
 
   public static A_FINALISER = new EtatDossier("A_FINALISER", "À finaliser");
   public static A_INSTRUIRE = new EtatDossier("A_INSTRUIRE", "À instruire");
@@ -45,15 +44,10 @@ export class EtatDossier {
 
   public static KO_REJETE = new EtatDossier("KO_REJETE", "Rejeté");
 
-  protected constructor(
-    id: string,
-    libelle: string,
-    estDisponibleRecherche: boolean = true,
-  ) {
+  protected constructor(id: string, libelle: string) {
     this.id = id;
     this.slug = id.toLowerCase().replaceAll("_", "-");
     this.libelle = libelle;
-    this.estDisponibleRecherche = estDisponibleRecherche;
   }
 
   protected static _catalog: EtatDossier[] = [
