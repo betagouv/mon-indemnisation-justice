@@ -10,36 +10,28 @@
             background-repeat: no-repeat;
             background-size: 70%;
             background-position: center;
-        }}
+        }
     </style>
 {% endblock stylesheets %}
 
-{% block javascripts %}
-    <!-- Script en version es6 module et nomodule pour les navigateurs le ne supportant pas -->
-    <script type="module" src="/dsfr/dsfr.module.min.js"></script>
-    <script type="text/javascript" nomodule src="/dsfr/dsfr.nomodule.min.js"></script>
-{% endblock javascripts %}
-
-{% block body %}
-    <main role="main">
-        <div class="fr-container">
-            <div class="fr-grid-row">
-                <div class="fr-pt-6w fr-pb-12w fr-col-8">
-                    <h1>Une erreur est survenue.</h1>
-                    <p>
-                        Le chargement de la page n'a pu aboutir en raison d'une erreur dans notre système.
-                    </p>
-                    <p>
-                        Nous sommes sincèrement désolé pour la gêne occasionnée, nous mettons tout en œuvre pour que
-                        ceci ne se reporduise plus à l'avenir.</p>
-                    <p>
-                        Nous vous invitons à retourner à <a href="{{ path('app_homepage') }}">l'accueil</a>.
-                    </p>
-                </div>
-                <div class="fr-pt-6w fr-py-2w fr-col-4">
-                    <div class="undraw-map"></div>
-                </div>
+{% block main %}
+    <div class="fr-container fr-my-3w">
+        <div class="fr-grid-row">
+            <div class="fr-pt-6w fr-pb-12w fr-col-8">
+                <h1>Une erreur est survenue.</h1>
+                <p>
+                    Le chargement de la page n'a pu aboutir en raison d'une erreur dans notre système.
+                </p>
+                <p>
+                    Nous sommes sincèrement désolé pour la gêne occasionnée, nous mettons tout en œuvre pour que
+                    ceci ne se reporduise plus à l'avenir.</p>
+                <p>
+                    Nous vous invitons à retourner à <a href="{{ path('app_homepage') }}">l'accueil</a>.
+                </p>
+            </div>
+            <div class="fr-pt-6w fr-py-2w fr-col-4">
+                <div class="undraw-map"></div>
             </div>
         </div>
-    </main>
-{% endblock body %}
+    </div>>
+{% endblock main %}
