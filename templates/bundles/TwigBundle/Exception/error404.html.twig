@@ -10,23 +10,25 @@
             background-repeat: no-repeat;
             background-size: 70%;
             background-position: center;
-        }}
+        }
     </style>
 {% endblock stylesheets %}
 
 {% block main %}
-<div class="fr-grid-row">
-    <div class="fr-pt-6w fr-pb-12w fr-col-8">
-        <h1>Page non trouvée</h1>
-        <p>
-            Il semble que la page que vous demandez n'existe pas ou a été retirée.
-        </p>
-        <p>
-            Mais vous pouvez toujours retourner à <a href="{{ path('app_homepage') }}">l'accueil</a>.
-        </p>
+    <div class="fr-container fr-my-3w">
+        <div class="fr-grid-row">
+            <div class="fr-pt-6w fr-pb-12w fr-col-8">
+                <h1>Page non trouvée</h1>
+                <p>
+                    Il semble que la page que vous demandez n'existe pas ou a été retirée.
+                </p>
+                <p>
+                    Mais vous pouvez toujours retourner à <a href="{{ path('app_homepage') }}">l'accueil</a>.
+                </p>
+            </div>
+            <div class="fr-pt-6w fr-py-2w fr-col-4">
+                <div class="undraw-map"></div>
+            </div>
+        </div>
     </div>
-    <div class="fr-pt-6w fr-py-2w fr-col-4">
-        <div class="undraw-map"></div>
-    </div>
-</div>
 {% endblock main %}
