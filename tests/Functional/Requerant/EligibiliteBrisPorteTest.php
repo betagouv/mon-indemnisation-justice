@@ -91,16 +91,16 @@ class EligibiliteBrisPorteTest extends AbstractFunctionalTestCase
         $this
             ->wait()
             ->screenshot($device, 'question précisions')
-            ->checkField("Êtes-vous la personne visée par l'intervention des forces de l'ordre ?", 'Non')
+            ->checkField('Étiez-vous la personne recherchée par les forces de l’ordre lors de leur intervention ?', 'Non')
             ->wait()
             ->screenshot($device, 'question est visé')
-            ->checkField("Est-ce que la personne recherchée réside ou est hébergée à l'adresse du logement ayant subi le bris de porte ?", 'Non')
+            ->checkField("Est-ce que la personne recherchée par les forces de l'ordre réside ou est hébergée à l'adresse du logement ayant subi le bris de porte ?", 'Non')
             ->wait()
             ->screenshot($device, 'question est hébergeant')
-            ->checkField('Quel est votre statut par rapport au logement ?', 'Propriétaire')
+            ->checkField('Quel est votre statut par rapport au logement ayant subi le bris de porte ?', 'Propriétaire')
             ->wait()
             ->screenshot($device, 'question est propriétaire')
-            ->checkField('Avez-vous pris contact avec votre assurance habitation et obtenu une attestation de non prise en charge du sinistre ?', 'Oui')
+            ->checkField('Avez-vous pris contact avec votre assurance et obtenu une attestation de non prise en charge du sinistre ?', 'Oui')
             ->wait()
             ->screenshot($device, 'question a contacté assurance');
 
