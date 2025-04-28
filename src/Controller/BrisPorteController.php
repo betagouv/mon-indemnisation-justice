@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/bris-de-porte')]
 class BrisPorteController extends AbstractController
@@ -133,7 +135,7 @@ class BrisPorteController extends AbstractController
     }
 
     #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET', 'POST'])]
-    public function creationDeCompte(Request $request): Response
+    public function creationDeCompte(Request $request, NormalizerInterface $normalizer, UrlGeneratorInterface $router): Response
     {
         if ($this->getUser() instanceof Requerant) {
             return $this->redirectToRoute('requerant_home_index');
@@ -220,9 +222,15 @@ class BrisPorteController extends AbstractController
         }
 
         return $this->render('brisPorte/creation_de_compte.html.twig', [
-            'inscription' => $inscription,
+            'react' => [
+                'routes' => [
+                    'connexion' => $router->generate('app_login'),
+                    'cgu' => $router->generate('public_cgu'),
+                ],
+                'inscription' => $normalizer->normalize($inscription, 'json'),
+                'errors' => $errors,
+            ],
             'form' => $form,
-            'errors' => $errors,
         ]);
     }
 

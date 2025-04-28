@@ -1,0 +1,101 @@
+import { Equals, IsDefined, IsEmail, IsNotEmpty } from "class-validator";
+import { makeAutoObservable } from "mobx";
+
+export enum Civilite {
+  M = "Monsieur",
+  MME = "Madame",
+}
+
+export class Inscription {
+  @IsDefined()
+  _civilite?: Civilite = null;
+  @IsDefined()
+  @IsNotEmpty()
+  _prenom?: string = null;
+  @IsNotEmpty()
+  _nom?: string = null;
+  _nomNaissance?: string = null;
+  @IsEmail()
+  _courriel?: string = null;
+  _telephone?: string = null;
+  _motDePasse?: string = null;
+  _confirmation?: string = null;
+  @Equals(true)
+  _cguOk: boolean = false;
+
+  constructor() {
+    makeAutoObservable(this, {}, { autoBind: true });
+  }
+
+  get civilite(): Civilite {
+    return this._civilite;
+  }
+
+  set civilite(value: Civilite) {
+    this._civilite = value;
+  }
+
+  get prenom(): string {
+    return this._prenom;
+  }
+
+  set prenom(value: string) {
+    this._prenom = value;
+  }
+
+  get nom(): string {
+    return this._nom;
+  }
+
+  set nom(value: string) {
+    this._nom = value;
+  }
+
+  get nomNaissance(): string {
+    return this._nomNaissance;
+  }
+
+  set nomNaissance(value: string) {
+    this._nomNaissance = value;
+  }
+
+  get courriel(): string {
+    return this._courriel;
+  }
+
+  set courriel(value: string) {
+    this._courriel = value;
+  }
+
+  get telephone(): string {
+    return this._telephone;
+  }
+
+  set telephone(value: string) {
+    this._telephone = value;
+  }
+
+  get motDePasse(): string {
+    return this._motDePasse;
+  }
+
+  set motDePasse(value: string) {
+    this._motDePasse = value;
+  }
+
+  get confirmation(): string {
+    return this._confirmation;
+  }
+
+  set confirmation(value: string) {
+    this._confirmation = value;
+  }
+
+  get cguOk(): boolean {
+    return this._cguOk;
+  }
+
+  set cguOk(value: boolean) {
+    this._cguOk = value;
+  }
+}
