@@ -174,7 +174,7 @@ abstract class AbstractFunctionalTestCase extends PantherTestCase
                     ->reduce(
                         // On cherche l'élément <legend> dans le fieldset dont le texte est $legend
                         function (WebDriverElement $l) use ($legend, $exactMatch) {
-                            return $exactMatch ? trim($l->getText()) === $legend : str_contains(trim($l->getText()), $legend);
+                            return $exactMatch ? trim($l->getText()) === $legend : str_contains(trim(str_replace('\n', '', $l->getText())), $legend);
                         }
                     )
                     ->count();

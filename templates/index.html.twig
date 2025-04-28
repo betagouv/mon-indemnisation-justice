@@ -2,7 +2,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link href="{{ asset('remixicon/fonts/remixicon.css') }}" rel="stylesheet" />
+    <link href="{{ asset('remixicon/fonts/remixicon.css') }}" rel="stylesheet"/>
     <style>
         .pr-content_body .pr-requests > ul, .pr-content_body .pr-requests > ul > li {
             margin: 0;
@@ -19,11 +19,11 @@
 
         .fr-jumbotron {
             width: 100%;
-              top: 0;
-              left: 0;
-              background-size: cover !important;
-              background-position: 50% 50% !important;
-              z-index: 0;
+            top: 0;
+            left: 0;
+            background-size: cover !important;
+            background-position: 50% 50% !important;
+            z-index: 0;
         }
 
         .fr-jumbotron--olympe-de-gouges {
@@ -57,7 +57,7 @@
         .pr-info-importante {
             display: flex;
             flex-direction: column;
-            width:100%;
+            width: 100%;
             /*background-color: #E6EEFE;*/
             background-color: var(--background-contrast-blue-cumulus);
             background-clip: content-box;
@@ -118,6 +118,7 @@
                 margin-bottom: .75rem;
             }
         }
+
         @media (min-width: 992px) {
             .pr-section-comment-faire div.fr-container {
                 display: flex;
@@ -148,6 +149,7 @@
             width: 4rem;
             margin-right: 1.5rem;
         }
+
         .pr-section-comment-faire--etape-icone span {
             width: 4rem;
             height: 4rem;
@@ -220,7 +222,7 @@
                 content: "";
                 position: absolute;
                 top: 0;
-                left:0;
+                left: 0;
                 width: 100%;
                 height: 2rem;
                 mask: url('{{ asset("images/icon/icon-triangle-bottom.svg") }}') no-repeat;
@@ -231,18 +233,18 @@
         {# Tablets and desktops #}
         @media (min-width: 992px) {
             .pr-etapes-indemnisation-etape:not(:first-child) {
-                padding-left:4rem;
+                padding-left: 4rem;
             }
 
             .pr-etapes-indemnisation-etape:not(:first-child):before {
                 content: "";
                 position: absolute;
                 top: 0;
-                left:0;
+                left: 0;
                 width: 2.5rem;
                 height: 100%;
                 mask: url('{{ asset("images/icon/icon-triangle-right.svg") }}') no-repeat;
-                mask-size: 2.5rem 80% ;
+                mask-size: 2.5rem 80%;
             }
         }
 
@@ -264,7 +266,7 @@
             color: var(--background-overlap-grey);
         }
 
-        .pr-etapes-indemnisation--etape-icone span:before,i:before {
+        .pr-etapes-indemnisation--etape-icone span:before, i:before {
             font-size: 1.8rem;
             font-weight: normal;
         }
@@ -327,275 +329,307 @@
 {% block containerClasses %}{% endblock containerClasses %}
 
 {% block main %}
-<section class="fr-jumbotron fr-jumbotron--olympe-de-gouges fr-py-3w">
-    <div class="fr-container">
-        <div class="fr-col-md-9">
-            <div class="fr-grid-col">
-                <h1 class="fr-h1 fr-mt-3w fr-text--white">Votre porte a été endommagée par erreur par les forces de l’ordre
-                    au cours d'une opération de police judiciaire ?</h1>
-                <p class="fr-text--white">
-                    Mon Indemnisation Justice est un service en ligne qui vous permet de faire une demande d’indemnisation
-                    pour un bris de porte ou tout autre dégât matériel causé dans le cadre d’une opération de police
-                    judiciaire.
-                </p>
-                <p>
-                    {% block appelAAction %}
-                    <a class="fr-btn fr-p-3v" href="{{ url('bris_porte_tester_eligibilite') }}">
-                        Déposer votre demande d’indemnisation
-                    </a>
-                    {% endblock appelAAction %}
-                </p>
+    <section class="fr-jumbotron fr-jumbotron--olympe-de-gouges fr-py-3w">
+        <div class="fr-container">
+            <div class="fr-col-md-9">
+                <div class="fr-grid-col">
+                    <h1 class="fr-h1 fr-mt-3w fr-text--white">Votre porte a été endommagée par erreur par les forces de
+                        l’ordre
+                        au cours d'une opération de police judiciaire ?</h1>
+                    <p class="fr-text--white">
+                        Mon Indemnisation Justice est un service en ligne qui vous permet de faire une demande
+                        d’indemnisation
+                        pour un bris de porte ou tout autre dégât matériel causé dans le cadre d’une opération de police
+                        judiciaire.
+                    </p>
+                    <p>
+                        {% block appelAAction %}
+                            <a class="fr-btn fr-p-3v" href="{{ url('bris_porte_tester_eligibilite') }}">
+                                Déposer votre demande d’indemnisation
+                            </a>
+                        {% endblock appelAAction %}
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="fr-my-6w pr-section-comment-reagir">
-    <div class="fr-container">
-        <h3>Comment réagir ?</h3>
+    <section class="fr-my-6w pr-section-comment-reagir">
+        <div class="fr-container">
+            <h3>Comment réagir ?</h3>
 
-        <div class="pr-comment-reagir--reflexes">
-            <h5>Les bons réflexes</h5>
-            <p>
-                L’agent des forces de l’ordre doit vous remettre une attestation qui vous sera nécessaire pour faire votre demande d’indemnisation. Cette attestation est remise par l’agent en cas d’erreur de porte uniquement.
-            </p>
-            <ul>
-                <li>Assurez-vous que l’agent a complété l’espace qui lui est réservé : date et adresse de l’opération de police judiciaire, nom du service, numéro de parquet ou d’instruction ….</li>
-                <li>Si un serrurier est intervenu à la demande des forces de l’ordre pour sécuriser votre logement, vous
-                    n’avez pas à régler sa facture. Nos services prendront en charge l’intervention.</li>
-            </ul>
-        </div>
+            <div class="pr-comment-reagir--reflexes">
+                <h5>Les bons réflexes</h5>
+                <p>
+                    L’agent des forces de l’ordre doit vous remettre une attestation qui vous sera nécessaire pour faire
+                    votre demande d’indemnisation. Cette attestation est remise par l’agent <a class="fr-link"
+                                                                                               aria-describedby="tooltip-erreur-de-porte"
+                                                                                               id="link-2990" href="#">en
+                        cas d’erreur de porte uniquement.</a><span class="fr-tooltip fr-placement"
+                                                                   id="tooltip-erreur-de-porte" role="tooltip"
+                                                                   aria-hidden="true">c’est-à-dire <b>lorsque le logement ayant subi le bris de porte n’est pas celui qui était visé par l’opération de police judiciaire</b>.<br/>
+                        <br/>
+                        <u>Exemple :</u> la porte du logement 301 est fracturée alors que l’objectif visé par l’enquête est le logement 302.</span>
 
-        <div class="pr-comment-reagir--infos">
-            <h5>Informations importantes</h5>
-            <p>
-                Vous ne pouvez pas être indemnisés par différents intermédiaires pour le même dommage.
-                Afin de garantir <a class="fr-link" aria-describedby="infobulle-respect-principe" id="lien-infobulle-respect-principe"
-                href="#">le respect de ce principe</a>, nous vous invitons à nous fournir les différentes attestations
-                qui correspondent à votre situation.
-            </p>
-            <span class="fr-tooltip fr-placement" id="infobulle-respect-principe" role="tooltip" aria-hidden="true">
+                </p>
+                <ul>
+                    <li>Assurez-vous que l’agent a complété l’espace qui lui est réservé : date et adresse de
+                        l’opération de police judiciaire, nom du service, numéro de parquet ou d’instruction ….
+                    </li>
+                    <li>Si un serrurier est intervenu à la demande des forces de l’ordre pour sécuriser votre logement,
+                        vous
+                        n’avez pas à régler sa facture. Nos services prendront en charge l’intervention.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="pr-comment-reagir--infos">
+                <h5>Informations importantes</h5>
+                <p>
+                    La victime d’un dommage ne peut obtenir des indemnisations distinctes en réparation du même
+                    préjudice.
+                    Afin de garantir <a class="fr-link" aria-describedby="infobulle-respect-principe"
+                                        id="lien-infobulle-respect-principe"
+                                        href="#">le respect de ce principe</a>, nous vous invitons à nous fournir les
+                    différentes attestations
+                    qui correspondent à votre situation.
+                </p>
+                <span class="fr-tooltip fr-placement" id="infobulle-respect-principe" role="tooltip" aria-hidden="true">
                 En vertu du principe de réparation intégrale du préjudice sans perte ni profit, la victime d'un dommage
                 ne peut obtenir deux indemnisations distinctes en réparation du même préjudice (Cour de cassation,
                 civile, Chambre civile 2, 16 décembre 2021, 19-11.294, Inédit ; Cour de cassation, civile, Chambre
                 civile 2, 9 février 2023, 21-21.217, Publié au bulletin)
             </span>
 
-            <div class="fr-container--fluid">
-                <div class="fr-grid-row fr-grid-row--gutters">
-                    <div class="fr-col-lg-6 fr-col-12 pr-info-importante">
-                        <div class="pr-info-importante--titre">
-                            <strong>Vous êtes propriétaire</strong>
+                <div class="fr-container--fluid">
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-lg-6 fr-col-12 pr-info-importante">
+                            <div class="pr-info-importante--titre">
+                                <strong>Vous êtes propriétaire</strong>
+                            </div>
+                            <div class="pr-comment-reagir--infos-info">
+                                <ul>
+                                    <li>
+                                        Prenez contact avec votre <b>assurance</b> afin de vérifier la prise
+                                        en
+                                        charge du sinistre <sup>1</sup>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="pr-comment-reagir--infos-info">
-                            <ul>
-                                <li>
-                                    Prenez contact avec votre <b>assurance habitation</b> afin de vérifier la prise en
-                                    charge du sinistre <sup>1</sup>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
 
-                    <div class="fr-col-lg-6 fr-col-12 pr-info-importante">
+                        <div class="fr-col-lg-6 fr-col-12 pr-info-importante">
 
-                        <div class="pr-info-importante--titre">
-                            <strong>Vous êtes locataire</strong>
-                        </div>
-                        <div class="pr-comment-reagir--infos-info">
-                            <ul>
-                                <li>
-                                    Prenez contact avec votre <b>assurance habitation</b> afin de vérifier la prise en charge du sinistre <sup>1</sup>
-                                </li>
-                            </ul>
+                            <div class="pr-info-importante--titre">
+                                <strong>Vous êtes locataire</strong>
+                            </div>
+                            <div class="pr-comment-reagir--infos-info">
+                                <ul>
+                                    <li>
+                                        Prenez contact avec votre <b>assurance habitation</b> afin de vérifier la prise
+                                        en charge du sinistre <sup>1</sup>
+                                    </li>
+                                </ul>
 
-                            <ul>
-                                <li>
-                                    Prenez contact avec votre <b>bailleur</b> qui a, à votre égard, une
-                                    <a class="fr-link" aria-describedby="infobulle-ref-article-1720" id="lien-infobulle-ref-article-1720" href="#">
-                                        obligation de sécurité
-                                    </a> <sup>1</sup>
-                                </li>
-                            </ul>
+                                <ul>
+                                    <li>
+                                        Prenez contact avec votre <b>bailleur</b> qui a, à votre égard, une
+                                        <a class="fr-link" aria-describedby="infobulle-ref-article-1720"
+                                           id="lien-infobulle-ref-article-1720" href="#">
+                                            obligation de sécurité
+                                        </a> <sup>1</sup>
+                                    </li>
+                                </ul>
 
 
-                            <span class="fr-tooltip fr-placement" id="infobulle-ref-article-1720" role="tooltip" aria-hidden="true">
+                                <span class="fr-tooltip fr-placement" id="infobulle-ref-article-1720" role="tooltip"
+                                      aria-hidden="true">
                                 Article 1720 du code civil : « Le bailleur est tenu de délivrer la chose en bon état de réparations de toute espèce. Il doit y faire, pendant la durée du bail, toutes les réparations qui peuvent devenir nécessaires, autres que les locatives ».
                             </span>
-                        </div>
+                            </div>
 
+                        </div>
+                    </div>
+
+                    <p>
+                        <i class="fr-text--xs">1. En cas de refus, demandez une attestation de non-prise en charge</i>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="fr-my-6w pr-section-comment-faire">
+        <div class="fr-container">
+            <div class="fr-col-lg-6 fr-col-12 pr-section-comment-faire--titre">
+                <h3>Comment faire votre demande d'indemnisation ?</h3>
+
+                <img src="{{ asset('images/undraw_image_folder.svg') }}" alt="Icône recherche dossier"/>
+            </div>
+
+            <div class="fr-col-lg-6 fr-col-12 pr-section-comment-faire--etapes">
+                <div class="pr-section-comment-faire--etape">
+                    <div class="pr-section-comment-faire--etape-icone">
+                        <span>1</span>
+                    </div>
+
+                    <div class="pr-section-comment-faire--etape-description">
+                        <h6>Testez votre éligibilité à l’indemnisation</h6>
+                        <p>
+                            Afin de vérifier votre éligibilité à l’indemnisation, vous devez répondre à quelques
+                            questions.
+                        </p>
                     </div>
                 </div>
 
-                <p>
-                    <i class="fr-text--xs">1. En cas de refus, demandez une attestation de non-prise en charge</i>
-                </p>
-            </div>
-        </div>
+                <div class="pr-section-comment-faire--etape">
+                    <div class="pr-section-comment-faire--etape-icone">
+                        <span>2</span>
+                    </div>
 
-    </div>
-</section>
+                    <div class="pr-section-comment-faire--etape-description">
+                        <h6>Créez votre compte</h6>
+                        <p>
+                            Votre compte vous permet de constituer votre dossier, de recevoir des messages de nos
+                            services
+                            et de suivre l’état d’avancement du traitement de votre demande.
+                        </p>
 
-<section class="fr-my-6w pr-section-comment-faire">
-    <div class="fr-container">
-        <div class="fr-col-lg-6 fr-col-12 pr-section-comment-faire--titre">
-            <h3>Comment faire votre demande d'indemnisation ?</h3>
-
-            <img src="{{ asset('images/undraw_image_folder.svg') }}" alt="Icône recherche dossier" />
-        </div>
-
-        <div class="fr-col-lg-6 fr-col-12 pr-section-comment-faire--etapes">
-            <div class="pr-section-comment-faire--etape">
-                <div class="pr-section-comment-faire--etape-icone">
-                    <span>1</span>
+                        <p>
+                            Vous pourrez très prochainement utiliser votre compte FranceConnect.
+                        </p>
+                    </div>
                 </div>
 
-                <div class="pr-section-comment-faire--etape-description">
-                    <h6>Testez votre éligibilité à l’indemnisation</h6>
+                <div class="pr-section-comment-faire--etape">
+                    <div class="pr-section-comment-faire--etape-icone">
+                        <span>3</span>
+                    </div>
+
+                    <div class="pr-section-comment-faire--etape-description">
+                        <h6>Constituez votre dossier</h6>
+                        <p>
+                            Vous devez compléter le formulaire de demande d’indemnisation en vous aidant des
+                            informations
+                            figurant sur l’attestation remise par l’agent des forces de l’ordre. Vous devez également
+                            transmettre les documents demandés. Tout dossier incomplet ne pourra être traité.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pr-section-comment-faire--etape">
+                    <div class="pr-section-comment-faire--etape-icone">
+                        <span>4</span>
+                    </div>
+
+                    <div class="pr-section-comment-faire--etape-description">
+                        <h6>Envoyez votre demande d’indemnisation</h6>
+                        <p>
+                            Vérifiez l’exactitude des informations fournies avant de nous transmettre votre demande
+                            d’indemnisation.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <section class="fr-my-6w">
+        <div class="fr-container">
+            <h3>Comment se passe le traitement de votre demande d'indemnisation ?</h3>
+
+            <p>Vous avez constitué et déposé votre dossier ? Quelles sont les prochaines étapes ?</p>
+
+            <div class="pr-etapes-indemnisation fr-grid-row fr-mb-3w">
+                <div class="fr-col-12 fr-col-lg-4 pr-etapes-indemnisation-etape">
+                    {# Icone #}
+                    <div class="pr-etapes-indemnisation--etape-icone">
+                        <i class="ri-search-2-line" aria-hidden="true"></i>
+                    </div>
+
+                    <h6>Instruction de votre dossier</h6>
+
                     <p>
-                        Afin de vérifier votre éligibilité à l’indemnisation, vous devez répondre à quelques questions.
+                        Nos services se rapprochent des autorités compétentes afin de recueillir les informations
+                        nécessaires
+                        au traitement de votre demande.
                     </p>
                 </div>
-            </div>
 
-            <div class="pr-section-comment-faire--etape">
-                <div class="pr-section-comment-faire--etape-icone">
-                    <span>2</span>
-                </div>
+                <div class="fr-col-12 fr-col-lg-4 pr-etapes-indemnisation-etape">
 
-                <div class="pr-section-comment-faire--etape-description">
-                    <h6>Créez votre compte</h6>
+                    <div class="pr-etapes-indemnisation--etape-icone">
+                        <i class="ri-shake-hands-line" aria-hidden="true"></i>
+                    </div>
+
+                    <h6>Proposition d’indemnisation</h6>
+
                     <p>
-                        Votre compte vous permet de constituer votre dossier, de recevoir des messages de nos services
-                        et de suivre l’état d’avancement du traitement de votre demande.
+                        Après l’instruction de votre dossier, une proposition d’indemnisation vous sera adressée
+                        <sup>1</sup>.
+                    </p>
+
+                    <p>
+                        <i class="fr-text--xs">1. Si vous remplissiez les conditions
+                            d’indemnisation.</i>
                     </p>
                 </div>
-            </div>
 
-            <div class="pr-section-comment-faire--etape">
-                <div class="pr-section-comment-faire--etape-icone">
-                    <span>3</span>
-                </div>
+                <div class="fr-col-12 fr-col-lg-4  pr-etapes-indemnisation-etape">
 
-                <div class="pr-section-comment-faire--etape-description">
-                    <h6>Constituez votre dossier</h6>
+                    <div class="pr-etapes-indemnisation--etape-icone">
+                        <i class="ri-bank-line" aria-hidden="true"></i>
+                    </div>
+
+                    <h6>Indemnisation</h6>
+
                     <p>
-                        Vous devez compléter le formulaire de demande d’indemnisation en vous aidant des informations
-                        figurant sur l’attestation remise par l’agent des forces de l’ordre. Vous devez également
-                        transmettre les documents demandés. Tout dossier incomplet ne pourra être traité.
+                        Après acceptation de la proposition, vous percevrez l’indemnisation par virement
+                        sur votre compte bancaire.
                     </p>
                 </div>
+
             </div>
 
-            <div class="pr-section-comment-faire--etape">
-                <div class="pr-section-comment-faire--etape-icone">
-                    <span>4</span>
-                </div>
-
-                <div class="pr-section-comment-faire--etape-description">
-                    <h6>Envoyez votre demande d’indemnisation</h6>
-                    <p>
-                        Vérifiez l’exactitude des informations fournies avant de nous transmettre votre demande
-                        d’indemnisation.
-                    </p>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-</section>
-
-<section class="fr-my-6w">
-    <div class="fr-container">
-        <h3>Comment se passe le traitement de votre demande d'indemnisation ?</h3>
-
-        <p>Vous avez constitué et déposé votre dossier ? Quelles sont les prochaines étapes ?</p>
-
-        <div class="pr-etapes-indemnisation fr-grid-row fr-mb-3w">
-            <div class="fr-col-12 fr-col-lg-4 pr-etapes-indemnisation-etape">
-                {# Icone #}
-                <div class="pr-etapes-indemnisation--etape-icone">
-                    <i class="ri-search-2-line" aria-hidden="true"></i>
-                </div>
-
-                <h6>Instruction de votre dossier</h6>
-
+            <div class="fr-callout fr-icon-info-line">
+                <h3 class="fr-callout__title">Informations importantes</h3>
+                <p>Deux conditions cumulatives d’indemnisation : (cf : test d’éligibilité).</p>
+                <ul class="fr-my-2w">
+                    <li>
+                        Vous ne devez pas être concerné(e) par l'opération de police judiciaire <b>ET</b>
+                    </li>
+                    <li>
+                        L'opération de police judiciaire doit avoir été réalisée par erreur à votre domicile.
+                    </li>
+                </ul>
                 <p>
-                    Nos services se rapprochent des autorités compétentes afin de recueillir les informations nécessaires
-                    au traitement de votre demande.
+                    <b>Seuls les frais de remise en état à l’identique de la porte endommagée seront remboursés.</b>
                 </p>
             </div>
+        </div>
 
-            <div class="fr-col-12 fr-col-lg-4 pr-etapes-indemnisation-etape">
 
-                <div class="pr-etapes-indemnisation--etape-icone">
-                    <i class="ri-shake-hands-line" aria-hidden="true"></i>
+    </section>
+
+    <section class="fr-my-6w pr-section-deposer">
+        <div class="fr-container">
+            <h3>Déposer votre demande d'indemnisation</h3>
+
+            <div class="pr-section-deposer--3a">
+                <div class="pr-section-deposer--3a-icone fr-col-lg-2 fr-col-12">
+                    <img alt="" src="{{ asset('images/undraw_reminder.svg') }}"/>
+                </div>
+                <div class="pr-section-deposer--3a-description fr-col-lg-10 fr-col-12">
+
+                    {{ block('appelAAction') }}
                 </div>
 
-                <h6>Proposition d’indemnisation</h6>
-
-                <p>
-                    Après l’instruction de votre dossier, une proposition d’indemnisation vous sera adressée <sup>1</sup>.
-                </p>
-
-                <p>
-                    <i class="fr-text--xs">1. À la condition que vous remplissiez les conditions d’indemnisation.</i>
-                </p>
             </div>
-
-            <div class="fr-col-12 fr-col-lg-4  pr-etapes-indemnisation-etape">
-
-                <div class="pr-etapes-indemnisation--etape-icone">
-                    <i class="ri-bank-line" aria-hidden="true"></i>
-                </div>
-
-                <h6>Indemnisation</h6>
-
-                <p>
-                    Après acceptation de la proposition, vous percevrez l’indemnisation par virement
-sur votre compte bancaire.
-                </p>
-            </div>
-
         </div>
-
-        <div class="fr-callout fr-icon-info-line">
-            <h3 class="fr-callout__title">Informations importantes</h3>
-            <p>Deux conditions cumulatives d’indemnisation : (cf : test d’éligibilité).</p>
-            <ul class="fr-my-2w">
-                <li>
-                    Vous ne devez pas être concerné(e) par l'opération de police judiciaire <b>ET</b>
-                </li>
-                <li>
-                    L'opération de police judiciaire doit avoir été réalisée par erreur à votre domicile.
-                </li>
-            </ul>
-            <p>
-                <b>Seuls les frais de remise en état à l’identique de la porte endommagée seront remboursés.</b>
-            </p>
-        </div>
-    </div>
-
-
-</section>
-
-<section class="fr-my-6w pr-section-deposer">
-    <div class="fr-container">
-        <h3>Déposer votre demande d'indemnisation</h3>
-        
-        <div class="pr-section-deposer--3a">
-            <div class="pr-section-deposer--3a-icone fr-col-lg-2 fr-col-12">
-                <img alt="" src="{{ asset('images/undraw_reminder.svg') }}" />
-            </div>
-            <div class="pr-section-deposer--3a-description fr-col-lg-10 fr-col-12">
-
-                {{ block('appelAAction') }}
-            </div>
-
-        </div>
-    </div>
-</section>
+    </section>
 
 
 {% endblock %}

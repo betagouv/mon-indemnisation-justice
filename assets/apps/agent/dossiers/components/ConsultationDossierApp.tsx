@@ -172,7 +172,7 @@ export const ConsultationDossierApp = observer(
                             refSectionCourrier.current.offsetWidth,
                           );
                         }
-                        window.location.hash = "courrier";
+                        history.replaceState(undefined, undefined, "#courrier");
                       }}
                     />
                   )}
@@ -187,7 +187,7 @@ export const ConsultationDossierApp = observer(
                           refSectionCourrier.current.offsetWidth,
                         );
                       }
-                      window.location.hash = "courrier";
+                      history.replaceState(undefined, undefined, "#courrier");
                     }}
                     onSigne={() => {
                       if (refSectionCourrier.current) {
@@ -195,7 +195,7 @@ export const ConsultationDossierApp = observer(
                           refSectionCourrier.current.offsetWidth,
                         );
                       }
-                      window.location.hash = "courrier";
+                      history.replaceState(undefined, undefined, "#courrier");
                     }}
                   />
                 )}

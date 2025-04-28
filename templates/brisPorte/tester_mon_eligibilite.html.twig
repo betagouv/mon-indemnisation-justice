@@ -11,7 +11,7 @@
 
         .pr-section-formulaire {
             padding: 1.5rem 2rem;
-            box-shadow:0 0 8px 2px var(--shadow-color);
+            box-shadow: 0 0 8px 2px var(--shadow-color);
         }
 
         .pr-section-formulaire h4 {
@@ -54,9 +54,9 @@
 
         <div class="fr-col-12 fr-my-2w" id="vue-app">
             <form
-                name="eligibilite-test-form"
-                action="{{ url(app.current_route) }}"
-                method="POST"
+                    name="eligibilite-test-form"
+                    action="{{ url(app.current_route) }}"
+                    method="POST"
             >
                 <input type="hidden" name="_token" value="{{ form._token.vars.value }}">
                 <input type="hidden" name="estIssuAttestation" value="{{ form.estIssuAttestation.vars.value }}">
@@ -66,12 +66,14 @@
                         Avant de remplir le questionnaire
                     </h3>
                     <p class="fr-callout__text">
-                        Il est important de noter que vous ne pouvez pas être indemnisé par différents intermédiaires
-                        pour le même dommage. Afin de garantir
-                        <a class="fr-link" aria-describedby="infobulle-respect-principe" id="lien-infobulle-respect-principe" href="#">le respect de ce principe</a>,
+                        Il est important de noter que la victime d’un dommage ne peut obtenir des indemnisations
+                        distinctes en réparation du même préjudice. Afin de garantir
+                        <a class="fr-link" aria-describedby="infobulle-respect-principe"
+                           id="lien-infobulle-respect-principe" href="#">le respect de ce principe</a>
                         et vérifier votre éligibilité à l'indemnisation, vous devez répondre aux questions suivantes.
                     </p>
-                    <span class="fr-tooltip fr-placement" id="infobulle-respect-principe" role="tooltip" aria-hidden="true">
+                    <span class="fr-tooltip fr-placement" id="infobulle-respect-principe" role="tooltip"
+                          aria-hidden="true">
                         En vertu du principe de réparation intégrale du préjudice sans perte ni profit, la victime d'un
                         dommage ne peut obtenir deux indemnisations distinctes en réparation du même préjudice (Cour de
                         cassation, civile, Chambre civile 2, 16 décembre 2021, 19-11.294, Inédit ; Cour de cassation,
@@ -83,340 +85,382 @@
                 <div class="pr-section-formulaire fr-my-3w">
                     <h4>Contexte</h4>
                     <div class="fr-select-group fr-col-lg-6" id="eligibilite-test-form-question-departement">
-                        <label class="fr-label" for="eligibilite-test-form-departement">Dans quel département se situe le logement ?</label>
-                        <select class="fr-select" id="eligibilite-test-form-departement" name="departement" v-model="reponses.departement" @change="reinitialiser('departement')">
+                        <label class="fr-label" for="eligibilite-test-form-departement">Dans quel département se situe
+                            le logement ?</label>
+                        <select class="fr-select" id="eligibilite-test-form-departement" name="departement"
+                                v-model="reponses.departement" @change="reinitialiser('departement')">
                             <option value="" selected disabled hidden>Sélectionner une option</option>
                             {% for departement in departements %}
-                                <option value="{{ departement.code }}" >{{ departement.libelle }}</option>
+                                <option value="{{ departement.code }}">{{ departement.libelle }}</option>
                             {% endfor %}
 
                         </select>
                     </div>
-                    
-                    <div class="fr-input-group" v-if="questions.description(reponses, decisions)" v-cloak id="eligibilite-test-form-question-description">
+
+                    <div class="fr-input-group" v-if="questions.description(reponses, decisions)" v-cloak
+                         id="eligibilite-test-form-question-description">
                         <label class="fr-label" for="eligibilite-test-form-description">
                             Vous souhaitez nous apporter des précisions sur l'intervention ?
                             <span class="fr-hint-text">Facultatif</span>
                         </label>
                         <textarea
-                            class="fr-input"
-                            type="text"
-                            rows="10"
-                            cols="50"
-                            id="eligibilite-test-form-description"
-                            placeholder="Intervention survenue ce matin ..."
-                            name="description"
+                                class="fr-input"
+                                type="text"
+                                rows="10"
+                                cols="50"
+                                id="eligibilite-test-form-description"
+                                placeholder="Intervention survenue ce matin ..."
+                                name="description"
                         ></textarea>
 
                         <ul class="fr-btns-group fr-btns-group--inline-sm fr-btns-group--right fr-mt-2w">
                             <li>
-                                <button type="button" class="fr-btn fr-btn--sm" @click="reponses.description = document.getElementById('eligibilite-test-form-description').value; reinitialiser('description')">
+                                <button type="button" class="fr-btn fr-btn--sm"
+                                        @click="reponses.description = document.getElementById('eligibilite-test-form-description').value; reinitialiser('description')">
                                     Passer à la question suivante
                                 </button>
                             </li>
 
                         </ul>
-                </div>
+                    </div>
 
 
-                <div class="pr-section-formulaire fr-my-3w" v-if="questions.estVise(reponses, decisions)">
-                    <h4>Personne recherchée</h4>
-                    <div
-                        class="fr-col-12 fr-my-2w"
-                    >
-                        <fieldset
-                            class="fr-fieldset"
-                            aria-labelledby="eligibilite-test-form-question-estVise"
+                    <div class="pr-section-formulaire fr-my-3w" v-if="questions.estVise(reponses, decisions)">
+                        <h4>Personne recherchée par les <a class="fr-link" aria-describedby="tooltip-force-de-l-ordre"
+                                                           style="font-size: 1.5rem;" id="link-force-de-l-ordre"
+                                                           href="#">forces de l'ordre</a>
+                        </h4>
+
+                        <span class="fr-tooltip fr-placement" id="tooltip-force-de-l-ordre" role="tooltip"
+                              aria-hidden="true">
+
+                        La police judiciaire est chargée de constater les infractions pénales, d'en rassembler les
+                        preuves, d'en rechercher les auteurs et complices afin de les interpeller et de les déférer à
+                        l'autorité judiciaire
+                            </span>
+                        <div
+                                class="fr-col-12 fr-my-2w"
                         >
-                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="eligibilite-test-form-question-estVise">
-                                Êtes-vous la personne visée par l'intervention des forces de l'ordre ?
-                            </legend>
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-est-vise-oui"
-                                        name="estVise"
-                                        :value="true"
-                                        v-model="reponses.estVise"
-                                        @change="reinitialiser('estVise')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-est-vise-oui" >Oui</label>
+                            <fieldset
+                                    class="fr-fieldset"
+                                    aria-labelledby="eligibilite-test-form-question-estVise"
+                            >
+                                <legend class="fr-fieldset__legend--regular fr-fieldset__legend"
+                                        id="eligibilite-test-form-question-estVise">
+                                    Étiez-vous la personne recherchée par les forces de l’ordre lors de leur
+                                    intervention ?
+                                </legend>
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-est-vise-oui"
+                                                name="estVise"
+                                                :value="true"
+                                                v-model="reponses.estVise"
+                                                @change="reinitialiser('estVise')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label" for="eligibilite-test-form-est-vise-oui">Oui</label>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-est-vise-non"
-                                        name="estVise"
-                                        :value="false"
-                                        v-model="reponses.estVise"
-                                        @change="reinitialiser('estVise')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-est-vise-non" >Non</label>
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-est-vise-non"
+                                                name="estVise"
+                                                :value="false"
+                                                v-model="reponses.estVise"
+                                                @change="reinitialiser('estVise')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label" for="eligibilite-test-form-est-vise-non">Non</label>
+                                    </div>
                                 </div>
-                            </div>
 
-                        </fieldset>
+                            </fieldset>
+                        </div>
+
+                        <div
+                                class="fr-col-12 fr-my-2w"
+                                id="eligibilite-test-form-question-estHebergeant"
+                                v-if="questions.estHebergeant(reponses, decisions)"
+                                v-cloak
+                        >
+                            <fieldset
+                                    class="fr-fieldset"
+                                    aria-labelledby="eligibilite-test-form-question-estHebergeant"
+                            >
+                                <legend class="fr-fieldset__legend--regular fr-fieldset__legend"
+                                        id="eligibilite-test-form-question-estHebergeant">
+                                    Est-ce que la personne recherchée par les forces de l'ordre réside ou est hébergée à
+                                    l'adresse du logement ayant subi le bris de porte ?
+                                </legend>
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-est-recherche-oui"
+                                                name="estHebergeant"
+                                                :value="true"
+                                                v-model="reponses.estHebergeant"
+                                                @change="reinitialiser('estHebergeant')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label"
+                                               for="eligibilite-test-form-est-recherche-oui">Oui</label>
+                                    </div>
+                                </div>
+
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-est-recherche-non"
+                                                name="estHebergeant"
+                                                :value="false"
+                                                v-model="reponses.estHebergeant"
+                                                @change="reinitialiser('estHebergeant')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label"
+                                               for="eligibilite-test-form-est-recherche-non">Non</label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
                     </div>
 
                     <div
-                        class="fr-col-12 fr-my-2w"
-                        id="eligibilite-test-form-question-estHebergeant"
-                        v-if="questions.estHebergeant(reponses, decisions)"
-                        v-cloak
+                            class="pr-section-formulaire fr-my-3w"
+                            v-if="questions.estProprietaire(reponses, decisions)"
+                            v-cloak
                     >
-                        <fieldset
-                            class="fr-fieldset"
-                            aria-labelledby="eligibilite-test-form-question-estHebergeant"
+                        <h4>Situation liée au logement</h4>
+
+                        <div
+                                class="fr-col-12"
+                                id="eligibilite-test-form-question-estProprietaire"
+                                v-if="questions.estProprietaire(reponses, decisions)"
                         >
-                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="eligibilite-test-form-question-estHebergeant">
-                                Est-ce que la personne recherchée réside ou est hébergée à l'adresse du logement ayant subi le bris de porte ?
-                            </legend>
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-est-recherche-oui"
-                                        name="estHebergeant"
-                                        :value="true"
-                                        v-model="reponses.estHebergeant"
-                                        @change="reinitialiser('estHebergeant')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-est-recherche-oui" >Oui</label>
+                            <fieldset
+                                    class="fr-fieldset"
+                                    aria-labelledby="eligibilite-test-form-question-estProprietaire"
+                            >
+                                <legend class="fr-fieldset__legend--regular fr-fieldset__legend"
+                                        id="eligibilite-test-form-question-estProprietaire">
+                                    Quel est votre statut par rapport au logement ayant subi le bris de porte ?
+                                </legend>
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-est-proprietaire-oui"
+                                                name="estProprietaire"
+                                                :value="true"
+                                                v-model="reponses.estProprietaire"
+                                                @change="reinitialiser('estProprietaire')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label" for="eligibilite-test-form-est-proprietaire-oui">Propriétaire</label>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-est-recherche-non"
-                                        name="estHebergeant"
-                                        :value="false"
-                                        v-model="reponses.estHebergeant"
-                                        @change="reinitialiser('estHebergeant')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-est-recherche-non" >Non</label>
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-est-proprietaire-non"
+                                                name="estProprietaire"
+                                                :value="false"
+                                                v-model="reponses.estProprietaire"
+                                                @change="reinitialiser('estProprietaire')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label" for="eligibilite-test-form-est-proprietaire-non">Locataire</label>
+                                    </div>
                                 </div>
-                            </div>
-                        </fieldset>
-                    </div>
-                </div>
 
-                <div
-                    class="pr-section-formulaire fr-my-3w"
-                    v-if="questions.estProprietaire(reponses, decisions)"
-                    v-cloak
-                >
-                    <h4>Situation liée au logement et possession des attestations</h4>
+                            </fieldset>
+                        </div>
 
-                    <div
-                        class="fr-col-12"
-                        id="eligibilite-test-form-question-estProprietaire"
-                        v-if="questions.estProprietaire(reponses, decisions)"
-                    >
-                        <fieldset
-                            class="fr-fieldset"
-                            aria-labelledby="eligibilite-test-form-question-estProprietaire"
+                        <div
+                                class="fr-col-12 fr-my-2w"
+                                id="eligibilite-test-form-question-aContacteAssurance"
+                                v-if="questions.aContacteAssurance(reponses, decisions)"
                         >
-                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="eligibilite-test-form-question-estProprietaire">
-                                Quel est votre statut par rapport au logement ?
-                            </legend>
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-est-proprietaire-oui"
-                                        name="estProprietaire"
-                                        :value="true"
-                                        v-model="reponses.estProprietaire"
-                                        @change="reinitialiser('estProprietaire')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-est-proprietaire-oui" >Propriétaire</label>
+                            <fieldset
+                                    class="fr-fieldset"
+                                    aria-labelledby="eligibilite-test-form-question-aContacteAssurance"
+                            >
+                                <legend class="fr-fieldset__legend--regular fr-fieldset__legend"
+                                        id="eligibilite-test-form-question-aContacteAssurance">
+                                    Avez-vous pris contact avec votre assurance et obtenu une attestation de
+                                    non prise en charge du sinistre ?
+                                </legend>
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-a-contacte-assurance-oui"
+                                                name="aContacteAssurance"
+                                                :value="true"
+                                                v-model="reponses.aContacteAssurance"
+                                                @change="reinitialiser('aContacteAssurance')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label"
+                                               for="eligibilite-test-form-a-contacte-assurance-oui">Oui</label>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-est-proprietaire-non"
-                                        name="estProprietaire"
-                                        :value="false"
-                                        v-model="reponses.estProprietaire"
-                                        @change="reinitialiser('estProprietaire')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-est-proprietaire-non" >Locataire</label>
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-a-contacte-assurance-non"
+                                                name="aContacteAssurance"
+                                                :value="false"
+                                                v-model="reponses.aContacteAssurance"
+                                                @change="reinitialiser('aContacteAssurance')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label"
+                                               for="eligibilite-test-form-a-contacte-assurance-non">Non</label>
+                                    </div>
                                 </div>
-                            </div>
 
-                        </fieldset>
-                    </div>
+                            </fieldset>
+                        </div>
 
-                    <div
-                        class="fr-col-12 fr-my-2w"
-                        id="eligibilite-test-form-question-aContacteAssurance"
-                        v-if="questions.aContacteAssurance(reponses, decisions)"
-                    >
-                        <fieldset
-                            class="fr-fieldset"
-                            aria-labelledby="eligibilite-test-form-question-aContacteAssurance"
+                        <div
+                                class="fr-col-12 fr-my-2w"
+                                id="eligibilite-test-form-question-aContacteBailleur"
+                                v-if="questions.aContacteBailleur(reponses, decisions)"
                         >
-                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="eligibilite-test-form-question-aContacteAssurance">
-                                Avez-vous pris contact avec votre assurance habitation et obtenu une attestation de non prise en charge du sinistre ?
-                            </legend>
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-a-contacte-assurance-oui"
-                                        name="aContacteAssurance"
-                                        :value="true"
-                                        v-model="reponses.aContacteAssurance"
-                                        @change="reinitialiser('aContacteAssurance')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-assurance-oui" >Oui</label>
+                            <fieldset
+                                    class="fr-fieldset"
+                                    aria-labelledby="eligibilite-test-form-question-aContacteBailleur"
+                            >
+                                <legend class="fr-fieldset__legend--regular fr-fieldset__legend"
+                                        id="eligibilite-test-form-question-aContacteBailleur">
+                                    Avez-vous pris contact avec votre bailleur et obtenu une attestation de non prise en
+                                    charge des réparations ?
+                                </legend>
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-a-contacte-bailleur-oui"
+                                                name="aContacteBailleur"
+                                                :value="true"
+                                                v-model="reponses.aContacteBailleur"
+                                                @change="reinitialiser('aContacteBailleur')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label"
+                                               for="eligibilite-test-form-a-contacte-bailleur-oui">Oui</label>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-a-contacte-assurance-non"
-                                        name="aContacteAssurance"
-                                        :value="false"
-                                        v-model="reponses.aContacteAssurance"
-                                        @change="reinitialiser('aContacteAssurance')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-assurance-non" >Non</label>
+                                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                                    <div class="fr-radio-group">
+                                        <input
+                                                id="eligibilite-test-form-a-contacte-bailleur-non"
+                                                name="aContacteBailleur"
+                                                :value="false"
+                                                v-model="reponses.aContacteBailleur"
+                                                @change="reinitialiser('aContacteBailleur')"
+                                                type="radio"
+                                        />
+                                        <label class="fr-label"
+                                               for="eligibilite-test-form-a-contacte-bailleur-non">Non</label>
+                                    </div>
                                 </div>
-                            </div>
 
-                        </fieldset>
+                            </fieldset>
+                        </div>
                     </div>
 
-                    <div
-                        class="fr-col-12 fr-my-2w"
-                        id="eligibilite-test-form-question-aContacteBailleur"
-                        v-if="questions.aContacteBailleur(reponses, decisions)"
-                    >
-                        <fieldset
-                            class="fr-fieldset"
-                            aria-labelledby="eligibilite-test-form-question-aContacteBailleur"
-                        >
-                            <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="eligibilite-test-form-question-aContacteBailleur">
-                                Avez-vous pris contact avec votre bailleur et obtenu une attestation de non prise en charge des réparations ?
-                            </legend>
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-a-contacte-bailleur-oui"
-                                        name="aContacteBailleur"
-                                        :value="true"
-                                        v-model="reponses.aContacteBailleur"
-                                        @change="reinitialiser('aContacteBailleur')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-oui" >Oui</label>
-                                </div>
-                            </div>
+                    {# Décisions #}
+                    <div class="fr-alert fr-alert--success fr-my-3w eligibilite-test-form-decision" v-cloak
+                         v-if="estDecide('success')">
 
-                            <div class="fr-fieldset__element fr-fieldset__element--inline">
-                                <div class="fr-radio-group">
-                                    <input
-                                        id="eligibilite-test-form-a-contacte-bailleur-non"
-                                        name="aContacteBailleur"
-                                        :value="false"
-                                        v-model="reponses.aContacteBailleur"
-                                        @change="reinitialiser('aContacteBailleur')"
-                                        type="radio"
-                                    />
-                                    <label class="fr-label" for="eligibilite-test-form-a-contacte-bailleur-non" >Non</label>
-                                </div>
-                            </div>
+                        <h3 class="fr-alert__title">Vous êtes éligible à l’indemnisation</h3>
 
-                        </fieldset>
+                        <p>
+                            Vous pouvez déposer votre demande d’indemnisation.
+                        </p>
                     </div>
-                </div>
 
-                {# Décisions #}
-                <div class="fr-alert fr-alert--success fr-my-3w eligibilite-test-form-decision" v-cloak v-if="estDecide('success')">
+                    <div class="fr-alert fr-alert--warning fr-my-3w eligibilite-test-form-decision" v-cloak
+                         v-if="estDecide('warning_contact_assurance') || estDecide('warning_contact_bailleur')">
 
-                    <h3 class="fr-alert__title">Vous êtes éligible à l’indemnisation</h3>
+                        <h3 class="fr-alert__title">
+                            Nous serons en mesure de traiter votre demande d’indemnisation <u>uniquement si votre
+                                dossier est complet</u>. Cependant, vous pouvez créer votre compte et commencer à
+                            constituer votre dossier en ligne.
+                        </h3>
 
-                    <p>
-                        Vous pouvez déposer votre demande d’indemnisation.
-                    </p>
-                </div>
+                        <p v-if="estDecide('warning_contact_assurance')">
+                            Nous vous recommandons de prendre contact avec votre assurance <span
+                                    v-if="!reponses.estProprietaire">habitation</span> dès que possible.
+                            En
+                            cas de refus de prise en charge du sinistre, il est important de demander une attestation de
+                            non
+                            prise en charge.
+                        </p>
 
-                <div class="fr-alert fr-alert--warning fr-my-3w eligibilite-test-form-decision" v-cloak v-if="estDecide('warning_contact_assurance') || estDecide('warning_contact_bailleur')">
+                        <p v-if="estDecide('warning_contact_bailleur')">
+                            Nous vous recommandons de prendre contact avec votre bailleur dès que possible, pour obtenir
+                            l’attestation de non prise en charge des réparations.
+                        </p>
+                    </div>
 
-                    <h3 class="fr-alert__title" v-if="estDecide('warning_contact_assurance') && estDecide('warning_contact_bailleur')">Nous ne serons pas en mesure de traiter votre demande d’indemnisation car ces attestations sont des documents essentiels pour s’assurer du respect du principe de la réparation intégrale sans perte ni profit</h3>
-                    <h3 class="fr-alert__title" v-else="">
-                        Nous serons en mesure de traiter votre demande d’indemnisation <u>uniquement si votre dossier est complet</u>. Cependant, vous pouvez créer votre compte et commencer à constituer votre dossier en ligne.
-                    </h3>
+                    <div class="fr-alert fr-alert--error fr-my-3w eligibilite-test-form-decision" v-cloak
+                         v-if="estDecide('error_est_vise') || estDecide('error_est_hebergeant')">
 
-                    <p v-if="estDecide('warning_contact_assurance')">
-                        Nous vous recommandons de prendre contact avec votre assurance habitation dès que possible. En
-                        cas de refus de prise en charge du sinistre, il est important de demander une attestation de non
-                        prise en charge.
-                    </p>
+                        <h3 v-if="estDecide('error_est_vise')" class="fr-alert__title">Vous n’êtes pas éligible à
+                            l’indemnisation, car vous étiez concerné par l'opération de police judiciaire exécutée à
+                            votre domicile<sup>1</sup>.</h3>
 
-                    <p v-if="estDecide('warning_contact_bailleur')">
-                        Nous vous recommandons de prendre contact avec votre bailleur dès que possible, pour obtenir
-                        l’attestation de non prise en charge des réparations.
-                    </p>
-                </div>
-
-                <div class="fr-alert fr-alert--error fr-my-3w eligibilite-test-form-decision" v-cloak v-if="estDecide('error_est_vise') || estDecide('error_est_hebergeant')">
-
-                    <h3 v-if="estDecide('error_est_vise')" class="fr-alert__title">Vous n’êtes pas éligible à l’indemnisation, car vous étiez concerné par l'opération de police judiciaire exécutée à votre domicile<sup>1</sup>.</h3>
-
-                    <h3 v-if="estDecide('error_est_hebergeant')" class="fr-alert__title">Vous n’êtes pas éligible à l’indemnisation, car l’intervention des forces de l’ordre visait une personne de votre domicile<sup>1</sup>.</h3>
-
+                        <h3 v-if="estDecide('error_est_hebergeant')" class="fr-alert__title">Vous n’êtes pas éligible à
+                            l’indemnisation, car l’intervention des forces de l’ordre visait une personne de votre
+                            domicile<sup>1</sup>.</h3>
 
 
-                    <p v-if="estDecide('error_est_vise')">
-                        Vous ne pouvez prétendre à une indemnisation que si les forces de l'ordre ont commis une
-                        <a class="fr-link" aria-describedby="infobulle-faute-lourde" id="lien-infobulle-faute-lourde" href="#">faute lourde</a>
-                        au cours de leur intervention. Il vous appartiendra de prouver cette faute.
-                    </p>
-                    <span class="fr-tooltip fr-placement" id="infobulle-faute-lourde" role="tooltip" aria-hidden="true">
+                        <p v-if="estDecide('error_est_vise')">
+                            Vous ne pouvez prétendre à une indemnisation que si les forces de l'ordre ont commis une
+                            <a class="fr-link" aria-describedby="infobulle-faute-lourde"
+                               id="lien-infobulle-faute-lourde" href="#">faute lourde</a>
+                            au cours de leur intervention. Il vous appartiendra de prouver cette faute.
+                        </p>
+                        <span class="fr-tooltip fr-placement" id="infobulle-faute-lourde" role="tooltip"
+                              aria-hidden="true">
                         Constitue une faute lourde toute déficience caractérisée par un fait ou une série de faits
                         traduisant l'inaptitude du service public de la justice à remplir la mission dont il est investi
                         (Cour de Cassation, Assemblée plénière, du 23 février 2001, 99-16.165, Publié au bulletin)
                     </span>
 
-                    <span class="fr-text--sm fr-m-2w" v-if="estDecide('error_est_vise')">
+                        <span class="fr-text--sm fr-m-2w" v-if="estDecide('error_est_vise')">
                         (1) Cour de Cassation, Chambre civile 1, du 10 juin 1986, 84-15.740, Publié au bulletin.
                     </span>
 
-                    <span class="fr-text--sm fr-m-2w" v-if="estDecide('error_est_hebergeant')" >
+                        <span class="fr-text--sm fr-m-2w" v-if="estDecide('error_est_hebergeant')">
                         (1) Article 1735 du code civil : <q>Le preneur est tenu des dégradations et des pertes qui arrivent par le fait des personnes de sa maison ou de ses sous-locataires</q>
                     </span>
-                </div>
+                    </div>
 
-                {# Boutons #}
+                    {# Boutons #}
 
-                <div class="fr-btns-group fr-btns-group--left fr-btns-group--inline-lg">
-                    <a
-                        v-if="decisions.length > 0 && !estEligible()"
-                        class="fr-btn fr-btn--primary"
-                        href="{{ path('app_homepage') }}"
-                    >Revenir à la page d'accueil
-                    </a>
-                    <button
-                        class="fr-btn"
-                        :class="estEligible() ? 'fr-btn--primary' :'fr-btn--secondary'"
-                        type="submit"
-                        :disabled="decisions.length === 0"
-                    >Commencer la demande d'indemnisation
-                    </button>
-                </div>
+                    <div class="fr-btns-group fr-btns-group--left fr-btns-group--inline-lg">
+                        <a
+                                v-if="decisions.length > 0 && !estEligible()"
+                                class="fr-btn fr-btn--primary"
+                                href="{{ path('app_homepage') }}"
+                        >Revenir à la page d'accueil
+                        </a>
+                        <button
+                                class="fr-btn"
+                                :class="estEligible() ? 'fr-btn--primary' :'fr-btn--secondary'"
+                                type="submit"
+                                :disabled="decisions.length === 0"
+                        >Commencer la demande d'indemnisation
+                        </button>
+                    </div>
 
             </form>
 
