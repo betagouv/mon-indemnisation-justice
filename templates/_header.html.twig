@@ -9,7 +9,8 @@
                         </div>
                         {#  Menu mobile #}
                         <div class="fr-header__navbar">
-                            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499" id="button-500" title="Menu">
+                            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499"
+                                    id="button-500" title="Menu">
                                 Menu
                             </button>
                         </div>
@@ -17,24 +18,28 @@
                     <div class="fr-header__service">
                         <a href="{{ path('app_homepage') }}" title="Mon Indemnisation Justice"></a>
                         <p class="fr-header__service-title">Mon Indemnisation Justice</p>
+                        {#
                         {% if app.environment != 'prod' %}
                         <div>
                             <p class="fr-badge fr-badge--warning fr-badge--no-icon">Plateforme de test</p>
                         </div>
                         {% endif %}
+                        #}
                     </div>
                 </div>
                 <div class="fr-header__tools">
                     <div class="fr-header__tools-links">
                         <ul class="fr-btns-group">
                             <li>
-                                <a class="fr-btn fr-m-0  fr-icon-lock-line" href="{{ path('app_login') }}">Se connecter</a>
+                                <a class="fr-btn fr-m-0  fr-icon-lock-line" href="{{ path('app_login') }}">Se
+                                    connecter</a>
                             </li>
                         </ul>
                     </div>
                     <div class="fr-header__search fr-modal" id="modal-474">
                         <div class="fr-container fr-container-lg--fluid">
-                            <button class="fr-btn--close fr-btn" aria-controls="modal-474" title="Fermer">Fermer</button>
+                            <button class="fr-btn--close fr-btn" aria-controls="modal-474" title="Fermer">Fermer
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -56,7 +61,8 @@
                 </div>
 
                 {# Menu principal #}
-                <nav id="fr-header-main-navigation fr-container" class="fr-nav" role="navigation" aria-label="Menu principal" data-fr-js-navigation="true">
+                <nav id="fr-header-main-navigation fr-container" class="fr-nav" role="navigation"
+                     aria-label="Menu principal" data-fr-js-navigation="true">
                     <ul class="fr-nav__list">
                         <li class="fr-nav__item" data-fr-js-navigation-item="true">
                             <a href="{{ path('app_homepage') }}" class="fr-nav__link">

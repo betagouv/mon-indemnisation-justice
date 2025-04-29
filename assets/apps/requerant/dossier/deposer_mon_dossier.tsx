@@ -25,25 +25,30 @@ if (import.meta.env.PROD) {
 
 const { dossier, pays } = {
   ...{
-    // Pré-population des listes de documents par type
-    dossier: {
-      documents: {
-        attestation_information: [],
-        photo_prejudice: [],
-        carte_identite: [],
-        facture: [],
-        rib: [],
-        titre_propriete: [],
-        contrat_location: [],
-        non_prise_en_charge_bailleur: [],
-        non_prise_en_charge_assurance: [],
-        courrier_ministere: [],
-        courrier_requerant: [],
-      },
-    },
     ...JSON.parse(document.getElementById("react-arguments").textContent),
   },
 };
+
+// Pré-population des listes de documents par type
+const documents = {
+  attestation_information: [],
+  photo_prejudice: [],
+  carte_identite: [],
+  facture: [],
+  rib: [],
+  titre_propriete: [],
+  contrat_location: [],
+  non_prise_en_charge_bailleur: [],
+  non_prise_en_charge_assurance: [],
+  courrier_ministere: [],
+  courrier_requerant: [],
+};
+
+for (const [type, liste] of Object.entries(documents)) {
+  if (!dossier.documents.hasOwnProperty(type)) {
+    dossier.documents[type] = liste;
+  }
+}
 
 const root = ReactDOM.createRoot(document.getElementById("react-app"));
 
