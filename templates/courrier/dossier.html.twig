@@ -67,10 +67,11 @@
         }
 
         @media print {
-            html,body {
+            html, body {
                 margin: 0;
                 padding: 0;
             }
+
             .page {
                 width: 21cm;
                 height: 29.7cm;
@@ -132,7 +133,7 @@
 
             #courrier-decision-courrier {
                 @media screen {
-                    display:flex;
+                    display: flex;
                     flex-direction: column;
 
                     main {
@@ -188,7 +189,7 @@
                             letter-spacing: 0;
                             font-size: 11pt;
                             line-height: 13pt;
-                              word-wrap: break-word;
+                            word-wrap: break-word;
                         }
 
                     }
@@ -306,10 +307,10 @@
                     </p>
 
                     {% if dossier.redacteur is not null %}
-                    <p>
-                        <u>Affaire suivie par</u> : <span
-                                class="texte-majuscule">{{ dossier.redacteur.nomCourt }}</span>
-                    </p>
+                        <p>
+                            <u>Affaire suivie par</u> : <span
+                                    class="texte-majuscule">{{ dossier.redacteur.nomCourt }}</span>
+                        </p>
                     {% endif %}
 
                     <p>
@@ -346,13 +347,6 @@
             <div id="courrier-decision-courrier-contenu">
                 <p>
                     {{ dossier.requerant.personnePhysique.civilite.libelle }},
-                </p>
-                <p>
-                    J’accuse réception de votre requête par laquelle vous sollicitez{% if dossier.qualiteRequerant != 'AUT' or not dossier.precisionRequerant %}, en qualité de {{ dossier.qualiteRequerant != 'AUT' ? dossier.qualiteRequerant.libelle|lower : dossier.precisionRequerant|lower }},{% endif %}
-                    l’indemnisation du préjudice subi en raison de la détérioration de la porte d’entrée du logement sis
-                    {{ dossier.adresse.ligne1 }}{{ dossier.adresse.ligne2 }} à {{ dossier.adresse.localite }} ({{ dossier.adresse.codeDepartemental }}).
-                    Cette dégradation aurait été occasionnée au cours d’une opération de police judiciaire menée le
-                    {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}.
                 </p>
 
                 {% if dossier.corpsCourrier %}
@@ -402,7 +396,9 @@
             <p>
                 Je reconnais que, moyennant le versement de cette somme, je serai intégralement
                 désintéressé{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %} du préjudice
-                subi au cours de l’opération de police judiciaire intervenue le {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }} à l’adresse susmentionnée
+                subi au cours de l’opération de police judiciaire intervenue
+                le {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+                à l’adresse susmentionnée
                 ;</p>
 
             <p>
@@ -447,8 +443,10 @@
 
             {# Formulaire ici #}
 
-            <p><label for="courrier-decision-formulaire-champs-lieu-signature">Fait à</label> <input id="courrier-decision-formulaire-champs-lieu-signature" type="text" />
-                <label for="courrier-decision-formulaire-champs-date-signature">le</label> <input id="courrier-decision-formulaire-champs-date-signature" type="text" />
+            <p><label for="courrier-decision-formulaire-champs-lieu-signature">Fait à</label> <input
+                        id="courrier-decision-formulaire-champs-lieu-signature" type="text"/>
+                <label for="courrier-decision-formulaire-champs-date-signature">le</label> <input
+                        id="courrier-decision-formulaire-champs-date-signature" type="text"/>
             </p>
 
             <p class="marge-plus">Signature (précédée de la mention « lu et approuvé »)</p>
