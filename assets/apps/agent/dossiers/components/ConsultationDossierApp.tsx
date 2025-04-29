@@ -772,8 +772,12 @@ export const ConsultationDossierApp = observer(
                           <object
                             data={
                               dossier.documents
+                                .get(DocumentType.TYPE_COURRIER_REQUERANT.type)
+                                ?.at(0)?.url ??
+                              dossier.documents
                                 .get(DocumentType.TYPE_COURRIER_MINISTERE.type)
-                                ?.at(0)?.url ?? dossier.courrier.url
+                                ?.at(0)?.url ??
+                              dossier.courrier.url
                             }
                             type="application/pdf"
                             width={largeurSectionCourrier || "100%"}

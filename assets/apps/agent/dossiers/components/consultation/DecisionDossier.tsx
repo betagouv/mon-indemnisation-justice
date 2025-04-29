@@ -160,11 +160,11 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
 
     fermerModaleDecision();
 
-    // Déclencher le _hook_ onDecide s'il est défini
-    onDecide?.();
-
     setSauvegarderEnCours(false);
     decider(null);
+
+    // Déclencher le _hook_ onDecide s'il est défini
+    onDecide?.();
   };
 
   return (
