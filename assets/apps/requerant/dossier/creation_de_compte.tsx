@@ -5,10 +5,9 @@ import {
 } from "@/apps/requerant/dossier/models/Inscription";
 import { plainToInstance } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
-import { autorun, observable, reaction } from "mobx";
+import { autorun, observable, ObservableMap, reaction } from "mobx";
 import { observer } from "mobx-react-lite";
-import { IObservableArray } from "mobx/src/internal";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 
 const args = JSON.parse(document.getElementById("react-arguments").textContent);
@@ -21,13 +20,16 @@ interface Routes {
 const token = args.token;
 const routes: Routes = args.routes as Routes;
 const inscription = plainToInstance(Inscription, args.inscription);
-let erreurs: IObservableArray<ValidationError> = observable.array(null);
+let erreurs = observable.map<string, string>([]);
 
 autorun(async (i) => {
-  console.log(inscription);
   const err = await validate(inscription);
-  console.log(err);
-  erreurs.replace(err);
+  erreurs.replace(
+    err.map((error) => [
+      error.property.replace(/^_/, ""),
+      Object.values(error.constraints).at(0),
+    ]),
+  );
 });
 
 /*
@@ -138,10 +140,12 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
   inscription: Inscription;
   token: string;
   routes: Routes;
-  erreurs?: ValidationError[];
+  erreurs?: ObservableMap<string, string>;
 }) {
   const [motDePasseRevele, setMotDePasseRevele] = useState(false);
   const [confirmationRevelee, setConfirmationRevelee] = useState(false);
+
+  console.log(Array.from(erreurs.keys()));
 
   return (
     <div className="fr-container fr-my-3w">
@@ -215,7 +219,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                             className="fr-select"
                             id="inscription-champs-civilite"
                             aria-describedby="select-:r4:-desc"
-                            defaultValue={inscription.civilite}
+                            defaultValue={""}
                             onChange={(e) =>
                               (inscription.civilite = e.target.value)
                             }
@@ -466,7 +470,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                       </div>
 
                       <div className="fr-col-12">
-                        <button className="fr-btn" disabled={erreurs?.length}>
+                        <button className="fr-btn" disabled={erreurs.size}>
                           Valider mon inscription et poursuivre ma demande
                         </button>
                       </div>
