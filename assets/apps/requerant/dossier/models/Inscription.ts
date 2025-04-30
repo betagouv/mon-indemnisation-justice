@@ -1,4 +1,13 @@
-import { Equals, IsDefined, IsEmail, IsNotEmpty } from "class-validator";
+import { IsEqualTo } from "@/common/validation";
+import {
+  Equals,
+  IsDefined,
+  IsEmail,
+  IsNotEmpty,
+  Matches,
+  MinLength,
+  ValidateIf,
+} from "class-validator";
 import { makeAutoObservable } from "mobx";
 
 export enum Civilite {
@@ -7,7 +16,7 @@ export enum Civilite {
 }
 
 export class Inscription {
-  @IsDefined()
+  @IsDefined({ message: "" })
   _civilite?: Civilite = null;
   @IsDefined()
   @IsNotEmpty()
@@ -16,9 +25,19 @@ export class Inscription {
   _nom?: string = null;
   _nomNaissance?: string = null;
   @IsEmail()
+  @ValidateIf((i) => !!i.courriel)
   _courriel?: string = null;
+  @IsNotEmpty()
   _telephone?: string = null;
+  @MinLength(8, {
+    message:
+      "Le mot de passe doit contenir au moins 8 caractères, dont 1 chiffre",
+  })
   _motDePasse?: string = null;
+  @ValidateIf((i) => !!i.motDePasse)
+  @IsEqualTo("_motDePasse", {
+    message: "Les deux mots de passe doivent être identiques",
+  })
   _confirmation?: string = null;
   @Equals(true)
   _cguOk: boolean = false;
