@@ -4,8 +4,9 @@ import {
   Inscription,
 } from "@/apps/requerant/dossier/models/Inscription";
 import { plainToInstance } from "class-transformer";
-import { validate, ValidationError } from "class-validator";
-import { autorun, observable, ObservableMap, reaction } from "mobx";
+import { validate } from "class-validator";
+import { autorun, observable, ObservableMap } from "mobx";
+import _ from "lodash";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
@@ -314,12 +315,14 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                               (inscription.courriel = e.target.value)
                             }
                           />
-                          <p
-                            id="inscription-champs-courriel-error"
-                            className={`fr-error-text ${true ? "fr-hidden" : ""}`}
-                          >
-                            {/*{% verbatim %}{{ erreurs?.courriel }}{% endverbatim %}*/}
-                          </p>
+                          {erreurs.has("courriel") && (
+                            <p
+                              id="inscription-champs-courriel-error"
+                              className="fr-error-text"
+                            >
+                              {erreurs.get("courriel")}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="fr-col-6">

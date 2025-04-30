@@ -1,4 +1,4 @@
-import { IsEqualTo } from "@/common/validation";
+import { IsEmailAlreadyUsed, IsEqualTo } from "@/common/validation";
 import {
   Equals,
   IsDefined,
@@ -24,7 +24,8 @@ export class Inscription {
   @IsNotEmpty()
   _nom?: string = null;
   _nomNaissance?: string = null;
-  @IsEmail()
+  @IsEmail(undefined, { message: "L'adresse courriel n'est pas valide" })
+  @IsEmailAlreadyUsed({ message: "Cette adresse est déjà utilisée" })
   @ValidateIf((i) => !!i.courriel)
   _courriel?: string = null;
   @IsNotEmpty()

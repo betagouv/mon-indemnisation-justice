@@ -17,6 +17,7 @@ use MonIndemnisationJustice\Forms\TestEligibiliteType;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -232,6 +233,20 @@ class BrisPorteController extends AbstractController
             ],
             'form' => $form,
         ]);
+    }
+
+    #[Route(path: '/tester-adresse-courriel.json', name: 'bris_porte_tester_adresse_courriel', methods: ['POST'])]
+    public function testerAdresseCourrielJson(Request $request): Response
+    {
+        $adresse = $request->getPayload()->get('adresse');
+
+        if (!filter_var($adresse, FILTER_VALIDATE_EMAIL)) {
+            return new JsonResponse("$adresse n'est pas une adresse courriel valide", Response::HTTP_BAD_REQUEST);
+        }
+
+        $existant = $this->entityManager->getRepository(Requerant::class)->findOneBy(['email' => $adresse]);
+
+        return new JsonResponse(['disponible' => null === $existant], Response::HTTP_OK);
     }
 
     #[Route(path: '/finaliser-la-creation', name: 'bris_porte_finaliser_la_creation')]
