@@ -1,12 +1,18 @@
 import {
+  RequerantManagerImpl,
+  RequerantManagerInterface,
+} from "@/common/services/RequerantManager";
+import {
   registerDecorator,
   ValidationOptions,
   ValidationArguments,
 } from "class-validator";
+import _, { property } from "lodash";
+import { container } from "@/common/services";
 
 /**
- * La validateur IsEqualTo vérifie que la valeur d'un champs correspond à la valeur d'un autre champs `property` de
- * l'objet validé.
+ * Le validateur IsEqualTo vérifie que la valeur d'un champ correspond à la
+ * valeur d'un autre champ `property` de l'objet validé.
  *
  * @param property
  * @param validationOptions
@@ -28,6 +34,56 @@ export function IsEqualTo(
           const [relatedPropertyName] = args.constraints;
           const relatedValue = (args.object as any)[relatedPropertyName];
           return value === relatedValue;
+        },
+      },
+    });
+  };
+}
+
+/*
+@ValidatorConstraint({ async: true })
+export class IsEmailAlreadyUsedConstraint
+  implements ValidatorConstraintInterface
+{
+  constructor() {}
+  validate(adresse: any, args: ValidationArguments) {
+    return UserRepository.findOneByName(userName).then((user) => {
+      if (user) return false;
+      return true;
+    });
+  }
+}
+
+ */
+
+/**
+ * Le validateur IsEmailAlreadyUsed vérifie que l'adresse courriel définie dans
+ * le champ n'est pas déjà attribuée à un autre requérant.
+ *
+ * @param validationOptions
+ * @constructor
+ */
+export function IsEmailAlreadyUsed(validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    const debouncedVerification = _.debounce(
+      async (adresse: string) =>
+        container
+          .get<RequerantManagerInterface>(RequerantManagerImpl)
+          .estAdresseCourrielAttribuee(adresse),
+      250,
+    );
+
+    registerDecorator({
+      name: "isEqualTo",
+      target: object.constructor,
+      async: true,
+      propertyName: propertyName,
+      constraints: [property],
+      options: validationOptions,
+      validator: {
+        async validate(value: any, args: ValidationArguments) {
+          console.log(value);
+          return debouncedVerification(value);
         },
       },
     });
