@@ -23,20 +23,24 @@ export class RequerantAPICLient implements RequerantManagerInterface {
     }
 
     try {
-      const response = await fetch(
-        "/bris-de-porte/tester-adresse-courriel.json",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            adresse,
-          }),
+      const response = await fetch("/bris-de-porte/tester-adresse-courriel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-      );
-      const data = await response.json();
+        body: JSON.stringify({
+          adresse,
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
 
-      this.registre.set(adresse, (data.disponible as boolean) ?? false);
+        this.registre.set(adresse, (data.disponible as boolean) ?? false);
+        return this.registre.get(adresse);
+      }
 
-      return this.registre.get(adresse);
+      return false;
     } catch (error) {
       console.error(error);
       return true;
