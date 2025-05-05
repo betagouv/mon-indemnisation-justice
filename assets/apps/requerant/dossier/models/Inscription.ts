@@ -1,4 +1,5 @@
 import { IsEmailAlreadyUsed, IsEqualTo } from "@/common/validation";
+import { Expose, Transform } from "class-transformer";
 import {
   Equals,
   IsDefined,
@@ -25,8 +26,8 @@ export class Inscription {
   _nom?: string = null;
   _nomNaissance?: string = null;
   @IsEmail(undefined, { message: "L'adresse courriel n'est pas valide" })
-  @IsEmailAlreadyUsed({ message: "Cette adresse est déjà utilisée" })
   @ValidateIf((i) => !!i.courriel)
+  @IsEmailAlreadyUsed({ message: "Cette adresse est déjà utilisée" })
   _courriel?: string = null;
   @IsNotEmpty()
   _telephone?: string = null;
@@ -47,6 +48,10 @@ export class Inscription {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
+  @Expose()
+  @Transform(({ value }: { value: Civilite }) =>
+    Object.keys(Civilite).find((key) => Civilite[key] === value),
+  )
   get civilite(): Civilite {
     return this._civilite;
   }
@@ -55,6 +60,7 @@ export class Inscription {
     this._civilite = value;
   }
 
+  @Expose()
   get prenom(): string {
     return this._prenom;
   }
@@ -63,6 +69,7 @@ export class Inscription {
     this._prenom = value;
   }
 
+  @Expose()
   get nom(): string {
     return this._nom;
   }
@@ -71,6 +78,7 @@ export class Inscription {
     this._nom = value;
   }
 
+  @Expose()
   get nomNaissance(): string {
     return this._nomNaissance;
   }
@@ -79,6 +87,7 @@ export class Inscription {
     this._nomNaissance = value;
   }
 
+  @Expose()
   get courriel(): string {
     return this._courriel;
   }
@@ -87,6 +96,7 @@ export class Inscription {
     this._courriel = value;
   }
 
+  @Expose()
   get telephone(): string {
     return this._telephone;
   }
@@ -95,6 +105,7 @@ export class Inscription {
     this._telephone = value;
   }
 
+  @Expose()
   get motDePasse(): string {
     return this._motDePasse;
   }
@@ -103,6 +114,7 @@ export class Inscription {
     this._motDePasse = value;
   }
 
+  @Expose()
   get confirmation(): string {
     return this._confirmation;
   }
@@ -111,6 +123,7 @@ export class Inscription {
     this._confirmation = value;
   }
 
+  @Expose()
   get cguOk(): boolean {
     return this._cguOk;
   }
