@@ -18,21 +18,20 @@
                     <div class="fr-header__service">
                         <a href="{{ path('app_homepage') }}" title="Mon Indemnisation Justice"></a>
                         <p class="fr-header__service-title">Mon Indemnisation Justice</p>
-                        {#
                         {% if app.environment != 'prod' %}
-                        <div>
-                            <p class="fr-badge fr-badge--warning fr-badge--no-icon">Plateforme de test</p>
-                        </div>
+                            <div>
+                                <p class="fr-badge fr-badge--warning fr-badge--no-icon">Plateforme de test</p>
+                            </div>
                         {% endif %}
-                        #}
                     </div>
                 </div>
                 <div class="fr-header__tools">
                     <div class="fr-header__tools-links">
                         <ul class="fr-btns-group">
                             <li>
-                                <a class="fr-btn fr-m-0  fr-icon-lock-line" href="{{ path('app_login') }}">Se
-                                    connecter</a>
+                                <a class="fr-btn fr-m-0  fr-icon-lock-line" href="{{ path('app_login') }}">
+                                    Se connecter
+                                </a>
                             </li>
                         </ul>
                     </div>
