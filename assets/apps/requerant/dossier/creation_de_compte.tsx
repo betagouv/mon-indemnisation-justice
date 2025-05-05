@@ -20,7 +20,7 @@ interface Routes {
   cgu: string;
 }
 
-const token = args.token;
+const token: string = args.token;
 const routes: Routes = args.routes as Routes;
 const inscription = plainToInstance(Inscription, args.inscription);
 let erreurs = observable.map<string, string>([]);
@@ -54,9 +54,13 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
   const creerLeCompte = async function () {
     setSauvegardeEnCours(true);
 
-    const response = await fetch("/bris-de-porte/creer-compte.json", {
+    const response = await fetch(`/bris-de-porte/creer-compte`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-Csrf-Token": token,
+      },
       body: JSON.stringify(
         instanceToPlain(inscription, { excludePrefixes: ["_"] }),
       ),
@@ -65,9 +69,9 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
     if (response.ok) {
       // Recharger la page afin d'être redirigé si l'inscription a bien fonctionné
       window.location.reload();
-    } else {
-      setSauvegardeEnCours(false);
     }
+
+    setSauvegardeEnCours(false);
   };
 
   return (
@@ -144,13 +148,14 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                             aria-describedby="select-:r4:-desc"
                             defaultValue={""}
                             onChange={(e) =>
-                              (inscription.civilite = e.target
-                                .value as Civilite)
+                              (inscription.civilite = Civilite[
+                                e.target.value
+                              ] as Civilite)
                             }
                           >
                             <option value="" disabled hidden></option>
-                            {Object.values(Civilite).map((civilite) => (
-                              <option key={civilite} value={civilite}>
+                            {Object.entries(Civilite).map(([nom, civilite]) => (
+                              <option key={civilite} value={nom}>
                                 {civilite.valueOf()}
                               </option>
                             ))}
@@ -237,7 +242,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                             onChange={(e) =>
                               _.debounce(
                                 () => (inscription.courriel = e.target.value),
-                                250,
+                                350,
                               )()
                             }
                           />
@@ -403,7 +408,10 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                           className="fr-btn"
                           type="submit"
                           disabled={erreurs.size > 0 || sauvegardeEnCours}
-                          onClick={() => creerLeCompte()}
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            await creerLeCompte();
+                          }}
                         >
                           {sauvegardeEnCours
                             ? "Inscription en cours"

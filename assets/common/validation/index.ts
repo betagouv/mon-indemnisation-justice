@@ -42,22 +42,6 @@ export function IsEqualTo(
   };
 }
 
-/*
-@ValidatorConstraint({ async: true })
-export class IsEmailAlreadyUsedConstraint
-  implements ValidatorConstraintInterface
-{
-  constructor() {}
-  validate(adresse: any, args: ValidationArguments) {
-    return UserRepository.findOneByName(userName).then((user) => {
-      if (user) return false;
-      return true;
-    });
-  }
-}
-
- */
-
 /**
  * Le validateur IsEmailAlreadyUsed vérifie que l'adresse courriel définie dans
  * le champ n'est pas déjà attribuée à un autre requérant.
@@ -67,14 +51,6 @@ export class IsEmailAlreadyUsedConstraint
  */
 export function IsEmailAlreadyUsed(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
-    const debouncedVerification = _.debounce(
-      async (adresse: string) =>
-        container
-          .get<RequerantManagerInterface>(RequerantManagerImpl)
-          .estAdresseCourrielAttribuee(adresse),
-      250,
-    );
-
     registerDecorator({
       name: "isEmailAlreadyUsed",
       target: object.constructor,
