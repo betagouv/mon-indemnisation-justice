@@ -13,6 +13,7 @@
         "@sentry/browser": "^8.37.1",
         "@sentry/react": "^9.9.0",
         "@types/lodash": "^4.17.15",
+        "@types/react": "18.3",
         "@vitejs/plugin-legacy": "^5.4.2",
         "@vitejs/plugin-react": "^4.3.3",
         "autoprefixer": "^10.4.20",
@@ -29,8 +30,8 @@
         "postcss-nested": "^7.0.2",
         "prop-types": "^15.8.1",
         "puppeteer": "^24.4.0",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1",
+        "react": "^18.3",
+        "react-dom": "^18.3",
         "react-quill-new": "^3.3.3",
         "reflect-metadata": "^0.2.2",
         "remixicon": "^4.4.0",
@@ -43,7 +44,7 @@
         "rollup": "npm:@rollup/wasm-node"
     },
     "devDependencies": {
-        "@types/react-dom": "^19.0.4",
+        "@types/react-dom": "18.3",
         "eslint-config-prettier": "^10.0.1",
         "prettier": "3.5.1",
         "stylelint": "^16.14.1",

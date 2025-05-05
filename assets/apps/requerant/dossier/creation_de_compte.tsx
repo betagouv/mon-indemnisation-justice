@@ -3,12 +3,14 @@ import {
   Civilite,
   Inscription,
 } from "@/apps/requerant/dossier/models/Inscription";
-import { plainToInstance } from "class-transformer";
+import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
-import { autorun, observable, ObservableMap } from "mobx";
 import _ from "lodash";
+import { autorun, observable, ObservableMap } from "mobx";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
+// En attente de React 19
+//import { useFormStatus } from "react-dom";
 import ReactDOM from "react-dom/client";
 
 const args = JSON.parse(document.getElementById("react-arguments").textContent);
@@ -33,105 +35,6 @@ autorun(async (i) => {
   );
 });
 
-/*
-createApp({
-  erreurs: { ...erreurs },
-  submissible: false,
-  inscription: { ...inscription },
-  avant: {},
-  revelations: {
-    motDePasse: false,
-    confirmation: false,
-  },
-  estRempli(valeur) {
-    return !!valeur && valeur.trim().length > 0;
-  },
-  estCourrielValide(valeur) {
-    return (
-      !!valeur &&
-      valeur.match(
-        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      )
-    );
-  },
-  basculer(champs) {
-    this.revelations[champs] = !this.revelations[champs];
-  },
-  verifier(inscription) {
-    if (this.avant?.prenom !== inscription.prenom) {
-      if (!this.estRempli(inscription.prenom)) {
-        this.erreurs.prenom = "";
-      } else {
-        delete this.erreurs.prenom;
-      }
-    }
-
-    if (this.avant?.nom !== inscription.nom) {
-      if (!this.estRempli(inscription.nom)) {
-        this.erreurs.nom = "";
-      } else {
-        delete this.erreurs.nom;
-      }
-    }
-
-    if (this.avant?.courriel !== inscription.courriel) {
-      if (!this.estCourrielValide(inscription.courriel)) {
-        this.erreurs.courriel = inscription.courriel
-          ? "L'adresse courriel n'est pas valide"
-          : false;
-      } else {
-        delete this.erreurs.courriel;
-      }
-    }
-
-    if (this.avant?.telephone !== inscription.telephone) {
-      if (!this.estRempli(inscription.telephone)) {
-        this.erreurs.telephone = "";
-      } else {
-        delete this.erreurs.telephone;
-      }
-    }
-
-    // Vérification du mot de passe:
-    if ((inscription.motDePasse || null) !== null) {
-      if (
-        (inscription.motDePasse != null &&
-          this.avant?.motDePasse !== inscription.motDePasse) ||
-        this.avant?.confirmation !== inscription.confirmation
-      ) {
-        delete this.erreurs.motDePasse;
-        delete this.erreurs.confirmation;
-        if (inscription.motDePasse.length < 8) {
-          this.erreurs.motDePasse =
-            "Le mot de passe doit contenir au moins 8 caractères, dont 1 chiffre";
-        } else if (!inscription.motDePasse.match(/\d/)) {
-          this.erreurs.motDePasse =
-            "Le mot de passe doit contenir au moins 1 chiffre";
-        } else if (
-          this.estRempli(inscription.motDePasse) &&
-          inscription.confirmation !== inscription.motDePasse
-        ) {
-          this.erreurs.confirmation =
-            "Les deux mots de passe doivent être identiques";
-        }
-      }
-    } else {
-      this.erreurs.motDePasse = null;
-    }
-
-    if (!inscription.cguOk) {
-      this.erreurs.cguOk = "";
-    } else {
-      delete this.erreurs.cguOk;
-    }
-
-    this.submissible = Object.keys(this.erreurs).length === 0;
-
-    this.avant = { ...inscription };
-  },
-}).mount("#vue-app");
-*/
-
 const CreationDeCompteApp = observer(function CreationDeCompteApp({
   inscription,
   token,
@@ -145,8 +48,27 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
 }) {
   const [motDePasseRevele, setMotDePasseRevele] = useState(false);
   const [confirmationRevelee, setConfirmationRevelee] = useState(false);
+  //const { pending: sauvegardeEnCours } = useFormStatus();
+  const [sauvegardeEnCours, setSauvegardeEnCours] = useState(false);
 
-  console.log(Array.from(erreurs.keys()));
+  const creerLeCompte = async function () {
+    setSauvegardeEnCours(true);
+
+    const response = await fetch("/bris-de-porte/creer-compte.json", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(
+        instanceToPlain(inscription, { excludePrefixes: ["_"] }),
+      ),
+    });
+
+    if (response.ok) {
+      // Recharger la page afin d'être redirigé si l'inscription a bien fonctionné
+      window.location.reload();
+    } else {
+      setSauvegardeEnCours(false);
+    }
+  };
 
   return (
     <div className="fr-container fr-my-3w">
@@ -175,7 +97,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
             className="pr-form-subscribe"
             style={{ border: "1px solid var(--border-default-grey)" }}
           >
-            <form method="POST" action="">
+            <form>
               <input type="hidden" name="_token" value={token} />
               <div className="fr-grid-row">
                 <div className="pr-form-subscribe_had-account fr-col-12"></div>
@@ -222,12 +144,13 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                             aria-describedby="select-:r4:-desc"
                             defaultValue={""}
                             onChange={(e) =>
-                              (inscription.civilite = e.target.value)
+                              (inscription.civilite = e.target
+                                .value as Civilite)
                             }
                           >
                             <option value="" disabled hidden></option>
                             {Object.values(Civilite).map((civilite) => (
-                              <option key={civilite} value={civilite.valueOf()}>
+                              <option key={civilite} value={civilite}>
                                 {civilite.valueOf()}
                               </option>
                             ))}
@@ -312,7 +235,10 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                             type="text"
                             defaultValue={inscription.courriel}
                             onChange={(e) =>
-                              (inscription.courriel = e.target.value)
+                              _.debounce(
+                                () => (inscription.courriel = e.target.value),
+                                250,
+                              )()
                             }
                           />
                           {erreurs.has("courriel") && (
@@ -374,7 +300,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                             />
                             <button
                               type="button"
-                              tabIndex="-1"
+                              tabIndex={-1}
                               className="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
                               onClick={() =>
                                 setMotDePasseRevele(!motDePasseRevele)
@@ -419,7 +345,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                             />
                             <button
                               type="button"
-                              tabIndex="-1"
+                              tabIndex={-1}
                               className="fr-btn fr-btn--tertiary-no-outline fr-btn--input-overlay"
                               onClick={() =>
                                 setConfirmationRevelee(!confirmationRevelee)
@@ -449,7 +375,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                                 type="checkbox"
                                 id="inscription-champs-cgu-ok"
                                 name="cguOk"
-                                defaultValue={inscription.cguOk}
+                                checked={inscription.cguOk}
                                 onChange={(e) =>
                                   (inscription.cguOk = e.target.checked)
                                 }
@@ -473,8 +399,15 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                       </div>
 
                       <div className="fr-col-12">
-                        <button className="fr-btn" disabled={erreurs.size}>
-                          Valider mon inscription et poursuivre ma demande
+                        <button
+                          className="fr-btn"
+                          type="submit"
+                          disabled={erreurs.size > 0 || sauvegardeEnCours}
+                          onClick={() => creerLeCompte()}
+                        >
+                          {sauvegardeEnCours
+                            ? "Inscription en cours"
+                            : "Valider mon inscription et poursuivre ma demande"}
                         </button>
                       </div>
                     </div>

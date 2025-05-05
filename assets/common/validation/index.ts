@@ -6,6 +6,8 @@ import {
   registerDecorator,
   ValidationOptions,
   ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
 } from "class-validator";
 import _, { property } from "lodash";
 import { container } from "@/common/services";
@@ -74,16 +76,17 @@ export function IsEmailAlreadyUsed(validationOptions?: ValidationOptions) {
     );
 
     registerDecorator({
-      name: "isEqualTo",
+      name: "isEmailAlreadyUsed",
       target: object.constructor,
-      async: true,
       propertyName: propertyName,
       constraints: [property],
+      async: true,
       options: validationOptions,
       validator: {
         async validate(value: any, args: ValidationArguments) {
-          console.log(value);
-          return debouncedVerification(value);
+          return await container
+            .get<RequerantManagerInterface>(RequerantManagerImpl)
+            .estAdresseCourrielAttribuee(value);
         },
       },
     });
