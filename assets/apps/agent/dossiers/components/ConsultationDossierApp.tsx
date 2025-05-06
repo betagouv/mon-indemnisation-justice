@@ -213,7 +213,7 @@ export const ConsultationDossierApp = observer(
                         href="#infos"
                         id="tab-infos"
                         className="fr-tabs__tab"
-                        tabIndex="0"
+                        tabIndex={0}
                         role="tab"
                         aria-selected={window.location.hash == "#infos"}
                         aria-controls="tab-panel-infos"
@@ -226,7 +226,7 @@ export const ConsultationDossierApp = observer(
                         href="#suivi"
                         id="tab-suivi"
                         className="fr-tabs__tab"
-                        tabIndex="-1"
+                        tabIndex={-1}
                         role="tab"
                         aria-selected={window.location.hash == "#suivi"}
                         aria-controls="tab-panel-suivi"
@@ -239,7 +239,7 @@ export const ConsultationDossierApp = observer(
                         href="#pieces-jointes"
                         id="tab-pieces-jointes"
                         className="fr-tabs__tab"
-                        tabIndex="-1"
+                        tabIndex={-1}
                         role="tab"
                         aria-selected={
                           window.location.hash == "#pieces-jointes"
@@ -254,7 +254,7 @@ export const ConsultationDossierApp = observer(
                         type="button"
                         id="tab-courrier"
                         className="fr-tabs__tab"
-                        tabIndex="-1"
+                        tabIndex={-1}
                         role="tab"
                         {...(null !== dossier.courrier ||
                         dossier.hasDocumentsType(
@@ -276,7 +276,7 @@ export const ConsultationDossierApp = observer(
                     className={`fr-tabs__panel ${window.location.hash == "#infos" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-infos"
-                    tabIndex="0"
+                    tabIndex={0}
                   >
                     <section>
                       <div className="fr-grid-column">
@@ -479,7 +479,7 @@ export const ConsultationDossierApp = observer(
                     className={`fr-tabs__panel ${window.location.hash == "#suivi" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-suivi"
-                    tabIndex="0"
+                    tabIndex={0}
                   >
                     <section>
                       <h3>Notes de suivi</h3>
@@ -521,7 +521,7 @@ export const ConsultationDossierApp = observer(
                     className={`fr-tabs__panel ${window.location.hash == "#pieces-jointes" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-pieces-jointes"
-                    tabIndex="0"
+                    tabIndex={0}
                   >
                     <section className="mij-dossier-documents">
                       <h3>Pièces jointes</h3>
@@ -679,7 +679,7 @@ export const ConsultationDossierApp = observer(
                                   0
                                     ? { "data-section-vide": "" }
                                     : {})}
-                                  {...(pieceJointe?.type === type.type
+                                  {...(pieceJointe?.type === type
                                     ? { "data-section-active": true }
                                     : {})}
                                 >
@@ -764,7 +764,7 @@ export const ConsultationDossierApp = observer(
                       className={`fr-tabs__panel ${window.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
                       role="tabpanel"
                       aria-labelledby="tab-courrier"
-                      tabIndex="0"
+                      tabIndex={0}
                     >
                       <section>
                         <h3>Courrier</h3>
