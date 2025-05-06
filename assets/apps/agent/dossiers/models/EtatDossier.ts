@@ -10,10 +10,7 @@ export class EtatDossier {
     "En cours d'instruction",
   );
 
-  public static DOUBLON_PAPIER = new EtatDossier(
-    "DOUBLON_PAPIER",
-    "Doublon papier",
-  );
+  public static CLOTURE = new EtatDossier("CLOTURE", "Clôturé");
 
   public static OK_A_SIGNER = new EtatDossier(
     "OK_A_SIGNER",
@@ -54,7 +51,7 @@ export class EtatDossier {
     EtatDossier.A_FINALISER,
     EtatDossier.A_INSTRUIRE,
     EtatDossier.EN_INSTRUCTION,
-    EtatDossier.DOUBLON_PAPIER,
+    EtatDossier.CLOTURE,
     EtatDossier.OK_A_SIGNER,
     EtatDossier.OK_A_APPROUVER,
     EtatDossier.OK_A_VERIFIER,

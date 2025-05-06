@@ -3,6 +3,76 @@ import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 
+type AttributionAction = "attribution" | "cloture";
+
+const AttributionFormulaire = observer(function AttributionFormulaireComponent({
+  attributaire,
+  sauvegarderEnCours,
+  attribuer,
+  annuler,
+}: {
+  attributaire?: Redacteur;
+  sauvegarderEnCours: boolean;
+  attribuer: (attributaire: Redacteur) => void;
+  annuler: () => void;
+}) {
+  return (
+    <>
+      <div className="fr-select-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
+        <label className="fr-label" htmlFor="dossier-select-attributaire">
+          Rédacteur :
+        </label>
+        <select
+          className="fr-select"
+          id="dossier-select-attributaire"
+          disabled={sauvegarderEnCours}
+          defaultValue={attributaire?.id || ""}
+          onChange={(e) => {
+            !!e.target.value &&
+              attribuer(Redacteur.resoudre(parseInt(e.target.value)));
+          }}
+        >
+          <option value="" disabled hidden>
+            Sélectionnez un rédacteur
+          </option>
+          {Redacteur.catalog().map((redacteur: Redacteur) => (
+            <option value={redacteur.id} key={redacteur.id}>
+              {redacteur.nom}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+        <li>
+          <button
+            className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
+            type="button"
+            disabled={sauvegarderEnCours}
+            onClick={() => annuler()}
+          >
+            {sauvegarderEnCours ? <i>Sauvegarde en cours ...</i> : <>Annuler</>}
+          </button>
+        </li>
+        <li>
+          <button
+            className="fr-btn fr-btn--sm"
+            type="button"
+            disabled={sauvegarderEnCours || !attributaire}
+            onClick={() => validerAttribution()}
+          >
+            Attribuer
+          </button>
+        </li>
+      </ul>
+    </>
+  );
+});
+
+const ClotureFormulaire = observer(function ClotureFormulaireComponent({}) {
+  return <></>;
+});
+
 export const AttributionDossier = observer(
   function AttributionDossierComponent({
     dossier,
@@ -90,7 +160,7 @@ export const AttributionDossier = observer(
                 className="fr-select"
                 id="dossier-select-attributaire"
                 disabled={sauvegarderEnCours}
-                defaultValue={attributaire || ""}
+                defaultValue={attributaire?.id || ""}
                 onChange={(e) => {
                   !!e.target.value &&
                     attribuer(Redacteur.resoudre(parseInt(e.target.value)));

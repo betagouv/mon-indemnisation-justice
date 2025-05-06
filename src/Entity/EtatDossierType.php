@@ -11,7 +11,7 @@ enum EtatDossierType: string
     case DOSSIER_EN_INSTRUCTION = 'EN_INSTRUCTION';
 
     // Le dossier existait d'abord en version papier
-    case DOSSIER_DOUBLON_PAPIER = 'DOUBLON_PAPIER';
+    case DOSSIER_CLOTURE = 'CLOTURE';
 
     // Le rédacteur a approuvé l'indemnisation
     case DOSSIER_OK_A_SIGNER = 'OK_A_SIGNER';
