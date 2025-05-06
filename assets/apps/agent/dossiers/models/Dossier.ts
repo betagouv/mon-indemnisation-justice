@@ -7,7 +7,7 @@ import {
   Redacteur,
   Requerant,
   TestEligibilite,
-} from "@/apps/agent/dossiers/models";
+} from ".";
 import { Expose, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";
 

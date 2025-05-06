@@ -107,7 +107,7 @@ abstract class AbstractFunctionalTestCase extends PantherTestCase
         return $this;
     }
 
-    protected function setField(string $label, string $value, bool $exactMatch = false): static
+    protected function setField(string $label, string|bool $value, bool $exactMatch = false): static
     {
         $field = $this->getFieldByLabel($label, exactMatch: $exactMatch);
 
@@ -118,12 +118,17 @@ abstract class AbstractFunctionalTestCase extends PantherTestCase
         switch ($field->getTagName()) {
             case 'textarea':
             case 'input':
-                $field->getElement(0)?->clear();
-                if ('file' === $field->getAttribute('type')) {
-                    $field->getElement(0)->setFileDetector(new LocalFileDetector());
+                if ('checkbox' === $field->getAttribute('type')) {
+                    $field->click();
+                } else {
+                    $field->getElement(0)?->clear();
+                    if ('file' === $field->getAttribute('type')) {
+                        $field->getElement(0)->setFileDetector(new LocalFileDetector());
+                    }
+
+                    $field->sendKeys($value);
                 }
 
-                $field->sendKeys($value);
                 break;
 
             case 'select':

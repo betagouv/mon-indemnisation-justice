@@ -118,31 +118,32 @@ class EligibiliteBrisPorteTest extends AbstractFunctionalTestCase
 
         $button = $this->client->getCrawler()->selectButton('Valider mon inscription et poursuivre ma demande')->first();
 
-        $form = $button->form([
+        $button->form([
             'civilite' => 'M',
             'prenom' => 'Rick',
             'nom' => 'Errant',
+            'nomNaissance' => 'Errant',
             'courriel' => 'rick.errant@courriel.fr',
             'telephone' => '0612345678',
             'motDePasse' => 'P4ssword',
             'confirmation' => 'P4ssword',
-            'cguOk' => true,
         ]);
+
+        $this->setField('Je certifie avoir lu et accepté', true);
 
         $this
             ->screenshot($device, 'Formulaire rempli')
-            ->wait();
+            ->wait(500);
 
         $this->assertTrue($button->isEnabled());
-        $this->client->submit($form);
 
-        $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
+        $button->click();
 
         $this->client->waitForVisibility('main', 1);
 
         $this
             ->screenshot($device, 'Formulaire soumis')
-            ->wait();
+            ->wait(500);
 
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
         $this->assertSelectorTextContains('h2.fr-stepper__title', 'Finaliser la création de votre compte');

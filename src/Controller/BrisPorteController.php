@@ -12,15 +12,19 @@ use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
-use MonIndemnisationJustice\Forms\InscriptionType;
 use MonIndemnisationJustice\Forms\TestEligibiliteType;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/bris-de-porte')]
 class BrisPorteController extends AbstractController
@@ -132,8 +136,8 @@ class BrisPorteController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET', 'POST'])]
-    public function creationDeCompte(Request $request): Response
+    #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET'])]
+    public function creationDeCompte(Request $request, NormalizerInterface $normalizer, UrlGeneratorInterface $router, CsrfTokenManagerInterface $csrfTokenManager): Response
     {
         if ($this->getUser() instanceof Requerant) {
             return $this->redirectToRoute('requerant_home_index');
@@ -153,77 +157,89 @@ class BrisPorteController extends AbstractController
             return $this->redirectToRoute('bris_porte_contactez_nous');
         }
 
-        $inscription = new Inscription();
-        $form = $this->createForm(InscriptionType::class, $inscription);
-        $errors = [];
+        return $this->render('brisPorte/creation_de_compte.html.twig', [
+            'react' => [
+                'routes' => [
+                    'connexion' => $router->generate('app_login'),
+                    'cgu' => $router->generate('public_cgu'),
+                ],
+                'token' => $csrfTokenManager->getToken('creation-de-compte')->getValue(),
+                'inscription' => $normalizer->normalize(new Inscription(), 'json'),
+            ],
+        ]);
+    }
 
-        if (Request::METHOD_POST === $request->getMethod()) {
-            $form->handleRequest($request);
-            if ($form->isSubmitted()) {
-                /** @var Inscription $inscription */
-                $inscription = $form->getData();
-                if ($form->isValid()) {
-                    // Création du compte requérant
-                    $requerant = (new Requerant())
-                        ->setEmail($inscription->courriel)
-                    ;
-                    $requerant->getPersonnePhysique()
-                        ->setCivilite($inscription->civilite)
-                        ->setPrenom1($inscription->prenom)
-                        ->setEmail($inscription->courriel)
-                        ->setTelephone($inscription->telephone)
-                        ->setNom($inscription->nom)
-                        ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom)
-                    ;
-                    $requerant->setPassword(
-                        $this->userPasswordHasher->hashPassword(
-                            $requerant,
-                            $inscription->motDePasse
-                        )
-                    );
-                    $requerant->genererJetonVerification();
-
-                    $this->entityManager->persist($requerant);
-
-                    $dossier = (new BrisPorte())
-                        ->setRequerant($requerant)
-                        ->setQualiteRequerant($testEligibilite->estProprietaire ? QualiteRequerant::PRO : QualiteRequerant::LOC)
-                        ->setTestEligibilite($testEligibilite)
-                    ;
-                    $this->entityManager->persist($dossier);
-
-                    $testEligibilite->requerant = $requerant;
-                    $this->entityManager->persist($testEligibilite);
-
-                    $this->entityManager->flush();
-                    $this->setTestEligibilite($testEligibilite, $request);
-
-                    // Envoi du mail de confirmation.
-                    $this->mailer
-                        ->toRequerant($requerant)
-                        ->subject("Activation de votre compte sur l'application Mon Indemnisation Justice")
-                        ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
-                            'requerant' => $requerant,
-                        ])
-                        ->send();
-                    // Ajout d'un drapeau pour marquer la réussite de l'inscription et pouvoir rediriger vers une page de succès
-                    $this->addFlash('emailRequerantInscrit', $requerant->getEmail());
-
-                    return $this->redirectToRoute('bris_porte_finaliser_la_creation');
-                } else {
-                    /** @var FormError $error */
-                    foreach ($form->getErrors(true) as $error) {
-                        $errors[$error->getOrigin()?->getName()] = $error->getMessage();
-                    }
-                }
-            }
+    #[Route(path: '/creer-compte', name: 'bris_porte_creation_de_compte_json', methods: ['POST'], format: 'json')]
+    public function creerCompteJson(
+        #[MapRequestPayload] Inscription $inscription,
+        Request $request,
+        CsrfTokenManagerInterface $csrfTokenManager,
+    ): Response {
+        if (!$csrfTokenManager->isTokenValid(new CsrfToken('creation-de-compte', $request->headers->get('X-Csrf-Token')))) {
+            return new JsonResponse('Le jeton CSRF est invalide.', Response::HTTP_NOT_ACCEPTABLE);
         }
 
-        return $this->render('brisPorte/creation_de_compte.html.twig', [
-            'inscription' => $inscription,
-            'form' => $form,
-            'errors' => $errors,
-        ]);
+        $testEligibilite = $this->getTestEligibilite($request);
+
+        // Création du compte requérant
+        $requerant = (new Requerant())
+            ->setEmail($inscription->courriel)
+        ;
+        $requerant->getPersonnePhysique()
+            ->setCivilite($inscription->civilite)
+            ->setPrenom1($inscription->prenom)
+            ->setEmail($inscription->courriel)
+            ->setTelephone($inscription->telephone)
+            ->setNom($inscription->nom)
+            ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom)
+        ;
+        $requerant->setPassword(
+            $this->userPasswordHasher->hashPassword(
+                $requerant,
+                $inscription->motDePasse
+            )
+        );
+        $requerant->genererJetonVerification();
+
+        $this->entityManager->persist($requerant);
+
+        $dossier = (new BrisPorte())
+            ->setRequerant($requerant)
+            ->setQualiteRequerant($testEligibilite->estProprietaire ? QualiteRequerant::PRO : QualiteRequerant::LOC)
+            ->setTestEligibilite($testEligibilite)
+        ;
+        $this->entityManager->persist($dossier);
+
+        $testEligibilite->requerant = $requerant;
+        $this->entityManager->persist($testEligibilite);
+
+        $this->entityManager->flush();
+        $this->setTestEligibilite($testEligibilite, $request);
+
+        // Envoi du mail de confirmation.
+        $this->mailer
+            ->toRequerant($requerant)
+            ->subject("Activation de votre compte sur l'application Mon Indemnisation Justice")
+            ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
+                'requerant' => $requerant,
+            ])
+            ->send();
+
+        return new JsonResponse('', Response::HTTP_CREATED);
+    }
+
+    #[Route(path: '/tester-adresse-courriel', name: 'bris_porte_tester_adresse_courriel', methods: ['POST'], format: 'json')]
+    public function testerAdresseCourrielJson(Request $request): Response
+    {
+        $adresse = $request->getPayload()->get('adresse');
+
+        if (!filter_var($adresse, FILTER_VALIDATE_EMAIL)) {
+            return new JsonResponse("$adresse n'est pas une adresse courriel valide", Response::HTTP_BAD_REQUEST);
+        }
+
+        $existant = $this->entityManager->getRepository(Requerant::class)->findOneBy(['email' => $adresse]);
+
+        return new JsonResponse(['disponible' => null === $existant], Response::HTTP_OK);
     }
 
     #[Route(path: '/finaliser-la-creation', name: 'bris_porte_finaliser_la_creation')]

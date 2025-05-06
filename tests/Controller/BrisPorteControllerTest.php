@@ -237,16 +237,18 @@ class BrisPorteControllerTest extends WebTestCase
         }
 
         $this->client->request('GET', '/bris-de-porte/creation-de-compte');
-
         if ($redirection) {
             $this->assertTrue($this->client->getResponse()->isRedirect($redirection));
         } else {
             $this->assertTrue($this->client->getResponse()->isSuccessful());
 
-            $form = $this->client->getCrawler()->selectButton('Valider mon inscription et poursuivre ma demande')->form();
+            $reactArgs = json_decode(trim($this->client->getCrawler()->filter('#react-arguments')->first()->text()), true);
+            $this->assertIsArray($reactArgs);
+            $token = $reactArgs['token'];
+            $this->assertNotEmpty($token);
 
-            $this->client->request($form->getMethod(), $form->getUri(), [
-                '_token' => $this->client->getCrawler()->filter('input[name="_token"]')->first()->attr('value'),
+            $this->client->request('POST', '/bris-de-porte/creer-compte', [
+                'cguOk' => true,
                 'civilite' => 'M',
                 'prenom' => 'Rick',
                 'nomNaissance' => 'Hérent',
@@ -255,7 +257,11 @@ class BrisPorteControllerTest extends WebTestCase
                 'telephone' => '06123456789',
                 'motDePasse' => 'P4ssword',
                 'confirmation' => 'P4ssword',
+            ], [], [
+                'HTTP_X-Csrf-Token' => $token,
             ]);
+
+            $this->client->request('GET', '/bris-de-porte/creation-de-compte');
 
             $this->assertResponseRedirects('/bris-de-porte/finaliser-la-creation', 302, 'À la soumission du formulaire, je dois être redirigé vers la page de finalisation de la création de compte');
         }

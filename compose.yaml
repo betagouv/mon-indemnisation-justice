@@ -44,7 +44,7 @@ services:
         aliases:
           - mailpit
     ports:
-      - "1025"
+      - "1025:1025"
       - "8025:8025"
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
