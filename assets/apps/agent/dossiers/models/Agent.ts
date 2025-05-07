@@ -31,7 +31,7 @@ export class Agent {
     return this.permissions.has(AgentPermissionType.REDACTEUR);
   }
 
-  public estAttribue(dossier: BaseDossier): boolean {
+  public instruit(dossier: BaseDossier): boolean {
     return this.equals(dossier.redacteur);
   }
 
