@@ -1,45 +1,118 @@
-export class EtatDossier {
+import { Redacteur } from "@/apps/agent/dossiers/models/Redacteur";
+import { Requerant } from "@/apps/agent/dossiers/models/Requerant";
+import { Expose, Transform, Type } from "class-transformer";
+
+interface EtatInterface {
+  get libelle(): string;
+
+  estASigner(): boolean;
+
+  estDecide(): boolean;
+
+  estAccepte(): boolean;
+
+  estAccepteRequerant(): boolean;
+
+  estIndemnise(): boolean;
+
+  estRejete(): boolean;
+
+  estCloture(): boolean;
+}
+
+export class EtatDossier implements EtatInterface {
+  public readonly id: number;
+  @Transform(({ value }: { value: string }) => EtatDossierType.resoudre(value))
+  public readonly etat: EtatDossierType;
+  @Transform(({ value }) => {
+    if (!value) {
+      return null;
+    }
+    return typeof value === "number" ? new Date(value) : value;
+  })
+  public readonly dateEntree: Date | null;
+  @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
+  public readonly redacteur: Redacteur | null = null;
+  @Expose()
+  @Type(() => Requerant)
+  public readonly requerant: Requerant | null = null;
+  public readonly contexte: any | null = null;
+
+  get libelle(): string {
+    return this.etat.libelle;
+  }
+
+  estASigner(): boolean {
+    return this.etat.estASigner();
+  }
+
+  estAccepte(): boolean {
+    return this.etat.estAccepte();
+  }
+
+  estAccepteRequerant(): boolean {
+    return this.etat.estAccepteRequerant();
+  }
+
+  estDecide(): boolean {
+    return this.etat.estDecide();
+  }
+
+  estIndemnise(): boolean {
+    return this.etat.estIndemnise();
+  }
+
+  estRejete(): boolean {
+    return this.etat.estRejete();
+  }
+
+  estCloture(): boolean {
+    return this.etat.estCloture();
+  }
+}
+
+export class EtatDossierType implements EtatInterface {
   public readonly id: string;
   public readonly slug: string;
   public readonly libelle: string;
 
-  public static A_FINALISER = new EtatDossier("A_FINALISER", "À finaliser");
-  public static A_INSTRUIRE = new EtatDossier("A_INSTRUIRE", "À instruire");
-  public static EN_INSTRUCTION = new EtatDossier(
+  public static A_FINALISER = new EtatDossierType("A_FINALISER", "À finaliser");
+  public static A_INSTRUIRE = new EtatDossierType("A_INSTRUIRE", "À instruire");
+  public static EN_INSTRUCTION = new EtatDossierType(
     "EN_INSTRUCTION",
     "En cours d'instruction",
   );
 
-  public static CLOTURE = new EtatDossier("CLOTURE", "Clôturé");
+  public static CLOTURE = new EtatDossierType("CLOTURE", "Clôturé");
 
-  public static OK_A_SIGNER = new EtatDossier(
+  public static OK_A_SIGNER = new EtatDossierType(
     "OK_A_SIGNER",
     "Accepté - à signer",
   );
 
-  public static OK_A_APPROUVER = new EtatDossier(
+  public static OK_A_APPROUVER = new EtatDossierType(
     "OK_A_APPROUVER",
     "Accepté - à approuver",
   );
 
-  public static OK_A_VERIFIER = new EtatDossier(
+  public static OK_A_VERIFIER = new EtatDossierType(
     "OK_A_VERIFIER",
     "Accepté - à vérifier",
   );
 
-  public static OK_A_INDEMNISER = new EtatDossier(
+  public static OK_A_INDEMNISER = new EtatDossierType(
     "OK_A_INDEMNISER",
     "Accepté - à indemniser",
   );
 
-  public static OK_INDEMNISE = new EtatDossier("OK_INDEMNISE", "Indemnisé");
+  public static OK_INDEMNISE = new EtatDossierType("OK_INDEMNISE", "Indemnisé");
 
-  public static KO_A_SIGNER = new EtatDossier(
+  public static KO_A_SIGNER = new EtatDossierType(
     "KO_A_SIGNER",
     "Rejeté - à signer",
   );
 
-  public static KO_REJETE = new EtatDossier("KO_REJETE", "Rejeté");
+  public static KO_REJETE = new EtatDossierType("KO_REJETE", "Rejeté");
 
   protected constructor(id: string, libelle: string) {
     this.id = id;
@@ -47,18 +120,18 @@ export class EtatDossier {
     this.libelle = libelle;
   }
 
-  protected static _catalog: EtatDossier[] = [
-    EtatDossier.A_FINALISER,
-    EtatDossier.A_INSTRUIRE,
-    EtatDossier.EN_INSTRUCTION,
-    EtatDossier.CLOTURE,
-    EtatDossier.OK_A_SIGNER,
-    EtatDossier.OK_A_APPROUVER,
-    EtatDossier.OK_A_VERIFIER,
-    EtatDossier.OK_A_INDEMNISER,
-    EtatDossier.OK_INDEMNISE,
-    EtatDossier.KO_A_SIGNER,
-    EtatDossier.KO_REJETE,
+  protected static _catalog: EtatDossierType[] = [
+    EtatDossierType.A_FINALISER,
+    EtatDossierType.A_INSTRUIRE,
+    EtatDossierType.EN_INSTRUCTION,
+    EtatDossierType.CLOTURE,
+    EtatDossierType.OK_A_SIGNER,
+    EtatDossierType.OK_A_APPROUVER,
+    EtatDossierType.OK_A_VERIFIER,
+    EtatDossierType.OK_A_INDEMNISER,
+    EtatDossierType.OK_INDEMNISE,
+    EtatDossierType.KO_A_SIGNER,
+    EtatDossierType.KO_REJETE,
   ];
 
   public estASigner(): boolean {
@@ -75,33 +148,37 @@ export class EtatDossier {
 
   public estAccepteRequerant(): boolean {
     return [
-      EtatDossier.OK_A_VERIFIER.id,
-      EtatDossier.OK_A_INDEMNISER.id,
-      EtatDossier.OK_INDEMNISE.id,
+      EtatDossierType.OK_A_VERIFIER.id,
+      EtatDossierType.OK_A_INDEMNISER.id,
+      EtatDossierType.OK_INDEMNISE.id,
     ].includes(this.id);
   }
 
   public estIndemnise(): boolean {
-    return EtatDossier.OK_INDEMNISE == this;
+    return EtatDossierType.OK_INDEMNISE == this;
   }
 
   public estRejete(): boolean {
     return this.id.startsWith("KO");
   }
 
-  public static get liste(): EtatDossier[] {
-    return EtatDossier._catalog;
+  estCloture(): boolean {
+    return EtatDossierType.CLOTURE == this;
   }
 
-  public static resoudreParSlug(slug: string): null | EtatDossier {
+  public static get liste(): EtatDossierType[] {
+    return EtatDossierType._catalog;
+  }
+
+  public static resoudreParSlug(slug: string): null | EtatDossierType {
     return this._catalog.find((e) => e.slug == slug) ?? null;
   }
 
-  public static resoudre(id: string): null | EtatDossier {
+  public static resoudre(id: string): null | EtatDossierType {
     return this._catalog.find((e) => e.id == id) ?? null;
   }
 
-  public egal(etat: EtatDossier): boolean {
+  public egal(etat: EtatDossierType): boolean {
     return this.id === etat.id;
   }
 }

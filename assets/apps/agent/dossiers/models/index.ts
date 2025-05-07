@@ -3,7 +3,7 @@ import { Agent } from "./Agent";
 import { Courrier } from "./Courrier";
 import { Document, DocumentType } from "./Document";
 import { BaseDossier, DossierDetail } from "./Dossier";
-import { EtatDossier } from "./EtatDossier";
+import { EtatDossier, EtatDossierType } from "./EtatDossier";
 import { RechercheDossier } from "./RechercheDossier";
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
@@ -18,6 +18,7 @@ export {
   DossierDetail,
   DocumentType,
   EtatDossier,
+  EtatDossierType,
   RechercheDossier,
   Redacteur,
   Requerant,

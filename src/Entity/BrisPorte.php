@@ -251,11 +251,6 @@ class BrisPorte
 
     #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
     #[SerializedName('etat')]
-    public function getEtatActuel(): ?string
-    {
-        return $this->getEtatDossier()?->getEtat()->value;
-    }
-
     public function getEtatDossier(): ?EtatDossier
     {
         return $this->etatDossier;

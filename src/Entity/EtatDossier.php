@@ -2,10 +2,17 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\EtatDossierRepository;
+use MonIndemnisationJustice\Service\DateConvertisseur;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
+#[ApiResource(
+    operations: [],
+)]
 #[ORM\Entity(repositoryClass: EtatDossierRepository::class)]
 #[ORM\Table(name: 'dossier_etats')]
 class EtatDossier
@@ -15,6 +22,7 @@ class EtatDossier
     #[ORM\Column]
     protected ?int $id = null;
 
+    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'string', nullable: false, enumType: EtatDossierType::class)]
     protected EtatDossierType $etat;
 
@@ -29,12 +37,20 @@ class EtatDossier
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?Agent $agent;
 
+    #[Groups(['agent:liste', 'agent:detail'])]
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['detach'])]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id', )]
     protected ?Requerant $requerant;
 
+    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $contexte;
+
+    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getEtat(): EtatDossierType
     {
@@ -76,6 +92,13 @@ class EtatDossier
         return $this->etat->getLibelle();
     }
 
+    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
+    #[SerializedName('dateEntree')]
+    public function getDateEntreeTimestamp(): ?int
+    {
+        return DateConvertisseur::enMillisecondes($this->dateEntree);
+    }
+
     public function getDate(): \DateTimeInterface
     {
         return $this->dateEntree;
@@ -89,6 +112,13 @@ class EtatDossier
     public function getAgent(): ?Agent
     {
         return $this->agent;
+    }
+
+    #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
+    #[SerializedName('redacteur')]
+    public function getReferenceAgent(): ?int
+    {
+        return $this->agent?->getId();
     }
 
     public function getRequerant(): ?Requerant

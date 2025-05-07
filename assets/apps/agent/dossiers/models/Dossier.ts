@@ -1,9 +1,10 @@
+import { EtatDossier } from "@/apps/agent/dossiers/models/EtatDossier";
 import {
   Adresse,
   Courrier,
   Document,
   DocumentType,
-  EtatDossier,
+  EtatDossierType,
   Redacteur,
   Requerant,
   TestEligibilite,
@@ -15,7 +16,7 @@ export abstract class BaseDossier {
   public readonly id: number;
   public readonly reference: string;
 
-  @Transform(({ value }: { value: string }) => EtatDossier.resoudre(value))
+  @Type(() => EtatDossier)
   public etat: EtatDossier = null;
   protected _dateDepot: Date | null;
   @Expose()
@@ -32,7 +33,10 @@ export abstract class BaseDossier {
   }
 
   public estAAttribuer(): boolean {
-    return this.etat.egal(EtatDossier.A_INSTRUIRE) && null === this.redacteur;
+    return (
+      this.etat.etat.egal(EtatDossierType.A_INSTRUIRE) &&
+      null === this.redacteur
+    );
   }
 
   attribuer(redacteur: Redacteur): void {
@@ -40,47 +44,48 @@ export abstract class BaseDossier {
   }
 
   enAttenteInstruction(): boolean {
-    return this.etat.egal(EtatDossier.A_INSTRUIRE);
+    return this.etat.etat.egal(EtatDossierType.A_INSTRUIRE);
   }
 
   enInstruction(): boolean {
-    return this.etat.egal(EtatDossier.EN_INSTRUCTION);
+    return this.etat.etat.egal(EtatDossierType.EN_INSTRUCTION);
   }
 
   get enAttenteDecision(): boolean {
-    return [EtatDossier.A_INSTRUIRE, EtatDossier.EN_INSTRUCTION].includes(
-      this.etat,
-    );
+    return [
+      EtatDossierType.A_INSTRUIRE,
+      EtatDossierType.EN_INSTRUCTION,
+    ].includes(this.etat.etat);
   }
 
   get enAttenteValidation(): boolean {
-    return [EtatDossier.OK_A_SIGNER, EtatDossier.KO_A_SIGNER].includes(
-      this.etat,
+    return [EtatDossierType.OK_A_SIGNER, EtatDossierType.KO_A_SIGNER].includes(
+      this.etat.etat,
     );
   }
 
   changerEtat(etat: EtatDossier): void {
-    this.etat = etat instanceof EtatDossier ? etat : EtatDossier.resoudre(etat);
+    this.etat = etat;
   }
 
   public estDecide(): boolean {
-    return this.etat.estDecide();
+    return this.etat.etat.estDecide();
   }
 
   public estAccepte(): boolean {
-    return this.etat.estAccepte();
+    return this.etat.etat.estAccepte();
   }
 
   public estAccepteRequerant(): boolean {
-    return this.etat.estAccepteRequerant();
+    return this.etat.etat.estAccepteRequerant();
   }
 
   public estIndemnise(): boolean {
-    return this.etat.estIndemnise();
+    return this.etat.etat.estIndemnise();
   }
 
   public estRejete(): boolean {
-    return this.etat.estRejete();
+    return this.etat.etat.estRejete();
   }
 }
 
