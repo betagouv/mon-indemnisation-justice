@@ -129,15 +129,15 @@ export const ConsultationDossierApp = observer(
             <div className="fr-col-12 fr-p-3w">
               {/*  Résumé de l'état + boutons */}
               <div
-                className={`fr-dossier-etat fr-dossier-etat--${dossier.etat.slug} fr-p-4w`}
+                className={`fr-dossier-etat fr-dossier-etat--${dossier.etat.etat.slug} fr-p-4w`}
               >
                 <h3 className="">Dossier {dossier.reference}</h3>
 
                 <div>
                   <p
-                    className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.slug} fr-py-1w fr-px-2w`}
+                    className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.etat.slug} fr-py-1w fr-px-2w`}
                   >
-                    {dossier.etat.libelle}
+                    {dossier.etat.etat.libelle}
                   </p>
                 </div>
 

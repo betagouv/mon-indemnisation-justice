@@ -1,5 +1,11 @@
-import { Agent, EtatDossier, Redacteur } from "@/apps/agent/dossiers/models";
+import {
+  Agent,
+  EtatDossier,
+  EtatDossierType,
+  Redacteur,
+} from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
+import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 
@@ -10,11 +16,13 @@ const AttributionFormulaire = observer(function AttributionFormulaireComponent({
   sauvegarderEnCours,
   attribuer,
   annuler,
+  validerAttribution,
 }: {
   attributaire?: Redacteur;
   sauvegarderEnCours: boolean;
   attribuer: (attributaire: Redacteur) => void;
   annuler: () => void;
+  validerAttribution: () => void;
 }) {
   return (
     <>
@@ -129,7 +137,7 @@ export const AttributionDossier = observer(
     const marquerDoublonPapier = async () => {
       setSauvegarderEnCours(true);
       const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/marquer/doublon.json`,
+        `/agent/redacteur/dossier/${dossier.id}/cloturer.json`,
         {
           method: "POST",
           headers: {
@@ -141,7 +149,7 @@ export const AttributionDossier = observer(
 
       if (response.ok) {
         const data = await response.json();
-        dossier.changerEtat(data.etat);
+        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
       }
 
       attribuer(null);

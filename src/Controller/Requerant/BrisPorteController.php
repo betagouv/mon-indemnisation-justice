@@ -132,7 +132,7 @@ class BrisPorteController extends RequerantController
         $this->em->flush();
 
         return new JsonResponse([
-            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'etat' => $normalizer->normalize($dossier->getEtatDossier(), 'json', ['requerant:detail']),
             'documents' => [
                 Document::TYPE_COURRIER_MINISTERE => $normalizer->normalize($dossier->getDocumentsParType(Document::TYPE_COURRIER_REQUERANT), 'json', ['groups' => 'requerant:detail']),
             ],
