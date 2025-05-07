@@ -35,7 +35,7 @@ export class EtatDossier implements EtatInterface {
   public readonly redacteur: Redacteur | null = null;
   @Expose()
   @Type(() => Requerant)
-  public readonly requerant: Requerant | null = null;
+  public readonly requerant: boolean;
   public readonly contexte: any | null = null;
 
   get libelle(): string {

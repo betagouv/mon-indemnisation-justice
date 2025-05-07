@@ -116,7 +116,10 @@ class DossierController extends AgentController
     #[Route('/dossier/{id}/cloturer.json', name: 'agent_redacteur_marquer_doublon_papier_dossier', methods: ['POST'])]
     public function cloturer(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
-        $dossier->changerStatut(EtatDossierType::DOSSIER_CLOTURE, agent: $this->getAgent());
+        $dossier->changerStatut(EtatDossierType::DOSSIER_CLOTURE, agent: $this->getAgent(), contexte: [
+            'motif' => $request->getPayload()->get('motif'),
+            'explication' => $request->getPayload()->get('explication'),
+        ]);
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([

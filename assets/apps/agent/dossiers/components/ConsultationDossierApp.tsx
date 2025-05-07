@@ -1,4 +1,3 @@
-import { ValidationDossier } from "@/apps/agent/dossiers/components/consultation/ValidationDossier";
 import {
   Agent,
   Document,
@@ -7,7 +6,9 @@ import {
 } from "@/apps/agent/dossiers/models";
 import {
   AttributionDossier,
+  ClotureDossier,
   DecisionDossier,
+  ValidationDossier,
 } from "@/apps/agent/dossiers/components/consultation";
 import { plainToInstance } from "class-transformer";
 
@@ -158,12 +159,20 @@ export const ConsultationDossierApp = observer(
                 </p>
 
                 {/* Attribution du rédacteur */}
-                <AttributionDossier dossier={dossier} agent={agent} />
+                {agent.estAttributeur() && dossier.estAAttribuer() && (
+                  <AttributionDossier dossier={dossier} agent={agent} />
+                )}
+
+                {/* Clôture du dossier */}
+                {dossier.estCloturable() &&
+                  (agent.estAttributeur() || agent.instruit(dossier)) && (
+                    <ClotureDossier dossier={dossier} agent={agent} />
+                  )}
 
                 {/* Décision du rédacteur sur le dossier */}
                 {dossier.enAttenteDecision &&
                   agent.estRedacteur() &&
-                  agent.estAttribue(dossier) && (
+                  agent.instruit(dossier) && (
                     <DecisionDossier
                       dossier={dossier}
                       onDecide={() => {

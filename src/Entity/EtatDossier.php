@@ -37,7 +37,6 @@ class EtatDossier
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?Agent $agent;
 
-    #[Groups(['agent:liste', 'agent:detail'])]
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['detach'])]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id', )]
     protected ?Requerant $requerant;
@@ -121,9 +120,17 @@ class EtatDossier
         return $this->agent?->getId();
     }
 
+    #[Groups(['agent:detail'])]
     public function getRequerant(): ?Requerant
     {
         return $this->requerant;
+    }
+
+    #[Groups(['agent:liste'])]
+    #[SerializedName('requerant')]
+    public function getEstRequerant(): bool
+    {
+        return null !== $this->requerant;
     }
 
     public function getContexte(): array

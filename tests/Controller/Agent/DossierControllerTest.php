@@ -30,6 +30,7 @@ class DossierControllerTest extends WebTestCase
 
         $this->client->request('GET', '/agent/redacteur/dossiers.json', ['e' => 'a-finaliser']);
 
+        $this->assertTrue($this->client->getResponse()->isOk());
         $dossiers = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertCount(1, $dossiers);
@@ -41,6 +42,7 @@ class DossierControllerTest extends WebTestCase
                 'etat' => $dossier->getEtatDossier()->getEtat()->value,
                 'dateEntree' => $dossier->getEtatDossier()->getDate()->getTimestamp() * 1000,
                 'redacteur' => null,
+                'requerant' => true,
             ],
             'dateDepot' => null,
             'redacteur' => $dossier->getRedacteur()?->getId(),
