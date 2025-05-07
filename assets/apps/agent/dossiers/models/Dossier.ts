@@ -51,6 +51,15 @@ export abstract class BaseDossier {
     return this.etat.etat.egal(EtatDossierType.EN_INSTRUCTION);
   }
 
+  estCloturable(): boolean {
+    return [
+      EtatDossierType.A_INSTRUIRE,
+      EtatDossierType.EN_INSTRUCTION,
+      EtatDossierType.OK_A_SIGNER,
+      EtatDossierType.KO_A_SIGNER,
+    ].includes(this.etat.etat);
+  }
+
   get enAttenteDecision(): boolean {
     return [
       EtatDossierType.A_INSTRUIRE,
