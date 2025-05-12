@@ -3,17 +3,14 @@
 namespace MonIndemnisationJustice\Service;
 
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Part\DataPart;
 
 class Mailer
 {
-    public const BASE_DOMAIN = 'mon-indemnisation.anje-justice.fr';
     private ?TemplatedEmail $email = null;
 
     public function __construct(
@@ -58,16 +55,6 @@ class Mailer
     {
         $this->email->htmlTemplate($htmlTemplate);
         $this->email->context($params);
-
-        return $this;
-    }
-
-    public function addAttachment(string $content, Document $document): static
-    {
-        $this->email->addPart(
-            (new DataPart($content, $document->getOriginalFilename()))
-            ->setContentId(sprintf('%s@%s', $document->getContentId(), self::BASE_DOMAIN))
-        );
 
         return $this;
     }

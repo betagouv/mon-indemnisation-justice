@@ -295,6 +295,11 @@ class BrisPorte
         return $this->historiqueEtats->findFirst(fn (int $index, EtatDossier $etat) => $etat->getEtat() === $type);
     }
 
+    public function estCloture(): bool
+    {
+        return EtatDossierType::DOSSIER_CLOTURE === $this->getEtatDossier()->getEtat();
+    }
+
     public function estConstitue(): bool
     {
         return null !== $this->getDateDeclaration();
@@ -426,6 +431,16 @@ class BrisPorte
     public function getType(): PrejudiceType
     {
         return PrejudiceType::BRIS_PORTE;
+    }
+
+    public function getMotifCloture(): ?string
+    {
+        return $this->getEtatDossier()->getElementContexte('motif');
+    }
+
+    public function getExplicationCloture(): ?string
+    {
+        return $this->getEtatDossier()->getElementContexte('explication');
     }
 
     public function getNumeroPV(): ?string

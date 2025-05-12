@@ -138,6 +138,11 @@ class EtatDossier
         return $this->contexte;
     }
 
+    public function getElementContexte(string $nom): mixed
+    {
+        return $this->contexte[$nom] ?? null;
+    }
+
     public function addContexte(array $contexte): array
     {
         return $this->contexte = array_merge_recursive($this->contexte, $contexte);
