@@ -3,8 +3,8 @@
         "_title": "Rédacteur",
         "sub": "c1722a03-4172-4015-9f0d-d1995d4cbe5c",
         "email": "redacteur@justice.gouv.fr",
-        "usual_name": "Acteur",
         "given_name": "Red",
+        "usual_name": "Acteur",
         "uid": "1234",
         "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
     },
@@ -12,8 +12,8 @@
         "_title": "Policier",
         "sub": "e316bde4-3d37-4ed8-9001-c40d9b07fe06",
         "email": "policier@interieur.gouv.fr",
-        "usual_name": "Policier",
         "given_name": "Jerome",
+        "usual_name": "Policier",
         "uid": "567",
         "idp_id": "e2f13a1f-9f43-4def-a5ed-06dce37d00e6"
     },
@@ -21,8 +21,8 @@
         "_title": "Attributeur",
         "sub": "14ea0686-9179-447a-a0b0-cdff4419befc",
         "email": "attributeur@justice.gouv.fr",
-        "usual_name": "Tributeur",
         "given_name": "Hat",
+        "usual_name": "Tributeur",
         "uid": "7301",
         "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
     },
@@ -30,8 +30,8 @@
         "_title": "Validateur",
         "sub": "dda38b83-bca4-4a25-8e2a-d2eb4947f02d",
         "email": "validateur@justice.gouv.fr",
-        "usual_name": "Hateur",
         "given_name": "Walid",
+        "usual_name": "Hateur",
         "uid": "551",
         "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
     },
@@ -39,8 +39,8 @@
         "_title": "Pierre (beta)",
         "sub": "eeb5c5d6-88eb-4d1c-b870-01bb26a84a0a",
         "email": "pierre.lemee@beta.gouv.fr",
-        "usual_name": "Lemée",
         "given_name": "Pierre",
+        "usual_name": "Lemée",
         "uid": "7654",
         "idp_id": "71144ab3-ee1a-4401-b7b3-79b44f7daeeb"
     }

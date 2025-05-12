@@ -1,7 +1,31 @@
-import { Agent, EtatDossier, Redacteur } from "@/apps/agent/dossiers/models";
+import { Agent, Redacteur } from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
+
+const attribuer = async ({
+  dossier,
+  attributaire,
+}: {
+  dossier: DossierDetail;
+  attributaire: Redacteur;
+}) => {
+  const response = await fetch(
+    `/agent/redacteur/dossier/${dossier.id}/attribuer.json`,
+    {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        redacteur_id: attributaire.id,
+      }),
+    },
+  );
+
+  return response.ok;
+};
 
 export const AttributionDossier = observer(
   function AttributionDossierComponent({
@@ -12,13 +36,13 @@ export const AttributionDossier = observer(
     agent: Agent;
   }) {
     // Représente le rédacteur à attribuer, présentement en cours de sélection dans le menu déroulant
-    const [attributaire, attribuer]: [
+    const [attributaire, setAttributaire]: [
       Redacteur | null,
       (redacteur: Redacteur | null) => void,
     ] = useState(dossier.redacteur);
 
-    // Indique si le mode d'édition du rédacteur attribué est activé (= clic sur l'icône "crayon" à côté du rédacteur attribué, seulement octroyé aux agents attributeur)
-    const [modeAttribution, setModeAttribution]: [
+    // Indique si l'attribution du rédacteur est activée (= clic sur l'icône "crayon" à côté du rédacteur attribué, seulement octroyé aux agents attributeur)
+    const [attributionEnCours, setAttributionEnCours]: [
       boolean,
       (mode: boolean) => void,
     ] = useState(false);
@@ -29,58 +53,23 @@ export const AttributionDossier = observer(
       (mode: boolean) => void,
     ] = useState(false);
 
-    const validerAttribution = async () => {
+    const valider = async () => {
       if (!attributaire.equals(dossier.redacteur)) {
         setSauvegarderEnCours(true);
-        const response = await fetch(
-          `/agent/redacteur/dossier/${dossier.id}/attribuer.json`,
-          {
-            method: "POST",
-            headers: {
-              "Content-type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({
-              redacteur_id: attributaire.id,
-            }),
-          },
-        );
+        const succes = await attribuer({ dossier, attributaire });
 
-        if (response.ok) {
+        if (succes) {
           dossier.attribuer(attributaire);
-        } // TODO afficher un message en cas d'erreur
-        setSauvegarderEnCours(false);
+        }
+
+        setAttributaire(null);
+        setAttributionEnCours(false);
       }
-
-      attribuer(null);
-      setModeAttribution(false);
-    };
-
-    const marquerDoublonPapier = async () => {
-      setSauvegarderEnCours(true);
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/marquer/doublon.json`,
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-          },
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        dossier.changerEtat(data.etat);
-      }
-
-      attribuer(null);
-      setModeAttribution(false);
     };
 
     return (
       <div>
-        {modeAttribution ? (
+        {attributionEnCours ? (
           <>
             <div className="fr-select-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
               <label className="fr-label" htmlFor="dossier-select-attributaire">
@@ -90,10 +79,12 @@ export const AttributionDossier = observer(
                 className="fr-select"
                 id="dossier-select-attributaire"
                 disabled={sauvegarderEnCours}
-                defaultValue={attributaire || ""}
+                defaultValue={attributaire?.id || ""}
                 onChange={(e) => {
                   !!e.target.value &&
-                    attribuer(Redacteur.resoudre(parseInt(e.target.value)));
+                    setAttributaire(
+                      Redacteur.resoudre(parseInt(e.target.value)),
+                    );
                 }}
               >
                 <option value="" disabled hidden>
@@ -114,7 +105,7 @@ export const AttributionDossier = observer(
                   type="button"
                   disabled={sauvegarderEnCours}
                   onClick={() => {
-                    setModeAttribution(false);
+                    setAttributionEnCours(false);
                   }}
                 >
                   {sauvegarderEnCours ? (
@@ -129,7 +120,7 @@ export const AttributionDossier = observer(
                   className="fr-btn fr-btn--sm"
                   type="button"
                   disabled={sauvegarderEnCours || !attributaire}
-                  onClick={() => validerAttribution()}
+                  onClick={() => valider()}
                 >
                   Attribuer
                 </button>
@@ -137,54 +128,42 @@ export const AttributionDossier = observer(
             </ul>
           </>
         ) : (
-          <p className="fr-m-1w">
-            Ce dossier
-            {dossier.redacteur ? (
-              agent.equals(dossier.redacteur) ? (
-                <>
-                  {" "}
-                  <b>vous</b> est attribué
-                </>
+          <>
+            <p className="fr-m-1w">
+              Ce dossier
+              {dossier.redacteur ? (
+                agent.equals(dossier.redacteur) ? (
+                  <>
+                    {" "}
+                    <b>vous</b> est attribué
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    est attribué à <u> {dossier.redacteur.nom} </u>
+                  </>
+                )
               ) : (
                 <>
                   {" "}
-                  est attribué à <u> {dossier.redacteur.nom} </u>
+                  n'est <i>pas encore attribué</i> à un rédacteur{" "}
                 </>
-              )
-            ) : (
-              <>
-                {" "}
-                n'est <i>pas encore attribué</i> à un rédacteur{" "}
-              </>
-            )}
-          </p>
-        )}
-        {!modeAttribution &&
-          agent.estAttributeur() &&
-          dossier.estAAttribuer() && (
+              )}
+            </p>
             <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--tertiary"
-                  type="button"
-                  disabled={sauvegarderEnCours}
-                  onClick={() => marquerDoublonPapier()}
-                >
-                  Marquer doublon papier
-                </button>
-              </li>
               <li>
                 <button
                   className="fr-btn fr-btn--sm"
                   type="button"
                   disabled={sauvegarderEnCours}
-                  onClick={() => setModeAttribution(true)}
+                  onClick={() => setAttributionEnCours(true)}
                 >
                   Attribuer
                 </button>
               </li>
             </ul>
-          )}
+          </>
+        )}
       </div>
     );
   },

@@ -1,0 +1,29 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% block entete %}
+    <b>Clôture du dossier {{ dossier.reference }}</b>
+{% endblock entete %}
+
+{% block contenu %}
+    Bonjour {{ dossier.requerant.nomCourant }},
+    <br/>
+    <br/>
+    <p>
+        Le dossier de demande d'indemnisation, de référence {{ dossier.reference }}, que vous avez déposé
+        le {{ dossier.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }},
+        vient d'être clôturé par un agent pour la raison suivante :
+    </p>
+    <blockquote>
+        {{ dossier.explicationCloture }}
+    </blockquote>
+    <br/>
+    <p>
+        Vous ne recevrez donc plus de notification concernant ce dossier. Si vous souhaitez contester cette décision,
+        nous vous invitons à prendre contact auprès du bureau du précontentieux à l'adresse <a
+                href="mailto:{{ precontentieux_courriel_equipe }}">{{ precontentieux_courriel_equipe }}</a>.
+    </p>
+    <br/>
+    Cordialement,<br/>
+    L'équipe Mon Indemnisation Justice
+{% endblock contenu %}
+

@@ -84,8 +84,8 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                 }
             } else {
                 $agent->setEmail($userInfo['email'])
-                ->setPrenom($userInfo['usual_name'])
-                ->setNom($userInfo['given_name']);
+                ->setPrenom($userInfo['given_name'])
+                ->setNom($userInfo['usual_name']);
             }
 
             $this->agentRepository->save($agent);

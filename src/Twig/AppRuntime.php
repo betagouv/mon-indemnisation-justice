@@ -37,7 +37,6 @@ class AppRuntime implements RuntimeExtensionInterface
                 return 'Dossier à compléter';
             case EtatDossierType::DOSSIER_A_INSTRUIRE:
             case EtatDossierType::DOSSIER_EN_INSTRUCTION:
-            case EtatDossierType::DOSSIER_DOUBLON_PAPIER:
             case EtatDossierType::DOSSIER_OK_A_SIGNER:
             case EtatDossierType::DOSSIER_KO_A_SIGNER:
                 return 'Dossier déposé';
@@ -49,6 +48,7 @@ class AppRuntime implements RuntimeExtensionInterface
             case EtatDossierType::DOSSIER_OK_INDEMNISE:
                 return 'Indemnisé';
             case EtatDossierType::DOSSIER_KO_REJETE:
+            case EtatDossierType::DOSSIER_CLOTURE:
                 return 'Dossier rejeté';
         }
 

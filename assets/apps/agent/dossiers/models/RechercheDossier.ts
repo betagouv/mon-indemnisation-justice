@@ -1,4 +1,4 @@
-import { EtatDossier } from "@/apps/agent/dossiers/models/EtatDossier";
+import { EtatDossierType } from "@/apps/agent/dossiers/models";
 import { action, computed, makeObservable, observable } from "mobx";
 import { Redacteur } from "./Redacteur.ts";
 
@@ -7,18 +7,18 @@ import { Redacteur } from "./Redacteur.ts";
  *
  */
 export class RechercheDossier {
-  protected _etatsDossier: Map<EtatDossier, boolean>;
+  protected _etatsDossier: Map<EtatDossierType, boolean>;
   protected _attributaires: Set<Redacteur | null>;
   public motsClefs: string;
 
   constructor(
     attributaires: Array<Redacteur | null> = [],
-    etatsSelectionnes: EtatDossier[],
+    etatsSelectionnes: EtatDossierType[],
     motsClefs: string = "",
   ) {
     this._attributaires = new Set(attributaires);
     this._etatsDossier = new Map(
-      EtatDossier.liste.map((etatDossier) => [
+      EtatDossierType.liste.map((etatDossier) => [
         etatDossier,
         etatsSelectionnes.includes(etatDossier),
       ]),
@@ -45,15 +45,15 @@ export class RechercheDossier {
     return this._attributaires.values();
   }
 
-  get etatsDossier(): Map<EtatDossier, boolean> {
+  get etatsDossier(): Map<EtatDossierType, boolean> {
     return this._etatsDossier;
   }
 
-  estEtatDossierSelectionne(etatDossier: EtatDossier): boolean {
+  estEtatDossierSelectionne(etatDossier: EtatDossierType): boolean {
     return this._etatsDossier.get(etatDossier);
   }
 
-  getEtatsDossierSelectionnes(): EtatDossier[] {
+  getEtatsDossierSelectionnes(): EtatDossierType[] {
     return this._etatsDossier
       .entries()
       .filter(([_, selectionne]) => selectionne)
@@ -61,8 +61,8 @@ export class RechercheDossier {
       .toArray();
   }
 
-  changerEtatsDossier(etats: EtatDossier[]) {
-    for (const etat of EtatDossier.liste) {
+  changerEtatsDossier(etats: EtatDossierType[]) {
+    for (const etat of EtatDossierType.liste) {
       this._etatsDossier.set(etat, etats.includes(etat));
     }
   }
@@ -163,18 +163,18 @@ export class RechercheDossier {
         ? query
             .get("e")
             .split("|")
-            .map((e) => EtatDossier.resoudreParSlug(e))
+            .map((e) => EtatDossierType.resoudreParSlug(e))
             .filter((e) => !!e)
         : [
-            EtatDossier.A_INSTRUIRE,
-            EtatDossier.EN_INSTRUCTION,
-            EtatDossier.OK_A_SIGNER,
-            EtatDossier.OK_A_APPROUVER,
-            EtatDossier.OK_A_VERIFIER,
-            EtatDossier.OK_A_INDEMNISER,
-            EtatDossier.OK_INDEMNISE,
-            EtatDossier.KO_A_SIGNER,
-            EtatDossier.KO_REJETE,
+            EtatDossierType.A_INSTRUIRE,
+            EtatDossierType.EN_INSTRUCTION,
+            EtatDossierType.OK_A_SIGNER,
+            EtatDossierType.OK_A_APPROUVER,
+            EtatDossierType.OK_A_VERIFIER,
+            EtatDossierType.OK_A_INDEMNISER,
+            EtatDossierType.OK_INDEMNISE,
+            EtatDossierType.KO_A_SIGNER,
+            EtatDossierType.KO_REJETE,
           ],
       query.has("r") ? query.get("r") : "",
     );

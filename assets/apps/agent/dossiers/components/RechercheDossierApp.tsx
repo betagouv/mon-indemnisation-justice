@@ -1,6 +1,6 @@
 import {
   Agent,
-  EtatDossier,
+  EtatDossierType,
   RechercheDossier,
   Redacteur,
 } from "@/apps/agent/dossiers/models";
@@ -81,17 +81,17 @@ export const RechercheDossierApp = observer(
                           .map((etat) => etat.id)}
                         multiple={true}
                         style={{ height: "100%" }}
-                        size={EtatDossier.liste.length}
+                        size={EtatDossierType.liste.length}
                         onChange={(e) => {
                           recherche.changerEtatsDossier(
                             Array.from(e.target.selectedOptions).map(
                               (option: HTMLOptionElement) =>
-                                EtatDossier.resoudre(option.value),
+                                EtatDossierType.resoudre(option.value),
                             ),
                           );
                         }}
                       >
-                        {EtatDossier.liste.map((etat) => (
+                        {EtatDossierType.liste.map((etat) => (
                           <option value={etat.id} key={etat.id}>
                             {etat.libelle}
                           </option>
@@ -208,10 +208,26 @@ export const RechercheDossierApp = observer(
                                 <tr key={dossier.id}>
                                   <td className="fr-col-2">
                                     <p
-                                      className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.slug} fr-mb-1v`}
+                                      className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.etat.slug} fr-mb-1v`}
+                                      {...(dossier.etat.estCloture()
+                                        ? {
+                                            "aria-describedby": `tooltip-etat-dossier-${dossier.id}`,
+                                          }
+                                        : {})}
                                     >
                                       {dossier.etat.libelle}
                                     </p>
+                                    {dossier.etat.estCloture() && (
+                                      <span
+                                        className="fr-tooltip fr-placement"
+                                        id={`tooltip-etat-dossier-${dossier.id}`}
+                                        role="tooltip"
+                                      >
+                                        {dossier.etat.contexte?.motif || (
+                                          <i>Aucun motif</i>
+                                        )}
+                                      </span>
+                                    )}
                                     <br />
                                     {dossier.reference}
                                   </td>
@@ -241,11 +257,11 @@ export const RechercheDossierApp = observer(
                                   </td>
                                   <td className="fr-col-1">
                                     {dossier.estEligible ? (
-                                      <p class="fr-badge fr-badge--success fr-badge--no-icon">
+                                      <p className="fr-badge fr-badge--success fr-badge--no-icon">
                                         Oui
                                       </p>
                                     ) : (
-                                      <p class="fr-badge fr-badge--warning">
+                                      <p className="fr-badge fr-badge--warning">
                                         Non
                                       </p>
                                     )}
@@ -272,7 +288,7 @@ export const RechercheDossierApp = observer(
                               ))
                             ) : (
                               <tr>
-                                <td colSpan="5">
+                                <td colSpan={5}>
                                   <p className="fr-p-2w">
                                     Aucun dossier correspondant
                                   </p>

@@ -21,9 +21,9 @@ a:not([href])[role="button"] {
     /* EN_INSTRUCTION = 'info' */
     --var-couleur-pp-en-instruction: #0063cb;
     --var-couleur-ap-en-instruction: #e8edff;
-    /* DOUBLON_PAPIER = 'beige-gris-galet' */
-    --var-couleur-pp-doublon-papier: #6a6156;
-    --var-couleur-ap-doublon-papier: #eee4d9;
+    /* CLOTURE = 'beige-gris-galet' */
+    --var-couleur-pp-cloture: #6a6156;
+    --var-couleur-ap-cloture: #eee4d9;
 
     /* OK_A_SIGNER, = 'green-menthe' */
     --var-couleur-pp-ok-a-signer: #66673d;
@@ -80,8 +80,8 @@ a:not([href]) {
         border-left-color: var(--var-couleur-pp-en-instruction)
     }
 
-    &--doublon-papier {
-        border-left-color: var(--var-couleur-pp-doublon-papier);
+    &--cloture {
+        border-left-color: var(--var-couleur-pp-cloture);
     }
 
     &--ok-a-signer {
@@ -129,9 +129,9 @@ a:not([href]) {
         background-color: var(--var-couleur-ap-en-instruction);
     }
 
-    &--doublon-papier {
-        color: var(--var-couleur-pp-doublon-papier);
-        background-color: var(--var-couleur-ap-doublon-papier);
+    &--cloture {
+        color: var(--var-couleur-pp-cloture);
+        background-color: var(--var-couleur-ap-cloture);
     }
 
     &--ok-a-signer {

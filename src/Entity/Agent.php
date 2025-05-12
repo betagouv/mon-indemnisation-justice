@@ -283,6 +283,16 @@ class Agent implements UserInterface
         return $this;
     }
 
+    public function estRedacteur(): bool
+    {
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR);
+    }
+
+    public function instruit(BrisPorte $dossier): bool
+    {
+        return $this->estRedacteur() && $dossier->getRedacteur() === $this;
+    }
+
     public function setDonnesAuthentification(array|string|null $donnesAuthentification): Agent
     {
         if (null !== $donnesAuthentification) {

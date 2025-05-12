@@ -1,8 +1,13 @@
-import { Courrier, Document, DocumentType } from "@/apps/agent/dossiers/models";
+import {
+  Courrier,
+  Document,
+  DocumentType,
+  EtatDossier,
+} from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
-import React, { useRef, useState } from "react";
+import React, { FormEvent, useRef, useState } from "react";
 import ReactQuill from "react-quill-new";
 
 export const ValidationDossier = observer(function ValidationDossierComponent({
@@ -129,7 +134,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
 
     try {
       const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/courrier/signer.json`,
+        `/agent/redacteur/dossier/${dossier.id}/signer-courrier.json`,
         {
           method: "POST",
           headers: {
@@ -152,7 +157,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
           );
         }
         if (data.etat) {
-          dossier.changerEtat(data.etat);
+          dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
         }
       }
     } catch (e) {
@@ -183,7 +188,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
 
       if (response.ok) {
         const data = await response.json();
-        dossier.changerEtat(data.etat);
+        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
       }
     } catch (e) {
       console.error(e);
@@ -286,12 +291,13 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                             <input
                               className="fr-input"
                               defaultValue={montantIndemnisation}
-                              onInput={(e: InputEvent) => {
-                                const input = e.target as HTMLInputElement;
+                              onInput={(e: FormEvent<HTMLInputElement>) => {
+                                const value = (e.target as HTMLInputElement)
+                                  .value;
 
                                 setMontantIndemnisation(
-                                  input.value?.match(/^\d+(.\d{0,2})?$/)
-                                    ? parseFloat(input.value?.replace(",", "."))
+                                  value?.match(/^\d+(.\d{0,2})?$/)
+                                    ? parseFloat(value?.replace(",", "."))
                                     : null,
                                 );
 

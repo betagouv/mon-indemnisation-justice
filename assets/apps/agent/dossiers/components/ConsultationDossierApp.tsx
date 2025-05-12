@@ -1,4 +1,3 @@
-import { ValidationDossier } from "@/apps/agent/dossiers/components/consultation/ValidationDossier";
 import {
   Agent,
   Document,
@@ -7,7 +6,9 @@ import {
 } from "@/apps/agent/dossiers/models";
 import {
   AttributionDossier,
+  ClotureDossier,
   DecisionDossier,
+  ValidationDossier,
 } from "@/apps/agent/dossiers/components/consultation";
 import { plainToInstance } from "class-transformer";
 
@@ -129,17 +130,31 @@ export const ConsultationDossierApp = observer(
             <div className="fr-col-12 fr-p-3w">
               {/*  Résumé de l'état + boutons */}
               <div
-                className={`fr-dossier-etat fr-dossier-etat--${dossier.etat.slug} fr-p-4w`}
+                className={`fr-dossier-etat fr-dossier-etat--${dossier.etat.etat.slug} fr-p-4w`}
               >
                 <h3 className="">Dossier {dossier.reference}</h3>
 
                 <div>
                   <p
-                    className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.slug} fr-py-1w fr-px-2w`}
+                    className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.etat.slug} fr-py-1w fr-px-2w`}
+                    {...(dossier.etat.estCloture()
+                      ? {
+                          "aria-describedby": `tooltip-etat-dossier-${dossier.id}`,
+                        }
+                      : {})}
                   >
-                    {dossier.etat.libelle}
+                    {dossier.etat.etat.libelle}
                   </p>
                 </div>
+                {dossier.etat.estCloture() && (
+                  <span
+                    className="fr-tooltip fr-placement"
+                    id={`tooltip-etat-dossier-${dossier.id}`}
+                    role="tooltip"
+                  >
+                    {dossier.etat.contexte?.motif || <i>Aucun motif</i>}
+                  </span>
+                )}
 
                 <p className="fr-m-1w">
                   Déposé le{" "}
@@ -158,12 +173,20 @@ export const ConsultationDossierApp = observer(
                 </p>
 
                 {/* Attribution du rédacteur */}
-                <AttributionDossier dossier={dossier} agent={agent} />
+                {agent.estAttributeur() && dossier.estAAttribuer() && (
+                  <AttributionDossier dossier={dossier} agent={agent} />
+                )}
+
+                {/* Clôture du dossier */}
+                {dossier.estCloturable() &&
+                  (agent.estAttributeur() || agent.instruit(dossier)) && (
+                    <ClotureDossier dossier={dossier} agent={agent} />
+                  )}
 
                 {/* Décision du rédacteur sur le dossier */}
                 {dossier.enAttenteDecision &&
                   agent.estRedacteur() &&
-                  agent.estAttribue(dossier) && (
+                  agent.instruit(dossier) && (
                     <DecisionDossier
                       dossier={dossier}
                       onDecide={() => {
@@ -213,7 +236,7 @@ export const ConsultationDossierApp = observer(
                         href="#infos"
                         id="tab-infos"
                         className="fr-tabs__tab"
-                        tabIndex="0"
+                        tabIndex={0}
                         role="tab"
                         aria-selected={window.location.hash == "#infos"}
                         aria-controls="tab-panel-infos"
@@ -226,7 +249,7 @@ export const ConsultationDossierApp = observer(
                         href="#suivi"
                         id="tab-suivi"
                         className="fr-tabs__tab"
-                        tabIndex="-1"
+                        tabIndex={-1}
                         role="tab"
                         aria-selected={window.location.hash == "#suivi"}
                         aria-controls="tab-panel-suivi"
@@ -239,7 +262,7 @@ export const ConsultationDossierApp = observer(
                         href="#pieces-jointes"
                         id="tab-pieces-jointes"
                         className="fr-tabs__tab"
-                        tabIndex="-1"
+                        tabIndex={-1}
                         role="tab"
                         aria-selected={
                           window.location.hash == "#pieces-jointes"
@@ -254,7 +277,7 @@ export const ConsultationDossierApp = observer(
                         type="button"
                         id="tab-courrier"
                         className="fr-tabs__tab"
-                        tabIndex="-1"
+                        tabIndex={-1}
                         role="tab"
                         {...(null !== dossier.courrier ||
                         dossier.hasDocumentsType(
@@ -276,7 +299,7 @@ export const ConsultationDossierApp = observer(
                     className={`fr-tabs__panel ${window.location.hash == "#infos" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-infos"
-                    tabIndex="0"
+                    tabIndex={0}
                   >
                     <section>
                       <div className="fr-grid-column">
@@ -479,7 +502,7 @@ export const ConsultationDossierApp = observer(
                     className={`fr-tabs__panel ${window.location.hash == "#suivi" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-suivi"
-                    tabIndex="0"
+                    tabIndex={0}
                   >
                     <section>
                       <h3>Notes de suivi</h3>
@@ -521,7 +544,7 @@ export const ConsultationDossierApp = observer(
                     className={`fr-tabs__panel ${window.location.hash == "#pieces-jointes" ? "fr-tabs__panel--selected" : ""}`}
                     role="tabpanel"
                     aria-labelledby="tab-pieces-jointes"
-                    tabIndex="0"
+                    tabIndex={0}
                   >
                     <section className="mij-dossier-documents">
                       <h3>Pièces jointes</h3>
@@ -679,7 +702,7 @@ export const ConsultationDossierApp = observer(
                                   0
                                     ? { "data-section-vide": "" }
                                     : {})}
-                                  {...(pieceJointe?.type === type.type
+                                  {...(pieceJointe?.type === type
                                     ? { "data-section-active": true }
                                     : {})}
                                 >
@@ -764,7 +787,7 @@ export const ConsultationDossierApp = observer(
                       className={`fr-tabs__panel ${window.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
                       role="tabpanel"
                       aria-labelledby="tab-courrier"
-                      tabIndex="0"
+                      tabIndex={0}
                     >
                       <section>
                         <h3>Courrier</h3>

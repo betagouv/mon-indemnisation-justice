@@ -1,11 +1,15 @@
-import { Courrier, EtatDossier } from "@/apps/agent/dossiers/models";
+import {
+  Courrier,
+  EtatDossier,
+  EtatDossierType,
+} from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { Administration } from "@/apps/agent/gestion_agents/models";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import React, { useRef, useState } from "react";
+import React, { FormEvent, useRef, useState } from "react";
 
 type MotifRefus = "est_vise" | "est_hebergeant" | "autre";
 
@@ -58,7 +62,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
     setSauvegarderEnCours(true);
 
     const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/instruction/demarrer.json`,
+      `/agent/redacteur/dossier/${dossier.id}/demarrer-instruction.json`,
       {
         method: "POST",
         headers: {
@@ -70,7 +74,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
 
     if (response.ok) {
       const data = await response.json();
-      dossier.changerEtat(data.etat);
+      dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
       setSauvegarderEnCours(false);
     }
   };
@@ -154,7 +158,7 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
     if (response.ok) {
       dossier.montantIndemnisation = montant;
       const data = await response.json();
-      dossier.changerEtat(data.etat);
+      dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
       dossier.setCourrier(plainToInstance(Courrier, data.courrier));
     }
 
@@ -258,12 +262,12 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                             <input
                               className="fr-input"
                               defaultValue={montantIndemnisation}
-                              onInput={(e: InputEvent) => {
-                                const input = e.target as HTMLInputElement;
-
+                              onInput={(e: FormEvent<HTMLInputElement>) => {
+                                const value = (e.target as HTMLInputElement)
+                                  .value;
                                 setMontantIndemnisation(
-                                  input.value?.match(/^\d+(.\d{0,2})?$/)
-                                    ? parseFloat(input.value?.replace(",", "."))
+                                  value?.match(/^\d+(.\d{0,2})?$/)
+                                    ? parseFloat(value?.replace(",", "."))
                                     : null,
                                 );
                               }}
@@ -396,7 +400,9 @@ export const DecisionDossier = observer(function DecisionDossierComponent({
                           <select
                             className="fr-select"
                             defaultValue={motifRejet}
-                            onChange={(e) => setMotifRejet(e.target.value)}
+                            onChange={(e) =>
+                              setMotifRejet(e.target.value as MotifRefus)
+                            }
                           >
                             <option value="est_vise">
                               Le requérant était visé par l'opération

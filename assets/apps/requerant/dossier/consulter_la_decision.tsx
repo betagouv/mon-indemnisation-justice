@@ -3,6 +3,7 @@ import {
   Document,
   DocumentType,
   DossierDetail,
+  EtatDossier,
 } from "@/apps/agent/dossiers/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
@@ -99,7 +100,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
           );
         }
         if (data.etat) {
-          dossier.changerEtat(data.etat);
+          dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
         }
       }
     } catch (e) {
@@ -194,7 +195,6 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
               <signatureModal.Component
                 title="Signature du dossier"
                 iconId={"fr-icon-ball-pen-line"}
-                children={null}
                 size={"large"}
               >
                 <Stepper

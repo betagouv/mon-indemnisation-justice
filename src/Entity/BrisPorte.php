@@ -251,11 +251,6 @@ class BrisPorte
 
     #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
     #[SerializedName('etat')]
-    public function getEtatActuel(): ?string
-    {
-        return $this->getEtatDossier()?->getEtat()->value;
-    }
-
     public function getEtatDossier(): ?EtatDossier
     {
         return $this->etatDossier;
@@ -298,6 +293,11 @@ class BrisPorte
     public function getEtat(EtatDossierType $type): ?EtatDossier
     {
         return $this->historiqueEtats->findFirst(fn (int $index, EtatDossier $etat) => $etat->getEtat() === $type);
+    }
+
+    public function estCloture(): bool
+    {
+        return EtatDossierType::DOSSIER_CLOTURE === $this->getEtatDossier()->getEtat();
     }
 
     public function estConstitue(): bool
@@ -431,6 +431,16 @@ class BrisPorte
     public function getType(): PrejudiceType
     {
         return PrejudiceType::BRIS_PORTE;
+    }
+
+    public function getMotifCloture(): ?string
+    {
+        return $this->getEtatDossier()->getElementContexte('motif');
+    }
+
+    public function getExplicationCloture(): ?string
+    {
+        return $this->getEtatDossier()->getElementContexte('explication');
     }
 
     public function getNumeroPV(): ?string

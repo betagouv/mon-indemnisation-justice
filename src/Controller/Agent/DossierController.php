@@ -13,9 +13,11 @@ use MonIndemnisationJustice\Event\DossierDecideEvent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
+use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +34,7 @@ class DossierController extends AgentController
         EtatDossierType::DOSSIER_A_INSTRUIRE,
         EtatDossierType::DOSSIER_EN_INSTRUCTION,
         EtatDossierType::DOSSIER_OK_A_SIGNER,
-        EtatDossierType::DOSSIER_DOUBLON_PAPIER,
+        EtatDossierType::DOSSIER_CLOTURE,
         EtatDossierType::DOSSIER_OK_A_APPROUVER,
         EtatDossierType::DOSSIER_OK_A_VERIFIER,
         EtatDossierType::DOSSIER_OK_A_INDEMNISER,
@@ -48,6 +50,8 @@ class DossierController extends AgentController
         protected readonly ImprimanteCourrier $imprimanteCourrier,
         // A supprimer
         protected readonly EntityManagerInterface $em,
+        protected readonly NormalizerInterface $normalizer,
+        protected readonly Mailer $mailer,
     ) {
     }
 
@@ -111,15 +115,32 @@ class DossierController extends AgentController
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
-    #[IsGranted(Agent::ROLE_AGENT_ATTRIBUTEUR)]
-    #[Route('/dossier/{id}/marquer/doublon.json', name: 'agent_redacteur_marquer_doublon_papier_dossier', methods: ['POST'])]
-    public function marquerDoublonPapier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    #[IsGranted(
+        attribute: new Expression('is_granted("ROLE_AGENT_ATTRIBUTEUR") or user.instruit(subject["dossier"])'),
+        subject: [
+            'dossier' => new Expression('args["dossier"]'),
+        ]
+    )]
+    #[Route('/dossier/{id}/cloturer.json', name: 'agent_redacteur_marquer_doublon_papier_dossier', methods: ['POST'])]
+    public function cloturer(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
-        $dossier->changerStatut(EtatDossierType::DOSSIER_DOUBLON_PAPIER, agent: $this->getAgent());
+        $dossier->changerStatut(EtatDossierType::DOSSIER_CLOTURE, agent: $this->getAgent(), contexte: [
+            'motif' => $request->getPayload()->get('motif'),
+            'explication' => $request->getPayload()->get('explication'),
+        ]);
         $this->dossierRepository->save($dossier);
 
+        // Envoi du mail de confirmation.
+        $this->mailer
+            ->toRequerant($dossier->getRequerant())
+            ->subject("Clôture du dossier {$dossier->getReference()}")
+            ->htmlTemplate('email/cloture_dossier.html.twig', [
+                'dossier' => $dossier,
+            ])
+            ->send();
+
         return new JsonResponse([
-            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }
 
@@ -157,7 +178,7 @@ class DossierController extends AgentController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
-    #[Route('/dossier/{id}/instruction/demarrer.json', name: 'agent_redacteur_instruction_demarrer_dossier', methods: ['POST'])]
+    #[Route('/dossier/{id}/demarrer-instruction.json', name: 'agent_redacteur_instruction_demarrer_dossier', methods: ['POST'])]
     public function demarrerInstruction(#[MapEntity(id: 'id')] BrisPorte $dossier): Response
     {
         if (EtatDossierType::DOSSIER_A_INSTRUIRE !== $dossier->getEtatDossier()->getEtat()) {
@@ -176,13 +197,13 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
-            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
         ]);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
     #[Route('/dossier/{id}/decider.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
-    public function deciderAccepterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function deciderAccepterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, NormalizerInterface $normalizer): Response
     {
         $agent = $this->getAgent();
 
@@ -222,7 +243,7 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
-            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'etat' => $normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
             'courrier' => $dossier->getCourrier() ? [
                 'id' => $dossier->getCourrier()->getId(),
                 'filename' => $dossier->getCourrier()->getFilename(),
@@ -299,7 +320,7 @@ class DossierController extends AgentController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
-    #[Route('/dossier/{id}/courrier/signer.json', name: 'agent_redacteur_signer_courrier_dossier', methods: ['POST'])]
+    #[Route('/dossier/{id}/signer-courrier.json', name: 'agent_redacteur_signer_courrier_dossier', methods: ['POST'])]
     public function signerCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, EventDispatcherInterface $eventDispatcher): Response
     {
         if (!$dossier->getEtatDossier()->estASigner()) {
@@ -342,7 +363,7 @@ class DossierController extends AgentController
                     ],
                 ],
             ],
-            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }
 
@@ -363,7 +384,7 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
-            'etat' => $dossier->getEtatDossier()->getEtat()->value,
+            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }
 
@@ -376,7 +397,7 @@ class DossierController extends AgentController
                     $request->query->has('e') ?
                         array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')) :
                         [
-                            // EtatDossierType::DOSSIER_DOUBLON_PAPIER,
+                            // EtatDossierType::DOSSIER_CLOTURE,
                             // EtatDossierType::DOSSIER_A_FINALISER,
                             EtatDossierType::DOSSIER_A_INSTRUIRE,
                             EtatDossierType::DOSSIER_EN_INSTRUCTION,
