@@ -13,9 +13,11 @@ use MonIndemnisationJustice\Event\DossierDecideEvent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
+use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,6 +51,7 @@ class DossierController extends AgentController
         // A supprimer
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
+        protected readonly Mailer $mailer,
     ) {
     }
 
@@ -112,7 +115,12 @@ class DossierController extends AgentController
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
-    #[IsGranted(Agent::ROLE_AGENT_ATTRIBUTEUR)]
+    #[IsGranted(
+        attribute: new Expression('is_granted("ROLE_AGENT_ATTRIBUTEUR") or user.instruit(subject["dossier"])'),
+        subject: [
+            'dossier' => new Expression('args["dossier"]'),
+        ]
+    )]
     #[Route('/dossier/{id}/cloturer.json', name: 'agent_redacteur_marquer_doublon_papier_dossier', methods: ['POST'])]
     public function cloturer(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
@@ -121,6 +129,15 @@ class DossierController extends AgentController
             'explication' => $request->getPayload()->get('explication'),
         ]);
         $this->dossierRepository->save($dossier);
+
+        // Envoi du mail de confirmation.
+        $this->mailer
+            ->toRequerant($dossier->getRequerant())
+            ->subject("Clôture du dossier {$dossier->getReference()}")
+            ->htmlTemplate('email/cloture_dossier.html.twig', [
+                'dossier' => $dossier,
+            ])
+            ->send();
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),

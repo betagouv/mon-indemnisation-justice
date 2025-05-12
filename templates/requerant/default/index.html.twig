@@ -6,13 +6,16 @@
     {{ parent() }}
     {% set flash = app.flashes('dossier')|first %}
     {% if flash %}
-        <dialog aria-labelledby="fr-modal-flash-dossier--title" role="dialog" id="fr-modal-flash-dossier" class="fr-modal fr-modal--opened">
+        <dialog aria-labelledby="fr-modal-flash-dossier--title" role="dialog" id="fr-modal-flash-dossier"
+                class="fr-modal fr-modal--opened">
             <div class="fr-container fr-container--fluid fr-container-md">
                 <div class="fr-grid-row fr-grid-row--center">
                     <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                         <div class="fr-modal__body">
                             <div class="fr-modal__header">
-                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-flash-dossier">Fermer</button>
+                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
+                                        aria-controls="fr-modal-flash-dossier">Fermer
+                                </button>
                             </div>
                             <div class="fr-modal__content">
                                 <div class="fr-alert fr-alert--success">
@@ -24,8 +27,10 @@
                                         vous a été envoyé à l'instant.
                                     </p>
                                     <p>
-                                        Votre dossier sera traité par un agent du bureau dans les plus brefs délais. Vous
-                                        serez informés de son évolution par courriel mais pourrez aussi suivre son avancement
+                                        Votre dossier sera traité par un agent du bureau dans les plus brefs délais.
+                                        Vous
+                                        serez informés de son évolution par courriel mais pourrez aussi suivre son
+                                        avancement
                                         en vous connectant à votre espace personnel.
                                     </p>
                                 </div>
@@ -48,18 +53,18 @@
                     <table data-fr-js-table-element="true" class="">
                         <caption>Mes dossiers</caption>
                         <thead>
-                            <tr>
-                                <th scope="col" class="fr-col-1">Référence</th>
-                                <th scope="col" class="fr-col-5">Statut de la demande d'indemnisation</th>
-                                <th scope="col" class="fr-col-3">Date du dernier statut</th>
-                                <th scope="col" class="fr-col-1">Code suivi</th>
-                                <th scope="col" class="fr-col-2"></th>
-                            </tr>
+                        <tr>
+                            <th scope="col" class="fr-col-1">Référence</th>
+                            <th scope="col" class="fr-col-5">Statut de la demande d'indemnisation</th>
+                            <th scope="col" class="fr-col-3">Date du dernier statut</th>
+                            <th scope="col" class="fr-col-1">Code suivi</th>
+                            <th scope="col" class="fr-col-2"></th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {# @var dossiers App\Entity\BrisPorte[] #}
-                            {% for dossier in dossiers %}
-                                {% set dateDernierStatut = dossier.estSigne ? dossier.etatDossier.date : dossier.dateDeclaration| default(dossier.dateCreation) %}
+                        {# @var dossiers App\Entity\BrisPorte[] #}
+                        {% for dossier in dossiers %}
+                            {% set dateDernierStatut = dossier.estSigne ? dossier.etatDossier.date : dossier.dateDeclaration| default(dossier.dateCreation) %}
                             <tr>
                                 <td>{{ dossier.reference }}</td>
                                 <td>
@@ -67,6 +72,15 @@
                                         <p class="fr-badge fr-badge--{{ dossier.estAccepte ? 'success' : 'error' }}">
                                             {{ dossier|etat_requerant }}
                                         </p>
+                                    {% elseif dossier.estCloture %}
+                                        <p class="fr-badge fr-badge--beige-gris-galet"
+                                           aria-describedby="cloture-explication-{{ dossier.id }}-tooltip">
+                                            Dossier clôturé&nbsp&nbsp;
+                                            <span class="fr-icon-chat-delete-line" aria-hidden="true"></span>
+                                        </p>
+                                        <span class="fr-tooltip fr-placement"
+                                              id="cloture-explication-{{ dossier.id }}-tooltip" role="tooltip"
+                                              aria-hidden="true">{{ dossier.explicationCloture }}</span>
                                     {% elseif dossier.estConstitue %}
                                         <p class="fr-badge fr-badge--blue-cumulus">
                                             Dossier déposé&nbsp;
@@ -80,27 +94,31 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {{ dateDernierStatut|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY", timezone='Europe/Paris') }}<br/>
-                                    ({{ dateDernierStatut|format_datetime(locale='fr',pattern="HH'h'mm", timezone='Europe/Paris') }})
+                                    {{ dateDernierStatut|format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY", timezone='Europe/Paris') }}
+                                    <br/>
+                                    ({{ dateDernierStatut|format_datetime(locale='fr',pattern="HH'h'mm", timezone='Europe/Paris') }}
+                                    )
                                 </td>
                                 <td>{{ dossier.raccourci }}</td>
                                 <td>
-                                    <a
-                                        {% if dossier.estSigne %}
-                                            href="{{ url('requerant_dossier_consulter_decision', { 'id' : dossier.id }) }}"
-                                            class="fr-btn fr-btn--sm fr-icon-eye-line fr-btn--icon-left"
-                                        {% else %}
-                                            href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
-                                            class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left"
-                                        {% endif %}
+                                    {% if not dossier.estCloture %}
+                                        <a
+                                                {% if dossier.estSigne %}
+                                                    href="{{ url('requerant_dossier_consulter_decision', { 'id' : dossier.id }) }}"
+                                                    class="fr-btn fr-btn--sm fr-icon-eye-line fr-btn--icon-left"
+                                                {% else %}
+                                                    href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
+                                                    class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left"
+                                                {% endif %}
 
 
-                                    >
-                                        {% if dossier.estSigne %}Consulter{% elseif dossier.estConstitue %}Modifier{% else %}Compléter{% endif %}
-                                    </a>
+                                        >
+                                            {% if dossier.estSigne %}Consulter{% elseif dossier.estConstitue %}Modifier{% else %}Compléter{% endif %}
+                                        </a>
+                                    {% endif %}
                                 </td>
                             </tr>
-                            {% endfor %}
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>

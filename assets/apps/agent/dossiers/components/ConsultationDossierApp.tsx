@@ -137,10 +137,24 @@ export const ConsultationDossierApp = observer(
                 <div>
                   <p
                     className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.etat.slug} fr-py-1w fr-px-2w`}
+                    {...(dossier.etat.estCloture()
+                      ? {
+                          "aria-describedby": `tooltip-etat-dossier-${dossier.id}`,
+                        }
+                      : {})}
                   >
                     {dossier.etat.etat.libelle}
                   </p>
                 </div>
+                {dossier.etat.estCloture() && (
+                  <span
+                    className="fr-tooltip fr-placement"
+                    id={`tooltip-etat-dossier-${dossier.id}`}
+                    role="tooltip"
+                  >
+                    {dossier.etat.contexte?.motif || <i>Aucun motif</i>}
+                  </span>
+                )}
 
                 <p className="fr-m-1w">
                   Déposé le{" "}
