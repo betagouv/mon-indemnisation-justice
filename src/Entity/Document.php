@@ -28,6 +28,8 @@ class Document
 
     public const TYPE_COURRIER_REQUERANT = 'courrier_requerant';
 
+    public const TYPE_ARRETE_PAIEMENT = 'arrete_paiement';
+
     public static $types = [
         self::TYPE_ATTESTATION_INFORMATION => "Attestation à remettre en cas d'erreur de porte", // Dossier
         self::TYPE_PHOTO_PREJUDICE => 'Photo de la porte endommagée', // Dossier
@@ -40,6 +42,7 @@ class Document
         self::TYPE_ATTESTATION_NON_PRISE_EN_CHARGE_ASSURANCE => "Attestation de non prise en charge par l'assurance habitation",
         self::TYPE_COURRIER_MINISTERE => 'Courrier signé de décision du Ministere',
         self::TYPE_COURRIER_REQUERANT => "Courrier signé d'acceptation du requérant",
+        self::TYPE_ARRETE_PAIEMENT => 'Arrêté de paiement',
     ];
 
     #[ORM\Id]

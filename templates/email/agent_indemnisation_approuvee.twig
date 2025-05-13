@@ -1,0 +1,37 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% set consultation_url = url('agent_redacteur_consulter_dossier', {'id': dossier.id, '_fragment': 'courrier'}) %}
+
+{% block subject %}Dossier {{ dossier.reference }}: {% if dossier.requerant.estFeminin() %}la requérante{% else %}le requérant{% endif %} a approuvé l'indemnisation{% endblock subject %}
+
+{% block entete %}
+    <b>{% if dossier.requerant.estFeminin() %}La requérante{% else %}Le requérant{% endif %} a approuvé
+        l'indemnisation</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+    Bonjour {{ agent.prenom }},
+    <br/>
+    <br/>
+    <p>
+        {% if dossier.requerant.estFeminin() %}La requérante{% else %}Le requérant{% endif %} {{ dossier.requerant.nomComplet }}
+        vient d'approuver la proposition d'indemnisation qui lui est
+        faite sur le dossier de référence {{ dossier.reference }}.
+    </p>
+    <p>
+        Vous êtes invité à consulter la déclaration d'acceptation à l'adresse suivante :
+        <a href="{{ consultation_url }}" title="Consulter la déclaration d'acceptation">{{ consultation_url }}</a>
+        ou en cliquant sur le bouton ci-dessous :
+    </p>
+    <br/>
+    <p>
+        {{ email.bouton("Consulter la déclaration d'acceptation", consultation_url) }}
+        <br/>
+    </p>
+    <br/>
+    Cordialement,<br/>
+    L'équipe Mon Indemnisation Justice
+{% endblock contenu %}
