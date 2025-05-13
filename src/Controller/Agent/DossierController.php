@@ -115,8 +115,9 @@ class DossierController extends AgentController
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
+    // TODO créer un voter https://symfony.com/doc/current/security/voters.html
     #[IsGranted(
-        attribute: new Expression('is_granted("ROLE_AGENT_ATTRIBUTEUR") or user.instruit(subject["dossier"])'),
+        attribute: new Expression('is_granted("ROLE_AGENT_ATTRIBUTEUR") or is_granted("ROLE_AGENT_VALIDATEUR") or user.instruit(subject["dossier"])'),
         subject: [
             'dossier' => new Expression('args["dossier"]'),
         ]
@@ -144,7 +145,13 @@ class DossierController extends AgentController
         ], Response::HTTP_OK);
     }
 
-    #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
+    // TODO créer un voter https://symfony.com/doc/current/security/voters.html
+    #[IsGranted(
+        attribute: new Expression('is_granted("ROLE_AGENT_ATTRIBUTEUR") or is_granted("ROLE_AGENT_VALIDATEUR") or user.instruit(subject["dossier"])'),
+        subject: [
+            'dossier' => new Expression('args["dossier"]'),
+        ]
+    )]
     #[Route('/dossier/{id}/piece-jointe/ajouter.json', name: 'agent_redacteur_ajouter_piece_jointe_dossier', methods: ['POST'])]
     public function ajouterPieceJointe(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {

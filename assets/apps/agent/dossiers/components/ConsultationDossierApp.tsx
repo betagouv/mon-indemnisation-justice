@@ -173,9 +173,8 @@ export const ConsultationDossierApp = observer(
                 </p>
 
                 {/* Attribution du rédacteur */}
-                {agent.estAttributeur() && dossier.estAAttribuer() && (
-                  <AttributionDossier dossier={dossier} agent={agent} />
-                )}
+
+                <AttributionDossier dossier={dossier} agent={agent} />
 
                 {/* Clôture du dossier */}
                 {dossier.estCloturable() &&
@@ -233,33 +232,32 @@ export const ConsultationDossierApp = observer(
                   >
                     <li role="presentation">
                       <a
-                        href="#infos"
                         id="tab-infos"
                         className="fr-tabs__tab"
                         tabIndex={0}
                         role="tab"
                         aria-selected={window.location.hash == "#infos"}
                         aria-controls="tab-panel-infos"
+                        onClick={() => history.replaceState({}, "", "#infos")}
                       >
                         Informations du dossier
                       </a>
                     </li>
                     <li role="presentation">
                       <a
-                        href="#suivi"
                         id="tab-suivi"
                         className="fr-tabs__tab"
                         tabIndex={-1}
                         role="tab"
                         aria-selected={window.location.hash == "#suivi"}
                         aria-controls="tab-panel-suivi"
+                        onClick={() => history.replaceState({}, "", "#suivi")}
                       >
                         Notes de suivi
                       </a>
                     </li>
                     <li role="presentation">
                       <a
-                        href="#pieces-jointes"
                         id="tab-pieces-jointes"
                         className="fr-tabs__tab"
                         tabIndex={-1}
@@ -268,6 +266,9 @@ export const ConsultationDossierApp = observer(
                           window.location.hash == "#pieces-jointes"
                         }
                         aria-controls="tab-panel-pieces-jointes"
+                        onClick={() =>
+                          history.replaceState({}, "", "#pieces-jointes")
+                        }
                       >
                         Pièces jointes
                       </a>
@@ -556,7 +557,17 @@ export const ConsultationDossierApp = observer(
                               <button
                                 className="fr-btn fr-btn--sm fr-btn--primary"
                                 type="button"
-                                disabled={!dossier.enInstruction()}
+                                disabled={
+                                  !(
+                                    agent.estAttributeur() ||
+                                    agent.estValidateur() ||
+                                    agent.instruit(dossier)
+                                  ) ||
+                                  !(
+                                    dossier.enAttenteDecision ||
+                                    dossier.enAttenteValidation
+                                  )
+                                }
                                 onClick={() => ouvrirModalePieceJointe()}
                               >
                                 Ajouter une pièce jointe
@@ -660,7 +671,7 @@ export const ConsultationDossierApp = observer(
                                             type="file"
                                             id="file-upload"
                                             name="file-upload"
-                                            accept="application/pdf"
+                                            accept="application/pdf,image/*"
                                             onChange={(e) =>
                                               setNouvellePieceJointe(
                                                 e.target.files[0],
