@@ -290,6 +290,9 @@ export const ConsultationDossierApp = observer(
                                 window.location.hash == "#courrier",
                             }
                           : { disabled: true })}
+                        onClick={() =>
+                          history.replaceState({}, "", "#courrier")
+                        }
                       >
                         Décision et courrier
                       </a>

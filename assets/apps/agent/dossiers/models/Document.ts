@@ -66,5 +66,6 @@ export class Document {
     DocumentType.TYPE_TITRE_PROPRIETE,
     DocumentType.TYPE_CONTRAT_LOCATION,
     DocumentType.TYPE_COURRIER_MINISTERE,
+    DocumentType.TYPE_COURRIER_REQUERANT,
   ];
 }

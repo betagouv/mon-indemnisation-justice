@@ -278,6 +278,11 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->personnePhysique->getCivilite()->value;
     }
 
+    public function estFeminin(): bool
+    {
+        return $this->personnePhysique->getCivilite()->estFeminin();
+    }
+
     #[Groups('agent:detail')]
     #[SerializedName('nom')]
     public function getNom(): string
