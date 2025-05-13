@@ -150,18 +150,20 @@ export const AttributionDossier = observer(
                 </>
               )}
             </p>
-            <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm"
-                  type="button"
-                  disabled={sauvegarderEnCours}
-                  onClick={() => setAttributionEnCours(true)}
-                >
-                  Attribuer
-                </button>
-              </li>
-            </ul>
+            {agent.estAttributeur() && dossier.estAAttribuer() && (
+              <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
+                <li>
+                  <button
+                    className="fr-btn fr-btn--sm"
+                    type="button"
+                    disabled={sauvegarderEnCours}
+                    onClick={() => setAttributionEnCours(true)}
+                  >
+                    Attribuer
+                  </button>
+                </li>
+              </ul>
+            )}
           </>
         )}
       </div>

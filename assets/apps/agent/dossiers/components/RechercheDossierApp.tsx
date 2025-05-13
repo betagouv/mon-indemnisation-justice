@@ -171,9 +171,15 @@ export const RechercheDossierApp = observer(
             </section>
 
             <div className="fr-grid-row">
+              <div className="fr-col-12 fr-my-2w">
+                <h6 className="fr-m-0">
+                  {dossiers.length} dossier{dossiers.length > 1 && "s"} trouvé
+                  {dossiers.length > 1 && "s"}
+                </h6>
+              </div>
               <div className="fr-col-12">
                 <div
-                  className="fr-table"
+                  className="fr-table fr-m-0"
                   id="prec-tableau-dossiers-nouveauxs_container"
                 >
                   <div className="fr-table__wrapper">
