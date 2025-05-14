@@ -493,7 +493,7 @@ export const ValidationDossier = observer(function ValidationDossierComponent({
                             }
                             onClick={() => signerCourrier(fichierSigne)}
                           >
-                            Téléverser et signer
+                            Téléverser et envoyer au requérant
                           </button>
                         </li>
                       </ul>
