@@ -23,6 +23,11 @@ enum Civilite: string
         };
     }
 
+    public function libelleNaissance(string $nomNaissance): string
+    {
+        return sprintf('né%s %s', $this->estFeminin() ? 'e' : '', $nomNaissance);
+    }
+
     public static function choices(): array
     {
         return array_merge(

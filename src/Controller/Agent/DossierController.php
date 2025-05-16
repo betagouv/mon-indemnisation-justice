@@ -291,6 +291,22 @@ class DossierController extends AgentController
         }
     }
 
+    #[IsGranted(
+        attribute: new Expression('user.instruit(subject["dossier"])'),
+        subject: [
+            'dossier' => new Expression('args["dossier"]'),
+        ]
+    )]
+    #[Route('/dossier/{id}/arrete-paiement/generer.html', name: 'agent_redacteur_generer_arrete_paiement_dossier', methods: ['POST'])]
+    public function genererArretePaiementDossier(
+        #[MapEntity(id: 'id')] BrisPorte $dossier,
+        Request $request,
+    ): Response {
+        return $this->render('courrier/arretePaiement.html.twig', [
+            'dossier' => $dossier,
+        ]);
+    }
+
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/courrier/editer.json', name: 'agent_redacteur_editer_courrier_dossier', methods: ['POST'])]
     public function editerCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response

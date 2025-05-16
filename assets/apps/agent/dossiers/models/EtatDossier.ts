@@ -100,6 +100,11 @@ export class EtatDossierType implements EtatInterface {
     "Accepté - à vérifier",
   );
 
+  public static OK_VERIFIE = new EtatDossierType(
+    "OK_VERIFIE",
+    "Accepté - vérifié",
+  );
+
   public static OK_A_INDEMNISER = new EtatDossierType(
     "OK_A_INDEMNISER",
     "Accepté - à indemniser",
@@ -128,6 +133,7 @@ export class EtatDossierType implements EtatInterface {
     EtatDossierType.OK_A_SIGNER,
     EtatDossierType.OK_A_APPROUVER,
     EtatDossierType.OK_A_VERIFIER,
+    EtatDossierType.OK_VERIFIE,
     EtatDossierType.OK_A_INDEMNISER,
     EtatDossierType.OK_INDEMNISE,
     EtatDossierType.KO_A_SIGNER,
