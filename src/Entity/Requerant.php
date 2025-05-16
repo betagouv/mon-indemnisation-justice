@@ -363,9 +363,15 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->getPersonnePhysique()?->getNomCourant($civilite, $capital);
     }
 
-    public function getNomComplet(): ?string
+    /**
+     * Affiche l'appellation officielle du requérant, soit:
+     * - "Monsieur DUPONT Jean" pour un particulier
+     * - "la société ACME représentée par Madame DUPONT, née MARTIN, Jeanne" pour un particulier
+     */
+    public function getNomComplet(): string
     {
-        return $this->getPersonnePhysique()?->getNomComplet() ?? null;
+        return ($this->isPersonneMorale ?
+            "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '').$this->personnePhysique->getNomComplet();
     }
 
     public function getDernierDossier(): ?BrisPorte

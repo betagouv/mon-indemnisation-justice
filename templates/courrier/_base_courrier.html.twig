@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Courrier</title>
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+
+
+    <style>
+
+        main {
+            text-wrap: pretty;
+            text-align: justify;
+            font: 11pt Arial, sans-serif;
+            line-height: 13pt !important;
+
+            p {
+                margin: 8pt 0;
+            }
+
+            a {
+                color: #5e95d6;;
+            }
+        }
+
+        .texte-majuscule {
+            text-transform: uppercase;
+        }
+
+        .text-flottant-droite {
+            float: right
+        }
+
+        .text-centre {
+            text-align: center;
+        }
+
+        @page {
+            size: A4;
+            margin: 1.2cm;
+            background-color: transparent;
+        }
+
+        .page {
+            page-break-after: always;
+
+            @media screen {
+                &:not(:last-child) {
+                    border-bottom: 1px solid #ccc;
+                }
+
+                padding-bottom: 2cm;
+                margin-bottom: 2cm;
+            }
+        }
+
+        .footer-space {
+            height: 30pt;
+        }
+
+        .pied-de-page {
+            position: fixed;
+            height: 30pt;
+            bottom: 0;
+
+            p {
+                color: #ccc;
+                font-family: 'Marianne', sans-serif;
+                font-size: 8pt;
+                line-height: 10pt;
+            }
+
+        }
+
+        @media screen {
+            body {
+                padding: 1.2cm 1.2cm 2.4cm 1.2cm;
+            }
+
+            .pied-de-page {
+                bottom: 1.2cm;
+            }
+        }
+
+    </style>
+    {% block style %}{% endblock style %}
+</head>
+<body>
+{#  Utilisation de la technique de la <table> pour répéter l'en-tête et / ou le pied de page tout en laissant le texte
+    se poursuivre à la page suivante
+    https://medium.com/@Idan_Co/the-ultimate-print-html-template-with-header-footer-568f415f6d2a
+#}
+<table>
+    {#
+    <thead>
+    <tr>
+        <td>
+            <div class="header-space">&nbsp;</div>
+        </td>
+    </tr>
+    </thead>
+    #}
+    <tbody>
+    <tr>
+        <td>
+            <main>
+                {% block pages %}{% endblock pages %}
+            </main>
+        </td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td>
+            <div class="footer-space">&nbsp;</div>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+
+
+{% block piedDePage %}
+    <div class="pied-de-page">
+        <p>
+            13, place Vendôme – 75042 Paris Cedex 01<br/>
+            Téléphone : 01 44 77 60 60<br/>
+            www.justice.gouv.fr
+        </p>
+    </div>
+{% endblock piedDePage %}
+
+
+
+
+{% if web|default(false) %}
+    {# TODO trouver un moyen de faire fonctionner Paged.js https://gitlab.coko.foundation/pagedjs/pagedjs/ #}
+    {#
+    <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+    <script>
+        window.PagedConfig = {
+            before: () => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve()
+                    }, 51000);
+                })
+            },
+            after: (flow) => {
+                console.log("after", flow)
+            },
+        };
+    </script>
+    #}
+{% endif %}
+</body>
+</html>

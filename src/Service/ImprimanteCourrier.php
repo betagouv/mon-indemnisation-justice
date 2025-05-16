@@ -33,7 +33,7 @@ class ImprimanteCourrier
     }
 
     /**
-     * Imprime, i.e. génère un fichier PDF, le courrier d'un dossier.
+     * Imprime, i.e. génère un fichier PDF, le courrier de décision d'un dossier.
      *
      * @param BrisPorte $dossier        le dossier pour lequel imprimer le courrier
      * @param bool      $garderFichiers garder ou non les fichiers temporaires sur le disque (utile en cas de débogage)
@@ -49,7 +49,7 @@ class ImprimanteCourrier
         try {
             // Générer le contenu de la page HTML statique
             $this->filesystem->dumpFile("$path/courrier_$dossier->id.html",
-                $this->twig->render('courrier/dossier.html.twig', [
+                $this->twig->render('courrier/decision.html.twig', [
                     'dossier' => $dossier,
                 ])
             );

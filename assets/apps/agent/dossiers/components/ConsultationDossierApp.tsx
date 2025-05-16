@@ -8,7 +8,8 @@ import {
   AttributionDossier,
   ClotureDossier,
   DecisionDossier,
-  ValidationDossier,
+  ValidationDecisionDossier,
+  ValidationAcceptationDossier,
 } from "@/apps/agent/dossiers/components/consultation";
 import { plainToInstance } from "class-transformer";
 
@@ -201,7 +202,7 @@ export const ConsultationDossierApp = observer(
 
                 {/* Validation du validateur sur le dossier */}
                 {dossier.enAttenteValidation && agent.estValidateur() && (
-                  <ValidationDossier
+                  <ValidationDecisionDossier
                     dossier={dossier}
                     onEdite={() => {
                       if (refSectionCourrier.current) {
@@ -221,6 +222,16 @@ export const ConsultationDossierApp = observer(
                     }}
                   />
                 )}
+
+                {/* Le rédacteur vérifie la déclaration d'acceptation et la valide */}
+                {dossier.estAVerifier && agent.instruit(dossier) && (
+                  <ValidationAcceptationDossier dossier={dossier} />
+                )}
+
+                {/* L'agent validateur génère et signe l'arrêté de paiement */}
+                {dossier.enAttentePaiement && agent.estValidateur() && <></>}
+
+                {/* L'agent validateur génère et signe l'arrêté de paiement */}
               </div>
 
               <div className="fr-my-2w">

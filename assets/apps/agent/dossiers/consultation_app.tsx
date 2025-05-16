@@ -10,6 +10,8 @@ import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools
 import { plainToInstance } from "class-transformer";
 import React, { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
+import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
+startReactDsfr({ defaultColorScheme: "system" });
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
@@ -38,7 +40,9 @@ const dossier = plainToInstance(DossierDetail, args.dossier, {
 });
 
 ReactDOM.createRoot(
-  document.getElementById("react-app-agent-consultation-dossiers"),
+  document.getElementById(
+    "react-app-agent-consultation-dossiers",
+  ) as HTMLElement,
   sentryOptions,
 ).render(
   <StrictMode>

@@ -243,18 +243,17 @@ class PersonnePhysique
         );
     }
 
-    public function getNomComplet(): ?string
+    public function getNomComplet(): string
     {
-        $civilite = $this->getCivilite()?->getLibelle();
-        $nomNaissance = $this->getNomNaissance();
-        $nom = $this->getNom();
-        if ($nomNaissance && $nom) {
-            $nom = $nom.' né.e '.$nomNaissance;
-        } elseif ($nomNaissance) {
-            $nom = $nomNaissance;
-        }
+        similar_text($this->nom, $this->nomNaissance, $similarite);
 
-        return implode(' ', [$civilite, $this->getPrenom1(), $nom]);
+        return sprintf(
+            '%s %s %s %s',
+            $this->civilite->getLibelle(),
+            strtoupper($this->nom),
+            empty($this->nomNaissance) || $similarite > 80 ? '' : $this->civilite->libelleNaissance($this->nomNaissance),
+            $this->prenom1
+        );
     }
 
     public function getEmail(): ?string
