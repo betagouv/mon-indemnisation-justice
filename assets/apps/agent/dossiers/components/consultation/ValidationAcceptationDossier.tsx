@@ -1,11 +1,16 @@
-import { Document, DocumentType } from "@/apps/agent/dossiers/models";
+import {
+  Document,
+  DocumentType,
+  EtatDossier,
+} from "@/apps/agent/dossiers/models";
 import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
-import ReactQuill from "react-quill-new";
+import ReactQuill, { Quill } from "react-quill-new";
 
 type ValidationAcceptationAction = "verification" | "edition" | "relecture";
 
@@ -52,6 +57,30 @@ const PieceJointe = function PieceJointeComponent({
   );
 };
 
+// Patch pour la gestion des ul/ol dans Quill
+import List, { ListContainer } from "quill/formats/list";
+
+class UListContainer extends ListContainer {}
+UListContainer.blotName = "ulist-container";
+UListContainer.tagName = "UL";
+
+class UListItem extends List {
+  static register() {
+    Quill.register(UListContainer);
+  }
+}
+
+UListItem.blotName = "ulist";
+UListItem.tagName = "LI";
+
+UListContainer.allowedChildren = [UListItem];
+UListItem.requiredContainer = UListContainer;
+
+Quill.register({
+  "formats/list": List,
+  "formats/ulist": UListItem,
+});
+
 export const ValidationAcceptationDossier = observer(
   function ValidationAcceptationDossierComponent({
     dossier,
@@ -68,18 +97,26 @@ export const ValidationAcceptationDossier = observer(
       ValidationAcceptationEtat,
       (etat: ValidationAcceptationEtat) => void,
     ] = useState({
+      corpsCourrier: dossier.corpsCourrier,
       sauvegardeEnCours: false,
       action: "verification",
+      arreteDePaiement:
+        dossier.getDocumentsType(DocumentType.TYPE_ARRETE_PAIEMENT).at(0) ??
+        null,
     } as ValidationAcceptationEtat);
 
     // Actions
     const annuler = () => {
       setEtatValidation({
+        corpsCourrier: dossier.corpsCourrier,
         sauvegardeEnCours: false,
         action: "verification",
       } as ValidationAcceptationEtat);
       validationAcceptationActionModale.close();
     };
+
+    const setSauvegardeEnCours = (sauvegardeEnCours: boolean = true) =>
+      setEtatValidation({ ...etatValidation, sauvegardeEnCours });
 
     const verifierDeclarationAcceptation = () => {
       validationAcceptationActionModale.open();
@@ -89,18 +126,73 @@ export const ValidationAcceptationDossier = observer(
       setEtatValidation({ ...etatValidation, action: "edition" });
 
     const editerCorpsCourrier = (corpsCourrier: string) => {
-      console.log(corpsCourrier);
       setEtatValidation({ ...etatValidation, corpsCourrier });
     };
 
-    const genererArretePaiement = () => {
+    const genererArretePaiement = async () => {
       // Envoi à l'API pour impression, récupération du document
-      console.log(etatValidation.corpsCourrier);
-      relire();
+      setSauvegardeEnCours(true);
+
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/generer.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            corpsCourrier: etatValidation.corpsCourrier,
+          }),
+        },
+      );
+      let document: Document;
+
+      if (response.ok) {
+        const data = await response.json();
+        document = plainToInstance(Document, data.document);
+        setEtatValidation({
+          ...etatValidation,
+          arreteDePaiement: document,
+        });
+      }
+
+      setEtatValidation({
+        ...etatValidation,
+        action: "relecture",
+        arreteDePaiement: document,
+      });
     };
 
-    const relire = () =>
+    const relire = () => {
       setEtatValidation({ ...etatValidation, action: "relecture" });
+    };
+
+    const valider = async () => {
+      // Appel à l'API pour valider le document
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/valider.json`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            document: etatValidation.arreteDePaiement.id,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+        dossier.addDocument(etatValidation.arreteDePaiement);
+      }
+
+      setSauvegardeEnCours(false);
+      validationAcceptationActionModale.close();
+    };
 
     return (
       <>
@@ -168,24 +260,17 @@ export const ValidationAcceptationDossier = observer(
                     priority: "tertiary no outline",
                     onClick: () => annuler(),
                   } as ButtonProps,
-                  /*
-                  {
-                    children: "Re-vérifier la déclaration",
-                    priority: "secondary",
-                    onClick: () => verifierDeclarationAcceptation(),
-                  } as ButtonProps,
-                  */
                   {
                     children: "Générer le document",
                     iconId: "fr-icon-printer-line",
+                    priority: "secondary",
                     disabled:
                       etatValidation.sauvegardeEnCours ||
                       !etatValidation.corpsCourrier,
-                    onClick: () => relire(),
+                    onClick: () => genererArretePaiement(),
                   } as ButtonProps,
                   {
                     children: "Visualiser",
-                    iconId: "fr-icon-search-line",
                     disabled:
                       etatValidation.sauvegardeEnCours ||
                       !etatValidation.arreteDePaiement,
@@ -204,8 +289,20 @@ export const ValidationAcceptationDossier = observer(
                 buttonsSize="small"
                 buttons={[
                   {
-                    children: "Valider",
+                    children: "Annuler",
+                    priority: "tertiary no outline",
+                    onClick: () => annuler(),
+                  } as ButtonProps,
+                  {
+                    iconId: "fr-icon-pencil-line",
+                    children: "Éditer",
+                    priority: "secondary",
                     onClick: () => editer(),
+                  } as ButtonProps,
+                  {
+                    iconId: "fr-icon-check-line",
+                    children: "Valider",
+                    onClick: () => valider(),
                   } as ButtonProps,
                 ]}
               />

@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Twig\Environment;
 
 #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
 #[Route('/agent/redacteur')]
@@ -52,6 +53,7 @@ class DossierController extends AgentController
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
         protected readonly Mailer $mailer,
+        protected readonly Environment $twig,
     ) {
     }
 
@@ -82,6 +84,16 @@ class DossierController extends AgentController
     #[Route('/dossier/{id}', name: 'agent_redacteur_consulter_dossier')]
     public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {
+        // Temporaire: rustine pour re-générer le corps du courrier avec le contenu de l'arrêté de paiement si le
+        // dossier est approuvé par le requérant
+        if (EtatDossierType::DOSSIER_OK_A_VERIFIER === $dossier->getEtatDossier()->getEtat() && null === $dossier->getCorpsCourrier()) {
+            $dossier->setCorpsCourrier($this->twig->render('courrier/_corps_arretePaiement.html.twig', [
+                'dossier' => $dossier,
+            ]));
+            $this->em->persist($dossier);
+            $this->em->flush();
+        }
+
         return $this->render('agent/dossier/consulter_bris_porte.html.twig', [
             'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
             'react' => [
@@ -238,7 +250,7 @@ class DossierController extends AgentController
             ->setCorpsCourrier($corpsCourrier);
         }
 
-        $destination = $this->imprimanteCourrier->imprimerCourrier($dossier);
+        $destination = $this->imprimanteCourrier->imprimerLettreDecision($dossier);
         $dossier->setCourrier(
             (new CourrierDossier())
                 ->setDossier($dossier)
@@ -297,14 +309,50 @@ class DossierController extends AgentController
             'dossier' => new Expression('args["dossier"]'),
         ]
     )]
-    #[Route('/dossier/{id}/arrete-paiement/generer.html', name: 'agent_redacteur_generer_arrete_paiement_dossier', methods: ['POST'])]
+    #[Route('/dossier/{id}/arrete-paiement/generer.json', name: 'agent_redacteur_generer_arrete_paiement_dossier', methods: ['POST'])]
     public function genererArretePaiementDossier(
         #[MapEntity(id: 'id')] BrisPorte $dossier,
         Request $request,
     ): Response {
-        return $this->render('courrier/arretePaiement.html.twig', [
-            'dossier' => $dossier,
-        ]);
+        $dossier->setCorpsCourrier($request->getPayload()->get('corpsCourrier'));
+        $this->em->persist($dossier);
+        $destination = $this->imprimanteCourrier->imprimerArretePaiement($dossier);
+        $document = (new Document())
+                ->setFilename($destination)
+                ->setType(Document::TYPE_ARRETE_PAIEMENT)
+                ->setMime('application/pdf')
+                ->setSize(0)
+                ->setOriginalFilename("Arrêté de paiement - dossier {$dossier->getReference()}");
+
+        $this->em->persist($document);
+        $this->em->flush();
+
+        return new JsonResponse(['document' => $this->normalizer->normalize($document, 'json', ['groups' => ['agent:detail']])], Response::HTTP_CREATED);
+    }
+
+    #[IsGranted(
+        attribute: new Expression('user.instruit(subject["dossier"])'),
+        subject: [
+            'dossier' => new Expression('args["dossier"]'),
+        ]
+    )]
+    #[Route('/dossier/{id}/arrete-paiement/valider.json', name: 'agent_redacteur_valider_arrete_paiement_dossier', methods: ['POST'])]
+    public function validerArretePaiementDossier(
+        #[MapEntity(id: 'id')] BrisPorte $dossier,
+        Request $request,
+    ): Response {
+        $document = $this->em->getRepository(Document::class)->find($request->getPayload()->getInt('document'));
+        if (null === $document) {
+            return new JsonResponse([], Response::HTTP_NOT_FOUND);
+        }
+
+        $dossier->ajouterDocument($document);
+        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_VERIFIE, agent: $this->getAgent());
+
+        $this->em->persist($dossier);
+        $this->em->flush();
+
+        return new JsonResponse(['etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail'])]);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
@@ -320,7 +368,7 @@ class DossierController extends AgentController
 
         $dossier->setPropositionIndemnisation($montantIndemnisation)
             ->setCorpsCourrier($corpsCourrier);
-        $destination = $this->imprimanteCourrier->imprimerCourrier($dossier);
+        $destination = $this->imprimanteCourrier->imprimerLettreDecision($dossier);
         $dossier->setCourrier(
             (new CourrierDossier())
                 ->setDossier($dossier)
@@ -356,6 +404,7 @@ class DossierController extends AgentController
         $content = $file->getContent();
         $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
+
         $document = (new Document())
                 ->setFilename($filename)
                 ->setOriginalFilename($file->getClientOriginalName())
@@ -367,7 +416,7 @@ class DossierController extends AgentController
         $this->em->flush();
 
         $dossier->ajouterDocument($document);
-
+        $dossier->setCorpsCourrier(null);
         $dossier->changerStatut($dossier->getEtatDossier()->estAccepte() ? EtatDossierType::DOSSIER_OK_A_APPROUVER : EtatDossierType::DOSSIER_KO_REJETE, agent: $this->getAgent());
 
         $this->dossierRepository->save($dossier);
