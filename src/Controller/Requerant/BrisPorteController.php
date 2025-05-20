@@ -24,6 +24,10 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant/bris-de-porte')]
@@ -37,6 +41,7 @@ class BrisPorteController extends RequerantController
         // A supprimer
         protected readonly EntityManagerInterface $em,
         protected readonly Mailer $mailer,
+        protected readonly Environment $twig,
     ) {
     }
 
@@ -129,6 +134,14 @@ class BrisPorteController extends RequerantController
         $dossier->ajouterDocument($document);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
+        try {
+            $dossier->setCorpsCourrier($this->twig->render('courrier/_corps_arretePaiement.html.twig', [
+                'dossier' => $dossier,
+            ]));
+        } catch (LoaderError|SyntaxError|RuntimeError $e) {
+            // TODO log
+        }
+
         $this->em->persist($dossier);
         $this->em->flush();
 

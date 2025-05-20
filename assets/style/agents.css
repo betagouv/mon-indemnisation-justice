@@ -28,16 +28,21 @@ a:not([href])[role="button"] {
     /* OK_A_SIGNER, = 'green-menthe' */
     --var-couleur-pp-ok-a-signer: #66673d;
     --var-couleur-ap-ok-a-signer: #fceeac;
-
-    /* OK_A_VALIDER, = 'green-bourgeon' */
-    --var-couleur-pp-ok-a-verifier: #447049;
-    --var-couleur-ap-ok-a-verifier: #c9fcac;
     /* OK_A_APPROUVER, = 'green-bourgeon' */
     --var-couleur-pp-ok-a-approuver: #447049;
     --var-couleur-ap-ok-a-approuver: #c9fcac;
+    /* OK_A_VERIFIER, = 'green-bourgeon' */
+    --var-couleur-pp-ok-a-verifier: #447049;
+    --var-couleur-ap-ok-a-verifier: #c9fcac;
+    /* OK_VERIFIE = 'green-emeraude' */
+    --var-couleur-pp-ok-verifie: #297254;
+    --var-couleur-ap-ok-verifie: #c3fad5;
     /* OK_A_INDEMNISER = 'green-emeraude' */
     --var-couleur-pp-ok-a-indemniser: #297254;
     --var-couleur-ap-ok-a-indemniser: #c3fad5;
+    /* OK_EN_ATTENTE_PAIEMENT = 'green-emeraude' */
+    --var-couleur-pp-ok-en-attente-paiement: #297254;
+    --var-couleur-ap-ok-en-attente-paiement: #c3fad5;
     /* OK_INDEMNISE = 'success' */
     --var-couleur-pp-ok-indemnise: #18753c;
     --var-couleur-ap-ok-indemnise: #b8fec9;
@@ -88,16 +93,24 @@ a:not([href]) {
         border-left-color: var(--var-couleur-pp-ok-a-signer);
     }
 
-    &--ok-a-verifier {
-        border-left-color: var(--var-couleur-pp-ok-a-verifier);
-    }
-
     &--ok-a-approuver {
         border-left-color: var(--var-couleur-pp-ok-a-approuver);
     }
 
+    &--ok-a-verifier {
+        border-left-color: var(--var-couleur-pp-ok-a-verifier);
+    }
+
+    &--ok-verifie {
+        border-left-color: var(--var-couleur-pp-ok-verifie);
+    }
+
     &--ok-a-indemniser {
         border-left-color: var(--var-couleur-pp-ok-a-indemniser);
+    }
+
+    &--ok-en-attente-paiement {
+        border-left-color: var(--var-couleur-pp-ok-en-attente-paiement);
     }
 
     &--ok-indemnise {
@@ -139,19 +152,29 @@ a:not([href]) {
         background-color: var(--var-couleur-ap-ok-a-signer);
     }
 
-    &--ok-a-verifier {
-        color: var(--var-couleur-pp-ok-a-verifier);
-        background-color: var(--var-couleur-ap-ok-a-verifier);
-    }
-
     &--ok-a-approuver {
         color: var(--var-couleur-pp-ok-a-approuver);
         background-color: var(--var-couleur-ap-ok-a-approuver);
     }
 
+    &--ok-a-verifier {
+        color: var(--var-couleur-pp-ok-a-verifier);
+        background-color: var(--var-couleur-ap-ok-a-verifier);
+    }
+
+    &--ok-verifie {
+        color: var(--var-couleur-pp-ok-verifie);
+        background-color: var(--var-couleur-ap-ok-verifie);
+    }
+
     &--ok-a-indemniser {
         color: var(--var-couleur-pp-ok-a-indemniser);
         background-color: var(--var-couleur-ap-ok-a-indemniser);
+    }
+
+    &--ok-en-attente-paiement {
+        color: var(--var-couleur-pp-ok-en-attente-paiement);
+        background-color: var(--var-couleur-ap-ok-en-attente-paiement);
     }
 
     &--ok-indemnise {

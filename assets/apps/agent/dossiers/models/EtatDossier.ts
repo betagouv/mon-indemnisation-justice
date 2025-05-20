@@ -110,6 +110,11 @@ export class EtatDossierType implements EtatInterface {
     "Accepté - à indemniser",
   );
 
+  public static OK_EN_ATTENTE_PAIEMENT = new EtatDossierType(
+    "OK_EN_ATTENTE_PAIEMENT",
+    "Accepté - en attente versement",
+  );
+
   public static OK_INDEMNISE = new EtatDossierType("OK_INDEMNISE", "Indemnisé");
 
   public static KO_A_SIGNER = new EtatDossierType(

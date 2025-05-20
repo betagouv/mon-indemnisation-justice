@@ -33,28 +33,48 @@ class ImprimanteCourrier
     }
 
     /**
-     * Imprime, i.e. génère un fichier PDF, le courrier de décision d'un dossier.
+     * Imprime le courrier de décision pour un dossier.
      *
      * @param BrisPorte $dossier        le dossier pour lequel imprimer le courrier
      * @param bool      $garderFichiers garder ou non les fichiers temporaires sur le disque (utile en cas de débogage)
      *
      * @throws \League\Flysystem\FilesystemException
      */
-    public function imprimerCourrier(BrisPorte $dossier, bool $garderFichiers = false): string
+    public function imprimerLettreDecision(BrisPorte $dossier, bool $garderFichiers = false): string
+    {
+        return $this->imprimerDocument('courrier/decision.html.twig', "decision_dossier_$dossier->id", [
+            'dossier' => $dossier,
+        ], $garderFichiers);
+    }
+
+    /**
+     * Imprime l'arrêté de paiement pour un dossier.
+     *
+     * @param BrisPorte $dossier        le dossier pour lequel imprimer le courrier
+     * @param bool      $garderFichiers garder ou non les fichiers temporaires sur le disque (utile en cas de débogage)
+     *
+     * @throws \League\Flysystem\FilesystemException
+     */
+    public function imprimerArretePaiement(BrisPorte $dossier, bool $garderFichiers = false): string
+    {
+        return $this->imprimerDocument('courrier/arretePaiement.html.twig', "arrete_paiement_$dossier->id", [
+            'dossier' => $dossier,
+        ], $garderFichiers);
+    }
+
+    protected function imprimerDocument(string $gabarit, string $document, array $contexte, bool $garderFichiers = false): string
     {
         $path = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
 
         $this->filesystem->mkdir($path);
 
         try {
+            $fichierHtml = "$path/$document.html";
+            $fichierPdf = "$path/$document.pdf";
             // Générer le contenu de la page HTML statique
-            $this->filesystem->dumpFile("$path/courrier_$dossier->id.html",
-                $this->twig->render('courrier/decision.html.twig', [
-                    'dossier' => $dossier,
-                ])
-            );
+            $this->filesystem->dumpFile($fichierHtml, $this->twig->render($gabarit, $contexte));
 
-            $impression = new Process([$this->binDirectory.'/print.js', "$path/courrier_$dossier->id.html", "$path/courrier_$dossier->id.pdf"], $this->projectDirectory);
+            $impression = new Process([$this->binDirectory.'/print.js', $fichierHtml, $fichierPdf], $this->projectDirectory);
 
             $impression->run();
 
@@ -63,13 +83,13 @@ class ImprimanteCourrier
                 throw new ProcessFailedException($impression);
             }
 
-            if (!$this->filesystem->exists("$path/courrier_$dossier->id.pdf")) {
-                throw new \LogicException("Le fichier '$path/courrier_$dossier->id.pdf' n'a pas été créé");
+            if (!$this->filesystem->exists($fichierPdf)) {
+                throw new \LogicException("Le fichier '$fichierPdf' n'a pas été créé");
             }
 
-            $destination = hash('sha256', file_get_contents("$path/courrier_$dossier->id.pdf")).'.pdf';
+            $destination = hash('sha256', file_get_contents($fichierPdf)).'.pdf';
 
-            $this->storage->write($destination, file_get_contents("$path/courrier_$dossier->id.pdf"));
+            $this->storage->write($destination, file_get_contents($fichierPdf));
 
             return $destination;
         } catch (\Exception $e) {

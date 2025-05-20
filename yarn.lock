@@ -3683,11 +3683,11 @@ react-is@^16.13.1, react-is@^16.7.0:
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
 react-quill-new@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/react-quill-new/-/react-quill-new-3.3.3.tgz#f3b5f5f1c4398339e3da4f30fb19a53b8734cca7"
-  integrity sha512-jxbm1QUJlkuGUpc9/GUgGw5USLHdp43H0M7AufqS3V+zRLng9uqLeVBGjXYqEbUKi8QVOM4SClSV3F7kVNj68w==
+  version "3.4.6"
+  resolved "https://registry.yarnpkg.com/react-quill-new/-/react-quill-new-3.4.6.tgz#37db9df85865b262de077e5f71cfc000589da4fb"
+  integrity sha512-S2kEAwoKRo+xUIAEpb94fwiPe2QU3FmwIfQ+7Lkchf+izPa2nRu1mr4i4QxyVYg8TjHDryDUiOEYZuFEV45QFA==
   dependencies:
-    lodash "^4.17.21"
+    lodash-es "^4.17.21"
     quill "~2.0.2"
 
 react-refresh@^0.14.2:

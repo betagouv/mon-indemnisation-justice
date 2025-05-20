@@ -81,6 +81,7 @@ export abstract class BaseDossier {
     return [
       EtatDossierType.OK_VERIFIE,
       EtatDossierType.OK_A_INDEMNISER,
+      EtatDossierType.OK_EN_ATTENTE_PAIEMENT,
     ].includes(this.etat.etat);
   }
 

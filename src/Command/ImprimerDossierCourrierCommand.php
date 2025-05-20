@@ -44,7 +44,7 @@ class ImprimerDossierCourrierCommand extends Command
             throw new \LogicException("Aucun bris de porte d'id $id");
         }
 
-        $path = $this->imprimante->imprimerCourrier($brisPorte);
+        $path = $this->imprimante->imprimerLettreDecision($brisPorte);
 
         $output->writeln($path);
 

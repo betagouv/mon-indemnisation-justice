@@ -5,6 +5,36 @@
 {% block stylesheets %}
     {{ parent() }}
 
+    <style>
+        .ql-editor {
+            h1, h2, h3, h4, h5, h6 {
+                font-weight: bold !important;
+                font-size: 1rem !important;
+                line-height: 1.2rem !important;
+                text-align: center !important;
+                text-transform: uppercase !important;
+            }
+
+            strong {
+                font-weight: bold !important;
+
+                u {
+                    font-weight: bold !important;
+                }
+            }
+
+            ol {
+                list-style-type: none !important;
+
+                li {
+                    content: '' !important;
+                    counter-increment: none;
+                }
+            }
+        }
+
+    </style>
+
     {{ vite_entry_link_tags('agent/dossiers/consulter') }}
 
 {% endblock stylesheets %}
@@ -16,10 +46,21 @@
 {% block javascripts %}
     <script id="react-arguments" type="application/json">
     {{ react|default({})|json_encode()|raw }}
-  </script>
-  {% if est_vite_server_actif() %}
-      {% include '_vite_hmr_extra.html.twig' %}
-  {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+    {% if est_vite_server_actif() %}
+        {% include '_vite_hmr_extra.html.twig' %}
+    {% endif %}
 
     {{ vite_entry_script_tags('agent/dossiers/consulter') }}
 
