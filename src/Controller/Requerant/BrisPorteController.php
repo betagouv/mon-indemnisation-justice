@@ -24,6 +24,10 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant/bris-de-porte')]
@@ -36,6 +40,8 @@ class BrisPorteController extends RequerantController
         #[Target('default.storage')] protected readonly FilesystemOperator $storage,
         // A supprimer
         protected readonly EntityManagerInterface $em,
+        protected readonly Mailer $mailer,
+        protected readonly Environment $twig,
     ) {
     }
 
@@ -58,7 +64,7 @@ class BrisPorteController extends RequerantController
     }
 
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function redirection(#[MapEntity(id: 'id')] BrisPorte $brisPorte, Mailer $mailer): RedirectResponse
+    public function redirection(#[MapEntity(id: 'id')] BrisPorte $brisPorte): RedirectResponse
     {
         $requerant = $this->getRequerant();
 
@@ -66,7 +72,7 @@ class BrisPorteController extends RequerantController
             $brisPorte->setDeclare();
             $this->brisPorteRepository->save($brisPorte);
 
-            $mailer
+            $this->mailer
                ->toRequerant($requerant)
                ->subject('Votre déclaration de bris de porte a bien été prise en compte')
                ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
@@ -128,8 +134,29 @@ class BrisPorteController extends RequerantController
         $dossier->ajouterDocument($document);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
+        try {
+            $dossier->setCorpsCourrier($this->twig->render('courrier/_corps_arretePaiement.html.twig', [
+                'dossier' => $dossier,
+            ]));
+        } catch (LoaderError|SyntaxError|RuntimeError $e) {
+            // TODO log
+        }
+
         $this->em->persist($dossier);
         $this->em->flush();
+
+        if (null !== $dossier->getRedacteur()) {
+            // Envoi du courriel de notification au rédacteur
+            $this->mailer
+                   ->toAgent($dossier->getRedacteur())
+                   ->subject(sprintf("Dossier %s: %s a approuvé l'indemnisation", $dossier->getReference(), $dossier->getRequerant()->estFeminin() ? 'la requérante' : 'le requérant'))
+                   ->htmlTemplate('email/agent_indemnisation_approuvee.twig', [
+                       'dossier' => $dossier,
+                       'agent' => $dossier->getRedacteur(),
+                   ])
+                   ->send()
+            ;
+        }
 
         return new JsonResponse([
             'etat' => $normalizer->normalize($dossier->getEtatDossier(), 'json', ['requerant:detail']),

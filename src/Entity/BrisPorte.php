@@ -320,8 +320,23 @@ class BrisPorte
     #[Groups('dossier:lecture')]
     public function getDateDeclaration(): ?\DateTimeInterface
     {
+        return $this->getDateEtat(EtatDossierType::DOSSIER_A_INSTRUIRE);
+    }
+
+    public function getDateSignatureAgent(): ?\DateTimeInterface
+    {
+        return $this->getDateEtat(EtatDossierType::DOSSIER_OK_A_APPROUVER);
+    }
+
+    public function getDateSignatureRequerant(): ?\DateTimeInterface
+    {
+        return $this->getDateEtat(EtatDossierType::DOSSIER_OK_A_VERIFIER);
+    }
+
+    protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
+    {
         return $this->historiqueEtats
-            ->findFirst(fn (int $index, EtatDossier $etat) => EtatDossierType::DOSSIER_A_INSTRUIRE === $etat->getEtat()
+            ->findFirst(fn (int $index, EtatDossier $e) => $etat === $e->getEtat()
             )?->getDate();
     }
 

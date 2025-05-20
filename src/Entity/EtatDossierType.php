@@ -19,13 +19,22 @@ enum EtatDossierType: string
     // Le validateur a signé le courrier d'indemnisation, c'est au tour du requérant d'approuver
     case DOSSIER_OK_A_APPROUVER = 'OK_A_APPROUVER';
 
-    // Le requérant a accepté la proposition d'indemnisation...
-
-    // ... il faut vérifier le courrier signé
+    // Le requérant a accepté la proposition d'indemnisation, le rédacteur doit vérifier la déclaration d'acceptation
     case DOSSIER_OK_A_VERIFIER = 'OK_A_VERIFIER';
-    // ... le courrier est vérifié, on génère l'arrêté de paiement qu'on transmet au bureau du paiement
+
+    // La déclaration d'acceptation est validée par le rédacteur, l'agent validateur doit générer l'arrêté de paiement
+    case DOSSIER_OK_VERIFIE = 'OK_VERIFIE';
+
+    // L'arrêté de paiement est généré, l'agent "transmission budget" doit le télécharger et le transmettre au bureau du
+    // budget.
     case DOSSIER_OK_A_INDEMNISER = 'OK_A_INDEMNISER';
 
+    // L'agent "transmission budget" a transmis l'arrêté de paiement au bureau du budget et attend un retour de leur
+    // part.
+    case DOSSIER_OK_EN_ATTENTE_PAIEMENT = 'OK_EN_ATTENTE_PAIEMENT';
+
+    // L'agent "transmission budget" a été notifiée du versement de l'indemnisation, elle déclare le dossier comme
+    // indemnisé et clos.
     case DOSSIER_OK_INDEMNISE = 'OK_INDEMNISE';
 
     case DOSSIER_KO_A_SIGNER = 'KO_A_SIGNER';

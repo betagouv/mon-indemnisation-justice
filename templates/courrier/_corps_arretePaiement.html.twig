@@ -1,0 +1,54 @@
+<h3>Arrêté</h3>
+
+<h4>Le garde des sceaux, ministre de la justice</h4>
+
+<p>
+    Vu la Loi n° 2025-127 du 14 février 2025 de finances pour 2025 ;
+</p>
+<p>
+    Vu la demande de {{ dossier.requerant.nomComplet }} aux fins d’indemnisation du préjudice subi en raison de la
+    détérioration de la porte d’entrée du logement situé à {{ dossier.adresse.localite|upper }}
+    ({{ dossier.adresse.codeDepartemental }}) ;
+</p>
+<p>
+    Considérant que le préjudice matériel subi par {{ dossier.requerant.nomComplet }} résulte d’une opération de
+    police judiciaire menée
+    le {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }} à
+    l’adresse susmentionnée ;
+</p>
+
+<p>Considérant que la responsabilité de l’État est engagée à l’égard de {{ dossier.requerant.nomComplet }} sur le
+    fondement de la rupture d’égalité devant les charges publiques ;
+</p>
+<p>Vu la proposition du ministère de la justice en date
+    du {{ dossier.dateSignatureAgent|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+    d'allouer à {{ dossier.requerant.nomComplet }} une indemnité définitive
+    de {{ dossier.montantIndemnisation|montant_litteral }}
+    ({{ dossier.montantIndemnisation|number_format(2, ',', ' ') }} EUR) ;
+    Vu la déclaration d’acceptation de {{ dossier.requerant.nomComplet }} en date
+    du {{ dossier.dateSignatureRequerant|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+    ;
+</p>
+
+<p>Considérant qu’il convient de procéder au paiement de ladite somme ;</p>
+
+<h3>Arrêté</h3>
+
+<p>
+    <b><u>Article 1er</u></b>. - Il est alloué à {{ dossier.requerant.nomComplet }} la somme
+    de {{ dossier.montantIndemnisation|montant_litteral }}
+    ({{ dossier.montantIndemnisation|number_format(2, ',', ' ') }} EUR) pour les causes sus-énoncées.</p>
+<p>
+    <b><u>Article 2.</u></b> - Cette somme sera versée sur le compte bancaire de {{ dossier.requerant.nomComplet }}
+    ouvert à <i>?BANQUE?</i> :
+</p>
+<ul>
+    <li>Code banque : <i>?CODE BANQUE?</i></li>
+    <li>Code guichet : <i>?CODE GUICHET?</i></li>
+    <li>Numéro de compte : <i>?NO COMPTE?</i></li>
+    <li>Clé RIB : <i>?CLEF RIB?</i></li>
+</ul>
+<p>
+    <b><u>Article 3.</u></b> - Le montant de cette indemnité sera imputé sur les crédits inscrits au programme
+    166, HT2, domaine fonctionnel 0166-06-01 du budget du Ministère de la Justice.
+</p>

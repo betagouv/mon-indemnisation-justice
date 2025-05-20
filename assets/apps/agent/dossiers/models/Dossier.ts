@@ -73,6 +73,18 @@ export abstract class BaseDossier {
     );
   }
 
+  get estAVerifier(): boolean {
+    return [EtatDossierType.OK_A_VERIFIER].includes(this.etat.etat);
+  }
+
+  get enAttentePaiement(): boolean {
+    return [
+      EtatDossierType.OK_VERIFIE,
+      EtatDossierType.OK_A_INDEMNISER,
+      EtatDossierType.OK_EN_ATTENTE_PAIEMENT,
+    ].includes(this.etat.etat);
+  }
+
   changerEtat(etat: EtatDossier): void {
     this.etat = etat;
   }

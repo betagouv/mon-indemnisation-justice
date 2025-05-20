@@ -44,6 +44,11 @@ export class DocumentType {
     "courrier_requerant",
     "Courrier de décision signé du requérant",
   );
+
+  public static readonly TYPE_ARRETE_PAIEMENT = new DocumentType(
+    "arrete_paiement",
+    "Arrêté de paiement",
+  );
 }
 
 export class Document {
@@ -66,5 +71,7 @@ export class Document {
     DocumentType.TYPE_TITRE_PROPRIETE,
     DocumentType.TYPE_CONTRAT_LOCATION,
     DocumentType.TYPE_COURRIER_MINISTERE,
+    DocumentType.TYPE_COURRIER_REQUERANT,
+    DocumentType.TYPE_ARRETE_PAIEMENT,
   ];
 }

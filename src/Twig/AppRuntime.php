@@ -76,7 +76,7 @@ class AppRuntime implements RuntimeExtensionInterface
         $numberParsing = explode('.', number_format(round($amount, 2, PHP_ROUND_HALF_DOWN), 2, '.', ''));
         $_1 = $t->format($numberParsing[0]);
         $_2 = $t->format($numberParsing[1]);
-        $output = str_replace(['$1', '$2'], [$_1, $_2], '$1 euros et $2 centimes');
+        $output = str_replace(['$1', '$2', '$3'], [$_1, $_2, $numberParsing[1] > 1 ? 's' : ''], '$1 euros et $2 centime$3');
 
         return $output;
     }

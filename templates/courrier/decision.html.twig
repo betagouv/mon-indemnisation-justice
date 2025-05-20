@@ -1,0 +1,310 @@
+{% extends 'courrier/_base_courrier.html.twig' %}
+
+{% block style %}
+    <style>
+        body {
+
+            header {
+
+                .courrier-decision-courrier-titre {
+                    font-family: 'Marianne', sans-serif;
+                    width: 33%;
+                    text-align: right;
+                    font-weight: bold;
+                    font-size: 12pt;
+                    letter-spacing: -.5pt;
+                }
+            }
+
+            #courrier-decision {
+
+
+                #courrier-decision-courrier-introduction {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: flex-start;
+                    flex-wrap: wrap;
+                    margin: 0 0 30pt 0;
+
+                    p {
+                        &:first-child {
+                            margin-top: 0 !important;
+                        }
+
+                        margin: 10pt 0;
+                        font-size: 10pt;
+                        line-height: 13pt;
+                        text-wrap: wrap;
+                    }
+
+                    .contact-bureau {
+                    }
+
+                    .section-a-gauche {
+                        width: calc(11 * 100% / 18)
+                    }
+
+                    .section-a-droite {
+                        width: calc(7 * 100% / 18);
+
+                        &.section-flottante {
+                            margin-left: calc(11 * 100% / 18);
+                        }
+                    }
+                }
+
+                #courrier-decision-courrier-contenu {
+                    p {
+                        margin: 12pt 0;
+                        letter-spacing: 0;
+                        font-size: 11pt;
+                        line-height: 13pt;
+                        word-wrap: break-word;
+                    }
+
+                }
+            }
+
+            #declaration-acceptation {
+                * {
+                    letter-spacing: .8pt;
+                    font-size: 11pt;
+                    line-height: 12pt;
+                    font-family: Arial, sans-serif;
+                }
+
+                input {
+                    border: none;
+                }
+
+                p {
+                    &.formulaire-titre {
+                        width: 100%;
+                        text-align: center;
+                    }
+
+                    &:first-child {
+                        margin: 0 0 1.5cm 0;
+                    }
+
+                    &.marge-plus {
+                        margin: 1.5cm 0 0 0;
+                    }
+
+                    &.marge-plus-plus {
+                        margin: 3cm 0 0 0;
+                    }
+
+                    margin: 10pt 0;
+                }
+
+                ul.formulaire {
+                    margin: 1cm 2cm;
+                    padding: 0;
+                    list-style-type: none;
+                    list-style-position: inside;
+
+                    li {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: end;
+
+                        *:first-child {
+                            flex: 2 1 0;
+                        }
+
+                        * {
+                            flex: 3 1 0;
+                        }
+
+
+                        &.formulaire-section {
+                            margin-top: 1cm;
+                        }
+
+                        input {
+                            border-bottom: 2px dotted #333 !important;
+                        }
+                    }
+                }
+
+                #declaration-acceptation-champs-lieu-signature, #declaration-acceptation-champs-date-signature {
+                    margin: 0 1rem;
+                }
+            }
+        }
+
+    </style>
+{% endblock style %}
+
+{% block pages %}
+
+    <header>
+
+        <div id="logo-ministere">
+            {% include 'courrier/logo_ministere.svg' %}
+        </div>
+
+
+        <span class="courrier-decision-courrier-titre">Direction des services judiciaires</span>
+
+    </header>
+    <div id="courrier-decision" class="page">
+        <div id="courrier-decision-courrier-introduction">
+
+            <div class="section-a-gauche">
+                <p>
+                    <b>Chef de bureau / Adjointe au chef du bureau</b>
+                </p>
+
+                {% if dossier.redacteur is not null %}
+                    <p>
+                        <u>Affaire suivie par</u> : <span
+                                class="texte-majuscule">{{ dossier.redacteur.nomCourt }}</span>
+                    </p>
+                {% endif %}
+
+                <p>
+                    <b class="texte-majuscule">
+                        Sous-direction des finances, <br/>
+                        de l’immobilier et de la performance<br/>
+                        bureau du precontentieux (FIP6)
+
+                    </b>
+                </p>
+
+                <p class="contact-bureau">
+                    <a href="mailto:precontentieux.dsj-fip6@justice.gouv.fr">precontentieux.dsj-fip6@justice.gouv.fr</a><br/>
+                    <b><u>Référence à rappeler</u></b> : {{ dossier.reference }}
+                </p>
+            </div>
+
+            <div class="section-a-droite">
+                Paris,
+                le {{ "now"|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+            </div>
+
+
+            <div class="section-a-droite section-flottante">
+                <p>
+                    {{ dossier.requerant.personnePhysique.civilite.libelle }} {{ dossier.requerant.personnePhysique.nom|upper }} {{ dossier.requerant.personnePhysique.prenom1|capitalize }}{% if dossier.requerant.email != null %}
+                        <br/>
+                        Courriel: <a
+                                href="mailto:{{ dossier.requerant.email }}">{{ dossier.requerant.email }}</a>
+                    {% endif %}
+                </p>
+            </div>
+
+        </div>
+
+        <div id="courrier-decision-courrier-contenu">
+            <p>
+                {{ dossier.requerant.personnePhysique.civilite.libelle }},
+            </p>
+
+            {% if dossier.corpsCourrier %}
+                {{ dossier.corpsCourrier|raw }}
+            {% else %}
+                {% if dossier.etatDossier.estAccepte() %}
+                    {% include 'courrier/_corps_accepte.html.twig' with {montantIndemnisation: dossier.propositionIndemnisation } %}
+                {% elseif dossier.etatDossier.estRejete() %}
+                    {% include 'courrier/_corps_rejete.html.twig' %}
+                {% endif %}
+            {% endif %}
+        </div>
+
+
+    </div>
+
+
+
+    {% if formulaire|default(dossier.estAccepte) %}
+        <div id="declaration-acceptation" class="page">
+            <p class="formulaire-titre">
+                <b class="texte-majuscule">Déclaration d’acceptation</b>
+            </p>
+
+            <p>
+                Je soussigné{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %},
+                …………………..………………………, déclare accepter l’indemnité définitive de
+                <b>{{ dossier.propositionIndemnisation|montant_litteral }}
+                    ({{ dossier.propositionIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
+                préjudice
+                confondues qui m’est proposée par le garde des Sceaux, ministre de la Justice, en réparation du
+                préjudice
+                subi en raison de la détérioration de la porte d’entrée d’un logement m’appartenant
+                sis {{ dossier.adresse.ligne1 }}
+                {{ dossier.adresse.ligne2 }} à {{ dossier.adresse.localite }}
+                ({{ dossier.adresse.codeDepartemental }})
+                ;
+            </p>
+
+            <p>
+                Je reconnais que, moyennant le versement de cette somme, je serai intégralement
+                désintéressé{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %} du préjudice
+                subi au cours de l’opération de police judiciaire intervenue
+                le {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+                à l’adresse susmentionnée
+                ;</p>
+
+            <p>
+                Je déclare renoncer à exercer toute action ultérieure à raison de ces faits contre l’État.
+            </p>
+
+            <p>
+                Je demande que l’indemnité soit versée sur le compte référencé ci-dessous :</p>
+
+            <ul class="formulaire">
+                <li>
+                    <label for="declaration-acceptation-champs-etablissement">Établissement :</label><input
+                            id="declaration-acceptation-champs-etablissement" type="text"/>
+                </li>
+                <li>
+                    <label for="declaration-acceptation-champs-code-banque">Code banque :</label><input
+                            id="declaration-acceptation-champs-code-banque" type="text"/>
+                </li>
+                <li>
+                    <label for="declaration-acceptation-champs-code-guichet">Code guichet :</label><input
+                            id="declaration-acceptation-champs-code-guichet" type="text"/>
+                </li>
+                <li>
+                    <label for="declaration-acceptation-champs-numero-compte">Numéro de compte :</label><input
+                            id="declaration-acceptation-champs-numero-compte" type="text"/>
+                </li>
+                <li>
+                    <label for="declaration-acceptation-champs-cle-rib">Clé RIB :</label><input
+                            id="declaration-acceptation-champs-cle-rib" type="text"/>
+                </li>
+
+                <li class="formulaire-section">
+                    <label for="declaration-acceptation-champs-numero-ss">Numéro de sécurité sociale
+                        :</label><input
+                            id="declaration-acceptation-champs-numero-ss" type="text"/>
+                </li>
+                <li>
+                    <label for="declaration-acceptation-champs-naissance">Date et lieu de naissance
+                        :</label><input
+                            id="declaration-acceptation-champs-naissance" type="text"/>
+                </li>
+            </ul>
+
+            {# Formulaire ici #}
+
+            <p><label for="declaration-acceptation-champs-lieu-signature">Fait à</label> <input
+                        id="declaration-acceptation-champs-lieu-signature" type="text"/>
+                <label for="declaration-acceptation-champs-date-signature">le</label> <input
+                        id="declaration-acceptation-champs-date-signature" type="text"/>
+            </p>
+
+            <p class="marge-plus">Signature (précédée de la mention « lu et approuvé »)</p>
+
+            <p class="marge-plus">La déclaration d’acceptation doit être retournée via votre espace personnel</p>
+
+            <p class="marge-plus-plus"><b><u>Référence à rappeler</u> :{{ dossier.reference }}</b></p>
+
+
+        </div>
+    {% endif %}
+
+
+{% endblock pages %}

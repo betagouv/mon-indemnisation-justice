@@ -28,17 +28,6 @@ class CourrierController extends AbstractController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
-    #[Route('/dossier/{id}/courrier/previsualiser', name: 'agent_redacteur_courrier_dossier_previsualiser', methods: ['GET'], condition: "env('APP_DEBUG')")]
-    public function previsualiserCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
-    {
-        return $this->render('courrier/dossier.html.twig', [
-            'dossier' => $dossier,
-            'web' => $request->query->getBoolean('w', true),
-            'formulaire' => $request->query->getBoolean('f', true),
-        ]);
-    }
-
-    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
     #[Route('/dossier/{id}/courrier/{hash}', name: 'agent_redacteur_courrier_dossier', methods: ['GET'])]
     public function courrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, string $hash, Request $request): Response
     {

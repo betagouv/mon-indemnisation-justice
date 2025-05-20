@@ -34,6 +34,10 @@ class Agent implements UserInterface
 
     public const ROLE_AGENT_ATTRIBUTEUR = 'ROLE_AGENT_ATTRIBUTEUR';
 
+    // Le rôle ROLE_AGENT_TRANSMISSION_BUDGET est attribué à l'agent en charge d'échanger avec le bureau du budget
+    // (envoi de l'arrêté de paiement et autres documents légaux ainsi que notification des versements effectués).
+    public const ROLE_AGENT_TRANSMISSION_BUDGET = 'ROLE_AGENT_TRANSMISSION_BUDGET';
+
     public const ROLE_AGENT_BUREAU_BUDGET = 'ROLE_AGENT_BUREAU_BUDGET';
 
     public const ROLE_AGENT_FORCES_DE_L_ORDRE = 'ROLE_AGENT_FORCES_DE_L_ORDRE';

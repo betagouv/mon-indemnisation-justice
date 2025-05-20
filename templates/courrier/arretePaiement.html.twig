@@ -1,0 +1,41 @@
+{% extends 'courrier/_base_courrier.html.twig' %}
+
+{% block style %}
+    <style>
+        h3, h4 {
+            font-weight: bold;
+            font-size: 1rem;
+            line-height: 1.2rem;
+            text-align: center;
+            text-transform: uppercase;
+        }
+    </style>
+{% endblock style %}
+
+
+
+{% block pages %}
+
+    <header>
+
+        <div id="logo-ministere">
+            {% include 'courrier/logo_ministere.svg' %}
+        </div>
+
+    </header>
+
+    {% if dossier.corpsCourrier %}
+        {{ dossier.corpsCourrier|raw }}
+    {% else %}
+        {% include 'courrier/_corps_arretePaiement.html.twig' %}
+    {% endif %}
+
+    <p>Fait à Paris, le {{ 'now'|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}</p>
+
+
+    <p class="text-centre" style="width: 30%;margin:auto;">
+        <b>Pour le garde des sceaux,<br>
+            ministre de la justice<br/>
+            et par délégation</b>
+    </p>
+{% endblock pages %}
