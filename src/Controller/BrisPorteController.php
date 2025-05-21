@@ -9,12 +9,13 @@ use Doctrine\ORM\Exception\ORMException;
 use MonIndemnisationJustice\Dto\Inscription;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\GeoDepartement;
-use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Forms\TestEligibiliteType;
+use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,6 +36,8 @@ class BrisPorteController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
         private readonly Mailer $mailer,
+        #[Autowire(service: 'oidc_client_france_connect')]
+        protected readonly OidcClient $oidcClientFranceConnect,
     ) {
     }
 
@@ -161,6 +164,7 @@ class BrisPorteController extends AbstractController
             'react' => [
                 'routes' => [
                     'connexion' => $router->generate('app_login'),
+                    'inscriptionFranceConnect' => $this->oidcClientFranceConnect->buildAuthorizeUrl($request, 'requerant_securite_inscription'),
                     'cgu' => $router->generate('public_cgu'),
                 ],
                 'token' => $csrfTokenManager->getToken('creation-de-compte')->getValue(),
@@ -202,13 +206,6 @@ class BrisPorteController extends AbstractController
         $requerant->genererJetonVerification();
 
         $this->entityManager->persist($requerant);
-
-        $dossier = (new BrisPorte())
-            ->setRequerant($requerant)
-            ->setQualiteRequerant($testEligibilite->estProprietaire ? QualiteRequerant::PRO : QualiteRequerant::LOC)
-            ->setTestEligibilite($testEligibilite)
-        ;
-        $this->entityManager->persist($dossier);
 
         $testEligibilite->requerant = $requerant;
         $this->entityManager->persist($testEligibilite);
