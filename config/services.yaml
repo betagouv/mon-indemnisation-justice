@@ -25,12 +25,15 @@ services:
       arguments:
         - '%env(DATABASE_URL)%'
 
-    MonIndemnisationJustice\Security\Oidc\OidcClient:
+    oidc_client_pro_connect:
+      class: 'MonIndemnisationJustice\Security\Oidc\OidcClient'
       arguments:
         $wellKnownUrl: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
         $clientId: '%env(PRO_CONNECT_CLIENT_ID)%'
         $clientSecret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
-        $loginCheckRoute: 'agent_securite_connexion'
+        $loginCheckRoutes: ['agent_securite_connexion']
+        $context:
+          scope: ['openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id']
 
     MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator:
       arguments:
@@ -38,6 +41,24 @@ services:
         $loginCheckRoute: 'agent_securite_connexion'
         $loginSuccessRoute: 'agent_index'
         $autoPromotionHashes: '%env(default::json:MIJ_AUTO_PROMOTION_HASHES)%'
+
+    oidc_client_france_connect:
+      class: 'MonIndemnisationJustice\Security\Oidc\OidcClient'
+      arguments:
+        $wellKnownUrl: '%env(FRANCE_CONNECT_WELL_KNOWN_URL)%'
+        $clientId: '%env(FRANCE_CONNECT_CLIENT_ID)%'
+        $clientSecret: '%env(FRANCE_CONNECT_CLIENT_SECRET)%'
+        $loginCheckRoutes: ['requerant_securite_connexion', 'requerant_securite_inscription']
+        $context:
+          scope: ['openid', 'email', 'phone_number', 'given_name', 'family_name', 'birthdate', 'gender', 'birthplace', 'birthcountry']
+          acr_values: 'eidas1'
+
+    MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator:
+        arguments:
+          $loginPageRoute: 'app_login'
+          $signupCheckRoute: 'requerant_securite_inscription'
+          $loginCheckRoute: 'requerant_securite_connexion'
+          $loginSuccessRoute: 'requerant_home_index'
 
     MonIndemnisationJustice\Service\Mailer:
         $emailFrom: '%env(EMAIL_FROM)%'
