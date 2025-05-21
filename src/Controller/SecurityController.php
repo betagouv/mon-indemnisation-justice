@@ -31,6 +31,8 @@ class SecurityController extends AbstractController
         protected Mailer $mailer,
         protected EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
+        #[Autowire(service: 'oidc_client_france_connect')]
+        protected readonly OidcClient $oidcClientREquerant,
         #[Autowire(service: 'oidc_client_pro_connect')]
         protected readonly OidcClient $oidcClientAgent,
     ) {
@@ -58,6 +60,7 @@ class SecurityController extends AbstractController
         return $this->render('security/connexion.html.twig', [
             'last_username' => $lastUsername,
             'error_message' => $errorMessage,
+            'france_connect_url' => $this->oidcClientREquerant->buildAuthorizeUrl($request, 'requerant_securite_connexion'),
             'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
         ]);
     }

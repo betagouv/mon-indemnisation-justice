@@ -205,78 +205,94 @@
                         ou suivre l'avancement de mon dossier.
                     </p>
 
-                    <div class="fr-grow fr-column fr-column--centered">
-                        <form method="POST">
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                            <div class="fr-grid-row">
-                                <div class="fr-col-12 fr-mb-2w">
-                                    <div class="fr-input-group">
-                                        <label class="fr-label" for="input-:r1:">
-                                            Adresse courriel<span
-                                                    class="fr-hint-text">Format attendu : nom@domaine.fr</span>
-                                        </label>
-                                        <input
-                                                type="email"
-                                                name="_username"
-                                                class="fr-input"
-                                                aria-describedby="input-:r1:-desc-error"
-                                                id="input-:r1:" value="{{ last_username }}"
-                                        >
-                                        {% if error_message|default(null) is not null %}
-                                            <div id="input-:r1:-messages-group"
-                                                 class="fr-messages-group fr-message--error" aria-live="polite">
-                                                {{ error_message }}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="fr-col-12 fr-mb-1w">
-                                    <div class="fr-password" id="password-input-:r4:" data-fr-js-password="true">
-                                        <label class="fr-label" for="password-:r5:">Mot de passe</label>
-                                        <div class="fr-input-wrap">
-                                            <input
-                                                    name="_password"
-                                                    class="fr-password__input fr-input"
-                                                    id="password-:r5:"
-                                                    type="password"
-                                                    value=""
-                                            >
-                                        </div>
-                                        <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
-                                            <input
-                                                    aria-label="Afficher le mot de passe"
-                                                    id="password-:r5:-toggle-show"
-                                                    type="checkbox"
-                                            >
-                                            <label
-                                                    class="fr-password__checkbox fr-label"
-                                                    for="password-:r5:-toggle-show">
-                                                Afficher
+                    <div>
+                        <div class="fr-connect-group">
+                            <a class="fr-btn fr-connect" href="{{ france_connect_url }}" rel="nofollow">
+                                <span class="fr-connect__login">S’identifier avec</span>
+                                <span class="fr-connect__brand">FranceConnect</span>
+                            </a>
+                            <p>
+                                <a href="https://franceconnect.gouv.fr/" target="_blank" rel="noopener"
+                                   title="Qu’est-ce que FranceConnect ? - nouvelle fenêtre"
+                                >
+                                    Qu’est-ce que FranceConnect ?
+                                </a>
+                            </p>
+                        </div>
+
+
+                        <div class="fr-grow fr-column fr-column--centered">
+                            <form method="POST">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                <div class="fr-grid-row">
+                                    <div class="fr-col-12 fr-mb-2w">
+                                        <div class="fr-input-group">
+                                            <label class="fr-label" for="input-:r1:">
+                                                Adresse courriel<span
+                                                        class="fr-hint-text">Format attendu : nom@domaine.fr</span>
                                             </label>
+                                            <input
+                                                    type="email"
+                                                    name="_username"
+                                                    class="fr-input"
+                                                    aria-describedby="input-:r1:-desc-error"
+                                                    id="input-:r1:" value="{{ last_username }}"
+                                            >
+                                            {% if error_message|default(null) is not null %}
+                                                <div id="input-:r1:-messages-group"
+                                                     class="fr-messages-group fr-message--error" aria-live="polite">
+                                                    {{ error_message }}
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                </div>
-                                <div class="fr-col-12  fr-mb-3w">
-                                    <div class="fr-btns-group fr-btns-group--inline">
-                                        <button
-                                                class="fr-btn fr-btn--tertiary-no-outline"
-                                                type="button"
-                                                aria-controls="fr-modal-motdepasse-oublie"
-                                                data-fr-opened="false"
-                                        >
-                                            J'ai oublié mon mot de passe
-                                        </button>
+                                    <div class="fr-col-12 fr-mb-1w">
+                                        <div class="fr-password" id="password-input-:r4:" data-fr-js-password="true">
+                                            <label class="fr-label" for="password-:r5:">Mot de passe</label>
+                                            <div class="fr-input-wrap">
+                                                <input
+                                                        name="_password"
+                                                        class="fr-password__input fr-input"
+                                                        id="password-:r5:"
+                                                        type="password"
+                                                        value=""
+                                                >
+                                            </div>
+                                            <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
+                                                <input
+                                                        aria-label="Afficher le mot de passe"
+                                                        id="password-:r5:-toggle-show"
+                                                        type="checkbox"
+                                                >
+                                                <label
+                                                        class="fr-password__checkbox fr-label"
+                                                        for="password-:r5:-toggle-show">
+                                                    Afficher
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12  fr-mb-3w">
+                                        <div class="fr-btns-group fr-btns-group--inline">
+                                            <button
+                                                    class="fr-btn fr-btn--tertiary-no-outline"
+                                                    type="button"
+                                                    aria-controls="fr-modal-motdepasse-oublie"
+                                                    data-fr-opened="false"
+                                            >
+                                                J'ai oublié mon mot de passe
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="fr-col-12 fr-btns-group fr-btns-group--inline fr-btns-group--right">
+                                        <button class="fr-btn" type="submit">Je me connecte à mon espace</button>
                                     </div>
                                 </div>
-                                <div class="fr-col-12 fr-btns-group fr-btns-group--inline fr-btns-group--right">
-                                    <button class="fr-btn" type="submit">Je me connecte à mon espace</button>
-                                </div>
-                            </div>
 
-                        </form>
+                            </form>
 
+                        </div>
                     </div>
-                </div>
             </section>
 
             <div class="fr-section-separateur"></div>
