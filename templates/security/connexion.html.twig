@@ -170,11 +170,11 @@
 
             }
 
-            .fr-connect {
+            .fr-pro-connect {
                 padding-left: 4.375em !important;
             }
 
-            .fr-connect:before {
+            .fr-pro-connect:before {
                 width: 3.375em !important;
                 background-size: 3.375em 3em !important;
                 left: 0.625em !important;
@@ -310,7 +310,7 @@
                         <form method="post" action="{{ path('securite_connexion_agent') }}">
                             <input type="hidden" name="_csrf_token_agent" value="{{ csrf_token('connexionAgent') }}">
                             <div class="fr-connect-group">
-                                <button class="fr-connect" type="submit">
+                                <button class="fr-connect fr-pro-connect" type="submit">
                                     <span class="fr-connect__login">S’identifier avec</span>
                                     <span class="fr-connect__brand">ProConnect</span>
                                 </button>

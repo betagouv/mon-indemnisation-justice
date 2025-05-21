@@ -49,6 +49,7 @@ services:
         $clientId: '%env(FRANCE_CONNECT_CLIENT_ID)%'
         $clientSecret: '%env(FRANCE_CONNECT_CLIENT_SECRET)%'
         $loginCheckRoutes: ['requerant_securite_connexion', 'requerant_securite_inscription']
+        $logoutRoute: 'requerant_securite_deconnexion'
         $context:
           scope: ['openid', 'email', 'phone_number', 'given_name', 'family_name', 'birthdate', 'gender', 'birthplace', 'birthcountry']
           acr_values: 'eidas1'
