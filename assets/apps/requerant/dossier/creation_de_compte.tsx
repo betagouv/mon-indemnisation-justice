@@ -3,6 +3,7 @@ import {
   Civilite,
   Inscription,
 } from "@/apps/requerant/dossier/models/Inscription";
+import FranceConnectButton from "@codegouvfr/react-dsfr/FranceConnectButton";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import _ from "lodash";
@@ -17,6 +18,7 @@ const args = JSON.parse(document.getElementById("react-arguments").textContent);
 
 interface Routes {
   connexion: string;
+  inscriptionFranceConnect: string;
   cgu: string;
 }
 
@@ -128,6 +130,10 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                         </a>
                       </p>
                     </div>
+
+                    <FranceConnectButton
+                      url={routes.inscriptionFranceConnect}
+                    />
 
                     <p className="fr-my-2w">
                       Tous les champs sont obligatoires

@@ -17,6 +17,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[ORM\Entity(repositoryClass: RequerantRepository::class)]
 #[ORM\Table(name: 'requerants')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SUB', fields: ['sub'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -39,8 +40,11 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'simple_array')]
     protected array $roles = [self::ROLE_REQUERANT];
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $password = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $sub = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateChangementMDP = null;
@@ -170,6 +174,18 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getSub(): ?string
+    {
+        return $this->sub;
+    }
+
+    public function setSub(?string $sub): Requerant
+    {
+        $this->sub = $sub;
 
         return $this;
     }
