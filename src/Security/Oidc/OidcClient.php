@@ -41,6 +41,7 @@ class OidcClient
         protected readonly UrlGeneratorInterface $urlGenerator,
         #[Target('oidc')] protected readonly CacheInterface $cache,
         protected readonly array $context = [],
+        protected readonly ?string $logoutRoute = null,
     ) {
         $this->client = new HttpClient([]);
     }
@@ -115,7 +116,32 @@ class OidcClient
         );
     }
 
-    public function authenticate(Request $request): string
+    public function buildLogoutUrl(Request $request, string $idToken): string
+    {
+        $state = Uuid::uuid4()->toString();
+        $redirectUri = $this->urlGenerator->generate($this->logoutRoute, referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $request->getSession()->set('_oidc_authentication', [
+            'state' => $state,
+        ]);
+
+        return sprintf(
+            '%s?%s',
+            $this->configuration['end_session_endpoint'],
+            http_build_query(
+                [
+                    'id_token_hint' => $idToken,
+                    'post_logout_redirect_uri' => $redirectUri,
+                    'state' => $state,
+                ]
+            )
+        );
+    }
+
+    /**
+     * @return string[]
+     */
+    public function authenticate(Request $request): array
     {
         $this->configure();
 
@@ -163,7 +189,7 @@ class OidcClient
             throw new AuthenticationException('Authorization failed (nonce does not match).');
         }
 
-        return $accessToken;
+        return [$accessToken, $credentials->id_token];
     }
 
     public function fetchUserInfo(string $token): array
@@ -187,5 +213,19 @@ class OidcClient
 
         // Sinon, on traite en JWT (au risque de jeter des exceptions)
         return (array) JWT::decode($raw, $this->jwks);
+    }
+
+    public function logout(Request $request): bool
+    {
+        $context = $request->getSession()->get('_oidc_authentication', []);
+        $state = $request->query->get('state');
+
+        if ($state === ($context['state'] ?? null)) {
+            $request->getSession()->remove('_oidc_authentication');
+
+            return true;
+        }
+
+        return false;
     }
 }

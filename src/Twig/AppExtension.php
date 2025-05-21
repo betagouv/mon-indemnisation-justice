@@ -15,6 +15,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('est_agent', [AppRuntime::class, 'estAgent']),
             new TwigFilter('est_requerant', [AppRuntime::class, 'estRequerant']),
             new TwigFilter('etat_requerant', [AppRuntime::class, 'etatDossierRequerant']),
+            new TwigFilter('url_deconnexion', [AppRuntime::class, 'urlDeconnexion']),
             new TwigFilter('md5', 'md5'),
             new TwigFilter('base64_encode', 'base64_encode'),
             new TwigFilter('base64_decode', 'base64_decode'),
