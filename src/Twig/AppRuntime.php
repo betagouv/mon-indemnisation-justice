@@ -2,15 +2,19 @@
 
 namespace MonIndemnisationJustice\Twig;
 
+use ApiPlatform\Metadata\UrlGeneratorInterface;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator;
 use Pentatrion\ViteBundle\Exception\EntrypointNotFoundException;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\FirewallMapInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AppRuntime implements RuntimeExtensionInterface
@@ -21,6 +25,9 @@ class AppRuntime implements RuntimeExtensionInterface
         protected readonly EntrypointsLookup $entrypointLookup,
         #[Autowire(param: 'kernel.project_dir')]
         string $projectDirectory,
+        protected readonly UrlGeneratorInterface $router,
+        protected readonly FranceConnectAuthenticator $franceConnectAuthenticator,
+        protected readonly FirewallMapInterface $firewallMap,
     ) {
         $this->publicDirectory = "$projectDirectory/public";
     }
@@ -28,6 +35,15 @@ class AppRuntime implements RuntimeExtensionInterface
     public function estRequerant(?UserInterface $user = null): bool
     {
         return $user instanceof Requerant;
+    }
+
+    public function urlDeconnexion(Requerant $requerant, Request $request): ?string
+    {
+        if ($requerant->estFranceConnect()) {
+            return $this->franceConnectAuthenticator->getUrlDeconnexion($request);
+        }
+
+        return $this->router->generate('app_logout');
     }
 
     public function etatDossierRequerant(BrisPorte $dossier): string

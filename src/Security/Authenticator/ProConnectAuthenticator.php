@@ -57,10 +57,10 @@ class ProConnectAuthenticator extends AbstractAuthenticator
     {
         try {
             // Authenticate
-            $token = $this->oidcClient->authenticate($request);
+            list($accessToken) = $this->oidcClient->authenticate($request);
 
             // User info
-            $userInfo = $this->oidcClient->fetchUserInfo($token);
+            $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
 
             $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);
 

@@ -24,6 +24,8 @@ use Symfony\Component\Security\Http\HttpUtils;
 
 class FranceConnectAuthenticator extends AbstractAuthenticator
 {
+    public const LOGOUT_URL_SESSION_KEY = 'france_connect_deconnexion_url';
+
     public function __construct(
         protected readonly HttpUtils $httpUtils,
         protected readonly string $loginPageRoute,
@@ -58,10 +60,10 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
     {
         try {
             // Authenticate
-            $token = $this->oidcClient->authenticate($request);
+            list($accessToken, $idToken) = $this->oidcClient->authenticate($request);
 
             // User info
-            $userInfo = $this->oidcClient->fetchUserInfo($token);
+            $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
 
             $requerant = $this->requerantRepository->findByEmailOrSub($userInfo['email'] ?? null, $userInfo['sub'] ?? null);
             if (null === $requerant) {
@@ -91,14 +93,28 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                     $this->em->flush();
                 } else {
                     // Connexion
-                    throw new AuthenticationException('Utilsiateur non reconnu');
+                    throw new AuthenticationException('Utilisateur non reconnu');
                 }
             }
+
+            $request->getSession()->set(self::LOGOUT_URL_SESSION_KEY, $this->oidcClient->buildLogoutUrl($request, $idToken));
 
             return new SelfValidatingPassport(new UserBadge($requerant->getUserIdentifier()));
         } catch (AuthenticationException $e) {
             $this->logger->error($e->getMessage(), $e->getMessageData());
             throw $e;
+        }
+    }
+
+    public function getUrlDeconnexion(Request $request): ?string
+    {
+        return $request->getSession()->get(self::LOGOUT_URL_SESSION_KEY);
+    }
+
+    public function logout(Request $request): void
+    {
+        if ($this->oidcClient->logout($request)) {
+            $request->getSession()->remove(self::LOGOUT_URL_SESSION_KEY);
         }
     }
 
@@ -109,6 +125,6 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new RedirectResponse($this->urlGenerator->generate($this->loginPageRoute, ['erreur' => 'proconnect']));
+        return new RedirectResponse($this->urlGenerator->generate($this->loginPageRoute, ['erreur' => $exception->getMessage()]));
     }
 }
