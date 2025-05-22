@@ -112,11 +112,21 @@ class EligibiliteBrisPorteTest extends AbstractFunctionalTestCase
         $this->assertEquals(Response::HTTP_OK, $this->client->getInternalResponse()->getStatusCode());
         $this->client->waitForVisibility('main', 1);
 
+        $this->client->refreshCrawler();
+
         $this
             ->step('Page inscription')
             ->screenshot($device);
 
-        $button = $this->client->getCrawler()->selectButton('Valider mon inscription et poursuivre ma demande')->first();
+        $this->getButton("S'inscrire avec une adresse email")->click();
+
+        $this
+            ->wait(200)
+            ->screenshot($device, 'Formulaire affiché');
+
+        $this->client->refreshCrawler();
+
+        $button = $this->client->getCrawler()->selectButton('Valider mon inscription et poursuivre ma demande');
 
         $button->form([
             'civilite' => 'M',

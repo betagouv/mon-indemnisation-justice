@@ -22,6 +22,9 @@ env:
   SYMFONY_DEPRECATIONS_HELPER: disabled
   PANTHER_ERROR_SCREENSHOT_DIR: public/screenshots
   PANTHER_ERROR_SCREENSHOT_ATTACH: true
+  FRANCE_CONNECT_WELL_KNOWN_URL: http://franceconnect:9997/.well-known/openid-configuration
+  FRANCE_CONNECT_CLIENT_ID: client_id
+  FRANCE_CONNECT_CLIENT_SECRET: client_secret
   PRO_CONNECT_WELL_KNOWN_URL: https://domain.null/.well-known/openid-configuration
   PRO_CONNECT_CLIENT_ID: proconnect-mock
   PRO_CONNECT_CLIENT_SECRET: bar
@@ -56,6 +59,17 @@ jobs:
         ports:
           - 1025:1025
           - 8025:8025
+      franceconnect:
+        image: pierrelemee/mock-oidc-server
+        ports:
+          - 5432:5432
+        env:
+          PORT: 9997
+          HOST: '0.0.0.0'
+          # Liste exhaustive des exemples : https://github.com/france-connect/sources/blob/main/docker/volumes/fcp-low/mocks/idp/databases/citizen/base.csv
+          USERS: "/app/data/usagers.json"
+        volumes:
+          - ./.docker/franceconnect:/app/data/
     steps:
       - uses: actions/checkout@v4
       - uses: browser-actions/setup-firefox@v1
