@@ -41,6 +41,12 @@ class SecurityController extends AbstractController
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(Request $request): Response
     {
+        if ($request->query->has('erreur')) {
+            $this->addFlash('message_erreur_connexion', $request->query->get('erreur'));
+
+            return $this->redirect($request->getRequestUri());
+        }
+
         $error = $this->authenticationUtils->getLastAuthenticationError();
         $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
 

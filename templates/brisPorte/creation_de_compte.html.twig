@@ -62,6 +62,26 @@
         [v-cloak] {
             display: none !important;
         }
+
+        .fr-section-separateur--ligne {
+            width: 100%;
+            margin: 1rem 0;
+
+            span {
+                width: 100%;
+                display: flex;
+                align-items: center;
+
+                &:before,
+                &:after {
+                    flex: 1;
+                    content: "";
+                    margin: 0 1rem;
+                    background: var(--border-contrast-grey);
+                    height: 1px;
+                }
+            }
+        }
     </style>
 {% endblock %}
 
@@ -73,6 +93,7 @@
 {% block javascripts %}
     <script id="react-arguments" type="application/json">
     {{ react|default({})|json_encode()|raw }}
+
 
     </script>
 
