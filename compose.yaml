@@ -32,6 +32,7 @@ services:
           - mon-indemnisation.anje-justice.dev
           - mon-indemnisation.anje-justice.test
           - proconnect.gouv.test
+          - franceconnect.gouv.test
     ports:
       - "80:80"
       - "443:443"
@@ -102,6 +103,24 @@ services:
     ports:
       - "5173:5173"
 
+  franceconnect:
+    image: pierrelemee/mock-oidc-server
+    hostname: franceconnect
+    networks:
+      mijnet:
+        aliases:
+          - franceconnect
+    ports:
+      - '9997:9997'
+    environment:
+      PORT: 9997
+      HOST: '0.0.0.0'
+      # Liste exhaustive des exemples : https://github.com/france-connect/sources/blob/main/docker/volumes/fcp-low/mocks/idp/databases/citizen/base.csv
+      USERS: "/app/data/usagers.json"
+    working_dir: /app
+    volumes:
+      - ./.docker/franceconnect:/app/data/
+
   proconnect:
     image: pierrelemee/mock-oidc-server
     hostname: proconnect
@@ -118,7 +137,6 @@ services:
     working_dir: /app
     volumes:
       - ./.docker/proconnect:/app/data/
-
 
 networks:
   mijnet:

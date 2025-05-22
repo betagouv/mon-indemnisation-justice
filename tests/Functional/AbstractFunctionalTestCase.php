@@ -46,6 +46,15 @@ abstract class AbstractFunctionalTestCase extends PantherTestCase
 
     abstract protected static function pathSuffix(): string;
 
+    protected function getButton(string $label): ?WebDriverElement
+    {
+        return $this->client->getCrawler()->filter('button,a.fr-btn')
+                ->reduce(function (WebDriverElement $e) use ($label) {
+                    return trim($e->getText()) === $label;
+                })
+                ->first() ?? null;
+    }
+
     public function devices(): array
     {
         return [

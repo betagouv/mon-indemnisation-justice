@@ -5,7 +5,6 @@ namespace MonIndemnisationJustice\Tests\Functional\Requerant;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
 use Facebook\WebDriver\WebDriverDimension;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverPoint;
 use GuzzleHttp\Client as HttpClient;
 use MonIndemnisationJustice\Entity\Adresse;
@@ -89,15 +88,6 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
         // Doc API mailpit https://mailpit.axllent.org/docs/api-v1/view.html#delete-/api/v1/messages
         $this->mailerClient = new HttpClient(['base_uri' => $_ENV['MAILPIT_URL'] ?? $_SERVER['MAILPIT_URL']]);
         $this->mailerClient->delete('/api/v1/messages');
-    }
-
-    protected function getButton(string $label): ?WebDriverElement
-    {
-        return $this->client->getCrawler()->filter('button,a.fr-btn')
-                ->reduce(function (WebDriverElement $e) use ($label) {
-                    return trim($e->getText()) === $label;
-                })
-                ->first() ?? null;
     }
 
     /**
