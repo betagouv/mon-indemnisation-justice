@@ -30,6 +30,32 @@
         </dialog>
     {% endif %}
 
+    {% set flash = app.flashes('message_erreur_connexion')|first %}
+    {% if flash %}
+        <dialog aria-labelledby="fr-modal-flash-error" role="dialog" id="fr-modal-flash-error"
+                class="fr-modal fr-modal--opened">
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                        <div class="fr-modal__body">
+                            <div class="fr-modal__header">
+                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
+                                        aria-controls="fr-modal-flash-error">Fermer
+                                </button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <div class="fr-alert fr-alert--error">
+                                    <h3 class="fr-alert__title">Erreur de connexion</h3>
+                                    <p>{{ flash }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+    {% endif %}
+
     <dialog
             aria-labelledby="fr-modal-title-fr-modal-motdepasse-oublie"
             role="dialog"
@@ -186,6 +212,27 @@
                 width: 1px;
                 align-self: stretch;
             }
+
+            .fr-section-separateur--ligne {
+                width: 100%;
+                margin: 1rem 0;
+
+                span {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+
+                    &:before,
+                    &:after {
+                        flex: 1;
+                        content: "";
+                        margin: 0 1rem;
+                        background: var(--border-contrast-grey);
+                        height: 1px;
+                    }
+                }
+            }
+
         }
 
     </style>
@@ -205,7 +252,8 @@
                         ou suivre l'avancement de mon dossier.
                     </p>
 
-                    <div>
+                    <div style="display: flex; flex-direction: column;align-items: center;align-self: center;width: 100%;">
+
                         <div class="fr-connect-group">
                             <a class="fr-btn fr-connect" href="{{ france_connect_url }}" rel="nofollow">
                                 <span class="fr-connect__login">S’identifier avec</span>
@@ -220,9 +268,21 @@
                             </p>
                         </div>
 
+                        <div class="fr-section-separateur--ligne">
+                            <span>ou</span>
+                        </div>
 
-                        <div class="fr-grow fr-column fr-column--centered">
-                            <form method="POST">
+
+                        <div class="fr-grow fr-column fr-column--centered ">
+                            <p style="text-align: center;">J'ai initié mon compte sans France Connect ou je suis une
+                                personne morale (bailleur
+                                social ou SCI)</p>
+                            <button type="button" class="fr-btn" id="bouton-afficher-formulaire-connexion-email">
+                                S'identifier avec son adresse email
+                            </button>
+
+
+                            <form method="POST" class="fr-hidden" id="formulaire-connexion-email">
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                                 <div class="fr-grid-row">
                                     <div class="fr-col-12 fr-mb-2w">
@@ -293,6 +353,7 @@
 
                         </div>
                     </div>
+                </div>
             </section>
 
             <div class="fr-section-separateur"></div>
@@ -346,6 +407,11 @@
                     /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                 ));
             }
+        });
+
+        document.getElementById('bouton-afficher-formulaire-connexion-email').addEventListener('click', (event) => {
+            document.getElementById('formulaire-connexion-email')?.classList.remove('fr-hidden');
+            event.target.classList.add('fr-hidden');
         });
 
     </script>
