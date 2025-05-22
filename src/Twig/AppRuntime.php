@@ -39,8 +39,8 @@ class AppRuntime implements RuntimeExtensionInterface
 
     public function urlDeconnexion(Requerant $requerant, Request $request): ?string
     {
-        if ($requerant->estFranceConnect()) {
-            return $this->franceConnectAuthenticator->getUrlDeconnexion($request);
+        if ($requerant->estFranceConnect() && null !== ($logoutUrl = $this->franceConnectAuthenticator->getUrlDeconnexion($request))) {
+            return $logoutUrl;
         }
 
         return $this->router->generate('app_logout');
