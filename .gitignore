@@ -33,3 +33,10 @@ compose.override.yaml
 /public/build/
 /public/preview/
 ###< pentatrion/vite-bundle ###
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
