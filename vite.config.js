@@ -7,6 +7,7 @@ import copy from "rollup-plugin-copy";
 import legacy from "@vitejs/plugin-legacy";
 import autoprefixer from "autoprefixer";
 import nested from "postcss-nested";
+import { configDefaults } from "vitest/config";
 
 // Vite will ignore native environment variables, unless they're declared in local `.env` file
 // (see https://github.com/vitejs/vite/issues/562)
