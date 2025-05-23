@@ -8,7 +8,7 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "types": ["vite/client", "vitest/globals"],
+    "types": ["vite/client", "vitest/globals", "@vitest/browser/providers/playwright"],
     "allowImportingTsExtensions": true,
      "baseUrl": ".",
       "paths": {

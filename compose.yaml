@@ -29,8 +29,8 @@ services:
     networks:
       mijnet:
         aliases:
-          - mon-indemnisation.anje-justice.dev
-          - mon-indemnisation.anje-justice.test
+          - mon-indemnisation.justice.gouv.dev
+          - mon-indemnisation.justice.gouv.test
           - proconnect.gouv.test
           - franceconnect.gouv.test
     ports:
