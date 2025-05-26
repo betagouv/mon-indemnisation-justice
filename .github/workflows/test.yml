@@ -97,12 +97,6 @@ jobs:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
 
-      - name: Cache yarn dependencies
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: yarn-${{ hashFiles('yarn.lock') }}
-
       - name: Setup PHP and run tests
         uses: shivammathur/setup-php@v2
         with:
@@ -114,11 +108,35 @@ jobs:
           curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | sudo -E bash
           sudo apt install symfony-cli
 
-      - name: Install dependencies & build assets
-        run: |
-          composer install --no-interaction --optimize-autoloader
-          yarn install --no-progress --non-interactive
-          yarn build
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --optimize-autoloader
+
+      - name: Cache yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: yarn-${{ hashFiles('yarn.lock') }}
+
+      - name: Install Yarn dependencies
+        run: yarn install --no-progress --non-interactive --frozen-lockfile
+
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(yarn info @playwright/test version | sed -n 2p)" >> $GITHUB_ENV
+
+      - name: Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: playwright-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Build frontend assets
+        run: yarn build
 
       - name: Run migration
         run: bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
@@ -133,9 +151,7 @@ jobs:
         run: yarn vitest run --reporter=junit --outputFile=test-result-vitest.xml
 
       - name: Run end-to-end tests
-        run: |
-          npx playwright install --with-deps
-          npx playwright test --reporter=junit --project firefox --retries 0
+        run: npx playwright test --reporter=junit --project firefox --retries 0
         env:
           CI: 1
           APP_ENV: test
