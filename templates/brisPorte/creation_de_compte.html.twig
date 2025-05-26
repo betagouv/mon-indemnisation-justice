@@ -5,11 +5,6 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        /** Hack: maintenir les input de type checkbox et radio "cliquables". */
-        input[type=radio], input[type=checkbox] {
-            z-index: 2;
-        }
-
         .pr-keyboard-hands .pic-keyboard-hands {
             background-image: url('{{ asset("images/picture/pic_keyboard-hands.jpg") }}');
             background-repeat: no-repeat;
@@ -93,7 +88,6 @@
 {% block javascripts %}
     <script id="react-arguments" type="application/json">
     {{ react|default({})|json_encode()|raw }}
-
 
     </script>
 
