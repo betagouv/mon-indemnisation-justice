@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import * as process from "node:process";
 import * as url from "node:url";
 
 /**
@@ -80,7 +81,7 @@ export default defineConfig({
   ...(process.env.CI
     ? {
         webServer: {
-          command: "symfony server:start --allow-http --no-tls",
+          command: `APP_ENV=${process.env.APP_ENV ?? "ci"} symfony server:start --allow-http --no-tls`,
           url: "http://127.0.0.1:8000",
           reuseExistingServer: !process.env.CI,
         },

@@ -102,7 +102,7 @@ test("test éligibilité", async ({ page }) => {
   await page.getByLabel("Nom de naissance").fill("Errant");
   await page.getByLabel("Nom d'usage").fill("Errant");
   await page.getByLabel("Adresse courriel").fill("rick.errant@courriel.fr");
-  await page.waitForTimeout(1000);
+  await page.waitForResponse("/bris-de-porte/tester-adresse-courriel");
   await page.getByLabel("Numéro de téléphone").fill("0612345678");
   await page.getByLabel("Mot de passe").first().fill("P4ssword");
   await page.getByLabel("Confirmation du mot de passe").fill("P4ssword");
