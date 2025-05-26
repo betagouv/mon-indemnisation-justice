@@ -22,7 +22,7 @@ env:
   SYMFONY_DEPRECATIONS_HELPER: disabled
   PANTHER_ERROR_SCREENSHOT_DIR: public/screenshots
   PANTHER_ERROR_SCREENSHOT_ATTACH: true
-  FRANCE_CONNECT_WELL_KNOWN_URL: http://franceconnect:9997/.well-known/openid-configuration
+  FRANCE_CONNECT_WELL_KNOWN_URL: http://localhost:9997/.well-known/openid-configuration
   FRANCE_CONNECT_CLIENT_ID: client_id
   FRANCE_CONNECT_CLIENT_SECRET: client_secret
   PRO_CONNECT_WELL_KNOWN_URL: https://domain.null/.well-known/openid-configuration
@@ -62,14 +62,30 @@ jobs:
       franceconnect:
         image: pierrelemee/mock-oidc-server
         ports:
-          - 5432:5432
+          - 9997:9997
         env:
           PORT: 9997
           HOST: '0.0.0.0'
           # Liste exhaustive des exemples : https://github.com/france-connect/sources/blob/main/docker/volumes/fcp-low/mocks/idp/databases/citizen/base.csv
-          USERS: "/app/data/usagers.json"
-        volumes:
-          - ./.docker/franceconnect:/app/data/
+          USERS: '[{
+            "_title": "test",
+            "sub": "c1722a03-4172-4015-9f0d-d1995d4cbe5c",
+            "email": "redacteur@justice.gouv.fr",
+            "gender": "female",
+            "given_name": "Angela Claire Louise",
+            "given_name_array": [
+                "Angela", "Claire", "Louise"
+            ],
+            "family_name": "DUBOIS",
+            "phone_number": "123456789",
+            "birthdate": "1962-08-24",
+            "birthplace": "75107",
+            "birthcountry": "99100",
+            "country" : "France",
+            "locality" : "Paris",
+            "postal_code" : "75107",
+            "street_address" : "20 avenue de Ségur"}
+            ]'
     steps:
       - uses: actions/checkout@v4
       - uses: browser-actions/setup-firefox@v1
@@ -92,7 +108,12 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: 'zip, intl, calendarn gd, pdo, pdo_pgsql, pgsql'
+          extensions: 'zip, intl, calendar gd, pdo, pdo_pgsql, pgsql'
+
+      - name: Install Symfony CLI
+        run: |
+          curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | sudo -E bash
+          sudo apt install symfony-cli
 
       - name: Install dependencies & build assets
         run: |
@@ -106,16 +127,20 @@ jobs:
       - name: Load data fixtures
         run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate --purge-exclusions=geo_departements --purge-exclusions=geo_regions --purge-exclusions=geo_pays
 
-      - name: Detect headless browser driver
-        run: vendor/bin/bdi detect drivers
+      - name: Run backend unit tests
+        run: bin/phpunit --log-junit test-result-phpunit.xml
 
-      - name: Run backend unit test
-        run: |
-          bin/phpunit --log-junit test-result-phpunit.xml
+      - name: Run frontend unit tests
+        run: yarn vitest run --reporter=junit --outputFile=test-result-vitest.xml
 
-      - name: Run unit test
+      - name: Run end-to-end tests
         run: |
-          yarn vitest run --reporter=junit --outputFile=test-result-vitest.xml
+          npx playwright install --with-deps
+          npx playwright test --reporter=junit --project firefox
+        env:
+          CI: 1
+          BASE_URL: http://localhost:8000
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-result-playwright.xml
 
       - name: Publish test reports
         uses: mbeccati/test-reporter@phpunit-support

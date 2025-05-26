@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import * as url from "node:url";
 
 /**
  * Read environment variables from file.
@@ -23,12 +24,14 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
-  timeout: 30000,
+  timeout: 5000,
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "https://mon-indemnisation.justice.gouv.test",
+    baseURL: process.env.CI
+      ? "http://127.0.0.1:8000"
+      : "https://mon-indemnisation.justice.gouv.test",
     ignoreHTTPSErrors: true,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
@@ -74,9 +77,13 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  ...(process.env.CI
+    ? {
+        webServer: {
+          command: "symfony server:start --allow-http --no-tls",
+          url: "http://127.0.0.1:8000",
+          reuseExistingServer: !process.env.CI,
+        },
+      }
+    : {}),
 });

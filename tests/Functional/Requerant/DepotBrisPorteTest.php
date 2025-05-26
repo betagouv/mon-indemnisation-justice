@@ -98,6 +98,7 @@ class DepotBrisPorteTest extends AbstractFunctionalTestCase
      */
     public function testDepotDossierBrisPorte(string $device, int $width, int $height): void
     {
+        $this->markTestSkipped('Délégation à playwright');
         $this->clearScreenshots($device);
         $this->client->getCookieJar()->clear();
         $this->client->manage()->window()
