@@ -58,6 +58,7 @@ class EligibiliteBrisPorteTest extends AbstractFunctionalTestCase
      */
     public function testTestEligibiliteEtInscription(string $device, int $width, int $height): void
     {
+        $this->markTestSkipped('Délégation à playwright');
         $this->client->getCookieJar()->clear();
         $this->client->manage()->window()
             ->maximize()

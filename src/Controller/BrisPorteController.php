@@ -140,8 +140,12 @@ class BrisPorteController extends AbstractController
     }
 
     #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET'])]
-    public function creationDeCompte(Request $request, NormalizerInterface $normalizer, UrlGeneratorInterface $router, CsrfTokenManagerInterface $csrfTokenManager): Response
-    {
+    public function creationDeCompte(
+        Request $request,
+        NormalizerInterface $normalizer,
+        UrlGeneratorInterface $router,
+        CsrfTokenManagerInterface $csrfTokenManager,
+    ): Response {
         if ($this->getUser() instanceof Requerant) {
             return $this->redirectToRoute('requerant_home_index');
         }

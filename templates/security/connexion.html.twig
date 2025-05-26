@@ -30,8 +30,7 @@
         </dialog>
     {% endif %}
 
-    {% set flash = app.flashes('message_erreur_connexion')|first %}
-    {% if flash %}
+    {% if message_erreur_connexion is defined and message_erreur_connexion is not null %}
         <dialog aria-labelledby="fr-modal-flash-error" role="dialog" id="fr-modal-flash-error"
                 class="fr-modal fr-modal--opened">
             <div class="fr-container fr-container--fluid fr-container-md">
@@ -46,7 +45,7 @@
                             <div class="fr-modal__content">
                                 <div class="fr-alert fr-alert--error">
                                     <h3 class="fr-alert__title">Erreur de connexion</h3>
-                                    <p>{{ flash }}</p>
+                                    <p>{{ message_erreur_connexion }}</p>
                                 </div>
                             </div>
                         </div>

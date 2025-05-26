@@ -3,11 +3,8 @@
 {% block title %}Bris de porte : tester mon éligibilité{% endblock %}
 
 {% block stylesheets %}
+    {{ parent() }}
     <style>
-        input[type=radio], input[type=checkbox] {
-            z-index: 10 !important;
-        }
-
         form[name="eligibilite-test-form"] {
             display: flex;
             flex-direction: column;
@@ -33,11 +30,6 @@
 
         .pr-section-decision > .fr-alert {
             background-color: var(--background-overlap-grey) !important;
-        }
-
-        /* Vue */
-        [v-cloak] {
-            display: none !important;
         }
     </style>
 {% endblock stylesheets %}
