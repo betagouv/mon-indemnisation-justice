@@ -6,10 +6,12 @@ const Civilite = ({
   civilite,
   setCivilite,
   defaultOptionText = null,
+  estActif = true,
 }: {
   civilite: string;
   setCivilite: (civilite: string) => void;
   defaultOptionText?: string;
+  estActif: boolean;
 }) => {
   const civilites = {
     M: "Monsieur",
@@ -19,6 +21,7 @@ const Civilite = ({
   return (
     <Select
       label="Civilité"
+      disabled={!estActif}
       nativeSelectProps={{
         id: randomId(),
         name: "civilite",
