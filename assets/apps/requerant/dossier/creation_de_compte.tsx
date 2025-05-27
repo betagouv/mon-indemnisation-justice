@@ -133,6 +133,18 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                     </div>
 
                     <div className="fr-grid-row fr-grid-row--center">
+                      <div className="fr-notice fr-notice--info fr-mb-2w">
+                        <div className="fr-container">
+                          <div className="fr-notice__body">
+                            <p>
+                              FranceConnect est la solution proposée par l’État
+                              pour sécuriser et simplifier la connexion à vos
+                              services en ligne
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
                       <FranceConnectButton
                         url={routes.inscriptionFranceConnect}
                       />

@@ -190,6 +190,12 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
+    public function getEstFranceConnect(): bool
+    {
+        return $this->estFranceConnect();
+    }
+
     public function estFranceConnect(): bool
     {
         return null !== $this->sub;
