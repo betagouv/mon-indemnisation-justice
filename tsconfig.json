@@ -1,18 +1,29 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "moduleResolution": "bundler",
     "jsx": "react",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "types": ["vite/client", "vitest/globals", "@vitest/browser/providers/playwright"],
+    "types": [
+      "node",
+      "vite/client",
+      "vitest/globals",
+      "@vitest/browser/providers/playwright"
+    ],
     "allowImportingTsExtensions": true,
-     "baseUrl": ".",
-      "paths": {
-        "@/*": ["./assets/*"]
-      }
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./assets/*"
+      ]
+    }
   }
 }
