@@ -54,6 +54,7 @@ class DossierFixture implements ORMFixtureInterface
             ->setTelephone('0621436587')
             )
             ->setEmail('raquel.randt@courriel.fr')
+            ->setVerifieCourriel(true)
             ->setRoles([Requerant::ROLE_REQUERANT])
         ;
 
