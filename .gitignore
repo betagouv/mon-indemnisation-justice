@@ -28,7 +28,8 @@ compose.override.yaml
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
-/drivers/
+
+
 ###> pentatrion/vite-bundle ###
 /node_modules/
 /public/build/
