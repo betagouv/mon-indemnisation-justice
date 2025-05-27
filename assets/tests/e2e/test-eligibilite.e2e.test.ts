@@ -14,13 +14,13 @@ test("test éligibilité", async ({ page }) => {
 
   await expect(
     page.getByLabel(
-      " Vous souhaitez nous apporter des précisions sur l'intervention ? ",
+      "Vous souhaitez nous apporter des précisions sur l'intervention ? ",
     ),
   ).toBeVisible();
 
   await page
     .getByLabel(
-      " Vous souhaitez nous apporter des précisions sur l'intervention ? ",
+      "Vous souhaitez nous apporter des précisions sur l'intervention ? ",
     )
     .fill("Porte fracassée à l'aube");
 
