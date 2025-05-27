@@ -5,30 +5,6 @@ on:
     branches:
       - '**'
 
-env:
-  APP_ENV: test
-  APP_SECRET: bafc23a0315b735289c499a886798934
-  APP_DEBUG: false
-  DATABASE_URL: pgsql://precontentieux:precontentieux@localhost:5432/precontest?serverVersion=15
-  PRECONTENTIEUX_COURRIEL_EQUIPE: equipe@precontentieux.anje-justice.test
-  COMPOSER_ALLOW_SUPERUSER: 1
-  BASE_URL: precontentieux.test
-  MAILER_FROM: ne-pas-repondre@precontentieux.test
-  MAILER_DSN: smtp://localhost:1025
-  MAILPIT_URL: http://localhost:8025
-  CORS_ALLOW_ORIGIN: "*"
-  EMAIL_FROM: ne-pas-repondre@precontentieux.anje-justice.test
-  EMAIL_FROM_LABEL: "Mon Indemnisation Justice (test)"
-  SYMFONY_DEPRECATIONS_HELPER: disabled
-  PANTHER_ERROR_SCREENSHOT_DIR: public/screenshots
-  PANTHER_ERROR_SCREENSHOT_ATTACH: true
-  FRANCE_CONNECT_WELL_KNOWN_URL: http://localhost:9997/.well-known/openid-configuration
-  FRANCE_CONNECT_CLIENT_ID: client_id
-  FRANCE_CONNECT_CLIENT_SECRET: client_secret
-  PRO_CONNECT_WELL_KNOWN_URL: https://domain.null/.well-known/openid-configuration
-  PRO_CONNECT_CLIENT_ID: proconnect-mock
-  PRO_CONNECT_CLIENT_SECRET: bar
-
 permissions:
   contents: read
   issues: read
@@ -36,7 +12,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  test:
+  test-backend:
     runs-on: ubuntu-24.04
     services:
       postgres:
@@ -86,16 +62,211 @@ jobs:
             "postal_code" : "75107",
             "street_address" : "20 avenue de Ségur"}
             ]'
+    env:
+      APP_ENV: test
+      APP_SECRET: bafc23a0315b735289c499a886798934
+      APP_DEBUG: false
+      DATABASE_URL: pgsql://precontentieux:precontentieux@localhost:5432/precontest?serverVersion=15
+      PRECONTENTIEUX_COURRIEL_EQUIPE: equipe@precontentieux.anje-justice.test
+      COMPOSER_ALLOW_SUPERUSER: 1
+      BASE_URL: precontentieux.test
+      MAILER_FROM: ne-pas-repondre@precontentieux.test
+      MAILER_DSN: smtp://localhost:1025
+      MAILPIT_URL: http://localhost:8025
+      CORS_ALLOW_ORIGIN: "*"
+      EMAIL_FROM: ne-pas-repondre@precontentieux.anje-justice.test
+      EMAIL_FROM_LABEL: "Mon Indemnisation Justice (test)"
+      SYMFONY_DEPRECATIONS_HELPER: disabled
+      PANTHER_ERROR_SCREENSHOT_DIR: public/screenshots
+      PANTHER_ERROR_SCREENSHOT_ATTACH: true
+      FRANCE_CONNECT_WELL_KNOWN_URL: http://localhost:9997/.well-known/openid-configuration
+      FRANCE_CONNECT_CLIENT_ID: client_id
+      FRANCE_CONNECT_CLIENT_SECRET: client_secret
+      PRO_CONNECT_WELL_KNOWN_URL: https://domain.null/.well-known/openid-configuration
+      PRO_CONNECT_CLIENT_ID: proconnect-mock
+      PRO_CONNECT_CLIENT_SECRET: bar
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: 22.x
+
       - name: Cache composer dependencies
         uses: actions/cache@v3
         with:
           path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
+          key: backend-composer-${{ hashFiles('composer.lock') }}
+
+      - name: Setup PHP and run tests
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: 'zip, intl, calendar gd, pdo, pdo_pgsql, pgsql'
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --optimize-autoloader
+
+      - name: Cache yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: backend-yarn-${{ hashFiles('yarn.lock') }}
+
+      - name: Install Yarn dependencies
+        run: yarn install --no-progress --non-interactive --frozen-lockfile
+
+      - name: Build frontend assets
+        run: yarn build
+
+      - name: Run migration
+        run: bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
+
+      - name: Load data fixtures
+        run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate --purge-exclusions=geo_departements --purge-exclusions=geo_regions --purge-exclusions=geo_pays
+
+      - name: Run backend unit tests
+        run: bin/phpunit --log-junit test-result-backend.xml
+
+      - name: Backend test report
+        uses: mbeccati/test-reporter@phpunit-support
+        if: ${{ !cancelled() }}
+        with:
+          name: Backend test report
+          path: test-result-*.xml
+          reporter: java-junit
+
+  test-frontend:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+         node-version: 22.x
+
+      - name: Cache yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: frontend-yarn-${{ hashFiles('yarn.lock') }}
+
+      - name: Install Yarn dependencies
+        run: yarn install --no-progress --non-interactive --frozen-lockfile
+
+      - name: Build frontend assets
+        run: yarn build
+
+      - name: Run frontend unit tests
+        run: yarn vitest run --reporter=junit --outputFile=test-result-frontend.xml
+
+      - name: Frontend test report
+        uses: dorny/test-reporter@v2
+        if: ${{ !cancelled() }}
+        with:
+          name: Frontend test report
+          path: test-result-frontend.xml
+          reporter: java-junit
+
+  test-end2end:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: precontentieux
+          POSTGRES_DB: precontest
+          POSTGRES_HOST: postgres
+          POSTGRES_PASSWORD: precontentieux
+          POSTGRES_PORT: 5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mailpit:
+        image: axllent/mailpit
+        ports:
+          - 1025:1025
+          - 8025:8025
+      franceconnect:
+        image: pierrelemee/mock-oidc-server
+        ports:
+          - 9997:9997
+        env:
+          PORT: 9997
+          HOST: '0.0.0.0'
+          # Liste exhaustive des exemples : https://github.com/france-connect/sources/blob/main/docker/volumes/fcp-low/mocks/idp/databases/citizen/base.csv
+          USERS: '[{
+            "_title": "test",
+            "sub": "c1722a03-4172-4015-9f0d-d1995d4cbe5c",
+            "email": "redacteur@justice.gouv.fr",
+            "gender": "female",
+            "given_name": "Angela Claire Louise",
+            "given_name_array": [
+                "Angela", "Claire", "Louise"
+            ],
+            "family_name": "DUBOIS",
+            "phone_number": "123456789",
+            "birthdate": "1962-08-24",
+            "birthplace": "75107",
+            "birthcountry": "99100",
+            "country" : "France",
+            "locality" : "Paris",
+            "postal_code" : "75107",
+            "street_address" : "20 avenue de Ségur"}
+            ]'
+    env:
+      CI: 1
+      APP_ENV: test
+      APP_SECRET: bafc23a0315b735289c499a886798934
+      APP_DEBUG: false
+      DATABASE_URL: pgsql://precontentieux:precontentieux@localhost:5432/precontest?serverVersion=15
+      PRECONTENTIEUX_COURRIEL_EQUIPE: equipe@precontentieux.anje-justice.test
+      COMPOSER_ALLOW_SUPERUSER: 1
+      BASE_URL: http://localhost:8000
+      MAILER_FROM: ne-pas-repondre@precontentieux.test
+      MAILER_DSN: smtp://localhost:1025
+      MAILPIT_URL: http://localhost:8025
+      CORS_ALLOW_ORIGIN: "*"
+      EMAIL_FROM: ne-pas-repondre@precontentieux.anje-justice.test
+      EMAIL_FROM_LABEL: "Mon Indemnisation Justice (test)"
+      SYMFONY_DEPRECATIONS_HELPER: disabled
+      PANTHER_ERROR_SCREENSHOT_DIR: public/screenshots
+      PANTHER_ERROR_SCREENSHOT_ATTACH: true
+      FRANCE_CONNECT_WELL_KNOWN_URL: http://localhost:9997/.well-known/openid-configuration
+      FRANCE_CONNECT_CLIENT_ID: client_id
+      FRANCE_CONNECT_CLIENT_SECRET: client_secret
+      PRO_CONNECT_WELL_KNOWN_URL: https://domain.null/.well-known/openid-configuration
+      PRO_CONNECT_CLIENT_ID: proconnect-mock
+      PRO_CONNECT_CLIENT_SECRET: bar
+      PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-result-end2end.xml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 22.x
+
+      - name: Compute installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(yarn info @playwright/test version | sed -n 2p)" >> $GITHUB_ENV
+
+      - name: Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: end2end-playwright-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: end2end-composer-${{ hashFiles('composer.lock') }}
 
       - name: Setup PHP and run tests
         uses: shivammathur/setup-php@v2
@@ -115,25 +286,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: yarn-${{ hashFiles('yarn.lock') }}
+          key: end2end-yarn-${{ hashFiles('yarn.lock') }}
 
       - name: Install Yarn dependencies
         run: yarn install --no-progress --non-interactive --frozen-lockfile
-
-      - name: Get installed Playwright version
-        id: playwright-version
-        run: echo "PLAYWRIGHT_VERSION=$(yarn info @playwright/test version | sed -n 2p)" >> $GITHUB_ENV
-
-      - name: Cache playwright binaries
-        uses: actions/cache@v3
-        id: playwright-cache
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: playwright-${{ env.PLAYWRIGHT_VERSION }}
-
-      - name: Install Playwright
-        run: npx playwright install --with-deps
 
       - name: Build frontend assets
         run: yarn build
@@ -144,24 +300,14 @@ jobs:
       - name: Load data fixtures
         run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate --purge-exclusions=geo_departements --purge-exclusions=geo_regions --purge-exclusions=geo_pays
 
-      - name: Run backend unit tests
-        run: bin/phpunit --log-junit test-result-phpunit.xml
-
-      - name: Run frontend unit tests
-        run: yarn vitest run --reporter=junit --outputFile=test-result-vitest.xml
-
       - name: Run end-to-end tests
+        # Pour l'heure on se limite à Firefox car on ne sait pas encore créer des fixtures par Browser
         run: npx playwright test --reporter=junit --project firefox --retries 0
-        env:
-          CI: 1
-          APP_ENV: test
-          BASE_URL: http://localhost:8000
-          PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-result-playwright.xml
 
-      - name: Publish test reports
-        uses: mbeccati/test-reporter@phpunit-support
+      - name: End-to-end test report
+        uses: dorny/test-reporter@v2
         if: ${{ !cancelled() }}
         with:
-          name: Publish test reports
-          path: test-result-*.xml
+          name: End-to-end test report
+          path: test-result-end2end.xml
           reporter: java-junit

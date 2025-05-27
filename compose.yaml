@@ -137,6 +137,23 @@ services:
     working_dir: /app
     volumes:
       - ./.docker/proconnect:/app/data/
+  playwright:
+    profiles:
+      - playwright
+    build:
+      dockerfile: .docker/playwright/Dockerfile
+      context: .
+    hostname: playwright
+    networks:
+      mijnet:
+        aliases:
+          - playwright
+    command: npx playwright test --ui-port=8080 --ui-host=0.0.0.0 --project firefox
+    volumes:
+      - .:/app
+    expose:
+      - "8080"
+      - "3000"
 
 networks:
   mijnet:
