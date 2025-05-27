@@ -64,11 +64,7 @@ services:
       - APP_ENV=${APP_ENV:-dev}
       - TS=Europe/Paris
       - SYMFONY_DEPRECATIONS_HELPER=disabled
-      - PANTHER_ERROR_SCREENSHOT_DIR=public/screenshots
-      - PANTHER_ERROR_SCREENSHOT_ATTACH=true
-      - PANTHER_FIREFOX_ARGUMENTS='-width=1200 -height=2000'
       - MAILPIT_URL=http://mailpit:8025
-      - CHROMIUM_PATH=/usr/bin/google-chrome
     restart: always
     depends_on:
       - postgres
@@ -151,9 +147,9 @@ services:
     command: npx playwright test --ui-port=8080 --ui-host=0.0.0.0 --project firefox
     volumes:
       - .:/app
-    expose:
-      - "8080"
-      - "3000"
+    ports:
+      - "8080:8080"
+      - "3000:3000"
 
 networks:
   mijnet:
