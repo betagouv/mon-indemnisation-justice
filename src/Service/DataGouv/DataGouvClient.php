@@ -16,6 +16,7 @@ class DataGouvClient
     public function __construct(
         protected readonly LoggerInterface $logger,
         protected readonly ImporteurGeoPays $importeurGeoPays,
+        protected readonly ImporteurGeoDepartement $importeurGeoDepartement,
     ) {
         $this->client = new HttpClient([
             'base_uri' => 'https://tabular-api.data.gouv.fr',
@@ -25,6 +26,11 @@ class DataGouvClient
     public function importerGeoPays(): void
     {
         $this->importer($this->importeurGeoPays);
+    }
+
+    public function importerGeoDepartement(): void
+    {
+        $this->importer($this->importeurGeoDepartement);
     }
 
     protected function importer(DataGouvProcessor $processeur, int $pageSize = 50): void
