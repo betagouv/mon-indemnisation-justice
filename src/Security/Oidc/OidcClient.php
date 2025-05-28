@@ -37,9 +37,11 @@ class OidcClient
         protected readonly string $wellKnownUrl,
         protected readonly string $clientId,
         protected readonly string $clientSecret,
-        protected readonly string $loginCheckRoute,
+        protected readonly array $loginCheckRoutes,
         protected readonly UrlGeneratorInterface $urlGenerator,
         #[Target('oidc')] protected readonly CacheInterface $cache,
+        protected readonly array $context = [],
+        protected readonly ?string $logoutRoute = null,
     ) {
         $this->client = new HttpClient([]);
     }
@@ -74,38 +76,76 @@ class OidcClient
         }
     }
 
-    protected function getRedirectUri(): string
+    protected function getRedirectUri(?string $redirectRoute = null): string
     {
-        return $this->urlGenerator->generate($this->loginCheckRoute, referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
+        return $this->urlGenerator->generate(null !== $redirectRoute && in_array($redirectRoute, $this->loginCheckRoutes) ? $redirectRoute : $this->loginCheckRoutes[0], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
-    public function buildAuthorizeUrl(Request $request): string
+    public function buildAuthorizeUrl(Request $request, ?string $redirectRoute = null): string
     {
         $this->configure();
 
         $state = Uuid::uuid4()->toString();
         $nonce = Uuid::uuid4()->toString();
+        $redirectUri = $this->getRedirectUri($redirectRoute);
 
         $request->getSession()->set('_oidc_authentication', [
             'state' => $state,
             'nonce' => $nonce,
+            'redirect_uri' => $redirectUri,
         ]);
 
         return sprintf(
             '%s?%s',
             $this->configuration['authorization_endpoint'],
-            http_build_query([
-                'response_type' => 'code',
-                'client_id' => $this->clientId,
-                'redirect_uri' => $this->getRedirectUri(),
-                'scope' => implode(' ', ['openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id']),
-                'state' => $state,
-                'nonce' => $nonce,
-            ])
+            http_build_query(
+                array_merge(
+                    [
+                        'response_type' => 'code',
+                        'client_id' => $this->clientId,
+                        'redirect_uri' => $redirectUri,
+                        'state' => $state,
+                        'nonce' => $nonce,
+                    ],
+                    $this->context,
+                    [
+                        'scope' => implode(' ', $this->context['scope'] ?? []),
+                    ]
+                )
+            )
         );
     }
 
-    public function authenticate(Request $request): string
+    public function buildLogoutUrl(Request $request, string $idToken): ?string
+    {
+        if (!isset($this->configuration['end_session_endpoint'])) {
+            return null;
+        }
+
+        $state = Uuid::uuid4()->toString();
+        $redirectUri = $this->urlGenerator->generate($this->logoutRoute, referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $request->getSession()->set('_oidc_authentication', [
+            'state' => $state,
+        ]);
+
+        return sprintf(
+            '%s?%s',
+            $this->configuration['end_session_endpoint'],
+            http_build_query(
+                [
+                    'id_token_hint' => $idToken,
+                    'post_logout_redirect_uri' => $redirectUri,
+                    'state' => $state,
+                ]
+            )
+        );
+    }
+
+    /**
+     * @return string[]
+     */
+    public function authenticate(Request $request): array
     {
         $this->configure();
 
@@ -113,10 +153,9 @@ class OidcClient
             throw new AuthenticationException("$error - ".$request->query->get('error_description'));
         }
 
+        $context = $request->getSession()->get('_oidc_authentication', []);
         $state = $request->query->get('state');
         $code = $request->query->get('code');
-
-        $context = $request->getSession()->get('_oidc_authentication', []);
 
         if ($state !== ($context['state'] ?? null)) {
             throw new AuthenticationException('Invalid state.');
@@ -131,7 +170,7 @@ class OidcClient
                     'grant_type' => 'authorization_code',
                     'client_id' => $this->clientId,
                     'client_secret' => $this->clientSecret,
-                    'redirect_uri' => $this->getRedirectUri(),
+                    'redirect_uri' => $context['redirect_uri'],
                     'code' => $code,
                 ],
             ]);
@@ -154,7 +193,7 @@ class OidcClient
             throw new AuthenticationException('Authorization failed (nonce does not match).');
         }
 
-        return $accessToken;
+        return [$accessToken, $credentials->id_token];
     }
 
     public function fetchUserInfo(string $token): array
@@ -178,5 +217,19 @@ class OidcClient
 
         // Sinon, on traite en JWT (au risque de jeter des exceptions)
         return (array) JWT::decode($raw, $this->jwks);
+    }
+
+    public function logout(Request $request): bool
+    {
+        $context = $request->getSession()->get('_oidc_authentication', []);
+        $state = $request->query->get('state');
+
+        if ($state === ($context['state'] ?? null)) {
+            $request->getSession()->remove('_oidc_authentication');
+
+            return true;
+        }
+
+        return false;
     }
 }

@@ -22,7 +22,7 @@ sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keyc
 # Convertir le certificat racine au format .crt
 openssl x509 -inform PEM -in "$(pwd)/rootCA.pem" -out rootCA.crt
 
-for domain in mon-indemnisation.anje-justice.dev mon-indemnisation.justice.gouv.dev mon-indemnisation.justice.gouv.test proconnect.gouv.test; do
+for domain in mon-indemnisation.anje-justice.dev mon-indemnisation.justice.gouv.dev mon-indemnisation.justice.gouv.test proconnect.gouv.test franceconnect.gouv.test; do
   # Génération
   CAROOT=$(pwd) mkcert "${domain}"
   # Register domain as local domain

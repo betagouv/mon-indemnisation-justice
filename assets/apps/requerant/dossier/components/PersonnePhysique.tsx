@@ -20,6 +20,7 @@ const PersonnePhysique = function () {
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-lg-3 fr-col-4">
           <Civilite
+            estActif={!dossier.requerant.estFranceConnect}
             civilite={dossier.requerant.personnePhysique?.civilite}
             setCivilite={(civilite) =>
               patchDossier({ requerant: { personnePhysique: { civilite } } })
@@ -28,6 +29,7 @@ const PersonnePhysique = function () {
         </div>
         <div className="fr-col-lg-9 fr-col-8">
           <Input
+            disabled={dossier.requerant.estFranceConnect}
             label="Prénom(s)"
             nativeInputProps={{
               id: randomId(),
@@ -43,6 +45,7 @@ const PersonnePhysique = function () {
         </div>
         <div className="fr-col-lg-6 fr-col-12">
           <Input
+            disabled={dossier.requerant.estFranceConnect}
             label="Nom de naissance"
             nativeInputProps={{
               id: randomId(),
@@ -73,6 +76,7 @@ const PersonnePhysique = function () {
         </div>
         <div className="fr-col-lg-3 fr-col-12">
           <Input
+            disabled={dossier.requerant.estFranceConnect}
             label="Date de naissance"
             nativeInputProps={{
               id: randomId(),
@@ -89,6 +93,7 @@ const PersonnePhysique = function () {
         </div>
         <div className="fr-col-lg-6 fr-col-12">
           <Input
+            disabled={dossier.requerant.estFranceConnect}
             label="Ville de naissance"
             nativeInputProps={{
               id: randomId(),
@@ -105,6 +110,7 @@ const PersonnePhysique = function () {
         </div>
         <div className="fr-col-lg-3 fr-col-12">
           <Select
+            disabled={dossier.requerant.estFranceConnect}
             label="Pays de naissance"
             nativeSelectProps={{
               id: randomId(),

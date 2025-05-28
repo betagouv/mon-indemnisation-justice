@@ -48,6 +48,8 @@ security:
                 check_path: app_login
                 enable_csrf: true
                 default_target_path: requerant_home_index
+            custom_authenticators:
+                - MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator
             logout:
                 path: app_logout
                 # where to redirect after logout

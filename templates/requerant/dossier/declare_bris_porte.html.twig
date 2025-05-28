@@ -3,26 +3,28 @@
 {% block title %}Déclarer un bris de porte{% endblock %}
 
 {% block stylesheets %}
-  {{ vite_entry_link_tags('requerant/dossier/deposer_mon_dossier') }}
+
+    {{ parent() }}
+    {{ vite_entry_link_tags('requerant/dossier/deposer_mon_dossier') }}
 {% endblock stylesheets %}
 
 {% block main %}
-  <div id="react-app"></div>
+    <div id="react-app"></div>
 {% endblock %}
 
 {% block javascripts %}
-  <script id="react-arguments" type="application/json">
-    {
-        "dossier": {{ dossier|serialize('json', {groups: 'dossier:lecture'})|raw }},
+    <script id="react-arguments" type="application/json">
+        {
+            "dossier": {{ dossier|serialize('json', {groups: 'dossier:lecture'})|raw }},
         "pays": {{ pays|serialize('json')|raw }}
-    }
-  </script>
-  {% if est_vite_server_actif() %}
-      {% include '_vite_hmr_extra.html.twig' %}
-  {% endif %}
+        }
+    </script>
+    {% if est_vite_server_actif() %}
+        {% include '_vite_hmr_extra.html.twig' %}
+    {% endif %}
 
-  {{ vite_entry_script_tags('requerant/dossier/deposer_mon_dossier') }}
+    {{ vite_entry_script_tags('requerant/dossier/deposer_mon_dossier') }}
 
-  {{ parent() }}
+    {{ parent() }}
 
 {% endblock javascripts %}

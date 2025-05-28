@@ -8,6 +8,7 @@ use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\FournisseurIdentiteAgentRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +28,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator
         protected readonly string $loginPageRoute,
         protected readonly string $loginCheckRoute,
         protected readonly string $loginSuccessRoute,
+        #[Autowire(service: 'oidc_client_pro_connect')]
         protected readonly OidcClient $oidcClient,
         protected readonly AgentRepository $agentRepository,
         protected readonly FournisseurIdentiteAgentRepository $fournisseurIdentiteAgentRepository,
@@ -55,10 +57,10 @@ class ProConnectAuthenticator extends AbstractAuthenticator
     {
         try {
             // Authenticate
-            $token = $this->oidcClient->authenticate($request);
+            list($accessToken) = $this->oidcClient->authenticate($request);
 
             // User info
-            $userInfo = $this->oidcClient->fetchUserInfo($token);
+            $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
 
             $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);
 

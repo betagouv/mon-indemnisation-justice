@@ -1,0 +1,21 @@
+[
+    {
+        "_title": "test",
+        "sub": "c1722a03-4172-4015-9f0d-d1995d4cbe5c",
+        "email": "redacteur@justice.gouv.fr",
+        "gender": "female",
+        "given_name": "Angela Claire Louise",
+        "given_name_array": [
+            "Angela", "Claire", "Louise"
+        ],
+        "family_name": "DUBOIS",
+        "phone_number": "123456789",
+        "birthdate": "1962-08-24",
+        "birthplace": "75107",
+        "birthcountry": "99100",
+        "country" : "France",
+        "locality" : "Paris",
+        "postal_code" : "75107",
+        "street_address" : "20 avenue de Ségur"
+    }
+]
