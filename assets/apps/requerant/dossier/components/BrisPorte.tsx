@@ -15,7 +15,6 @@ const BrisPorte = () => {
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
       <div className="fr-col-12">
-        <a name="bris-de-porte"></a>
         <section className="pr-form-section fr-p-4w">
           <h3>Informations sur le bris de porte</h3>
           <div className="fr-grid-row fr-grid-row--gutters">
@@ -92,15 +91,15 @@ const BrisPorte = () => {
                   {
                     label: "Oui",
                     nativeInputProps: {
-                      checked: dossier.isPorteBlindee === true,
-                      onChange: () => patchDossier({ isPorteBlindee: true }),
+                      checked: dossier.estPorteBlindee,
+                      onChange: () => patchDossier({ estPorteBlindee: true }),
                     },
                   },
                   {
                     label: "Non",
                     nativeInputProps: {
-                      checked: dossier.isPorteBlindee !== true,
-                      onChange: () => patchDossier({ isPorteBlindee: false }),
+                      checked: !dossier.estPorteBlindee,
+                      onChange: () => patchDossier({ estPorteBlindee: false }),
                     },
                   },
                 ]}

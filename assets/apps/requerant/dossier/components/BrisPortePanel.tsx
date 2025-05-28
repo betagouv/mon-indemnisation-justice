@@ -53,7 +53,7 @@ const BrisPortePanel = function () {
 
   return (
     <>
-      <section tabIndex="0" className="pr-case_stepper" id="pr-case_stepper">
+      <section tabIndex={0} className="pr-case_stepper" id="pr-case_stepper">
         <Stepper
           currentStep={getCurrentStep()}
           nextTitle={nextTitle}
@@ -99,7 +99,6 @@ const BrisPortePanel = function () {
       )}
       {step === 2 && (
         <>
-          <a name="pieces"></a>
           <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
             <div className="fr-col-12">
               <section className="pr-form-section">
