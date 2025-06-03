@@ -21,8 +21,9 @@ class ImporterDonneesGeoCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        // $this->dataGouvClient->importerGeoPays();
-        $this->dataGouvClient->importerGeoDepartement();
+        $this->dataGouvClient->importerGeoPays();
+        $this->dataGouvClient->importerGeoDepartements();
+        $this->dataGouvClient->importerGeoCommunes();
 
         return Command::SUCCESS;
     }
