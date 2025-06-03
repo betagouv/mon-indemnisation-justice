@@ -76,10 +76,6 @@ class PersonnePhysique
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
-    public function __construct()
-    {
-    }
-
     public function __toString()
     {
         return implode(' ', [

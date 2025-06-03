@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 abstract class GeoDataEntity
 {
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false, insertable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected \DateTimeInterface $dateDerniereMaj;
 
     #[ORM\Column(nullable: false, options: ['default' => true])]

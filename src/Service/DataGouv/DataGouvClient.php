@@ -18,6 +18,7 @@ class DataGouvClient
         protected readonly ImporteurGeoPays $importeurGeoPays,
         protected readonly ImporteurGeoDepartement $importeurGeoDepartement,
         protected readonly ImporteurGeoCommune $importeurGeoCommune,
+        protected readonly ImporteurGeoCodePostal $importeurGeoCodePostal,
     ) {
         $this->client = new HttpClient([
             'base_uri' => 'https://tabular-api.data.gouv.fr',
@@ -36,7 +37,10 @@ class DataGouvClient
 
     public function importerGeoCommunes(): void
     {
+        // On importe d'abord la liste des communes connues
         $this->importer($this->importeurGeoCommune);
+        // Puis, on charge la liste des associations code commune INSEE <-> code postal
+        $this->importer($this->importeurGeoCodePostal);
     }
 
     protected function importer(DataGouvProcessor $processeur, int $pageSize = 50): void

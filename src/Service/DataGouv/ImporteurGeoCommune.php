@@ -9,6 +9,9 @@ use MonIndemnisationJustice\Entity\GeoDepartement;
 class ImporteurGeoCommune implements DataGouvProcessor
 {
     // Communes et villes de France https://www.data.gouv.fr/fr/datasets/communes-et-villes-de-france-en-csv-excel-json-parquet-et-feather/
+
+    // Cette source n'est pas fiable, car on n'y trouve pas la liste exhaustive des codes postaux (ex: Marseille =>
+    // 13000 mais pas 13005, etc)
     private const RESOURCE_GEO_COMMUNE = '6989ed1a-8ffb-4ef9-b008-340327c99430';
 
     public function __construct(
@@ -23,14 +26,13 @@ class ImporteurGeoCommune implements DataGouvProcessor
 
     public function processRecord(array $record): void
     {
-        if (null !== $record['code_postal']) {
+        if (null !== $record['code_insee']) {
             /** @var GeoCommune $commune */
             $commune = $this->entityManager->getRepository(GeoCommune::class)->find($record['code_insee']);
             if (null === $commune) {
                 $commune = (new GeoCommune())
                 ->setCode($record['code_insee'])
                 ->setNom($record['nom_standard'])
-                ->setCodePostaux(isset($record['codes_postaux']) ? array_map('trim', explode(',', $record['codes_postaux'])) : [$record['code_postal']])
                 ->setDepartement($this->entityManager->getRepository(GeoDepartement::class)->find($record['dep_code']));
 
                 $this->entityManager->persist($commune);
