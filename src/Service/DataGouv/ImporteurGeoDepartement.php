@@ -9,7 +9,7 @@ use MonIndemnisationJustice\Entity\GeoRegion;
 class ImporteurGeoDepartement implements DataGouvProcessor
 {
     // Liste des départements français métropolitains, d'outre mer et les COM ainsi que leurs préfectures https://www.data.gouv.fr/fr/datasets/liste-des-departements-francais-metropolitains-doutre-mer-et-les-com-ainsi-que-leurs-prefectures/
-    public const RESOURCE_GEO_DEPARTEMENT = '987227fb-dcb2-429e-96af-8979f97c9c84';
+    public const RESOURCE_GEO_DEPARTEMENT = '8603852d-9ae4-4a32-b65f-d5800106e985';
 
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,

@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: 'geo_communes')]
@@ -17,12 +18,13 @@ class GeoCommune extends GeoDataEntity
     #[ORM\Column]
     protected string $nom;
 
-    #[ORM\Column(type: 'simple_array')]
-    protected array $codePostaux;
-
     #[ORM\ManyToOne(targetEntity: GeoDepartement::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code', nullable: false, onDelete: 'SET NULL')]
     protected GeoDepartement $departement;
+
+    #[ORM\OneToMany(targetEntity: GeoCodePostal::class, mappedBy: 'commune')]
+    /** @var Collection<GeoCodePostal> */
+    protected Collection $codePostaux;
 
     public function getCode(): string
     {
@@ -44,18 +46,6 @@ class GeoCommune extends GeoDataEntity
     public function setNom(string $nom): GeoCommune
     {
         $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getCodePostaux(): array
-    {
-        return $this->codePostaux;
-    }
-
-    public function setCodePostaux(array $codePostaux): GeoCommune
-    {
-        $this->codePostaux = $codePostaux;
 
         return $this;
     }

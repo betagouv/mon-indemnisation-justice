@@ -4,6 +4,8 @@ namespace MonIndemnisationJustice\Security\Authenticator;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Entity\GeoCommune;
+use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Repository\RequerantRepository;
@@ -84,11 +86,29 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                             ->setPrenom3($prenoms[2] ?? null)
                             ->setDateNaissance(new \DateTime($userInfo['birthdate'] ?? ''))
                             ->setEmail($userInfo['email'] ?? null)
-                            // TODO récupérer les codes INSEE des pays https://www.data.gouv.fr/fr/datasets/referentiel-des-pays-et-des-territoires/
-                            // ->setPaysNaissance($userInfo['birthcountry'] ?? null)
-                            // TODO récupérer les communes et leur code INSEE https://www.data.gouv.fr/fr/datasets/communes-et-villes-de-france-en-csv-excel-json-parquet-et-feather/
-                            // ->setCommuneNaissance($userInfo['birthplace'] ?? null)
                         );
+
+                    // Récupération du pays de naissance
+                    if (null !== ($codePaysNaissance = $userInfo['birthcountry'])) {
+                        /** @var GeoPays $paysNaissance */
+                        $paysNaissance = $this->em->getRepository(GeoPays::class)->find($codePaysNaissance);
+
+                        if (null !== $paysNaissance) {
+                            $requerant->getPersonnePhysique()->setPaysNaissance($paysNaissance);
+                        }
+                    }
+
+                    // Récupération de la commune de naissance
+                    if (null !== ($codeCommuneNaissance = $userInfo['birthplace'])) {
+                        /** @var GeoCommune $communeNaissance */
+                        $communeNaissance = $this->em->getRepository(GeoCommune::class)->find($codeCommuneNaissance);
+
+                        if (null !== $communeNaissance) {
+                            // TODO remplacer par la référence directe à l'entité GeoCommune
+                            $requerant->getPersonnePhysique()->setCommuneNaissance($communeNaissance->getNom());
+                        }
+                    }
+
                     $this->em->persist($requerant);
                     $this->em->flush();
                 } else {
