@@ -33,7 +33,7 @@ services:
         $clientSecret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
         $loginCheckRoutes: ['agent_securite_connexion']
         $context:
-          scope: ['openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id']
+          scope: ['openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom']
 
     MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator:
       arguments:

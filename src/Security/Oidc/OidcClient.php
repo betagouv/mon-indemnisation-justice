@@ -63,7 +63,7 @@ class OidcClient
         }
 
         if (null === $this->jwks) {
-            $this->jwks = JWK::parseKeySet($this->cache->get('oidc_jwks', function () {
+            $this->jwks = JWK::parseKeySet($this->cache->get(sprintf('_oidc_jwks_%s', sha1($this->wellKnownUrl)), function () {
                 try {
                     $response = $this->client->get($this->configuration['jwks_uri']);
 
