@@ -297,6 +297,11 @@ class Agent implements UserInterface
         return $this->estRedacteur() && $dossier->getRedacteur() === $this;
     }
 
+    public function getDonnesAuthentification(): ?array
+    {
+        return $this->donnesAuthentification ? json_decode($this->donnesAuthentification, true) : null;
+    }
+
     public function setDonnesAuthentification(array|string|null $donnesAuthentification): Agent
     {
         if (null !== $donnesAuthentification) {

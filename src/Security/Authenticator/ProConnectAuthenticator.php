@@ -88,6 +88,21 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                 $agent->setEmail($userInfo['email'])
                 ->setPrenom($userInfo['given_name'])
                 ->setNom($userInfo['usual_name']);
+
+                // Rattrapage des donées 'custom' pour les agents connectés avant l'intégration de ces données
+                // supplémentaires https://partenaires.proconnect.gouv.fr/docs/fournisseur-service/custom-scope
+                if (
+                    null !== $userInfo['custom']
+                    && null !== ($donneesAuthentification = $agent->getDonnesAuthentification())
+                    && !isset($donneesAuthentification['custom'])
+                ) {
+                    $agent->setDonnesAuthentification(
+                        array_merge(
+                            $donneesAuthentification,
+                            $userInfo
+                        )
+                    );
+                }
             }
 
             $this->agentRepository->save($agent);
