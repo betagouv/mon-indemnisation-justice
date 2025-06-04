@@ -120,7 +120,7 @@ jobs:
         run: bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
 
       - name: Load data fixtures
-        run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate --purge-exclusions=geo_departements --purge-exclusions=geo_regions --purge-exclusions=geo_pays
+        run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate --purge-exclusions=geo_departements --purge-exclusions=geo_regions --purge-exclusions=geo_communes --purge-exclusions=geo_codes_postaux
 
       - name: Run backend unit tests
         run: bin/phpunit --log-junit test-result-backend.xml
@@ -294,7 +294,7 @@ jobs:
         run: bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
 
       - name: Load data fixtures
-        run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate --purge-exclusions=geo_departements --purge-exclusions=geo_regions --purge-exclusions=geo_pays
+        run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate --purge-exclusions=geo_departements --purge-exclusions=geo_regions --purge-exclusions=geo_communes --purge-exclusions=geo_codes_postaux
 
       - name: Run end-to-end tests
         # Pour l'heure on se limite à Firefox car on ne sait pas encore créer des fixtures par Browser

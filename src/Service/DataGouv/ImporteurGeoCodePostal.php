@@ -46,9 +46,7 @@ class ImporteurGeoCodePostal implements DataGouvProcessor
             }
 
             $code = (new GeoCodePostal())->setCodePostal($codePostal)->setCommune($commune);
-        }
 
-        if (null !== $code) {
             $this->entityManager->persist($code);
             $this->entityManager->flush();
         }

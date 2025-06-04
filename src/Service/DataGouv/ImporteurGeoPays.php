@@ -11,7 +11,7 @@ class ImporteurGeoPays implements DataGouvProcessor
     // mais pas renseignée sur la source data.gouv.fr
     public const CODE_INSEE_FRANCE = '99100';
 
-    // Référentiel des pays et des territoires https://www.data.gouv.fr/fr/datasets/referentiel-des-pays-et-des-territoires/#/resources
+    // Référentiel des pays et des territoires https://www.data.gouv.fr/fr/datasets/referentiel-des-pays-et-des-territoires/#/resources/2b38f28d-15e7-4f0c-b61d-6ca1d9b1cfa2
     private const RESOURCE_GEO_PAYS = '2b38f28d-15e7-4f0c-b61d-6ca1d9b1cfa2';
 
     public function __construct(
@@ -26,15 +26,17 @@ class ImporteurGeoPays implements DataGouvProcessor
 
     public function processRecord(array $record): void
     {
-        /** @var GeoPays $pays */
-        $pays = $this->entityManager->getRepository(GeoPays::class)->find($record['ISO_alpha3']) ?? (new GeoPays())->setCode($record['ISO_alpha3']);
+        if (3 === strlen($record['ISO_alpha3'])) {
+            /** @var GeoPays $pays */
+            $pays = $this->entityManager->getRepository(GeoPays::class)->find($record['ISO_alpha3']) ?? (new GeoPays())->setCode($record['ISO_alpha3']);
 
-        $pays
-            ->setNom($record['NOM_COURT'])
-            ->setCodeInsee('FRA' === $record['ISO_alpha3T'] ? self::CODE_INSEE_FRANCE : $record['CODE_COG']);
+            $pays
+                ->setNom($record['NOM_COURT'])
+                ->setCodeInsee('FRA' === $record['ISO_alpha3'] ? self::CODE_INSEE_FRANCE : $record['CODE_COG']);
 
-        $this->entityManager->persist($pays);
-        $this->entityManager->flush();
+            $this->entityManager->persist($pays);
+            $this->entityManager->flush();
+        }
     }
 
     public function onProcessed(): void
