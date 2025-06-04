@@ -40,13 +40,12 @@ class DataGouvClient
         // On importe d'abord la liste des communes connues
         $this->importer($this->importeurGeoCommune);
         // Puis, on charge la liste des associations code commune INSEE <-> code postal
-        $this->importer($this->importeurGeoCodePostal);
+        $this->importer($this->importeurGeoCodePostal, 100);
     }
 
-    protected function importer(DataGouvProcessor $processeur, int $pageSize = 50): void
+    protected function importer(DataGouvProcessor $processeur, int $pageSize = 50, int $page = 1): void
     {
-        $dataUri = $this->getResourceDataUri($processeur->getResource(), $pageSize).'?'.http_build_query(['page_size' => $pageSize]);
-        $page = 0;
+        $dataUri = $this->getResourceDataUri($processeur->getResource(), $pageSize).'?'.http_build_query(['page_size' => $pageSize, 'page' => $page]);
 
         while (null !== $dataUri) {
             $response = $this->request($dataUri);

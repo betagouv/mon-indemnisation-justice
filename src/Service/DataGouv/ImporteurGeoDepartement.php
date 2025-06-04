@@ -23,24 +23,22 @@ class ImporteurGeoDepartement implements DataGouvProcessor
 
     public function processRecord(array $record): void
     {
-        if (in_array($record['type'], ['DPT', 'DOM'])) {
-            /* @var GeoDepartement $departement */
-            $departement = $this->entityManager->getRepository(GeoDepartement::class)->find($record['code']);
+        /* @var GeoDepartement $departement */
+        $departement = $this->entityManager->getRepository(GeoDepartement::class)->find($record['code']);
 
-            if (null === $departement) {
-                $region = $this->entityManager->getRepository(GeoRegion::class)->findOneBy(['nom' => $record['region']]);
+        if (null === $departement) {
+            $region = $this->entityManager->getRepository(GeoRegion::class)->findOneBy(['nom' => $record['region']]);
 
-                $departement = (new GeoDepartement())
-                    ->setCode($record['code'])
-                    ->setDeploye(false)
-                    ->setNom($record['nom'])
-                    ->setRegion($region)
-                ;
-            }
-
-            $this->entityManager->persist($departement);
-            $this->entityManager->flush();
+            $departement = (new GeoDepartement())
+                ->setCode($record['code'])
+                ->setDeploye(false)
+                ->setNom($record['nom'])
+                ->setRegion($region)
+            ;
         }
+
+        $this->entityManager->persist($departement);
+        $this->entityManager->flush();
     }
 
     public function onProcessed(): void

@@ -37,10 +37,13 @@ class ImporteurGeoCodePostal implements DataGouvProcessor
             $commune = $this->entityManager->getRepository(GeoCommune::class)->find($codeInsee);
 
             if (null === $commune) {
+                $codeDepartement = substr($record['#Code_commune_INSEE'], 0, str_starts_with($record['#Code_commune_INSEE'], '97') ? 3 : 2);
+                $departement = $this->entityManager->getRepository(GeoDepartement::class)->find($codeDepartement);
+
                 $commune = (new GeoCommune())
                 ->setCode($codeInsee)
                 ->setNom($this->normaliserNom($record['Nom_de_la_commune']))
-                ->setDepartement($this->entityManager->getRepository(GeoDepartement::class)->find(substr($record['#Code_commune_INSEE'], 0, 2)));
+                ->setDepartement($departement);
 
                 $this->entityManager->persist($commune);
             }
