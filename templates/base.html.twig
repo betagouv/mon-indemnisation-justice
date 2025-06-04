@@ -17,6 +17,7 @@
     {% if app.environment != 'prod' %}
         <meta name="robots" content="noindex">
     {% endif %}
+    {% block meta %}{% endblock meta %}
 
     <style>
         /** Hack: maintenir les input de type checkbox et radio "cliquables". */
