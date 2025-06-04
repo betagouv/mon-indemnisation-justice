@@ -1,0 +1,8 @@
+version: 2
+
+# Voir la configuration https://docs.gitguardian.com/ggshield-docs/configuration
+
+secret:
+  # Exclude files and paths by globbing
+  ignored_paths:
+    - '.github/workflows/test.yml'
