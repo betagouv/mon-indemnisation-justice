@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Attestations à télécharger{% endblock %}
+
+{% block meta %}
+    <meta name="robots" content="noindex">
+{% endblock meta %}
+
+{% block stylesheets %}
+    <style>
+        h2 {
+            margin: 2rem 0;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block main %}
+    <div class="fr-container fr-container--fluid fr-my-3w">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <h1>Attestations à télécharger</h1>
+
+                <p>
+                    Vous trouverez ci-dessous les attestations dans leur version la plus récente. Ces documents sont
+                    <b>uniquement</b> destinés aux forces de l'ordre.
+                </p>
+
+                <div class="fr-tabs">
+                    <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
+                        <li role="presentation">
+                            <button
+                                    id="tabpanel-404" class="fr-tabs__tab fr-tabs__tab--icon-left"
+                                    tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">
+                                Attestation à remettre
+                            </button>
+                        </li>
+                        <li role="presentation">
+                            <button id="tabpanel-405" class="fr-tabs__tab fr-tabs__tab--icon-left"
+                                    tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">
+                                Guide de remise
+                            </button>
+                        </li>
+                    </ul>
+                    <div id="tabpanel-404-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
+                         aria-labelledby="tabpanel-404" tabindex="0">
+                        <h2>Attestation à remettre en cas d’erreur de porte</h2>
+
+                        <div class="fr-grid-row fr-col-12">
+                            <object
+                                    data="{{ url('attestations_attestation_a_remettre') }}"
+                                    type="application/pdf"
+                                    style="width: 100%;aspect-ratio: 210/297;"
+                            ></object>
+                        </div>
+                    </div>
+                    <div id="tabpanel-405-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-405"
+                         tabindex="0">
+                        <h2>Guide de remise de l’attestation</h2>
+
+                        <div class="fr-grid-row fr-col-12">
+                            <object
+                                    data="{{ url('attestations_guide_de_remise') }}"
+                                    type="application/pdf"
+                                    style="width: 100%;aspect-ratio: 210/297;"
+                            ></object>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
