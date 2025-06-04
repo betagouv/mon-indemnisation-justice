@@ -2,6 +2,7 @@
 /.env.dev
 /.env.prod
 /.env.test
+/.env.ci
 /.env.local.php
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
@@ -27,9 +28,17 @@ compose.override.yaml
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
-/drivers/
+
+
 ###> pentatrion/vite-bundle ###
 /node_modules/
 /public/build/
 /public/preview/
 ###< pentatrion/vite-bundle ###
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

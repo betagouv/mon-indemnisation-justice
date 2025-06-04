@@ -23,11 +23,23 @@ if (import.meta.env.PROD) {
   disableReactDevTools();
 }
 
-const { dossier, pays } = {
-  ...{
-    ...JSON.parse(document.getElementById("react-arguments").textContent),
-  },
-};
+const { dossier, pays }: { dossier: any; pays: any[] } = JSON.parse(
+  document.getElementById("react-arguments").textContent,
+);
+
+pays.sort((pays1: any, pays2: any) => {
+  if (pays1.code === "FRA") {
+    return -1;
+  }
+
+  if (pays2.code === "FRA") {
+    return 1;
+  }
+
+  return pays1.code.localeCompare(pays2.code);
+});
+
+console.log(pays);
 
 // Pré-population des listes de documents par type
 const documents = {

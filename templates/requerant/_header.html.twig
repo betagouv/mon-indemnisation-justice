@@ -9,7 +9,8 @@
                         </div>
                         {#  Menu mobile #}
                         <div class="fr-header__navbar">
-                            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499" id="button-500" title="Menu">
+                            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499"
+                                    id="button-500" title="Menu">
                                 Menu
                             </button>
                         </div>
@@ -18,9 +19,9 @@
                         <a href="{{ path('app_homepage') }}" title="Mon Indemnisation Justice"></a>
                         <p class="fr-header__service-title">Mon Indemnisation Justice</p>
                         {% if app.environment != 'prod' %}
-                        <div>
-                            <p class="fr-badge fr-badge--warning fr-badge--no-icon">Plateforme de test</p>
-                        </div>
+                            <div>
+                                <p class="fr-badge fr-badge--warning fr-badge--no-icon">Plateforme de test</p>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
@@ -30,14 +31,18 @@
                             <li>
                                 <span class="fr-btn fr-icon-user-line">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}</span>
                             </li>
-                            <a class="fr-btn fr-icon-logout-box-r-line"
-                               href="{{ path('app_logout') }}">Déconnexion</a>
+                            <li>
+                                <a class="fr-btn fr-icon-logout-box-r-line"
+                                   href="{{ app.user|url_deconnexion(app.request) }}">
+                                    Déconnexion
+                                </a>
                             </li>
                         </ul>
                     </div>
                     <div class="fr-header__search fr-modal" id="modal-474">
                         <div class="fr-container fr-container-lg--fluid">
-                            <button class="fr-btn--close fr-btn" aria-controls="modal-474" title="Fermer">Fermer</button>
+                            <button class="fr-btn--close fr-btn" aria-controls="modal-474" title="Fermer">Fermer
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -55,8 +60,11 @@
                         <li>
                             <span class="fr-btn fr-icon-user-line">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}</span>
                         </li>
-                        <a class="fr-btn fr-icon-logout-box-r-line"
-                           href="{{ path('app_logout') }}">Déconnexion</a>
+                        <li>
+                            <a class="fr-btn fr-icon-logout-box-r-line"
+                               href="{{ app.user|url_deconnexion(app.request) }}">
+                                Déconnexion
+                            </a>
                         </li>
                     </ul>
                 </div>

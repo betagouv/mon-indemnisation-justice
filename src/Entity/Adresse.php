@@ -33,6 +33,10 @@ class Adresse
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $localite = null;
 
+    #[ORM\Column(name: 'commune_code', length: 5, nullable: true)]
+    #[ORM\ManyToOne(targetEntity: GeoCommune::class)]
+    protected ?GeoCommune $commune = null;
+
     /**
      * @var Collection<int, BrisPorte>
      */
@@ -108,6 +112,18 @@ class Adresse
     public function setLocalite(?string $localite): static
     {
         $this->localite = $localite;
+
+        return $this;
+    }
+
+    public function getCommune(): ?GeoCommune
+    {
+        return $this->commune;
+    }
+
+    public function setCommune(?GeoCommune $commune): Adresse
+    {
+        $this->commune = $commune;
 
         return $this;
     }

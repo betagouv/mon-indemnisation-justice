@@ -29,9 +29,10 @@ services:
     networks:
       mijnet:
         aliases:
-          - mon-indemnisation.anje-justice.dev
-          - mon-indemnisation.anje-justice.test
+          - mon-indemnisation.justice.gouv.dev
+          - mon-indemnisation.justice.gouv.test
           - proconnect.gouv.test
+          - franceconnect.gouv.test
     ports:
       - "80:80"
       - "443:443"
@@ -63,11 +64,7 @@ services:
       - APP_ENV=${APP_ENV:-dev}
       - TS=Europe/Paris
       - SYMFONY_DEPRECATIONS_HELPER=disabled
-      - PANTHER_ERROR_SCREENSHOT_DIR=public/screenshots
-      - PANTHER_ERROR_SCREENSHOT_ATTACH=true
-      - PANTHER_FIREFOX_ARGUMENTS='-width=1200 -height=2000'
       - MAILPIT_URL=http://mailpit:8025
-      - CHROMIUM_PATH=/usr/bin/google-chrome
     restart: always
     depends_on:
       - postgres
@@ -102,6 +99,24 @@ services:
     ports:
       - "5173:5173"
 
+  franceconnect:
+    image: pierrelemee/mock-oidc-server
+    hostname: franceconnect
+    networks:
+      mijnet:
+        aliases:
+          - franceconnect
+    ports:
+      - '9997:9997'
+    environment:
+      PORT: 9997
+      HOST: '0.0.0.0'
+      # Liste exhaustive des exemples : https://github.com/france-connect/sources/blob/main/docker/volumes/fcp-low/mocks/idp/databases/citizen/base.csv
+      USERS: "/app/data/usagers.json"
+    working_dir: /app
+    volumes:
+      - ./.docker/franceconnect:/app/data/
+
   proconnect:
     image: pierrelemee/mock-oidc-server
     hostname: proconnect
@@ -118,7 +133,23 @@ services:
     working_dir: /app
     volumes:
       - ./.docker/proconnect:/app/data/
-
+  playwright:
+    profiles:
+      - playwright
+    build:
+      dockerfile: .docker/playwright/Dockerfile
+      context: .
+    hostname: playwright
+    networks:
+      mijnet:
+        aliases:
+          - playwright
+    command: npx playwright test --ui-port=8080 --ui-host=0.0.0.0 --project firefox
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+      - "3000:3000"
 
 networks:
   mijnet:

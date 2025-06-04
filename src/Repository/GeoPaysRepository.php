@@ -2,10 +2,9 @@
 
 namespace MonIndemnisationJustice\Repository;
 
-use MonIndemnisationJustice\Entity\GeoPays;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-
+use MonIndemnisationJustice\Entity\GeoPays;
 
 /**
  * @extends ServiceEntityRepository<GeoPays>
@@ -29,10 +28,10 @@ class GeoPaysRepository extends ServiceEntityRepository
     {
         return $this
             ->createQueryBuilder('p')
-            ->orderBy('p.estFrance', 'DESC')
-            ->addOrderBy('p.code', 'ASC')
+            // On retire les pays sans code INSEE, hormis la France
+            ->where('p.codeInsee is not null')
+            ->orderBy('p.code', 'ASC')
             ->getQuery()
             ->getResult();
     }
-
 }

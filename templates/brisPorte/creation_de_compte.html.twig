@@ -5,11 +5,6 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        /** Hack: maintenir les input de type checkbox et radio "cliquables". */
-        input[type=radio], input[type=checkbox] {
-            z-index: 2;
-        }
-
         .pr-keyboard-hands .pic-keyboard-hands {
             background-image: url('{{ asset("images/picture/pic_keyboard-hands.jpg") }}');
             background-repeat: no-repeat;
@@ -61,6 +56,26 @@
 
         [v-cloak] {
             display: none !important;
+        }
+
+        .fr-section-separateur--ligne {
+            width: 100%;
+            margin: 1rem 0;
+
+            span {
+                width: 100%;
+                display: flex;
+                align-items: center;
+
+                &:before,
+                &:after {
+                    flex: 1;
+                    content: "";
+                    margin: 0 1rem;
+                    background: var(--border-contrast-grey);
+                    height: 1px;
+                }
+            }
         }
     </style>
 {% endblock %}

@@ -2,9 +2,9 @@
 
 namespace MonIndemnisationJustice\Repository;
 
-use MonIndemnisationJustice\Entity\Requerant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -36,6 +36,16 @@ class RequerantRepository extends ServiceEntityRepository implements PasswordUpg
         $user->setPassword($newHashedPassword);
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
+    }
+
+    public function findByEmailOrSub(?string $email, ?string $sub): ?Requerant
+    {
+        return $this
+            ->createQueryBuilder('u')
+            ->where('u.email = :email')
+            ->orWhere('u.sub = :sub')
+            ->setParameter('email', $email)
+            ->setParameter('sub', $sub)->getQuery()->getOneOrNullResult();
     }
 
     public function findByRoles(array $roles): array

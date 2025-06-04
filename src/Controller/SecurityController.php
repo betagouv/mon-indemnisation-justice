@@ -13,6 +13,7 @@ use MonIndemnisationJustice\Repository\RequerantRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +31,10 @@ class SecurityController extends AbstractController
         protected Mailer $mailer,
         protected EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
-        protected readonly OidcClient $oidcClient,
+        #[Autowire(service: 'oidc_client_france_connect')]
+        protected readonly OidcClient $oidcClientREquerant,
+        #[Autowire(service: 'oidc_client_pro_connect')]
+        protected readonly OidcClient $oidcClientAgent,
     ) {
     }
 
@@ -56,7 +60,9 @@ class SecurityController extends AbstractController
         return $this->render('security/connexion.html.twig', [
             'last_username' => $lastUsername,
             'error_message' => $errorMessage,
+            'france_connect_url' => $this->oidcClientREquerant->buildAuthorizeUrl($request, 'requerant_securite_connexion'),
             'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
+            'message_erreur_connexion' => $request->query->get('erreur'),
         ]);
     }
 
@@ -68,7 +74,7 @@ class SecurityController extends AbstractController
         }
 
         if ($this->isCsrfTokenValid('connexionAgent', $request->getPayload()->get('_csrf_token_agent'))) {
-            return $this->redirect($this->oidcClient->buildAuthorizeUrl($request));
+            return $this->redirect($this->oidcClientAgent->buildAuthorizeUrl($request));
         }
 
         return $this->render('security/connexion.html.twig', [

@@ -126,6 +126,7 @@ const User = function () {
                   <div className="fr-grid-row fr-grid-row--gutters">
                     <div className="fr-col-lg-2 fr-col-4">
                       <Civilite
+                        estActif={!dossier.requerant.estFranceConnect}
                         civilite={dossier.requerant.personnePhysique.civilite}
                         setCivilite={(civilite) =>
                           patchDossier({
@@ -136,6 +137,7 @@ const User = function () {
                     </div>
                     <div className="fr-col-lg-10 fr-col-8">
                       <Input
+                        disabled={dossier.requerant.estFranceConnect}
                         label="Prénom(s)"
                         nativeInputProps={{
                           placeholder: "Premier prénom",
@@ -152,6 +154,7 @@ const User = function () {
                     </div>
                     <div className="fr-col-lg-6 fr-col-12">
                       <Input
+                        disabled={!dossier.requerant.estFranceConnect}
                         label="Nom de naissance"
                         nativeInputProps={{
                           value:
