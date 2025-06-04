@@ -16,7 +16,7 @@
     <script id="react-arguments" type="application/json">
         {
             "dossier": {{ dossier|serialize('json', {groups: 'dossier:lecture'})|raw }},
-        "pays": {{ pays|serialize('json')|raw }}
+            "pays": {{ pays|serialize('json')|raw }}
         }
     </script>
     {% if est_vite_server_actif() %}

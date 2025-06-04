@@ -14,6 +14,7 @@ use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Service\DataGouv\ImporteurGeoPays;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DossierFixture implements ORMFixtureInterface
@@ -25,6 +26,30 @@ class DossierFixture implements ORMFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
+        // Pays
+
+        $france = (new GeoPays())
+            ->setCode('FRA')
+            ->setCodeInsee(ImporteurGeoPays::CODE_INSEE_FRANCE)
+            ->setNom('France');
+
+        $manager->persist($france);
+
+        $belgique = (new GeoPays())
+            ->setCode('BEL')
+            ->setCodeInsee('99131')
+            ->setNom('Belgique');
+
+        $manager->persist($belgique);
+
+        $maroc = (new GeoPays())
+            ->setCode('MAR')
+            ->setCodeInsee('99350')
+            ->setNom('Maroc');
+
+        $manager->persist($maroc);
+
+        // Agents
         $redacteur = (new Agent())
             ->setNom('Acteur')
             ->setPrenom('Red')
@@ -35,6 +60,7 @@ class DossierFixture implements ORMFixtureInterface
             ->setUid('1234')
             ->setAdministration(Administration::MINISTERE_JUSTICE);
 
+        // Requérants
         $requerant = (new Requerant())
             ->setAdresse(
                 (new Adresse())
@@ -60,6 +86,7 @@ class DossierFixture implements ORMFixtureInterface
 
         $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
 
+        // Dossiers
         $dossier = (new BrisPorte())
             ->setReference('BRI/20250101/001')
             ->setRequerant($requerant)

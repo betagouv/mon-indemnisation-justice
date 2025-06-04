@@ -3,9 +3,10 @@
 namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\GeoCodePostalRepository;
 
 #[ORM\Table(name: 'geo_codes_postaux')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: GeoCodePostalRepository::class)]
 #[ORM\Index(name: 'idx_code_postal', columns: ['code_postal'])]
 #[ORM\UniqueConstraint(name: 'unique_code_insee_postal', fields: ['codePostal', 'commune'])]
 #[ORM\HasLifecycleCallbacks]

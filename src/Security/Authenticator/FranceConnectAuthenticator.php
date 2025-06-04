@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Security\Authenticator;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Civilite;
-use MonIndemnisationJustice\Entity\GeoCommune;
+use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Requerant;
@@ -100,12 +100,14 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
                     // Récupération de la commune de naissance
                     if (null !== ($codeCommuneNaissance = $userInfo['birthplace'])) {
-                        /** @var GeoCommune $communeNaissance */
-                        $communeNaissance = $this->em->getRepository(GeoCommune::class)->find($codeCommuneNaissance);
+                        /** @var GeoCodePostal $codePostalNaissance */
+                        $codePostalNaissance = $this->em->getRepository(GeoCodePostal::class)->identifier($codeCommuneNaissance);
 
-                        if (null !== $communeNaissance) {
-                            // TODO remplacer par la référence directe à l'entité GeoCommune
-                            $requerant->getPersonnePhysique()->setCommuneNaissance($communeNaissance->getNom());
+                        if (null !== $codePostalNaissance) {
+                            $requerant->getPersonnePhysique()
+                                ->setCodePostalNaissance($codePostalNaissance)
+                                ->setCommuneNaissance($codePostalNaissance->getCommune()->getNom())
+                            ;
                         }
                     }
 

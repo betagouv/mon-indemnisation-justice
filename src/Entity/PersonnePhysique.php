@@ -57,6 +57,10 @@ class PersonnePhysique
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $communeNaissance = null;
 
+    #[ORM\ManyToOne(targetEntity: GeoCodePostal::class)]
+    #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
+    protected ?GeoCodePostal $codePostalNaissance = null;
+
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
     #[ORM\ManyToOne(targetEntity: GeoPays::class)]
@@ -189,6 +193,18 @@ class PersonnePhysique
     public function setCommuneNaissance(?string $communeNaissance = null): static
     {
         $this->communeNaissance = $communeNaissance;
+
+        return $this;
+    }
+
+    public function getCodePostalNaissance(): ?GeoCodePostal
+    {
+        return $this->codePostalNaissance;
+    }
+
+    public function setCodePostalNaissance(?GeoCodePostal $codePostalNaissance): PersonnePhysique
+    {
+        $this->codePostalNaissance = $codePostalNaissance;
 
         return $this;
     }

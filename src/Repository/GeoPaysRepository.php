@@ -29,10 +29,8 @@ class GeoPaysRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('p')
             // On retire les pays sans code INSEE, hormis la France
-            ->where("p.codeInsee is not null or p.code = 'FRA'")
-            // On souhaite placer la France en premier dans la liste
-            ->orderBy("p.code = 'FRA'", 'DESC')
-            ->addOrderBy('p.code', 'ASC')
+            ->where('p.codeInsee is not null')
+            ->orderBy('p.code', 'ASC')
             ->getQuery()
             ->getResult();
     }
