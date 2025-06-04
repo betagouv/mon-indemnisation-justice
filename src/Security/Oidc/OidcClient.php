@@ -27,6 +27,7 @@ final class OidcConnectionContext
 class OidcClient
 {
     protected HttpClient $client;
+    protected string $sessionKey;
     protected ?array $configuration = null;
     /**
      * @var array<string, Key> the set of JSON Web Keys
@@ -44,6 +45,7 @@ class OidcClient
         protected readonly ?string $logoutRoute = null,
     ) {
         $this->client = new HttpClient([]);
+        $this->sessionKey = sprintf('_oidc_authentication_%s', sha1($this->wellKnownUrl));
     }
 
     protected function configure(): void
@@ -76,6 +78,21 @@ class OidcClient
         }
     }
 
+    protected function getSessionContext(Request $request): array
+    {
+        return $request->getSession()->get($this->sessionKey);
+    }
+
+    protected function setSessionContext(Request $request, array $values = []): void
+    {
+        $request->getSession()->set($this->sessionKey, $values);
+    }
+
+    protected function clearSessionContext(Request $request): void
+    {
+        $request->getSession()->remove($this->sessionKey);
+    }
+
     protected function getRedirectUri(?string $redirectRoute = null): string
     {
         return $this->urlGenerator->generate(null !== $redirectRoute && in_array($redirectRoute, $this->loginCheckRoutes) ? $redirectRoute : $this->loginCheckRoutes[0], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
@@ -89,7 +106,7 @@ class OidcClient
         $nonce = Uuid::uuid4()->toString();
         $redirectUri = $this->getRedirectUri($redirectRoute);
 
-        $request->getSession()->set('_oidc_authentication', [
+        $this->setSessionContext($request, [
             'state' => $state,
             'nonce' => $nonce,
             'redirect_uri' => $redirectUri,
@@ -125,7 +142,7 @@ class OidcClient
         $state = Uuid::uuid4()->toString();
         $redirectUri = $this->urlGenerator->generate($this->logoutRoute, referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $request->getSession()->set('_oidc_authentication', [
+        $this->setSessionContext($request, [
             'state' => $state,
         ]);
 
@@ -153,7 +170,7 @@ class OidcClient
             throw new AuthenticationException("$error - ".$request->query->get('error_description'));
         }
 
-        $context = $request->getSession()->get('_oidc_authentication', []);
+        $context = $this->getSessionContext($request);
         $state = $request->query->get('state');
         $code = $request->query->get('code');
 
@@ -221,11 +238,11 @@ class OidcClient
 
     public function logout(Request $request): bool
     {
-        $context = $request->getSession()->get('_oidc_authentication', []);
+        $context = $this->getSessionContext($request);
         $state = $request->query->get('state');
 
         if ($state === ($context['state'] ?? null)) {
-            $request->getSession()->remove('_oidc_authentication');
+            $this->clearSessionContext($request);
 
             return true;
         }
