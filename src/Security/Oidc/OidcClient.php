@@ -27,12 +27,12 @@ final class OidcConnectionContext
 class OidcClient
 {
     protected HttpClient $client;
-    protected string $sessionKey;
     protected ?array $configuration = null;
     /**
      * @var array<string, Key> the set of JSON Web Keys
      */
     protected ?array $jwks = null;
+    protected string $sessionKey;
 
     public function __construct(
         protected readonly string $wellKnownUrl,
@@ -51,7 +51,7 @@ class OidcClient
     protected function configure(): void
     {
         if (null === $this->configuration) {
-            $this->configuration = $this->cache->get('oidc_well_known_configuration', function () {
+            $this->configuration = $this->cache->get(sprintf('_oidc_well_known_configuration_%s', sha1($this->wellKnownUrl)), function () {
                 try {
                     $response = $this->client->get($this->wellKnownUrl);
 
