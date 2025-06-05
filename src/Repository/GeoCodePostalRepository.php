@@ -25,18 +25,17 @@ class GeoCodePostalRepository extends ServiceEntityRepository
      * À partir d'un code INSEE donné, retourne le GeoCodePostal associé en choisissant celui avec la plus petite valeur
      * de code postal.
      *
-     * En effet, dans les cas des arrondissements on optera pour le code postal générique (ex: Marseille sera associée à
-     * '13000').
-     *
-     * @return int
+     * En effet, dans les cas des arrondissements, on optera pour le code postal générique (ex: Marseille sera associée
+     * à '13000').
      */
     public function identifier(string $codeInsee): ?GeoCodePostal
     {
         return $this
-            ->createQueryBuilder('p')
-            ->where('p.codeInsee = :codeInsee')
+            ->createQueryBuilder('gcp')
+                ->join('gcp.commune', 'gc')
+            ->where('gc.code = :codeInsee')
             ->setParameter('codeInsee', $codeInsee)
-            ->orderBy('p.codePostal', 'asc')
+            ->orderBy('gcp.codePostal', 'asc')
             ->setMaxResults(1)
             ->getQuery()
             ->getSingleResult();

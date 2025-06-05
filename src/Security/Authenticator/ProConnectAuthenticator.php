@@ -92,7 +92,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                 // Rattrapage des donées 'custom' pour les agents connectés avant l'intégration de ces données
                 // supplémentaires https://partenaires.proconnect.gouv.fr/docs/fournisseur-service/custom-scope
                 if (
-                    null !== $userInfo['custom']
+                    isset($userInfo['custom'])
                     && null !== ($donneesAuthentification = $agent->getDonnesAuthentification())
                     && !isset($donneesAuthentification['custom'])
                 ) {
