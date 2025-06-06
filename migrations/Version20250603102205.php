@@ -32,7 +32,6 @@ final class Version20250603102205 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE SCHEMA public');
         $this->addSql('ALTER TABLE geo_codes_postaux DROP CONSTRAINT FK_CFDB17BBDA459572');
         $this->addSql('DROP TABLE geo_codes_postaux');
         $this->addSql('ALTER TABLE adresse DROP commune_code');
