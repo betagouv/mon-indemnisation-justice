@@ -15,7 +15,8 @@ abstract class GeoDataEntity
     protected bool $estActif = true;
 
     #[ORM\PrePersist]
-    public function onPrePersist(PrePersistEventArgs $args): void
+    #[ORM\PreUpdate]
+    public function onPersist(PrePersistEventArgs $args): void
     {
         $this->dateDerniereMaj = new \DateTime();
     }

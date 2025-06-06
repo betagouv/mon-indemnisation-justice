@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use MonIndemnisationJustice\Service\DateConvertisseur;
@@ -18,6 +19,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[ORM\Table(name: 'requerants')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SUB', fields: ['sub'])]
+#[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -46,8 +48,8 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?string $sub = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateChangementMDP = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
+    protected \DateTimeInterface $dateInscription;
 
     #[ORM\Column(type: 'string', length: 12, nullable: true)]
     protected ?string $jetonVerification;
@@ -82,6 +84,12 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         $this->personnePhysique = new PersonnePhysique();
         $this->adresse = new Adresse();
         $this->dossiers = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(PrePersistEventArgs $args): void
+    {
+        $this->dateInscription = new \DateTime();
     }
 
     public function getPId(): ?int
@@ -215,16 +223,9 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function getDateChangementMDP(): ?\DateTimeInterface
+    public function getDateInscription(): ?\DateTimeInterface
     {
-        return $this->dateChangementMDP;
-    }
-
-    public function setDateChangementMDP(?\DateTimeInterface $dateChangementMDP): static
-    {
-        $this->dateChangementMDP = $dateChangementMDP;
-
-        return $this;
+        return $this->dateInscription;
     }
 
     public function getJetonVerification(): ?string

@@ -62,7 +62,7 @@ services:
     command: bash -c 'update-ca-certificates && composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && yarn install && php-fpm'
     environment:
       - APP_ENV=${APP_ENV:-dev}
-      - TS=Europe/Paris
+      - TZ=Europe/Paris
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
     restart: always

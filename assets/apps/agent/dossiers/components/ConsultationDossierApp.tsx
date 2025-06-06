@@ -11,6 +11,8 @@ import {
   ValidationDecisionDossier,
   ValidationAcceptationDossier,
 } from "@/apps/agent/dossiers/components/consultation";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
 
 import { observer } from "mobx-react-lite";
@@ -767,31 +769,51 @@ export const ConsultationDossierApp = observer(
                             ))}
                           </ul>
                         </div>
+                        {/* Affichage de la pièce jointe sélectionnée */}
                         <div className="fr-col-9 fr-px-4w">
                           {pieceJointe ? (
-                            <div className="fr-grid-row">
-                              <h6>{pieceJointe.originalFilename}</h6>
-                              {pieceJointe.mime == "application/pdf" ? (
-                                <object
-                                  data={pieceJointe.url}
-                                  type="application/pdf"
-                                  style={{
-                                    width: "100%",
-                                    aspectRatio: "210/297",
-                                  }}
-                                ></object>
-                              ) : (
-                                <img
-                                  src={pieceJointe.url}
-                                  alt={pieceJointe.originalFilename}
-                                  style={{
-                                    width: "100%",
-                                    maxHeight: "100vh",
-                                    objectFit: "contain",
-                                  }}
-                                />
-                              )}
-                            </div>
+                            <>
+                              <ButtonsGroup
+                                inlineLayoutWhen="always"
+                                alignment="right"
+                                buttonsIconPosition="right"
+                                buttonsSize="small"
+                                buttons={[
+                                  {
+                                    children: "Télécharger",
+                                    iconId: "fr-icon-download-line",
+                                    linkProps: {
+                                      href: pieceJointe.url,
+                                      download: true,
+                                    },
+                                  } as ButtonProps,
+                                ]}
+                              />
+
+                              <div className="fr-grid-row">
+                                <h6>{pieceJointe.originalFilename}</h6>
+                                {pieceJointe.mime == "application/pdf" ? (
+                                  <object
+                                    data={pieceJointe.url}
+                                    type="application/pdf"
+                                    style={{
+                                      width: "100%",
+                                      aspectRatio: "210/297",
+                                    }}
+                                  ></object>
+                                ) : (
+                                  <img
+                                    src={pieceJointe.url}
+                                    alt={pieceJointe.originalFilename}
+                                    style={{
+                                      width: "100%",
+                                      maxHeight: "100vh",
+                                      objectFit: "contain",
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            </>
                           ) : (
                             <i>Aucune pièce jointe sélectionnée</i>
                           )}
