@@ -132,6 +132,13 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
+    #[ORM\Column(name: 'est_lie_attestation', options: ['default' => false])]
+    protected bool $estLieAttestation = false;
+
+    #[ORM\ManyToOne(cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
+    protected ?InstitutionSecuritePublique $institutionSecuritePublique = null;
+
     public function __construct()
     {
         $this->dateCreation = new \DateTimeImmutable();
