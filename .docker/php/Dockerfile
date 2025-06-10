@@ -36,10 +36,7 @@ RUN npm install --force -g yarn
 RUN apt install -y firefox-esr
 
 # Chrome
-RUN apt install -y libvulkan1 fonts-liberation libgbm1 xdg-utils \
-    && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/google-chrome-stable_current_amd64.deb \
-    && dpkg -i /tmp/google-chrome-stable_current_amd64.deb \
-    && rm -f /tmp/google-chrome-stable_current_amd64.deb
+RUN apt install -y chromium
 
 # Cleanups
 
