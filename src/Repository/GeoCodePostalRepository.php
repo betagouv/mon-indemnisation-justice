@@ -38,6 +38,6 @@ class GeoCodePostalRepository extends ServiceEntityRepository
             ->orderBy('gcp.codePostal', 'asc')
             ->setMaxResults(1)
             ->getQuery()
-            ->getSingleResult();
+            ->getOneOrNullResult();
     }
 }
