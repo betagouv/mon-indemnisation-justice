@@ -42,3 +42,8 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###

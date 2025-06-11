@@ -133,6 +133,14 @@ class Document
         return $this;
     }
 
+    /**
+     * @return Collection<BrisPorte>
+     */
+    public function getDossiers(): Collection
+    {
+        return $this->dossiers;
+    }
+
     public function getSize(): ?string
     {
         return $this->size;
@@ -165,6 +173,27 @@ class Document
     public function getFileHash(): string
     {
         return md5($this->filename);
+    }
+
+    public function getMetaDonnee(string $key): mixed
+    {
+        if (is_array($this->metaDonnees)) {
+            return @$this->metaDonnees[$key];
+        }
+
+        return null;
+    }
+
+    public function getMetaDonnees(): ?array
+    {
+        return $this->metaDonnees;
+    }
+
+    public function setMetaDonnees(array $metaDonnees, bool $merge = false): static
+    {
+        $this->metaDonnees = $merge ? array_merge($this->metaDonnees ?? [], $metaDonnees) : $metaDonnees;
+
+        return $this;
     }
 
     #[Groups(['agent:detail'])]
