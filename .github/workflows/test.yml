@@ -93,7 +93,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: vendor
-          key: backend-composer-${{ hashFiles('composer.lock') }}
+          key: backend-composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
 
       - name: Setup PHP and run tests
         uses: shivammathur/setup-php@v2
@@ -108,7 +108,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: backend-yarn-${{ hashFiles('yarn.lock') }}
+          key: backend-yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       - name: Install Yarn dependencies
         run: yarn install --no-progress --non-interactive --frozen-lockfile
@@ -145,7 +145,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: frontend-yarn-${{ hashFiles('yarn.lock') }}
+          key: frontend-yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       - name: Install Yarn dependencies
         run: yarn install --no-progress --non-interactive --frozen-lockfile
@@ -243,15 +243,6 @@ jobs:
         with:
           node-version: 22.x
 
-      - name: Install Playwright
-        run: npx playwright install --with-deps
-
-      - name: Cache composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: vendor
-          key: end2end-composer-${{ hashFiles('composer.lock') }}
-
       - name: Setup PHP and run tests
         uses: shivammathur/setup-php@v2
         with:
@@ -263,17 +254,43 @@ jobs:
           curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | sudo -E bash
           sudo apt install symfony-cli
 
+      - name: Cache composer dependencies
+        id: cache-composer
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: end2end-composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+
       - name: Install Composer dependencies
         run: composer install --no-interaction --optimize-autoloader
+        if: steps.cache-composer.outputs.cache-hit != 'true'
 
       - name: Cache yarn dependencies
+        id: cache-yarn
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: end2end-yarn-${{ hashFiles('yarn.lock') }}
+          key: end2end-yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       - name: Install Yarn dependencies
         run: yarn install --no-progress --non-interactive --frozen-lockfile
+        if: steps.cache-yarn.outputs.cache-hit != 'true'
+
+      - name: Compute installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(yarn info @playwright/test version | sed -n 2p)" >> $GITHUB_ENV
+
+      - name: Cache playwright binaries
+        id: cache-playwright
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: end2end-playwright-${{ runner.os }}-${{ hashFiles('yarn.lock') }}-${{ env.PLAYWRIGHT_VERSION }}
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
 
       - name: Build frontend assets
         run: yarn build
