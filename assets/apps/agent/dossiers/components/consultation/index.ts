@@ -1,13 +1,3 @@
-import { AttributionDossier } from "./AttributionDossier";
-import { ClotureDossier } from "./ClotureDossier";
-import { DecisionDossier } from "./DecisionDossier";
-import { ValidationDecisionDossier } from "./ValidationDecisionDossier";
-import { ValidationAcceptationDossier } from "./ValidationAcceptationDossier";
+import {ValidationDecisionDossier} from "./ValidationDecisionDossier";
 
-export {
-  AttributionDossier,
-  ClotureDossier,
-  DecisionDossier,
-  ValidationDecisionDossier,
-  ValidationAcceptationDossier,
-};
+export { ValidationDecisionDossier };

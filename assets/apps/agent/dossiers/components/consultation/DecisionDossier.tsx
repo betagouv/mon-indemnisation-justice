@@ -1,19 +1,14 @@
-import {
-  Courrier,
-  EtatDossier,
-  EtatDossierType,
-} from "@/apps/agent/dossiers/models";
-import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier";
-import { Administration } from "@/apps/agent/gestion_agents/models";
-import { plainToInstance } from "class-transformer";
-import { observer } from "mobx-react-lite";
+import {Courrier, EtatDossier,} from "@/apps/agent/dossiers/models";
+import {DossierDetail} from "@/apps/agent/dossiers/models/Dossier";
+import {plainToInstance} from "class-transformer";
+import {observer} from "mobx-react-lite";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import React, { FormEvent, useRef, useState } from "react";
+import React, {FormEvent, useRef, useState} from "react";
 
 type MotifRefus = "est_vise" | "est_hebergeant" | "autre";
 
-export const DecisionDossier = observer(function DecisionDossierComponent({
+const DecisionDossier = observer(function DecisionDossierComponent({
   dossier,
   onDecide,
 }: {

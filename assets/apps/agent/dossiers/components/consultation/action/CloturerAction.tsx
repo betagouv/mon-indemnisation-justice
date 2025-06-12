@@ -1,12 +1,14 @@
-import {
-  Agent,
-  BaseDossier,
-  DossierDetail,
-  EtatDossier,
-} from "@/apps/agent/dossiers/models";
-import { plainToInstance } from "class-transformer";
-import { observer } from "mobx-react-lite";
-import React, { ChangeEvent, useState } from "react";
+import {ButtonProps} from "@codegouvfr/react-dsfr/Button";
+import {plainToInstance} from "class-transformer";
+import React, {ChangeEvent, useState} from "react";
+import {Agent, BaseDossier, DossierDetail, EtatDossier,} from "@/apps/agent/dossiers/models";
+import {createModal} from "@codegouvfr/react-dsfr/Modal";
+import {observer} from "mobx-react-lite";
+
+const _modale = createModal({
+  id: "modale-action-cloturer",
+  isOpenedByDefault: false,
+});
 
 const cloturer = async ({
   dossier,
@@ -76,7 +78,17 @@ const RaisonsCloture: Map<string, RaisonCloture> = new Map<
   ],
 ]);
 
-export const ClotureDossier = observer(function ClotureDossierComponent({
+const estCloturable = ({
+  dossier,
+  agent,
+}: {
+  dossier: DossierDetail;
+  agent: Agent;
+}) =>
+  dossier.estCloturable() &&
+  (agent.estAttributeur() || agent.instruit(dossier));
+
+export const CloturerModale = observer(function CloturerActionModale({
   dossier,
   agent,
 }: {
@@ -87,7 +99,7 @@ export const ClotureDossier = observer(function ClotureDossierComponent({
   const [etatCloture, setEtatCloture]: [
     EtatCloture,
     (etat: EtatCloture) => void,
-  ] = useState({} as EtatCloture);
+  ] = useState({ action: "preselection" } as EtatCloture);
 
   const selectionModele = (modele: RaisonCloture) =>
     setEtatCloture({
@@ -113,10 +125,10 @@ export const ClotureDossier = observer(function ClotureDossierComponent({
     setEtatCloture({} as EtatCloture);
   };
 
-  return (
-    <>
+  return estCloturable({ dossier, agent }) ? (
+    <_modale.Component title="Clôturer le dossier" size="large">
       {etatCloture.action && (
-        <div className="fr-col-12 fr-grid-row fr-grid-row--gutters fr-mt-3w fr-px-2w">
+        <div className="fr-col-12 fr-grid-row fr-grid-row--gutters">
           <div className="fr-alert fr-alert--info fr-alert--sm">
             <p>
               Choisissez un modèle prédéfini de motif & explication, ou optez
@@ -124,7 +136,7 @@ export const ClotureDossier = observer(function ClotureDossierComponent({
             </p>
           </div>
           {etatCloture.action === "preselection" && (
-            <div className="fr-select-group fr-col-offset-6 fr-col-lg-6 fr-mb-0">
+            <div className="fr-select-group fr-col-12">
               <label
                 className="fr-label"
                 htmlFor="dossier-cloture-preselection"
@@ -295,6 +307,27 @@ export const ClotureDossier = observer(function ClotureDossierComponent({
           </>
         )}
       </ul>
-    </>
+    </_modale.Component>
+  ) : (
+    <></>
   );
 });
+
+export const cloturerBoutons = ({
+  dossier,
+  agent,
+}: {
+  dossier: DossierDetail;
+  agent: Agent;
+}): ButtonProps[] => {
+  return estCloturable({ dossier, agent })
+    ? [
+        {
+          children: "Clôturer",
+          priority: "tertiary no outline",
+          iconId: "fr-icon-pause-circle-line",
+          onClick: () => _modale.open(),
+        } as ButtonProps,
+      ]
+    : [];
+};
