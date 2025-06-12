@@ -4,15 +4,15 @@ namespace MonIndemnisationJustice\Entity;
 
 enum TypeInstitutionSecuritePublique: string
 {
-    case P = 'PN';
-    case G = 'GN';
+    case PN = 'PN';
+    case GN = 'GN';
     case PP = 'PP';
 
     public function getLibelleCourt(): string
     {
         return match ($this) {
-            TypeInstitutionSecuritePublique::P => 'Police',
-            TypeInstitutionSecuritePublique::G => 'Gendarmerie',
+            TypeInstitutionSecuritePublique::PN => 'Police',
+            TypeInstitutionSecuritePublique::GN => 'Gendarmerie',
             TypeInstitutionSecuritePublique::PP => 'Préfecture de Police',
         };
     }
@@ -20,8 +20,8 @@ enum TypeInstitutionSecuritePublique: string
     public function getLibelle(): string
     {
         return match ($this) {
-            TypeInstitutionSecuritePublique::P => 'Police nationale',
-            TypeInstitutionSecuritePublique::G => 'Gendarmerie nationale',
+            TypeInstitutionSecuritePublique::PN => 'Police nationale',
+            TypeInstitutionSecuritePublique::GN => 'Gendarmerie nationale',
             TypeInstitutionSecuritePublique::PP => 'Préfecture de Police',
         };
     }

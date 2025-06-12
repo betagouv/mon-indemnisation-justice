@@ -132,9 +132,11 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
+    #[Groups(['agent:detail'])]
     #[ORM\Column(name: 'est_lie_attestation', options: ['default' => false])]
     protected bool $estLieAttestation = false;
 
+    #[Groups(['agent:detail'])]
     #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
     protected ?InstitutionSecuritePublique $institutionSecuritePublique = null;
@@ -585,5 +587,22 @@ class BrisPorte
         $this->qualiteRequerant = $qualiteRequerant;
 
         return $this;
+    }
+
+    public function isEstLieAttestation(): bool
+    {
+        return $this->estLieAttestation;
+    }
+
+    public function getInstitutionSecuritePublique(): ?InstitutionSecuritePublique
+    {
+        return $this->institutionSecuritePublique;
+    }
+
+    #[Groups(['agent:detail'])]
+    #[SerializedName('institutionSecuritePublique')]
+    public function getLibelleInstitutionSecuritePublique(): ?string
+    {
+        return $this->institutionSecuritePublique?->getType()->value;
     }
 }

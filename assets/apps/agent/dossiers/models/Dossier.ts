@@ -1,4 +1,6 @@
 import { EtatDossier } from "@/apps/agent/dossiers/models/EtatDossier";
+import { InstitutionSecuritePublique } from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
+import { object } from "prop-types";
 import {
   Adresse,
   Courrier,
@@ -9,7 +11,7 @@ import {
   Requerant,
   TestEligibilite,
 } from ".";
-import { Expose, Transform, Type } from "class-transformer";
+import { Expose, plainToInstance, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";
 
 export abstract class BaseDossier {
@@ -143,7 +145,15 @@ export class DossierDetail extends BaseDossier {
 
   public montantIndemnisation: number | null = null;
 
-  @Transform(({ value }: { value: object }) => new Map(Object.entries(value)))
+  @Transform(
+    ({ value }: { value: object }) =>
+      new Map(
+        Object.entries(value).map(([t, d]) => [
+          t,
+          plainToInstance(Document, d as Array<any>),
+        ]),
+      ),
+  )
   public documents: Map<string, Document[]> = new Map(
     Document.types.map((type: DocumentType) => [type.type, []]),
   );
@@ -152,6 +162,9 @@ export class DossierDetail extends BaseDossier {
   @Expose()
   @Type(() => Courrier)
   public courrier?: Courrier = null;
+
+  public estLieAttestation?: boolean;
+  public institutionSecuritePublique?: InstitutionSecuritePublique;
 
   constructor() {
     super();
