@@ -53,18 +53,18 @@ services:
 
   # The Symfony app
   symfony:
-    platform: linux/amd64
     hostname: symfony
     stdin_open: true
     tty: true
     # En attendant un accès à Harbor
-    image: pierrelemee/precontentieux-full:latest
+    image: pierrelemee/precontentieux-full
     command: bash -c 'update-ca-certificates && composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && yarn install && php-fpm'
     environment:
       - APP_ENV=${APP_ENV:-dev}
       - TZ=Europe/Paris
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
+      - CHROMIUM_PATH=/usr/bin/chromium
     restart: always
     depends_on:
       - postgres
