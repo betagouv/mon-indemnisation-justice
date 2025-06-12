@@ -63,6 +63,10 @@ export class Document {
   public readonly type: DocumentType;
   public metaDonnees: any;
 
+  public isPDF(): boolean {
+    return "application/pdf" === this.mime;
+  }
+
   public static types: DocumentType[] = [
     DocumentType.TYPE_ATTESTATION_INFORMATION,
     DocumentType.TYPE_PHOTO_PREJUDICE,
