@@ -1,24 +1,17 @@
+import { DossierActions } from "@/apps/agent/dossiers/components/consultation/action";
 import { MetaDonneesAttestationForm } from "@/apps/agent/dossiers/components/consultation/piecejointe/MetaDonneesAttestation";
+import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe/PieceJointe";
 import {
   Agent,
   Document,
-  DossierDetail,
   DocumentType,
+  DossierDetail,
 } from "@/apps/agent/dossiers/models";
-import {
-  AttributionDossier,
-  ClotureDossier,
-  DecisionDossier,
-  ValidationDecisionDossier,
-  ValidationAcceptationDossier,
-} from "@/apps/agent/dossiers/components/consultation";
-import { InstitutionSecuritePublique } from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
-
 import { observer } from "mobx-react-lite";
-import React, { useRef, useLayoutEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import ReactQuill from "react-quill-new";
 
 export const ConsultationDossierApp = observer(
@@ -119,14 +112,9 @@ export const ConsultationDossierApp = observer(
       dossier.annoter(notes);
     };
 
-    const refSectionCourrier = useRef(null);
-    const [largeurSectionCourrier, setLargeurSectionCourrier] = useState(0);
-
-    useLayoutEffect(() => {
-      if (refSectionCourrier.current) {
-        setLargeurSectionCourrier(refSectionCourrier.current.offsetWidth);
-      }
-    }, []);
+    const ouvrirSectionCourrier = () => {
+      history.replaceState(undefined, undefined, "#courrier");
+    };
 
     return (
       <>
@@ -177,65 +165,37 @@ export const ConsultationDossierApp = observer(
                   par <u>{dossier.requerant.nomSimple()}</u>
                 </p>
 
-                {/* Attribution du rédacteur */}
-
-                <AttributionDossier dossier={dossier} agent={agent} />
-
-                {/* Clôture du dossier */}
-                {dossier.estCloturable() &&
-                  (agent.estAttributeur() || agent.instruit(dossier)) && (
-                    <ClotureDossier dossier={dossier} agent={agent} />
+                <p className="fr-m-1w">
+                  Ce dossier
+                  {dossier.redacteur ? (
+                    agent.equals(dossier.redacteur) ? (
+                      <>
+                        {" "}
+                        <b>vous</b> est attribué.
+                      </>
+                    ) : (
+                      <>
+                        {" "}
+                        est attribué à <u> {dossier.redacteur.nom} </u>.
+                      </>
+                    )
+                  ) : (
+                    <>
+                      {" "}
+                      n'est <i>pas encore attribué</i> à un rédacteur.
+                    </>
                   )}
+                </p>
 
-                {/* Décision du rédacteur sur le dossier */}
-                {dossier.enAttenteDecision &&
-                  agent.estRedacteur() &&
-                  agent.instruit(dossier) && (
-                    <DecisionDossier
-                      dossier={dossier}
-                      onDecide={() => {
-                        if (refSectionCourrier.current) {
-                          setLargeurSectionCourrier(
-                            refSectionCourrier.current.offsetWidth,
-                          );
-                        }
-                        history.replaceState(undefined, undefined, "#courrier");
-                      }}
-                    />
-                  )}
-
-                {/* Validation du validateur sur le dossier */}
-                {dossier.enAttenteValidation && agent.estValidateur() && (
-                  <ValidationDecisionDossier
-                    dossier={dossier}
-                    onEdite={() => {
-                      if (refSectionCourrier.current) {
-                        setLargeurSectionCourrier(
-                          refSectionCourrier.current.offsetWidth,
-                        );
-                      }
-                      history.replaceState(undefined, undefined, "#courrier");
-                    }}
-                    onSigne={() => {
-                      if (refSectionCourrier.current) {
-                        setLargeurSectionCourrier(
-                          refSectionCourrier.current.offsetWidth,
-                        );
-                      }
-                      history.replaceState(undefined, undefined, "#courrier");
-                    }}
-                  />
-                )}
-
-                {/* Le rédacteur vérifie la déclaration d'acceptation et la valide */}
-                {dossier.estAVerifier && agent.instruit(dossier) && (
-                  <ValidationAcceptationDossier dossier={dossier} />
-                )}
+                {/** Actions sur le dossier */}
+                <DossierActions
+                  dossier={dossier}
+                  agent={agent}
+                  onDecide={() => ouvrirSectionCourrier()}
+                />
 
                 {/* L'agent validateur génère et signe l'arrêté de paiement */}
                 {dossier.enAttentePaiement && agent.estValidateur() && <></>}
-
-                {/* L'agent validateur génère et signe l'arrêté de paiement */}
               </div>
 
               <div className="fr-my-2w">
@@ -805,26 +765,10 @@ export const ConsultationDossierApp = observer(
                                   />
                                 )}
 
-                                {pieceJointe.mime == "application/pdf" ? (
-                                  <object
-                                    data={pieceJointe.url}
-                                    type="application/pdf"
-                                    style={{
-                                      width: "100%",
-                                      aspectRatio: "210/297",
-                                    }}
-                                  ></object>
-                                ) : (
-                                  <img
-                                    src={pieceJointe.url}
-                                    alt={pieceJointe.originalFilename}
-                                    style={{
-                                      width: "100%",
-                                      maxHeight: "100vh",
-                                      objectFit: "contain",
-                                    }}
-                                  />
-                                )}
+                                <PieceJointe
+                                  pieceJointe={pieceJointe}
+                                  className="fr-col-12"
+                                />
                               </div>
                             </>
                           ) : (
@@ -835,13 +779,7 @@ export const ConsultationDossierApp = observer(
                     </section>
                   </div>
 
-                  {(null !== dossier.courrier ||
-                    dossier.hasDocumentsType(
-                      DocumentType.TYPE_COURRIER_MINISTERE,
-                    ) ||
-                    dossier.hasDocumentsType(
-                      DocumentType.TYPE_COURRIER_REQUERANT,
-                    )) && (
+                  {null !== dossier.getCourrierAJour() && (
                     <div
                       id="tab-panel-courrier"
                       className={`fr-tabs__panel ${window.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
@@ -851,27 +789,12 @@ export const ConsultationDossierApp = observer(
                     >
                       <section>
                         <h3>Courrier</h3>
-                        <div className="fr-grid-row" ref={refSectionCourrier}>
+                        <div className="fr-grid-row fr-col-12">
                           <object
-                            data={
-                              dossier.documents
-                                .get(DocumentType.TYPE_COURRIER_REQUERANT.type)
-                                ?.at(0)?.url ??
-                              dossier.documents
-                                .get(DocumentType.TYPE_COURRIER_MINISTERE.type)
-                                ?.at(0)?.url ??
-                              dossier.courrier.url
-                            }
+                            data={dossier.getCourrierAJour()?.url}
                             type="application/pdf"
-                            width={largeurSectionCourrier || "100%"}
-                            height={
-                              largeurSectionCourrier
-                                ? Math.floor(
-                                    (297 * largeurSectionCourrier) / 210,
-                                  )
-                                : undefined
-                            }
                             style={{
+                              width: "100%",
                               aspectRatio: "210/297",
                             }}
                           ></object>
