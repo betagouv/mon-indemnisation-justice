@@ -3,15 +3,18 @@
 namespace MonIndemnisationJustice\Controller\Agent;
 
 use AsyncAws\S3\Exception\NoSuchKeyException;
+use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\TypeInstitutionSecuritePublique;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -26,6 +29,7 @@ class DocumentController extends AbstractController
     public function __construct(
         #[Target('default.storage')]
         protected readonly FilesystemOperator $storage,
+        protected readonly EntityManagerInterface $em,
     ) {
     }
 

@@ -132,9 +132,11 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
+    #[Groups(['agent:detail'])]
     #[ORM\Column(name: 'est_lie_attestation', options: ['default' => false])]
     protected bool $estLieAttestation = false;
 
+    #[Groups(['agent:detail'])]
     #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
     protected ?InstitutionSecuritePublique $institutionSecuritePublique = null;

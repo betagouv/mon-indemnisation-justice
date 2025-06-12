@@ -1,3 +1,4 @@
+import { MetaDonneesAttestationForm } from "@/apps/agent/dossiers/components/consultation/piecejointe/MetaDonneesAttestation";
 import {
   Agent,
   Document,
@@ -11,6 +12,7 @@ import {
   ValidationDecisionDossier,
   ValidationAcceptationDossier,
 } from "@/apps/agent/dossiers/components/consultation";
+import { InstitutionSecuritePublique } from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
@@ -773,25 +775,36 @@ export const ConsultationDossierApp = observer(
                         <div className="fr-col-9 fr-px-4w">
                           {pieceJointe ? (
                             <>
-                              <ButtonsGroup
-                                inlineLayoutWhen="always"
-                                alignment="right"
-                                buttonsIconPosition="right"
-                                buttonsSize="small"
-                                buttons={[
-                                  {
-                                    children: "Télécharger",
-                                    iconId: "fr-icon-download-line",
-                                    linkProps: {
-                                      href: pieceJointe.url,
-                                      download: true,
-                                    },
-                                  } as ButtonProps,
-                                ]}
-                              />
+                              <div className="fr-grid-row fr-col-12">
+                                <h4>{pieceJointe.originalFilename}</h4>
 
-                              <div className="fr-grid-row">
-                                <h6>{pieceJointe.originalFilename}</h6>
+                                <ButtonsGroup
+                                  className="fr-grid-row fr-col-12"
+                                  inlineLayoutWhen="always"
+                                  alignment="right"
+                                  buttonsIconPosition="right"
+                                  buttonsSize="small"
+                                  buttons={[
+                                    {
+                                      children: "Télécharger",
+                                      iconId: "fr-icon-download-line",
+                                      linkProps: {
+                                        href: pieceJointe.url,
+                                        download: true,
+                                      },
+                                    } as ButtonProps,
+                                  ]}
+                                />
+
+                                {/* Partie spécifique au type de pièce jointe */}
+                                {pieceJointe.type ==
+                                  DocumentType.TYPE_ATTESTATION_INFORMATION && (
+                                  <MetaDonneesAttestationForm
+                                    className="fr-col-12 fr-mb-2w"
+                                    document={pieceJointe}
+                                  />
+                                )}
+
                                 {pieceJointe.mime == "application/pdf" ? (
                                   <object
                                     data={pieceJointe.url}
