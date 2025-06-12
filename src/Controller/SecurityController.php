@@ -32,7 +32,7 @@ class SecurityController extends AbstractController
         protected EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
         #[Autowire(service: 'oidc_client_france_connect')]
-        protected readonly OidcClient $oidcClientREquerant,
+        protected readonly OidcClient $oidcClientRequerant,
         #[Autowire(service: 'oidc_client_pro_connect')]
         protected readonly OidcClient $oidcClientAgent,
     ) {
@@ -60,7 +60,7 @@ class SecurityController extends AbstractController
         return $this->render('security/connexion.html.twig', [
             'last_username' => $lastUsername,
             'error_message' => $errorMessage,
-            'france_connect_url' => $this->oidcClientREquerant->buildAuthorizeUrl($request, 'requerant_securite_connexion'),
+            'france_connect_url' => $this->oidcClientRequerant->buildAuthorizeUrl($request, 'requerant_securite_connexion'),
             'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
             'message_erreur_connexion' => $request->query->get('erreur'),
         ]);
@@ -79,6 +79,7 @@ class SecurityController extends AbstractController
 
         return $this->render('security/connexion.html.twig', [
             'last_username' => null,
+            'france_connect_url' => $this->oidcClientRequerant->buildAuthorizeUrl($request, 'requerant_securite_connexion'),
             'error_message' => null,
             'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
         ]);
