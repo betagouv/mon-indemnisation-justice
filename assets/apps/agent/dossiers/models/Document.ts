@@ -56,10 +56,12 @@ export class Document {
   public readonly mime: string;
   public readonly originalFilename: string;
   public readonly url: string;
-  @Transform(({ value }: { value: string }) =>
-    Document.types.find((type: DocumentType) => type.type == value),
+  @Transform(
+    ({ value }: { value: string }): DocumentType =>
+      Document.types.find((type: DocumentType) => type.type === value),
   )
   public readonly type: DocumentType;
+  public metaDonnees: any;
 
   public static types: DocumentType[] = [
     DocumentType.TYPE_ATTESTATION_INFORMATION,

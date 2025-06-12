@@ -4,12 +4,15 @@ namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\DocumentRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Document
 {
     public const TYPE_ATTESTATION_INFORMATION = 'attestation_information';
@@ -71,6 +74,35 @@ class Document
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $originalFilename = null;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
+    protected \DateTimeInterface $dateAjout;
+
+    /**
+     * Si `true`, alors ajouté par le requérant lors du dépôt de dossier.
+     * Si `false`, alors téléversé en complément ou édité par l'agent.
+     *
+     * Sinon automatique, ex: arrêté de paiement post acceptation.
+     * */
+    #[ORM\Column(nullable: true)]
+    protected ?bool $estAjoutRequerant = null;
+
+    #[ORM\Column(nullable: true)]
+    protected ?bool $estValide = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    protected ?\DateTimeInterface $dateValidation = null;
+
+    #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    protected ?Agent $validateur;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $corpsCourrier = null;
+
+    #[Groups(['agent:detail'])]
+    #[ORM\Column(type: 'json', nullable: true)]
+    protected ?array $metaDonnees = null;
+
     #[ORM\ManyToMany(targetEntity: BrisPorte::class, mappedBy: 'documents')]
     /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
@@ -78,6 +110,12 @@ class Document
     public function __construct()
     {
         $this->dossiers = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function onPersist(PrePersistEventArgs $args): void
+    {
+        $this->dateAjout = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -165,9 +203,23 @@ class Document
         return $this;
     }
 
-    public function getContentId(): string
+    public function valider(Agent $agent): self
     {
-        return "$this->type+$this->filename";
+        return $this->setValidation(true, $agent);
+    }
+
+    public function rejeter(Agent $agent): self
+    {
+        return $this->setValidation(false, $agent);
+    }
+
+    protected function setValidation(bool $estValide, Agent $agent): self
+    {
+        $this->estValide = $estValide;
+        $this->dateValidation = new \DateTimeImmutable();
+        $this->validateur = $agent;
+
+        return $this;
     }
 
     public function getFileHash(): string
