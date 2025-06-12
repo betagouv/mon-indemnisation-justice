@@ -51,6 +51,14 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateInscription;
 
+    /**
+     * Temporaire: maintien de ce champs pour se conformer avec les données sérialisées en session.
+     *
+     * TODO: supprimer ce champs dès que les sessions ont toutes expiré (~14 jours, requête sur `sessions` avec
+     *      `like '%dateChangementMDP%'`)
+     */
+    public \DateTimeInterface $dateChangementMDP;
+
     #[ORM\Column(type: 'string', length: 12, nullable: true)]
     protected ?string $jetonVerification;
 
