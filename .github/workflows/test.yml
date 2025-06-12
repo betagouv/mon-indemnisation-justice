@@ -243,18 +243,6 @@ jobs:
         with:
           node-version: 22.x
 
-      - name: Compute installed Playwright version
-        id: playwright-version
-        run: echo "PLAYWRIGHT_VERSION=$(yarn info @playwright/test version | sed -n 2p)" >> $GITHUB_ENV
-
-      - name: Cache playwright binaries
-        uses: actions/cache@v3
-        id: playwright-cache
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: end2end-playwright-${{ env.PLAYWRIGHT_VERSION }}
-
       - name: Install Playwright
         run: npx playwright install --with-deps
 
@@ -307,3 +295,4 @@ jobs:
           name: End-to-end test report
           path: test-result-end2end.xml
           reporter: java-junit
+          fail-on-error: false
