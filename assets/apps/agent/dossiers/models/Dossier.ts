@@ -1,16 +1,8 @@
-import { EtatDossier } from "@/apps/agent/dossiers/models/EtatDossier";
-import {
-  Adresse,
-  Courrier,
-  Document,
-  DocumentType,
-  EtatDossierType,
-  Redacteur,
-  Requerant,
-  TestEligibilite,
-} from ".";
-import { Expose, Transform, Type } from "class-transformer";
-import { action, computed, makeObservable, observable } from "mobx";
+import {EtatDossier} from "@/apps/agent/dossiers/models/EtatDossier";
+import {InstitutionSecuritePublique} from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
+import {Adresse, Courrier, Document, DocumentType, EtatDossierType, Redacteur, Requerant, TestEligibilite,} from ".";
+import {Expose, plainToInstance, Transform, Type} from "class-transformer";
+import {action, computed, makeObservable, observable} from "mobx";
 
 export abstract class BaseDossier {
   public readonly id: number;
@@ -143,7 +135,15 @@ export class DossierDetail extends BaseDossier {
 
   public montantIndemnisation: number | null = null;
 
-  @Transform(({ value }: { value: object }) => new Map(Object.entries(value)))
+  @Transform(
+    ({ value }: { value: object }) =>
+      new Map(
+        Object.entries(value).map(([t, d]) => [
+          t,
+          plainToInstance(Document, d as Array<any>),
+        ]),
+      ),
+  )
   public documents: Map<string, Document[]> = new Map(
     Document.types.map((type: DocumentType) => [type.type, []]),
   );
@@ -152,6 +152,9 @@ export class DossierDetail extends BaseDossier {
   @Expose()
   @Type(() => Courrier)
   public courrier?: Courrier = null;
+
+  public estLieAttestation?: boolean;
+  public institutionSecuritePublique?: InstitutionSecuritePublique;
 
   constructor() {
     super();
@@ -197,5 +200,9 @@ export class DossierDetail extends BaseDossier {
 
   public viderDocumentParType(type: DocumentType): void {
     this.documents.set(type.type, []);
+  }
+
+  public getCourrierAJour(): Document | Courrier {
+    return this.documents.get(DocumentType.TYPE_COURRIER_REQUERANT.type)?.at(0) ?? this.documents.get(DocumentType.TYPE_COURRIER_MINISTERE.type)?.at(0) ?? this.courrier
   }
 }

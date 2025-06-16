@@ -3,14 +3,18 @@
 namespace MonIndemnisationJustice\Controller\Agent;
 
 use AsyncAws\S3\Exception\NoSuchKeyException;
+use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\TypeInstitutionSecuritePublique;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -25,7 +29,42 @@ class DocumentController extends AbstractController
     public function __construct(
         #[Target('default.storage')]
         protected readonly FilesystemOperator $storage,
+        protected readonly EntityManagerInterface $em,
     ) {
+    }
+
+    #[Route('/{id}/meta-donnees', name: 'agent_document_metadonnees', methods: ['PUT', 'PATCH'])]
+    public function metaDonnees(#[MapEntity(id: 'id')] Document $document, Request $request): Response
+    {
+        if (Document::TYPE_ATTESTATION_INFORMATION === $document->getType()) {
+            $document->setMetaDonnees(
+                array_merge(
+                    $request->getPayload()->has('estAttestation') ? [
+                        'estAttestation' => $request->getPayload()->getBoolean('estAttestation'),
+                    ] : [],
+                    $request->getPayload()->has('typeInstitutionSecuritePublique') ? [
+                        'typeInstitutionSecuritePublique' => TypeInstitutionSecuritePublique::from(
+                            $request->getPayload()->getString('typeInstitutionSecuritePublique')
+                        ),
+                    ] : []
+                ),
+
+                'PATCH' === $request->getMethod()
+            );
+            $this->em->persist($document);
+            $this->em->flush();
+
+            if ($request->getPayload()->has('estAttestation')) {
+                $em = $this->em;
+                $document->getDossiers()->map(function (BrisPorte $brisPorte) use ($em) {
+                    $brisPorte->recalculerEstLieAttestation();
+                    $em->persist($brisPorte);
+                });
+            }
+            $this->em->flush();
+        }
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/{id}/{hash}', name: 'agent_document_download', methods: ['GET'])]

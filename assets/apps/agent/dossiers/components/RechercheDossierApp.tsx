@@ -191,10 +191,10 @@ export const RechercheDossierApp = observer(
                               <th scope="col" className="fr-col-2">
                                 Référence / état
                               </th>
-                              <th scope="col" className="fr-col-3">
+                              <th scope="col" className="fr-col-4">
                                 Idéntité et adresse du requérant
                               </th>
-                              <th scope="col" className="fr-col-3">
+                              <th scope="col" className="fr-col-2">
                                 Déposé le
                               </th>
                               <th scope="col" className="fr-col-1">
@@ -237,29 +237,42 @@ export const RechercheDossierApp = observer(
                                     <br />
                                     {dossier.reference}
                                   </td>
-                                  <td className="fr-col-3">
+                                  <td
+                                    className="fr-col-4"
+                                    style={{
+                                      wordWrap: "break-word",
+                                      whiteSpace: "pre-wrap",
+                                    }}
+                                  >
                                     <span className="fr-text--lg fr-text--bold">
                                       {dossier.requerant}
                                     </span>
                                     <br />
-                                    {dossier.adresse}
+                                    <p>{dossier.adresse}</p>
                                   </td>
-                                  <td className="fr-col-3">
-                                    {_.capitalize(
-                                      dossier.dateDepot?.toLocaleString(
-                                        "fr-FR",
-                                        {
-                                          weekday: "long",
-                                          day: "numeric",
-                                          month: "long",
-                                          year: "numeric",
-                                        },
-                                      ),
+                                  <td
+                                    className="fr-col-2"
+                                    style={{ overflow: "hidden" }}
+                                  >
+                                    {dossier.dateDepot && (
+                                      <>
+                                        {_.capitalize(
+                                          dossier.dateDepot?.toLocaleString(
+                                            "fr-FR",
+                                            {
+                                              weekday: "long",
+                                              day: "numeric",
+                                              month: "long",
+                                              year: "numeric",
+                                            },
+                                          ),
+                                        )}
+                                        <br />à {dossier.dateDepot?.getHours()}h
+                                        {String(
+                                          dossier.dateDepot?.getMinutes(),
+                                        ).padStart(2, "0")}
+                                      </>
                                     )}
-                                    <br />à {dossier.dateDepot?.getHours()}h
-                                    {String(
-                                      dossier.dateDepot?.getMinutes(),
-                                    ).padStart(2, "0")}
                                   </td>
                                   <td className="fr-col-1">
                                     {dossier.estEligible ? (

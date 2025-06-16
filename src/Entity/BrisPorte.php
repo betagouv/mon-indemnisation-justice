@@ -132,9 +132,11 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
+    #[Groups(['agent:detail'])]
     #[ORM\Column(name: 'est_lie_attestation', options: ['default' => false])]
     protected bool $estLieAttestation = false;
 
+    #[Groups(['agent:detail'])]
     #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
     protected ?InstitutionSecuritePublique $institutionSecuritePublique = null;
@@ -402,6 +404,9 @@ class BrisPorte
         return $this->documentsParType;
     }
 
+    /**
+     * @return Document[]
+     */
     public function getDocumentsParType(string $type): array
     {
         return $this->documentsParType[$type] ?? [];
@@ -585,5 +590,34 @@ class BrisPorte
         $this->qualiteRequerant = $qualiteRequerant;
 
         return $this;
+    }
+
+    public function isEstLieAttestation(): bool
+    {
+        return $this->estLieAttestation;
+    }
+
+    public function recalculerEstLieAttestation(): self
+    {
+        $this->estLieAttestation = count(array_filter(
+            $this->getDocumentsParType(Document::TYPE_ATTESTATION_INFORMATION),
+            function (Document $document): bool {
+                return true === $document->getMetaDonnee('estAttestation');
+            }
+        )) > 0;
+
+        return $this;
+    }
+
+    public function getInstitutionSecuritePublique(): ?InstitutionSecuritePublique
+    {
+        return $this->institutionSecuritePublique;
+    }
+
+    #[Groups(['agent:detail'])]
+    #[SerializedName('institutionSecuritePublique')]
+    public function getLibelleInstitutionSecuritePublique(): ?string
+    {
+        return $this->institutionSecuritePublique?->getType()->value;
     }
 }
