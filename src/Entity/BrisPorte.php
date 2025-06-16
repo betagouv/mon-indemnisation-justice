@@ -132,7 +132,7 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
-    #[Groups(['agent:detail'])]
+    #[Groups(['agent:detail', 'agent:liste'])]
     #[ORM\Column(name: 'est_lie_attestation', options: ['default' => false])]
     protected bool $estLieAttestation = false;
 

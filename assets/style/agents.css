@@ -73,6 +73,15 @@ a:not([href]) {
     border-left: calc(2 * var(--left-padding)) solid;
     border-radius: var(--left-padding) 0 0 0;
 
+    /* Supprimer la marge du bas pour le group de bouton */
+    .fr-btns-group {
+        li {
+            button {
+                margin-bottom: 0 !important;
+            }
+        }
+    }
+
     &--a-finaliser {
         border-left-color: var(--var-couleur-pp-a-finaliser);
     }
@@ -268,3 +277,4 @@ a:not([href]) {
         line-height: 13pt;
     }
 }
+
