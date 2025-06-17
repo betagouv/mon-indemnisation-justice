@@ -40,7 +40,7 @@ class Adresse
     /**
      * @var Collection<int, BrisPorte>
      */
-    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'adresse')]
+    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'adresse', cascade: [])]
     private Collection $brisPortes;
 
     public function __toString()

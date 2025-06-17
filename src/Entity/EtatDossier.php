@@ -29,16 +29,16 @@ class EtatDossier
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, name: 'date')]
     protected \DateTimeInterface $dateEntree;
 
-    #[ORM\ManyToOne(targetEntity: BrisPorte::class, inversedBy: 'historiqueEtats', cascade: ['detach'])]
-    #[ORM\JoinColumn(nullable: false, name: 'dossier_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: BrisPorte::class, inversedBy: 'historiqueEtats')]
+    #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     protected ?BrisPorte $dossier;
 
-    #[ORM\ManyToOne(targetEntity: Agent::class, cascade: ['detach'])]
+    #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?Agent $agent;
 
-    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['detach'])]
-    #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id', )]
+    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: [])]
+    #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id')]
     protected ?Requerant $requerant;
 
     #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
