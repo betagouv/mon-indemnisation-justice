@@ -29,7 +29,8 @@
                     <div class="fr-header__tools-links">
                         <ul class="fr-btns-group">
                             <li>
-                                <span class="fr-btn fr-icon-user-line">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}</span>
+                                <a class="fr-btn fr-icon-user-line"
+                                   href="{{ url('requerant_home_index') }}">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}</a>
                             </li>
                             <li>
                                 <a class="fr-btn fr-icon-logout-box-r-line"
@@ -73,13 +74,13 @@
                 <nav id="fr-header-main-navigation" class="fr-nav" role="navigation" aria-label="Menu principal">
                     <ul class="fr-nav__list">
                         <li class="fr-nav__item" data-fr-js-navigation-item="true">
-                            <a href="{{ path('app_homepage') }}" class="fr-nav__link">
+                            <a href="{{ path('requerant_home_index') }}" class="fr-nav__link">
                                 <span class="fr-icon-home-4-line fr-text--bold" aria-hidden="true"></span>
                             </a>
                         </li>
 
                         <li class="fr-nav__item" data-fr-js-navigation-item="true">
-                            <a href="{{ url('requerant_home_index') }}" class="fr-nav__link">Mes demandes</a>
+                            <a href="{{ url('requerant_home_dossiers') }}" class="fr-nav__link">Mes demandes</a>
                         </li>
                     </ul>
                 </nav>

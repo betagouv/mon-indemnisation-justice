@@ -139,7 +139,7 @@ test("dépôt de dossier", async ({ page }) => {
   await expect(page.getByText("Je déclare mon bris de porte")).toBeEnabled();
   await page.getByText("Je déclare mon bris de porte").click();
 
-  await expect(page).toHaveURL("/requerant");
+  await expect(page).toHaveURL("/requerant/mes-demandes");
 
   // TODO vérifier que la modale de confirmation est bien affichée
   // TODO vérifier qu'un email est bien reçu (cf. PHP) :
