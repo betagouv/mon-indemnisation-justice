@@ -39,7 +39,7 @@ class BrisPorte
     public ?int $id = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
-    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist'], inversedBy: 'dossiers')]
+    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: [], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected Requerant $requerant;
 
@@ -52,7 +52,7 @@ class BrisPorte
     protected ?string $notes = null;
 
     #[ORM\OneToOne(targetEntity: EtatDossier::class, inversedBy: null)]
-    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?EtatDossier $etatDossier = null;
 
     #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER')]
@@ -80,7 +80,7 @@ class BrisPorte
 
     #[ORM\JoinTable(name: 'document_dossiers')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'dossiers', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'dossiers', cascade: ['persist', 'remove'])]
     /** @var Collection<Document> */
     protected Collection $documents;
     protected ?array $documentsParType = null;
@@ -106,7 +106,8 @@ class BrisPorte
     protected ?string $numeroPV = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste', 'requerant:detail'])]
-    #[ORM\ManyToOne(inversedBy: 'brisPortes', cascade: ['persist'])]
+    #[ORM\ManyToOne(cascade: ['persist', 'remove'], inversedBy: 'brisPortes')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Adresse $adresse;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
@@ -121,7 +122,7 @@ class BrisPorte
 
     #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?TestEligibilite $testEligibilite = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
@@ -154,12 +155,6 @@ class BrisPorte
     public function onPrePersist(PrePersistEventArgs $args): void
     {
         $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
-    }
-
-    #[ORM\PreRemove]
-    public function onPreRemove(): void
-    {
-        $this->etatDossier = null;
     }
 
     #[ORM\PostLoad]
