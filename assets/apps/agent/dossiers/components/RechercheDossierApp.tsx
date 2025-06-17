@@ -198,7 +198,8 @@ export const RechercheDossierApp = observer(
                                 Déposé le
                               </th>
                               <th scope="col" className="fr-col-1">
-                                Éligible ?
+                                Éligible ?<br />
+                                Attestation ?
                               </th>
                               <th scope="col" className="fr-col-2">
                                 Attribué à
@@ -283,6 +284,12 @@ export const RechercheDossierApp = observer(
                                       <p className="fr-badge fr-badge--warning">
                                         Non
                                       </p>
+                                    )}
+                                    <br />
+                                    {dossier.estLieAttestation ? (
+                                      <b>Oui</b>
+                                    ) : (
+                                      <>Non</>
                                     )}
                                   </td>
                                   <td className="fr-col-2">

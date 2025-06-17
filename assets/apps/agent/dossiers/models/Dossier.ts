@@ -1,8 +1,17 @@
-import {EtatDossier} from "@/apps/agent/dossiers/models/EtatDossier";
-import {InstitutionSecuritePublique} from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
-import {Adresse, Courrier, Document, DocumentType, EtatDossierType, Redacteur, Requerant, TestEligibilite,} from ".";
-import {Expose, plainToInstance, Transform, Type} from "class-transformer";
-import {action, computed, makeObservable, observable} from "mobx";
+import { EtatDossier } from "@/apps/agent/dossiers/models/EtatDossier";
+import { InstitutionSecuritePublique } from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
+import {
+  Adresse,
+  Courrier,
+  Document,
+  DocumentType,
+  EtatDossierType,
+  Redacteur,
+  Requerant,
+  TestEligibilite,
+} from ".";
+import { Expose, plainToInstance, Transform, Type } from "class-transformer";
+import { action, computed, makeObservable, observable } from "mobx";
 
 export abstract class BaseDossier {
   public readonly id: number;
@@ -14,6 +23,7 @@ export abstract class BaseDossier {
   @Expose()
   @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
   public redacteur: Redacteur | null = null;
+  public estLieAttestation?: boolean;
 
   @Expose()
   get dateDepot(): null | Date {
@@ -153,7 +163,6 @@ export class DossierDetail extends BaseDossier {
   @Type(() => Courrier)
   public courrier?: Courrier = null;
 
-  public estLieAttestation?: boolean;
   public institutionSecuritePublique?: InstitutionSecuritePublique;
 
   constructor() {
@@ -203,6 +212,10 @@ export class DossierDetail extends BaseDossier {
   }
 
   public getCourrierAJour(): Document | Courrier {
-    return this.documents.get(DocumentType.TYPE_COURRIER_REQUERANT.type)?.at(0) ?? this.documents.get(DocumentType.TYPE_COURRIER_MINISTERE.type)?.at(0) ?? this.courrier
+    return (
+      this.documents.get(DocumentType.TYPE_COURRIER_REQUERANT.type)?.at(0) ??
+      this.documents.get(DocumentType.TYPE_COURRIER_MINISTERE.type)?.at(0) ??
+      this.courrier
+    );
   }
 }
