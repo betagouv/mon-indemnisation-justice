@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\PersonnePhysiqueRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: PersonnePhysiqueRepository::class)]
@@ -53,10 +54,12 @@ class PersonnePhysique
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $communeNaissance = null;
 
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
+    #[SerializedName('communeNaissance')]
     #[ORM\ManyToOne(targetEntity: GeoCodePostal::class)]
     #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
     protected ?GeoCodePostal $codePostalNaissance = null;
@@ -195,6 +198,13 @@ class PersonnePhysique
         $this->communeNaissance = $communeNaissance;
 
         return $this;
+    }
+
+    #[SerializedName('codePostalNaissance')]
+    #[Groups(['dossier:lecture'])]
+    public function getCodePostalNaissanceCode(): ?string
+    {
+        return $this->codePostalNaissance?->getCodePostal();
     }
 
     public function getCodePostalNaissance(): ?GeoCodePostal
