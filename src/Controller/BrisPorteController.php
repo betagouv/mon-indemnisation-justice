@@ -41,29 +41,19 @@ class BrisPorteController extends AbstractController
     ) {
     }
 
-    protected function getTestEligibilite(Request $request): ?TestEligibilite
-    {
-        $id = $request->getSession()->get(self::SESSION_CONTEXT_KEY, null);
-
-        if ($id) {
-            try {
-                return $this->entityManager->find(TestEligibilite::class, $id);
-            } catch (ORMException $exception) {
-                $request->getSession()->remove(self::SESSION_CONTEXT_KEY);
-            }
-        }
-
-        return null;
-    }
-
-    protected function setTestEligibilite(TestEligibilite $testEligibilite, Request $request): void
-    {
-        $request->getSession()->set(self::SESSION_CONTEXT_KEY, $testEligibilite?->id);
-    }
-
     #[Route('/tester-mon-eligibilite', name: 'bris_porte_tester_eligibilite', methods: ['GET', 'POST'])]
     public function testerMonEligibilite(Request $request): Response
     {
+        if ($this->getUser() instanceof Requerant) {
+            /** @var Requerant $requerant */
+            $requerant = $this->getUser();
+            if (null !== $requerant->getDernierDossier() && !$requerant->getDernierDossier()->estConstitue()) {
+                return $this->redirectToRoute('app_bris_porte_edit', ['id' => $requerant->getDernierDossier()->getId()]);
+            }
+
+            // Sinon on poursuit le test d'éligibilité en vue de créer un nouveau dossier.
+        }
+
         $testEligibilite = $this->getTestEligibilite($request) ?? new TestEligibilite();
 
         if ($request->getSession()->has(AtterrissageController::SESSION_KEY)) {
@@ -111,10 +101,33 @@ class BrisPorteController extends AbstractController
             }
         }
 
-        return $this->render('brisPorte/tester_mon_eligibilite.html.twig', [
-            'form' => $form,
-            'departements' => $this->entityManager->getRepository(GeoDepartement::class)->getListeTriee()]
+        return $this->render(
+            'brisPorte/tester_mon_eligibilite.html.twig',
+            [
+                'form' => $form,
+                'departements' => $this->entityManager->getRepository(GeoDepartement::class)->getListeTriee(),
+            ]
         );
+    }
+
+    protected function getTestEligibilite(Request $request): ?TestEligibilite
+    {
+        $id = $request->getSession()->get(self::SESSION_CONTEXT_KEY, null);
+
+        if ($id) {
+            try {
+                return $this->entityManager->find(TestEligibilite::class, $id);
+            } catch (ORMException $exception) {
+                $request->getSession()->remove(self::SESSION_CONTEXT_KEY);
+            }
+        }
+
+        return null;
+    }
+
+    protected function setTestEligibilite(TestEligibilite $testEligibilite, Request $request): void
+    {
+        $request->getSession()->set(self::SESSION_CONTEXT_KEY, $testEligibilite?->id);
     }
 
     #[Route('/contactez-nous', name: 'bris_porte_contactez_nous', methods: ['GET'])]
@@ -191,16 +204,14 @@ class BrisPorteController extends AbstractController
 
         // Création du compte requérant
         $requerant = (new Requerant())
-            ->setEmail($inscription->courriel)
-        ;
+            ->setEmail($inscription->courriel);
         $requerant->getPersonnePhysique()
             ->setCivilite($inscription->civilite)
             ->setPrenom1($inscription->prenom)
             ->setEmail($inscription->courriel)
             ->setTelephone($inscription->telephone)
             ->setNom($inscription->nom)
-            ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom)
-        ;
+            ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom);
         $requerant->setPassword(
             $this->userPasswordHasher->hashPassword(
                 $requerant,
@@ -260,6 +271,11 @@ class BrisPorteController extends AbstractController
             }
         }
 
-        return $this->render('brisPorte/finaliser_la_creation.html.twig', ['email' => $testEligibilite->requerant->getEmail()]);
+        return $this->render(
+            'brisPorte/finaliser_la_creation.html.twig',
+            [
+                'email' => $testEligibilite->requerant->getEmail(),
+            ]
+        );
     }
 }

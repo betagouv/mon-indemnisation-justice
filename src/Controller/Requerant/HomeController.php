@@ -22,6 +22,7 @@ class HomeController extends RequerantController
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         $requerant = $this->getRequerant();
+        $dossier = $requerant->getDernierDossier();
 
         if ($request->getSession()->has(PublicBrisPorteController::SESSION_CONTEXT_KEY)) {
             // Créer le dossier ici avant de virer les infos du test d'éligibilité
@@ -30,12 +31,17 @@ class HomeController extends RequerantController
                 try {
                     $testEligibilite = $em->find(TestEligibilite::class, $id);
 
-                    $dossier = (new BrisPorte())
-                        ->setRequerant($requerant)
-                        ->setQualiteRequerant($testEligibilite->estProprietaire ? QualiteRequerant::PRO : QualiteRequerant::LOC)
-                        ->setTestEligibilite($testEligibilite)
-                    ;
-                    $em->persist($dossier);
+                    if (null !== $dossier && !$dossier?->estConstitue()) {
+                        // Suppression du test d'éligibilité, doublon de celui déjà associé au dossier en cours.
+                        $em->remove($testEligibilite);
+                    } else {
+                        $dossier = (new BrisPorte())
+                            ->setRequerant($requerant)
+                            ->setQualiteRequerant($testEligibilite->estProprietaire ? QualiteRequerant::PRO : QualiteRequerant::LOC)
+                            ->setTestEligibilite($testEligibilite);
+                        $em->persist($dossier);
+                    }
+
                     $em->flush();
                 } catch (ORMException $exception) {
                     // TODO log peut-être
@@ -45,10 +51,17 @@ class HomeController extends RequerantController
             $request->getSession()->remove(PublicBrisPorteController::SESSION_CONTEXT_KEY);
         }
 
-        $dossier = $requerant->getDernierDossier();
         if (null !== $dossier && !$dossier?->estConstitue()) {
             return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
         }
+
+        return $this->redirectToRoute('requerant_home_dossiers');
+    }
+
+    #[Route('/mes-demandes', name: 'requerant_home_dossiers')]
+    public function mesDemandes(Request $request, EntityManagerInterface $em): Response
+    {
+        $requerant = $this->getRequerant();
 
         return $this->render('requerant/default/index.html.twig', [
             'dossiers' => $requerant->getDossiers(),
