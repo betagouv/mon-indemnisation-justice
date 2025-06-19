@@ -27,13 +27,22 @@ class GeoRegion
         return $this->code;
     }
 
+    public function setCode(string $code): self
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
     public function getNom(): string
     {
         return $this->nom;
     }
 
-    public function estDeploye(): bool
+    public function setNom(string $nom): self
     {
-        return $this->departements->forAll(fn (GeoDepartement $departement) => $departement->estDeploye());
+        $this->nom = $nom;
+
+        return $this;
     }
 }

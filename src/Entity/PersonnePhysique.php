@@ -190,12 +190,12 @@ class PersonnePhysique
 
     public function getCommuneNaissance(): ?string
     {
-        return $this->communeNaissance;
+        return $this->codePostalNaissance?->getCommune()->getNom();
     }
 
-    public function setCommuneNaissance(?string $communeNaissance = null): static
+    public function setCommuneNaissance(?GeoCodePostal $codePostal = null): static
     {
-        $this->communeNaissance = $communeNaissance;
+        $this->codePostalNaissance = $codePostal;
 
         return $this;
     }
@@ -205,18 +205,6 @@ class PersonnePhysique
     public function getCodePostalNaissanceCode(): ?string
     {
         return $this->codePostalNaissance?->getCodePostal();
-    }
-
-    public function getCodePostalNaissance(): ?GeoCodePostal
-    {
-        return $this->codePostalNaissance;
-    }
-
-    public function setCodePostalNaissance(?GeoCodePostal $codePostalNaissance): PersonnePhysique
-    {
-        $this->codePostalNaissance = $codePostalNaissance;
-
-        return $this;
     }
 
     public function getPaysNaissance(): ?GeoPays
