@@ -11,7 +11,7 @@ use MonIndemnisationJustice\Repository\GeoCodePostalRepository;
 #[ORM\Index(name: 'idx_code_postal', columns: ['code_postal'])]
 #[ORM\UniqueConstraint(name: 'unique_code_insee_postal', fields: ['codePostal', 'commune'])]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource(uriTemplate: '/api/geo-code-postal/{id}', operations: [])]
+#[ApiResource]
 class GeoCodePostal extends GeoDataEntity
 {
     #[ORM\Id]

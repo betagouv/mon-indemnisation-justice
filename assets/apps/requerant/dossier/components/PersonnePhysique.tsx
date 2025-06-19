@@ -231,15 +231,20 @@ const PersonnePhysique = function PersonnePhysique() {
             label="Ville de naissance"
             nativeSelectProps={{
               id: randomId(),
-              value: dossier.requerant.personnePhysique.communeNaissance || "",
+              value: dossier.requerant.personnePhysique.communeNaissance ?? "",
               onChange: (e) => {
-                patchDossier({
-                  requerant: {
-                    personnePhysique: {
-                      communeNaissance: e.target.value,
+                if (
+                  e.target.value !=
+                  dossier.requerant.personnePhysique.communeNaissance
+                ) {
+                  patchDossier({
+                    requerant: {
+                      personnePhysique: {
+                        communeNaissance: e.target.value,
+                      },
                     },
-                  },
-                });
+                  });
+                }
               },
             }}
           >
