@@ -39,8 +39,6 @@ pays.sort((pays1: any, pays2: any) => {
   return pays1.code.localeCompare(pays2.code);
 });
 
-console.log(pays);
-
 // Pré-population des listes de documents par type
 const documents = {
   attestation_information: [],

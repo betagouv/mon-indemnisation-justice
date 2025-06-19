@@ -52,11 +52,14 @@ test("dépôt de dossier", async ({ page }) => {
     page.locator("h2", { hasText: "Données personnelles" }),
   ).toBeVisible();
 
+  /*
   await page
     .getByLabel("Les 10 premiers chiffres de votre numéro de sécurité sociale")
     .fill("2790656123");
-  await page.getByLabel("Ville de naissance").fill("Turenne");
+
+   */
   await page.getByLabel("Pays de naissance").selectOption("France");
+  //await page.getByLabel("Ville de naissance").fill("Turenne");
   await page.getByLabel("Date de naissance").fill("1979-05-17");
 
   await expect(

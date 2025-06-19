@@ -17,7 +17,7 @@ const User = function () {
     <>
       <div className="fr-grid-row">
         <div className="fr-col-12">
-          <div className="pr-case_bris-de-porte_is-personne-morale fr-px-2w fr-pt-4w">
+          <div className="pr-case_bris-de-porte_is-personne-morale fr-pt-2w">
             <RadioButtons
               orientation="horizontal"
               legend="Votre demande d'indemnisation concerne une personne morale (société, entreprise, association, fondation etc.)"
@@ -223,76 +223,11 @@ const User = function () {
       )}
       {!dossier.requerant.isPersonneMorale && (
         <>
-          <div id="pr-bris-de-porte_personne-physique">
+          <div id="pr-bris-de-porte_personne-physique" className="fr-mb-4w">
             <div className="fr-grid-row fr-grid-row--gutters">
               <div className="fr-col-12">
-                <section className="pr-form-section fr-p-4w">
+                <section className="pr-form-section">
                   <PersonnePhysique />
-                  <div className="fr-grid-row fr-grid-row--gutters">
-                    <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                        label="Adresse"
-                        nativeInputProps={{
-                          value: dossier.requerant.adresse.ligne1 || "",
-                          placeholder: "Numéro de voie, rue",
-                          onChange: (e) =>
-                            patchDossier({
-                              requerant: {
-                                adresse: { ligne1: e.target.value },
-                              },
-                            }),
-                          maxLength: 255,
-                        }}
-                      />
-                    </div>
-
-                    <div className="fr-col-lg-6 fr-col-12">
-                      <Input
-                        label="Complément d'adresse (facultatif)"
-                        nativeInputProps={{
-                          value: dossier.requerant.adresse.ligne2 || "",
-                          placeholder: "Étage, escalier",
-                          onChange: (e) =>
-                            patchDossier({
-                              requerant: {
-                                adresse: { ligne2: e.target.value },
-                              },
-                            }),
-                          maxLength: 255,
-                        }}
-                      />
-                    </div>
-                    <div className="fr-col-lg-2 fr-col-4">
-                      <Input
-                        label="Code postal"
-                        nativeInputProps={{
-                          value: dossier.requerant.adresse.codePostal || "",
-                          onChange: (e) =>
-                            patchDossier({
-                              requerant: {
-                                adresse: { codePostal: e.target.value },
-                              },
-                            }),
-                          maxLength: 5,
-                        }}
-                      />
-                    </div>
-                    <div className="fr-col-lg-10 fr-col-8">
-                      <Input
-                        label="Ville"
-                        nativeInputProps={{
-                          value: dossier.requerant.adresse.localite || "",
-                          onChange: (e) =>
-                            patchDossier({
-                              requerant: {
-                                adresse: { localite: e.target.value },
-                              },
-                            }),
-                          maxLength: 255,
-                        }}
-                      />
-                    </div>
-                  </div>
                 </section>
               </div>
             </div>

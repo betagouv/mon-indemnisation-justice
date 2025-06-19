@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe.tsx";
@@ -10,6 +10,7 @@ import {
   DossierContext,
   PatchDossierContext,
 } from "@/apps/requerant/dossier/contexts/DossierContext.ts";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 
 const BrisPortePanel = function () {
   const dossier = useContext(DossierContext);
@@ -35,13 +36,16 @@ const BrisPortePanel = function () {
     setStep(step + 1);
     gotoStepper();
   }
+
   function decrementStep() {
     setStep(step - 1);
     gotoStepper();
   }
+
   function getCurrentStep() {
     return step + 1;
   }
+
   function gotoStepper() {
     document.getElementById("pr-case_stepper")?.focus();
   }
@@ -69,13 +73,16 @@ const BrisPortePanel = function () {
       {step === 0 && (
         <section className="pr-case_form fr-mb-4w">
           <User />
-          <div className="fr-grid-row fr-grid-row--gutters">
-            <div className="fr-col-12">
-              <Button onClick={incrementStep}>
-                Valider et passer à l'étape suivante
-              </Button>
-            </div>
-          </div>
+          <ButtonsGroup
+            inlineLayoutWhen="always"
+            alignment="right"
+            buttons={[
+              {
+                children: "Valider et passer à l'étape suivante",
+                onClick: () => incrementStep(),
+              },
+            ]}
+          />
         </section>
       )}
       {step === 1 && (

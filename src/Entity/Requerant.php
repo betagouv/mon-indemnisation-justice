@@ -34,7 +34,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Groups(['user:read', 'dossier:lecture'])]
     #[ORM\Column(length: 180)]
-    private ?string $email = null;
+    protected ?string $email = null;
 
     /**
      * @var list<string> The user roles
@@ -110,7 +110,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    #[Groups('agent:detail')]
+    #[Groups(['agent:detail', 'dossier:detail'])]
     #[SerializedName('courriel')]
     public function getEmail(): ?string
     {
@@ -156,9 +156,9 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @see UserInterface
-     *
      * @return list<string>
+     *
+     * @see UserInterface
      */
     public function getRoles(): array
     {
@@ -407,7 +407,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     public function getNomComplet(): string
     {
         return ($this->isPersonneMorale ?
-            "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '').$this->personnePhysique->getNomComplet();
+                "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '').$this->personnePhysique->getNomComplet();
     }
 
     public function getDernierDossier(): ?BrisPorte

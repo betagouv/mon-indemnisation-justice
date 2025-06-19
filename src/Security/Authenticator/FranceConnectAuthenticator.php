@@ -51,11 +51,10 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                 || $this->httpUtils->checkRequestPath($request, $this->loginCheckRoute)
             )
             && $request->query->has('state')
-                && (
-                    $request->query->has('code')
-                    || $request->query->has('error')
-                )
-        ;
+            && (
+                $request->query->has('code')
+                || $request->query->has('error')
+            );
     }
 
     public function authenticate(Request $request): Passport
@@ -80,12 +79,12 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                         ->setPersonnePhysique(
                             (new PersonnePhysique())
                                 ->setCivilite('male' === $userInfo['gender'] ? Civilite::M : Civilite::MME)
-                            ->setNom($userInfo['family_name'] ?? '')
-                            ->setPrenom1($prenoms[0] ?? null)
-                            ->setPrenom2($prenoms[1] ?? null)
-                            ->setPrenom3($prenoms[2] ?? null)
-                            ->setDateNaissance(new \DateTime($userInfo['birthdate'] ?? ''))
-                            ->setEmail($userInfo['email'] ?? null)
+                                ->setNom($userInfo['family_name'] ?? '')
+                                ->setPrenom1($prenoms[0] ?? null)
+                                ->setPrenom2($prenoms[1] ?? null)
+                                ->setPrenom3($prenoms[2] ?? null)
+                                ->setDateNaissance(new \DateTime($userInfo['birthdate'] ?? ''))
+                                ->setEmail($userInfo['email'] ?? null)
                         );
 
                     // Récupération du pays de naissance
@@ -105,9 +104,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
                         if (null !== $codePostalNaissance) {
                             $requerant->getPersonnePhysique()
-                                ->setCodePostalNaissance($codePostalNaissance)
-                                ->setCommuneNaissance($codePostalNaissance->getCommune()->getNom())
-                            ;
+                                ->setCommuneNaissance($codePostalNaissance);
                         }
                     }
 

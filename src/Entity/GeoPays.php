@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: GeoPaysRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['codeInsee'], message: 'Ce code INSEE est déjà attribué à un pays')]
-#[ApiResource(uriTemplate: '/geo-pays/{code}')]
+#[ApiResource(uriTemplate: '/geo-pays/{code}', operations: [])]
 class GeoPays extends GeoDataEntity
 {
     #[ORM\Id]
