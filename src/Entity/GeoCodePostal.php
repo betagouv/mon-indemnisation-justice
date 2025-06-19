@@ -23,7 +23,7 @@ class GeoCodePostal extends GeoDataEntity
     /** Le code postal */
     protected string $codePostal;
 
-    #[ORM\ManyToOne(targetEntity: GeoCommune::class, inversedBy: 'codePostaux')]
+    #[ORM\ManyToOne(targetEntity: GeoCommune::class, cascade: ['persist'], inversedBy: 'codePostaux')]
     #[ORM\JoinColumn(name: 'code_commune', referencedColumnName: 'code', nullable: false)]
     protected GeoCommune $commune;
 

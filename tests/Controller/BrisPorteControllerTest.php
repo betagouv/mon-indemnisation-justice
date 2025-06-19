@@ -45,20 +45,19 @@ class BrisPorteControllerTest extends WebTestCase
         $requerant = (new Requerant())
             ->setAdresse(
                 (new Adresse())
-                ->setLigne1('12 rue des Oliviers')
-                ->setLocalite('Nantes')
-                ->setCodePostal('44100')
+                    ->setLigne1('12 rue des Oliviers')
+                    ->setLocalite('Nantes')
+                    ->setCodePostal('44100')
             )
             ->setPersonnePhysique(
                 (new PersonnePhysique())
-                ->setEmail('raquel.randt@courriel.fr')
-                ->setCivilite(Civilite::MME)
-                ->setPrenom1('Raquel')
-                ->setNom('Randt')
+                    ->setEmail('raquel.randt@courriel.fr')
+                    ->setCivilite(Civilite::MME)
+                    ->setPrenom1('Raquel')
+                    ->setNom('Randt')
             )
             ->setEmail('raquel.randt@courriel.fr')
-            ->setRoles([Requerant::ROLE_REQUERANT])
-        ;
+            ->setRoles([Requerant::ROLE_REQUERANT]);
         $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
 
         $this->em->persist($requerant);
