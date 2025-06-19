@@ -58,11 +58,11 @@ class PersonnePhysique
     private ?string $communeNaissance = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
+    // #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
     #[SerializedName('communeNaissance')]
     #[ORM\ManyToOne(targetEntity: GeoCodePostal::class)]
     #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
-    protected ?GeoCodePostal $codePostalNaissance = null;
+    public ?GeoCodePostal $codePostalNaissance = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
