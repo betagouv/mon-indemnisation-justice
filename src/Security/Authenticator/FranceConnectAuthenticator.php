@@ -90,7 +90,9 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                     // Récupération du pays de naissance
                     if (null !== ($codePaysNaissance = $userInfo['birthcountry'])) {
                         /** @var GeoPays $paysNaissance */
-                        $paysNaissance = $this->em->getRepository(GeoPays::class)->find($codePaysNaissance);
+                        $paysNaissance = $this->em->getRepository(GeoPays::class)->findOneBy([
+                            'codeInsee' => $codePaysNaissance]
+                        );
 
                         if (null !== $paysNaissance) {
                             $requerant->getPersonnePhysique()->setPaysNaissance($paysNaissance);
@@ -104,7 +106,8 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
                         if (null !== $codePostalNaissance) {
                             $requerant->getPersonnePhysique()
-                                ->setCommuneNaissance($codePostalNaissance);
+                                ->setCommuneNaissance($codePostalNaissance)
+                                ->setPaysNaissance($this->em->getRepository(GeoPays::class)->getFrance());
                         }
                     }
 

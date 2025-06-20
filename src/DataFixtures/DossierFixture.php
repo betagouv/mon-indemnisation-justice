@@ -17,7 +17,6 @@ use MonIndemnisationJustice\Entity\GeoRegion;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
-use MonIndemnisationJustice\Service\DataGouv\ImporteurGeoPays;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DossierFixture implements ORMFixtureInterface
@@ -33,7 +32,7 @@ class DossierFixture implements ORMFixtureInterface
 
         $france = (new GeoPays())
             ->setCode('FRA')
-            ->setCodeInsee(ImporteurGeoPays::CODE_INSEE_FRANCE)
+            ->setCodeInsee(GeoPays::CODE_INSEE_FRANCE)
             ->setNom('France');
 
         $manager->persist($france);
@@ -142,7 +141,6 @@ class DossierFixture implements ORMFixtureInterface
                     ->setDateNaissance(new \DateTime('1979-05-17'))
                     ->setCommuneNaissance($codePostal38300)
                     ->setPaysNaissance($france)
-                    ->setNumeroSecuriteSociale('')
                     ->setTelephone('0621436587')
             )
             ->setEmail('raquel.randt@courriel.fr')

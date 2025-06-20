@@ -23,6 +23,17 @@ enum Civilite: string
         };
     }
 
+    /**
+     * Le code pour la sécurité sociale.
+     */
+    public function getCode(): int
+    {
+        return match ($this) {
+            Civilite::M => 1,
+            Civilite::MME => 2,
+        };
+    }
+
     public function libelleNaissance(string $nomNaissance): string
     {
         return sprintf('né%s %s', $this->estFeminin() ? 'e' : '', $nomNaissance);

@@ -34,4 +34,9 @@ class GeoPaysRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getFrance(): GeoPays
+    {
+        return $this->findOneBy(['codeFrance' => GeoPays::CODE_INSEE_FRANCE]);
+    }
 }
