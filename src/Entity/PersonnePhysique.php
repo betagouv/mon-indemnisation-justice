@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: PersonnePhysiqueRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 #[ApiResource]
 class PersonnePhysique
 {
@@ -54,9 +55,6 @@ class PersonnePhysique
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $telephone = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $communeNaissance = null;
-
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     // #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
     #[SerializedName('communeNaissance')]
@@ -82,6 +80,18 @@ class PersonnePhysique
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
+
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->recalculerNumeroSecuriteSociale();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->recalculerNumeroSecuriteSociale();
+    }
 
     public function __toString()
     {
@@ -116,11 +126,21 @@ class PersonnePhysique
         return $this->numeroSecuriteSociale;
     }
 
-    public function setNumeroSecuriteSociale(?string $numeroSecuriteSociale): PersonnePhysique
+    public function recalculerNumeroSecuriteSociale(): void
     {
-        $this->numeroSecuriteSociale = $numeroSecuriteSociale;
-
-        return $this;
+        if (null !== $this->civilite && null !== $this->dateNaissance && (
+            null !== $this->codePostalNaissance || (null !== $this->paysNaissance && !$this->paysNaissance->estFrance())
+        )
+        ) {
+            $this->dateNaissance->format('m');
+            $this->numeroSecuriteSociale = sprintf(
+                '%d%s%s%s',
+                $this->civilite->getCode(),
+                $this->dateNaissance->format('y'),
+                $this->dateNaissance->format('m'),
+                $this->codePostalNaissance ? $this->codePostalNaissance->getCommune()->getCode() : $this->paysNaissance->getCodeInsee()
+            );
+        }
     }
 
     public function getNom(): ?string

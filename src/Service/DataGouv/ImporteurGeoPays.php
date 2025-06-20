@@ -7,10 +7,6 @@ use MonIndemnisationJustice\Entity\GeoPays;
 
 class ImporteurGeoPays implements DataGouvProcessor
 {
-    // Une valeur particulière est attribuée à la France côté FranceConnect https://docs.partenaires.franceconnect.gouv.fr/fs/fs-technique/fs-technique-scope-fc/#liste-des-claims
-    // mais pas renseignée sur la source data.gouv.fr
-    public const CODE_INSEE_FRANCE = '99100';
-
     // Référentiel des pays et des territoires https://www.data.gouv.fr/fr/datasets/referentiel-des-pays-et-des-territoires/#/resources/2b38f28d-15e7-4f0c-b61d-6ca1d9b1cfa2
     private const RESOURCE_GEO_PAYS = '2b38f28d-15e7-4f0c-b61d-6ca1d9b1cfa2';
 
@@ -32,7 +28,7 @@ class ImporteurGeoPays implements DataGouvProcessor
 
             $pays
                 ->setNom($record['NOM_COURT'])
-                ->setCodeInsee('FRA' === $record['ISO_alpha3'] ? self::CODE_INSEE_FRANCE : $record['CODE_COG']);
+                ->setCodeInsee('FRA' === $record['ISO_alpha3'] ? GeoPays::CODE_INSEE_FRANCE : $record['CODE_COG']);
 
             $this->entityManager->persist($pays);
             $this->entityManager->flush();

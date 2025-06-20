@@ -5,16 +5,17 @@ namespace MonIndemnisationJustice\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Table(name: 'geo_pays')]
 #[ORM\Entity(repositoryClass: GeoPaysRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['codeInsee'], message: 'Ce code INSEE est déjà attribué à un pays')]
+#[ORM\Index(name: 'idx_pays_code_insee', columns: ['code_insee'])]
 #[ApiResource(uriTemplate: '/geo-pays/{code}', operations: [])]
 class GeoPays extends GeoDataEntity
 {
+    public const CODE_INSEE_FRANCE = '99100';
+
     #[ORM\Id]
     #[ORM\Column(length: 3)]
     #[Groups(['dossier:lecture'])]
@@ -54,6 +55,11 @@ class GeoPays extends GeoDataEntity
     public function getCodeInsee(): ?string
     {
         return $this->codeInsee;
+    }
+
+    public function estFrance(): bool
+    {
+        return self::CODE_INSEE_FRANCE === $this->codeInsee;
     }
 
     public function setCodeInsee(?string $codeInsee): GeoPays
