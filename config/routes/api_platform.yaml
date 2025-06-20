@@ -3,8 +3,3 @@ api_platform:
     type: api_platform
     prefix: /api
 
-
-api_doc:
-  path: 'https://www.google.com'
-  schemes: [ 'https' ]
-  host: 'www.google.com'

@@ -2,6 +2,8 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -9,12 +11,14 @@ use MonIndemnisationJustice\Repository\AdresseRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AdresseRepository::class)]
+#[ApiResource(uriTemplate: '/{id}', operations: [])]
 class Adresse
 {
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
+    #[ApiProperty(identifier: true, uriTemplate: null)]
     private ?int $id = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail', 'agent:liste'])]

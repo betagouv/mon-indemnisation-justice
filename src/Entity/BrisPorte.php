@@ -3,7 +3,9 @@
 namespace MonIndemnisationJustice\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Symfony\Action\NotFoundAction;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,13 +21,20 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 #[ApiResource(
     operations: [
         new Patch(
-            uriTemplate: '/requerant/dossier/{id}',
+            uriTemplate: '/api/requerant/dossier/{id}',
             normalizationContext: ['groups' => ['dossier:lecture'], 'skip_null_values' => false],
             denormalizationContext: ['groups' => ['dossier:patch'], 'allow_extra_attributes' => false],
             security: "is_granted('ROLE_REQUERANT') and object.getRequerant() == user",
             name: 'requerant_dossier_api_patch'
         ),
-    ]
+        /*
+        new Get(
+            controller: NotFoundAction::class,
+            read: false,
+            output: false
+        ),
+        */
+    ],
 )]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
 #[ORM\HasLifecycleCallbacks]
