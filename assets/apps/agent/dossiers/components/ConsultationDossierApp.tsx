@@ -12,7 +12,8 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import React, { useRef, useState } from "react";
-import ReactQuill from "react-quill-new";
+import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -24,6 +25,16 @@ export const ConsultationDossierApp = observer(
   }) {
     // Référence vers la modale d'ajout de pièce jointe
     const refModalePJ = useRef(null);
+
+    // Référence vers l'onglet ouvert
+    const [selectedTab, selectTab] = useState(
+      window.location.hash?.replace(/^#/, "") || "infos",
+    );
+
+    const changerOnglet = (tab) => {
+      selectTab(tab);
+      history.replaceState({}, "", `#${tab}`);
+    };
 
     // Type de document associé à la pièce jointe téléversée
     const [typePJ, setTypePj]: [DocumentType, (typePJ?: DocumentType) => void] =
@@ -108,12 +119,17 @@ export const ConsultationDossierApp = observer(
         },
       );
 
+      if (!response.ok) {
+        const message = await response.text();
+        console.error(`${response.status} ${response.statusText} - ${message}`);
+      }
+
       setSauvegarderEnCours(false);
       dossier.annoter(notes);
     };
 
     const ouvrirSectionCourrier = () => {
-      history.replaceState(undefined, undefined, "#courrier");
+      changerOnglet("courrier");
     };
 
     return (
@@ -192,6 +208,8 @@ export const ConsultationDossierApp = observer(
                   dossier={dossier}
                   agent={agent}
                   onDecide={() => ouvrirSectionCourrier()}
+                  onEdite={() => ouvrirSectionCourrier()}
+                  onSigne={() => ouvrirSectionCourrier()}
                 />
 
                 {/* L'agent validateur génère et signe l'arrêté de paiement */}
@@ -199,87 +217,24 @@ export const ConsultationDossierApp = observer(
               </div>
 
               <div className="fr-my-2w">
-                <div className="fr-tabs">
-                  <ul
-                    className="fr-tabs__list"
-                    role="tablist"
-                    aria-label="Détails du dossier"
-                  >
-                    <li role="presentation">
-                      <a
-                        id="tab-infos"
-                        className="fr-tabs__tab"
-                        tabIndex={0}
-                        role="tab"
-                        aria-selected={window.location.hash == "#infos"}
-                        aria-controls="tab-panel-infos"
-                        onClick={() => history.replaceState({}, "", "#infos")}
-                      >
-                        Informations du dossier
-                      </a>
-                    </li>
-                    <li role="presentation">
-                      <a
-                        id="tab-suivi"
-                        className="fr-tabs__tab"
-                        tabIndex={-1}
-                        role="tab"
-                        aria-selected={window.location.hash == "#suivi"}
-                        aria-controls="tab-panel-suivi"
-                        onClick={() => history.replaceState({}, "", "#suivi")}
-                      >
-                        Notes de suivi
-                      </a>
-                    </li>
-                    <li role="presentation">
-                      <a
-                        id="tab-pieces-jointes"
-                        className="fr-tabs__tab"
-                        tabIndex={-1}
-                        role="tab"
-                        aria-selected={
-                          window.location.hash == "#pieces-jointes"
-                        }
-                        aria-controls="tab-panel-pieces-jointes"
-                        onClick={() =>
-                          history.replaceState({}, "", "#pieces-jointes")
-                        }
-                      >
-                        Pièces jointes
-                      </a>
-                    </li>
-                    <li role="presentation">
-                      <a
-                        type="button"
-                        id="tab-courrier"
-                        className="fr-tabs__tab"
-                        tabIndex={-1}
-                        role="tab"
-                        {...(null !== dossier.courrier ||
-                        dossier.hasDocumentsType(
-                          DocumentType.TYPE_COURRIER_MINISTERE,
-                        )
-                          ? {
-                              "aria-controls": "tab-panel-courrier",
-                              "aria-selected":
-                                window.location.hash == "#courrier",
-                            }
-                          : { disabled: true })}
-                        onClick={() =>
-                          history.replaceState({}, "", "#courrier")
-                        }
-                      >
-                        Décision et courrier
-                      </a>
-                    </li>
-                  </ul>
-                  <div
-                    id="tab-panel-infos"
-                    className={`fr-tabs__panel ${window.location.hash == "#infos" ? "fr-tabs__panel--selected" : ""}`}
-                    role="tabpanel"
-                    aria-labelledby="tab-infos"
-                    tabIndex={0}
-                  >
+                <Tabs
+                  selectedTabId={selectedTab}
+                  tabs={[
+                    { tabId: "infos", label: "Informations du dossier" },
+                    {
+                      tabId: "suivi",
+                      label: "Notes de suivi",
+                      iconId: "fr-icon-ball-pen-line",
+                    },
+                    { tabId: "pieces-jointes", label: "Pièces jointes" },
+                    {
+                      tabId: "courrier",
+                      label: "Décision et courrier",
+                    },
+                  ]}
+                  onTabChange={changerOnglet}
+                >
+                  {selectedTab == "infos" && (
                     <section>
                       <div className="fr-grid-column">
                         <h3>Informations sur le dossier </h3>
@@ -474,15 +429,9 @@ export const ConsultationDossierApp = observer(
                         </ul>
                       </div>
                     </section>
-                  </div>
+                  )}
 
-                  <div
-                    id="tab-panel-suivi"
-                    className={`fr-tabs__panel ${window.location.hash == "#suivi" ? "fr-tabs__panel--selected" : ""}`}
-                    role="tabpanel"
-                    aria-labelledby="tab-suivi"
-                    tabIndex={0}
-                  >
+                  {selectedTab == "suivi" && (
                     <section>
                       <h3>Notes de suivi</h3>
 
@@ -508,23 +457,16 @@ export const ConsultationDossierApp = observer(
                       </ul>
 
                       <div className="fr-grid-row fr-col-12">
-                        <ReactQuill
-                          theme="snow"
+                        <QuillEditor
                           readOnly={dossier.enAttenteInstruction()}
                           value={notes}
                           onChange={(value) => setNotes(value)}
                         />
                       </div>
                     </section>
-                  </div>
+                  )}
 
-                  <div
-                    id="tab-panel-pieces-jointes"
-                    className={`fr-tabs__panel ${window.location.hash == "#pieces-jointes" ? "fr-tabs__panel--selected" : ""}`}
-                    role="tabpanel"
-                    aria-labelledby="tab-pieces-jointes"
-                    tabIndex={0}
-                  >
+                  {selectedTab == "pieces-jointes" && (
                     <section className="mij-dossier-documents">
                       <h3>Pièces jointes</h3>
                       <div className="fr-grid-row">
@@ -777,18 +719,13 @@ export const ConsultationDossierApp = observer(
                         </div>
                       </div>
                     </section>
-                  </div>
+                  )}
 
-                  {null !== dossier.getCourrierAJour() && (
-                    <div
-                      id="tab-panel-courrier"
-                      className={`fr-tabs__panel ${window.location.hash == "#courrier" ? "fr-tabs__panel--selected" : ""}`}
-                      role="tabpanel"
-                      aria-labelledby="tab-courrier"
-                      tabIndex={0}
-                    >
-                      <section>
-                        <h3>Courrier</h3>
+                  {selectedTab == "courrier" && (
+                    <section>
+                      <h3>Courrier</h3>
+
+                      {dossier.getCourrierAJour() ? (
                         <div className="fr-grid-row fr-col-12">
                           <object
                             data={dossier.getCourrierAJour()?.url}
@@ -799,10 +736,12 @@ export const ConsultationDossierApp = observer(
                             }}
                           ></object>
                         </div>
-                      </section>
-                    </div>
+                      ) : (
+                        <p>Pas encore de courrier</p>
+                      )}
+                    </section>
                   )}
-                </div>
+                </Tabs>
               </div>
             </div>
           </div>
