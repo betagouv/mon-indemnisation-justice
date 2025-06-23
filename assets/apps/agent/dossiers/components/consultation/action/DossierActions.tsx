@@ -22,6 +22,10 @@ import {
   confirmerBoutons,
   ConfirmerModale,
 } from "@/apps/agent/dossiers/components/consultation/action/ConfirmationAction.tsx";
+import {
+  genererArretePaiementBoutons,
+  GenererArretePaiementModale,
+} from "@/apps/agent/dossiers/components/consultation/action/GenererArretePaiementAction.tsx";
 
 export const DossierActions = function DossierActionBar({
   dossier,
@@ -54,6 +58,7 @@ export const DossierActions = function DossierActionBar({
             }),
             ...confirmerBoutons({ dossier, agent }),
             ...verifierAcceptationBoutons({ dossier, agent }),
+            ...genererArretePaiementBoutons({ dossier, agent }),
           ] as [ButtonProps, ...ButtonProps[]]
         }
       />
@@ -69,6 +74,7 @@ export const DossierActions = function DossierActionBar({
         onSigne={onSigne}
       />
       <VerifierAcceptationActionModale dossier={dossier} agent={agent} />
+      <GenererArretePaiementModale dossier={dossier} agent={agent} />
     </>
   );
 };

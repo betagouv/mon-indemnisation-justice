@@ -24,8 +24,8 @@ UListContainer.allowedChildren = [UListItem];
 UListItem.requiredContainer = UListContainer;
 
 Quill.register({
-  "formats/list": List,
-  "formats/ulist": UListItem,
+  "formats/ordered": UListContainer,
+  "formats/bullet": UListItem,
 });
 
 const QuillEditor = ({
