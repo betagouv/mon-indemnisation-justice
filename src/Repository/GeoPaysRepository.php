@@ -37,6 +37,6 @@ class GeoPaysRepository extends ServiceEntityRepository
 
     public function getFrance(): GeoPays
     {
-        return $this->findOneBy(['codeFrance' => GeoPays::CODE_INSEE_FRANCE]);
+        return $this->findOneBy(['codeInsee' => GeoPays::CODE_INSEE_FRANCE]);
     }
 }
