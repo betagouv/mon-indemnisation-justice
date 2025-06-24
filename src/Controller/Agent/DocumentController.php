@@ -10,6 +10,7 @@ use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\TypeInstitutionSecuritePublique;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,7 +37,7 @@ class DocumentController extends AbstractController
     #[Route('/{id}/meta-donnees', name: 'agent_document_metadonnees', methods: ['PUT', 'PATCH'])]
     public function metaDonnees(#[MapEntity(id: 'id')] Document $document, Request $request): Response
     {
-        if (Document::TYPE_ATTESTATION_INFORMATION === $document->getType()) {
+        if (DocumentType::TYPE_ATTESTATION_INFORMATION === $document->getType()) {
             $document->setMetaDonnees(
                 array_merge(
                     $request->getPayload()->has('estAttestation') ? [
@@ -97,5 +98,14 @@ class DocumentController extends AbstractController
         } catch (UnableToReadFile|FilesystemException|NoSuchKeyException $e) {
             return new Response('', Response::HTTP_NOT_FOUND);
         }
+    }
+
+    #[Route('/{id}/imprimer', name: 'agent_document_imprimer', methods: ['PUT'])]
+    public function imprimer(#[MapEntity(id: 'id')] Document $document, Request $request): Response
+    {
+        // Récupérer le corps du courrier, et l'imprimer
+        // $document->getType()
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Event\DossierConstitueEvent;
@@ -73,13 +74,12 @@ class BrisPorteController extends RequerantController
             $this->brisPorteRepository->save($brisPorte);
 
             $this->mailer
-               ->toRequerant($requerant)
-               ->subject('Votre déclaration de bris de porte a bien été prise en compte')
-               ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
-                   'dossier' => $brisPorte,
-               ])
-               ->send()
-            ;
+                ->toRequerant($requerant)
+                ->subject('Votre déclaration de bris de porte a bien été prise en compte')
+                ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
+                    'dossier' => $brisPorte,
+                ])
+                ->send();
 
             $this->eventDispatcher->dispatch(new DossierConstitueEvent($brisPorte));
 
@@ -123,11 +123,11 @@ class BrisPorteController extends RequerantController
         $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
         $document = (new Document())
-                ->setFilename($filename)
-                ->setOriginalFilename($file->getClientOriginalName())
-                ->setSize($file->getSize())
-                ->setType(Document::TYPE_COURRIER_REQUERANT)
-                ->setMime($file->getMimeType());
+            ->setFilename($filename)
+            ->setOriginalFilename($file->getClientOriginalName())
+            ->setSize($file->getSize())
+            ->setType(DocumentType::TYPE_COURRIER_REQUERANT)
+            ->setMime($file->getMimeType());
 
         $this->em->persist($document);
 
@@ -135,6 +135,7 @@ class BrisPorteController extends RequerantController
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
         try {
+            // TODO créer le document de type arrêté de paiement à la place
             $dossier->setCorpsCourrier($this->twig->render('courrier/_corps_arretePaiement.html.twig', [
                 'dossier' => $dossier,
             ]));
@@ -148,20 +149,19 @@ class BrisPorteController extends RequerantController
         if (null !== $dossier->getRedacteur()) {
             // Envoi du courriel de notification au rédacteur
             $this->mailer
-                   ->toAgent($dossier->getRedacteur())
-                   ->subject(sprintf("Dossier %s: %s a approuvé l'indemnisation", $dossier->getReference(), $dossier->getRequerant()->estFeminin() ? 'la requérante' : 'le requérant'))
-                   ->htmlTemplate('email/agent_indemnisation_approuvee.twig', [
-                       'dossier' => $dossier,
-                       'agent' => $dossier->getRedacteur(),
-                   ])
-                   ->send()
-            ;
+                ->toAgent($dossier->getRedacteur())
+                ->subject(sprintf("Dossier %s: %s a approuvé l'indemnisation", $dossier->getReference(), $dossier->getRequerant()->estFeminin() ? 'la requérante' : 'le requérant'))
+                ->htmlTemplate('email/agent_indemnisation_approuvee.twig', [
+                    'dossier' => $dossier,
+                    'agent' => $dossier->getRedacteur(),
+                ])
+                ->send();
         }
 
         return new JsonResponse([
             'etat' => $normalizer->normalize($dossier->getEtatDossier(), 'json', ['requerant:detail']),
             'documents' => [
-                Document::TYPE_COURRIER_MINISTERE => $normalizer->normalize($dossier->getDocumentsParType(Document::TYPE_COURRIER_REQUERANT), 'json', ['groups' => 'requerant:detail']),
+                DocumentType::TYPE_COURRIER_MINISTERE->value => $normalizer->normalize($dossier->getDocumentsParType(DocumentType::TYPE_COURRIER_REQUERANT), 'json', ['groups' => 'requerant:detail']),
             ],
         ], Response::HTTP_OK);
     }

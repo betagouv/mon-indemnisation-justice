@@ -162,11 +162,11 @@ class BrisPorte
     {
         $this->documentsParType = $this->documents->reduce(
             function (array $carry, Document $document) {
-                if (!isset($carry[$document->getType()])) {
-                    $carry[$document->getType()] = [];
+                if (!isset($carry[$document->getType()->value])) {
+                    $carry[$document->getType()->value] = [];
                 }
 
-                $carry[$document->getType()][] = $document;
+                $carry[$document->getType()->value][] = $document;
 
                 return $carry;
             }, []
@@ -378,16 +378,16 @@ class BrisPorte
     {
         $this->documents->add($document);
 
-        $this->documentsParType[$document->getType()][] = $document;
+        $this->documentsParType[$document->getType()->value][] = $document;
     }
 
-    public function supprimerDocumentsParType(string $type): void
+    public function supprimerDocumentsParType(DocumentType $type): void
     {
         foreach ($this->documents->filter(fn (Document $d) => $d->getType() === $type) as $document) {
             $this->documents->removeElement($document);
         }
 
-        $this->documentsParType[$type] = [];
+        $this->documentsParType[$type->value] = [];
     }
 
     /**
@@ -402,9 +402,9 @@ class BrisPorte
     /**
      * @return Document[]
      */
-    public function getDocumentsParType(string $type): array
+    public function getDocumentsParType(DocumentType $type): array
     {
-        return $this->documentsParType[$type] ?? [];
+        return $this->documentsParType[$type->value] ?? [];
     }
 
     public function getPropositionIndemnisation(): ?string
@@ -595,7 +595,7 @@ class BrisPorte
     public function recalculerEstLieAttestation(): self
     {
         $this->estLieAttestation = count(array_filter(
-            $this->getDocumentsParType(Document::TYPE_ATTESTATION_INFORMATION),
+            $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION),
             function (Document $document): bool {
                 return true === $document->getMetaDonnee('estAttestation');
             }
