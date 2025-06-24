@@ -5,7 +5,6 @@ namespace MonIndemnisationJustice\Twig;
 use ApiPlatform\Metadata\UrlGeneratorInterface;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator;
@@ -95,11 +94,6 @@ class AppRuntime implements RuntimeExtensionInterface
         $output = str_replace(['$1', '$2', '$3'], [$_1, $_2, $numberParsing[1] > 1 ? 's' : ''], '$1 euros et $2 centime$3');
 
         return $output;
-    }
-
-    public function typesDocument(): array
-    {
-        return Document::$types;
     }
 
     public function absoluteAssetPath(string $path): string

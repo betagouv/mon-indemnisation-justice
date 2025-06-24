@@ -55,6 +55,7 @@ export class Document {
   public readonly id: number;
   public readonly mime: string;
   public readonly originalFilename: string;
+  public corps?: string;
   public readonly url: string;
   @Transform(
     ({ value }: { value: string }): DocumentType =>
