@@ -11,7 +11,7 @@ import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
 
@@ -30,6 +30,13 @@ export const ConsultationDossierApp = observer(
     const [selectedTab, selectTab] = useState(
       window.location.hash?.replace(/^#/, "") || "infos",
     );
+
+    const courrier = useMemo<Document>(
+      () => dossier.getCourrierAJour(),
+      [dossier.getCourrierAJour()?.url],
+    );
+
+    console.log(courrier?.url);
 
     const changerOnglet = (tab) => {
       selectTab(tab);
@@ -725,17 +732,11 @@ export const ConsultationDossierApp = observer(
                     <section>
                       <h3>Courrier</h3>
 
-                      {dossier.getCourrierAJour() ? (
-                        <div className="fr-grid-row fr-col-12">
-                          <object
-                            data={dossier.getCourrierAJour()?.url}
-                            type="application/pdf"
-                            style={{
-                              width: "100%",
-                              aspectRatio: "210/297",
-                            }}
-                          ></object>
-                        </div>
+                      {courrier ? (
+                        <PieceJointe
+                          className="fr-col-12"
+                          pieceJointe={courrier}
+                        />
                       ) : (
                         <p>Pas encore de courrier</p>
                       )}

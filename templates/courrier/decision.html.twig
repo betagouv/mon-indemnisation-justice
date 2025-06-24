@@ -202,8 +202,8 @@
                 {{ dossier.requerant.personnePhysique.civilite.libelle }},
             </p>
 
-            {% if dossier.corpsCourrier %}
-                {{ dossier.corpsCourrier|raw }}
+            {% if corps is defined and corps is not null %}
+                {{ corps|raw }}
             {% else %}
                 {% if dossier.etatDossier.estAccepte() %}
                     {% include 'courrier/_corps_accepte.html.twig' with {montantIndemnisation: dossier.propositionIndemnisation } %}
