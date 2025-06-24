@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Event\DossierConstitueEvent;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
+use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -43,6 +44,7 @@ class BrisPorteController extends RequerantController
         protected readonly EntityManagerInterface $em,
         protected readonly Mailer $mailer,
         protected readonly Environment $twig,
+        protected readonly ImprimanteCourrier $imprimanteCourrier,
     ) {
     }
 
@@ -122,23 +124,29 @@ class BrisPorteController extends RequerantController
         $content = $file->getContent();
         $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
-        $document = (new Document())
+        $acceptation = (new Document())
             ->setFilename($filename)
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
             ->setType(DocumentType::TYPE_COURRIER_REQUERANT)
             ->setMime($file->getMimeType());
 
-        $this->em->persist($document);
+        $this->em->persist($acceptation);
 
-        $dossier->ajouterDocument($document);
+        $dossier->ajouterDocument($acceptation);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
         try {
             // TODO créer le document de type arrêté de paiement à la place
-            $dossier->setCorpsCourrier($this->twig->render('courrier/_corps_arretePaiement.html.twig', [
-                'dossier' => $dossier,
-            ]));
+            $arretePaiement = (new Document())->setType(DocumentType::TYPE_ARRETE_PAIEMENT)->setCorps(
+                $this->twig->render('courrier/_corps_arretePaiement.html.twig', [
+                    'dossier' => $dossier,
+                ])
+            );
+
+            $arretePaiement = $this->imprimanteCourrier->imprimerArretePaiement($dossier, $arretePaiement);
+            $dossier->ajouterDocument($arretePaiement);
+            $this->em->persist($arretePaiement);
         } catch (LoaderError|SyntaxError|RuntimeError $e) {
             // TODO log
         }

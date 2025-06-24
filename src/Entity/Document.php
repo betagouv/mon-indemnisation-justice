@@ -9,6 +9,8 @@ use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\DocumentRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
@@ -23,6 +25,7 @@ class Document
 
     #[ORM\Column(nullable: true)]
     #[Groups(['dossier:lecture'])]
+    #[Ignore]
     private ?string $filename = null;
 
     #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
@@ -33,11 +36,11 @@ class Document
     #[ORM\Column(nullable: true)]
     protected ?string $mime = null;
 
-    #[Groups(['dossier:lecture'])]
+    #[Groups(['dossier:lecture', 'agent:detail'])]
     #[ORM\Column(nullable: true)]
     private ?string $size = null;
 
-    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
+    #[Groups(['dossier:lecture', 'requerant:detail'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $originalFilename = null;
 
@@ -61,18 +64,18 @@ class Document
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    protected ?Agent $validateur;
+    protected ?Agent $validateur = null;
 
     #[Groups(['agent:detail'])]
-    #[SerializedName('corps')]
     #[ORM\Column(type: 'text', nullable: true)]
-    protected ?string $corpsCourrier = null;
+    protected ?string $corps = null;
 
     #[Groups(['agent:detail'])]
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $metaDonnees = null;
 
     #[ORM\ManyToMany(targetEntity: BrisPorte::class, mappedBy: 'documents')]
+    #[Ignore]
     /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
 
@@ -109,6 +112,7 @@ class Document
         return $this->type;
     }
 
+    #[Ignore]
     public function getTypeLibelle(): ?string
     {
         return $this->type->getLibelle();
@@ -189,6 +193,18 @@ class Document
         return $this;
     }
 
+    public function getCorps(): ?string
+    {
+        return $this->corps;
+    }
+
+    public function setCorps(?string $corps): static
+    {
+        $this->corps = $corps;
+
+        return $this;
+    }
+
     public function valider(Agent $agent): self
     {
         return $this->setValidation(true, $agent);
@@ -236,6 +252,7 @@ class Document
 
     #[Groups(['agent:detail'])]
     #[SerializedName('url')]
+    #[Context]
     public function getAgentUrl(): ?string
     {
         // URL pointant sur la route "agent_document_download"

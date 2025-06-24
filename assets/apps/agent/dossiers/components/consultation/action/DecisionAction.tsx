@@ -5,7 +5,8 @@ import React, { FormEvent, useState } from "react";
 
 import {
   Agent,
-  Courrier,
+  Document,
+  DocumentType,
   DossierDetail,
   EtatDossier,
 } from "@/apps/agent/dossiers/models";
@@ -178,7 +179,9 @@ export const DeciderModale = observer(function DeciderActionModale({
       dossier.montantIndemnisation = montant;
       const data = await response.json();
       dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-      dossier.setCourrier(plainToInstance(Courrier, data.courrier));
+      const courrier = plainToInstance(Document, data.document);
+      dossier.viderDocumentParType(DocumentType.TYPE_ARRETE_PAIEMENT);
+      dossier.addDocument(courrier);
     }
 
     _modale.close();

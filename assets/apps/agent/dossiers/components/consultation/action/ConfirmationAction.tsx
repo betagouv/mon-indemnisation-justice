@@ -2,7 +2,6 @@ import React, { FormEvent, useState } from "react";
 
 import {
   Agent,
-  Courrier,
   Document,
   DocumentType,
   DossierDetail,
@@ -70,7 +69,9 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
 
   // Corps du courrier
   const [courrier, setCourrier]: [string | null, (courrier: string) => void] =
-    useState(dossier.corpsCourrier);
+    useState(
+      dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)?.corps,
+    );
 
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
@@ -135,8 +136,10 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
 
     if (response.ok) {
       const data = await response.json();
-      dossier.setCourrier(plainToInstance(Courrier, data.courrier));
-      dossier.viderDocumentParType(DocumentType.TYPE_COURRIER_MINISTERE);
+      const courrier = plainToInstance(Document, data.document);
+      console.log(courrier);
+      dossier.viderDocumentParType(DocumentType.TYPE_ARRETE_PAIEMENT);
+      dossier.addDocument(courrier);
     }
 
     _modale.close();
@@ -365,7 +368,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
               <a
                 className="fr-link fr-link--download"
                 download={`Lettre décision dossier ${dossier.reference}`}
-                href={`${dossier.courrier.url}?download`}
+                href={`${dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)?.url}?download`}
               >
                 Télécharger le courrier
                 <span className="fr-link__detail">PDF</span>

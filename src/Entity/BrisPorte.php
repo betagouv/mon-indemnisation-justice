@@ -60,11 +60,6 @@ class BrisPorte
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
-    #[Groups('agent:detail')]
-    #[ORM\OneToOne(targetEntity: CourrierDossier::class, inversedBy: null, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'courrier_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    protected ?CourrierDossier $courrier = null;
-
     #[ORM\OneToMany(targetEntity: CourrierDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'LAZY')]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
     /** @var Collection<CourrierDossier> */
@@ -84,10 +79,6 @@ class BrisPorte
     /** @var Collection<Document> */
     protected Collection $documents;
     protected ?array $documentsParType = null;
-
-    #[Groups('agent:detail')]
-    #[ORM\Column(type: 'text', nullable: true)]
-    protected ?string $corpsCourrier = null;
 
     #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
@@ -350,18 +341,6 @@ class BrisPorte
             ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, requerant: true);
     }
 
-    public function getCourrier(): ?CourrierDossier
-    {
-        return $this->courrier;
-    }
-
-    public function setCourrier(?CourrierDossier $courrier): BrisPorte
-    {
-        $this->courrier = $courrier;
-
-        return $this;
-    }
-
     public function getReference(): ?string
     {
         return $this->reference;
@@ -399,6 +378,11 @@ class BrisPorte
         return $this->documentsParType;
     }
 
+    public function getDocumentParType(DocumentType $type): ?Document
+    {
+        return $this->documentsParType[$type->value][0] ?? null;
+    }
+
     /**
      * @return Document[]
      */
@@ -422,18 +406,6 @@ class BrisPorte
     public function setPropositionIndemnisation(?string $propositionIndemnisation): self
     {
         $this->propositionIndemnisation = $propositionIndemnisation;
-
-        return $this;
-    }
-
-    public function getCorpsCourrier(): ?string
-    {
-        return $this->corpsCourrier;
-    }
-
-    public function setCorpsCourrier(?string $corpsCourrier): BrisPorte
-    {
-        $this->corpsCourrier = $corpsCourrier;
 
         return $this;
     }
