@@ -2,7 +2,6 @@ import { EtatDossier } from "@/apps/agent/dossiers/models/EtatDossier";
 import { InstitutionSecuritePublique } from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
 import {
   Adresse,
-  Courrier,
   Document,
   DocumentType,
   EtatDossierType,
@@ -158,11 +157,6 @@ export class DossierDetail extends BaseDossier {
     Document.types.map((type: DocumentType) => [type.type, []]),
   );
 
-  public corpsCourrier?: string;
-  @Expose()
-  @Type(() => Courrier)
-  public courrier?: Courrier = null;
-
   public institutionSecuritePublique?: InstitutionSecuritePublique;
 
   constructor() {
@@ -173,8 +167,6 @@ export class DossierDetail extends BaseDossier {
       enAttenteDecision: computed,
       etat: observable,
       changerEtat: action,
-      courrier: observable,
-      setCourrier: action,
       documents: observable,
       addDocument: action,
       viderDocumentParType: action,
@@ -183,16 +175,16 @@ export class DossierDetail extends BaseDossier {
     });
   }
 
-  setCourrier(courrier: Courrier) {
-    this.courrier = courrier;
-  }
-
   annoter(notes: string): void {
     this.notes = notes;
   }
 
   public hasDocumentsType(type: DocumentType): boolean {
     return this.getDocumentsType(type).length > 0;
+  }
+
+  public getDocumentType(type: DocumentType): Document {
+    return this.documents.get(type.type)?.at(0);
   }
 
   public getDocumentsType(type: DocumentType): Document[] {
@@ -211,11 +203,10 @@ export class DossierDetail extends BaseDossier {
     this.documents.set(type.type, []);
   }
 
-  public getCourrierAJour(): Document | Courrier {
+  public getCourrierAJour(): Document {
     return (
       this.documents.get(DocumentType.TYPE_COURRIER_REQUERANT.type)?.at(0) ??
-      this.documents.get(DocumentType.TYPE_COURRIER_MINISTERE.type)?.at(0) ??
-      this.courrier
+      this.documents.get(DocumentType.TYPE_COURRIER_MINISTERE.type)?.at(0)
     );
   }
 }

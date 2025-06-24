@@ -52,7 +52,9 @@ export const VerifierAcceptationModale =
       ValidationAcceptationEtat,
       (etat: ValidationAcceptationEtat) => void,
     ] = useState({
-      corpsCourrier: dossier.corpsCourrier,
+      corpsCourrier: dossier.getDocumentType(
+        DocumentType.TYPE_COURRIER_MINISTERE,
+      )?.corps,
       sauvegardeEnCours: false,
       action: "verification",
       arreteDePaiement:
@@ -63,7 +65,9 @@ export const VerifierAcceptationModale =
     // Actions
     const annuler = () => {
       setEtatValidation({
-        corpsCourrier: dossier.corpsCourrier,
+        corpsCourrier: dossier.getDocumentType(
+          DocumentType.TYPE_COURRIER_MINISTERE,
+        )?.corps,
         sauvegardeEnCours: false,
         action: "verification",
       } as ValidationAcceptationEtat);
@@ -142,7 +146,9 @@ export const VerifierAcceptationModale =
       if (response.ok) {
         const data = await response.json();
         dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-        dossier.addDocument(etatValidation.arreteDePaiement);
+        const courrier = plainToInstance(Document, data.document);
+        dossier.viderDocumentParType(DocumentType.TYPE_ARRETE_PAIEMENT);
+        dossier.addDocument(courrier);
       }
 
       setSauvegardeEnCours(false);

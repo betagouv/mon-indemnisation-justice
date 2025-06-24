@@ -46,4 +46,17 @@ enum DocumentType: string
             default => false,
         };
     }
+
+    /**
+     * Retourne le chemin vers le gabarit (i.e. "template") twig à utiliser pour la génération du document.
+     */
+    public function getGabarit(): ?string
+    {
+        return match ($this) {
+            self::TYPE_COURRIER_MINISTERE => 'courrier/decision.html.twig',
+            self::TYPE_ARRETE_PAIEMENT => 'courrier/arretePaiement.html.twig',
+
+            default => null,
+        };
+    }
 }
