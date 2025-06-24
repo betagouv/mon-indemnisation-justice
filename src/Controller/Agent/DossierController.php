@@ -8,6 +8,7 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\CourrierDossier;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Event\DossierDecideEvent;
 use MonIndemnisationJustice\Repository\AgentRepository;
@@ -31,19 +32,6 @@ use Twig\Environment;
 #[Route('/agent/redacteur')]
 class DossierController extends AgentController
 {
-    private const ETATS_DOSSIERS_ELIGIBLES = [
-        EtatDossierType::DOSSIER_A_INSTRUIRE,
-        EtatDossierType::DOSSIER_EN_INSTRUCTION,
-        EtatDossierType::DOSSIER_OK_A_SIGNER,
-        EtatDossierType::DOSSIER_CLOTURE,
-        EtatDossierType::DOSSIER_OK_A_APPROUVER,
-        EtatDossierType::DOSSIER_OK_A_VERIFIER,
-        EtatDossierType::DOSSIER_OK_A_INDEMNISER,
-        EtatDossierType::DOSSIER_OK_INDEMNISE,
-        EtatDossierType::DOSSIER_KO_A_SIGNER,
-        EtatDossierType::DOSSIER_KO_REJETE,
-    ];
-
     public function __construct(
         protected readonly BrisPorteRepository $dossierRepository,
         protected readonly AgentRepository $agentRepository,
@@ -167,7 +155,13 @@ class DossierController extends AgentController
     #[Route('/dossier/{id}/piece-jointe/ajouter.json', name: 'agent_redacteur_ajouter_piece_jointe_dossier', methods: ['POST'])]
     public function ajouterPieceJointe(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
-        $type = $request->request->get('type');
+        $type = DocumentType::tryFrom($request->request->get('type'));
+        if (null === $type) {
+            return new JsonResponse([
+                'error' => 'Type non reconnu ',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         /** @var UploadedFile $file */
         $file = $request->files->get('file');
 
@@ -237,20 +231,21 @@ class DossierController extends AgentController
 
         if ($indemnisation) {
             $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_OK_A_SIGNER, agent: $agent, contexte: $montantIndemnisation ? [
-                'montant' => $montantIndemnisation,
-            ] : null)
-            ->setPropositionIndemnisation($montantIndemnisation)
-            ->setCorpsCourrier($corpsCourrier);
+                ->changerStatut(EtatDossierType::DOSSIER_OK_A_SIGNER, agent: $agent, contexte: $montantIndemnisation ? [
+                    'montant' => $montantIndemnisation,
+                ] : null)
+                ->setPropositionIndemnisation($montantIndemnisation)
+                ->setCorpsCourrier($corpsCourrier);
         } else {
             $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_KO_A_SIGNER, agent: $agent, contexte: $motif ? [
-                'motif' => $motif,
-            ] : null)
-            ->setCorpsCourrier($corpsCourrier);
+                ->changerStatut(EtatDossierType::DOSSIER_KO_A_SIGNER, agent: $agent, contexte: $motif ? [
+                    'motif' => $motif,
+                ] : null)
+                ->setCorpsCourrier($corpsCourrier);
         }
 
         $destination = $this->imprimanteCourrier->imprimerLettreDecision($dossier);
+        // TODO créer le document de type courrier ministère à la place
         $dossier->setCourrier(
             (new CourrierDossier())
                 ->setDossier($dossier)
@@ -318,11 +313,11 @@ class DossierController extends AgentController
         $this->em->persist($dossier);
         $destination = $this->imprimanteCourrier->imprimerArretePaiement($dossier);
         $document = (new Document())
-                ->setFilename($destination)
-                ->setType(Document::TYPE_ARRETE_PAIEMENT)
-                ->setMime('application/pdf')
-                ->setSize(0)
-                ->setOriginalFilename("Arrêté de paiement - dossier {$dossier->getReference()}");
+            ->setFilename($destination)
+            ->setType(DocumentType::TYPE_ARRETE_PAIEMENT)
+            ->setMime('application/pdf')
+            ->setSize(0)
+            ->setOriginalFilename("Arrêté de paiement - dossier {$dossier->getReference()}");
 
         $this->em->persist($document);
         $this->em->flush();
@@ -377,7 +372,7 @@ class DossierController extends AgentController
                 ->setFilename($destination)
         );
         // Suppression d'un éventuel courrier signé, désormais considéré caduc
-        $dossier->supprimerDocumentsParType(Document::TYPE_COURRIER_MINISTERE);
+        $dossier->supprimerDocumentsParType(DocumentType::TYPE_COURRIER_MINISTERE);
 
         $this->dossierRepository->save($dossier);
 
@@ -406,11 +401,11 @@ class DossierController extends AgentController
         $this->storage->write($filename, $content);
 
         $document = (new Document())
-                ->setFilename($filename)
-                ->setOriginalFilename($file->getClientOriginalName())
-                ->setSize($file->getSize())
-                ->setType(Document::TYPE_COURRIER_MINISTERE)
-                ->setMime($file->getMimeType());
+            ->setFilename($filename)
+            ->setOriginalFilename($file->getClientOriginalName())
+            ->setSize($file->getSize())
+            ->setType(DocumentType::TYPE_COURRIER_MINISTERE)
+            ->setMime($file->getMimeType());
 
         $this->em->persist($document);
         $this->em->flush();
@@ -425,7 +420,7 @@ class DossierController extends AgentController
 
         return new JsonResponse([
             'documents' => [
-                Document::TYPE_COURRIER_MINISTERE => [
+                DocumentType::TYPE_COURRIER_MINISTERE->value => [
                     [
                         'id' => $document->getId(),
                         'mime' => $document->getMime(),
@@ -447,10 +442,10 @@ class DossierController extends AgentController
 
         if ($dossier->estAccepte()) {
             $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent);
+                ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent);
         } else {
             $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent);
+                ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent);
         }
 
         $this->dossierRepository->save($dossier);
