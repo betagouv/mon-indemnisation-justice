@@ -45,28 +45,6 @@ const QuillEditor = ({
   return (
     <ReactQuill
       theme="snow"
-      modules={{
-        toolbar: [
-          ["bold", "italic", "underline", "strike", "blockquote"],
-          [
-            { list: "ordered" },
-            { list: "bullet" },
-            { indent: "-1" },
-            { indent: "+1" },
-          ],
-          ["link"],
-        ],
-      }}
-      formats={[
-        "bold",
-        "italic",
-        "underline",
-        "strike",
-        "blockquote",
-        "list",
-        "indent",
-        "link",
-      ]}
       value={value}
       onChange={onChange}
       readOnly={readOnly}

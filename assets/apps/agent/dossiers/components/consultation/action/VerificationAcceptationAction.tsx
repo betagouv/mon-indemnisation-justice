@@ -162,6 +162,7 @@ export const VerifierAcceptationModale =
               vérifiez que tous les champs sont correctement remplis :
             </p>
             <PieceJointe
+              className="fr-my-2w"
               pieceJointe={dossier
                 .getDocumentsType(DocumentType.TYPE_COURRIER_REQUERANT)
                 .at(0)}
@@ -222,7 +223,10 @@ export const VerifierAcceptationModale =
         )}
         {etatValidation.action === "relecture" && (
           <>
-            <PieceJointe pieceJointe={etatValidation.arreteDePaiement} />
+            <PieceJointe
+              className="fr-my-2w"
+              pieceJointe={etatValidation.arreteDePaiement}
+            />
             <ButtonsGroup
               inlineLayoutWhen="always"
               alignment="right"

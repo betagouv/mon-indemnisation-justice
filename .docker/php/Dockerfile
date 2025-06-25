@@ -24,7 +24,10 @@ RUN apt-get install -y libpq-dev && docker-php-ext-configure pgsql -with-pgsql=/
 RUN apt-get install -y libldap2-dev libldap-common && docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/ && docker-php-ext-install ldap
 
 # PHP config
-RUN echo "memory_limit = -1" >> $PHP_INI_DIR/conf.d/php.ini
+RUN echo 'date.timezone = "Europe/Paris"' >> $PHP_INI_DIR/conf.d/php.ini
+RUN echo 'memory_limit = -1' >> $PHP_INI_DIR/conf.d/php.ini
+RUN echo 'upload_max_filesize = 10M' >> $PHP_INI_DIR/conf.d/php.ini
+RUN echo 'post_max_size = 10M' >> $PHP_INI_DIR/conf.d/php.ini
 
 # Node
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
