@@ -231,57 +231,62 @@ class DossierController extends AgentController
                 ] : null);
         }
 
-        $courrierDecision = $dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
-
-        if (null === $courrierDecision) {
-            $courrierDecision = (new Document())->setType(DocumentType::TYPE_COURRIER_MINISTERE);
-            $dossier->ajouterDocument($courrierDecision);
-        }
-
-        $courrierDecision->setCorps($corpsCourrier);
-        $courrierDecision = $this->imprimanteCourrier->imprimerLettreDecision($dossier, $courrierDecision)->setOriginalFilename("Lettre de décision - dossier {$dossier->getReference()}");
-
-        $this->em->persist($courrierDecision);
         $this->em->persist($dossier);
 
         $this->em->flush();
 
         return new JsonResponse([
             'etat' => $normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
-            'document' => $this->normalizer->normalize($courrierDecision, 'json', ['agent:detail']),
+            'document' => $this->normalizer->normalize($dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE), 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
-    #[Route('/dossier/{id}/courrier/generer.html', name: 'agent_redacteur_generer_courrier_dossier', methods: ['POST'])]
+    #[Route('/dossier/{id}/courrier/generer.json', name: 'agent_redacteur_generer_courrier_dossier', methods: ['POST'])]
     public function genererCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
         $indemnisation = $request->getPayload()->getBoolean('indemnisation');
 
+        $propositionIndemnisation = $dossier->getOrCreatePropositionIndemnisation();
+
         if ($indemnisation) {
-            return $this->render('courrier/_corps_accepte.html.twig', [
-                'dossier' => $dossier,
-                'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
-            ]);
+            $propositionIndemnisation->setCorps(
+                $this->twig->render('courrier/_corps_accepte.html.twig', [
+                    'dossier' => $dossier,
+                    'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
+                ])
+            );
         } else {
             $motifRefus = $request->getPayload()->get('motifRefus');
 
             if ('est_vise' === $motifRefus) {
-                return $this->render('courrier/_corps_rejete_est_vise.html.twig', [
-                    'dossier' => $dossier,
-                ]);
+                $propositionIndemnisation->setCorps(
+                    $this->twig->render('courrier/_corps_rejete_est_vise.html.twig', [
+                        'dossier' => $dossier,
+                    ])
+                );
             }
 
             if ('est_hebergeant' === $motifRefus) {
-                return $this->render('courrier/_corps_rejete_est_hebergeant.html.twig', [
-                    'dossier' => $dossier,
-                ]);
+                $propositionIndemnisation->setCorps(
+                    $this->twig->render('courrier/_corps_rejete_est_hebergeant.html.twig', [
+                        'dossier' => $dossier,
+                    ])
+                );
             }
 
-            return $this->render('courrier/_corps_rejete.html.twig', [
-                'dossier' => $dossier,
-            ]);
+            $propositionIndemnisation->setCorps(
+                $this->twig->render('courrier/_corps_rejete.html.twig', [
+                    'dossier' => $dossier,
+                ])
+            );
         }
+
+        $this->em->persist($propositionIndemnisation);
+        $this->em->persist($dossier);
+        $this->em->flush();
+
+        return new JsonResponse($this->normalizer->normalize($propositionIndemnisation, 'json', ['agent:detail']));
     }
 
     #[IsGranted(
@@ -353,27 +358,12 @@ class DossierController extends AgentController
         }
 
         $montantIndemnisation = floatval($request->getPayload()->get('montantIndemnisation'));
-        $corpsCourrier = $request->getPayload()->get('corpsCourrier');
         $dossier->setPropositionIndemnisation($montantIndemnisation);
 
-        $courrierDecision = $dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
-
-        if (null === $courrierDecision) {
-            $courrierDecision = (new Document())->setType(DocumentType::TYPE_COURRIER_MINISTERE);
-            $dossier->ajouterDocument($courrierDecision);
-        }
-
-        $courrierDecision->setCorps($corpsCourrier);
-        $courrierDecision = $this->imprimanteCourrier->imprimerLettreDecision($dossier, $courrierDecision)->setOriginalFilename("Lettre de décision - dossier {$dossier->getReference()}");
-
-        $this->em->persist($courrierDecision);
         $this->em->persist($dossier);
         $this->em->flush();
 
-        return new JsonResponse([
-            // TODO https://symfony.com/doc/current/serializer/custom_normalizer.html
-            'document' => $this->normalizer->normalize($courrierDecision, 'json', ['agent:detail']),
-        ], Response::HTTP_OK);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]

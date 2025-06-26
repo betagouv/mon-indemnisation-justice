@@ -9,7 +9,6 @@ use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\DocumentRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
@@ -169,6 +168,14 @@ class Document
         return $this->dossiers;
     }
 
+    public function ajouterAuDossier(BrisPorte $dossier): static
+    {
+        $dossier->ajouterDocument($this);
+        $this->dossiers->add($dossier);
+
+        return $this;
+    }
+
     public function getSize(): ?string
     {
         return $this->size;
@@ -224,6 +231,7 @@ class Document
         return $this;
     }
 
+    #[Groups(['agent:detail'])]
     public function getFileHash(): string
     {
         return md5($this->filename);
@@ -248,15 +256,6 @@ class Document
         $this->metaDonnees = $merge ? array_merge($this->metaDonnees ?? [], $metaDonnees) : $metaDonnees;
 
         return $this;
-    }
-
-    #[Groups(['agent:detail'])]
-    #[SerializedName('url')]
-    #[Context]
-    public function getAgentUrl(): ?string
-    {
-        // URL pointant sur la route "agent_document_download"
-        return "/agent/document/$this->id/{$this->getFileHash()}";
     }
 
     #[Groups(['requerant:detail'])]
