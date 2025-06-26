@@ -1,34 +1,59 @@
-import React, { useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Document } from "@/apps/agent/dossiers/models";
+import { Document, DossierDetail } from "@/apps/agent/dossiers/models";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
+import { plainToInstance } from "class-transformer";
 
 export const EditeurDocument = observer(function EditeurDocumentComponent({
-  document,
-  onChange,
+  dossier,
+  document = null,
+  className = null,
+  onChange = null,
+  onImpression = null,
 }: {
+  dossier: DossierDetail;
   document?: Document;
-  onChange: (document: Document) => void;
+  className?: string;
+  onChange?: (document: Document) => void;
+  onImpression?: (impressionEnCours: boolean) => void;
 }) {
-  const [modeEdition, setModeEdition] = React.useState<boolean>(true);
-  const [corps, setCorps] = React.useState<string>(document.corps);
+  const [modeEdition, setModeEdition] = useState<boolean>(true);
+  const [impressionEnCours, setImpressionEnCours] = useState<boolean>(false);
+  const [corps, setCorps] = useState<string>(document.corps);
 
   const imprimer = useCallback(async () => {
-    fetch(``);
-  }, [document.id]);
+    setImpressionEnCours(true);
+    onImpression?.(impressionEnCours);
+    const response = await fetch(
+      `/agent/document/${dossier.id}/proposition-indemnisation/imprimer`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ corps }),
+      },
+    );
 
-  const visualiser = () => {
-    if (corps !== document.corps) {
-      imprimer();
-    } else {
-      setModeEdition(false);
+    if (response.ok) {
+      const data = await response.json();
+
+      const document = plainToInstance(Document, data);
+      onChange?.(document);
     }
+
+    setImpressionEnCours(false);
+    onImpression?.(impressionEnCours);
+  }, [dossier.id, corps]);
+
+  const visualiser = async () => {
+    if (corps !== document.corps) {
+      await imprimer();
+    }
+    setModeEdition(false);
   };
 
   return (
-    <>
+    <div className={className}>
       <div className="fr-col-12 fr-mb-2w">
         <ButtonsGroup
           inlineLayoutWhen="always"
@@ -39,7 +64,11 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
               ? {
                   children: "Visualiser",
                   priority: "secondary",
-                  iconId: "fr-icon-printer-line",
+                  iconId:
+                    corps !== document.corps
+                      ? "fr-icon-printer-line"
+                      : "fr-icon-eye-line",
+                  disabled: impressionEnCours,
                   onClick: () => {
                     visualiser();
                   },
@@ -47,6 +76,7 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
               : {
                   children: "Éditer",
                   priority: "secondary",
+                  disabled: impressionEnCours,
                   iconId: "fr-icon-pencil-line",
                   onClick: () => {
                     setModeEdition(true);
@@ -57,11 +87,17 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
       </div>
       <div className="fr-col-12">
         {modeEdition ? (
-          <QuillEditor value={corps} onChange={setCorps} />
+          <QuillEditor
+            value={corps}
+            onChange={(value) => {
+              setCorps(value);
+            }}
+            readOnly={impressionEnCours}
+          />
         ) : (
           <PieceJointe pieceJointe={document} />
         )}
       </div>
-    </>
+    </div>
   );
 });

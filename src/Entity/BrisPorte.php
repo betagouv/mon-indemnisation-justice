@@ -383,6 +383,17 @@ class BrisPorte
         return $this->documentsParType[$type->value][0] ?? null;
     }
 
+    public function getOrCreatePropositionIndemnisation(): Document
+    {
+        $propositionIndemnisation = $this->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
+
+        if (null === $propositionIndemnisation) {
+            $propositionIndemnisation = (new Document())->setType(DocumentType::TYPE_COURRIER_MINISTERE)->ajouterAuDossier($this);
+        }
+
+        return $propositionIndemnisation;
+    }
+
     /**
      * @return Document[]
      */

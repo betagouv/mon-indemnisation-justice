@@ -36,8 +36,6 @@ export const ConsultationDossierApp = observer(
       [dossier.getCourrierAJour()?.url],
     );
 
-    console.log(courrier?.url);
-
     const changerOnglet = (tab) => {
       selectTab(tab);
       history.replaceState({}, "", `#${tab}`);
