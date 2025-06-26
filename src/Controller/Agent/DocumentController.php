@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\TypeInstitutionSecuritePublique;
+use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
 #[Route('/agent/document')]
@@ -100,12 +102,19 @@ class DocumentController extends AbstractController
         }
     }
 
-    #[Route('/{id}/imprimer', name: 'agent_document_imprimer', methods: ['PUT'])]
-    public function imprimer(#[MapEntity(id: 'id')] Document $document, Request $request): Response
+    #[Route('/{id}/proposition-indemnisation/imprimer', name: 'agent_document_imprimer', methods: ['PUT'])]
+    public function imprimer(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, NormalizerInterface $normalizer, ImprimanteCourrier $imprimanteCourrier): Response
     {
         // Récupérer le corps du courrier, et l'imprimer
-        // $document->getType()
+        $propositionIndemnisation = $dossier->getOrCreatePropositionIndemnisation();
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        $propositionIndemnisation->setCorps($request->getPayload()->get('corps'));
+
+        $propositionIndemnisation = $imprimanteCourrier->imprimerLettreDecision($dossier, $propositionIndemnisation);
+        $this->em->persist($dossier);
+        $this->em->persist($propositionIndemnisation);
+        $this->em->flush();
+
+        return new JsonResponse($normalizer->normalize($propositionIndemnisation, 'json', ['groups' => ['agent:detail']]));
     }
 }

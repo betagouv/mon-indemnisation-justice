@@ -41,9 +41,12 @@ class ImprimanteCourrier
      *
      * @throws \League\Flysystem\FilesystemException
      */
-    public function imprimerLettreDecision(BrisPorte $dossier, ?Document $document = null): Document
+    public function imprimerLettreDecision(BrisPorte $dossier, Document $propositionIndemnisation): Document
     {
-        return $this->imprimerDocument($dossier, $document, DocumentType::TYPE_COURRIER_MINISTERE);
+        return $this->imprimerDocument(
+            $dossier,
+            $propositionIndemnisation
+        );
     }
 
     /**
@@ -53,17 +56,19 @@ class ImprimanteCourrier
      *
      * @throws \League\Flysystem\FilesystemException
      */
-    public function imprimerArretePaiement(BrisPorte $dossier, ?Document $document = null): Document
+    public function imprimerArretePaiement(BrisPorte $dossier): Document
     {
-        return $this->imprimerDocument($dossier, $document, DocumentType::TYPE_ARRETE_PAIEMENT);
+        return $this->imprimerDocument(
+            $dossier,
+            $dossier->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT),
+            DocumentType::TYPE_ARRETE_PAIEMENT
+        );
     }
 
-    protected function imprimerDocument(BrisPorte $dossier, ?Document $document = null, ?DocumentType $type = null): Document
+    protected function imprimerDocument(BrisPorte $dossier, Document $document): Document
     {
         // Création d'un préfixe de chemin temporaire, dédié à la génération des documents HTML et PDF
         $path = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
-
-        $document = $document ?? (new Document())->setType($type);
 
         $this->filesystem->mkdir($path);
 
@@ -93,7 +98,9 @@ class ImprimanteCourrier
 
             $this->storage->write($destination, file_get_contents($fichierPdf));
 
-            $document->setFilename($destination)->setSize(filesize($fichierPdf))->setMime('application/pdf');
+            $document->setFilename($destination)
+                ->setSize(filesize($fichierPdf))
+                ->setMime('application/pdf');
 
             return $document;
         } catch (\Exception $e) {

@@ -56,13 +56,17 @@ export class Document {
   public readonly mime: string;
   public readonly originalFilename: string;
   public corps?: string;
-  public readonly url: string;
+  public fileHash: string;
   @Transform(
     ({ value }: { value: string }): DocumentType =>
       Document.types.find((type: DocumentType) => type.type === value),
   )
   public readonly type: DocumentType;
   public metaDonnees: any;
+
+  get url(): string {
+    return `/agent/document/${this.id}/${this.fileHash}`;
+  }
 
   public isPDF(): boolean {
     return "application/pdf" === this.mime;
