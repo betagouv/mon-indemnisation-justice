@@ -46,11 +46,14 @@ export class DocumentType {
   public static readonly TYPE_COURRIER_REQUERANT = new DocumentType(
     "courrier_requerant",
     "Courrier de décision signé du requérant",
+    false,
+    true,
   );
 
   public static readonly TYPE_ARRETE_PAIEMENT = new DocumentType(
     "arrete_paiement",
     "Arrêté de paiement",
+    true,
   );
 }
 

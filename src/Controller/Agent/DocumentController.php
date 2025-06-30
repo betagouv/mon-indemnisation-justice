@@ -102,19 +102,23 @@ class DocumentController extends AbstractController
         }
     }
 
-    #[Route('/{id}/proposition-indemnisation/imprimer', name: 'agent_document_imprimer', methods: ['PUT'])]
-    public function imprimer(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, NormalizerInterface $normalizer, ImprimanteCourrier $imprimanteCourrier): Response
+    #[Route('/{id}/imprimer', name: 'agent_document_imprimer', methods: ['PUT'])]
+    public function imprimer(#[MapEntity(id: 'id')] Document $document, Request $request, NormalizerInterface $normalizer, ImprimanteCourrier $imprimanteCourrier): Response
     {
-        // Récupérer le corps du courrier, et l'imprimer
-        $propositionIndemnisation = $dossier->getOrCreatePropositionIndemnisation();
+        if (!$document->estEditable()) {
+            return new JsonResponse([
+                'error' => 'Ce document ne peut être édité',
+            ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
 
-        $propositionIndemnisation->setCorps($request->getPayload()->get('corps'));
+        $document->setCorps($request->getPayload()->get('corps'));
 
-        $propositionIndemnisation = $imprimanteCourrier->imprimerLettreDecision($dossier, $propositionIndemnisation);
-        $this->em->persist($dossier);
-        $this->em->persist($propositionIndemnisation);
+        $document = $imprimanteCourrier->imprimerDocument($document);
+        $this->em->persist($document);
         $this->em->flush();
 
-        return new JsonResponse($normalizer->normalize($propositionIndemnisation, 'json', ['groups' => ['agent:detail']]));
+        return new JsonResponse($normalizer->normalize($document, 'json', ['groups' => ['agent:detail']]));
     }
 }

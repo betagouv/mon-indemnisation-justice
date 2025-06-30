@@ -215,7 +215,6 @@ class DossierController extends AgentController
 
         $indemnisation = floatval($request->getPayload()->getBoolean('indemnisation'));
         $montantIndemnisation = floatval($request->getPayload()->get('montantIndemnisation'));
-        $corpsCourrier = $request->getPayload()->get('corpsCourrier');
         $motif = $request->getPayload()->getString('motif');
 
         if ($indemnisation) {
@@ -282,6 +281,8 @@ class DossierController extends AgentController
             );
         }
 
+        $propositionIndemnisation = $this->imprimanteCourrier->imprimerDocument($propositionIndemnisation);
+
         $this->em->persist($propositionIndemnisation);
         $this->em->persist($dossier);
         $this->em->flush();
@@ -301,16 +302,8 @@ class DossierController extends AgentController
         Request $request,
     ): Response {
         try {
-            $arretePaiement = $dossier->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT);
-
-            if (null === $arretePaiement) {
-                $arretePaiement = (new Document())->setType(DocumentType::TYPE_ARRETE_PAIEMENT);
-                $dossier->ajouterDocument($arretePaiement);
-
-                $this->em->persist($dossier);
-            }
-            $arretePaiement->setCorps($request->getPayload()->get('corps'));
-            $arretePaiement = $this->imprimanteCourrier->imprimerArretePaiement($dossier, $arretePaiement)
+            $arretePaiement = $dossier->getOrCreateArretePaiement()->setCorps($request->getPayload()->get('corps'));
+            $arretePaiement = $this->imprimanteCourrier->imprimerDocument($arretePaiement)
                 ->setOriginalFilename("Arrêté de paiement - dossier {$dossier->getReference()}");
 
             $this->em->persist($arretePaiement);
@@ -333,14 +326,11 @@ class DossierController extends AgentController
     #[Route('/dossier/{id}/arrete-paiement/valider.json', name: 'agent_redacteur_valider_arrete_paiement_dossier', methods: ['POST'])]
     public function validerArretePaiementDossier(
         #[MapEntity(id: 'id')] BrisPorte $dossier,
-        Request $request,
     ): Response {
-        $document = $this->em->getRepository(Document::class)->find($request->getPayload()->getInt('document'));
-        if (null === $document) {
+        if (null === $dossier->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT)) {
             return new JsonResponse([], Response::HTTP_NOT_FOUND);
         }
 
-        $dossier->ajouterDocument($document);
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_VERIFIE, agent: $this->getAgent());
 
         $this->em->persist($dossier);
@@ -381,11 +371,10 @@ class DossierController extends AgentController
         $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
 
-        $document = (new Document())
+        $document = $dossier->getOrCreatePropositionIndemnisation()
             ->setFilename($filename)
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
-            ->setType(DocumentType::TYPE_COURRIER_MINISTERE)
             ->setMime($file->getMimeType());
 
         $this->em->persist($document);
@@ -402,6 +391,40 @@ class DossierController extends AgentController
             'documents' => [
                 DocumentType::TYPE_COURRIER_MINISTERE->value => $this->normalizer->normalize($document, 'json', ['agent:detail']),
             ],
+            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+        ], Response::HTTP_OK);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
+    #[Route('/dossier/{id}/arrete-paiement/signer.json', name: 'agent_redacteur_signer_arrete_paiement', methods: ['POST'])]
+    public function signerArretePaiement(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        if (EtatDossierType::DOSSIER_OK_VERIFIE !== $dossier->getEtatDossier()->getEtat()) {
+            return new JsonResponse(['error' => "Cet dossier n'est pas à signer"], Response::HTTP_BAD_REQUEST);
+        }
+
+        /** @var UploadedFile $file */
+        $file = $request->files->get('fichierSigne');
+
+        $content = $file->getContent();
+        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+        $this->storage->write($filename, $content);
+
+        $document = $dossier->getOrCreateArretePaiement()
+            ->setFilename($filename)
+            ->setOriginalFilename($file->getClientOriginalName())
+            ->setSize($file->getSize())
+            ->setMime($file->getMimeType());
+
+        $this->em->persist($document);
+        $this->em->flush();
+
+        $dossier->ajouterDocument($document);
+        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_INDEMNISER, agent: $this->getAgent());
+
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse([
             'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }

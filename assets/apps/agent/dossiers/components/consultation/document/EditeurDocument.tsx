@@ -1,15 +1,17 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Document, DossierDetail } from "@/apps/agent/dossiers/models";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 import { plainToInstance } from "class-transformer";
+import { DeltaStatic, EmitterSource } from "react-quill-new";
 
 export const EditeurDocument = observer(function EditeurDocumentComponent({
   dossier,
-  document = null,
+  document,
   className = null,
+  lectureSeule = false,
   onChange = null,
   onEdite = null,
   onImpression = null,
@@ -17,24 +19,30 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
   dossier: DossierDetail;
   document?: Document;
   className?: string;
+  lectureSeule?: boolean;
   onChange?: (document: Document) => void;
   onEdite?: (corps: string) => void;
   onImpression?: (impressionEnCours: boolean) => void;
 }) {
   const [modeEdition, setModeEdition] = useState<boolean>(true);
   const [impressionEnCours, setImpressionEnCours] = useState<boolean>(false);
+  const [modificationsEnAttente, setModificationsEnAttente] =
+    useState<boolean>(false);
   const [corps, setCorps] = useState<string>(document.corps);
+
+  const modifier = (corps: string) => {
+    setModificationsEnAttente(true);
+    setCorps(corps);
+    onEdite?.(corps);
+  };
 
   const imprimer = useCallback(async () => {
     setImpressionEnCours(true);
     onImpression?.(impressionEnCours);
-    const response = await fetch(
-      `/agent/document/${dossier.id}/proposition-indemnisation/imprimer`,
-      {
-        method: "PUT",
-        body: JSON.stringify({ corps }),
-      },
-    );
+    const response = await fetch(`/agent/document/${document.id}/imprimer`, {
+      method: "PUT",
+      body: JSON.stringify({ corps }),
+    });
 
     if (response.ok) {
       const data = await response.json();
@@ -44,11 +52,13 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
     }
 
     setImpressionEnCours(false);
+    setModificationsEnAttente(false);
     onImpression?.(impressionEnCours);
-  }, [dossier.id, corps]);
+  }, [document.id, corps]);
 
   const visualiser = async () => {
-    if (corps !== document.corps) {
+    console.log(modificationsEnAttente);
+    if (modificationsEnAttente) {
       await imprimer();
     }
     setModeEdition(false);
@@ -71,9 +81,7 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
                       ? "fr-icon-printer-line"
                       : "fr-icon-eye-line",
                   disabled: impressionEnCours,
-                  onClick: () => {
-                    visualiser();
-                  },
+                  onClick: async () => visualiser(),
                 }
               : {
                   children: "Éditer",
@@ -91,11 +99,8 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
         {modeEdition ? (
           <QuillEditor
             value={corps}
-            onChange={(value) => {
-              setCorps(value);
-              onEdite?.(value);
-            }}
-            readOnly={impressionEnCours}
+            onChange={(value) => modifier(value)}
+            readOnly={impressionEnCours || lectureSeule}
           />
         ) : (
           <PieceJointe pieceJointe={document} />

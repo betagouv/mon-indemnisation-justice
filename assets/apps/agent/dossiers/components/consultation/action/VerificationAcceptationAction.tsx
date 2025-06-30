@@ -1,11 +1,10 @@
-import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
+import { EditeurDocument } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
 import React, { useState } from "react";
 import {
   Agent,
-  Document,
   DocumentType,
   DossierDetail,
   EtatDossier,
@@ -18,13 +17,11 @@ const _modale = createModal({
   isOpenedByDefault: false,
 });
 
-type ValidationAcceptationAction = "verification" | "edition" | "relecture";
+type ValidationAcceptationAction = "verification" | "edition";
 
 type ValidationAcceptationEtat = {
   action?: ValidationAcceptationAction;
-  corpsCourrier: string;
   sauvegardeEnCours: boolean;
-  arreteDePaiement?: Document;
 };
 
 const estAVerifier = ({ dossier, agent }): boolean =>
@@ -52,14 +49,8 @@ export const VerifierAcceptationModale =
       ValidationAcceptationEtat,
       (etat: ValidationAcceptationEtat) => void,
     ] = useState({
-      corpsCourrier: dossier.getDocumentType(
-        DocumentType.TYPE_COURRIER_MINISTERE,
-      )?.corps,
       sauvegardeEnCours: false,
       action: "verification",
-      arreteDePaiement:
-        dossier.getDocumentsType(DocumentType.TYPE_ARRETE_PAIEMENT).at(0) ??
-        null,
     } as ValidationAcceptationEtat);
 
     // Actions
@@ -84,49 +75,6 @@ export const VerifierAcceptationModale =
     const editer = () =>
       setEtatValidation({ ...etatValidation, action: "edition" });
 
-    const editerCorpsCourrier = (corpsCourrier: string) => {
-      setEtatValidation({ ...etatValidation, corpsCourrier });
-    };
-
-    const genererArretePaiement = async () => {
-      // Envoi à l'API pour impression, récupération du document
-      setSauvegardeEnCours(true);
-
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/generer.json`,
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            corpsCourrier: etatValidation.corpsCourrier,
-          }),
-        },
-      );
-      let document: Document;
-
-      if (response.ok) {
-        const data = await response.json();
-        document = plainToInstance(Document, data.document);
-        setEtatValidation({
-          ...etatValidation,
-          arreteDePaiement: document,
-        });
-      }
-
-      setEtatValidation({
-        ...etatValidation,
-        action: "relecture",
-        arreteDePaiement: document,
-      });
-    };
-
-    const relire = () => {
-      setEtatValidation({ ...etatValidation, action: "relecture" });
-    };
-
     const valider = async () => {
       // Appel à l'API pour valider le document
       const response = await fetch(
@@ -137,18 +85,12 @@ export const VerifierAcceptationModale =
             "Content-type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify({
-            document: etatValidation.arreteDePaiement.id,
-          }),
         },
       );
 
       if (response.ok) {
         const data = await response.json();
         dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-        const courrier = plainToInstance(Document, data.document);
-        dossier.viderDocumentParType(DocumentType.TYPE_ARRETE_PAIEMENT);
-        dossier.addDocument(courrier);
       }
 
       setSauvegardeEnCours(false);
@@ -188,14 +130,18 @@ export const VerifierAcceptationModale =
         )}
         {etatValidation.action === "edition" && (
           <>
-            <div className="fr-input-group fr-my-2w">
-              <QuillEditor
-                value={etatValidation.corpsCourrier}
-                onChange={(value) => editerCorpsCourrier(value)}
-                readOnly={etatValidation.sauvegardeEnCours}
-              />
-              <div />
-            </div>
+            <EditeurDocument
+              className="fr-input-group fr-my-2w"
+              dossier={dossier}
+              document={dossier.getDocumentType(
+                DocumentType.TYPE_ARRETE_PAIEMENT,
+              )}
+              onImpression={(impressionEnCours) =>
+                setSauvegardeEnCours(impressionEnCours)
+              }
+              onChange={(arretePaiement) => dossier.addDocument(arretePaiement)}
+              lectureSeule={etatValidation.sauvegardeEnCours}
+            />
 
             <ButtonsGroup
               inlineLayoutWhen="always"
@@ -208,51 +154,16 @@ export const VerifierAcceptationModale =
                   onClick: () => annuler(),
                 } as ButtonProps,
                 {
-                  children: "Générer le document",
-                  iconId: "fr-icon-printer-line",
+                  children: "Voir la déclaration",
                   priority: "secondary",
-                  disabled:
-                    etatValidation.sauvegardeEnCours ||
-                    !etatValidation.corpsCourrier,
-                  onClick: () => genererArretePaiement(),
+                  onClick: () => verifierDeclarationAcceptation(),
                 } as ButtonProps,
                 {
-                  children: "Visualiser",
-                  disabled:
-                    etatValidation.sauvegardeEnCours ||
-                    !etatValidation.arreteDePaiement,
-                  onClick: () => relire(),
-                } as ButtonProps,
-              ]}
-            />
-          </>
-        )}
-        {etatValidation.action === "relecture" && (
-          <>
-            <PieceJointe
-              className="fr-my-2w"
-              pieceJointe={etatValidation.arreteDePaiement}
-            />
-            <ButtonsGroup
-              inlineLayoutWhen="always"
-              alignment="right"
-              buttonsSize="small"
-              buttons={[
-                {
-                  children: "Annuler",
-                  priority: "tertiary no outline",
-                  onClick: () => annuler(),
-                } as ButtonProps,
-                {
-                  iconId: "fr-icon-pencil-line",
-                  children: "Éditer",
-                  priority: "secondary",
-                  onClick: () => editer(),
-                } as ButtonProps,
-                {
-                  iconId: "fr-icon-check-line",
-                  children: "Valider",
-                  onClick: () => valider(),
+                  children: "Valider l'arrêté de paiement",
+                  iconId: "fr-icon-send-plane-line",
+                  priority: "primary",
+                  disabled: etatValidation.sauvegardeEnCours,
+                  onClick: async () => valider(),
                 } as ButtonProps,
               ]}
             />

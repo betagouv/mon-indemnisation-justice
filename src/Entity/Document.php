@@ -39,7 +39,7 @@ class Document
     #[ORM\Column(nullable: true)]
     private ?string $size = null;
 
-    #[Groups(['dossier:lecture', 'requerant:detail'])]
+    #[Groups(['dossier:lecture', 'requerant:detail', 'agent:detail'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $originalFilename = null;
 
@@ -73,7 +73,7 @@ class Document
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $metaDonnees = null;
 
-    #[ORM\ManyToMany(targetEntity: BrisPorte::class, mappedBy: 'documents')]
+    #[ORM\ManyToMany(targetEntity: BrisPorte::class, mappedBy: 'documents', cascade: ['persist'])]
     #[Ignore]
     /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
@@ -155,6 +155,7 @@ class Document
 
     public function ajouterAuDossier(BrisPorte $dossier): static
     {
+        $dossier->ajouterDocument($this);
         $this->dossiers->add($dossier);
 
         return $this;
@@ -168,12 +169,10 @@ class Document
         return $this->dossiers;
     }
 
-    public function ajouterAuDossier(BrisPorte $dossier): static
+    #[Ignore]
+    public function getDossier(): ?BrisPorte
     {
-        $dossier->ajouterDocument($this);
-        $this->dossiers->add($dossier);
-
-        return $this;
+        return $this->dossiers->first();
     }
 
     public function getSize(): ?string
@@ -210,6 +209,11 @@ class Document
         $this->corps = $corps;
 
         return $this;
+    }
+
+    public function estEditable(): bool
+    {
+        return null !== $this->type->getGabarit();
     }
 
     public function valider(Agent $agent): self

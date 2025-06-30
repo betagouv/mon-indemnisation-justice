@@ -92,7 +92,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
   const estTypeFichierOk = (fichier?: File) =>
     fichier && ["application/pdf"].includes(fichier.type);
 
-  // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
+  // Indique si la sauvegarde de la décision est en cours
   const [sauvegardeEnCours, setSauvegardeEnCours]: [
     boolean,
     (mode: boolean) => void,
@@ -140,14 +140,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
 
       if (response.ok) {
         const data = await response.json();
-        if (data.documents.courrier_ministere?.length) {
-          dossier.addDocument(
-            plainToInstance(Document, data.documents.courrier_ministere?.at(0)),
-          );
-        }
-        if (data.etat) {
-          dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-        }
+        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
       }
     } catch (e) {
       console.error(e);

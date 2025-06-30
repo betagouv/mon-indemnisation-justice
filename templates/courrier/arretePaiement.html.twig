@@ -24,8 +24,8 @@
 
     </header>
 
-    {% if dossier.corpsCourrier %}
-        {{ dossier.corpsCourrier|raw }}
+    {% if corps is defined and corps is not null %}
+        {{ corps|raw }}
     {% else %}
         {% include 'courrier/_corps_arretePaiement.html.twig' %}
     {% endif %}
