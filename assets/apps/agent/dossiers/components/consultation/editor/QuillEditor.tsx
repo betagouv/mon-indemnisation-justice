@@ -46,7 +46,16 @@ const QuillEditor = ({
     <ReactQuill
       theme="snow"
       value={value}
-      onChange={onChange}
+      onChange={(
+        value,
+        delta: DeltaStatic,
+        source: EmitterSource,
+        editor: UnprivilegedEditor,
+      ) => {
+        if (source === "user") {
+          onChange?.(value);
+        }
+      }}
       readOnly={readOnly}
     />
   );

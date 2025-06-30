@@ -383,15 +383,19 @@ class BrisPorte
         return $this->documentsParType[$type->value][0] ?? null;
     }
 
+    protected function getOrCreateDocument(DocumentType $type): Document
+    {
+        return $this->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($this);
+    }
+
     public function getOrCreatePropositionIndemnisation(): Document
     {
-        $propositionIndemnisation = $this->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
+        return $this->getOrCreateDocument(DocumentType::TYPE_COURRIER_MINISTERE);
+    }
 
-        if (null === $propositionIndemnisation) {
-            $propositionIndemnisation = (new Document())->setType(DocumentType::TYPE_COURRIER_MINISTERE)->ajouterAuDossier($this);
-        }
-
-        return $propositionIndemnisation;
+    public function getOrCreateArretePaiement(): Document
+    {
+        return $this->getOrCreateDocument(DocumentType::TYPE_ARRETE_PAIEMENT);
     }
 
     /**

@@ -144,7 +144,7 @@ export const DeciderModale = observer(function DeciderActionModale({
   onDecide?: () => void;
 }) {
   // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
-  const [sauvegarderEnCours, setSauvegarderEnCours]: [
+  const [sauvegardeEnCours, setSauvegarderEnCours]: [
     boolean,
     (mode: boolean) => void,
   ] = useState(false);

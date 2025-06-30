@@ -142,10 +142,9 @@ class BrisPorteController extends RequerantController
                 $this->twig->render('courrier/_corps_arretePaiement.html.twig', [
                     'dossier' => $dossier,
                 ])
-            );
+            )->ajouterAuDossier($dossier);
 
-            $arretePaiement = $this->imprimanteCourrier->imprimerArretePaiement($dossier, $arretePaiement);
-            $dossier->ajouterDocument($arretePaiement);
+            $arretePaiement = $this->imprimanteCourrier->imprimerDocument($arretePaiement);
             $this->em->persist($arretePaiement);
         } catch (LoaderError|SyntaxError|RuntimeError $e) {
             // TODO log
