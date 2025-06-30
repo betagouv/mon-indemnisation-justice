@@ -133,6 +133,7 @@ jobs:
           name: Backend test report
           path: test-result-*.xml
           reporter: java-junit
+          fail-on-error: false
 
   test-frontend:
     runs-on: ubuntu-24.04
@@ -164,6 +165,7 @@ jobs:
           name: Frontend test report
           path: test-result-frontend.xml
           reporter: java-junit
+          fail-on-error: false
 
   test-end2end:
     runs-on: ubuntu-24.04
