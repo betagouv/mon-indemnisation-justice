@@ -1,3 +1,4 @@
+import { EditeurDocument } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
 import React, { FormEvent, useState } from "react";
 
 import {
@@ -12,7 +13,6 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { makeAutoObservable } from "mobx";
 import { plainToInstance } from "class-transformer";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor/QuillEditor.tsx";
 
 const _modale = createModal({
   id: "modale-action-confirmation",
@@ -68,10 +68,12 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
   ] = useState(null);
 
   // Corps du courrier
-  const [courrier, setCourrier]: [string | null, (courrier: string) => void] =
-    useState(
-      dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)?.corps,
-    );
+  const [corpsCourrier, setCorpsCourrier]: [
+    string,
+    (corpsCourrier: string) => void,
+  ] = useState(
+    dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)?.corps,
+  );
 
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
@@ -114,41 +116,6 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
         ),
       );
     }
-  };
-
-  const editerCourrier = async (motif?: string) => {
-    setSauvegardeEnCours(true);
-
-    const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/courrier/editer.json`,
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          montantIndemnisation,
-          corpsCourrier: courrier,
-        }),
-      },
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      const courrier = plainToInstance(Document, data.document);
-      console.log(courrier);
-      dossier.viderDocumentParType(DocumentType.TYPE_ARRETE_PAIEMENT);
-      dossier.addDocument(courrier);
-    }
-
-    _modale.close();
-    setSauvegardeEnCours(false);
-    marquerFichierSigne(false);
-    setFichierSigne(null);
-    etat.setDecision(true);
-    // Déclencher le _hook_ onEdite s'il est défini
-    onEdite?.();
   };
 
   const signerCourrier = async (fichier: File) => {
@@ -255,7 +222,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
                     );
 
                     if (dossier.estAccepte()) {
-                      detecterMontantIndemnisation(courrier);
+                      detecterMontantIndemnisation(corpsCourrier);
                     }
                   }}
                   aria-describedby="dossier-decision-acceptation-indemnisation-messages"
@@ -265,6 +232,41 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
                   inputMode="numeric"
                 />
               </div>
+
+              {dossier.estAccepte() &&
+                montantIndemnisationLu &&
+                montantIndemnisation !== montantIndemnisationLu && (
+                  <div className="fr-alert fr-alert--warning">
+                    <h3 className="fr-alert__title">
+                      Attention : risque d'ambigüité sur le montant de
+                      l'indemnisation
+                    </h3>
+                    <p>
+                      Vous indiquez indemniser à hauteur de{" "}
+                      <span className={"fr-text--bold"}>
+                        {montantIndemnisation} €
+                      </span>
+                      , pourtant le courrier mentionne un montant
+                      <i> en chiffres</i> de{" "}
+                      <span className={"fr-text--bold"}>
+                        {montantIndemnisationLu} €
+                      </span>
+                      .
+                    </p>
+
+                    <p>
+                      Puisque la valeur déclarée dans le champs "Montant de
+                      l'indemnisation" sera également mentionnée sur le
+                      formulaire de déclaration d'acceptation, il y a un risque
+                      d'ambigüité pour le requérant.
+                    </p>
+
+                    <p>
+                      Veillez donc à bien accorder les montants dans le courrier
+                      (en chiffres ainsi qu'en toutes lettres).
+                    </p>
+                  </div>
+                )}
 
               {!montantIndemnisation && (
                 <div
@@ -278,53 +280,23 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
             </div>
           )}
 
-          <div className="fr-input-group fr-col-12">
-            <QuillEditor
-              value={courrier}
-              onChange={(value) => {
-                setCourrier(value);
-                if (dossier.estAccepte()) {
-                  detecterMontantIndemnisation(value);
-                }
-              }}
-              readOnly={sauvegardeEnCours}
-            />
-          </div>
-
-          {dossier.estAccepte() &&
-            montantIndemnisationLu &&
-            montantIndemnisation !== montantIndemnisationLu && (
-              <div className="fr-alert fr-alert--warning">
-                <h3 className="fr-alert__title">
-                  Attention : risque d'ambigüité sur le montant de
-                  l'indemnisation
-                </h3>
-                <p>
-                  Vous indiquez indemniser à hauteur de{" "}
-                  <span className={"fr-text--bold"}>
-                    {montantIndemnisation} €
-                  </span>
-                  , pourtant le courrier mentionne un montant
-                  <i> en chiffres</i> de{" "}
-                  <span className={"fr-text--bold"}>
-                    {montantIndemnisationLu} €
-                  </span>
-                  .
-                </p>
-
-                <p>
-                  Puisque la valeur déclarée dans le champs "Montant de
-                  l'indemnisation" sera également mentionnée sur le formulaire
-                  de déclaration d'acceptation, il y a un risque d'ambigüité
-                  pour le requérant.
-                </p>
-
-                <p>
-                  Veillez donc à bien accorder les montants dans le courrier (en
-                  chiffres ainsi qu'en toutes lettres).
-                </p>
-              </div>
+          <EditeurDocument
+            className="fr-input-group fr-col-12"
+            dossier={dossier}
+            document={dossier.getDocumentType(
+              DocumentType.TYPE_COURRIER_MINISTERE,
             )}
+            onChange={(courrier) => dossier.addDocument(courrier)}
+            onEdite={(corps) => {
+              if (dossier.estAccepte()) {
+                setCorpsCourrier(corps);
+                detecterMontantIndemnisation(corps);
+              }
+            }}
+            onImpression={(impressionEnCours) =>
+              setSauvegardeEnCours(impressionEnCours)
+            }
+          />
 
           <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
             <li>
@@ -346,10 +318,10 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
               <button
                 className="fr-btn fr-btn--sm fr-btn--primary"
                 type="button"
-                onClick={() => editerCourrier()}
+                onClick={() => etat.setDecision(true)}
                 disabled={sauvegardeEnCours}
               >
-                Ré-éditer le courrier
+                Passer à la signature
               </button>
             </li>
           </ul>

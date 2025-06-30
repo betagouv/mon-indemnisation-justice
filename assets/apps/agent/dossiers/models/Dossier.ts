@@ -192,7 +192,7 @@ export class DossierDetail extends BaseDossier {
   }
 
   public addDocument(document: Document): void {
-    if (!this.documents.has(document.type.type)) {
+    if (!this.documents.has(document.type.type) || document.type.estUnique) {
       this.documents.set(document.type.type, []);
     }
 

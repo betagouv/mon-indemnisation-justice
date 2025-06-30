@@ -11,12 +11,14 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
   document = null,
   className = null,
   onChange = null,
+  onEdite = null,
   onImpression = null,
 }: {
   dossier: DossierDetail;
   document?: Document;
   className?: string;
   onChange?: (document: Document) => void;
+  onEdite?: (corps: string) => void;
   onImpression?: (impressionEnCours: boolean) => void;
 }) {
   const [modeEdition, setModeEdition] = useState<boolean>(true);
@@ -91,6 +93,7 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
             value={corps}
             onChange={(value) => {
               setCorps(value);
+              onEdite?.(value);
             }}
             readOnly={impressionEnCours}
           />

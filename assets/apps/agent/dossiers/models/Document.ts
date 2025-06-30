@@ -4,6 +4,8 @@ export class DocumentType {
   private constructor(
     public readonly type: string,
     public readonly libelle: string,
+    // Indique s'il n'y a qu'un seul document de ce type par dossier ou non
+    public readonly estUnique: boolean = false,
     // Indique si les documents de ce type sont à transmettre par le requérant
     public readonly estRequerant: boolean = true,
   ) {}
@@ -38,6 +40,7 @@ export class DocumentType {
   public static readonly TYPE_COURRIER_MINISTERE = new DocumentType(
     "courrier_ministere",
     "Courrier de décision signé du Ministere",
+    true,
   );
 
   public static readonly TYPE_COURRIER_REQUERANT = new DocumentType(
