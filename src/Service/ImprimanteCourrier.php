@@ -67,7 +67,8 @@ class ImprimanteCourrier
 
             $document->setFilename($destination)
                 ->setSize(filesize($fichierPdf))
-                ->setMime('application/pdf');
+                ->setMime('application/pdf')
+                ->setOriginalFilename($document->getType()->nommerFichier($document->getDossier()));
 
             return $document;
         } catch (\Exception $e) {

@@ -59,8 +59,10 @@ export class DocumentType {
 
 export class Document {
   public readonly id: number;
-  public readonly mime: string;
   public readonly originalFilename: string;
+  public readonly mime: string;
+  public readonly size?: number;
+
   public corps?: string;
   public fileHash: string;
   @Transform(
@@ -72,6 +74,42 @@ export class Document {
 
   get url(): string {
     return `/agent/document/${this.id}/${this.fileHash}`;
+  }
+
+  get typeFichier(): string {
+    switch (this.mime) {
+      case "application/pdf":
+        return "pdf";
+      case "image/jpeg":
+        return "jpg";
+      case "image/png":
+        return "png";
+      case "image/gif":
+        return "gif";
+
+      default:
+        return "";
+    }
+  }
+
+  get tailleFichier(): string {
+    if (!this.size) {
+      return "";
+    }
+
+    if (this.size < 1024) {
+      return `${this.size} o`;
+    } else {
+      if (this.size < 1024 * 1024) {
+        return `${this.size % 1024} ko`;
+      } else {
+        return `${this.size % (1024 * 1024)} mo`;
+      }
+    }
+  }
+
+  get infoFichier(): string {
+    return `${this.typeFichier?.toUpperCase()}${this.size ? " - " + this.tailleFichier : ""}`;
   }
 
   public isPDF(): boolean {

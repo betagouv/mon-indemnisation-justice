@@ -1,7 +1,6 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
 import { plainToInstance } from "class-transformer";
-import React, { createContext, useContext, FormEvent, useState } from "react";
+import React, { FormEvent, useState } from "react";
 
 import {
   Agent,
@@ -13,7 +12,10 @@ import {
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { observer } from "mobx-react-lite";
 import { makeAutoObservable, makeObservable } from "mobx";
-import { EditeurDocument } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
+import {
+  EditeurDocument,
+  EditeurMode,
+} from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 
 const _modale = createModal({
@@ -167,6 +169,9 @@ export const DeciderModale = observer(function DeciderActionModale({
         : "autre",
   );
 
+  // Le mode en cours sur l'éditeur de document
+  const [editeurMode, setEditeurMode] = useState<EditeurMode>("edition");
+
   const annuler = () => {
     _modale.close();
     etatDecision.annuler();
@@ -219,7 +224,14 @@ export const DeciderModale = observer(function DeciderActionModale({
   return estEnAttenteDecision({ dossier, agent }) && dossier.enInstruction() ? (
     <_modale.Component
       title={
-        etatDecision ? "Accepter l'indemnisation" : "Rejeter l'indemnisation"
+        etatDecision.decision
+          ? " Accepter l'indemnisation"
+          : " Rejeter l'indemnisation"
+      }
+      iconId={
+        etatDecision.decision
+          ? "fr-icon-checkbox-circle-line"
+          : "fr-icon-close-circle-line"
       }
       size="large"
     >
@@ -263,8 +275,10 @@ export const DeciderModale = observer(function DeciderActionModale({
               },
               {
                 disabled: !montantIndemnisation,
-                onClick: async () =>
-                  await etatDecision.rejeter(dossier, motifRejet),
+                onClick: async () => {
+                  await etatDecision.rejeter(dossier, motifRejet);
+                  setEditeurMode("edition");
+                },
                 children: "Éditer le courrier",
               },
             ]}
@@ -326,8 +340,11 @@ export const DeciderModale = observer(function DeciderActionModale({
               },
               {
                 disabled: !montantIndemnisation,
-                onClick: async () =>
-                  etatDecision.accepter(dossier, montantIndemnisation),
+                iconId: "fr-icon-edit-box-line",
+                onClick: async () => {
+                  await etatDecision.accepter(dossier, montantIndemnisation);
+                  setEditeurMode("edition");
+                },
                 children: "Éditer le courrier",
               },
             ]}
@@ -339,9 +356,9 @@ export const DeciderModale = observer(function DeciderActionModale({
         <>
           <EditeurDocument
             className="fr-my-2w"
-            dossier={dossier}
             document={etatDecision.courrier}
-            onChange={(document: Document) =>
+            mode={editeurMode}
+            onImprime={(document: Document) =>
               etatDecision.setCourrier(document)
             }
             onImpression={(impressionEnCours) =>
@@ -362,9 +379,12 @@ export const DeciderModale = observer(function DeciderActionModale({
               },
               {
                 children: etatDecision.decision
-                  ? "Changer le montant d'indemnisation"
+                  ? "Changer le montant"
                   : "Changer le motif de refus",
                 priority: "secondary",
+                iconId: etatDecision.decision
+                  ? "fr-icon-money-euro-circle-line"
+                  : "fr-icon-chat-delete-line",
                 onClick: () => {
                   if (etatDecision.decision) {
                     etatDecision.etape = "choix_montant";
@@ -373,21 +393,40 @@ export const DeciderModale = observer(function DeciderActionModale({
                   }
                 },
               },
-              {
-                disabled: !montantIndemnisation || !etatDecision.courrier,
-                iconId: "fr-icon-send-plane-line",
-                onClick: async () =>
-                  deciderDossier({
-                    indemnisation: etatDecision.decision,
-                    ...(etatDecision.decision
-                      ? { montant: etatDecision.montantIndemnisation }
-                      : {}),
-                    ...(etatDecision.decision
-                      ? {}
-                      : { motif: etatDecision.motifRefus }),
-                  }),
-                children: "Valider la décision",
-              },
+              ...(editeurMode === "edition"
+                ? ([
+                    {
+                      iconId: "fr-icon-eye-line",
+                      children: "Visualiser",
+                      priority: "secondary",
+                      disabled: sauvegardeEnCours,
+                      onClick: () => setEditeurMode("visualisation"),
+                    },
+                  ] as ButtonProps[])
+                : ([
+                    {
+                      iconId: "fr-icon-edit-box-line",
+                      children: "Éditer",
+                      disabled: sauvegardeEnCours,
+                      priority: "secondary",
+                      onClick: () => setEditeurMode("edition"),
+                    },
+                    {
+                      disabled: !montantIndemnisation || !etatDecision.courrier,
+                      iconId: "fr-icon-send-plane-line",
+                      onClick: async () =>
+                        deciderDossier({
+                          indemnisation: etatDecision.decision,
+                          ...(etatDecision.decision
+                            ? { montant: etatDecision.montantIndemnisation }
+                            : {}),
+                          ...(etatDecision.decision
+                            ? {}
+                            : { motif: etatDecision.motifRefus }),
+                        }),
+                      children: "Valider la décision",
+                    },
+                  ] as ButtonProps[])),
             ]}
           />
         </>

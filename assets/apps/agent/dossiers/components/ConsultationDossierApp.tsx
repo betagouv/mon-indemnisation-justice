@@ -31,11 +31,6 @@ export const ConsultationDossierApp = observer(
       window.location.hash?.replace(/^#/, "") || "infos",
     );
 
-    const courrier = useMemo<Document>(
-      () => dossier.getCourrierAJour(),
-      [dossier.getCourrierAJour()?.url],
-    );
-
     const changerOnglet = (tab) => {
       selectTab(tab);
       history.replaceState({}, "", `#${tab}`);
@@ -730,10 +725,10 @@ export const ConsultationDossierApp = observer(
                     <section>
                       <h3>Courrier</h3>
 
-                      {courrier ? (
+                      {dossier.getCourrierAJour() ? (
                         <PieceJointe
                           className="fr-col-12"
-                          pieceJointe={courrier}
+                          pieceJointe={dossier.getCourrierAJour()}
                         />
                       ) : (
                         <p>Pas encore de courrier</p>

@@ -375,7 +375,7 @@ class DossierController extends AgentController
             ->setFilename($filename)
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
-            ->setMime($file->getMimeType());
+            ->setMime($file->getClientMimeType());
 
         $this->em->persist($document);
         $this->em->flush();

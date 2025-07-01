@@ -34,12 +34,7 @@ const QuillEditor = ({
   readOnly = false,
 }: {
   value: string;
-  onChange?(
-    value: string,
-    delta: DeltaStatic,
-    source: EmitterSource,
-    editor: UnprivilegedEditor,
-  ): void;
+  onChange?(value: string): void;
   readOnly?: boolean;
 }) => {
   return (
