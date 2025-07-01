@@ -59,4 +59,17 @@ enum DocumentType: string
             default => null,
         };
     }
+
+    /**
+     * Retourne le chemin vers le gabarit (i.e. "template") twig à utiliser pour la génération du document.
+     */
+    public function nommerFichier(BrisPorte $dossier): ?string
+    {
+        return match ($this) {
+            self::TYPE_COURRIER_MINISTERE => "Lettre décision dossier {$dossier->getReference()}.pdf",
+            self::TYPE_ARRETE_PAIEMENT => "Arrêté de paiement dossier {$dossier->getReference()}.pdf",
+
+            default => null,
+        };
+    }
 }

@@ -1,4 +1,10 @@
-import { EditeurDocument } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
+import {
+  EditeurDocument,
+  EditeurMode,
+} from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Download from "@codegouvfr/react-dsfr/Download";
 import React, { FormEvent, useState } from "react";
 
 import {
@@ -13,6 +19,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { makeAutoObservable } from "mobx";
 import { plainToInstance } from "class-transformer";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { TelechargerPieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
 
 const _modale = createModal({
   id: "modale-action-confirmation",
@@ -97,6 +104,9 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
     boolean,
     (mode: boolean) => void,
   ] = useState(false);
+
+  // Le mode en cours sur l'éditeur de document
+  const [editeurMode, setEditeurMode] = useState<EditeurMode>("edition");
 
   // Actions
 
@@ -185,7 +195,16 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
 
   return estEnAttenteConfirmation({ dossier, agent }) ? (
     <_modale.Component
-      title="Éditer la proposition d'indemnisation"
+      title={
+        dossier.estAccepte()
+          ? " Confirmer l'indemnisation"
+          : " Confirmer le rejet"
+      }
+      iconId={
+        dossier.estAccepte()
+          ? "fr-icon-checkbox-circle-line"
+          : "fr-icon-close-circle-line"
+      }
       size="large"
     >
       {!etat.decision && (
@@ -213,6 +232,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
                         ? parseFloat(value?.replace(",", "."))
                         : null,
                     );
+                    setEditeurMode("edition");
 
                     if (dossier.estAccepte()) {
                       detecterMontantIndemnisation(corpsCourrier);
@@ -229,36 +249,40 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
               {dossier.estAccepte() &&
                 montantIndemnisationLu &&
                 montantIndemnisation !== montantIndemnisationLu && (
-                  <div className="fr-alert fr-alert--warning">
-                    <h3 className="fr-alert__title">
-                      Attention : risque d'ambigüité sur le montant de
-                      l'indemnisation
-                    </h3>
-                    <p>
-                      Vous indiquez indemniser à hauteur de{" "}
-                      <span className={"fr-text--bold"}>
-                        {montantIndemnisation} €
-                      </span>
-                      , pourtant le courrier mentionne un montant
-                      <i> en chiffres</i> de{" "}
-                      <span className={"fr-text--bold"}>
-                        {montantIndemnisationLu} €
-                      </span>
-                      .
-                    </p>
-
-                    <p>
-                      Puisque la valeur déclarée dans le champs "Montant de
-                      l'indemnisation" sera également mentionnée sur le
-                      formulaire de déclaration d'acceptation, il y a un risque
-                      d'ambigüité pour le requérant.
-                    </p>
-
-                    <p>
-                      Veillez donc à bien accorder les montants dans le courrier
-                      (en chiffres ainsi qu'en toutes lettres).
-                    </p>
-                  </div>
+                  <Alert
+                    className="fr-my-2w"
+                    small={false}
+                    closable={false}
+                    severity="warning"
+                    title="Attention : risque d'ambigüité sur le montant de
+                      l'indemnisation"
+                    description={
+                      <>
+                        <p>
+                          Vous indiquez indemniser à hauteur de{" "}
+                          <span className={"fr-text--bold"}>
+                            {montantIndemnisation} €
+                          </span>
+                          , pourtant le courrier mentionne un montant
+                          <i> en chiffres</i> de{" "}
+                          <span className={"fr-text--bold"}>
+                            {montantIndemnisationLu} €
+                          </span>
+                          .
+                        </p>
+                        <p>
+                          Puisque la valeur déclarée dans le champs "Montant de
+                          l'indemnisation" sera également mentionnée sur le
+                          formulaire de déclaration d'acceptation, il y a un
+                          risque d'ambigüité pour le requérant.
+                        </p>
+                        <p>
+                          Veillez donc à bien accorder les montants dans le
+                          courrier (en chiffres ainsi qu'en toutes lettres).
+                        </p>
+                      </>
+                    }
+                  />
                 )}
 
               {!montantIndemnisation && (
@@ -275,70 +299,75 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
 
           <EditeurDocument
             className="fr-input-group fr-col-12"
-            dossier={dossier}
+            mode={editeurMode}
             document={dossier.getDocumentType(
               DocumentType.TYPE_COURRIER_MINISTERE,
             )}
-            onChange={(courrier) => dossier.addDocument(courrier)}
             onEdite={(corps) => {
               if (dossier.estAccepte()) {
                 setCorpsCourrier(corps);
                 detecterMontantIndemnisation(corps);
               }
             }}
+            onImprime={(courrier) => dossier.addDocument(courrier)}
             onImpression={(impressionEnCours) =>
               setSauvegardeEnCours(impressionEnCours)
             }
           />
 
-          <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-            <li>
-              <button
-                className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                type="button"
-                onClick={() => _modale.close()}
-                disabled={sauvegardeEnCours}
-              >
-                {sauvegardeEnCours ? (
+          <ButtonsGroup
+            className="fr-mt-3w"
+            alignment="right"
+            inlineLayoutWhen="always"
+            buttonsIconPosition="right"
+            buttons={[
+              {
+                priority: "tertiary no outline",
+                onClick: () => _modale.close(),
+                disabled: sauvegardeEnCours,
+                children: sauvegardeEnCours ? (
                   <i>Sauvegarde en cours ...</i>
                 ) : (
-                  <>Annuler</>
-                )}
-              </button>
-            </li>
-
-            <li>
-              <button
-                className="fr-btn fr-btn--sm fr-btn--primary"
-                type="button"
-                onClick={() => etat.setDecision(true)}
-                disabled={sauvegardeEnCours}
-              >
-                Passer à la signature
-              </button>
-            </li>
-          </ul>
+                  "Annuler"
+                ),
+              },
+              ...(editeurMode === "edition"
+                ? ([
+                    {
+                      iconId: "fr-icon-eye-line",
+                      children: "Visualiser",
+                      priority: "secondary",
+                      disabled: sauvegardeEnCours,
+                      onClick: () => setEditeurMode("visualisation"),
+                    },
+                  ] as ButtonProps[])
+                : ([
+                    {
+                      iconId: "fr-icon-edit-box-line",
+                      children: "Éditer",
+                      disabled: sauvegardeEnCours,
+                      priority: "secondary",
+                      onClick: () => setEditeurMode("edition"),
+                    },
+                    {
+                      iconId: "fr-icon-edit-line",
+                      onClick: () => etat.setDecision(true),
+                      children: "Passer à la signature",
+                    },
+                  ] as ButtonProps[])),
+            ]}
+          />
         </>
       )}
       {
         // Téléversement, pour signature, du courrier
         etat.decision && !estFichierSigne && (
-          <div className="fr-modal__content">
-            <h1 id="modale-dossier-decision-titre" className="fr-modal__title">
-              <span className="fr-icon-edit-box-line fr-icon--lg fr-mr-1w"></span>
-              Signer le courrier
-            </h1>
-
-            <div className="fr-input-group fr-mb-3w">
-              <a
-                className="fr-link fr-link--download"
-                download={`Lettre décision dossier ${dossier.reference}`}
-                href={`${dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)?.url}?download`}
-              >
-                Télécharger le courrier
-                <span className="fr-link__detail">PDF</span>
-              </a>
-            </div>
+          <>
+            <TelechargerPieceJointe
+              pieceJointe={dossier.getDocumentType(
+                DocumentType.TYPE_COURRIER_MINISTERE,
+              )}
+            />
 
             <div className="fr-upload-group">
               <label className="fr-label" htmlFor="file-upload">
@@ -367,105 +396,100 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
                 }}
               />
             </div>
-            <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                  type="button"
-                  onClick={() => _modale.close()}
-                  disabled={sauvegardeEnCours}
-                >
-                  {sauvegardeEnCours ? (
+
+            <ButtonsGroup
+              className="fr-mt-3w"
+              alignment="right"
+              inlineLayoutWhen="always"
+              buttonsIconPosition="right"
+              buttons={[
+                {
+                  priority: "tertiary no outline",
+                  onClick: () => _modale.close(),
+                  disabled: sauvegardeEnCours,
+                  children: sauvegardeEnCours ? (
                     <i>Sauvegarde en cours ...</i>
                   ) : (
-                    <>Annuler</>
-                  )}
-                </button>
-              </li>
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--secondary"
-                  type="button"
-                  onClick={() => etat.setDecision(false)}
-                  disabled={sauvegardeEnCours}
-                >
-                  Éditer le courrier
-                </button>
-              </li>
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--primary"
-                  type="button"
-                  disabled={
+                    "Annuler"
+                  ),
+                },
+                {
+                  priority: "secondary",
+                  onClick: () => etat.setDecision(false),
+                  disabled: sauvegardeEnCours,
+                  iconId: "fr-icon-edit-box-line",
+                  children: "Éditer le courrier",
+                },
+                {
+                  disabled:
                     !fichierSigne ||
                     !estTypeFichierOk(fichierSigne) ||
                     !estTailleFichierOk(fichierSigne) ||
-                    sauvegardeEnCours
-                  }
-                  onClick={() => signerCourrier(fichierSigne)}
-                >
-                  Téléverser et envoyer au requérant
-                </button>
-              </li>
-            </ul>
-          </div>
+                    sauvegardeEnCours,
+                  onClick: () => signerCourrier(fichierSigne),
+                  iconId: "fr-icon-send-plane-line",
+                  children: "Téléverser et envoyer au requérant",
+                },
+              ]}
+            />
+          </>
         )
       }
       {
         // Envoi au requérant
         etat.decision && estFichierSigne && (
-          <div className="fr-modal__content">
-            <h1 id="modale-dossier-decision-titre" className="fr-modal__title">
-              <span className="fr-icon-edit-box-line fr-icon--lg fr-mr-1w"></span>
-              Envoyer le courrier au requérant
-            </h1>
+          <>
+            <Alert
+              small={false}
+              closable={false}
+              severity="info"
+              title="Envoi imminent"
+              description={
+                <>
+                  <p>
+                    Vous vous apprêtez à faire part de votre décision au
+                    requérant via l'envoi du courrier dûment signé.
+                  </p>
+                  <p>
+                    Cette action est définitive: une fois le courrier transmis,
+                    vous n'aurez plus la possibilité d'éditer votre réponse.
+                  </p>
+                  <p>
+                    Aussi,{" "}
+                    <span className="fr-text--bold">
+                      veillez à bien relire le document
+                    </span>{" "}
+                    afin de vous assurer que tout est conforme.
+                  </p>
+                </>
+              }
+            />
 
-            <div className="fr-alert fr-alert--info">
-              <h3 className="fr-alert__title">Envoi imminent</h3>
-              <p>
-                Vous vous apprêtez à faire part de votre décision au requérant
-                via l'envoi du courrier dûment signé.
-              </p>
-              <p>
-                Cette action est définitive: une fois le courrier transmis, vous
-                n'aurez plus la possibilité d'éditer votre réponse.
-              </p>
-              <p>
-                Aussi,{" "}
-                <span className="fr-text--bold">
-                  veillez à bien relire le document
-                </span>{" "}
-                afin de vous assurer que tout est conforme.
-              </p>
-            </div>
-
-            <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                  type="button"
-                  onClick={() => _modale.close()}
-                  disabled={sauvegardeEnCours}
-                >
-                  {sauvegardeEnCours ? (
+            <ButtonsGroup
+              className="fr-mt-3w"
+              alignment="right"
+              inlineLayoutWhen="always"
+              buttonsIconPosition="right"
+              buttons={[
+                {
+                  priority: "tertiary no outline",
+                  children: sauvegardeEnCours ? (
                     <i>Sauvegarde en cours ...</i>
                   ) : (
-                    <>Annuler</>
-                  )}
-                </button>
-              </li>
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--primary"
-                  type="button"
-                  disabled={sauvegardeEnCours}
-                  onClick={() => envoyerAuRequerant()}
-                >
-                  Envoyer au requérant
-                </button>
-              </li>
-            </ul>
-          </div>
+                    "Annuler"
+                  ),
+                  onClick: () => _modale.close(),
+                  disabled: sauvegardeEnCours,
+                },
+                {
+                  disabled: sauvegardeEnCours,
+                  onClick: () => envoyerAuRequerant(),
+                  priority: "primary",
+                  children: "Envoyer au requérant",
+                },
+              ]}
+            />
+          </>
         )
       }
     </_modale.Component>

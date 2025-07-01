@@ -13,7 +13,11 @@ import {
 } from "@/apps/agent/dossiers/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { EditeurDocument } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
+import {
+  EditeurDocument,
+  EditeurMode,
+} from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
+import { TelechargerPieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 
 const _modale = createModal({
   id: "modale-action-generer-arrete-paiement",
@@ -60,7 +64,11 @@ export const GenererArretePaiementModale = observer(
       (mode: boolean) => void,
     ] = useState(false);
 
+    // Le mode en cours sur l'éditeur de document
+    const [editeurMode, setEditeurMode] = useState<EditeurMode>("edition");
+
     const envoyer = useCallback(async () => {
+      setSauvegardeEnCours(true);
       const response = await fetch(
         `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/signer.json`,
         {
@@ -81,6 +89,7 @@ export const GenererArretePaiementModale = observer(
         const data = await response.json();
         dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
       }
+      setSauvegardeEnCours(false);
     }, [dossier.id, fichierSigne]);
 
     return estEnAttenteEditionArretePaiement({ dossier, agent }) ? (
@@ -91,17 +100,17 @@ export const GenererArretePaiementModale = observer(
             : " Signer l'arrêté de paiement"
         }
         size="large"
-        iconId="fr-icon-search-line"
+        iconId="fr-icon-printer-line"
       >
         {estEdition ? (
           <>
             <EditeurDocument
               className="fr-my-2w"
-              dossier={dossier}
+              mode={editeurMode}
               document={dossier
                 .getDocumentsType(DocumentType.TYPE_ARRETE_PAIEMENT)
                 .at(0)}
-              onChange={(document: Document) => dossier.addDocument(document)}
+              onImprime={(document: Document) => dossier.addDocument(document)}
             />
 
             <ButtonsGroup
@@ -113,27 +122,42 @@ export const GenererArretePaiementModale = observer(
                   children: "Annuler",
                   priority: "tertiary no outline",
                 },
-                {
-                  children: "Signer pour envoyer",
-                  iconId: "fr-icon-send-plane-line",
-                  onClick: () => setEdition(false),
-                  priority: "primary",
-                },
+                ...(editeurMode === "edition"
+                  ? ([
+                      {
+                        iconId: "fr-icon-eye-line",
+                        children: "Visualiser",
+                        priority: "secondary",
+                        disabled: sauvegardeEnCours,
+                        onClick: () => setEditeurMode("visualisation"),
+                      },
+                    ] as ButtonProps[])
+                  : ([
+                      {
+                        iconId: "fr-icon-edit-box-line",
+                        children: "Éditer",
+                        disabled: sauvegardeEnCours,
+                        priority: "secondary",
+                        onClick: () => setEditeurMode("edition"),
+                      },
+                      {
+                        children: "Signer et envoyer",
+                        priority: "secondary",
+                        disabled: sauvegardeEnCours,
+                        iconId: "fr-icon-send-plane-line",
+                        onClick: () => setEdition(false),
+                      },
+                    ] as ButtonProps[])),
               ]}
             />
           </>
         ) : (
           <>
-            <div className="fr-input-group fr-mb-3w">
-              <a
-                className="fr-link fr-link--download"
-                download={`Lettre décision dossier ${dossier.reference}`}
-                href={`${dossier.getDocumentType(DocumentType.TYPE_ARRETE_PAIEMENT)?.url}?download`}
-              >
-                Télécharger le courrier
-                <span className="fr-link__detail">PDF</span>
-              </a>
-            </div>
+            <TelechargerPieceJointe
+              pieceJointe={dossier.getDocumentType(
+                DocumentType.TYPE_ARRETE_PAIEMENT,
+              )}
+            />
 
             <div className="fr-upload-group">
               <label className="fr-label" htmlFor="file-upload">

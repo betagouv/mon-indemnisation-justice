@@ -7,21 +7,27 @@ import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piece
 import { plainToInstance } from "class-transformer";
 import { DeltaStatic, EmitterSource } from "react-quill-new";
 
+export type EditeurMode = "edition" | "visualisation";
+
 export const EditeurDocument = observer(function EditeurDocumentComponent({
-  dossier,
   document,
   className = null,
   lectureSeule = false,
-  onChange = null,
+  // Mode "controlled" : permet au composant parent de prendre le contrôle sur le mode en cours (édition ou visualisation)
+  mode = null,
+  // Callback appelé lorsque le corps du document a été édité par l'utilisateur
   onEdite = null,
+  // Callback appelé lorsque le document sors de l'impression (i.e. génération d'un nouveau fichier PDF avec le corps mis à jour)
+  onImprime = null,
+  // Callback appelé avant / après l'impression
   onImpression = null,
 }: {
-  dossier: DossierDetail;
   document?: Document;
   className?: string;
   lectureSeule?: boolean;
-  onChange?: (document: Document) => void;
+  mode?: EditeurMode;
   onEdite?: (corps: string) => void;
+  onImprime?: (document: Document) => void;
   onImpression?: (impressionEnCours: boolean) => void;
 }) {
   const [modeEdition, setModeEdition] = useState<boolean>(true);
@@ -48,7 +54,7 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
       const data = await response.json();
 
       const document = plainToInstance(Document, data);
-      onChange?.(document);
+      onImprime?.(document);
     }
 
     setImpressionEnCours(false);
@@ -56,8 +62,15 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
     onImpression?.(impressionEnCours);
   }, [document.id, corps]);
 
+  // Mode "controlled" : lorsque l'on bascule en mode visualisation et que le
+  // document a été édité, alors on automatise l'impression
+  useEffect(() => {
+    if (mode === "visualisation" && modificationsEnAttente) {
+      imprimer();
+    }
+  }, [mode]);
+
   const visualiser = async () => {
-    console.log(modificationsEnAttente);
     if (modificationsEnAttente) {
       await imprimer();
     }
@@ -66,44 +79,54 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
 
   return (
     <div className={className}>
-      <div className="fr-col-12 fr-mb-2w">
-        <ButtonsGroup
-          inlineLayoutWhen="always"
-          alignment="right"
-          buttonsIconPosition="right"
-          buttons={[
-            modeEdition
-              ? {
-                  children: "Visualiser",
-                  priority: "secondary",
-                  iconId:
-                    corps !== document.corps
-                      ? "fr-icon-printer-line"
-                      : "fr-icon-eye-line",
-                  disabled: impressionEnCours,
-                  onClick: async () => visualiser(),
-                }
-              : {
-                  children: "Éditer",
-                  priority: "secondary",
-                  disabled: impressionEnCours,
-                  iconId: "fr-icon-pencil-line",
-                  onClick: () => {
-                    setModeEdition(true);
+      {null === mode && (
+        <div className="fr-col-12 fr-mb-2w">
+          <ButtonsGroup
+            inlineLayoutWhen="always"
+            alignment="right"
+            buttonsIconPosition="right"
+            buttons={[
+              modeEdition
+                ? {
+                    children: "Visualiser",
+                    priority: "secondary",
+                    iconId:
+                      corps !== document.corps
+                        ? "fr-icon-printer-line"
+                        : "fr-icon-eye-line",
+                    disabled: impressionEnCours,
+                    onClick: async () => visualiser(),
+                  }
+                : {
+                    children: "Éditer",
+                    priority: "secondary",
+                    disabled: impressionEnCours,
+                    iconId: "fr-icon-pencil-line",
+                    onClick: () => {
+                      setModeEdition(true);
+                    },
                   },
-                },
-          ]}
-        />
-      </div>
+            ]}
+          />
+        </div>
+      )}
       <div className="fr-col-12">
-        {modeEdition ? (
+        {(null !== mode ? mode === "edition" : modeEdition === true) && (
           <QuillEditor
             value={corps}
             onChange={(value) => modifier(value)}
             readOnly={impressionEnCours || lectureSeule}
           />
-        ) : (
-          <PieceJointe pieceJointe={document} />
+        )}
+
+        {mode === "visualisation" && (
+          <>
+            {impressionEnCours ? (
+              <p>Impression en cours...</p>
+            ) : (
+              <PieceJointe pieceJointe={document} />
+            )}
+          </>
         )}
       </div>
     </div>
