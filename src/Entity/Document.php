@@ -164,6 +164,23 @@ class Document
         return $this;
     }
 
+    public function getDateAjout(): \DateTimeInterface
+    {
+        return $this->dateAjout;
+    }
+
+    public function estAjoutRequerant(): ?bool
+    {
+        return $this->estAjoutRequerant;
+    }
+
+    public function setAjoutRequerant(?bool $estAjoutRequerant): static
+    {
+        $this->estAjoutRequerant = $estAjoutRequerant;
+
+        return $this;
+    }
+
     public function ajouterAuDossier(BrisPorte $dossier): static
     {
         $this->dossiers->add($dossier);

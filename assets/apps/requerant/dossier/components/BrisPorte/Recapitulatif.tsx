@@ -14,9 +14,9 @@ const Recapitulatif = ({
   const dossier = useContext(DossierContext);
 
   return (
-    <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
+    <div className="fr-grid-row fr-mb-4w">
       <div className="fr-col-lg-6 fr-col-12">
-        <section className="pr-form-section fr-p-4w">
+        <section className="pr-form-section">
           {dossier.requerant.isPersonneMorale && (
             <>
               <h3>Identité de la société</h3>
@@ -76,7 +76,7 @@ const Recapitulatif = ({
         </section>
       </div>
       <div className="fr-col-12">
-        <section className="pr-form-section fr-p-4w">
+        <section className="pr-form-section fr-py-4w">
           <h3>Bris de porte</h3>
           <div className="fr-mb-2w">
             <label>Date de l'opération de police judiciaire</label> :{" "}
@@ -117,7 +117,7 @@ const Recapitulatif = ({
         </section>
       </div>
       <div className="fr-col-12">
-        <section className="pr-form-section fr-px-4w">
+        <section className="pr-form-section fr-py-4w">
           <h3>Documents à joindre obligatoirement à votre demande</h3>
 
           <Document

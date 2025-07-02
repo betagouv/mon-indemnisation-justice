@@ -13,9 +13,9 @@ const BrisPorte = () => {
   const patchDossier = useContext(PatchDossierContext);
 
   return (
-    <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
+    <div className="fr-grid-row fr-mb-3w">
       <div className="fr-col-12">
-        <section className="pr-form-section fr-p-4w">
+        <section className="pr-form-section">
           <h3>Informations sur le bris de porte</h3>
           <div className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-lg-4 fr-col-12">

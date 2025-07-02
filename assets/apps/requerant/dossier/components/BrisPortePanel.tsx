@@ -71,11 +71,12 @@ const BrisPortePanel = function () {
         </p>
       )}
       {step === 0 && (
-        <section className="pr-case_form fr-mb-4w">
+        <section className="pr-case_form">
           <User />
           <ButtonsGroup
             inlineLayoutWhen="always"
             alignment="right"
+            buttonsIconPosition="right"
             buttons={[
               {
                 children: "Valider et passer à l'étape suivante",
@@ -88,27 +89,29 @@ const BrisPortePanel = function () {
       {step === 1 && (
         <>
           <BrisPorte />
-          <div className="fr-col-12">
-            <ul className="fr-btns-group fr-btns-group--inline-sm">
-              <li>
-                <Button onClick={incrementStep}>
-                  Valider et passer à l'étape suivante
-                </Button>
-              </li>
-              <li>
-                <Button onClick={decrementStep} priority="secondary">
-                  Revenir à l'étape précédente
-                </Button>
-              </li>
-            </ul>
-          </div>
+          <ButtonsGroup
+            inlineLayoutWhen="always"
+            alignment="right"
+            buttonsIconPosition="right"
+            buttons={[
+              {
+                priority: "secondary",
+                children: "Revenir à l'étape précédente",
+                onClick: () => decrementStep(),
+              },
+              {
+                children: "Valider et passer à l'étape suivante",
+                onClick: () => incrementStep(),
+              },
+            ]}
+          />
         </>
       )}
       {step === 2 && (
         <>
-          <div className="fr-grid-row fr-grid-row--gutters fr-mb-4w">
+          <div className="fr-grid-row fr-mb-4w">
             <div className="fr-col-12">
-              <section className="pr-form-section">
+              <section className="pr-fo rm-section">
                 <Document
                   documents={dossier.documents.attestation_information}
                   libelle="Attestation complétée par les forces de l'ordre"
@@ -390,20 +393,22 @@ const BrisPortePanel = function () {
                   }
                 />
               </section>
-            </div>
-            <div className="fr-col-12">
-              <ul className="fr-btns-group fr-btns-group--inline-sm">
-                <li>
-                  <Button onClick={incrementStep}>
-                    Valider et passer à l'étape suivante
-                  </Button>
-                </li>
-                <li>
-                  <Button onClick={decrementStep} priority="secondary">
-                    Revenir à l'étape précédente
-                  </Button>
-                </li>
-              </ul>
+              <ButtonsGroup
+                inlineLayoutWhen="always"
+                alignment="right"
+                buttonsIconPosition="right"
+                buttons={[
+                  {
+                    priority: "secondary",
+                    children: "Revenir à l'étape précédente",
+                    onClick: () => decrementStep(),
+                  },
+                  {
+                    children: "Valider et passer à l'étape suivante",
+                    onClick: () => incrementStep(),
+                  },
+                ]}
+              />
             </div>
           </div>
         </>
@@ -414,27 +419,26 @@ const BrisPortePanel = function () {
             gotoFirstSection={gotoFirstSection}
             gotoSecondSection={gotoSecondSection}
           />
-          <div className="fr-col-12">
-            <ul className="fr-btns-group fr-btns-group--inline-sm">
-              <li>
-                <Button
-                  linkProps={{
-                    // Route: app_requerant_update_statut_to_constitue
-                    href: `/requerant/bris-de-porte/passage-a-l-etat-constitue/${dossier.id}`,
-                  }}
-                >
-                  {dossier.dateDeclaration
-                    ? "Mettre à jour mon dossier"
-                    : "Je déclare mon bris de porte"}
-                </Button>
-              </li>
-              <li>
-                <Button onClick={decrementStep} priority="secondary">
-                  Revenir à l'étape précédente
-                </Button>
-              </li>
-            </ul>
-          </div>
+          <ButtonsGroup
+            inlineLayoutWhen="always"
+            alignment="right"
+            buttonsIconPosition="right"
+            buttons={[
+              {
+                priority: "secondary",
+                children: "Revenir à l'étape précédente",
+                onClick: () => decrementStep(),
+              },
+              {
+                children: dossier.dateDeclaration
+                  ? "Mettre à jour mon dossier"
+                  : "Je déclare mon bris de porte",
+                linkProps: {
+                  href: `/requerant/bris-de-porte/passage-a-l-etat-constitue/${dossier.id}`,
+                },
+              },
+            ]}
+          />
         </>
       )}
     </>

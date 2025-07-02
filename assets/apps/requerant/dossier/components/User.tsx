@@ -15,9 +15,9 @@ const User = function () {
 
   return (
     <>
-      <div className="fr-grid-row">
+      <div className="fr-grid-row fr-mb-3w">
         <div className="fr-col-12">
-          <div className="pr-case_bris-de-porte_is-personne-morale fr-pt-2w">
+          <div className="pr-case_bris-de-porte_is-personne-morale">
             <RadioButtons
               orientation="horizontal"
               legend="Votre demande d'indemnisation concerne une personne morale (société, entreprise, association, fondation etc.)"

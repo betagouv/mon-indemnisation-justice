@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { randomId } from "@/apps/requerant/dossier/services/Random.ts";
 
 export const Uploader = ({
@@ -12,11 +12,11 @@ export const Uploader = ({
   onUploaded: (document: any) => void;
   type: string;
 }) => {
-  const MAX_SIZE = 2048 * 1000 * 8;
+  const MAX_SIZE = 5 * 1024 * 1024;
   const [erreur, setErreur]: [string | null, (erreur: string | null) => void] =
     useState(null);
 
-  const id = useRef(randomId());
+  const id = useMemo<string>(() => randomId(), []);
 
   const handleFileInput = (ev) => {
     setErreur("");
@@ -32,7 +32,7 @@ export const Uploader = ({
     ) {
       setErreur("Type de fichier nom accepté");
     } else if (file.size > MAX_SIZE) {
-      setErreur("Taille de fichier supérieure à 2Mo");
+      setErreur("Taille de fichier supérieure à 5Mo");
       return;
     } else {
       const data = new FormData();
@@ -60,7 +60,7 @@ export const Uploader = ({
         onChange={handleFileInput}
       />
       <span className="fr-hint-text">
-        Taille maximale : 2 Mo. Formats supportés : jpg, png, pdf.
+        Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf.
       </span>
       {erreur && <p className="fr-error-text">{erreur}</p>}
     </div>

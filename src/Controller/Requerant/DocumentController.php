@@ -40,19 +40,22 @@ class DocumentController extends AbstractController
 
         /** @var UploadedFile $file */
         foreach ($files as $file) {
-            $content = $file->getContent();
-            $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
-            $this->storage->write($filename, $content);
-            $document = (new Document())
-                ->setFilename($filename)
-                ->setOriginalFilename($file->getClientOriginalName())
-                ->setSize($file->getSize())
-                ->setType($type)
-                ->setMime($file->getMimeType());
+            if (null !== $file->getPathname()) {
+                $content = $file->getContent();
+                $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+                $this->storage->write($filename, $content);
+                $document = (new Document())
+                    ->setFilename($filename)
+                    ->setOriginalFilename($file->getClientOriginalName())
+                    ->setAjoutRequerant(true)
+                    ->setSize($file->getSize())
+                    ->setType($type)
+                    ->setMime($file->getMimeType());
 
-            $dossier->ajouterDocument($document);
+                $dossier->ajouterDocument($document);
 
-            $this->em->persist($dossier);
+                $this->em->persist($dossier);
+            }
         }
 
         $this->em->flush();
