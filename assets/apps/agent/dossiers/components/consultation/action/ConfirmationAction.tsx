@@ -518,7 +518,9 @@ export const confirmerBoutons = ({
   return estEnAttenteConfirmation({ dossier, agent })
     ? [
         {
-          children: "Éditer la proposition d'indemnisation",
+          children: dossier.estAccepte()
+            ? "Éditer la proposition d'indemnisation"
+            : "Éditer le courrier de rejet",
           priority: "secondary",
           disabled: false,
           iconId: "fr-icon-edit-box-line",
