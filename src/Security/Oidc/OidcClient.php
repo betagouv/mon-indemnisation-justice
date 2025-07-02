@@ -78,7 +78,7 @@ class OidcClient
         }
     }
 
-    protected function getSessionContext(Request $request): array
+    protected function getSessionContext(Request $request): ?array
     {
         return $request->getSession()->get($this->sessionKey);
     }
@@ -174,7 +174,7 @@ class OidcClient
         $state = $request->query->get('state');
         $code = $request->query->get('code');
 
-        if ($state !== ($context['state'] ?? null)) {
+        if (null === $context || $state !== ($context['state'] ?? null)) {
             throw new AuthenticationException('Invalid state.');
         }
 
