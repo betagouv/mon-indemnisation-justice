@@ -234,8 +234,9 @@ const PersonnePhysique = function PersonnePhysique() {
               value: dossier.requerant.personnePhysique.communeNaissance ?? "",
               onChange: (e) => {
                 if (
+                  !!e.target.value &&
                   e.target.value !=
-                  dossier.requerant.personnePhysique.communeNaissance
+                    dossier.requerant.personnePhysique.communeNaissance
                 ) {
                   patchDossier({
                     requerant: {
@@ -248,7 +249,7 @@ const PersonnePhysique = function PersonnePhysique() {
               },
             }}
           >
-            <option value={undefined}>
+            <option value={""}>
               {communes.length === 0
                 ? "Tapez le code postal"
                 : "Sélectionnez une ville"}

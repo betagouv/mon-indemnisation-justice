@@ -283,17 +283,18 @@
                             <span>ou</span>
                         </div>
 
-
                         <div class="fr-grow fr-column fr-column--centered ">
                             <p style="text-align: center;">J'ai initié mon compte sans France Connect ou je suis une
                                 personne morale (bailleur
                                 social ou SCI)</p>
-                            <button type="button" class="fr-btn" id="bouton-afficher-formulaire-connexion-email">
-                                S'identifier avec son adresse email
-                            </button>
+                            {% if last_username|default(null) is null %}
+                                <button type="button" class="fr-btn" id="bouton-afficher-formulaire-connexion-email">
+                                    S'identifier avec son adresse email
+                                </button>
+                            {% endif %}
 
-
-                            <form method="POST" class="fr-hidden" id="formulaire-connexion-email">
+                            <form method="POST" {% if last_username|default(null) is null %} class="fr-hidden"{% endif %}
+                                  id="formulaire-connexion-email">
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                                 <div class="fr-grid-row">
                                     <div class="fr-col-12 fr-mb-2w">
@@ -420,11 +421,16 @@
             }
         });
 
+        {% if last_username|default(null) is null %}
         document.getElementById('bouton-afficher-formulaire-connexion-email').addEventListener('click', (event) => {
             document.getElementById('formulaire-connexion-email')?.classList.remove('fr-hidden');
             event.target.classList.add('fr-hidden');
         });
 
+        {% else %}
+        document.querySelector('input[type=password].fr-password__input')?.focus();
+
+        {% endif %}
     </script>
 
 {% endblock %}
