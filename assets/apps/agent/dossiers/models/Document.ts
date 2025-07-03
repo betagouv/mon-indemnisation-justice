@@ -1,4 +1,6 @@
 import { Transform } from "class-transformer";
+import { Agent } from "@/apps/agent/dossiers/models/Agent.ts";
+import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier.ts";
 
 export class DocumentType {
   private constructor(
@@ -44,6 +46,16 @@ export class DocumentType {
     "Contrat de location",
   );
 
+  public static readonly TYPE_NON_PRISE_EN_CHARGE_ASSURANCE = new DocumentType(
+    "non_prise_en_charge_assurance",
+    "Attestation de non prise en charge par l'assurance",
+  );
+
+  public static readonly TYPE_NON_PRISE_EN_CHARGE_BAILLEUR = new DocumentType(
+    "non_prise_en_charge_bailleur",
+    "Attestation de non prise en charge par le bailleur",
+  );
+
   public static readonly TYPE_COURRIER_MINISTERE = new DocumentType(
     "courrier_ministere",
     "Courrier de décision signé du Ministere",
@@ -69,6 +81,7 @@ export class Document {
   public readonly originalFilename: string;
   public readonly mime: string;
   public readonly size?: number;
+  public readonly estAjoutRequerant?: boolean;
 
   public corps?: string;
   public fileHash: string;
@@ -78,6 +91,13 @@ export class Document {
   )
   public readonly type: DocumentType;
   public metaDonnees: any;
+
+  public estEditable(dossier: DossierDetail, agent: Agent): boolean {
+    return (
+      this.estAjoutRequerant === false &&
+      (agent.estValidateur() || agent.instruit(dossier))
+    );
+  }
 
   get url(): string {
     return `/agent/document/${this.id}/${this.fileHash}`;
@@ -116,7 +136,7 @@ export class Document {
   }
 
   get infoFichier(): string {
-    return `${this.typeFichier?.toUpperCase()}${this.size ? " - " + this.tailleFichier : ""}`;
+    return `${this.type?.libelle || ""} - ${this.typeFichier?.toUpperCase()}${this.size ? " - " + this.tailleFichier : ""}`;
   }
 
   public isPDF(): boolean {
@@ -132,6 +152,8 @@ export class Document {
     DocumentType.TYPE_RIB,
     DocumentType.TYPE_TITRE_PROPRIETE,
     DocumentType.TYPE_CONTRAT_LOCATION,
+    DocumentType.TYPE_NON_PRISE_EN_CHARGE_ASSURANCE,
+    DocumentType.TYPE_NON_PRISE_EN_CHARGE_BAILLEUR,
     DocumentType.TYPE_COURRIER_MINISTERE,
     DocumentType.TYPE_COURRIER_REQUERANT,
     DocumentType.TYPE_ARRETE_PAIEMENT,

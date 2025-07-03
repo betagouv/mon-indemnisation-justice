@@ -162,7 +162,8 @@ class DossierController extends AgentController
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
             ->setType($type)
-            ->setMime($file->getMimeType());
+            ->setAjoutRequerant(false)
+            ->setMime($file->getClientMimeType());
 
         $dossier->ajouterDocument($document);
 
@@ -170,13 +171,7 @@ class DossierController extends AgentController
 
         $this->dossierRepository->save($dossier);
 
-        return new JsonResponse([
-            'id' => $document->getId(),
-            'mime' => $document->getMime(),
-            'originalFilename' => $document->getOriginalFilename(),
-            'url' => $this->generateUrl('agent_document_download', ['id' => $document->getId(), 'hash' => md5($document->getFilename())]),
-            'type' => $document->getType(),
-        ], Response::HTTP_OK);
+        return new JsonResponse($this->normalizer->normalize($document, 'json', ['agent:detail']), Response::HTTP_OK);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]

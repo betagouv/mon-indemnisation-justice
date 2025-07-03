@@ -13,7 +13,14 @@ import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
-import { AjoutPieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
+import {
+  AjoutPieceJointe,
+  TelechargerPieceJointe,
+} from "@/apps/agent/dossiers/components/consultation/piecejointe";
+import {
+  ouvrirModaleSuppressionPieceJointe,
+  SuppressionPieceJointe,
+} from "@/apps/agent/dossiers/components/consultation/piecejointe/SuppressionPieceJointe.tsx";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -486,23 +493,54 @@ export const ConsultationDossierApp = observer(
                               <div className="fr-grid-row fr-col-12">
                                 <h4>{pieceJointe.originalFilename}</h4>
 
-                                <ButtonsGroup
+                                <TelechargerPieceJointe
                                   className="fr-grid-row fr-col-12"
-                                  inlineLayoutWhen="always"
-                                  alignment="right"
-                                  buttonsIconPosition="right"
-                                  buttonsSize="small"
-                                  buttons={[
-                                    {
-                                      children: "Télécharger",
-                                      iconId: "fr-icon-download-line",
-                                      linkProps: {
-                                        href: pieceJointe.url,
-                                        download: true,
-                                      },
-                                    } as ButtonProps,
-                                  ]}
+                                  pieceJointe={pieceJointe}
                                 />
+
+                                {pieceJointe.estEditable(dossier, agent) && (
+                                  <>
+                                    <SuppressionPieceJointe
+                                      pieceJointe={pieceJointe}
+                                      dossier={dossier}
+                                      onSupprime={() =>
+                                        selectionnerPieceJointe(
+                                          dossier.documents
+                                            .values()
+                                            ?.find(
+                                              (documents) =>
+                                                documents.length > 0,
+                                            )
+                                            ?.at(0) ?? null,
+                                        )
+                                      }
+                                    />
+                                    <ButtonsGroup
+                                      className="fr-grid-row fr-col-12"
+                                      inlineLayoutWhen="always"
+                                      alignment="right"
+                                      buttonsIconPosition="right"
+                                      buttonsSize="small"
+                                      buttons={[
+                                        {
+                                          children: "Supprimer",
+                                          iconId: "fr-icon-delete-bin-line",
+                                          priority: "secondary",
+                                          onClick: () =>
+                                            ouvrirModaleSuppressionPieceJointe(),
+                                        },
+                                        /*
+                                    TODO: réactiver quand la modale d'ajout sera étendue pour gérer l'édition
+                                    {
+                                      children: "Éditer",
+                                      iconId: "fr-icon-edit-line",
+                                      priority: "secondary",
+                                    },
+                                    */
+                                      ]}
+                                    />
+                                  </>
+                                )}
 
                                 {/* Partie spécifique au type de pièce jointe */}
                                 {pieceJointe.type ==

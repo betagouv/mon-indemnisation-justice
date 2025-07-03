@@ -169,6 +169,7 @@ export class DossierDetail extends BaseDossier {
       changerEtat: action,
       documents: observable,
       addDocument: action,
+      removeDocument: action,
       viderDocumentParType: action,
       notes: observable,
       annoter: action,
@@ -197,6 +198,13 @@ export class DossierDetail extends BaseDossier {
     }
 
     this.documents.get(document.type.type).push(document);
+  }
+
+  public removeDocument(document: Document): void {
+    this.documents.set(
+      document.type.type,
+      this.documents.get(document.type.type).filter((d) => d.id != document.id),
+    );
   }
 
   public viderDocumentParType(type: DocumentType): void {

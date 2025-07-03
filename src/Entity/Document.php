@@ -53,6 +53,7 @@ class Document
      * Sinon automatique, ex: arrêté de paiement post acceptation.
      * */
     #[ORM\Column(nullable: true)]
+    #[Groups(['agent:detail'])]
     protected ?bool $estAjoutRequerant = null;
 
     #[ORM\Column(nullable: true)]
