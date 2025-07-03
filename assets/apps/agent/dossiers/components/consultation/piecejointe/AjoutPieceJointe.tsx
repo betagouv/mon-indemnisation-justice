@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   Agent,
   Document,
@@ -9,6 +9,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { plainToInstance } from "class-transformer";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { Select } from "@codegouvfr/react-dsfr/Select";
 
 const _modale = createModal({
   id: "modale-ajouter-piece-jointe",
@@ -26,8 +27,8 @@ const component = function AjoutPieceJointe({
   agent: Agent;
   onAjoute?: (nouvellePieceJointe: Document) => void;
 }) {
-  // État d'avancement de l'opération d'ajout :
-  const [etatAjout, setEtatAjout] = useState<EtatAjout>("choix_type");
+  // Ref sur le champ de sélection du fichier, pour pouvoir le réinitialiser
+  const refChampFichier = useRef<HTMLInputElement>();
 
   // Type de document associé à la pièce jointe téléversée
   const [typePJ, setTypePj]: [DocumentType, (typePJ?: DocumentType) => void] =
@@ -81,6 +82,7 @@ const component = function AjoutPieceJointe({
         dossier.addDocument(document);
         _modale.close();
         onAjoute?.(document);
+        refChampFichier.current.value = null;
         setTypePj(null);
         setNouvellePieceJointe(null);
       }
@@ -93,15 +95,14 @@ const component = function AjoutPieceJointe({
   return (
     <>
       <ButtonsGroup
-        inlineLayoutWhen="always"
+        inlineLayoutWhen="never"
+        alignment="center"
         buttonsIconPosition="right"
         buttons={[
           {
             priority: "primary",
             iconId: "fr-icon-file-add-line",
-            disabled:
-              !(agent.estValidateur() || agent.instruit(dossier)) ||
-              !(dossier.enAttenteDecision || dossier.enAttenteValidation),
+            disabled: !(agent.estValidateur() || agent.instruit(dossier)),
             onClick: () => _modale.open(),
             children: "Ajouter",
           },
@@ -113,47 +114,36 @@ const component = function AjoutPieceJointe({
         iconId="fr-icon-file-add-line"
         size="large"
       >
-        {}
-        <div className="fr-select-group fr-my-2w">
-          <label className="fr-label" htmlFor="storybook-select-171">
-            {" "}
-            Type de pièce jointe{" "}
-          </label>
-          <select
-            className="fr-select"
-            aria-describedby="storybook-select-171-messages"
-            id="storybook-select-171"
-            name="storybook-select-171"
-            defaultValue={""}
-            onChange={(e) =>
+        <Select
+          className="fr-my-2w"
+          label="Type de pièce jointe"
+          nativeSelectProps={{
+            onChange: (e) =>
               setTypePj(
                 Document.types.find(
                   (type: DocumentType) => type.type == e.target.value,
                 ),
-              )
-            }
-          >
-            <option value="" disabled hidden>
-              Sélectionnez un type
-            </option>
-            {Document.types
-              .filter((type: DocumentType) => type.estAjoutableAgent())
-              .map((type: DocumentType) => (
-                <option value={type.type} key={type.type}>
-                  {type.libelle}
-                </option>
-              ))}
-          </select>
-          <div
-            className="fr-messages-group"
-            id="storybook-select-171-messages"
-            aria-live="polite"
-          ></div>
-        </div>
+              ),
+            value: typePJ?.type ?? "",
+          }}
+        >
+          <option value="" disabled hidden>
+            Sélectionnez un type
+          </option>
+          {Document.types
+            .filter((type: DocumentType) => type.estAjoutableAgent())
+            .map((type: DocumentType) => (
+              <option value={type.type} key={type.type}>
+                {type.libelle}
+              </option>
+            ))}
+        </Select>
+
         <Upload
           className="fr-my-2w"
           label="Fichier à téléverser"
           hint="Taille maximale : 10 Mo. Format pdf uniquement."
+          ref={refChampFichier}
           state={
             !nouvellePieceJointe ||
             estTailleFichierOk(nouvellePieceJointe) ||
@@ -165,6 +155,7 @@ const component = function AjoutPieceJointe({
           stateRelatedMessage=""
           nativeInputProps={{
             accept: "application/pdf,image/*",
+            defaultValue: null,
             onChange: (e) => setNouvellePieceJointe(e.target.files[0]),
           }}
         />

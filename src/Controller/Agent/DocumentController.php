@@ -16,6 +16,7 @@ use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -100,6 +101,27 @@ class DocumentController extends AbstractController
         } catch (UnableToReadFile|FilesystemException|NoSuchKeyException $e) {
             return new Response('', Response::HTTP_NOT_FOUND);
         }
+    }
+
+    #[IsGranted(
+        attribute: new Expression('is_granted("ROLE_AGENT_ATTRIBUTEUR") or is_granted("ROLE_AGENT_VALIDATEUR") or user.instruit(subject["document"].getDossier())'),
+        subject: [
+            'document' => new Expression('args["document"]'),
+        ]
+    )]
+    #[Route('/{id}/supprimer', name: 'agent_document_supprimer', methods: ['DELETE'])]
+    public function supprimer(#[MapEntity(id: 'id')] Document $document): Response
+    {
+        if (false !== $document->estAjoutRequerant()) {
+            return new JsonResponse([
+                'error' => 'Ce document ne peut être supprimé',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->em->remove($document);
+        $this->em->flush();
+
+        return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/{id}/imprimer', name: 'agent_document_imprimer', methods: ['PUT'])]

@@ -4,11 +4,14 @@ import Download from "@codegouvfr/react-dsfr/Download";
 
 const component = function TelechargerPieceJointe({
   pieceJointe,
+  className,
 }: {
   pieceJointe: Document;
+  className?: string;
 }) {
   return (
     <Download
+      className={className}
       details={pieceJointe?.infoFichier}
       label={pieceJointe.originalFilename}
       linkProps={{
