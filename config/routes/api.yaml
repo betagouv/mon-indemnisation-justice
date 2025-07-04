@@ -1,0 +1,4 @@
+api_agent_document_imprimer:
+  path: /api/agent/document/imprimer
+  controller: MonIndemnisationJustice\Api\Agent\Document\ImprimerDocumentEndpoint
+  methods: GET
