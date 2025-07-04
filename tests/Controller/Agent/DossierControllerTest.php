@@ -88,9 +88,7 @@ class DossierControllerTest extends WebTestCase
             'dateOperation' => null,
             'estPorteBlindee' => false,
             'documents' => [],
-            'corpsCourrier' => null,
             'montantIndemnisation' => null,
-            'courrier' => null,
             'adresse' => [
                 'ligne1' => $dossier->getAdresse()->getLigne1(),
                 'ligne2' => $dossier->getAdresse()->getLigne2(),

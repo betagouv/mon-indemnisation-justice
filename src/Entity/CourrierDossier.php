@@ -5,7 +5,6 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'dossier_courriers')]
@@ -105,13 +104,5 @@ class CourrierDossier
     public function getFileHash(): string
     {
         return md5($this->filename);
-    }
-
-    #[Groups(['agent:detail'])]
-    #[SerializedName('url')]
-    public function getAgentUrl(): ?string
-    {
-        // URL pointant sur la route "agent_redacteur_courrier_dossier"
-        return "/agent/redacteur/dossier/{$this->dossier->getId()}/courrier/{$this->getFileHash()}";
     }
 }

@@ -31,7 +31,7 @@ export const MetaDonneesAttestationForm = function MetaDonneesAttestationForm({
   } as MetaDonneesAttestation);
 
   const sauvegarder = useCallback(
-    async (metaDonnees: MetaDonneesAttestation) => {
+    async (metaDonnees: Partial<MetaDonneesAttestation>) => {
       const response = await fetch(
         `/agent/document/${document.id}/meta-donnees`,
         {
@@ -44,31 +44,37 @@ export const MetaDonneesAttestationForm = function MetaDonneesAttestationForm({
         },
       );
     },
-    [document],
+    [document.id],
   );
 
   const setEstAttestation = useCallback(
     async (estAttestation: boolean) => {
-      setMetaDonnees({
-        ...metaDonnees,
-        estAttestation,
+      setMetaDonnees((metaDonnees: MetaDonneesAttestation) => {
+        return {
+          ...metaDonnees,
+          estAttestation,
+        };
       });
       await sauvegarder({ estAttestation });
     },
-    [document, metaDonnees.estAttestation],
+    [metaDonnees],
   );
 
   const setTypeInstitutionSecuritePublique = useCallback(
     async (institutionSecuritePublique: InstitutionSecuritePublique) => {
-      setMetaDonnees({
-        ...metaDonnees,
-        typeInstitutionSecuritePublique: institutionSecuritePublique.type,
+      setMetaDonnees((metaDonnees) => {
+        return {
+          ...metaDonnees,
+          typeInstitutionSecuritePublique:
+            institutionSecuritePublique?.type ?? null,
+        };
       });
       await sauvegarder({
-        typeInstitutionSecuritePublique: institutionSecuritePublique.type,
+        typeInstitutionSecuritePublique:
+          institutionSecuritePublique?.type ?? null,
       });
     },
-    [document, metaDonnees.typeInstitutionSecuritePublique],
+    [metaDonnees],
   );
 
   return (
@@ -101,14 +107,7 @@ export const MetaDonneesAttestationForm = function MetaDonneesAttestationForm({
             value: metaDonnees.typeInstitutionSecuritePublique ?? "",
           }}
         >
-          <option
-            value=""
-            {...(metaDonnees.typeInstitutionSecuritePublique
-              ? { disabled: true }
-              : {})}
-          >
-            Sélectionner un type
-          </option>
+          <option value="">Sélectionner un type</option>
           {InstitutionSecuritePublique.entries().map(([type, institution]) => (
             <option value={type} key={type}>
               {institution.libelle()}

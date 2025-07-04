@@ -1,8 +1,14 @@
-import React, { FormEvent, useState } from "react";
+import {
+  EditeurDocument,
+  EditeurMode,
+} from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Download from "@codegouvfr/react-dsfr/Download";
+import React, { FormEvent, useCallback, useState } from "react";
 
 import {
   Agent,
-  Courrier,
   Document,
   DocumentType,
   DossierDetail,
@@ -13,7 +19,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { makeAutoObservable } from "mobx";
 import { plainToInstance } from "class-transformer";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor/QuillEditor.tsx";
+import { TelechargerPieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
 
 const _modale = createModal({
   id: "modale-action-confirmation",
@@ -69,8 +75,12 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
   ] = useState(null);
 
   // Corps du courrier
-  const [courrier, setCourrier]: [string | null, (courrier: string) => void] =
-    useState(dossier.corpsCourrier);
+  const [corpsCourrier, setCorpsCourrier]: [
+    string,
+    (corpsCourrier: string) => void,
+  ] = useState(
+    dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)?.corps,
+  );
 
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
@@ -89,11 +99,14 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
   const estTypeFichierOk = (fichier?: File) =>
     fichier && ["application/pdf"].includes(fichier.type);
 
-  // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
+  // Indique si la sauvegarde de la décision est en cours
   const [sauvegardeEnCours, setSauvegardeEnCours]: [
     boolean,
     (mode: boolean) => void,
   ] = useState(false);
+
+  // Le mode en cours sur l'éditeur de document
+  const [editeurMode, setEditeurMode] = useState<EditeurMode>("edition");
 
   // Actions
 
@@ -115,38 +128,27 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
     }
   };
 
-  const editerCourrier = async (motif?: string) => {
-    setSauvegardeEnCours(true);
-
-    const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/courrier/editer.json`,
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
+  const changerMontantIndemnisation = useCallback(
+    async (montantIndemnisation: number) => {
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/proposition-indemnisation/changer-montant.json`,
+        {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            montantIndemnisation,
+          }),
         },
-        body: JSON.stringify({
-          montantIndemnisation,
-          corpsCourrier: courrier,
-        }),
-      },
-    );
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      dossier.setCourrier(plainToInstance(Courrier, data.courrier));
-      dossier.viderDocumentParType(DocumentType.TYPE_COURRIER_MINISTERE);
-    }
-
-    _modale.close();
-    setSauvegardeEnCours(false);
-    marquerFichierSigne(false);
-    setFichierSigne(null);
-    etat.setDecision(true);
-    // Déclencher le _hook_ onEdite s'il est défini
-    onEdite?.();
-  };
+      if (response.ok) {
+        dossier.setMontantIndemnisation(montantIndemnisation);
+      }
+    },
+    [dossier.id],
+  );
 
   const signerCourrier = async (fichier: File) => {
     setSauvegardeEnCours(true);
@@ -170,14 +172,8 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
 
       if (response.ok) {
         const data = await response.json();
-        if (data.documents.courrier_ministere?.length) {
-          dossier.addDocument(
-            plainToInstance(Document, data.documents.courrier_ministere?.at(0)),
-          );
-        }
-        if (data.etat) {
-          dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-        }
+        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+        dossier.addDocument(plainToInstance(Document, data.document));
       }
     } catch (e) {
       console.error(e);
@@ -222,7 +218,16 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
 
   return estEnAttenteConfirmation({ dossier, agent }) ? (
     <_modale.Component
-      title="Éditer la proposition d'indemnisation"
+      title={
+        dossier.estAccepte()
+          ? " Confirmer l'indemnisation"
+          : " Confirmer le rejet"
+      }
+      iconId={
+        dossier.estAccepte()
+          ? "fr-icon-checkbox-circle-line"
+          : "fr-icon-close-circle-line"
+      }
       size="large"
     >
       {!etat.decision && (
@@ -250,11 +255,15 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
                         ? parseFloat(value?.replace(",", "."))
                         : null,
                     );
+                    setEditeurMode("edition");
 
                     if (dossier.estAccepte()) {
-                      detecterMontantIndemnisation(courrier);
+                      detecterMontantIndemnisation(corpsCourrier);
                     }
                   }}
+                  onBlur={() =>
+                    changerMontantIndemnisation(montantIndemnisation)
+                  }
                   aria-describedby="dossier-decision-acceptation-indemnisation-messages"
                   id="dossier-decision-acceptation-indemnisation-champs"
                   type="number"
@@ -262,6 +271,45 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
                   inputMode="numeric"
                 />
               </div>
+
+              {dossier.estAccepte() &&
+                montantIndemnisationLu &&
+                montantIndemnisation !== montantIndemnisationLu && (
+                  <Alert
+                    className="fr-my-2w"
+                    small={false}
+                    closable={false}
+                    severity="warning"
+                    title="Attention : risque d'ambigüité sur le montant de
+                      l'indemnisation"
+                    description={
+                      <>
+                        <p>
+                          Vous indiquez indemniser à hauteur de{" "}
+                          <span className={"fr-text--bold"}>
+                            {montantIndemnisation} €
+                          </span>
+                          , pourtant le courrier mentionne un montant
+                          <i> en chiffres</i> de{" "}
+                          <span className={"fr-text--bold"}>
+                            {montantIndemnisationLu} €
+                          </span>
+                          .
+                        </p>
+                        <p>
+                          Puisque la valeur déclarée dans le champs "Montant de
+                          l'indemnisation" sera également mentionnée sur le
+                          formulaire de déclaration d'acceptation, il y a un
+                          risque d'ambigüité pour le requérant.
+                        </p>
+                        <p>
+                          Veillez donc à bien accorder les montants dans le
+                          courrier (en chiffres ainsi qu'en toutes lettres).
+                        </p>
+                      </>
+                    }
+                  />
+                )}
 
               {!montantIndemnisation && (
                 <div
@@ -275,102 +323,79 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
             </div>
           )}
 
-          <div className="fr-input-group fr-col-12">
-            <QuillEditor
-              value={courrier}
-              onChange={(value) => {
-                setCourrier(value);
-                if (dossier.estAccepte()) {
-                  detecterMontantIndemnisation(value);
-                }
-              }}
-              readOnly={sauvegardeEnCours}
-            />
-          </div>
-
-          {dossier.estAccepte() &&
-            montantIndemnisationLu &&
-            montantIndemnisation !== montantIndemnisationLu && (
-              <div className="fr-alert fr-alert--warning">
-                <h3 className="fr-alert__title">
-                  Attention : risque d'ambigüité sur le montant de
-                  l'indemnisation
-                </h3>
-                <p>
-                  Vous indiquez indemniser à hauteur de{" "}
-                  <span className={"fr-text--bold"}>
-                    {montantIndemnisation} €
-                  </span>
-                  , pourtant le courrier mentionne un montant
-                  <i> en chiffres</i> de{" "}
-                  <span className={"fr-text--bold"}>
-                    {montantIndemnisationLu} €
-                  </span>
-                  .
-                </p>
-
-                <p>
-                  Puisque la valeur déclarée dans le champs "Montant de
-                  l'indemnisation" sera également mentionnée sur le formulaire
-                  de déclaration d'acceptation, il y a un risque d'ambigüité
-                  pour le requérant.
-                </p>
-
-                <p>
-                  Veillez donc à bien accorder les montants dans le courrier (en
-                  chiffres ainsi qu'en toutes lettres).
-                </p>
-              </div>
+          <EditeurDocument
+            className="fr-input-group fr-col-12"
+            mode={editeurMode}
+            document={dossier.getDocumentType(
+              DocumentType.TYPE_COURRIER_MINISTERE,
             )}
+            onEdite={(corps) => {
+              if (dossier.estAccepte()) {
+                setCorpsCourrier(corps);
+                detecterMontantIndemnisation(corps);
+              }
+            }}
+            onImprime={(courrier) => dossier.addDocument(courrier)}
+            onImpression={(impressionEnCours) =>
+              setSauvegardeEnCours(impressionEnCours)
+            }
+          />
 
-          <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-            <li>
-              <button
-                className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                type="button"
-                onClick={() => _modale.close()}
-                disabled={sauvegardeEnCours}
-              >
-                {sauvegardeEnCours ? (
+          <ButtonsGroup
+            className="fr-mt-3w"
+            alignment="right"
+            inlineLayoutWhen="always"
+            buttonsIconPosition="right"
+            buttonsSize="small"
+            buttons={[
+              {
+                priority: "tertiary no outline",
+                onClick: () => _modale.close(),
+                disabled: sauvegardeEnCours,
+                children: sauvegardeEnCours ? (
                   <i>Sauvegarde en cours ...</i>
                 ) : (
-                  <>Annuler</>
-                )}
-              </button>
-            </li>
-
-            <li>
-              <button
-                className="fr-btn fr-btn--sm fr-btn--primary"
-                type="button"
-                onClick={() => editerCourrier()}
-                disabled={sauvegardeEnCours}
-              >
-                Ré-éditer le courrier
-              </button>
-            </li>
-          </ul>
+                  "Annuler"
+                ),
+              },
+              ...(editeurMode === "edition"
+                ? ([
+                    {
+                      iconId: "fr-icon-eye-line",
+                      children: "Visualiser",
+                      priority: "secondary",
+                      disabled: sauvegardeEnCours,
+                      onClick: () => setEditeurMode("visualisation"),
+                    },
+                  ] as ButtonProps[])
+                : ([
+                    {
+                      iconId: "fr-icon-edit-box-line",
+                      children: "Éditer",
+                      disabled: sauvegardeEnCours,
+                      priority: "secondary",
+                      onClick: () => setEditeurMode("edition"),
+                    },
+                    {
+                      iconId: "fr-icon-edit-line",
+                      onClick: () => etat.setDecision(true),
+                      priority: "secondary",
+                      children: "Passer à la signature",
+                    },
+                  ] as ButtonProps[])),
+            ]}
+          />
         </>
       )}
       {
         // Téléversement, pour signature, du courrier
         etat.decision && !estFichierSigne && (
-          <div className="fr-modal__content">
-            <h1 id="modale-dossier-decision-titre" className="fr-modal__title">
-              <span className="fr-icon-edit-box-line fr-icon--lg fr-mr-1w"></span>
-              Signer le courrier
-            </h1>
-
-            <div className="fr-input-group fr-mb-3w">
-              <a
-                className="fr-link fr-link--download"
-                download={`Lettre décision dossier ${dossier.reference}`}
-                href={`${dossier.courrier.url}?download`}
-              >
-                Télécharger le courrier
-                <span className="fr-link__detail">PDF</span>
-              </a>
-            </div>
+          <>
+            <TelechargerPieceJointe
+              pieceJointe={dossier.getDocumentType(
+                DocumentType.TYPE_COURRIER_MINISTERE,
+              )}
+            />
 
             <div className="fr-upload-group">
               <label className="fr-label" htmlFor="file-upload">
@@ -399,105 +424,102 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
                 }}
               />
             </div>
-            <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                  type="button"
-                  onClick={() => _modale.close()}
-                  disabled={sauvegardeEnCours}
-                >
-                  {sauvegardeEnCours ? (
+
+            <ButtonsGroup
+              className="fr-mt-3w"
+              alignment="right"
+              inlineLayoutWhen="always"
+              buttonsIconPosition="right"
+              buttonsSize="small"
+              buttons={[
+                {
+                  priority: "tertiary no outline",
+                  onClick: () => _modale.close(),
+                  disabled: sauvegardeEnCours,
+                  children: sauvegardeEnCours ? (
                     <i>Sauvegarde en cours ...</i>
                   ) : (
-                    <>Annuler</>
-                  )}
-                </button>
-              </li>
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--secondary"
-                  type="button"
-                  onClick={() => etat.setDecision(false)}
-                  disabled={sauvegardeEnCours}
-                >
-                  Éditer le courrier
-                </button>
-              </li>
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--primary"
-                  type="button"
-                  disabled={
+                    "Annuler"
+                  ),
+                },
+                {
+                  priority: "secondary",
+                  onClick: () => etat.setDecision(false),
+                  disabled: sauvegardeEnCours,
+                  iconId: "fr-icon-edit-box-line",
+                  children: "Éditer le courrier",
+                },
+                {
+                  disabled:
                     !fichierSigne ||
                     !estTypeFichierOk(fichierSigne) ||
                     !estTailleFichierOk(fichierSigne) ||
-                    sauvegardeEnCours
-                  }
-                  onClick={() => signerCourrier(fichierSigne)}
-                >
-                  Téléverser et envoyer au requérant
-                </button>
-              </li>
-            </ul>
-          </div>
+                    sauvegardeEnCours,
+                  onClick: () => signerCourrier(fichierSigne),
+                  iconId: "fr-icon-send-plane-line",
+                  children: "Téléverser et envoyer au requérant",
+                },
+              ]}
+            />
+          </>
         )
       }
       {
         // Envoi au requérant
         etat.decision && estFichierSigne && (
-          <div className="fr-modal__content">
-            <h1 id="modale-dossier-decision-titre" className="fr-modal__title">
-              <span className="fr-icon-edit-box-line fr-icon--lg fr-mr-1w"></span>
-              Envoyer le courrier au requérant
-            </h1>
+          <>
+            <Alert
+              small={false}
+              closable={false}
+              severity="info"
+              title="Envoi imminent"
+              description={
+                <>
+                  <p>
+                    Vous vous apprêtez à faire part de votre décision au
+                    requérant via l'envoi du courrier dûment signé.
+                  </p>
+                  <p>
+                    Cette action est définitive: une fois le courrier transmis,
+                    vous n'aurez plus la possibilité d'éditer votre réponse.
+                  </p>
+                  <p>
+                    Aussi,{" "}
+                    <span className="fr-text--bold">
+                      veillez à bien relire le document
+                    </span>{" "}
+                    afin de vous assurer que tout est conforme.
+                  </p>
+                </>
+              }
+            />
 
-            <div className="fr-alert fr-alert--info">
-              <h3 className="fr-alert__title">Envoi imminent</h3>
-              <p>
-                Vous vous apprêtez à faire part de votre décision au requérant
-                via l'envoi du courrier dûment signé.
-              </p>
-              <p>
-                Cette action est définitive: une fois le courrier transmis, vous
-                n'aurez plus la possibilité d'éditer votre réponse.
-              </p>
-              <p>
-                Aussi,{" "}
-                <span className="fr-text--bold">
-                  veillez à bien relire le document
-                </span>{" "}
-                afin de vous assurer que tout est conforme.
-              </p>
-            </div>
-
-            <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                  type="button"
-                  onClick={() => _modale.close()}
-                  disabled={sauvegardeEnCours}
-                >
-                  {sauvegardeEnCours ? (
+            <ButtonsGroup
+              className="fr-mt-3w"
+              alignment="right"
+              inlineLayoutWhen="always"
+              buttonsIconPosition="right"
+              buttonsSize="small"
+              buttons={[
+                {
+                  priority: "tertiary no outline",
+                  children: sauvegardeEnCours ? (
                     <i>Sauvegarde en cours ...</i>
                   ) : (
-                    <>Annuler</>
-                  )}
-                </button>
-              </li>
-              <li>
-                <button
-                  className="fr-btn fr-btn--sm fr-btn--primary"
-                  type="button"
-                  disabled={sauvegardeEnCours}
-                  onClick={() => envoyerAuRequerant()}
-                >
-                  Envoyer au requérant
-                </button>
-              </li>
-            </ul>
-          </div>
+                    "Annuler"
+                  ),
+                  onClick: () => _modale.close(),
+                  disabled: sauvegardeEnCours,
+                },
+                {
+                  disabled: sauvegardeEnCours,
+                  onClick: () => envoyerAuRequerant(),
+                  priority: "primary",
+                  children: "Envoyer au requérant",
+                },
+              ]}
+            />
+          </>
         )
       }
     </_modale.Component>

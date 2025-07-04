@@ -6,11 +6,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Event\DossierConstitueEvent;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
+use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -42,6 +44,7 @@ class BrisPorteController extends RequerantController
         protected readonly EntityManagerInterface $em,
         protected readonly Mailer $mailer,
         protected readonly Environment $twig,
+        protected readonly ImprimanteCourrier $imprimanteCourrier,
     ) {
     }
 
@@ -73,13 +76,12 @@ class BrisPorteController extends RequerantController
             $this->brisPorteRepository->save($brisPorte);
 
             $this->mailer
-               ->toRequerant($requerant)
-               ->subject('Votre déclaration de bris de porte a bien été prise en compte')
-               ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
-                   'dossier' => $brisPorte,
-               ])
-               ->send()
-            ;
+                ->toRequerant($requerant)
+                ->subject('Votre déclaration de bris de porte a bien été prise en compte')
+                ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
+                    'dossier' => $brisPorte,
+                ])
+                ->send();
 
             $this->eventDispatcher->dispatch(new DossierConstitueEvent($brisPorte));
 
@@ -122,22 +124,26 @@ class BrisPorteController extends RequerantController
         $content = $file->getContent();
         $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
-        $document = (new Document())
-                ->setFilename($filename)
-                ->setOriginalFilename($file->getClientOriginalName())
-                ->setSize($file->getSize())
-                ->setType(Document::TYPE_COURRIER_REQUERANT)
-                ->setMime($file->getMimeType());
 
-        $this->em->persist($document);
+        $acceptation = $dossier->getOrCreateDeclarationAcceptation()
+            ->setFilename($filename)
+            ->setOriginalFilename($file->getClientOriginalName())
+            ->setSize($file->getSize())
+            ->setMime($file->getClientMimeType());
 
-        $dossier->ajouterDocument($document);
+        $this->em->persist($acceptation);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
         try {
-            $dossier->setCorpsCourrier($this->twig->render('courrier/_corps_arretePaiement.html.twig', [
-                'dossier' => $dossier,
-            ]));
+            // TODO créer le document de type arrêté de paiement à la place
+            $arretePaiement = (new Document())->setType(DocumentType::TYPE_ARRETE_PAIEMENT)->setCorps(
+                $this->twig->render('courrier/_corps_arretePaiement.html.twig', [
+                    'dossier' => $dossier,
+                ])
+            )->ajouterAuDossier($dossier);
+
+            $arretePaiement = $this->imprimanteCourrier->imprimerDocument($arretePaiement);
+            $this->em->persist($arretePaiement);
         } catch (LoaderError|SyntaxError|RuntimeError $e) {
             // TODO log
         }
@@ -148,21 +154,18 @@ class BrisPorteController extends RequerantController
         if (null !== $dossier->getRedacteur()) {
             // Envoi du courriel de notification au rédacteur
             $this->mailer
-                   ->toAgent($dossier->getRedacteur())
-                   ->subject(sprintf("Dossier %s: %s a approuvé l'indemnisation", $dossier->getReference(), $dossier->getRequerant()->estFeminin() ? 'la requérante' : 'le requérant'))
-                   ->htmlTemplate('email/agent_indemnisation_approuvee.twig', [
-                       'dossier' => $dossier,
-                       'agent' => $dossier->getRedacteur(),
-                   ])
-                   ->send()
-            ;
+                ->toAgent($dossier->getRedacteur())
+                ->subject(sprintf("Dossier %s: %s a approuvé l'indemnisation", $dossier->getReference(), $dossier->getRequerant()->estFeminin() ? 'la requérante' : 'le requérant'))
+                ->htmlTemplate('email/agent_indemnisation_approuvee.twig', [
+                    'dossier' => $dossier,
+                    'agent' => $dossier->getRedacteur(),
+                ])
+                ->send();
         }
 
         return new JsonResponse([
             'etat' => $normalizer->normalize($dossier->getEtatDossier(), 'json', ['requerant:detail']),
-            'documents' => [
-                Document::TYPE_COURRIER_MINISTERE => $normalizer->normalize($dossier->getDocumentsParType(Document::TYPE_COURRIER_REQUERANT), 'json', ['groups' => 'requerant:detail']),
-            ],
+            'document' => $normalizer->normalize($acceptation, 'json', ['groups' => 'requerant:detail']),
         ], Response::HTTP_OK);
     }
 }

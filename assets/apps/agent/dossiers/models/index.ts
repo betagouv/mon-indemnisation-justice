@@ -1,6 +1,5 @@
 import { Adresse } from "./Adresse";
 import { Agent } from "./Agent";
-import { Courrier } from "./Courrier";
 import { Document, DocumentType } from "./Document";
 import { BaseDossier, DossierDetail } from "./Dossier";
 import { EtatDossier, EtatDossierType } from "./EtatDossier";
@@ -13,7 +12,6 @@ export {
   Adresse,
   Agent,
   BaseDossier,
-  Courrier,
   Document,
   DossierDetail,
   DocumentType,

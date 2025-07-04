@@ -60,11 +60,6 @@ class BrisPorte
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
-    #[Groups('agent:detail')]
-    #[ORM\OneToOne(targetEntity: CourrierDossier::class, inversedBy: null, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'courrier_actuel_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    protected ?CourrierDossier $courrier = null;
-
     #[ORM\OneToMany(targetEntity: CourrierDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'LAZY')]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
     /** @var Collection<CourrierDossier> */
@@ -84,10 +79,6 @@ class BrisPorte
     /** @var Collection<Document> */
     protected Collection $documents;
     protected ?array $documentsParType = null;
-
-    #[Groups('agent:detail')]
-    #[ORM\Column(type: 'text', nullable: true)]
-    protected ?string $corpsCourrier = null;
 
     #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
@@ -162,11 +153,11 @@ class BrisPorte
     {
         $this->documentsParType = $this->documents->reduce(
             function (array $carry, Document $document) {
-                if (!isset($carry[$document->getType()])) {
-                    $carry[$document->getType()] = [];
+                if (!isset($carry[$document->getType()->value])) {
+                    $carry[$document->getType()->value] = [];
                 }
 
-                $carry[$document->getType()][] = $document;
+                $carry[$document->getType()->value][] = $document;
 
                 return $carry;
             }, []
@@ -350,18 +341,6 @@ class BrisPorte
             ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, requerant: true);
     }
 
-    public function getCourrier(): ?CourrierDossier
-    {
-        return $this->courrier;
-    }
-
-    public function setCourrier(?CourrierDossier $courrier): BrisPorte
-    {
-        $this->courrier = $courrier;
-
-        return $this;
-    }
-
     public function getReference(): ?string
     {
         return $this->reference;
@@ -378,16 +357,16 @@ class BrisPorte
     {
         $this->documents->add($document);
 
-        $this->documentsParType[$document->getType()][] = $document;
+        $this->documentsParType[$document->getType()->value][] = $document;
     }
 
-    public function supprimerDocumentsParType(string $type): void
+    public function supprimerDocumentsParType(DocumentType $type): void
     {
         foreach ($this->documents->filter(fn (Document $d) => $d->getType() === $type) as $document) {
             $this->documents->removeElement($document);
         }
 
-        $this->documentsParType[$type] = [];
+        $this->documentsParType[$type->value] = [];
     }
 
     /**
@@ -399,12 +378,37 @@ class BrisPorte
         return $this->documentsParType;
     }
 
+    public function getDocumentParType(DocumentType $type): ?Document
+    {
+        return $this->documentsParType[$type->value][0] ?? null;
+    }
+
+    protected function getOrCreateDocument(DocumentType $type): Document
+    {
+        return $this->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($this);
+    }
+
+    public function getOrCreatePropositionIndemnisation(): Document
+    {
+        return $this->getOrCreateDocument(DocumentType::TYPE_COURRIER_MINISTERE);
+    }
+
+    public function getOrCreateArretePaiement(): Document
+    {
+        return $this->getOrCreateDocument(DocumentType::TYPE_ARRETE_PAIEMENT);
+    }
+
+    public function getOrCreateDeclarationAcceptation(): Document
+    {
+        return $this->getOrCreateDocument(DocumentType::TYPE_COURRIER_REQUERANT);
+    }
+
     /**
      * @return Document[]
      */
-    public function getDocumentsParType(string $type): array
+    public function getDocumentsParType(DocumentType $type): array
     {
-        return $this->documentsParType[$type] ?? [];
+        return $this->documentsParType[$type->value] ?? [];
     }
 
     public function getPropositionIndemnisation(): ?string
@@ -422,18 +426,6 @@ class BrisPorte
     public function setPropositionIndemnisation(?string $propositionIndemnisation): self
     {
         $this->propositionIndemnisation = $propositionIndemnisation;
-
-        return $this;
-    }
-
-    public function getCorpsCourrier(): ?string
-    {
-        return $this->corpsCourrier;
-    }
-
-    public function setCorpsCourrier(?string $corpsCourrier): BrisPorte
-    {
-        $this->corpsCourrier = $corpsCourrier;
 
         return $this;
     }
@@ -592,10 +584,17 @@ class BrisPorte
         return $this->estLieAttestation;
     }
 
+    /**
+     *Un dossier est considéré comme lié à la "nouvelle attestation" s'il a été initié à partir d'un flash du QR code
+     * (i.e. route "") ou sinon si au moins des documents de type `TYPE_ATTESTATION_INFORMATION` est marqué comme nouvelle
+     * attestation dans ses méta-données (champs `estAttestation`).
+     *
+     * @return $this
+     */
     public function recalculerEstLieAttestation(): self
     {
-        $this->estLieAttestation = count(array_filter(
-            $this->getDocumentsParType(Document::TYPE_ATTESTATION_INFORMATION),
+        $this->estLieAttestation &= count(array_filter(
+            $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION),
             function (Document $document): bool {
                 return true === $document->getMetaDonnee('estAttestation');
             }

@@ -9,6 +9,7 @@ use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,7 +35,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/{type}', name: 'document_upload', methods: ['POST'])]
-    public function upload(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, string $type): JsonResponse
+    public function upload(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, DocumentType $type): JsonResponse
     {
         $files = $request->files->all();
 
@@ -50,7 +51,7 @@ class DocumentController extends AbstractController
                     ->setAjoutRequerant(true)
                     ->setSize($file->getSize())
                     ->setType($type)
-                    ->setMime($file->getMimeType());
+                    ->setMime($file->getClientMimeType());
 
                 $dossier->ajouterDocument($document);
 
@@ -64,6 +65,7 @@ class DocumentController extends AbstractController
             'id' => $document->getId(),
             'filename' => $document->getFilename(),
             'size' => $document->getSize(),
+            'mime' => $document->getMime(),
             'type' => $document->getType(),
             'originalFilename' => $document->getOriginalFilename(),
         ]);

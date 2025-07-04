@@ -1,4 +1,11 @@
+import { AjoutPieceJointe } from "./AjoutPieceJointe";
 import { MetaDonneesAttestationForm } from "./MetaDonneesAttestation";
 import { PieceJointe } from "./PieceJointe";
+import { TelechargerPieceJointe } from "./TelechargerPieceJointe";
 
-export { MetaDonneesAttestationForm, PieceJointe };
+export {
+  AjoutPieceJointe,
+  MetaDonneesAttestationForm,
+  PieceJointe,
+  TelechargerPieceJointe,
+};

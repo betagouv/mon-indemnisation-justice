@@ -9,11 +9,18 @@ import {
 } from "@/apps/agent/dossiers/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
+import {
+  AjoutPieceJointe,
+  TelechargerPieceJointe,
+} from "@/apps/agent/dossiers/components/consultation/piecejointe";
+import {
+  ouvrirModaleSuppressionPieceJointe,
+  SuppressionPieceJointe,
+} from "@/apps/agent/dossiers/components/consultation/piecejointe/SuppressionPieceJointe.tsx";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -23,9 +30,6 @@ export const ConsultationDossierApp = observer(
     dossier: DossierDetail;
     agent: Agent;
   }) {
-    // Référence vers la modale d'ajout de pièce jointe
-    const refModalePJ = useRef(null);
-
     // Référence vers l'onglet ouvert
     const [selectedTab, selectTab] = useState(
       window.location.hash?.replace(/^#/, "") || "infos",
@@ -34,53 +38,6 @@ export const ConsultationDossierApp = observer(
     const changerOnglet = (tab) => {
       selectTab(tab);
       history.replaceState({}, "", `#${tab}`);
-    };
-
-    // Type de document associé à la pièce jointe téléversée
-    const [typePJ, setTypePj]: [DocumentType, (typePJ?: DocumentType) => void] =
-      useState(null);
-
-    // Pièce jointe à téléverser
-    const [nouvellePieceJointe, setNouvellePieceJointe]: [
-      File | null,
-      (nouvellePieceJointe: File) => void,
-    ] = useState(null);
-
-    const ouvrirModalePieceJointe = () =>
-      refModalePJ.current?.classList.add("fr-modal--opened");
-    const fermerModalePieceJointe = () =>
-      refModalePJ.current?.classList.remove("fr-modal--opened");
-
-    const ajouterPieceJointe = async () => {
-      setSauvegarderEnCours(true);
-
-      const payload = new FormData();
-      payload.append("file", nouvellePieceJointe);
-      payload.append("type", typePJ.type);
-
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/piece-jointe/ajouter.json`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-          body: payload,
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        const document = plainToInstance(Document, data);
-        dossier.addDocument(document);
-        selectionnerPieceJointe(document);
-        fermerModalePieceJointe();
-        setTypePj(null);
-        setNouvellePieceJointe(null);
-      }
-
-      setSauvegarderEnCours(false);
-      dossier.annoter(notes);
     };
 
     // Pièce jointe en cours de visualisation
@@ -435,26 +392,29 @@ export const ConsultationDossierApp = observer(
                     <section>
                       <h3>Notes de suivi</h3>
 
-                      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-                        <li>
-                          <button
-                            className="fr-btn fr-btn--sm fr-btn--primary"
-                            type="button"
-                            disabled={
+                      <ButtonsGroup
+                        className="fr-mt-3w"
+                        inlineLayoutWhen="always"
+                        alignment="right"
+                        buttonsIconPosition="right"
+                        buttonsSize="small"
+                        buttons={[
+                          {
+                            disabled:
                               sauvegarderEnCours ||
                               !notes?.trim() ||
-                              dossier.notes == notes
-                            }
-                            onClick={() => annoterCourrier()}
-                          >
-                            {sauvegarderEnCours ? (
-                              <>Sauvegarde en cours ...</>
-                            ) : (
-                              <>Enregistrer les changements</>
-                            )}
-                          </button>
-                        </li>
-                      </ul>
+                              dossier.notes == notes,
+                            onClick: () => annoterCourrier(),
+                            children: sauvegarderEnCours
+                              ? "Sauvegarde en cours ..."
+                              : dossier.notes == notes
+                                ? "Enregistré"
+                                : "Enregistrer les changements",
+                            iconId: "fr-icon-save-line",
+                            priority: "primary",
+                          },
+                        ]}
+                      />
 
                       <div className="fr-grid-row fr-col-12">
                         <QuillEditor
@@ -472,157 +432,13 @@ export const ConsultationDossierApp = observer(
                       <div className="fr-grid-row">
                         <div className="fr-col-3 mij-dossier-documents-liste">
                           {/* Ajout d'une pièce jointe */}
-                          <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline">
-                            <li>
-                              <button
-                                className="fr-btn fr-btn--sm fr-btn--primary"
-                                type="button"
-                                disabled={
-                                  !(
-                                    agent.estAttributeur() ||
-                                    agent.estValidateur() ||
-                                    agent.instruit(dossier)
-                                  ) ||
-                                  !(
-                                    dossier.enAttenteDecision ||
-                                    dossier.enAttenteValidation
-                                  )
-                                }
-                                onClick={() => ouvrirModalePieceJointe()}
-                              >
-                                Ajouter une pièce jointe
-                              </button>
-                            </li>
-                          </ul>
-
-                          <dialog
-                            ref={refModalePJ}
-                            className="fr-modal"
-                            aria-labelledby="modale-ajout-pj-titre"
-                            data-fr-concealing-backdrop="true"
-                          >
-                            <div className="fr-container fr-container--fluid fr-container-md">
-                              <div className="fr-grid-row fr-grid-row--center">
-                                <div className="fr-col-8">
-                                  <div className="fr-modal__body">
-                                    <div className="fr-modal__header">
-                                      <button
-                                        title="Fermer"
-                                        type="button"
-                                        className="fr-btn--close fr-btn"
-                                        onClick={() =>
-                                          fermerModalePieceJointe()
-                                        }
-                                      >
-                                        Fermer
-                                      </button>
-                                    </div>
-                                    <div className="fr-modal__content">
-                                      <h1
-                                        id="modale-ajout-pj-titre"
-                                        className="fr-modal__title"
-                                      >
-                                        <span
-                                          className="fr-icon-upload-2-line fr-mx-1w"
-                                          aria-hidden="true"
-                                        ></span>{" "}
-                                        Ajouter une pièce jointe au dossier
-                                      </h1>
-
-                                      <div className="fr-select-group">
-                                        <label
-                                          className="fr-label"
-                                          htmlFor="storybook-select-171"
-                                        >
-                                          {" "}
-                                          Type de pièce jointe{" "}
-                                        </label>
-                                        <select
-                                          className="fr-select"
-                                          aria-describedby="storybook-select-171-messages"
-                                          id="storybook-select-171"
-                                          name="storybook-select-171"
-                                          defaultValue={""}
-                                          onChange={(e) =>
-                                            setTypePj(
-                                              Document.types.find(
-                                                (type: DocumentType) =>
-                                                  type.type == e.target.value,
-                                              ),
-                                            )
-                                          }
-                                        >
-                                          <option value="" disabled hidden>
-                                            Sélectionnez un type
-                                          </option>
-                                          {Document.types.map(
-                                            (type: DocumentType) => (
-                                              <option
-                                                value={type.type}
-                                                key={type.type}
-                                              >
-                                                {type.libelle}
-                                              </option>
-                                            ),
-                                          )}
-                                        </select>
-                                        <div
-                                          className="fr-messages-group"
-                                          id="storybook-select-171-messages"
-                                          aria-live="polite"
-                                        ></div>
-                                      </div>
-
-                                      {typePJ && (
-                                        <div className="fr-upload-group">
-                                          <label
-                                            className="fr-label"
-                                            htmlFor="file-upload"
-                                          >
-                                            Document à joindre
-                                            <span className="fr-hint-text">
-                                              Taille maximale : 10
-                                              Mo.&nbsp;Format pdf
-                                              uniquement.&nbsp;
-                                            </span>
-                                          </label>{" "}
-                                          <input
-                                            className="fr-upload"
-                                            type="file"
-                                            id="file-upload"
-                                            name="file-upload"
-                                            accept="application/pdf,image/*"
-                                            onChange={(e) =>
-                                              setNouvellePieceJointe(
-                                                e.target.files[0],
-                                              )
-                                            }
-                                          />
-                                        </div>
-                                      )}
-
-                                      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-                                        <li>
-                                          <button
-                                            className="fr-btn fr-btn--sm fr-btn--primary"
-                                            type="button"
-                                            disabled={
-                                              sauvegarderEnCours ||
-                                              !typePJ ||
-                                              !nouvellePieceJointe
-                                            }
-                                            onClick={() => ajouterPieceJointe()}
-                                          >
-                                            Ajouter
-                                          </button>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </dialog>
+                          <AjoutPieceJointe
+                            dossier={dossier}
+                            agent={agent}
+                            onAjoute={(nouvellePieceJointe: Document) =>
+                              selectionnerPieceJointe(nouvellePieceJointe)
+                            }
+                          />
 
                           {/* Menu latéral des pièces jointes */}
                           <ul>
@@ -680,23 +496,54 @@ export const ConsultationDossierApp = observer(
                               <div className="fr-grid-row fr-col-12">
                                 <h4>{pieceJointe.originalFilename}</h4>
 
-                                <ButtonsGroup
+                                <TelechargerPieceJointe
                                   className="fr-grid-row fr-col-12"
-                                  inlineLayoutWhen="always"
-                                  alignment="right"
-                                  buttonsIconPosition="right"
-                                  buttonsSize="small"
-                                  buttons={[
-                                    {
-                                      children: "Télécharger",
-                                      iconId: "fr-icon-download-line",
-                                      linkProps: {
-                                        href: pieceJointe.url,
-                                        download: true,
-                                      },
-                                    } as ButtonProps,
-                                  ]}
+                                  pieceJointe={pieceJointe}
                                 />
+
+                                {pieceJointe.estEditable(dossier, agent) && (
+                                  <>
+                                    <SuppressionPieceJointe
+                                      pieceJointe={pieceJointe}
+                                      dossier={dossier}
+                                      onSupprime={() =>
+                                        selectionnerPieceJointe(
+                                          dossier.documents
+                                            .values()
+                                            ?.find(
+                                              (documents) =>
+                                                documents.length > 0,
+                                            )
+                                            ?.at(0) ?? null,
+                                        )
+                                      }
+                                    />
+                                    <ButtonsGroup
+                                      className="fr-grid-row fr-col-12"
+                                      inlineLayoutWhen="always"
+                                      alignment="right"
+                                      buttonsIconPosition="right"
+                                      buttonsSize="small"
+                                      buttons={[
+                                        {
+                                          children: "Supprimer",
+                                          iconId: "fr-icon-delete-bin-line",
+                                          priority: "secondary",
+                                          onClick: () =>
+                                            ouvrirModaleSuppressionPieceJointe(),
+                                        },
+                                        /*
+                                    TODO: réactiver quand la modale d'ajout sera étendue pour gérer l'édition
+                                    {
+                                      children: "Éditer",
+                                      iconId: "fr-icon-edit-line",
+                                      priority: "secondary",
+                                    },
+                                    */
+                                      ]}
+                                    />
+                                  </>
+                                )}
 
                                 {/* Partie spécifique au type de pièce jointe */}
                                 {pieceJointe.type ==
@@ -726,16 +573,10 @@ export const ConsultationDossierApp = observer(
                       <h3>Courrier</h3>
 
                       {dossier.getCourrierAJour() ? (
-                        <div className="fr-grid-row fr-col-12">
-                          <object
-                            data={dossier.getCourrierAJour()?.url}
-                            type="application/pdf"
-                            style={{
-                              width: "100%",
-                              aspectRatio: "210/297",
-                            }}
-                          ></object>
-                        </div>
+                        <PieceJointe
+                          className="fr-col-12"
+                          pieceJointe={dossier.getCourrierAJour()}
+                        />
                       ) : (
                         <p>Pas encore de courrier</p>
                       )}

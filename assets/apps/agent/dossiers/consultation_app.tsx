@@ -5,7 +5,12 @@ import "@/common/polyfill";
 import "@/style/agents.css";
 
 import { ConsultationDossierApp } from "@/apps/agent/dossiers/components/ConsultationDossierApp";
-import { Agent, DossierDetail, Redacteur } from "@/apps/agent/dossiers/models";
+import {
+  Agent,
+  DocumentType,
+  DossierDetail,
+  Redacteur,
+} from "@/apps/agent/dossiers/models";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import { plainToInstance } from "class-transformer";
 import React, { StrictMode } from "react";

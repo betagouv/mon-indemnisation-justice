@@ -24,8 +24,8 @@ UListContainer.allowedChildren = [UListItem];
 UListItem.requiredContainer = UListContainer;
 
 Quill.register({
-  "formats/list": List,
-  "formats/ulist": UListItem,
+  "formats/ordered": UListContainer,
+  "formats/bullet": UListItem,
 });
 
 const QuillEditor = ({
@@ -34,19 +34,23 @@ const QuillEditor = ({
   readOnly = false,
 }: {
   value: string;
-  onChange?(
-    value: string,
-    delta: DeltaStatic,
-    source: EmitterSource,
-    editor: UnprivilegedEditor,
-  ): void;
+  onChange?(value: string): void;
   readOnly?: boolean;
 }) => {
   return (
     <ReactQuill
       theme="snow"
       value={value}
-      onChange={onChange}
+      onChange={(
+        value,
+        delta: DeltaStatic,
+        source: EmitterSource,
+        editor: UnprivilegedEditor,
+      ) => {
+        if (source === "user") {
+          onChange?.(value);
+        }
+      }}
       readOnly={readOnly}
     />
   );

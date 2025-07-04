@@ -2,7 +2,6 @@ import { EtatDossier } from "@/apps/agent/dossiers/models/EtatDossier";
 import { InstitutionSecuritePublique } from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
 import {
   Adresse,
-  Courrier,
   Document,
   DocumentType,
   EtatDossierType,
@@ -158,11 +157,6 @@ export class DossierDetail extends BaseDossier {
     Document.types.map((type: DocumentType) => [type.type, []]),
   );
 
-  public corpsCourrier?: string;
-  @Expose()
-  @Type(() => Courrier)
-  public courrier?: Courrier = null;
-
   public institutionSecuritePublique?: InstitutionSecuritePublique;
 
   constructor() {
@@ -173,26 +167,32 @@ export class DossierDetail extends BaseDossier {
       enAttenteDecision: computed,
       etat: observable,
       changerEtat: action,
-      courrier: observable,
-      setCourrier: action,
+      setMontantIndemnisation: action,
       documents: observable,
       addDocument: action,
+      removeDocument: action,
       viderDocumentParType: action,
       notes: observable,
       annoter: action,
     });
   }
 
-  setCourrier(courrier: Courrier) {
-    this.courrier = courrier;
-  }
-
   annoter(notes: string): void {
     this.notes = notes;
   }
 
+  setMontantIndemnisation(montantIndemnisation: number): this {
+    this.montantIndemnisation = montantIndemnisation;
+
+    return this;
+  }
+
   public hasDocumentsType(type: DocumentType): boolean {
     return this.getDocumentsType(type).length > 0;
+  }
+
+  public getDocumentType(type: DocumentType): Document {
+    return this.documents.get(type.type)?.at(0);
   }
 
   public getDocumentsType(type: DocumentType): Document[] {
@@ -200,22 +200,28 @@ export class DossierDetail extends BaseDossier {
   }
 
   public addDocument(document: Document): void {
-    if (!this.documents.has(document.type.type)) {
+    if (!this.documents.has(document.type.type) || document.type.estUnique) {
       this.documents.set(document.type.type, []);
     }
 
     this.documents.get(document.type.type).push(document);
   }
 
+  public removeDocument(document: Document): void {
+    this.documents.set(
+      document.type.type,
+      this.documents.get(document.type.type).filter((d) => d.id != document.id),
+    );
+  }
+
   public viderDocumentParType(type: DocumentType): void {
     this.documents.set(type.type, []);
   }
 
-  public getCourrierAJour(): Document | Courrier {
+  public getCourrierAJour(): Document {
     return (
       this.documents.get(DocumentType.TYPE_COURRIER_REQUERANT.type)?.at(0) ??
-      this.documents.get(DocumentType.TYPE_COURRIER_MINISTERE.type)?.at(0) ??
-      this.courrier
+      this.documents.get(DocumentType.TYPE_COURRIER_MINISTERE.type)?.at(0)
     );
   }
 }

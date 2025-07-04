@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Service;
 
 use League\Flysystem\FilesystemOperator;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Document;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -14,7 +14,7 @@ use Symfony\Component\Process\Process;
 use Twig\Environment;
 
 /**
- * Imprime, vers un document PDF, les courriers des dossiers.
+ * Imprime, vers un document PDF, les différents documents éditables des dossiers.
  */
 class ImprimanteCourrier
 {
@@ -32,47 +32,21 @@ class ImprimanteCourrier
         $this->binDirectory = "$projectDirectory/bin";
     }
 
-    /**
-     * Imprime le courrier de décision pour un dossier.
-     *
-     * @param BrisPorte $dossier        le dossier pour lequel imprimer le courrier
-     * @param bool      $garderFichiers garder ou non les fichiers temporaires sur le disque (utile en cas de débogage)
-     *
-     * @throws \League\Flysystem\FilesystemException
-     */
-    public function imprimerLettreDecision(BrisPorte $dossier, bool $garderFichiers = false): string
+    public function imprimerDocument(Document $document): Document
     {
-        return $this->imprimerDocument('courrier/decision.html.twig', "decision_dossier_$dossier->id", [
-            'dossier' => $dossier,
-        ], $garderFichiers);
-    }
-
-    /**
-     * Imprime l'arrêté de paiement pour un dossier.
-     *
-     * @param BrisPorte $dossier        le dossier pour lequel imprimer le courrier
-     * @param bool      $garderFichiers garder ou non les fichiers temporaires sur le disque (utile en cas de débogage)
-     *
-     * @throws \League\Flysystem\FilesystemException
-     */
-    public function imprimerArretePaiement(BrisPorte $dossier, bool $garderFichiers = false): string
-    {
-        return $this->imprimerDocument('courrier/arretePaiement.html.twig', "arrete_paiement_$dossier->id", [
-            'dossier' => $dossier,
-        ], $garderFichiers);
-    }
-
-    protected function imprimerDocument(string $gabarit, string $document, array $contexte, bool $garderFichiers = false): string
-    {
+        // Création d'un préfixe de chemin temporaire, dédié à la génération des documents HTML et PDF
         $path = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
 
         $this->filesystem->mkdir($path);
 
         try {
-            $fichierHtml = "$path/$document.html";
-            $fichierPdf = "$path/$document.pdf";
+            $fichierHtml = "$path/{$document->getType()->value}_{$document->getDossier()->getId()}.html";
+            $fichierPdf = "$path/{$document->getType()->value}_{$document->getDossier()->getId()}.pdf";
             // Générer le contenu de la page HTML statique
-            $this->filesystem->dumpFile($fichierHtml, $this->twig->render($gabarit, $contexte));
+            $this->filesystem->dumpFile($fichierHtml, $this->twig->render($document->getType()->getGabarit(), [
+                'dossier' => $document->getDossier(),
+                'corps' => $document?->getCorps(),
+            ]));
 
             $impression = new Process([$this->binDirectory.'/print.js', $fichierHtml, $fichierPdf], $this->projectDirectory);
 
@@ -91,12 +65,15 @@ class ImprimanteCourrier
 
             $this->storage->write($destination, file_get_contents($fichierPdf));
 
-            return $destination;
+            $document->setFilename($destination)
+                ->setSize(filesize($fichierPdf))
+                ->setMime('application/pdf')
+                ->setOriginalFilename($document->getType()->nommerFichier($document->getDossier()));
+
+            return $document;
         } catch (\Exception $e) {
-            // Sauf si explicitement demandé, supprimer les fichiers temporaires
-            if (!$garderFichiers) {
-                $this->filesystem->remove($path);
-            }
+            // Supprimer les fichiers temporaires
+            $this->filesystem->remove($path);
 
             throw new \LogicException($e->getMessage(), previous: $e);
         }

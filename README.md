@@ -9,3 +9,11 @@ Les préjudices éligibles à une indemnisation sont:
 * 🕥 les mises sous scéllé
 * 🕥 les dysfonctionnements
 * 🕥 les sinistres
+
+## Documentation technique
+
+- [Installation](/docs/001-Installation.md)
+- [Structure du projet](/docs/002-Structure%20du%20projet.md)
+- [Base de données](/docs/003-Base%20de%20données.md)
+- [Tests](/docs/004-Tests.md)
+- [Manipulations diverses](/docs/005-Manipulations%20diverses.md)
