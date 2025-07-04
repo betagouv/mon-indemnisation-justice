@@ -47,7 +47,7 @@ class DocumentController extends AbstractController
                         'estAttestation' => $request->getPayload()->getBoolean('estAttestation'),
                     ] : [],
                     $request->getPayload()->has('typeInstitutionSecuritePublique') ? [
-                        'typeInstitutionSecuritePublique' => TypeInstitutionSecuritePublique::from(
+                        'typeInstitutionSecuritePublique' => TypeInstitutionSecuritePublique::tryFrom(
                             $request->getPayload()->getString('typeInstitutionSecuritePublique')
                         ),
                     ] : []
@@ -58,6 +58,7 @@ class DocumentController extends AbstractController
             $this->em->persist($document);
             $this->em->flush();
 
+            // En cas de mise à jour de la méta-donnée "estAttestation", recalculer l'info pour le dossier :
             if ($request->getPayload()->has('estAttestation')) {
                 $em = $this->em;
                 $document->getDossiers()->map(function (BrisPorte $brisPorte) use ($em) {

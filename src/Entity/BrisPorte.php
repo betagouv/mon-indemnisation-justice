@@ -584,9 +584,16 @@ class BrisPorte
         return $this->estLieAttestation;
     }
 
+    /**
+     *Un dossier est considéré comme lié à la "nouvelle attestation" s'il a été initié à partir d'un flash du QR code
+     * (i.e. route "") ou sinon si au moins des documents de type `TYPE_ATTESTATION_INFORMATION` est marqué comme nouvelle
+     * attestation dans ses méta-données (champs `estAttestation`).
+     *
+     * @return $this
+     */
     public function recalculerEstLieAttestation(): self
     {
-        $this->estLieAttestation = count(array_filter(
+        $this->estLieAttestation &= count(array_filter(
             $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION),
             function (Document $document): bool {
                 return true === $document->getMetaDonnee('estAttestation');
