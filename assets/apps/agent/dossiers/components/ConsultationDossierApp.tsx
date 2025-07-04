@@ -392,26 +392,29 @@ export const ConsultationDossierApp = observer(
                     <section>
                       <h3>Notes de suivi</h3>
 
-                      <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-                        <li>
-                          <button
-                            className="fr-btn fr-btn--sm fr-btn--primary"
-                            type="button"
-                            disabled={
+                      <ButtonsGroup
+                        className="fr-mt-3w"
+                        inlineLayoutWhen="always"
+                        alignment="right"
+                        buttonsIconPosition="right"
+                        buttonsSize="small"
+                        buttons={[
+                          {
+                            disabled:
                               sauvegarderEnCours ||
                               !notes?.trim() ||
-                              dossier.notes == notes
-                            }
-                            onClick={() => annoterCourrier()}
-                          >
-                            {sauvegarderEnCours ? (
-                              <>Sauvegarde en cours ...</>
-                            ) : (
-                              <>Enregistrer les changements</>
-                            )}
-                          </button>
-                        </li>
-                      </ul>
+                              dossier.notes == notes,
+                            onClick: () => annoterCourrier(),
+                            children: sauvegarderEnCours
+                              ? "Sauvegarde en cours ..."
+                              : dossier.notes == notes
+                                ? "Enregistré"
+                                : "Enregistrer les changements",
+                            iconId: "fr-icon-save-line",
+                            priority: "primary",
+                          },
+                        ]}
+                      />
 
                       <div className="fr-grid-row fr-col-12">
                         <QuillEditor
