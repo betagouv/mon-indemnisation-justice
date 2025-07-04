@@ -142,7 +142,7 @@ class DossierController extends AgentController
         ]
     )]
     #[Route('/dossier/{id}/piece-jointe/ajouter.json', name: 'agent_redacteur_ajouter_piece_jointe_dossier', methods: ['POST'])]
-    public function ajouterPieceJointe(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function ajouterPieceJointe(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, EventDispatcherInterface $eventDispatcher): Response
     {
         $type = DocumentType::tryFrom($request->request->get('type'));
         if (null === $type) {
@@ -157,19 +157,30 @@ class DossierController extends AgentController
         $content = $file->getContent();
         $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
-        $document = (new Document())
+        $document = ($type->estUnique() ? $dossier->getDocumentParType($type) : (new Document())->setType($type)->ajouterAuDossier($dossier))
             ->setFilename($filename)
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
-            ->setType($type)
             ->setAjoutRequerant(false)
             ->setMime($file->getClientMimeType());
 
-        $dossier->ajouterDocument($document);
+        if ($request->request->has('metaDonnees')) {
+            $metaDonnees = json_decode($request->request->get('metaDonnees'), true);
+
+            $document->setMetaDonnees($metaDonnees);
+
+            if (isset($metaDonnees['montantIndemnisation'])) {
+                $dossier->setPropositionIndemnisation($metaDonnees['montantIndemnisation']);
+            }
+        }
 
         $this->em->persist($document);
+        $this->em->persist($dossier);
+        $this->em->flush();
 
-        $this->dossierRepository->save($dossier);
+        if (DocumentType::TYPE_COURRIER_MINISTERE === $type && EtatDossierType::DOSSIER_OK_A_APPROUVER === $dossier->getEtatDossier()->getEtat()) {
+            $eventDispatcher->dispatch(new DossierDecideEvent($dossier));
+        }
 
         return new JsonResponse($this->normalizer->normalize($document, 'json', ['agent:detail']), Response::HTTP_OK);
     }
