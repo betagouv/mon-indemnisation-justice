@@ -73,6 +73,9 @@ export abstract class BaseDossier {
       this.etat.etat,
     );
   }
+  get estAApprouver(): boolean {
+    return [EtatDossierType.OK_A_APPROUVER].includes(this.etat.etat);
+  }
 
   get estAVerifier(): boolean {
     return [EtatDossierType.OK_A_VERIFIER].includes(this.etat.etat);

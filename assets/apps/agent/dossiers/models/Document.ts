@@ -12,13 +12,6 @@ export class DocumentType {
     public readonly estRequerant: boolean = true,
   ) {}
 
-  estAjoutableAgent(): boolean {
-    return ![
-      DocumentType.TYPE_COURRIER_MINISTERE,
-      DocumentType.TYPE_ARRETE_PAIEMENT,
-    ].includes(this);
-  }
-
   public static readonly TYPE_ATTESTATION_INFORMATION = new DocumentType(
     "attestation_information",
     "Attestation à remettre en cas d'erreur de porte",

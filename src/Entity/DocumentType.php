@@ -47,6 +47,17 @@ enum DocumentType: string
         };
     }
 
+    public function estUnique(): bool
+    {
+        return match ($this) {
+            self::TYPE_COURRIER_MINISTERE,
+            self::TYPE_COURRIER_REQUERANT,
+            self::TYPE_ARRETE_PAIEMENT => true,
+
+            default => false,
+        };
+    }
+
     /**
      * Retourne le chemin vers le gabarit (i.e. "template") twig à utiliser pour la génération du document.
      */

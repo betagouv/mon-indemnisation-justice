@@ -1,4 +1,10 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, {
+  ClipboardEvent,
+  FormEvent,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import {
   Agent,
   Document,
@@ -10,6 +16,7 @@ import { plainToInstance } from "class-transformer";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Select } from "@codegouvfr/react-dsfr/Select";
+import { Input } from "@codegouvfr/react-dsfr/Input";
 
 const _modale = createModal({
   id: "modale-ajouter-piece-jointe",
@@ -34,6 +41,10 @@ const component = function AjoutPieceJointe({
   const [typePJ, setTypePj]: [DocumentType, (typePJ?: DocumentType) => void] =
     useState<DocumentType>(null);
 
+  const [montantIndemnisation, setMontantIndemnisation] = useState<number>(
+    dossier.montantIndemnisation,
+  );
+
   // Pièce jointe à téléverser
   const [nouvellePieceJointe, setNouvellePieceJointe]: [
     File | null,
@@ -55,15 +66,26 @@ const component = function AjoutPieceJointe({
     async ({
       typePJ,
       nouvellePieceJointe,
+      montantIndemnisation,
     }: {
       typePJ: DocumentType;
       nouvellePieceJointe: File;
+      montantIndemnisation?: number;
     }) => {
       setSauvegarderEnCours(true);
 
       const payload = new FormData();
       payload.append("file", nouvellePieceJointe);
       payload.append("type", typePJ.type);
+
+      if (montantIndemnisation) {
+        payload.append(
+          "metaDonnees",
+          JSON.stringify({
+            montantIndemnisation,
+          }),
+        );
+      }
 
       const response = await fetch(
         `/agent/redacteur/dossier/${dossier.id}/piece-jointe/ajouter.json`,
@@ -80,6 +102,10 @@ const component = function AjoutPieceJointe({
         const data = await response.json();
         const document = plainToInstance(Document, data);
         dossier.addDocument(document);
+        if (montantIndemnisation) {
+          dossier.setMontantIndemnisation(montantIndemnisation);
+        }
+
         _modale.close();
         onAjoute?.(document);
         refChampFichier.current.value = null;
@@ -130,14 +156,52 @@ const component = function AjoutPieceJointe({
           <option value="" disabled hidden>
             Sélectionnez un type
           </option>
-          {Document.types
-            .filter((type: DocumentType) => type.estAjoutableAgent())
-            .map((type: DocumentType) => (
-              <option value={type.type} key={type.type}>
-                {type.libelle}
-              </option>
-            ))}
+          {Document.types.map((type: DocumentType) => (
+            <option value={type.type} key={type.type}>
+              {type.libelle}
+            </option>
+          ))}
         </Select>
+
+        {dossier.estAApprouver &&
+          typePJ == DocumentType.TYPE_COURRIER_MINISTERE && (
+            <Input
+              label="Montant de l'indemnisation"
+              iconId="fr-icon-money-euro-circle-line"
+              hintText="Également affiché au réquréant sur la page de consultation"
+              nativeInputProps={{
+                defaultValue: montantIndemnisation,
+                onPaste: (e: ClipboardEvent<HTMLInputElement>) => {
+                  (e.target as HTMLInputElement).value = e.clipboardData
+                    .getData("text")
+                    .replace(/\s/g, "");
+
+                  e.preventDefault();
+                  const value = (e.target as HTMLInputElement).value;
+                  const montant = value?.match(/^\d+(.\d{0,2})?$/)
+                    ? parseFloat(value?.replace(",", "."))
+                    : null;
+
+                  console.log(value, montant);
+
+                  setMontantIndemnisation(montant);
+                },
+                onChange: (e: FormEvent<HTMLInputElement>) => {
+                  const value = (e.target as HTMLInputElement).value;
+                  const montant = value?.match(/^\d+(.\d{0,2})?$/)
+                    ? parseFloat(value?.replace(",", "."))
+                    : null;
+
+                  console.log(value, montant);
+
+                  setMontantIndemnisation(montant);
+                },
+                type: "number",
+                step: ".01",
+                inputMode: "numeric",
+              }}
+            />
+          )}
 
         <Upload
           className="fr-my-2w"
@@ -176,7 +240,15 @@ const component = function AjoutPieceJointe({
               priority: "primary",
               disabled: sauvegardeEnCours || !typePJ || !nouvellePieceJointe,
               onClick: () =>
-                ajouterPieceJointe({ typePJ, nouvellePieceJointe }),
+                ajouterPieceJointe({
+                  typePJ,
+                  nouvellePieceJointe,
+                  montantIndemnisation:
+                    dossier.estAApprouver &&
+                    typePJ == DocumentType.TYPE_COURRIER_MINISTERE
+                      ? montantIndemnisation
+                      : undefined,
+                }),
               iconId: "fr-icon-file-add-line",
               children: "Ajouter",
             },
