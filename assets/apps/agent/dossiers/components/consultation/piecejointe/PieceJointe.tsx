@@ -1,8 +1,7 @@
 import React from "react";
 
-import {Document} from "@/apps/agent/dossiers/models";
-//import { useStyles } from "tss-react/dsfr";
-import {fr} from "@codegouvfr/react-dsfr";
+import { Document } from "@/apps/agent/dossiers/models";
+import { fr } from "@codegouvfr/react-dsfr";
 
 export const PieceJointe = function PieceJointe({
   pieceJointe,
@@ -14,7 +13,7 @@ export const PieceJointe = function PieceJointe({
   //const { cx } = useStyles();
 
   return (
-    <div className={`${fr.cx("fr-grid-row")} ${className ?? ''}`}>
+    <div className={`${fr.cx("fr-grid-row")} ${className ?? ""}`}>
       {pieceJointe.isPDF() ? (
         <object
           data={pieceJointe.url}

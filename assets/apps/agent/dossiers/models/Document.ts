@@ -65,7 +65,7 @@ export class DocumentType {
   public static readonly TYPE_COURRIER_REQUERANT = new DocumentType(
     "courrier_requerant",
     "Courrier de décision signé du requérant",
-    false,
+    true,
     true,
   );
 
@@ -84,6 +84,7 @@ export class Document {
   public readonly estAjoutRequerant?: boolean;
 
   public corps?: string;
+  public readonly filename: string;
   public fileHash: string;
   @Transform(
     ({ value }: { value: string }): DocumentType =>

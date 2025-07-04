@@ -5,7 +5,7 @@ import {
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Download from "@codegouvfr/react-dsfr/Download";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useCallback, useState } from "react";
 
 import {
   Agent,
@@ -128,6 +128,28 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
     }
   };
 
+  const changerMontantIndemnisation = useCallback(
+    async (montantIndemnisation: number) => {
+      const response = await fetch(
+        `/agent/redacteur/dossier/${dossier.id}/proposition-indemnisation/changer-montant.json`,
+        {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            montantIndemnisation,
+          }),
+        },
+      );
+
+      if (response.ok) {
+        dossier.setMontantIndemnisation(montantIndemnisation);
+      }
+    },
+    [dossier.id],
+  );
+
   const signerCourrier = async (fichier: File) => {
     setSauvegardeEnCours(true);
 
@@ -151,6 +173,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
       if (response.ok) {
         const data = await response.json();
         dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+        dossier.addDocument(plainToInstance(Document, data.document));
       }
     } catch (e) {
       console.error(e);
@@ -238,6 +261,9 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
                       detecterMontantIndemnisation(corpsCourrier);
                     }
                   }}
+                  onBlur={() =>
+                    changerMontantIndemnisation(montantIndemnisation)
+                  }
                   aria-describedby="dossier-decision-acceptation-indemnisation-messages"
                   id="dossier-decision-acceptation-indemnisation-champs"
                   type="number"
@@ -320,6 +346,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
             alignment="right"
             inlineLayoutWhen="always"
             buttonsIconPosition="right"
+            buttonsSize="small"
             buttons={[
               {
                 priority: "tertiary no outline",
@@ -352,6 +379,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
                     {
                       iconId: "fr-icon-edit-line",
                       onClick: () => etat.setDecision(true),
+                      priority: "secondary",
                       children: "Passer à la signature",
                     },
                   ] as ButtonProps[])),
@@ -402,6 +430,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
               alignment="right"
               inlineLayoutWhen="always"
               buttonsIconPosition="right"
+              buttonsSize="small"
               buttons={[
                 {
                   priority: "tertiary no outline",
@@ -470,6 +499,7 @@ export const ConfirmerModale = observer(function ConfirmerActionModale({
               alignment="right"
               inlineLayoutWhen="always"
               buttonsIconPosition="right"
+              buttonsSize="small"
               buttons={[
                 {
                   priority: "tertiary no outline",

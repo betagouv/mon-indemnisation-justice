@@ -10,7 +10,7 @@ import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
@@ -55,6 +55,17 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
   // Numéro de l'étape active sur le formulaire de signature
   const [etape, setEtape] = useState(0);
 
+  // URL du document en cours de consultation
+  const courrierAffiche = useMemo<Document>(
+    () =>
+      dossier.getDocumentType(
+        dossier.estAccepteRequerant()
+          ? DocumentType.TYPE_COURRIER_REQUERANT
+          : DocumentType.TYPE_COURRIER_MINISTERE,
+      ),
+    [dossier.etat.id, dossier.documents],
+  );
+
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
     File | null,
@@ -94,14 +105,8 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
 
       if (response.ok) {
         const data = await response.json();
-        if (data.documents.courrier_requerant?.length) {
-          dossier.addDocument(
-            plainToInstance(Document, data.documents.courrier_requerant?.at(0)),
-          );
-        }
-        if (data.etat) {
-          dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-        }
+        dossier.addDocument(plainToInstance(Document, data.document));
+        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
       }
     } catch (e) {
       console.error(e);
@@ -408,15 +413,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
 
         <div className="fr-col-12">
           <object
-            data={
-              dossier
-                .getDocumentsType(
-                  dossier.estAccepteRequerant()
-                    ? DocumentType.TYPE_COURRIER_REQUERANT
-                    : DocumentType.TYPE_COURRIER_MINISTERE,
-                )
-                .at(0)?.url
-            }
+            data={`/requerant/document/${courrierAffiche.id}/${courrierAffiche.filename}`}
             type="application/pdf"
             style={{ width: "100%", aspectRatio: "210 / 297" }}
           ></object>

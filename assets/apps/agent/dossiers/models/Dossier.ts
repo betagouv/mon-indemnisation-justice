@@ -167,6 +167,7 @@ export class DossierDetail extends BaseDossier {
       enAttenteDecision: computed,
       etat: observable,
       changerEtat: action,
+      setMontantIndemnisation: action,
       documents: observable,
       addDocument: action,
       removeDocument: action,
@@ -178,6 +179,12 @@ export class DossierDetail extends BaseDossier {
 
   annoter(notes: string): void {
     this.notes = notes;
+  }
+
+  setMontantIndemnisation(montantIndemnisation: number): this {
+    this.montantIndemnisation = montantIndemnisation;
+
+    return this;
   }
 
   public hasDocumentsType(type: DocumentType): boolean {
