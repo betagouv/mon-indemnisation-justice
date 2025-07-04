@@ -51,7 +51,7 @@ class DocumentController extends AbstractController
                     ->setAjoutRequerant(true)
                     ->setSize($file->getSize())
                     ->setType($type)
-                    ->setMime($file->getMimeType());
+                    ->setMime($file->getClientMimeType());
 
                 $dossier->ajouterDocument($document);
 
@@ -65,6 +65,7 @@ class DocumentController extends AbstractController
             'id' => $document->getId(),
             'filename' => $document->getFilename(),
             'size' => $document->getSize(),
+            'mime' => $document->getMime(),
             'type' => $document->getType(),
             'originalFilename' => $document->getOriginalFilename(),
         ]);

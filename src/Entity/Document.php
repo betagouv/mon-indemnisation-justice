@@ -37,7 +37,7 @@ class Document
 
     #[Groups(['dossier:lecture', 'agent:detail'])]
     #[ORM\Column(nullable: true)]
-    private ?string $size = null;
+    private ?int $size = null;
 
     #[Groups(['dossier:lecture', 'requerant:detail', 'agent:detail'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -176,12 +176,12 @@ class Document
         return $this->dossiers->first();
     }
 
-    public function getSize(): ?string
+    public function getSize(): ?int
     {
         return $this->size;
     }
 
-    public function setSize(?string $size): static
+    public function setSize(?int $size): static
     {
         $this->size = $size;
 
