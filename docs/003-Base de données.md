@@ -192,36 +192,31 @@ class sessions {
    varchar(128) sess_id
 }
 
-agents  -->  agent_fournisseurs_identites : fournisseur_identite_uid:uid
-bris_porte  -->  adresse : adresse_id:id
-bris_porte  -->  agents : redacteur_id:id
-bris_porte  -->  dossier_etats : etat_actuel_id:id
-bris_porte  -->  eligibilite_tests : test_eligibilite_id:id
-bris_porte  -->  institutions_securite_publique : type_institution_securite_publique:type
-bris_porte  -->  requerants : requerant_id:
-bris_porte  -->  requerants : requerant_id:id
-document  -->  agents : validateur_id:id
-document_dossiers  -->  bris_porte : dossier_id:id
-document_dossiers  -->  document : document_id:id
-document_dossiers  -->  document : document_id:
-dossier_courriers  -->  agents : agent_id:id
-dossier_courriers  -->  bris_porte : dossier_id:id
-dossier_courriers  -->  requerants : requerant_id:id
-dossier_courriers  -->  requerants : requerant_id:
-dossier_etats  -->  agents : agent_id:id
-dossier_etats  -->  bris_porte : dossier_id:id
-dossier_etats  -->  requerants : requerant_id:id
-dossier_etats  -->  requerants : requerant_id:
-eligibilite_tests  -->  geo_departements : departement_code:code
-eligibilite_tests  -->  requerants : requerant_id:
-eligibilite_tests  -->  requerants : requerant_id:id
-geo_codes_postaux  -->  geo_communes : code_commune:code
-geo_communes  -->  geo_departements : departement_code:code
-geo_departements  -->  geo_regions : region_code:code
-personne_physique  -->  geo_codes_postaux : code_postal_naissance_id:id
-personne_physique  -->  geo_pays : pays_naissance:code
-personne_physique  -->  geo_pays : code_postal_naissance_id:code
-requerants  -->  adresse : adresse_id:id
-requerants  -->  personne_morale : personne_morale_id:id
-requerants  -->  personne_physique : personne_physique_id:id
+agents  -->  agent_fournisseurs_identites : fournisseur_identite_uid => uid
+bris_porte  -->  adresse : adresse_id => id
+bris_porte  -->  agents : redacteur_id => id
+bris_porte  -->  dossier_etats : etat_actuel_id => id
+bris_porte  -->  eligibilite_tests : test_eligibilite_id => id
+bris_porte  -->  institutions_securite_publique : type_institution_securite_publique => type
+bris_porte  -->  requerants : requerant_id => id
+document  -->  agents : validateur_id => id
+document_dossiers  -->  bris_porte : dossier_id => id
+document_dossiers  -->  document : document_id => id
+dossier_courriers  -->  agents : agent_id => id
+dossier_courriers  -->  bris_porte : dossier_id => id
+dossier_courriers  -->  requerants : requerant_id => id
+dossier_etats  -->  agents : agent_id => id
+dossier_etats  -->  bris_porte : dossier_id => id
+dossier_etats  -->  requerants : requerant_id => id
+eligibilite_tests  -->  geo_departements : departement_code => code
+eligibilite_tests  -->  requerants : requerant_id => id
+geo_codes_postaux  -->  geo_communes : code_commune => code
+geo_communes  -->  geo_departements : departement_code => code
+geo_departements  -->  geo_regions : region_code => code
+personne_physique  -->  geo_codes_postaux : code_postal_naissance_id => id
+personne_physique  -->  geo_pays : pays_naissance => code
+personne_physique  -->  geo_pays : code_postal_naissance_id => code
+requerants  -->  adresse : adresse_id => id
+requerants  -->  personne_morale : personne_morale_id => id
+requerants  -->  personne_physique : personne_physique_id => id
 ```
