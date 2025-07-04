@@ -133,6 +133,7 @@ services:
     working_dir: /app
     volumes:
       - ./.docker/proconnect:/app/data/
+
   playwright:
     profiles:
       - playwright
