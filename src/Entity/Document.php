@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\DocumentRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -23,8 +22,7 @@ class Document
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['dossier:lecture'])]
-    #[Ignore]
+    #[Groups(['dossier:lecture', 'requerant:detail'])]
     private ?string $filename = null;
 
     #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
@@ -261,13 +259,5 @@ class Document
         $this->metaDonnees = $merge ? array_merge($this->metaDonnees ?? [], $metaDonnees) : $metaDonnees;
 
         return $this;
-    }
-
-    #[Groups(['requerant:detail'])]
-    #[SerializedName('url')]
-    public function getRequerantUrl(): ?string
-    {
-        // URL pointant sur la route "agent_document_download"
-        return "/requerant/document/$this->id/{$this->filename}";
     }
 }

@@ -285,6 +285,23 @@ class DossierController extends AgentController
         return new JsonResponse($this->normalizer->normalize($propositionIndemnisation, 'json', ['agent:detail']));
     }
 
+    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
+    #[Route('/dossier/{id}/proposition-indemnisation/changer-montant.json', name: 'agent_redacteur_editer_courrier_dossier', methods: ['PUT'])]
+    public function changerMontantIndemnisation(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        if (!$dossier->getEtatDossier()->estASigner()) {
+            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
+        }
+
+        $montantIndemnisation = floatval($request->getPayload()->get('montantIndemnisation'));
+        $dossier->setPropositionIndemnisation($montantIndemnisation);
+
+        $this->em->persist($dossier);
+        $this->em->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
     #[IsGranted(
         attribute: new Expression('user.instruit(subject["dossier"])'),
         subject: [
@@ -335,23 +352,6 @@ class DossierController extends AgentController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
-    #[Route('/dossier/{id}/courrier/editer.json', name: 'agent_redacteur_editer_courrier_dossier', methods: ['POST'])]
-    public function editerCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
-    {
-        if (!$dossier->getEtatDossier()->estASigner()) {
-            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
-        }
-
-        $montantIndemnisation = floatval($request->getPayload()->get('montantIndemnisation'));
-        $dossier->setPropositionIndemnisation($montantIndemnisation);
-
-        $this->em->persist($dossier);
-        $this->em->flush();
-
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
-    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/signer-courrier.json', name: 'agent_redacteur_signer_courrier_dossier', methods: ['POST'])]
     public function signerCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, EventDispatcherInterface $eventDispatcher): Response
     {
@@ -383,9 +383,7 @@ class DossierController extends AgentController
         $eventDispatcher->dispatch(new DossierDecideEvent($dossier));
 
         return new JsonResponse([
-            'documents' => [
-                DocumentType::TYPE_COURRIER_MINISTERE->value => $this->normalizer->normalize($document, 'json', ['agent:detail']),
-            ],
+            'document' => $this->normalizer->normalize($document, 'json', ['agent:detail']),
             'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }

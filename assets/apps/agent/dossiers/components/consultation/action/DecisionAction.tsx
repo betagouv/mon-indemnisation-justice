@@ -264,6 +264,7 @@ export const DeciderModale = observer(function DeciderActionModale({
             inlineLayoutWhen="always"
             buttonsIconPosition="right"
             alignment="right"
+            buttonsSize="small"
             buttons={[
               {
                 children: "Annuler",
@@ -275,6 +276,8 @@ export const DeciderModale = observer(function DeciderActionModale({
               },
               {
                 disabled: !montantIndemnisation,
+                priority: "secondary",
+                iconId: "fr-icon-edit-box-line",
                 onClick: async () => {
                   await etatDecision.rejeter(dossier, motifRejet);
                   setEditeurMode("edition");
@@ -329,6 +332,7 @@ export const DeciderModale = observer(function DeciderActionModale({
             inlineLayoutWhen="always"
             buttonsIconPosition="right"
             alignment="right"
+            buttonsSize="small"
             buttons={[
               {
                 children: "Annuler",
@@ -340,6 +344,7 @@ export const DeciderModale = observer(function DeciderActionModale({
               },
               {
                 disabled: !montantIndemnisation,
+                priority: "secondary",
                 iconId: "fr-icon-edit-box-line",
                 onClick: async () => {
                   await etatDecision.accepter(dossier, montantIndemnisation);
@@ -369,6 +374,7 @@ export const DeciderModale = observer(function DeciderActionModale({
             inlineLayoutWhen="always"
             buttonsIconPosition="right"
             alignment="right"
+            buttonsSize="small"
             buttons={[
               {
                 children: "Annuler",

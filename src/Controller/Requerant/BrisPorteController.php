@@ -124,16 +124,14 @@ class BrisPorteController extends RequerantController
         $content = $file->getContent();
         $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
-        $acceptation = (new Document())
+
+        $acceptation = $dossier->getOrCreateDeclarationAcceptation()
             ->setFilename($filename)
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
-            ->setType(DocumentType::TYPE_COURRIER_REQUERANT)
-            ->setMime($file->getMimeType());
+            ->setMime($file->getClientMimeType());
 
         $this->em->persist($acceptation);
-
-        $dossier->ajouterDocument($acceptation);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
         try {
@@ -167,9 +165,7 @@ class BrisPorteController extends RequerantController
 
         return new JsonResponse([
             'etat' => $normalizer->normalize($dossier->getEtatDossier(), 'json', ['requerant:detail']),
-            'documents' => [
-                DocumentType::TYPE_COURRIER_MINISTERE->value => $normalizer->normalize($dossier->getDocumentsParType(DocumentType::TYPE_COURRIER_REQUERANT), 'json', ['groups' => 'requerant:detail']),
-            ],
+            'document' => $normalizer->normalize($acceptation, 'json', ['groups' => 'requerant:detail']),
         ], Response::HTTP_OK);
     }
 }

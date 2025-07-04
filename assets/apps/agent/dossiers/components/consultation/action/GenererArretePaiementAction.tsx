@@ -117,6 +117,7 @@ export const GenererArretePaiementModale = observer(
               inlineLayoutWhen="always"
               alignment="right"
               buttonsIconPosition="right"
+              buttonsSize="small"
               buttons={[
                 {
                   children: "Annuler",
@@ -191,6 +192,7 @@ export const GenererArretePaiementModale = observer(
               inlineLayoutWhen="always"
               alignment="right"
               buttonsIconPosition="right"
+              buttonsSize="small"
               buttons={[
                 {
                   children: "Annuler",
