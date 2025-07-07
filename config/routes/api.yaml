@@ -1,4 +1,6 @@
-api_agent_document_imprimer:
-  path: /api/agent/document/imprimer
-  controller: MonIndemnisationJustice\Api\Agent\Document\ImprimerDocumentEndpoint
-  methods: GET
+# config/routes/attributes.yaml
+controllers:
+    resource:
+        path: ../../src/Api/
+        namespace: MonIndemnisationJustice\Api
+    type: attribute

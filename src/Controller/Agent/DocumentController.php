@@ -12,7 +12,6 @@ use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\TypeInstitutionSecuritePublique;
-use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -24,7 +23,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
 #[Route('/agent/document')]
@@ -123,25 +121,5 @@ class DocumentController extends AbstractController
         $this->em->flush();
 
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
-    }
-
-    #[Route('/{id}/imprimer', name: 'agent_document_imprimer', methods: ['PUT'])]
-    public function imprimer(#[MapEntity(id: 'id')] Document $document, Request $request, NormalizerInterface $normalizer, ImprimanteCourrier $imprimanteCourrier): Response
-    {
-        if (!$document->estEditable()) {
-            return new JsonResponse([
-                'error' => 'Ce document ne peut être édité',
-            ],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
-        $document->setCorps($request->getPayload()->get('corps'));
-
-        $document = $imprimanteCourrier->imprimerDocument($document);
-        $this->em->persist($document);
-        $this->em->flush();
-
-        return new JsonResponse($normalizer->normalize($document, 'json', ['groups' => ['agent:detail']]));
     }
 }

@@ -20,7 +20,7 @@ class Document
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
-    private ?int $id = null;
+    protected ?int $id = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['dossier:lecture', 'requerant:detail'])]
@@ -56,14 +56,14 @@ class Document
     protected ?bool $estAjoutRequerant = null;
 
     #[ORM\Column(nullable: true)]
-    protected ?bool $estValide = null;
+    public ?bool $estValide = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateValidation = null;
+    public ?\DateTimeInterface $dateValidation = null;
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    protected ?Agent $validateur = null;
+    public ?Agent $validateur = null;
 
     #[Groups(['agent:detail'])]
     #[ORM\Column(type: 'text', nullable: true)]
