@@ -114,19 +114,16 @@ export class Document {
   }
 
   get tailleFichier(): string {
+    console.log(this.size);
+
     if (!this.size) {
       return "";
     }
 
-    if (this.size < 1024) {
-      return `${this.size} o`;
-    } else {
-      if (this.size < 1024 * 1024) {
-        return `${this.size % 1024} ko`;
-      } else {
-        return `${this.size % (1024 * 1024)} mo`;
-      }
-    }
+    const k = 1024;
+    const sizes = ["o", "ko", "mo", "go", "to"];
+    const i = Math.floor(Math.log(this.size) / Math.log(k));
+    return parseFloat((this.size / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
 
   get infoFichier(): string {

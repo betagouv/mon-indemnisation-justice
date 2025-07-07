@@ -197,6 +197,7 @@ export const GenererArretePaiementModale = observer(
                 {
                   children: "Annuler",
                   priority: "tertiary no outline",
+                  onClick: () => _modale.close(),
                 },
                 {
                   children: "Éditer l'arrêté de paiement",
@@ -236,7 +237,7 @@ export const genererArretePaiementBoutons = ({
   return estEnAttenteEditionArretePaiement({ dossier, agent })
     ? [
         {
-          children: "Valider l'arrêté de paiement",
+          children: "Signer l'arrêté de paiement",
           iconId: "fr-icon-printer-line",
           onClick: () => _modale.open(),
         } as ButtonProps,

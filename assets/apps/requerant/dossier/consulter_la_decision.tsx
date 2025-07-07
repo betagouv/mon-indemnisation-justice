@@ -123,7 +123,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
           <h1>Votre demande d'indemnisation</h1>
 
           <p>
-            La demande d'indemnisation que vous avez initié le{" "}
+            La demande d'indemnisation que vous avez initiée le{" "}
             {dossier.dateDepot.toLocaleString("fr-FR", {
               weekday: "long",
               day: "numeric",

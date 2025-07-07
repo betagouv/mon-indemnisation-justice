@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[\AllowDynamicProperties]
 class Document
 {
     #[ORM\Id]
