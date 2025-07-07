@@ -261,6 +261,23 @@ class BrisPorte
         return $this;
     }
 
+    public function getHistoriqueEtats(): Collection
+    {
+        return $this->historiqueEtats;
+    }
+
+    /**
+     * @param EtatDossier[] $etats
+     */
+    public function setHistoriqueEtats(array $etats): void
+    {
+        foreach ($etats as $etat) {
+            $this->historiqueEtats->add($etat->setDossier($this));
+        }
+
+        $this->etatDossier = $this->historiqueEtats->last();
+    }
+
     public function estASigner(): bool
     {
         return $this->etatDossier->estASigner();
