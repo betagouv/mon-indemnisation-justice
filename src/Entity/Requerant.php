@@ -21,6 +21,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SUB', fields: ['sub'])]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[\AllowDynamicProperties]
 class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 {
     // Le rôle ROLE_REQUERANT est celui donné au porteur d'une requête d'indemnisation

@@ -30,6 +30,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'bris_porte')]
+#[\AllowDynamicProperties]
 class BrisPorte
 {
     #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
