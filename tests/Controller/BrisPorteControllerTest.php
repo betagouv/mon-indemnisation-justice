@@ -4,93 +4,22 @@ namespace MonIndemnisationJustice\Tests\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController;
-use MonIndemnisationJustice\Entity\Adresse;
-use MonIndemnisationJustice\Entity\Civilite;
 use MonIndemnisationJustice\Entity\GeoDepartement;
-use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class BrisPorteControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
     protected EntityManagerInterface $em;
-    protected UserPasswordHasherInterface $passwordHasher;
-
-    public const REF_TEST_EN_EXPERIMENTATION_COMPLET = 'XP_COMPLET';
-    public const REF_TEST_EN_EXPERIMENTATION_INCOMPLET = 'XP_INCOMPLET';
-    public const REF_TEST_HORS_EXPERIMENTATION = 'HORS_XP';
-
-    protected array $testsEligibilite = [];
 
     public function setUp(): void
     {
         $this->client = self::createClient(['debug' => 0]);
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
-        $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
-
-        $requerant = $this->em
-            ->getRepository(Requerant::class)
-            ->findOneBy(['email' => 'raquel.randt@courriel.fr']);
-
-        if (null !== $requerant) {
-            $this->em->remove($requerant);
-            $this->em->flush();
-        }
-
-        $requerant = (new Requerant())
-            ->setAdresse(
-                (new Adresse())
-                    ->setLigne1('12 rue des Oliviers')
-                    ->setLocalite('Nantes')
-                    ->setCodePostal('44100')
-            )
-            ->setPersonnePhysique(
-                (new PersonnePhysique())
-                    ->setEmail('raquel.randt@courriel.fr')
-                    ->setCivilite(Civilite::MME)
-                    ->setPrenom1('Raquel')
-                    ->setNom('Randt')
-            )
-            ->setEmail('raquel.randt@courriel.fr')
-            ->setRoles([Requerant::ROLE_REQUERANT]);
-        $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
-
-        $this->em->persist($requerant);
-
-        $departementEnExperimentation = $this->em->getRepository(GeoDepartement::class)->findOneBy(['code' => '35']);
-        $departementHorsExperimentation = $this->em->getRepository(GeoDepartement::class)->findOneBy(['code' => '44']);
-
-        $testEnExperimentationComplet = TestEligibilite::fromArray([
-            'departement' => $departementEnExperimentation,
-            'estVise' => true,
-            'requerant' => $requerant,
-            'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
-        ]);
-        $this->em->persist($testEnExperimentationComplet);
-
-        $testEnExperimentationIncomplet = TestEligibilite::fromArray([
-            'departement' => $departementEnExperimentation,
-            'estVise' => true,
-            'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
-        ]);
-        $this->em->persist($testEnExperimentationIncomplet);
-
-        $testHorsExperimentation = TestEligibilite::fromArray([
-            'departement' => $departementHorsExperimentation,
-            'estVise' => true,
-            'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
-        ]);
-        $this->em->persist($testHorsExperimentation);
-        $this->em->flush();
-
-        $this->testsEligibilite[self::REF_TEST_EN_EXPERIMENTATION_COMPLET] = $testEnExperimentationComplet->id;
-        $this->testsEligibilite[self::REF_TEST_EN_EXPERIMENTATION_INCOMPLET] = $testEnExperimentationIncomplet->id;
-        $this->testsEligibilite[self::REF_TEST_HORS_EXPERIMENTATION] = $testHorsExperimentation->id;
     }
 
     protected function initializeSession(array $values = []): void
@@ -109,13 +38,62 @@ class BrisPorteControllerTest extends WebTestCase
         }
     }
 
+    protected function getTestEligibiliteEnXpComplet(): callable
+    {
+        return function (EntityManagerInterface $em) {
+            $test = TestEligibilite::fromArray([
+                'departement' => $em->getRepository(GeoDepartement::class)->find('35'),
+                'description' => 'Test en expérimentation complet',
+                'estVise' => true,
+                'requerant' => $em->getRepository(Requerant::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
+                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
+
+            $em->persist($test);
+            $em->flush();
+
+            return $test;
+        };
+    }
+
+    protected function getTestEligibiliteEnXpIncomplet(): callable
+    {
+        return function (EntityManagerInterface $em) {
+            $test = TestEligibilite::fromArray([
+                'departement' => $em->getRepository(GeoDepartement::class)->find('35'),
+                'description' => 'Test en expérimentation incomplet',
+                'estVise' => true,
+                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
+
+            $em->persist($test);
+            $em->flush();
+
+            return $test;
+        };
+    }
+
+    protected function getTestEligibiliteHorsXp(): callable
+    {
+        return function (EntityManagerInterface $em) {
+            $test = TestEligibilite::fromArray([
+                'departement' => $em->getRepository(GeoDepartement::class)->find('44'),
+                'description' => 'Test hors expérimentation',
+                'estVise' => true,
+                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
+
+            $em->persist($test);
+            $em->flush();
+
+            return $test;
+        };
+    }
+
     public function donnesTesterMonEligibilite()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/creation-de-compte'],
-            'test_en_xp_incomplet' => [self::REF_TEST_EN_EXPERIMENTATION_INCOMPLET, '/bris-de-porte/creation-de-compte'],
-            'test_en_xp_complet' => [self::REF_TEST_EN_EXPERIMENTATION_COMPLET, '/bris-de-porte/finaliser-la-creation', true],
-            'test_hors_xp' => [self::REF_TEST_HORS_EXPERIMENTATION, '/bris-de-porte/creation-de-compte'],
+            'test_en_xp_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_en_xp_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation', true],
+            'test_hors_xp' => [$this->getTestEligibiliteHorsXp(), '/bris-de-porte/creation-de-compte'],
         ];
     }
 
@@ -131,10 +109,12 @@ class BrisPorteControllerTest extends WebTestCase
      *
      * @dataProvider donnesTesterMonEligibilite
      */
-    public function testTesterMonEligibilite(?string $refTestPrecedent = null, ?string $redirection = null, bool $aRequerant = false): void
+    public function testTesterMonEligibilite(?callable $getTestEligibilite = null, ?string $redirection = null, bool $aRequerant = false): void
     {
-        if ($refTestPrecedent) {
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $this->testsEligibilite[$refTestPrecedent]]);
+        if ($getTestEligibilite) {
+            /** @var TestEligibilite $testEligibilite */
+            $testEligibilite = $getTestEligibilite($this->em);
+            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
         }
 
         $this->client->request('GET', '/bris-de-porte/tester-mon-eligibilite');
@@ -186,9 +166,9 @@ class BrisPorteControllerTest extends WebTestCase
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_en_xp_incomplet' => [self::REF_TEST_EN_EXPERIMENTATION_INCOMPLET, '/bris-de-porte/creation-de-compte'],
-            'test_en_xp_complet' => [self::REF_TEST_EN_EXPERIMENTATION_COMPLET, '/bris-de-porte/finaliser-la-creation'],
-            'test_hors_xp' => [self::REF_TEST_HORS_EXPERIMENTATION],
+            'test_en_xp_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_en_xp_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
+            'test_hors_xp' => [$this->getTestEligibiliteHorsXp()],
         ];
     }
 
@@ -198,10 +178,12 @@ class BrisPorteControllerTest extends WebTestCase
      *
      * @dataProvider donnesContactezNous
      */
-    public function testContactezNous(?string $refTestPrecedent = null, ?string $redirection = null): void
+    public function testContactezNous(?callable $getTestEligibilite = null, ?string $redirection = null): void
     {
-        if ($refTestPrecedent) {
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $this->testsEligibilite[$refTestPrecedent]]);
+        if ($getTestEligibilite) {
+            /** @var TestEligibilite $testEligibilite */
+            $testEligibilite = $getTestEligibilite($this->em);
+            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
         }
 
         $this->client->request('GET', '/bris-de-porte/contactez-nous');
@@ -217,9 +199,9 @@ class BrisPorteControllerTest extends WebTestCase
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_en_xp_incomplet' => [self::REF_TEST_EN_EXPERIMENTATION_INCOMPLET],
-            'test_en_xp_complet' => [self::REF_TEST_EN_EXPERIMENTATION_COMPLET, '/bris-de-porte/finaliser-la-creation'],
-            'test_hors_xp' => [self::REF_TEST_HORS_EXPERIMENTATION, '/bris-de-porte/contactez-nous'],
+            'test_en_xp_incomplet' => [$this->getTestEligibiliteEnXpIncomplet()],
+            'test_en_xp_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
+            'test_hors_xp' => [$this->getTestEligibiliteHorsXp(), '/bris-de-porte/contactez-nous'],
         ];
     }
 
@@ -229,10 +211,12 @@ class BrisPorteControllerTest extends WebTestCase
      *
      * @dataProvider donnesCreationDeCompte
      */
-    public function testCreationDeCompte(?string $refTestPrecedent = null, ?string $redirection = null): void
+    public function testCreationDeCompte(?callable $getTestEligibilite = null, ?string $redirection = null): void
     {
-        if ($refTestPrecedent) {
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $this->testsEligibilite[$refTestPrecedent]]);
+        if ($getTestEligibilite) {
+            /** @var TestEligibilite $testEligibilite */
+            $testEligibilite = $getTestEligibilite($this->em);
+            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
         }
 
         $this->client->request('GET', '/bris-de-porte/creation-de-compte');
@@ -270,9 +254,9 @@ class BrisPorteControllerTest extends WebTestCase
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_en_xp_incomplet' => [self::REF_TEST_EN_EXPERIMENTATION_INCOMPLET, '/bris-de-porte/creation-de-compte'],
-            'test_en_xp_complet' => [self::REF_TEST_EN_EXPERIMENTATION_COMPLET],
-            'test_hors_xp' => [self::REF_TEST_HORS_EXPERIMENTATION, '/bris-de-porte/contactez-nous'],
+            'test_en_xp_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_en_xp_complet' => [$this->getTestEligibiliteEnXpComplet()],
+            'test_hors_xp' => [$this->getTestEligibiliteHorsXp(), '/bris-de-porte/contactez-nous'],
         ];
     }
 
@@ -283,10 +267,12 @@ class BrisPorteControllerTest extends WebTestCase
      *
      * @dataProvider donnesFinaliserLaCreation
      */
-    public function testFinaliserLaCreation(?string $refTestPrecedent = null, ?string $redirection = null): void
+    public function testFinaliserLaCreation(?callable $getTestEligibilite = null, ?string $redirection = null): void
     {
-        if ($refTestPrecedent) {
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $this->testsEligibilite[$refTestPrecedent]]);
+        if ($getTestEligibilite) {
+            /** @var TestEligibilite $testEligibilite */
+            $testEligibilite = $getTestEligibilite($this->em);
+            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
         }
 
         $this->client->request('GET', '/bris-de-porte/finaliser-la-creation');

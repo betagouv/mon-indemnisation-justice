@@ -3,65 +3,52 @@
 namespace MonIndemnisationJustice\Tests\Controller\Requerant;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\Adresse;
-use MonIndemnisationJustice\Entity\Civilite;
-use MonIndemnisationJustice\Entity\PersonnePhysique;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class HomeControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
     protected EntityManagerInterface $em;
-    protected UserPasswordHasherInterface $passwordHasher;
 
     protected function setUp(): void
     {
         $this->client = self::createClient();
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
-        $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
-
-        $requerant = $this->em
-            ->getRepository(Requerant::class)
-            ->findOneBy(['email' => 'raquel.randt@courriel.fr']);
-
-        if (null !== $requerant) {
-            $this->em->remove($requerant);
-            $this->em->flush();
-        }
-
-        $requerant = (new Requerant())
-            ->setAdresse(
-                (new Adresse())
-                    ->setLigne1('12 rue des Oliviers')
-                    ->setLocalite('Nantes')
-                    ->setCodePostal('44100')
-            )
-            ->setPersonnePhysique(
-                (new PersonnePhysique())
-                    ->setEmail('raquel.randt@courriel.fr')
-                    ->setCivilite(Civilite::MME)
-                    ->setPrenom1('Raquel')
-                    ->setNom('Randt')
-            )
-            ->setEmail('raquel.randt@courriel.fr')
-            ->setRoles([Requerant::ROLE_REQUERANT]);
-        $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
-
-        $this->em->persist($requerant);
-        $this->em->flush();
     }
 
-    public function testIndex()
+    public function donneesIndex()
     {
-        $requerant = $this->em->getRepository(Requerant::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
+        return [
+            'sans_dossier_a_finaliser' => [
+                'ray.keran@courriel.fr', false,
+            ],
+            'avec_dossier_a_finaliser' => [
+                'raquel.randt@courriel.fr', true,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider donneesIndex
+     *
+     * @return void
+     */
+    public function testIndex(string $courriel, bool $enAttenteFinalisation = false)
+    {
+        $requerant = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $courriel]);
 
         $this->client->loginUser($requerant, 'requerant');
 
         $this->client->request('GET', '/requerant');
 
-        $this->assertResponseRedirects('/requerant/mes-demandes');
+        if ($enAttenteFinalisation) {
+            $dossier = $requerant->getDossiers()->filter(fn (BrisPorte $dossier) => !$dossier->estConstitue())->first();
+            $this->assertResponseRedirects("/requerant/bris-de-porte/declarer-un-bris-de-porte/{$dossier->getId()}");
+        } else {
+            $this->assertResponseRedirects('/requerant/mes-demandes');
+        }
     }
 }
