@@ -56,6 +56,13 @@ class EtatDossier
         return $this->etat;
     }
 
+    public function setEtat(EtatDossierType $etat): static
+    {
+        $this->etat = $etat;
+
+        return $this;
+    }
+
     public function estASigner(): bool
     {
         return $this->etat->estASigner();
@@ -103,14 +110,35 @@ class EtatDossier
         return $this->dateEntree;
     }
 
+    public function setDateEntree(\DateTimeInterface $dateEntree): EtatDossier
+    {
+        $this->dateEntree = $dateEntree;
+
+        return $this;
+    }
+
     public function getDossier(): BrisPorte
     {
         return $this->dossier;
     }
 
+    public function setDossier(?BrisPorte $dossier): EtatDossier
+    {
+        $this->dossier = $dossier;
+
+        return $this;
+    }
+
     public function getAgent(): ?Agent
     {
         return $this->agent;
+    }
+
+    public function setAgent(?Agent $agent): EtatDossier
+    {
+        $this->agent = $agent;
+
+        return $this;
     }
 
     #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
@@ -131,6 +159,13 @@ class EtatDossier
     public function getEstRequerant(): bool
     {
         return null !== $this->requerant;
+    }
+
+    public function setRequerant(?Requerant $requerant): EtatDossier
+    {
+        $this->requerant = $requerant;
+
+        return $this;
     }
 
     public function getContexte(): array

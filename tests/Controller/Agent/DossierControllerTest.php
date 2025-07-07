@@ -24,7 +24,6 @@ class DossierControllerTest extends WebTestCase
     public function testDossiersJson(): void
     {
         $agent = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'redacteur@justice.gouv.fr']);
-        $dossier = $this->em->getRepository(BrisPorte::class)->findOneBy(['reference' => 'BRI/20250101/001']);
 
         $this->client->loginUser($agent, 'agent');
 
@@ -33,30 +32,35 @@ class DossierControllerTest extends WebTestCase
         $this->assertTrue($this->client->getResponse()->isOk());
         $dossiers = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(1, $dossiers);
-        $this->assertArraysSimilar([
-            'id' => $dossier->getId(),
-            'reference' => $dossier->getReference(),
-            'etat' => [
-                'id' => $dossier->getEtatDossier()->getId(),
-                'etat' => $dossier->getEtatDossier()->getEtat()->value,
-                'dateEntree' => $dossier->getEtatDossier()->getDate()->getTimestamp() * 1000,
-                'redacteur' => null,
-                'requerant' => true,
-            ],
-            'dateDepot' => null,
-            'redacteur' => $dossier->getRedacteur()?->getId(),
-            'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
-            'adresse' => $dossier->getAdresse()->getLibelle(),
-            'estEligible' => true,
-            'estLieAttestation' => false,
-        ], $dossiers[0]);
+        $this->assertCount(2, $dossiers);
+
+        foreach ($dossiers as $donneesDossier) {
+            $dossier = $this->em->getRepository(BrisPorte::class)->find($donneesDossier['id']);
+
+            $this->assertArraysSimilar([
+                'id' => $dossier->getId(),
+                'reference' => $dossier->getReference(),
+                'etat' => [
+                    'id' => $dossier->getEtatDossier()->getId(),
+                    'etat' => $dossier->getEtatDossier()->getEtat()->value,
+                    'dateEntree' => $dossier->getEtatDossier()->getDate()->getTimestamp() * 1000,
+                    'redacteur' => null,
+                    'requerant' => true,
+                ],
+                'dateDepot' => $dossier->getDateDeclaration() ? $dossier->getDateDeclaration()->getTimestamp() * 1000 : null,
+                'redacteur' => $dossier->getRedacteur()?->getId(),
+                'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
+                'adresse' => $dossier->getAdresse()->getLibelle(),
+                'estEligible' => true,
+                'estLieAttestation' => false,
+            ], $donneesDossier);
+        }
     }
 
     public function testConsulterDossier(): void
     {
         $agent = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'redacteur@justice.gouv.fr']);
-        $dossier = $this->em->getRepository(BrisPorte::class)->findOneBy(['reference' => 'BRI/20250101/001']);
+        $dossier = $this->em->getRepository(BrisPorte::class)->findOneBy(['reference' => 'BRI/20250103/001']);
 
         $this->client->loginUser($agent, 'agent');
 
@@ -74,7 +78,7 @@ class DossierControllerTest extends WebTestCase
                 'dateEntree' => $dossier->getEtatDossier()->getDate()->getTimestamp() * 1000,
                 'redacteur' => null,
             ],
-            'dateDepot' => null,
+            'dateDepot' => $dossier->getDateDeclaration()->getTimestamp() * 1000,
             'redacteur' => $agent->getId(),
             'notes' => null,
             'testEligibilite' => [

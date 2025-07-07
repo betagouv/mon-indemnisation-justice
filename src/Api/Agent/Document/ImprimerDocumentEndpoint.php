@@ -14,6 +14,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/api/agent/document/{id}/imprimer', name: 'api_agent_document_imprimer', methods: ['PUT'])]
+/**
+ * Route API qui permet à un agent du bureau du Précontentieux d'éditer le corps d'un document et de générer le PDF via
+ * l'impression de la page web _templatée_.
+ */
 class ImprimerDocumentEndpoint
 {
     public function __construct(
