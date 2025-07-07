@@ -45,10 +45,16 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
   const imprimer = useCallback(async () => {
     setImpressionEnCours(true);
     onImpression?.(impressionEnCours);
-    const response = await fetch(`/agent/document/${document.id}/imprimer`, {
-      method: "PUT",
-      body: JSON.stringify({ corps }),
-    });
+    const response = await fetch(
+      `/api/agent/document/${document.id}/imprimer`,
+      {
+        headers: {
+          "Content-type": "application/json",
+        },
+        method: "PUT",
+        body: JSON.stringify({ corps }),
+      },
+    );
 
     if (response.ok) {
       const data = await response.json();
