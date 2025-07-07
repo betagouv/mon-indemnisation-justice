@@ -83,4 +83,9 @@ enum DocumentType: string
             default => null,
         };
     }
+
+    public static function toString(DocumentType $type): string
+    {
+        return $type->value;
+    }
 }
