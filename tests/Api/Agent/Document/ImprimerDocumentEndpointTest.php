@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\Document;
 
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
+use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -16,7 +17,7 @@ class ImprimerDocumentEndpointTest extends WebTestCase
 
     public function setUp(): void
     {
-        $this->client = self::createClient(['debug' => 0]);
+        $this->client = self::createClient(['debug' => true]);
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
         $this->storage = self::getContainer()->get('default.storage');
     }
@@ -27,6 +28,9 @@ class ImprimerDocumentEndpointTest extends WebTestCase
      */
     public function testImpressionOk(): void
     {
+        /** @var Agent $agent */
+        $agent = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'redacteur@justice.gouv.fr']);
+
         $dossier = $this->em->getRepository(BrisPorte::class)->findOneBy([
             'reference' => 'BRI/20250103/001',
         ]);
@@ -34,6 +38,7 @@ class ImprimerDocumentEndpointTest extends WebTestCase
         $this->em->persist($document);
         $this->em->flush();
 
+        $this->client->loginUser($agent, 'agent');
         $this->client->request('PUT', "/api/agent/document/{$document->getId()}/imprimer", [
             'corps' => 'Lorem ipsum',
         ]);

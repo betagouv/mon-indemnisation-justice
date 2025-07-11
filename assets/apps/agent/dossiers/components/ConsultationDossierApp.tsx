@@ -7,7 +7,6 @@ import {
   DocumentType,
   DossierDetail,
 } from "@/apps/agent/dossiers/models";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
