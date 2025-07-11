@@ -22,8 +22,8 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         agent:
-            pattern: ^/agent
-            #user_checker: MonIndemnisationJustice\Security\AgentChecker
+            pattern: ^/(api/)?agent
+            user_checker: MonIndemnisationJustice\Security\AgentChecker
             lazy: true
             provider: agent_provider
             custom_authenticators:
