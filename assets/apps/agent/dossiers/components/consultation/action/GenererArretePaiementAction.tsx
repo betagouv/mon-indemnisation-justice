@@ -122,6 +122,7 @@ export const GenererArretePaiementModale = observer(
                 {
                   children: "Annuler",
                   priority: "tertiary no outline",
+                  onClick: () => _modale.close(),
                 },
                 ...(editeurMode === "edition"
                   ? ([
