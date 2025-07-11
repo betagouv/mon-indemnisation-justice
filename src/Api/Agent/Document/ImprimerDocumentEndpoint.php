@@ -11,13 +11,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-#[Route('/api/agent/document/{id}/imprimer', name: 'api_agent_document_imprimer', methods: ['PUT'])]
 /**
  * Route API qui permet à un agent du bureau du Précontentieux d'éditer le corps d'un document et de générer le PDF via
  * l'impression de la page web _templatée_.
  */
+#[Route('/api/agent/document/{id}/imprimer', name: 'api_agent_document_imprimer', methods: ['PUT'])]
 class ImprimerDocumentEndpoint
 {
     public function __construct(
@@ -29,7 +30,7 @@ class ImprimerDocumentEndpoint
     }
 
     // TODO voir doc https://symfony.com/doc/current/controller/service.html#invokable-controllers
-
+    #[IsGranted('imprimer', 'document', "L'impression est réservée", 401)]
     public function __invoke(
         #[MapEntity(id: 'id')] Document $document,
         #[MapRequestPayload] ImprimerDocumentInput $input,

@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\Document;
 
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
+use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -27,6 +28,9 @@ class ImprimerDocumentEndpointTest extends WebTestCase
      */
     public function testImpressionOk(): void
     {
+        /** @var Agent $agent */
+        $agent = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'redacteur@justice.gouv.fr']);
+
         $dossier = $this->em->getRepository(BrisPorte::class)->findOneBy([
             'reference' => 'BRI/20250103/001',
         ]);
@@ -34,12 +38,16 @@ class ImprimerDocumentEndpointTest extends WebTestCase
         $this->em->persist($document);
         $this->em->flush();
 
+        dump($agent);
+        $this->client->loginUser($agent);
         $this->client->request('PUT', "/api/agent/document/{$document->getId()}/imprimer", [
             'corps' => 'Lorem ipsum',
         ]);
 
         /** @var \stdClass $output */
         $output = json_decode($this->client->getResponse()->getContent());
+
+        dump($this->client->getResponse()->getStatusCode());
 
         $this->assertTrue($this->client->getResponse()->isOk());
         $this->assertTrue($this->storage->has($output->filename));
