@@ -111,6 +111,9 @@ jobs:
           path: node_modules
           key: backend-yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
+      - uses: browser-actions/setup-chrome@v2
+        id: setup-chrome
+
       - name: Install Yarn dependencies
         run: yarn install --no-progress --non-interactive --frozen-lockfile
 
@@ -120,11 +123,10 @@ jobs:
       - name: Run migration
         run: bin/console -e test doctrine:migrations:migrate --no-interaction --all-or-nothing
 
-      - name: Load data fixtures
-        run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate
-
       - name: Run backend unit tests
         run: bin/phpunit --log-junit test-result-backend.xml
+        env:
+          CHROMIUM_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
 
       - name: Backend test report
         uses: mbeccati/test-reporter@phpunit-support
