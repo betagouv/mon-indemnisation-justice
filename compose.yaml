@@ -23,9 +23,6 @@ services:
     build:
       dockerfile: .docker/nginx/Dockerfile
       context: .
-    volumes:
-      # Ce partage, via un volume, est requis afin que Nginx puisse servir les fichiers statiques seul
-      - ./public:/app/public
     networks:
       mijnet:
         aliases:
@@ -57,14 +54,23 @@ services:
     stdin_open: true
     tty: true
     # En attendant un accès à Harbor
-    image: pierrelemee/precontentieux-full
-    command: bash -c 'update-ca-certificates && composer install --no-interaction --optimize-autoloader && bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && yarn install && php-fpm'
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+      target: dev
+    command: |
+      bash -c 'composer install --no-interaction --optimize-autoloader && \
+      bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && \
+      yarn install && \
+      cd /app/public && \
+      frankenphp php-server -a --worker ./index.php'
     environment:
       - APP_ENV=${APP_ENV:-dev}
       - TZ=Europe/Paris
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
       - CHROMIUM_PATH=/usr/bin/chromium
+      - APP_RUNTIME=Runtime\FrankenPhpSymfony\Runtime
     restart: always
     depends_on:
       - postgres
@@ -76,11 +82,11 @@ services:
       - /app/drivers
       - /app/vendor
       - /app/node_modules
-      - ./.docker/nginx/ssl:/usr/local/share/ca-certificates
+      #- ./.docker/nginx/ssl:/usr/local/share/ca-certificates
     networks:
       - mijnet
     ports:
-      - "9000:9000"
+      - "8001:80"
 
   # Vite dev server (frontend assets)
   vite:

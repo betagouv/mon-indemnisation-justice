@@ -19,8 +19,6 @@ cd .docker/nginx/ssl
 CAROOT=$(pwd) mkcert -install
 # Sous MacOSX, déclaré le certificat fiable
 sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$(pwd)/rootCA.pem"
-# Convertir le certificat racine au format .crt
-openssl x509 -inform PEM -in "$(pwd)/rootCA.pem" -out rootCA.crt
 
 for domain in mon-indemnisation.anje-justice.dev mon-indemnisation.justice.gouv.dev mon-indemnisation.justice.gouv.test proconnect.gouv.test franceconnect.gouv.test; do
   # Génération
