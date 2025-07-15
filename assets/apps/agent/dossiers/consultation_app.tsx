@@ -5,17 +5,15 @@ import "@/common/polyfill";
 import "@/style/agents.css";
 
 import { ConsultationDossierApp } from "@/apps/agent/dossiers/components/ConsultationDossierApp";
-import {
-  Agent,
-  DocumentType,
-  DossierDetail,
-  Redacteur,
-} from "@/apps/agent/dossiers/models";
+import { Agent, DossierDetail, Redacteur } from "@/apps/agent/dossiers/models";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import { plainToInstance } from "class-transformer";
 import React, { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
+import { container } from "@/common/services/agent";
+import { Provider } from "inversify-react";
+
 startReactDsfr({ defaultColorScheme: "system" });
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
@@ -51,6 +49,8 @@ ReactDOM.createRoot(
   sentryOptions,
 ).render(
   <StrictMode>
-    <ConsultationDossierApp dossier={dossier} agent={agent} />
+    <Provider container={container}>
+      <ConsultationDossierApp dossier={dossier} agent={agent} />
+    </Provider>
   </StrictMode>,
 );
