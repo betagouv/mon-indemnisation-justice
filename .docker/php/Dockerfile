@@ -1,6 +1,6 @@
 FROM composer:2.7 AS composer
 
-FROM php:8.3-fpm
+FROM dunglas/frankenphp:1.8-php8.3-bookworm as frankenphp
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
@@ -13,30 +13,26 @@ RUN echo "export LANG='fr_FR.UTF8'" >> /root/.bashrc
 # Generic utils
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y vim wget git openssl ca-certificates
+    apt-get install -y vim wget
 
 # PHP extensions
-RUN apt-get install -y libzip-dev zip && docker-php-ext-install zip
-RUN apt-get install -y libicu-dev && docker-php-ext-install intl
-RUN docker-php-ext-install calendar
-RUN apt-get install -y libpng-dev && docker-php-ext-install gd
-RUN apt-get install -y libpq-dev && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && docker-php-ext-install pdo pdo_pgsql pgsql
-RUN apt-get install -y libldap2-dev libldap-common && docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/ && docker-php-ext-install ldap
+RUN install-php-extensions \
+    zip \
+    intl \
+    calendar \
+    pdo pdo_pgsql pgsql
 
 # PHP config
-RUN echo 'date.timezone = "Europe/Paris"' >> $PHP_INI_DIR/conf.d/php.ini
-RUN echo 'memory_limit = -1' >> $PHP_INI_DIR/conf.d/php.ini
-RUN echo 'upload_max_filesize = 10M' >> $PHP_INI_DIR/conf.d/php.ini
-RUN echo 'post_max_size = 100M' >> $PHP_INI_DIR/conf.d/php.ini
+RUN echo 'date.timezone = "Europe/Paris"' >> $PHP_INI_DIR/php.ini
+RUN echo 'memory_limit = -1' >> $PHP_INI_DIR/php.ini
+RUN echo 'upload_max_filesize = 10M' >> $PHP_INI_DIR/php.ini
+RUN echo 'post_max_size = 100M' >> $PHP_INI_DIR/php.ini
 
 # Node
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get install -y nodejs
 RUN npm update -g
 RUN npm install --force -g yarn
-
-# Firefox
-RUN apt install -y firefox-esr
 
 # Chrome
 RUN apt install -y chromium
@@ -46,3 +42,18 @@ RUN apt install -y chromium
 RUN apt autoremove -y
 
 WORKDIR /app
+
+FROM frankenphp AS dev
+
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get install -y openssl ca-certificates
+
+# Convertir le certificat racine au format .crt
+COPY .docker/nginx/ssl/rootCA.pem /usr/local/share/ca-certificates
+
+RUN openssl x509 -inform PEM -in /usr/local/share/ca-certificates/rootCA.pem -out /usr/local/share/ca-certificates/rootCA.crt && \
+    update-ca-certificates
+
+
+
