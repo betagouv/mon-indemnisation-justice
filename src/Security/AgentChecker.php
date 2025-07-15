@@ -13,7 +13,9 @@ class AgentChecker implements UserCheckerInterface
     {
         if (!$user instanceof Agent) {
             throw new CustomUserMessageAuthenticationException('Ce compte ne semble pas lié à un agent');
-        } elseif (!$user->estValide()) {
+        }
+
+        if (!$user->estValide()) {
             throw new CustomUserMessageAuthenticationException('Ce compte agent a été désactivé');
         }
     }

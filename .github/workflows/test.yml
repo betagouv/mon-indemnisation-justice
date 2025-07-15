@@ -123,6 +123,9 @@ jobs:
       - name: Run migration
         run: bin/console -e test doctrine:migrations:migrate --no-interaction --all-or-nothing
 
+      - name: Load data fixtures
+        run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate
+
       - name: Run backend unit tests
         run: bin/phpunit --log-junit test-result-backend.xml
         env:

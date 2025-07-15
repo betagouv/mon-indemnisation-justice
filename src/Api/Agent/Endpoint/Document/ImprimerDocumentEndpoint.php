@@ -1,14 +1,16 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\Document;
+namespace MonIndemnisationJustice\Api\Agent\Endpoint\Document;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Api\Agent\Resources\DocumentOutput;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -19,6 +21,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  * l'impression de la page web _templatée_.
  */
 #[Route('/api/agent/document/{id}/imprimer', name: 'api_agent_document_imprimer', methods: ['PUT'])]
+#[IsGranted('imprimer', 'document', "L'impression est réservée", 401)]
 class ImprimerDocumentEndpoint
 {
     public function __construct(
@@ -29,18 +32,12 @@ class ImprimerDocumentEndpoint
     ) {
     }
 
-    // TODO voir doc https://symfony.com/doc/current/controller/service.html#invokable-controllers
-    #[IsGranted('imprimer', 'document', "L'impression est réservée", 401)]
     public function __invoke(
-        #[MapEntity(id: 'id')] Document $document,
+        #[MapEntity] Document $document,
         #[MapRequestPayload] ImprimerDocumentInput $input,
     ): Response {
         if (!$document->estEditable()) {
-            return new JsonResponse([
-                'error' => 'Ce document ne peut être édité',
-            ],
-                Response::HTTP_BAD_REQUEST
-            );
+            throw new BadRequestHttpException('Ce document ne peut être édité');
         }
 
         $document = $this->objectMapper->map($input, $document);
@@ -50,6 +47,6 @@ class ImprimerDocumentEndpoint
         $this->entityManager->persist($document);
         $this->entityManager->flush();
 
-        return new JsonResponse($this->normalizer->normalize($this->objectMapper->map($document, ImprimerDocumentOutput::class), 'json'));
+        return new JsonResponse($this->normalizer->normalize($this->objectMapper->map($document, DocumentOutput::class), 'json'));
     }
 }
