@@ -1,11 +1,12 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Document, DossierDetail } from "@/apps/agent/dossiers/models";
+import { Document } from "@/apps/agent/dossiers/models";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
-import { plainToInstance } from "class-transformer";
-import { DeltaStatic, EmitterSource } from "react-quill-new";
+import { DocumentManagerImpl } from "@/common/services/agent";
+import { useInjection } from "inversify-react";
+import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 
 export type EditeurMode = "edition" | "visualisation";
 
@@ -30,6 +31,9 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
   onImprime?: (document: Document) => void;
   onImpression?: (impressionEnCours: boolean) => void;
 }) {
+  const documentManager: DocumentManagerInterface =
+    useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+
   const [modeEdition, setModeEdition] = useState<boolean>(true);
   const [impressionEnCours, setImpressionEnCours] = useState<boolean>(false);
   const [modificationsEnAttente, setModificationsEnAttente] =
@@ -45,23 +49,8 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
   const imprimer = useCallback(async () => {
     setImpressionEnCours(true);
     onImpression?.(impressionEnCours);
-    const response = await fetch(
-      `/api/agent/document/${document.id}/imprimer`,
-      {
-        headers: {
-          "Content-type": "application/json",
-        },
-        method: "PUT",
-        body: JSON.stringify({ corps }),
-      },
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-
-      const document = plainToInstance(Document, data);
-      onImprime?.(document);
-    }
+    document = await documentManager.imprimer(document, corps);
+    onImprime?.(document);
 
     setImpressionEnCours(false);
     setModificationsEnAttente(false);
