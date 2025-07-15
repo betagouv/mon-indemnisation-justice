@@ -1,13 +1,13 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\Document;
+namespace MonIndemnisationJustice\Api\Agent\Resources;
 
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 
 #[Map(source: Document::class)]
-final class ImprimerDocumentOutput
+final class DocumentOutput
 {
     public int $id;
     public string $filename;

@@ -1,6 +1,6 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\Document;
+namespace MonIndemnisationJustice\Api\Agent\Endpoint\Document;
 
 use MonIndemnisationJustice\Entity\Document;
 use Symfony\Component\ObjectMapper\Attribute\Map;
