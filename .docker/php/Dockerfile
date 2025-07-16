@@ -54,7 +54,14 @@ COPY . /app/
 
 RUN  ls -la .
 
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-interaction --optimize-autoloader
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV APP_RUNTIME=Runtime\FrankenPhpSymfony\Runtime
+
+ARG DATABASE_URL
+ARG BASE_URL
+ARG PRECONTENTIEUX_COURRIEL_EQUIPE
+
+RUN composer install --no-interaction --optimize-autoloader
 
 RUN yarn install --frozen-lockfile && yarn build && yarn vite build
 
