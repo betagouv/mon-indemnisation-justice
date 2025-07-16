@@ -56,7 +56,7 @@ services:
     # En attendant un accès à Harbor
     build:
       context: .
-      dockerfile: .docker/php/Dockerfile
+      dockerfile: .docker/php/dev.dockerfile
       target: dev
     command: |
       bash -c 'composer install --no-interaction --optimize-autoloader && \
