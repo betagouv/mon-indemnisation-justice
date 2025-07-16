@@ -1,6 +1,6 @@
 FROM composer:2.7 AS composer
 
-FROM dunglas/frankenphp:1.8-php8.3-bookworm as frankenphp
+FROM dunglas/frankenphp:1.8-php8.3-bookworm AS frankenphp
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
@@ -21,6 +21,11 @@ RUN install-php-extensions \
     intl \
     calendar \
     pdo pdo_pgsql pgsql
+
+# Symfony CLI
+
+#RUN curl -1sLf https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh | bash && \
+#    apt install -y symfony-cli
 
 # PHP config
 RUN echo 'date.timezone = "Europe/Paris"' >> $PHP_INI_DIR/php.ini
@@ -45,6 +50,9 @@ WORKDIR /app
 
 FROM frankenphp AS dev
 
+# Parce que l'application de dev est amenée à discuter directement avec franceconnect.gouv.test et proconnect.gouv.test,
+# le conteneur doit disposer du cartificat racine qui a été utilisé pour générer les certificats HTTPS des sites sous
+# nginx :
 RUN apt-get update -y && \
     apt-get upgrade -y && \
     apt-get install -y openssl ca-certificates
@@ -55,5 +63,19 @@ COPY .docker/nginx/ssl/rootCA.pem /usr/local/share/ca-certificates
 RUN openssl x509 -inform PEM -in /usr/local/share/ca-certificates/rootCA.pem -out /usr/local/share/ca-certificates/rootCA.crt && \
     update-ca-certificates
 
+
+FROM frankenphp AS prod
+
+COPY . /app/
+
+RUN  ls -la .
+
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-interaction --optimize-autoloader
+
+RUN yarn install --frozen-lockfile && yarn build && yarn vite build
+
+WORKDIR /app/public
+
+CMD ["frankenphp", "php-server", "-a", "--worker", "./index.php"]
 
 
