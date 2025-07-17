@@ -29,12 +29,12 @@ class AttestationsController extends AbstractController
     #[Route('/attestations/attestation-a-remettre-en-cas-d-erreur-de-porte', name: 'attestations_attestation_a_remettre')]
     public function attestationARemettre(): Response
     {
-        return new BinaryFileResponse($this->assetsDirectory.'/attestations/attestation-a-remettre-en-cas-d-erreur-de-porte.pdf');
+        return new BinaryFileResponse($this->assetsDirectory.'/attestations/v2/attestation-a-remettre-en-cas-d-erreur-de-porte.pdf');
     }
 
     #[Route('/attestations/guide-de-remise-de-l-attestation', name: 'attestations_guide_de_remise')]
     public function guideDeRemiseDLattestation(): Response
     {
-        return new BinaryFileResponse($this->assetsDirectory.'/attestations/guide-de-remise-de-l-attestation.pdf');
+        return new BinaryFileResponse($this->assetsDirectory.'/attestations/v2/guide-de-remise-de-l-attestation.pdf');
     }
 }
