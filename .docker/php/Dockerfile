@@ -1,8 +1,4 @@
-FROM composer:2.7 AS composer
-
 FROM dunglas/frankenphp:1.8-php8.3-bookworm AS frankenphp
-
-COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # Extra .bashrc config
 RUN echo "alias ll='ls -l'" > /root/.bashrc
@@ -34,7 +30,7 @@ RUN echo 'upload_max_filesize = 10M' >> $PHP_INI_DIR/php.ini
 RUN echo 'post_max_size = 100M' >> $PHP_INI_DIR/php.ini
 
 # Node
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 RUN apt-get install -y nodejs
 RUN npm update -g
 RUN npm install --force -g yarn
@@ -42,25 +38,14 @@ RUN npm install --force -g yarn
 # Chrome
 RUN apt install -y chromium
 
+ENV CHROMIUM_PATH=/usr/bin/chromium
+
 # Cleanups
 
 RUN apt autoremove -y
 
-WORKDIR /app
-
-FROM frankenphp AS prod
-
-COPY . /app/
-
-RUN  ls -la .
-
+ENV TZ=Europe/Paris
 ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV APP_RUNTIME=Runtime\\FrankenPhpSymfony\\Runtime
+ENV APP_RUNTIME="Runtime\\FrankenPhpSymfony\\Runtime"
 
-RUN composer install --no-progress  --no-autoloader --no-scripts
-
-RUN yarn install --frozen-lockfile && yarn build && yarn vite build
-
-WORKDIR /app/public
-
-CMD ["bash -c 'composer run-script auto-scripts && frankenphp php-server -a --worker ./index.php'"]
+WORKDIR /app

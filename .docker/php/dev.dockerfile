@@ -1,7 +1,4 @@
-# syntax = edrevo/dockerfile-plus
-INCLUDE+ .docker/php/Dockerfile
-
-FROM frankenphp AS dev
+FROM pierrelemee/mij-frankenphp
 
 # Parce que l'application de dev est amenée à discuter directement avec franceconnect.gouv.test et proconnect.gouv.test,
 # le conteneur doit disposer du cartificat racine qui a été utilisé pour générer les certificats HTTPS des sites sous
