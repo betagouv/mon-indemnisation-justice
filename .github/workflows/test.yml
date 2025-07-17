@@ -5,6 +5,7 @@ on:
     branches:
       - '**'
       - '!prod'
+      - '!develop'
 
 permissions:
   contents: read

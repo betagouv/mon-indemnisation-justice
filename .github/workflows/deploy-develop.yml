@@ -1,12 +1,9 @@
 name: Deploy to dev app
 
 on:
-  workflow_run:
-    workflows: [ "Test" ]
-    types:
-      - completed
+  push:
     branches:
-      - develop
+    - develop
 
 jobs:
   deploy:
@@ -23,7 +20,7 @@ jobs:
 
       - name: Deploy to dev application
         env:
-          CC_APP_ID: ${{ secrets.CC_APP_DEV_DOCKER_ID }}
+          CC_APP_ID: ${{ secrets.CC_APP_DEV_ID }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
         run: |

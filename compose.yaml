@@ -57,7 +57,6 @@ services:
     build:
       context: .
       dockerfile: .docker/php/dev.dockerfile
-      target: dev
     command: |
       bash -c 'composer install --no-interaction --optimize-autoloader && \
       bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && \
@@ -66,11 +65,8 @@ services:
       frankenphp php-server -a --worker ./index.php'
     environment:
       - APP_ENV=${APP_ENV:-dev}
-      - TZ=Europe/Paris
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
-      - CHROMIUM_PATH=/usr/bin/chromium
-      - APP_RUNTIME=Runtime\\FrankenPhpSymfony\\Runtime
     restart: always
     depends_on:
       - postgres
