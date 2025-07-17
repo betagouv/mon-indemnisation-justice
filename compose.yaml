@@ -70,7 +70,7 @@ services:
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
       - CHROMIUM_PATH=/usr/bin/chromium
-      - APP_RUNTIME=Runtime\FrankenPhpSymfony\Runtime
+      - APP_RUNTIME=Runtime\\FrankenPhpSymfony\\Runtime
     restart: always
     depends_on:
       - postgres

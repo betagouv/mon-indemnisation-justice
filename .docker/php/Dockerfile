@@ -55,7 +55,7 @@ COPY . /app/
 RUN  ls -la .
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV APP_RUNTIME=Runtime\FrankenPhpSymfony\Runtime
+ENV APP_RUNTIME=Runtime\\FrankenPhpSymfony\\Runtime
 
 ARG DATABASE_URL
 ARG BASE_URL
