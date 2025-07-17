@@ -57,14 +57,10 @@ RUN  ls -la .
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV APP_RUNTIME=Runtime\\FrankenPhpSymfony\\Runtime
 
-ARG DATABASE_URL
-ARG BASE_URL
-ARG PRECONTENTIEUX_COURRIEL_EQUIPE
-
-RUN composer install --no-interaction --optimize-autoloader
+RUN composer install --no-progress  --no-autoloader --no-scripts
 
 RUN yarn install --frozen-lockfile && yarn build && yarn vite build
 
 WORKDIR /app/public
 
-CMD ["frankenphp", "php-server", "-a", "--worker", "./index.php"]
+CMD ["bash -c 'composer run-script auto-scripts && frankenphp php-server -a --worker ./index.php'"]
