@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .docker/php/Dockerfile
 
 jobs:
   build-push:
