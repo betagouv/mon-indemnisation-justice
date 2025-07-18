@@ -2,12 +2,15 @@ FROM pierrelemee/mij-frankenphp
 
 COPY . /app/
 
-ARG APP_ENV
+ARG APP_ENV=prod
+ENV APP_ENV=$APP_ENV
+
+ARG APP_SECRET
 ARG DATABASE_URL
 ARG BASE_URL
 ARG PRECONTENTIEUX_COURRIEL_EQUIPE
 ARG SENTRY_DSN
-ARG CC_REVERSE_PROXY_IPS
+ARG VITE_SENTRY_DSN
 
 RUN composer install --no-ansi --no-dev --no-progress --optimize-autoloader
 
