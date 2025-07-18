@@ -1,8 +1,4 @@
-FROM composer:2.7 AS composer
-
 FROM dunglas/frankenphp:1.8-php8.3-bookworm AS frankenphp
-
-COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # Extra .bashrc config
 RUN echo "alias ll='ls -l'" > /root/.bashrc
@@ -17,6 +13,7 @@ RUN apt-get update -y && \
 
 # PHP extensions
 RUN install-php-extensions \
+    @composer \
     zip \
     intl \
     calendar \

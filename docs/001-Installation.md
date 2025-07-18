@@ -38,13 +38,15 @@ docker compose build
 docker compose up -d
 ```
 
-En développement, lancez [le mode `watch`](https://docs.docker.com/compose/file-watch/):
+Comme l'image de base de `symfony` peut être amenée à évoluer (elle est construite en CI par
+[le workflow `build-docker-image.yml`](../.github/workflows/build-docker-image.yml)), il est nécessaire de reconstruire
+le conteneur régulièrement:
 
 ```bash
-docker compose watch
+docker compose up -d --build --pull always --force-recreate symfony 
 ```
 
-Pour exécuter une commande, exemple ici `cat composer.json`, sur le conteneur du service `symfony`, lancez:
+Pour exécuter une commande, exemple ici `cat composer.json`, sur le conteneur du service `symfony`, lancez :
 
 ```bash
 docker compose exec symfony cat composer.json
@@ -59,7 +61,7 @@ docker compose exec symfony bash
 ### Données de test
 
 Pour pouvoir naviguer sur le site, il va vous falloir créer des utilisateurs avec leurs données. On peut réaliser ceci
-grâce aux _data fixtures_:
+grâce aux _data fixtures_ :
 
 ```bash
 # Depuis le conteneur du service `symfony`:
