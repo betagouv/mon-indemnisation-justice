@@ -1,13 +1,103 @@
-import { createApp } from "petite-vue";
+import React, { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import { sentryOptions } from "@/apps/sentry.ts";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import CallOut from "@codegouvfr/react-dsfr/CallOut";
+import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 
-createApp({
-  reponses: {
-    departement: null,
-    description: null,
-    estVise: null,
-    estHebergeant: null,
-    estProprietaire: null,
-    aContacteAssurance: null,
+startReactDsfr({ defaultColorScheme: "system" });
+
+ReactDOM.createRoot(
+  document.getElementById("react-app") as HTMLElement,
+  sentryOptions,
+).render(
+  <StrictMode>
+    <div className="fr-container fr-my-3w">
+      <Stepper
+        currentStep={1}
+        stepCount={3}
+        title="Tester votre éligibilité"
+        nextTitle="Création de votre compte"
+      />
+    </div>
+
+    <div className="fr-col-12 fr-my-2w">
+      <form name="eligibilite-test-form" method="POST">
+        <input
+          type="hidden"
+          name="_token"
+          value="{{ form._token.vars.value }}"
+        />
+        <input
+          type="hidden"
+          name="estIssuAttestation"
+          value="{{ form.estIssuAttestation.vars.value }}"
+        />
+
+        <Alert
+          severity="info"
+          title=""
+          className="fr-mb-2w"
+          description={
+            <p>
+              Si vous avez déjà rempli ce questionnaire et créé un compte,{" "}
+              <a className="fr-link" href="/connexion">
+                connectez-vous
+              </a>
+              .
+            </p>
+          }
+        />
+
+        <CallOut title="Avant de remplir le questionnaire">
+          Il est important de noter que la victime d’un dommage ne peut obtenir
+          des indemnisations distinctes en réparation du même préjudice. Afin de
+          garantir
+          <a
+            className="fr-link"
+            aria-describedby="infobulle-respect-principe"
+            id="lien-infobulle-respect-principe"
+            href="#"
+          >
+            le respect de ce principe
+          </a>
+          et vérifier votre éligibilité à l'indemnisation, vous devez répondre
+          aux questions suivantes.
+          <Tooltip
+            id="infobulle-respect-principe"
+            title="En vertu du principe de réparation intégrale du préjudice sans perte ni profit, la victime d'un
+                        dommage ne peut obtenir deux indemnisations distinctes en réparation du même préjudice (Cour de
+                        cassation, civile, Chambre civile 2, 16 décembre 2021, 19-11.294, Inédit ; Cour de cassation,
+                        civile, Chambre civile 2, 9 février 2023, 21-21.217, Publié au bulletin)"
+            kind="hover"
+          />
+        </CallOut>
+      </form>
+    </div>
+  </StrictMode>,
+);
+
+/**
+ import {
+ createApp;
+ } from "petite-vue";
+
+ createApp({
+ reponses: {
+ departement: null,
+ description;
+ :
+ null,
+ estVise;
+ :
+ null,
+ estHebergeant;
+ :
+ null,
+ estProprietaire: null,
+ aContacteAssurance: null,
     aContacteBailleur: null,
   },
   questions: {
@@ -140,3 +230,4 @@ createApp({
     }
   },
 }).mount("#vue-app");
+*/

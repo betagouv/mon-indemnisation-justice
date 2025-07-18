@@ -35,6 +35,10 @@
 {% endblock stylesheets %}
 
 {% block main %}
+    <div id="react-app"></div>
+{% endblock main %}
+
+{% block old %}
     <div class="fr-container fr-my-3w">
         {#  Indicateur d'étapes #}
         <div class="fr-stepper">
@@ -48,7 +52,7 @@
             </p>
         </div>
 
-        <div class="fr-col-12 fr-my-2w" id="vue-app">
+        <div class="fr-col-12 fr-my-2w">
             <form
                     name="eligibilite-test-form"
                     action="{{ url(app.current_route) }}"
@@ -280,7 +284,8 @@
                                                 @change="reinitialiser('estProprietaire')"
                                                 type="radio"
                                         />
-                                        <label class="fr-label" for="eligibilite-test-form-est-proprietaire-oui">Propriétaire</label>
+                                        <label class="fr-label"
+                                               for="eligibilite-test-form-est-proprietaire-oui">Propriétaire</label>
                                     </div>
                                 </div>
 
@@ -294,7 +299,8 @@
                                                 @change="reinitialiser('estProprietaire')"
                                                 type="radio"
                                         />
-                                        <label class="fr-label" for="eligibilite-test-form-est-proprietaire-non">Locataire</label>
+                                        <label class="fr-label"
+                                               for="eligibilite-test-form-est-proprietaire-non">Locataire</label>
                                     </div>
                                 </div>
 
@@ -487,7 +493,8 @@
 
         </div>
     </div>
-{% endblock main %}
+{% endblock old %}
+
 
 {% block javascripts %}
     {{ parent() }}
