@@ -25,4 +25,4 @@ jobs:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
         run: |
           clever link $CC_APP_ID
-          clever deploy --alias mij-prod --force --same-commit-policy restart
+          clever deploy --alias mij-prod-docker --force --same-commit-policy restart
