@@ -2,8 +2,16 @@ FROM pierrelemee/mij-frankenphp
 
 COPY . /app/
 
-RUN composer install --no-ansi --no-dev --no-progress --no-scripts --optimize-autoloader
+ARG APP_ENV
+ARG DATABASE_URL
+ARG BASE_URL
+ARG PRECONTENTIEUX_COURRIEL_EQUIPE
+ARG SENTRY_DSN
+
+RUN composer install --no-ansi --no-dev --no-progress --optimize-autoloader
 
 RUN yarn install --frozen-lockfile && yarn build && yarn vite build
 
-CMD ["bash", "-c", "composer run-script auto-scripts && cd public && frankenphp php-server -a --worker ./index.php"]
+WORKDIR /app/public
+
+CMD ["frankenphp", "php-server", "-a", "--worker", "./index.php"]

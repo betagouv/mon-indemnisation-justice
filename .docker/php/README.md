@@ -7,9 +7,7 @@ PHP, en version 8.3, mais intègre également `node` en version 22 et `chromium`
 notamment à l'application PHP t'intéragir directement en HTTPS avec les conteneurs de ProConnect et FranceConnect
 - `prod.dockerfile`: c'est le fichier qui est utilisé pour le déploiement (en `prod` comme en `develop`). Il enrichit la
 base du code source (contrairement à l'image de dev où le code ser _monté_ par un volume) ainsi que toutes les
-dépendances applicatives, PHP comme JS. À noter que les scripts `composer` ne sont pas joués au `docker build`,
-puisqu'ils dépendent des variables d'environnements. Le `cache:clear` de Symfony est donc joué au démarrage ce qui
-engendre une latence.
+dépendances applicatives, PHP comme JS.
 
 
 ### Comment la _builder_ ?

@@ -33,5 +33,5 @@ when@develop:
 
 when@prod:
     framework:
-        trusted_proxies: '127.0.0.1,%env(CC_REVERSE_PROXY_IPS)%'
+        trusted_proxies: '127.0.0.1,%env(default::CC_REVERSE_PROXY_IPS)%'
 
