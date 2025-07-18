@@ -2,6 +2,8 @@ FROM pierrelemee/mij-frankenphp
 
 COPY . /app/
 
+RUN ls -la
+
 ARG APP_ENV
 ARG DATABASE_URL
 ARG BASE_URL
@@ -10,7 +12,7 @@ ARG SENTRY_DSN
 
 RUN composer install --no-ansi --no-dev --no-progress --optimize-autoloader
 
-RUN yarn install --frozen-lockfile && yarn build && yarn vite build
+RUN yarn install --frozen-lockfile && yarn build
 
 WORKDIR /app/public
 
