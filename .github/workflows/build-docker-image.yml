@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - tech/dockerize-etreorg
 
 jobs:
   build-push:
