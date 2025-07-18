@@ -62,11 +62,13 @@ services:
       bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && \
       yarn install && \
       cd /app/public && \
-      frankenphp php-server -a --worker ./index.php'
+      frankenphp php-server -a --watch ./index.php'
     environment:
       - APP_ENV=${APP_ENV:-dev}
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
+      #- MIJ_DOMAINE_PRIMAIRE=mon-indemnisation.justice.gouv.dev
+      - SERVER_NAME=:80
     restart: always
     depends_on:
       - postgres
