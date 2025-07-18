@@ -43,7 +43,8 @@ Comme l'image de base de `symfony` peut être amenée à évoluer (elle est cons
 le conteneur régulièrement:
 
 ```bash
-docker compose up -d --build --pull always --force-recreate symfony 
+docker compose build --pull symfony 
+docker compose up -d --force-recreate symfony 
 ```
 
 Pour exécuter une commande, exemple ici `cat composer.json`, sur le conteneur du service `symfony`, lancez :
