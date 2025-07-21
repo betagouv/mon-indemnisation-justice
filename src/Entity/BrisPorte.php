@@ -85,14 +85,6 @@ class BrisPorte
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
 
-    #[Groups('dossier:lecture')]
-    #[ORM\Column(length: 20, nullable: true)]
-    /**
-     * Numéro de référence raccourci, pour la recherche en ligne (comparable au numéro de réservation chez une
-     * compagnie aérienne).
-     */
-    private ?string $raccourci = null;
-
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     protected ?string $numeroPV = null;
@@ -444,18 +436,6 @@ class BrisPorte
     public function setPropositionIndemnisation(?string $propositionIndemnisation): self
     {
         $this->propositionIndemnisation = $propositionIndemnisation;
-
-        return $this;
-    }
-
-    public function getRaccourci(): ?string
-    {
-        return $this->raccourci;
-    }
-
-    public function setRaccourci(?string $raccourci): self
-    {
-        $this->raccourci = $raccourci;
 
         return $this;
     }

@@ -21,12 +21,6 @@ framework:
     php_errors:
         log: true
 
-when@test:
-    framework:
-        test: true
-        session:
-            storage_factory_id: session.storage.factory.mock_file
-
 when@develop:
     framework:
         trusted_proxies: '127.0.0.1,REMOTE_ADDR'

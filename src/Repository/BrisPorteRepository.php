@@ -8,7 +8,6 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
-use MonIndemnisationJustice\Service\PasswordGenerator;
 
 /**
  * @extends ServiceEntityRepository<BrisPorte>
@@ -47,8 +46,7 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->join('d.adresse', 'a')
             ->join('d.requerant', 'r')
             ->join('r.personnePhysique', 'pp')
-            ->orderBy('e.dateEntree', 'DESC')
-        ;
+            ->orderBy('e.dateEntree', 'DESC');
 
         if (!empty($etats)) {
             $qb
@@ -106,11 +104,11 @@ class BrisPorteRepository extends ServiceEntityRepository
                     $row['etat']->value => $row['nbDossiers'],
                 ],
                 $this->createQueryBuilder('b')
-                ->join('b.etatDossier', 'e')
-                ->select('e.etat', 'COUNT(b.id) AS nbDossiers')
-                ->groupBy('e.etat')
-                ->getQuery()
-                ->getArrayResult()
+                    ->join('b.etatDossier', 'e')
+                    ->select('e.etat', 'COUNT(b.id) AS nbDossiers')
+                    ->groupBy('e.etat')
+                    ->getQuery()
+                    ->getArrayResult()
             )
         );
     }
@@ -122,21 +120,6 @@ class BrisPorteRepository extends ServiceEntityRepository
         $dossier->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
 
         return $dossier;
-    }
-
-    public function generateRaccourci(int $length = 8): string
-    {
-        $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT id FROM public.bris_porte WHERE raccourci = :raccourci';
-        $req = $conn->prepare($sql);
-        do {
-            $password = mb_strtoupper(PasswordGenerator::new(length: $length, withSpecialChars: false));
-            $req->bindValue('raccourci', $password);
-            $stmt = $req->executeQuery();
-            $result = $stmt->fetchOne();
-        } while ($result);
-
-        return $password;
     }
 
     public function getForRequerant(Requerant $requerant): array
