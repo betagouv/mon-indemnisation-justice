@@ -54,10 +54,9 @@
                         <caption>Mes demandes</caption>
                         <thead>
                         <tr>
-                            <th scope="col" class="fr-col-1">Référence</th>
+                            <th scope="col" class="fr-col-2">Référence</th>
                             <th scope="col" class="fr-col-5">Statut de la demande d'indemnisation</th>
                             <th scope="col" class="fr-col-3">Date du dernier statut</th>
-                            <th scope="col" class="fr-col-1">Code suivi</th>
                             <th scope="col" class="fr-col-2"></th>
                         </tr>
                         </thead>
@@ -99,7 +98,6 @@
                                     ({{ dateDernierStatut|format_datetime(locale='fr',pattern="HH'h'mm", timezone='Europe/Paris') }}
                                     )
                                 </td>
-                                <td>{{ dossier.raccourci }}</td>
                                 <td>
                                     {% if not dossier.estCloture %}
                                         <a

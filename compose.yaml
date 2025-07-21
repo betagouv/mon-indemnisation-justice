@@ -49,7 +49,7 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   # The Symfony app
-  symfony:
+  symfony: &sf
     hostname: symfony
     stdin_open: true
     tty: true
@@ -62,13 +62,15 @@ services:
       bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && \
       yarn install && \
       cd /app/public && \
-      frankenphp php-server -a --worker ./index.php"
+      frankenphp php-server -a ./index.php"
     environment:
-      - APP_ENV=${APP_ENV:-dev}
+      - APP_ENV=dev
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
       #- MIJ_DOMAINE_PRIMAIRE=mon-indemnisation.justice.gouv.dev
       - SERVER_NAME=:80
+      - HTTPS=true;
+      - REQUEST_SCHEME=https
     restart: always
     depends_on:
       - postgres
@@ -84,6 +86,25 @@ services:
       - mijnet
     ports:
       - "8001:80"
+
+  test:
+    <<: *sf
+    environment:
+      - APP_ENV=test
+      - SYMFONY_DEPRECATIONS_HELPER=disabled
+      - MAILPIT_URL=http://mailpit:8025
+      #- MIJ_DOMAINE_PRIMAIRE=mon-indemnisation.justice.gouv.dev
+      - SERVER_NAME=:80
+      - HTTPS=true;
+      - REQUEST_SCHEME=https
+    command: |
+      bash -c "composer install --no-interaction --optimize-autoloader && \
+      bin/console -e test doctrine:migration:migrate --no-interaction --all-or-nothing && \
+      cd /app/public && \
+      frankenphp php-server -a ./index.php"
+    ports:
+      - "8002:80"
+
 
   # Vite dev server (frontend assets)
   vite:

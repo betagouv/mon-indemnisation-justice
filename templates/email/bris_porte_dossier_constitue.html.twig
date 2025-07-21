@@ -5,42 +5,42 @@
 {% block subject %}Mon Indemnisation Justice : votre déclaration de bris de porte a bien été pris en compte{% endblock subject %}
 
 {% block entete %}
-<b>Votre déclaration de bris de porte a bien été prise en compte</b>
+    <b>Votre déclaration de bris de porte a bien été prise en compte</b>
 {% endblock entete %}
 
 
 {% block contenu %}
-Bonjour {{ dossier.requerant.nomCourant }},
-<br/>
-<br/>
-<ul>
-    <li>
-        Référence du dossier à rappeler dans toutes vos correspondances : {{ dossier.reference }}
-    </li>
-    <li>
-        Numéro de suivi pour suivre l'avancement de votre dossier : {{ dossier.raccourci }}
-    </li>
-</ul>
-<br/>
-<p>
-Vous avez déclaré un bris de porte ce jour.
-</p>
+    Bonjour {{ dossier.requerant.nomCourant }},
+    <br/>
+    <br/>
+    <ul>
+        <li>
+            Référence du dossier à rappeler dans toutes vos correspondances : {{ dossier.reference }}
+        </li>
+    </ul>
+    <br/>
+    <p>
+        Vous avez déclaré un bris de porte ce jour.
+    </p>
 
-<p>
-Votre demande est prise en compte.
-</p>
-<p>
-Nos services reviendront vers vous dans les meilleurs délais, sans qu’une nouvelle démarche de votre part soit nécessaire.
-</p>
-<p>
-Nous vous remercions par avance de votre compréhension.
-</p>
-<p>
-<br/>
-Aidez-nous à améliorer notre application en <a href="https://docs.google.com/forms/d/e/1FAIpQLSfx1dyzPjfqP1H-X0YxUD66_Ai8JqoeYp7m5Fl34UhvjyyFVg/viewform?usp=sf_link">répondant à quelques questions</a>
-à propos de votre expérience.
-</p>
-<br/>
-Cordialement,<br/>
-L'équipe Mon Indemnisation Justice
+    <p>
+        Votre demande est prise en compte.
+    </p>
+    <p>
+        Nos services reviendront vers vous dans les meilleurs délais, sans qu’une nouvelle démarche de votre part soit
+        nécessaire.
+    </p>
+    <p>
+        Nous vous remercions par avance de votre compréhension.
+    </p>
+    <p>
+        <br/>
+        Aidez-nous à améliorer notre application en <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSfx1dyzPjfqP1H-X0YxUD66_Ai8JqoeYp7m5Fl34UhvjyyFVg/viewform?usp=sf_link">répondant
+            à quelques questions</a>
+        à propos de votre expérience.
+    </p>
+    <br/>
+    Cordialement,<br/>
+    L'équipe Mon Indemnisation Justice
 {% endblock contenu %}

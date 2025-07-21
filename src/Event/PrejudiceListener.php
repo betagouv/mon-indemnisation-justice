@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Event;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use MonIndemnisationJustice\Entity\BrisPorte;
@@ -14,7 +15,7 @@ class PrejudiceListener
     /**
      * Crée.
      *
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function preUpdate(PreUpdateEventArgs $args): void
     {
@@ -46,16 +47,6 @@ SQL,
                         str_pad($cpt, 3, '0', STR_PAD_LEFT)
                     )
                 );
-
-                /**
-                 * @author yanroussel
-                 *         Ajout d'un numéro de suivi
-                 */
-                $raccourci = $entityManager
-                  ->getRepository(BrisPorte::class)
-                  ->generateRaccourci()
-                ;
-                $entity->setRaccourci($raccourci);
             }
         }
     }

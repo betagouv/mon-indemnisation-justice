@@ -9,7 +9,8 @@
                         </div>
                         {#  Menu mobile #}
                         <div class="fr-header__navbar">
-                            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499" id="button-500" title="Menu">
+                            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499"
+                                    id="button-500" title="Menu">
                                 Menu
                             </button>
                         </div>
@@ -19,7 +20,7 @@
                         <p class="fr-header__service-title">Mon Indemnisation Justice</p>
                         <div>
                             {% if app.environment != 'prod' %}
-                            <p class="fr-badge fr-badge--warning fr-badge--no-icon">Plateforme test</p>
+                                <p class="fr-badge fr-badge--warning fr-badge--no-icon">Plateforme test</p>
                             {% endif %}
                             <p class="fr-badge fr-badge--info fr-badge--no-icon">Espace agent</p>
                         </div>
@@ -31,14 +32,16 @@
                             <li>
                                 <span class="fr-btn fr-icon-account-circle-line">{{ app.user }}</span>
                             </li>
-                            <a class="fr-btn fr-icon-logout-box-r-line"
-                               href="{{ path('agent_securite_deconnexion') }}">Déconnexion</a>
+                            <li>
+                                <a class="fr-btn fr-icon-logout-box-r-line"
+                                   href="{{ path('agent_securite_deconnexion') }}">Déconnexion</a>
                             </li>
                         </ul>
                     </div>
                     <div class="fr-header__search fr-modal" id="modal-474">
                         <div class="fr-container fr-container-lg--fluid">
-                            <button class="fr-btn--close fr-btn" aria-controls="modal-474" title="Fermer">Fermer</button>
+                            <button class="fr-btn--close fr-btn" aria-controls="modal-474" title="Fermer">Fermer
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -63,39 +66,41 @@
                 </div>
 
                 {# Menu principal #}
-                <nav id="fr-header-main-navigation fr-container" class="fr-nav" role="navigation" aria-label="Menu principal" data-fr-js-navigation="true">
+                <nav id="fr-header-main-navigation fr-container" class="fr-nav" role="navigation"
+                     aria-label="Menu principal" data-fr-js-navigation="true">
                     <ul class="fr-nav__list">
                         <li class="fr-nav__item">
                             <a href="{{ url('agent_mon_compte') }}" class="fr-nav__link">Mon compte</a>
                         </li>
                         {% if is_granted('ROLE_AGENT_DOSSIER') %}
-                        <li class="fr-nav__item">
-                            <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Les dossiers</a>
-                        </li>
+                            <li class="fr-nav__item">
+                                <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Les dossiers</a>
+                            </li>
                         {% endif %}
 
                         {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}
 
 
                             <li class="fr-nav__item">
-                                <button aria-expanded="false" aria-controls="menu-gestion-agents" type="menu" class="fr-nav__btn">Gestion des agents</button>
+                                <button aria-expanded="false" aria-controls="menu-gestion-agents" type="menu"
+                                        class="fr-nav__btn">Gestion des agents
+                                </button>
                                 <div class="fr-collapse fr-menu" id="menu-gestion-agents">
                                     <ul class="fr-menu__list">
 
                                         <li>
-                                          <a href="{{ url('gestion_agents_en_attente') }}" class="fr-nav__link">
-                                              Agents en attente de validation
-                                          </a>
+                                            <a href="{{ url('gestion_agents_en_attente') }}" class="fr-nav__link">
+                                                Agents en attente de validation
+                                            </a>
                                         </li>
 
                                         <li>
-                                          <a href="{{ url('gestion_agents_actifs') }}" class="fr-nav__link">
-                                              Agents actifs
-                                          </a>
+                                            <a href="{{ url('gestion_agents_actifs') }}" class="fr-nav__link">
+                                                Agents actifs
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
-
 
 
                             </li>
