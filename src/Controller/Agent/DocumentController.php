@@ -93,7 +93,7 @@ class DocumentController extends AbstractController
                 [
                     'Content-Transfer-Encoding', 'binary',
                     'Content-Type' => $document->getMime() ?? 'application/octet-stream',
-                    'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', $document->getOriginalFilename()),
+                    'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', mb_convert_encoding($document->getOriginalFilename(), 'ISO-8859-1', 'UTF-8')),
                     'Content-Length' => fstat($stream)['size'],
                 ]
             );
