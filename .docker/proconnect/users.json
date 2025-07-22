@@ -18,6 +18,15 @@
         "idp_id": "e2f13a1f-9f43-4def-a5ed-06dce37d00e6"
     },
     {
+        "_title": "Liaison budget",
+        "sub": "90d7335e-be32-4780-9bb3-6078f4482ece",
+        "email": "liaison@justice.gouv.fr",
+        "given_name": "Lison",
+        "usual_name": "Bude-Jay",
+        "uid": "119",
+        "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
+    },
+    {
         "_title": "Attributeur",
         "sub": "14ea0686-9179-447a-a0b0-cdff4419befc",
         "email": "attributeur@justice.gouv.fr",

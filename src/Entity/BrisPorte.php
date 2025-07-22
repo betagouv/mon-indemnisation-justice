@@ -388,6 +388,20 @@ class BrisPorte
         return $this->documentsParType;
     }
 
+    public function getRawDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function getDocumentsATransmettre(): Collection
+    {
+        return $this->documents->filter(fn (Document $document) => in_array($document->getType(), [
+            DocumentType::TYPE_ARRETE_PAIEMENT,
+            DocumentType::TYPE_CARTE_IDENTITE,
+            DocumentType::TYPE_RIB,
+        ]));
+    }
+
     public function getDocumentParType(DocumentType $type): ?Document
     {
         return $this->documentsParType[$type->value][0] ?? null;

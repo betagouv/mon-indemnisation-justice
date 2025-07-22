@@ -93,6 +93,11 @@ class EtatDossier
         return $this->estASigner();
     }
 
+    public function estAEnvoyerPourIndemnisation(): bool
+    {
+        return EtatDossierType::DOSSIER_OK_A_INDEMNISER === $this->etat;
+    }
+
     public function getLibelle(): string
     {
         return $this->etat->getLibelle();

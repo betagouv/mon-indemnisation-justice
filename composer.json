@@ -8,6 +8,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-openssl": "*",
+        "ext-zip": "*",
         "acsiomatic/device-detector-bundle": "^0.6.0",
         "api-platform/core": "^4",
         "doctrine/dbal": "^3",

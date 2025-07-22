@@ -28,6 +28,10 @@ const RolesAgent: RoleAgentSet = {
     libelle: "Attributeur",
     description: "Attribue les dossiers aux rédacteurs",
   },
+  ROLE_AGENT_LIAISON_BUDGET: {
+    libelle: "Liaison budget",
+    description: "Assure la liaison avec le bureau du budget",
+  },
   ROLE_AGENT_BUREAU_BUDGET: {
     libelle: "Agent du bureau du budget",
     description: "Programme les versements d'indemnisation",
