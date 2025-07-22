@@ -534,9 +534,26 @@ class DossierController extends AgentController
         ]
     )]
     #[Route('/dossier/{id}/envoyer-pour-indemnisation.json', name: 'agent_redacteur_envoyer_pour_indemnisation_dossier', methods: ['POST'])]
-    public function envoyerPourIndemnisationDossier(#[MapEntity] BrisPorte $dossier, Request $request): Response
+    public function envoyerPourIndemnisationDossier(#[MapEntity] BrisPorte $dossier): Response
     {
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT, agent: $this->getAgent());
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse([
+            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+        ], Response::HTTP_OK);
+    }
+
+    #[IsGranted(
+        attribute: new Expression('is_granted("ROLE_AGENT_LIAISON_BUDGET") and subject["dossier"].getEtatDossier().estEnAttenteIndemnisation()'),
+        subject: [
+            'dossier' => new Expression('args["dossier"]'),
+        ]
+    )]
+    #[Route('/dossier/{id}/marquer-indemnise.json', name: 'agent_redacteur_marquer_indemnise_dossier', methods: ['POST'])]
+    public function marquerIndemniseDossier(#[MapEntity] BrisPorte $dossier): Response
+    {
+        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_INDEMNISE, agent: $this->getAgent());
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([

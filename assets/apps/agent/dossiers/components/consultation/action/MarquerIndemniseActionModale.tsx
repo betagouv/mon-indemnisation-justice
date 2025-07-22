@@ -8,17 +8,15 @@ import {
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import Download from "@codegouvfr/react-dsfr/Download";
-import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
 
 const _modale = createModal({
-  id: "modale-action-envoyer-pour-indemnisation",
+  id: "modale-action-emarquer-indemnise",
   isOpenedByDefault: false,
 });
 
-const estAEnvoyerPourIndemnisation = ({
+const estEnAttenteIndemnisation = ({
   dossier,
   agent,
 }: {
@@ -26,7 +24,7 @@ const estAEnvoyerPourIndemnisation = ({
   agent: Agent;
 }): boolean =>
   agent.estLiaisonBudget() &&
-  dossier.etat.etat === EtatDossierType.OK_A_INDEMNISER;
+  dossier.etat.etat === EtatDossierType.OK_EN_ATTENTE_PAIEMENT;
 
 const component = observer(function EnvoyerPourIndemnisationActionModale({
   dossier,
@@ -41,17 +39,11 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
     (mode: boolean) => void,
   ] = useState(false);
 
-  // Indique que l'agent a déclaré avoir transmis les fichiers au Bureau du Budget
-  const [elementsTransmis, setElementsTransmis]: [
-    boolean,
-    (mode: boolean) => void,
-  ] = useState(false);
-
-  const envoyerPourIndemnisation = useCallback(async () => {
+  const marquerIndemnise = useCallback(async () => {
     setSauvegarderEnCours(true);
 
     const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/envoyer-pour-indemnisation.json`,
+      `/agent/redacteur/dossier/${dossier.id}/marquer-indemnise.json`,
       {
         method: "POST",
         headers: {
@@ -73,28 +65,24 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
   return (
     <_modale.Component
       size="large"
-      title=" Envoyer pour indemnisation"
-      iconId="fr-icon-send-plane-line"
+      title=" Marquer indemnisé"
+      iconId="fr-icon-check-line"
     >
       <p>
-        Télécharger l'ensemble des documents requis pour procéder à
-        l'indemnisation et transmettez-les au Bureau du Budget pour marquer le
-        dossier en attente de paiement.
+        Ce dossier a été transmis au Bureau du Budget le{" "}
+        {dossier.etat.dateEntree.toLocaleString("fr-FR", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })}
+        .
       </p>
 
-      <Download
-        label="Télécharger les documents à transmettre"
-        details="Arrêté de paiement, RIB, pièce d'identité"
-        linkProps={{
-          href: `/agent/redacteur/${dossier.id}/documents-a-transmettre`,
-        }}
-      />
-
-      <ToggleSwitch
-        label="Les fichiers sont transmis au bureau du budget"
-        checked={elementsTransmis}
-        onChange={(checked) => setElementsTransmis(checked)}
-      />
+      <p>
+        Si vous avez été notifié du versement de l'indemnité, vous pouvez
+        marquer le dossier comme indemnisé.
+      </p>
 
       <ButtonsGroup
         inlineLayoutWhen="always"
@@ -102,19 +90,18 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
         buttonsSize="small"
         buttons={[
           {
-            children: "Annuler",
+            children: sauvegardeEnCours ? "Sauvegarde en cours..." : "Annuler",
             priority: "tertiary no outline",
             onClick: () => {
               _modale.close();
-              setElementsTransmis(false);
             },
           },
           {
-            children: "Confirmer la transmission",
-            iconId: "fr-icon-send-plane-line",
+            children: "Marquer indemnisé",
+            iconId: "fr-icon-check-line",
             priority: "primary",
-            disabled: sauvegardeEnCours || !elementsTransmis,
-            onClick: async () => envoyerPourIndemnisation(),
+            disabled: sauvegardeEnCours,
+            onClick: async () => marquerIndemnise(),
           },
         ]}
       />
@@ -122,22 +109,22 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
   );
 });
 
-export const envoyerPourIndemnisationBoutons = ({
+export const marquerIndemniseBoutons = ({
   dossier,
   agent,
 }: {
   dossier: DossierDetail;
   agent: Agent;
 }): ButtonProps[] => {
-  return estAEnvoyerPourIndemnisation({ dossier, agent })
+  return estEnAttenteIndemnisation({ dossier, agent })
     ? [
         {
-          children: "Envoyer pour indemnisation",
-          iconId: "fr-icon-send-plane-line",
+          children: "Marquer comme indemnisé",
+          iconId: "fr-icon-check-line",
           onClick: () => _modale.open(),
         } as ButtonProps,
       ]
     : [];
 };
 
-export { component as EnvoyerPourIndemnisationActionModale };
+export { component as MarquerIndemniseActionModale };
