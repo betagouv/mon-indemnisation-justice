@@ -71,7 +71,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/{hash}', name: 'agent_document_download', methods: ['GET'])]
-    public function download(#[MapEntity(id: 'id')] Document $document, string $hash, Request $request): Response
+    public function download(#[MapEntity] Document $document, string $hash, Request $request): Response
     {
         if (md5($document->getFilename()) !== $hash) {
             throw new NotFoundHttpException('Document inconnu');

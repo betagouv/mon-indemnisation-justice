@@ -18,10 +18,12 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -80,6 +82,7 @@ class DossierController extends AgentController
                         $this->getAgent()->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR) ? ['ATTRIBUTEUR'] : [],
                         $this->getAgent()->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? ['REDACTEUR'] : [],
                         $this->getAgent()->hasRole(Agent::ROLE_AGENT_VALIDATEUR) ? ['VALIDATEUR'] : [],
+                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_LIAISON_BUDGET) ? ['LIAISON_BUDGET'] : [],
                     ),
                 ],
                 'dossier' => $normalizer->normalize($dossier, 'json', ['groups' => 'agent:detail']),
@@ -496,6 +499,49 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
+    }
+
+    #[IsGranted(
+        attribute: new Expression('is_granted("ROLE_AGENT_LIAISON_BUDGET") and subject["dossier"].getEtatDossier().estAEnvoyerPourIndemnisation()'),
+        subject: [
+            'dossier' => new Expression('args["dossier"]'),
+        ]
+    )]
+    #[Route('/{id}/documents-a-transmettre', name: 'agent_redacteur_documents_a_transmettre_dossier', methods: ['GET'])]
+    public function download(#[MapEntity] BrisPorte $dossier, Request $request): Response
+    {
+        $zip = new \ZipArchive();
+        $zipName = tempnam(sys_get_temp_dir(), "dossier_{$dossier->getReference()}.zip");
+
+        if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
+            throw new \RuntimeException('Cannot open '.$zipName);
+        }
+
+        foreach ($dossier->getDocumentsATransmettre()->toArray() as $document) {
+            $zip->addFromString($document->getOriginalFilename(), $this->storage->read($document->getFilename()));
+        }
+
+        return (new BinaryFileResponse($zipName, headers: [
+            'Content-Type' => 'application/zip',
+        ]))
+            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
+    }
+
+    #[IsGranted(
+        attribute: new Expression('is_granted("ROLE_AGENT_LIAISON_BUDGET") and subject["dossier"].getEtatDossier().estAEnvoyerPourIndemnisation()'),
+        subject: [
+            'dossier' => new Expression('args["dossier"]'),
+        ]
+    )]
+    #[Route('/dossier/{id}/envoyer-pour-indemnisation.json', name: 'agent_redacteur_envoyer_pour_indemnisation_dossier', methods: ['POST'])]
+    public function envoyerPourIndemnisationDossier(#[MapEntity] BrisPorte $dossier, Request $request): Response
+    {
+        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT, agent: $this->getAgent());
+        $this->dossierRepository->save($dossier);
+
+        return new JsonResponse([
+            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+        ], Response::HTTP_OK);
     }
 
     private static function extraireCritereRecherche(Request $request, string $nom): array

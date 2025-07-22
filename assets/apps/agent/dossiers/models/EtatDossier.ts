@@ -140,6 +140,7 @@ export class EtatDossierType implements EtatInterface {
     EtatDossierType.OK_A_VERIFIER,
     EtatDossierType.OK_VERIFIE,
     EtatDossierType.OK_A_INDEMNISER,
+    EtatDossierType.OK_EN_ATTENTE_PAIEMENT,
     EtatDossierType.OK_INDEMNISE,
     EtatDossierType.KO_A_SIGNER,
     EtatDossierType.KO_REJETE,

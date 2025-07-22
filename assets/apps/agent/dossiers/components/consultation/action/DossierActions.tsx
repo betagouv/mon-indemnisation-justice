@@ -26,6 +26,10 @@ import {
   genererArretePaiementBoutons,
   GenererArretePaiementModale,
 } from "@/apps/agent/dossiers/components/consultation/action/GenererArretePaiementAction.tsx";
+import {
+  EnvoyerPourIndemnisationActionModale,
+  envoyerPourIndemnisationBoutons,
+} from "@/apps/agent/dossiers/components/consultation/action/EnvoyerPourIndemnisationActionModale.tsx";
 
 export const DossierActions = function DossierActionBar({
   dossier,
@@ -59,6 +63,7 @@ export const DossierActions = function DossierActionBar({
             ...confirmerBoutons({ dossier, agent }),
             ...verifierAcceptationBoutons({ dossier, agent }),
             ...genererArretePaiementBoutons({ dossier, agent }),
+            ...envoyerPourIndemnisationBoutons({ dossier, agent }),
           ] as [ButtonProps, ...ButtonProps[]]
         }
       />
@@ -75,6 +80,7 @@ export const DossierActions = function DossierActionBar({
       />
       <VerifierAcceptationActionModale dossier={dossier} agent={agent} />
       <GenererArretePaiementModale dossier={dossier} agent={agent} />
+      <EnvoyerPourIndemnisationActionModale dossier={dossier} agent={agent} />
     </>
   );
 };
