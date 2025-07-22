@@ -235,7 +235,7 @@ class Document
         return $this;
     }
 
-    #[Groups(['agent:detail'])]
+    #[Groups(['agent:detail', 'requerant:detail'])]
     public function getFileHash(): string
     {
         return md5($this->filename);

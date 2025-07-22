@@ -162,7 +162,7 @@ jobs:
         run: yarn build
 
       - name: Run frontend unit tests
-        run: yarn vitest run --reporter=junit --outputFile=test-result-frontend.xml
+        run: yarn vitest run --reporter=junit --outputFile=test-result-frontend.xml --reporter=verbose
 
       - name: Frontend test report
         uses: dorny/test-reporter@v2

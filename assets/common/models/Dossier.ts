@@ -1,13 +1,13 @@
-import { EtatDossier } from "@/apps/agent/dossiers/models/EtatDossier";
-import { InstitutionSecuritePublique } from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
 import {
   Adresse,
   Document,
   DocumentType,
+  EtatDossier,
   EtatDossierType,
   Redacteur,
   Requerant,
   TestEligibilite,
+  InstitutionSecuritePublique,
 } from ".";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";

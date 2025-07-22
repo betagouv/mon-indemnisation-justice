@@ -1,7 +1,7 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
-import { Agent, DossierDetail, Redacteur } from "@/apps/agent/dossiers/models";
+import { Agent, DossierDetail, Redacteur } from "@/common/models";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
 const _modale = createModal({

@@ -13,7 +13,7 @@ import {
   DocumentType,
   DossierDetail,
   EtatDossier,
-} from "@/apps/agent/dossiers/models";
+} from "@/common/models";
 import { observer } from "mobx-react-lite";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { makeAutoObservable } from "mobx";

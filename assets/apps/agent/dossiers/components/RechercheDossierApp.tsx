@@ -3,7 +3,7 @@ import {
   EtatDossierType,
   RechercheDossier,
   Redacteur,
-} from "@/apps/agent/dossiers/models";
+} from "@/common/models";
 import { DossierApercu } from "@/apps/agent/dossiers/models/Dossier";
 import { observer } from "mobx-react-lite";
 import _ from "lodash";

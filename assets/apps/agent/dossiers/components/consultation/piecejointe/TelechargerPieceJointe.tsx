@@ -1,4 +1,4 @@
-import { Document } from "@/apps/agent/dossiers/models";
+import { Document } from "@/common/models";
 import React from "react";
 import Download from "@codegouvfr/react-dsfr/Download";
 

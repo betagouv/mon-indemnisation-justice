@@ -1,6 +1,5 @@
 import { Transform } from "class-transformer";
-import { Agent } from "@/apps/agent/dossiers/models/Agent.ts";
-import { DossierDetail } from "@/apps/agent/dossiers/models/Dossier.ts";
+import { Agent, DossierDetail } from "@/common/models";
 
 export class DocumentType {
   private constructor(
@@ -114,8 +113,6 @@ export class Document {
   }
 
   get tailleFichier(): string {
-    console.log(this.size);
-
     if (!this.size) {
       return "";
     }

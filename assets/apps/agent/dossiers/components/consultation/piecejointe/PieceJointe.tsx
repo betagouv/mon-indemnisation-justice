@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Document } from "@/apps/agent/dossiers/models";
+import { Document } from "@/common/models";
 import { fr } from "@codegouvfr/react-dsfr";
 
 export const PieceJointe = function PieceJointe({

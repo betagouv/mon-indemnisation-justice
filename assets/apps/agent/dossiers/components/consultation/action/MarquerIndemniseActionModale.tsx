@@ -4,7 +4,7 @@ import {
   DossierDetail,
   EtatDossier,
   EtatDossierType,
-} from "@/apps/agent/dossiers/models";
+} from "@/common/models";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
