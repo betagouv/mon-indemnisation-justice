@@ -14,7 +14,8 @@ ARG VITE_SENTRY_DSN
 
 RUN composer install --no-ansi --no-dev --no-progress --optimize-autoloader
 
-RUN --mount=type=cache,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn yarn install --frozen-lockfile && yarn build
+RUN --mount=type=cache,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn yarn install --prod --frozen-lockfile
+RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build
 
 WORKDIR /app/public
 

@@ -1,8 +1,8 @@
-import { Document } from "@/apps/agent/dossiers/models";
+import { Document } from "@/common/models";
 import {
   InstitutionSecuritePublique,
   TypeInstitutionSecuritePublique,
-} from "@/apps/agent/dossiers/models/InstitutionSecuritePublique";
+} from "@/common/models";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";

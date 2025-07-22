@@ -17,7 +17,7 @@ import {
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import React from "react";
-import { Agent, DossierDetail } from "@/apps/agent/dossiers/models";
+import { Agent, DossierDetail } from "@/common/models";
 import {
   confirmerBoutons,
   ConfirmerModale,

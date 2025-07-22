@@ -10,7 +10,7 @@ import {
   DossierDetail,
   EtatDossier,
   EtatDossierType,
-} from "@/apps/agent/dossiers/models";
+} from "@/common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import {

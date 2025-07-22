@@ -1,5 +1,5 @@
-import { Redacteur } from "@/apps/agent/dossiers/models/Redacteur";
-import { Requerant } from "@/apps/agent/dossiers/models/Requerant";
+import { Redacteur } from "./Redacteur";
+import { Requerant } from "./Requerant";
 import { Expose, Transform, Type } from "class-transformer";
 
 interface EtatInterface {

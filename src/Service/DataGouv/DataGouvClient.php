@@ -6,7 +6,7 @@ use GuzzleHttp\Client as HttpClient;
 use Psr\Log\LoggerInterface;
 
 /**
- * Classe qui permet d'accéder aux données.ouverte de https://data.gouv.fr via l'API tabulaire
+ * Classe qui permet d'accéder aux données ouvertes de https://data.gouv.fr via l'API tabulaire
  * https://www.data.gouv.fr/fr/dataservices/api-tabulaire-data-gouv-fr-beta/.
  */
 class DataGouvClient

@@ -24,6 +24,7 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     base,
+    cacheDir: import.meta.env.VITE_CACHE_DIR ?? "node_modules/.vite",
     css: {
       postcss: {
         plugins: [autoprefixer(), nested()],
@@ -87,6 +88,11 @@ export default defineConfig(({ command, mode }) => {
               "./assets/apps/agent/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
               "./assets/apps/agent/dossiers/consultation_app.tsx",
+          },
+        },
+        output: {
+          manualChunks: {
+            models: ["@/common/models"],
           },
         },
       },

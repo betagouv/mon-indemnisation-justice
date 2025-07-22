@@ -4,7 +4,7 @@ import {
   DocumentType,
   DossierDetail,
   EtatDossier,
-} from "@/apps/agent/dossiers/models";
+} from "@/common/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
@@ -130,13 +130,16 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
               month: "long",
               year: "numeric",
             })}
-            , concernant un bris de porte survenu le{" "}
-            {dossier.dateOperation.toLocaleString("fr-FR", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}{" "}
+            , concernant un bris de porte survenu{" "}
+            {dossier.dateOperation
+              ? "le " +
+                dossier.dateOperation.toLocaleString("fr-FR", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
+              : " à une date inconnue"}{" "}
             au logement{" "}
             {dossier.adresse.estRenseignee() ? (
               <>
@@ -233,13 +236,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                     <a
                       className="fr-link fr-link--download"
                       download={`Lettre décision dossier ${dossier.reference}`}
-                      href={
-                        dossier
-                          .getDocumentsType(
-                            DocumentType.TYPE_COURRIER_MINISTERE,
-                          )
-                          .at(0)?.url
-                      }
+                      href={`/requerant/document/${courrierAffiche.id}/${courrierAffiche.filename}`}
                     >
                       Télécharger le courrier
                     </a>

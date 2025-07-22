@@ -1,4 +1,4 @@
-import { EtatDossierType } from "@/apps/agent/dossiers/models";
+import { EtatDossierType } from "@/common/models";
 import { action, computed, makeObservable, observable } from "mobx";
 import { Redacteur } from "./Redacteur.ts";
 

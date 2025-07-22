@@ -1,0 +1,5 @@
+framework:
+    cache:
+        pools:
+            oidc:
+                adapter: cache.adapter.array

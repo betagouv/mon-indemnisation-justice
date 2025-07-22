@@ -10,7 +10,7 @@ class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_homepage')]
     #[Route('/declarer-un-prejudice', name: 'app_category')]
-    public function index(Request $request): Response
+    public function index(): Response
     {
         return $this->render('index.html.twig', [
         ]);
