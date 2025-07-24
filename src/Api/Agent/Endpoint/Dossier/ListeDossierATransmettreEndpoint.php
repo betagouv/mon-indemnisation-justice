@@ -5,11 +5,10 @@ namespace MonIndemnisationJustice\Api\Agent\Endpoint\Dossier;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Resources\Output\DossierATransmettreOutput;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
@@ -20,7 +19,6 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class ListeDossierATransmettreEndpoint
 {
     public function __construct(
-        protected readonly ObjectMapperInterface $objectMapper,
         protected readonly EntityManagerInterface $entityManager,
         protected readonly NormalizerInterface $normalizer,
     ) {
@@ -28,12 +26,17 @@ class ListeDossierATransmettreEndpoint
 
     public function __invoke(): Response
     {
-        $dossiers = $this->entityManager->getRepository(BrisPorte::class)->getListeDossiersATransmettre();
+        $dossiers = $this->entityManager->getRepository(BrisPorte::class)->listerDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
 
         return new JsonResponse(
             $this->normalizer->normalize(
                 array_map(
-                    fn (BrisPorte $dossier) => $this->objectMapper->map($dossier, DossierATransmettreOutput::class),
+                    /* Pas réussi à utiliser l'ObjectMapper ici : il se plaitn de ne pas trouver les champs
+                    `dateValidation` et `agentValidateur` dans la classe source, ce qui est tout de même ballot pour un
+                    mapper ... Et je n'ai pas non plus réussi à utiliser des _arrow function_ en guise de callable
+                    transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
+                    */
+                    fn (BrisPorte $dossier) => DossierATransmettreOutput::creerDepuisDossier($dossier),
                     $dossiers
                 ),
                 'json'

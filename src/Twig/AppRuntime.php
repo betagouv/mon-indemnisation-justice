@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Twig;
 
 use ApiPlatform\Metadata\UrlGeneratorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -24,6 +25,7 @@ class AppRuntime implements RuntimeExtensionInterface
         protected readonly EntrypointsLookup $entrypointLookup,
         #[Autowire(param: 'kernel.project_dir')]
         string $projectDirectory,
+        protected readonly EntityManagerInterface $em,
         protected readonly UrlGeneratorInterface $router,
         protected readonly FranceConnectAuthenticator $franceConnectAuthenticator,
         protected readonly FirewallMapInterface $firewallMap,
@@ -122,5 +124,10 @@ class AppRuntime implements RuntimeExtensionInterface
         }
 
         return '';
+    }
+
+    public function nbDossiersATransmettre(): int
+    {
+        return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
     }
 }

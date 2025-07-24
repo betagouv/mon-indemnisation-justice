@@ -1,15 +1,8 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "./liste/dossier-liste-element.css";
-
-interface DossierATransmettre {
-  readonly id: number;
-  readonly reference: string;
-  readonly requerant: string;
-  readonly montantIndemnisation: number;
-  readonly dateValidation: Date;
-  readonly agentValidateur: string;
-}
+import { plainToInstance } from "class-transformer";
+import { DossierATransmettre } from "./liste/DossierATransmettre.ts";
 
 const formateurMontantEuro = new Intl.NumberFormat("fr-FR", {
   style: "currency",
@@ -24,6 +17,15 @@ function DossierListeElementLigne({
 }: {
   dossier: DossierATransmettre;
 }) {
+  const telechargerDocumentsURL = useMemo<string>(
+    () => `/agent/redacteur/${dossier.id}/documents-a-transmettre`,
+    [dossier.id],
+  );
+  const consulterDossierURL = useMemo<string>(
+    () => `/agent/redacteur/dossier/${dossier.id}`,
+    [dossier.id],
+  );
+
   return (
     <div className="fr-grid-row mij-dossier-liste-element">
       <div className="fr-col-3">
@@ -36,7 +38,19 @@ function DossierListeElementLigne({
         <ul>
           <li>{dossier.requerant}</li>
           <li>{formateurMontantEuro.format(dossier.montantIndemnisation)}</li>
-          <li>validé le 15 août par {dossier.agentValidateur}</li>
+          <li>
+            validé le{" "}
+            {dossier.dateValidation.toLocaleString("fr-FR", {
+              day: "numeric",
+              month: "long",
+              year:
+                dossier.dateValidation.getFullYear() ===
+                new Date().getFullYear()
+                  ? undefined
+                  : "numeric",
+            })}{" "}
+            par {dossier.agentValidateur}
+          </li>
         </ul>
       </div>
 
@@ -54,13 +68,19 @@ function DossierListeElementLigne({
               iconId: "fr-icon-download-line",
               children: "Télécharger",
               className: "fr-mb-0",
+              linkProps: {
+                href: telechargerDocumentsURL,
+              },
             },
             {
               size: "small",
               priority: "tertiary no outline",
               iconId: "fr-icon-eye-line",
-              children: "Voir",
+              children: "Consulter",
               className: "fr-mb-0",
+              linkProps: {
+                href: consulterDossierURL,
+              },
             },
           ]}
         />
@@ -70,24 +90,18 @@ function DossierListeElementLigne({
 }
 
 export function ListeDossierATransmettre() {
-  const dossiers: DossierATransmettre[] = [
-    {
-      id: 56,
-      reference: "BRI/20250123/001",
-      requerant: "Mr Renaud VOITURE",
-      montantIndemnisation: 1732.56,
-      dateValidation: new Date("2025-05-15"),
-      agentValidateur: "Walid HATEUR",
-    } as DossierATransmettre,
-    {
-      id: 87,
-      reference: "BRI/20250217/002",
-      requerant: "Mme Ariane FUSEE",
-      montantIndemnisation: 2101.8,
-      dateValidation: new Date("2025-05-17"),
-      agentValidateur: "Walid HATEUR",
-    } as DossierATransmettre,
-  ];
+  const [dossiers, setDossiers]: [
+    DossierATransmettre[],
+    (dossiers: DossierATransmettre[]) => void,
+  ] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/agent/dossiers/liste/a-transmettre")
+      .then((response) => response.json())
+      .then((data) =>
+        setDossiers(plainToInstance(DossierATransmettre, data as any[])),
+      );
+  }, []);
 
   return (
     <>

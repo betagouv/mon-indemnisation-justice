@@ -1,10 +1,10 @@
 import {
   Agent,
+  DossierApercu,
   EtatDossierType,
   RechercheDossier,
   Redacteur,
 } from "@/common/models";
-import { DossierApercu } from "@/apps/agent/dossiers/models/Dossier";
 import { observer } from "mobx-react-lite";
 import _ from "lodash";
 import React from "react";

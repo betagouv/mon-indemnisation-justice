@@ -85,11 +85,33 @@ class BrisPorteRepository extends ServiceEntityRepository
      */
     public function getListeDossiersATransmettre(): array
     {
+        return $this->listerDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
+    }
+
+    /**
+     * @return BrisPorte[]
+     */
+    public function listerDossierParEtat(EtatDossierType $etat): array
+    {
         return $this->createQueryBuilder('d')
             ->join('d.etatDossier', 'ed')
             ->where('ed.etat = :etat')
-            ->setParameter('etat', EtatDossierType::DOSSIER_OK_A_INDEMNISER)
+            ->setParameter('etat', $etat)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return BrisPorte[]
+     */
+    public function compterDossierParEtat(EtatDossierType $etat): int
+    {
+        return $this->createQueryBuilder('d')
+            ->select('count(d.id)')
+            ->join('d.etatDossier', 'ed')
+            ->where('ed.etat = :etat')
+            ->setParameter('etat', $etat)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

@@ -59,8 +59,9 @@
                         <li>
                             <span class="fr-btn fr-icon-account-circle-line">{{ app.user }}</span>
                         </li>
-                        <a class="fr-btn fr-icon-logout-box-r-line"
-                           href="{{ path('agent_securite_deconnexion') }}">Déconnexion</a>
+                        <li>
+                            <a class="fr-btn fr-icon-logout-box-r-line"
+                               href="{{ path('agent_securite_deconnexion') }}">Déconnexion</a>
                         </li>
                     </ul>
                 </div>
@@ -73,9 +74,40 @@
                             <a href="{{ url('agent_mon_compte') }}" class="fr-nav__link">Mon compte</a>
                         </li>
                         {% if is_granted('ROLE_AGENT_DOSSIER') %}
-                            <li class="fr-nav__item">
-                                <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Les dossiers</a>
-                            </li>
+                            {% if is_granted('ROLE_AGENT_LIAISON_BUDGET') %}
+                                <li class="fr-nav__item">
+                                    <button aria-expanded="false" aria-controls="menu-gestion-agents" type="menu"
+                                            class="fr-nav__btn">Dossiers
+                                    </button>
+                                    <div class="fr-collapse fr-menu" id="menu-gestion-agents">
+                                        <ul class="fr-menu__list">
+
+                                            <li>
+                                                <a href="{{ url('agent_redacteur_dossiers_a_transmettre') }}"
+                                                   class="fr-nav__link">
+                                                    À transmettre au Bureau du Budget
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_aa_transmettre() }}</p>
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">
+                                                    Rechercher un dossier
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+
+                                </li>
+                            {% else %}
+                                <li class="fr-nav__item">
+                                    <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Les
+                                        dossiers</a>
+                                </li>
+                            {% endif %}
+
+
                         {% endif %}
 
                         {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}
