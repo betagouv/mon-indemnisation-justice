@@ -1,21 +1,16 @@
 <?php
 
-namespace MonIndemnisationJustice\Security;
+namespace MonIndemnisationJustice\Security\Voter;
 
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\Document;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class DocumentVoter extends Voter
+class DossierVoter extends Voter
 {
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if ('imprimer' !== $attribute) {
-            return false;
-        }
-
-        if (!$subject instanceof Document) {
+        if (!str_starts_with($attribute, 'lister:dossiers:')) {
             return false;
         }
 
@@ -28,13 +23,15 @@ class DocumentVoter extends Voter
             return false;
         }
 
+        $liste = explode(':', $attribute)[2] ?? null;
+
         /** @var Agent $agent */
         $agent = $token->getUser();
 
-        /** @var Document $document */
-        $document = $subject;
+        if (in_array($liste, ['a-transmettre', 'en-attente-indemnisation'])) {
+            return $agent->hasRole(Agent::ROLE_AGENT_LIAISON_BUDGET);
+        }
 
-        return $agent->hasRole(Agent::ROLE_AGENT_VALIDATEUR)
-            || $agent->instruit($document->getDossier());
+        return false;
     }
 }

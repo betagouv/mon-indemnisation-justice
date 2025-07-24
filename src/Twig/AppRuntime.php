@@ -130,4 +130,9 @@ class AppRuntime implements RuntimeExtensionInterface
     {
         return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
     }
+
+    public function nbDossiersEnAttenteIndemnisation(): int
+    {
+        return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
+    }
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "./liste/dossier-liste-element.css";
 import { plainToInstance } from "class-transformer";
-import { DossierATransmettre } from "./liste/DossierATransmettre.ts";
+import { DossierEnAttenteIndemnisation } from "@/apps/agent/dossiers/components/liste/DossierEnAttenteIndemnisation.ts";
 
 const formateurMontantEuro = new Intl.NumberFormat("fr-FR", {
   style: "currency",
@@ -12,15 +12,11 @@ const formateurMontantEuro = new Intl.NumberFormat("fr-FR", {
   maximumFractionDigits: 2,
 });
 
-function DossierATransmettreLigne({
+function DossierEnAttenteIndemnisationLigne({
   dossier,
 }: {
-  dossier: DossierATransmettre;
+  dossier: DossierEnAttenteIndemnisation;
 }) {
-  const telechargerDocumentsURL = useMemo<string>(
-    () => `/agent/redacteur/${dossier.id}/documents-a-transmettre`,
-    [dossier.id],
-  );
   const consulterDossierURL = useMemo<string>(
     () => `/agent/redacteur/dossier/${dossier.id}`,
     [dossier.id],
@@ -39,17 +35,16 @@ function DossierATransmettreLigne({
           <li>{dossier.requerant}</li>
           <li>{formateurMontantEuro.format(dossier.montantIndemnisation)}</li>
           <li>
-            validé le{" "}
-            {dossier.dateValidation.toLocaleString("fr-FR", {
+            transmis le{" "}
+            {dossier.dateTransmission.toLocaleString("fr-FR", {
               day: "numeric",
               month: "long",
               year:
-                dossier.dateValidation.getFullYear() ===
+                dossier.dateTransmission.getFullYear() ===
                 new Date().getFullYear()
                   ? undefined
                   : "numeric",
             })}{" "}
-            par {dossier.agentValidateur}
           </li>
         </ul>
       </div>
@@ -62,16 +57,6 @@ function DossierATransmettreLigne({
           buttonsEquisized={false}
           buttonsSize="small"
           buttons={[
-            {
-              size: "small",
-              priority: "tertiary no outline",
-              iconId: "fr-icon-download-line",
-              children: "Télécharger",
-              className: "fr-mb-0",
-              linkProps: {
-                href: telechargerDocumentsURL,
-              },
-            },
             {
               size: "small",
               priority: "tertiary no outline",
@@ -89,27 +74,29 @@ function DossierATransmettreLigne({
   );
 }
 
-export function ListeDossierATransmettre() {
+export function ListeDossierEnAttenteIndemnisation() {
   const [dossiers, setDossiers]: [
-    DossierATransmettre[],
-    (dossiers: DossierATransmettre[]) => void,
+    DossierEnAttenteIndemnisation[],
+    (dossiers: DossierEnAttenteIndemnisation[]) => void,
   ] = useState([]);
 
   useEffect(() => {
-    fetch("/api/agent/dossiers/liste/a-transmettre")
+    fetch("/api/agent/dossiers/liste/en-attente-indemnisation")
       .then((response) => response.json())
       .then((data) =>
-        setDossiers(plainToInstance(DossierATransmettre, data as any[])),
+        setDossiers(
+          plainToInstance(DossierEnAttenteIndemnisation, data as any[]),
+        ),
       );
   }, []);
 
   return (
     <>
-      <h1>Dossiers à transmettre au bureau du budget</h1>
+      <h1>Dossiers en attente de paiement</h1>
 
       <p>
-        Dossiers dont l'indemnisation a été acceptée par le requérant et dont
-        l'arrêté de paiement est signé.
+        Dossiers transmis au Bureau du Budget et pour lesquels le versement de
+        l'indemnisation est attendu.
       </p>
 
       <h4>
@@ -117,8 +104,11 @@ export function ListeDossierATransmettre() {
       </h4>
 
       <div>
-        {dossiers.map((dossier: DossierATransmettre) => (
-          <DossierATransmettreLigne key={dossier.id} dossier={dossier} />
+        {dossiers.map((dossier: DossierEnAttenteIndemnisation) => (
+          <DossierEnAttenteIndemnisationLigne
+            key={dossier.id}
+            dossier={dossier}
+          />
         ))}
       </div>
     </>
