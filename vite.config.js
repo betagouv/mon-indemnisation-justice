@@ -88,6 +88,8 @@ export default defineConfig(({ command, mode }) => {
               "./assets/apps/agent/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
               "./assets/apps/agent/dossiers/consultation_app.tsx",
+            "agent/dossiers/dossiers_a_transmettre":
+              "./assets/apps/agent/dossiers/dossiers_a_transmettre.tsx",
           },
         },
         output: {

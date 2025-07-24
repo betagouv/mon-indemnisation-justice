@@ -1,0 +1,27 @@
+{% extends 'agent/base.html.twig' %}
+
+{% block title %}Nouveaux dossiers{% endblock title %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ vite_entry_link_tags('agent/dossiers/dossiers_a_transmettre') }}
+{% endblock stylesheets %}
+
+{% block main %}
+    <div id="react-app" class="fr-container fr-my-3w"></div>
+{% endblock main %}
+
+{% block javascripts %}
+    <script id="react-arguments" type="application/json">
+    {{ react|default({})|json_encode()|raw }}
+
+    </script>
+    {% if est_vite_server_actif() %}
+        {% include '_vite_hmr_extra.html.twig' %}
+    {% endif %}
+
+    {{ vite_entry_script_tags('agent/dossiers/dossiers_a_transmettre') }}
+
+    {{ parent() }}
+{% endblock javascripts %}
