@@ -7,7 +7,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Entity\Requerant;
 
 /**
  * @extends ServiceEntityRepository<BrisPorte>
@@ -82,53 +81,15 @@ class BrisPorteRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param EtatDossierType[] $etats
-     *
      * @return BrisPorte[]
      */
-    protected function getDossiersParEtat(...$etats): array
+    public function getListeDossiersATransmettre(): array
     {
-        return $this->createQueryBuilder('b')
-            ->join('b.etatDossier', 'e')
-            ->where('e.etat in (:etats)')
-            ->setParameter('etats', $etats)
+        return $this->createQueryBuilder('d')
+            ->join('d.etatDossier', 'ed')
+            ->where('ed.etat = :etat')
+            ->setParameter('etat', EtatDossierType::DOSSIER_OK_A_INDEMNISER)
             ->getQuery()
             ->getResult();
-    }
-
-    public function decompteParEtat(): array
-    {
-        return array_merge(
-            ...array_map(
-                fn (array $row) => [
-                    $row['etat']->value => $row['nbDossiers'],
-                ],
-                $this->createQueryBuilder('b')
-                    ->join('b.etatDossier', 'e')
-                    ->select('e.etat', 'COUNT(b.id) AS nbDossiers')
-                    ->groupBy('e.etat')
-                    ->getQuery()
-                    ->getArrayResult()
-            )
-        );
-    }
-
-    public function nouveauDossier(Requerant $requerant): BrisPorte
-    {
-        $dossier = (new BrisPorte())->setRequerant($requerant);
-
-        $dossier->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
-
-        return $dossier;
-    }
-
-    public function getForRequerant(Requerant $requerant): array
-    {
-        return $this->findBy(['requerant' => $requerant]);
-    }
-
-    public function findByStatuts(array $statuts = [], array $orderBy = [], int $offset = 0, int $limit = 10): array
-    {
-        return $this->findAll();
     }
 }
