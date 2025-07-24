@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\Endpoint\Document;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\Resources\DocumentOutput;
+use MonIndemnisationJustice\Api\Agent\Resources\Output\DocumentOutput;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;

@@ -1,6 +1,6 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\Resources;
+namespace MonIndemnisationJustice\Api\Agent\Resources\Output;
 
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
