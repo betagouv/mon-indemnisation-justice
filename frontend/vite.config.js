@@ -20,7 +20,7 @@ Object.entries(process.env)
 
 export default defineConfig(({ command, mode }) => {
   const base = mode === "production" ? "/build/" : "/preview/";
-  const outDir = `public/${base}`;
+  const outDir = mode === "production" ? "preview" : 'build';
 
   return {
     base,

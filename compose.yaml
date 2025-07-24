@@ -77,13 +77,12 @@ services:
       - franceconnect
       - proconnect
     volumes:
-      # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
-      - .:/app
+      - ./backend:/app
+      - ./frontend/build:/app/public/
+      - ./frontend/preview:/app/public/
       - .docker/php/fichiers:/app/fichiers
       - /app/vendor
       - /app/var
-      - /app/node_modules
-      #- ./.docker/nginx/ssl:/usr/local/share/ca-certificates
     networks:
       - mijnet
     ports:
@@ -101,8 +100,10 @@ services:
       - HTTPS=true;
       - REQUEST_SCHEME=https
     command: |
-      bash -c "composer install --no-interaction --optimize-autoloader && \
+      bash -c "cd /app/backend && \
+      composer install --no-interaction --optimize-autoloader && \
       bin/console -e test doctrine:migration:migrate --no-interaction --all-or-nothing && \
+      cd /app/frontend && \
       yarn install --prod --frozen-lockfile && \
       yarn build && \
       cd /app/public && \
@@ -122,7 +123,7 @@ services:
     command: bash -c 'yarn install && yarn dev -l info'
     working_dir: /app
     volumes:
-      - .:/app
+      - frontend/:/app
       # Dossier à ne pas partager entre guest et host
       - /app/node_modules
     ports:
