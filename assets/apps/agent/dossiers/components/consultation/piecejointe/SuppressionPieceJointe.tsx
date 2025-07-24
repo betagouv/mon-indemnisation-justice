@@ -1,10 +1,5 @@
 import React, { useCallback, useState } from "react";
-import {
-  Agent,
-  Document,
-  DocumentType,
-  DossierDetail,
-} from "@/apps/agent/dossiers/models";
+import { Agent, Document, DocumentType, DossierDetail } from "@/common/models";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { plainToInstance } from "class-transformer";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";

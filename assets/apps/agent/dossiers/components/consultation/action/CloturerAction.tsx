@@ -6,7 +6,7 @@ import {
   BaseDossier,
   DossierDetail,
   EtatDossier,
-} from "@/apps/agent/dossiers/models";
+} from "@/common/models";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { observer } from "mobx-react-lite";
 

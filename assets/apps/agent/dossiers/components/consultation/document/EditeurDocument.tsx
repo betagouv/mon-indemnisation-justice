@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Document } from "@/apps/agent/dossiers/models";
+import { Document } from "@/common/models";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 import { DocumentManagerImpl } from "@/common/services/agent";

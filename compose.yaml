@@ -60,7 +60,6 @@ services:
     command: |
       bash -c "composer install --no-interaction --optimize-autoloader && \
       bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && \
-      yarn install && \
       cd /app/public && \
       frankenphp php-server -a ./index.php"
     environment:
@@ -75,11 +74,14 @@ services:
     depends_on:
       - postgres
       - mailpit
+      - franceconnect
+      - proconnect
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
       - .:/app
       - .docker/php/fichiers:/app/fichiers
       - /app/vendor
+      - /app/var
       - /app/node_modules
       #- ./.docker/nginx/ssl:/usr/local/share/ca-certificates
     networks:
@@ -89,6 +91,7 @@ services:
 
   test:
     <<: *sf
+    hostname: test
     environment:
       - APP_ENV=test
       - SYMFONY_DEPRECATIONS_HELPER=disabled
@@ -100,6 +103,8 @@ services:
     command: |
       bash -c "composer install --no-interaction --optimize-autoloader && \
       bin/console -e test doctrine:migration:migrate --no-interaction --all-or-nothing && \
+      yarn install --prod --frozen-lockfile && \
+      yarn build && \
       cd /app/public && \
       frankenphp php-server -a ./index.php"
     ports:

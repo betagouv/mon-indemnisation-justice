@@ -74,10 +74,6 @@ services:
 
     Pentatrion\ViteBundle\Service\EntrypointsLookup: '@pentatrion_vite.entrypoints_lookup[_default]'
 
-    cache.adapter.null:
-        class: Symfony\Component\Cache\Adapter\NullAdapter
-        arguments: [ ~ ]
-
 when@prod:
     services:
         Aws\S3\S3Client:

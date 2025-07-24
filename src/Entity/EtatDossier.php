@@ -27,7 +27,7 @@ class EtatDossier
     protected EtatDossierType $etat;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, name: 'date')]
-    protected \DateTimeInterface $dateEntree;
+    protected \DateTimeImmutable $dateEntree;
 
     #[ORM\ManyToOne(targetEntity: BrisPorte::class, inversedBy: 'historiqueEtats')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
@@ -93,6 +93,16 @@ class EtatDossier
         return $this->estASigner();
     }
 
+    public function estAEnvoyerPourIndemnisation(): bool
+    {
+        return EtatDossierType::DOSSIER_OK_A_INDEMNISER === $this->etat;
+    }
+
+    public function estEnAttenteIndemnisation(): bool
+    {
+        return EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT === $this->etat;
+    }
+
     public function getLibelle(): string
     {
         return $this->etat->getLibelle();
@@ -105,12 +115,12 @@ class EtatDossier
         return DateConvertisseur::enMillisecondes($this->dateEntree);
     }
 
-    public function getDate(): \DateTimeInterface
+    public function getDate(): \DateTimeImmutable
     {
         return $this->dateEntree;
     }
 
-    public function setDateEntree(\DateTimeInterface $dateEntree): EtatDossier
+    public function setDateEntree(\DateTimeImmutable $dateEntree): EtatDossier
     {
         $this->dateEntree = $dateEntree;
 

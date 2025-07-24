@@ -55,6 +55,7 @@ export class RequeteAgentValidation {
           "ROLE_AGENT_REDACTEUR",
           "ROLE_AGENT_ATTRIBUTEUR",
           "ROLE_AGENT_VALIDATEUR",
+          "ROLE_AGENT_LIAISON_BUDGET",
         ].includes(role)
       ) {
         this.ajouterRole("ROLE_AGENT_DOSSIER");

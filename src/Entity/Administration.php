@@ -43,7 +43,7 @@ enum Administration: string
                 Agent::ROLE_AGENT_ATTRIBUTEUR,
                 Agent::ROLE_AGENT_VALIDATEUR,
                 Agent::ROLE_AGENT_GESTION_PERSONNEL,
-                Agent::ROLE_AGENT_BUREAU_BUDGET,
+                Agent::ROLE_AGENT_LIAISON_BUDGET,
             ],
             self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
         };

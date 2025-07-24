@@ -17,7 +17,7 @@ import {
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import React from "react";
-import { Agent, DossierDetail } from "@/apps/agent/dossiers/models";
+import { Agent, DossierDetail } from "@/common/models";
 import {
   confirmerBoutons,
   ConfirmerModale,
@@ -26,6 +26,14 @@ import {
   genererArretePaiementBoutons,
   GenererArretePaiementModale,
 } from "@/apps/agent/dossiers/components/consultation/action/GenererArretePaiementAction.tsx";
+import {
+  EnvoyerPourIndemnisationActionModale,
+  envoyerPourIndemnisationBoutons,
+} from "@/apps/agent/dossiers/components/consultation/action/EnvoyerPourIndemnisationActionModale.tsx";
+import {
+  MarquerIndemniseActionModale,
+  marquerIndemniseBoutons,
+} from "@/apps/agent/dossiers/components/consultation/action/MarquerIndemniseActionModale.tsx";
 
 export const DossierActions = function DossierActionBar({
   dossier,
@@ -43,7 +51,6 @@ export const DossierActions = function DossierActionBar({
   return (
     <>
       {/** Actions sur le dossier */}
-
       <ButtonsGroup
         inlineLayoutWhen="always"
         alignment="right"
@@ -59,6 +66,8 @@ export const DossierActions = function DossierActionBar({
             ...confirmerBoutons({ dossier, agent }),
             ...verifierAcceptationBoutons({ dossier, agent }),
             ...genererArretePaiementBoutons({ dossier, agent }),
+            ...envoyerPourIndemnisationBoutons({ dossier, agent }),
+            ...marquerIndemniseBoutons({ dossier, agent }),
           ] as [ButtonProps, ...ButtonProps[]]
         }
       />
@@ -75,6 +84,8 @@ export const DossierActions = function DossierActionBar({
       />
       <VerifierAcceptationActionModale dossier={dossier} agent={agent} />
       <GenererArretePaiementModale dossier={dossier} agent={agent} />
+      <EnvoyerPourIndemnisationActionModale dossier={dossier} agent={agent} />
+      <MarquerIndemniseActionModale dossier={dossier} agent={agent} />
     </>
   );
 };

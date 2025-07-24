@@ -7,7 +7,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Entity\Requerant;
 
 /**
  * @extends ServiceEntityRepository<BrisPorte>
@@ -82,53 +81,37 @@ class BrisPorteRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param EtatDossierType[] $etats
-     *
      * @return BrisPorte[]
      */
-    protected function getDossiersParEtat(...$etats): array
+    public function getListeDossiersATransmettre(): array
     {
-        return $this->createQueryBuilder('b')
-            ->join('b.etatDossier', 'e')
-            ->where('e.etat in (:etats)')
-            ->setParameter('etats', $etats)
+        return $this->listerDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
+    }
+
+    /**
+     * @return BrisPorte[]
+     */
+    public function listerDossierParEtat(EtatDossierType $etat): array
+    {
+        return $this->createQueryBuilder('d')
+            ->join('d.etatDossier', 'ed')
+            ->where('ed.etat = :etat')
+            ->setParameter('etat', $etat)
             ->getQuery()
             ->getResult();
     }
 
-    public function decompteParEtat(): array
+    /**
+     * @return BrisPorte[]
+     */
+    public function compterDossierParEtat(EtatDossierType $etat): int
     {
-        return array_merge(
-            ...array_map(
-                fn (array $row) => [
-                    $row['etat']->value => $row['nbDossiers'],
-                ],
-                $this->createQueryBuilder('b')
-                    ->join('b.etatDossier', 'e')
-                    ->select('e.etat', 'COUNT(b.id) AS nbDossiers')
-                    ->groupBy('e.etat')
-                    ->getQuery()
-                    ->getArrayResult()
-            )
-        );
-    }
-
-    public function nouveauDossier(Requerant $requerant): BrisPorte
-    {
-        $dossier = (new BrisPorte())->setRequerant($requerant);
-
-        $dossier->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
-
-        return $dossier;
-    }
-
-    public function getForRequerant(Requerant $requerant): array
-    {
-        return $this->findBy(['requerant' => $requerant]);
-    }
-
-    public function findByStatuts(array $statuts = [], array $orderBy = [], int $offset = 0, int $limit = 10): array
-    {
-        return $this->findAll();
+        return $this->createQueryBuilder('d')
+            ->select('count(d.id)')
+            ->join('d.etatDossier', 'ed')
+            ->where('ed.etat = :etat')
+            ->setParameter('etat', $etat)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

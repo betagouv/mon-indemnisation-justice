@@ -4,34 +4,10 @@
 
 {% block modale %}
     {{ parent() }}
-    {% set flash = app.flashes('success')|first %}
-    {% if flash %}
-        <dialog aria-labelledby="fr-modal-flash-success" role="dialog" id="fr-modal-flash-success"
-                class="fr-modal fr-modal--opened">
-            <div class="fr-container fr-container--fluid fr-container-md">
-                <div class="fr-grid-row fr-grid-row--center">
-                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                        <div class="fr-modal__body">
-                            <div class="fr-modal__header">
-                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
-                                        aria-controls="fr-modal-flash-success">Fermer
-                                </button>
-                            </div>
-                            <div class="fr-modal__content">
-                                <div class="fr-alert fr-alert--success">
-                                    <h3 class="fr-alert__title">{{ flash.title }}</h3>
-                                    <p>{{ flash.message }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </dialog>
-    {% endif %}
+
 
     {% if message_erreur_connexion is defined and message_erreur_connexion is not null %}
-        <dialog aria-labelledby="fr-modal-flash-error" role="dialog" id="fr-modal-flash-error"
+        <dialog aria-labelledby="fr-modal-flash-error" role="alertdialog" id="fr-modal-flash-error"
                 class="fr-modal fr-modal--opened">
             <div class="fr-container fr-container--fluid fr-container-md">
                 <div class="fr-grid-row fr-grid-row--center">
@@ -53,11 +29,41 @@
                 </div>
             </div>
         </dialog>
+        <button data-fr-opened="true" aria-controls="fr-modal-flash-error" type="button" class="fr-btn fr-hidden">Modale
+            simple
+        </button>
+    {% else %}
+        {% set flash = app.flashes('success')|first %}
+        {% if flash %}
+            <dialog aria-labelledby="fr-modal-flash-success" role="alertdialog" id="fr-modal-flash-success"
+                    class="fr-modal fr-modal--opened">
+                <div class="fr-container fr-container--fluid fr-container-md">
+                    <div class="fr-grid-row fr-grid-row--center">
+                        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                            <div class="fr-modal__body">
+                                <div class="fr-modal__header">
+                                    <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
+                                            aria-controls="fr-modal-flash-success">Fermer
+                                    </button>
+                                </div>
+                                <div class="fr-modal__content">
+                                    <div class="fr-alert fr-alert--success">
+                                        <h3 class="fr-alert__title">{{ flash.title }}</h3>
+                                        <p>{{ flash.message }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </dialog>
+        {% endif %}
+
     {% endif %}
 
     <dialog
             aria-labelledby="fr-modal-title-fr-modal-motdepasse-oublie"
-            role="dialog"
+            role="alertdialog"
             id="fr-modal-motdepasse-oublie"
             class="fr-modal"
     >
@@ -432,5 +438,4 @@
 
         {% endif %}
     </script>
-
 {% endblock %}

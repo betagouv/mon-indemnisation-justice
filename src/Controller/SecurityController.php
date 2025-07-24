@@ -77,12 +77,7 @@ class SecurityController extends AbstractController
             return $this->redirect($this->oidcClientAgent->buildAuthorizeUrl($request));
         }
 
-        return $this->render('security/connexion.html.twig', [
-            'last_username' => null,
-            'france_connect_url' => $this->oidcClientRequerant->buildAuthorizeUrl($request, 'requerant_securite_connexion'),
-            'error_message' => null,
-            'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
-        ]);
+        return $this->redirectToRoute('app_login');
     }
 
     #[Route(path: '/deconnexion', name: 'app_logout')]

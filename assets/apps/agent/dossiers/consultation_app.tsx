@@ -5,7 +5,7 @@ import "@/common/polyfill";
 import "@/style/agents.css";
 
 import { ConsultationDossierApp } from "@/apps/agent/dossiers/components/ConsultationDossierApp";
-import { Agent, DossierDetail, Redacteur } from "@/apps/agent/dossiers/models";
+import { Agent, DossierDetail, Redacteur } from "@/common/models";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import { plainToInstance } from "class-transformer";
 import React, { StrictMode } from "react";
@@ -24,12 +24,6 @@ if (import.meta.hot) {
 // En production, désactivation de React devtools
 if (import.meta.env.PROD) {
   disableReactDevTools();
-}
-
-declare global {
-  interface Window {
-    dsfr: any;
-  }
 }
 
 const args = JSON.parse(document.getElementById("react-arguments").textContent);

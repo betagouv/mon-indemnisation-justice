@@ -1,9 +1,8 @@
 import "reflect-metadata";
-import { Redacteur } from "@/apps/agent/dossiers/models/Redacteur";
 
 import { plainToInstance } from "class-transformer";
 import { expect, test } from "vitest";
-import { DossierApercu, DossierDetail } from "./Dossier";
+import { DossierApercu, DossierDetail, Redacteur } from "@/common/models";
 
 Redacteur.charger([{ id: 3, nom: "Red ACTEUR" }]);
 

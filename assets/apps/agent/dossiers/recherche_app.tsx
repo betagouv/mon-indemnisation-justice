@@ -5,15 +5,18 @@ import "@/common/polyfill";
 import "@/style/agents.css";
 
 import { RechercheDossierApp } from "@/apps/agent/dossiers/components/RechercheDossierApp";
-import { Agent, Redacteur } from "@/apps/agent/dossiers/models";
-import { DossierApercu } from "@/apps/agent/dossiers/models/Dossier";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import { plainToInstance } from "class-transformer";
-import { autorun, observable, reaction, runInAction } from "mobx";
+import { autorun, observable, runInAction } from "mobx";
 import { IObservableArray } from "mobx/src/internal";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { RechercheDossier } from "@/apps/agent/dossiers/models/";
+import {
+  Agent,
+  Redacteur,
+  DossierApercu,
+  RechercheDossier,
+} from "@/common/models/";
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {

@@ -1,12 +1,7 @@
 import { DossierActions } from "@/apps/agent/dossiers/components/consultation/action";
 import { MetaDonneesAttestationForm } from "@/apps/agent/dossiers/components/consultation/piecejointe/MetaDonneesAttestation";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe/PieceJointe";
-import {
-  Agent,
-  Document,
-  DocumentType,
-  DossierDetail,
-} from "@/apps/agent/dossiers/models";
+import { Agent, Document, DocumentType, DossierDetail } from "@/common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";

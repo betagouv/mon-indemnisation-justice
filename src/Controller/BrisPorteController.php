@@ -51,7 +51,7 @@ class BrisPorteController extends AbstractController
                 return $this->redirectToRoute('app_bris_porte_edit', ['id' => $requerant->getDernierDossier()->getId()]);
             }
 
-            // Sinon on poursuit le test d'éligibilité en vue de créer un nouveau dossier.
+            // Sinon, on poursuit le test d'éligibilité en vue de créer un nouveau dossier.
         }
 
         $testEligibilite = $this->getTestEligibilite($request) ?? new TestEligibilite();
