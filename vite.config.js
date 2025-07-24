@@ -90,6 +90,8 @@ export default defineConfig(({ command, mode }) => {
               "./assets/apps/agent/dossiers/consultation_app.tsx",
             "agent/dossiers/dossiers_a_transmettre":
               "./assets/apps/agent/dossiers/dossiers_a_transmettre.tsx",
+            "agent/dossiers/dossiers_en_attente_indemnisation":
+              "./assets/apps/agent/dossiers/dossiers_en_attente_indemnisation.tsx",
           },
         },
         output: {

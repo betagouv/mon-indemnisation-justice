@@ -86,7 +86,15 @@
                                                 <a href="{{ url('agent_redacteur_dossiers_a_transmettre') }}"
                                                    class="fr-nav__link">
                                                     À transmettre au Bureau du Budget
-                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_aa_transmettre() }}</p>
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_transmettre() }}</p>
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="{{ url('agent_redacteur_dossiers_en_attente_indemnisation') }}"
+                                                   class="fr-nav__link">
+                                                    En attente de paiement
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_en_attente_indemnisation() }}</p>
                                                 </a>
                                             </li>
 
@@ -111,8 +119,6 @@
                         {% endif %}
 
                         {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}
-
-
                             <li class="fr-nav__item">
                                 <button aria-expanded="false" aria-controls="menu-gestion-agents" type="menu"
                                         class="fr-nav__btn">Gestion des agents
