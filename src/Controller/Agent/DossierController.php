@@ -70,6 +70,15 @@ class DossierController extends AgentController
         ]);
     }
 
+    #[IsGranted(Agent::ROLE_AGENT_LIAISON_BUDGET)]
+    #[Route('/dossiers-a-transmettre', name: 'agent_redacteur_dossiers_a_transmettre')]
+    public function dossiersATransmettre(NormalizerInterface $normalizer): Response
+    {
+        return $this->render('agent/dossier/dossiers_a_transmettre.html.twig', [
+            'react' => [],
+        ]);
+    }
+
     #[Route('/dossier/{id}', name: 'agent_redacteur_consulter_dossier')]
     public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {

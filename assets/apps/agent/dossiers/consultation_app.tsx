@@ -26,12 +26,6 @@ if (import.meta.env.PROD) {
   disableReactDevTools();
 }
 
-declare global {
-  interface Window {
-    dsfr: any;
-  }
-}
-
 const args = JSON.parse(document.getElementById("react-arguments").textContent);
 
 Redacteur.charger(args.redacteurs ?? []);

@@ -15,6 +15,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 export abstract class BaseDossier {
   public readonly id: number;
   public readonly reference: string;
+  public readonly montantIndemnisation?: number;
 
   @Type(() => EtatDossier)
   public etat: EtatDossier = null;

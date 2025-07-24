@@ -1,0 +1,14 @@
+.mij-dossier-liste-element {
+    align-items: center;
+    border-top: 1px solid #ccc;
+    justify-content: center;
+
+    &:last-child {
+        border-top: 1px solid #ccc;
+    }
+
+    ul.mij-dossier-details {
+        list-style: none;
+    }
+
+}
