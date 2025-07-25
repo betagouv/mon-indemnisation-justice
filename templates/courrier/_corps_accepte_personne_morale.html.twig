@@ -1,0 +1,31 @@
+{% include 'courrier/_corps_introduction.html.twig' %}
+<p>
+    Il résulte de l’examen de votre dossier, qu’eu égard aux circonstances et dans la mesure où vous êtes
+    tiers à l'opération de police judiciaire, il appartient au ministère de la Justice de prendre en
+    charge les frais de réparation au titre de la responsabilité sans faute de l'État pour rupture
+    d'égalité devant les charges publiques.
+</p>
+
+<p>
+    En conséquence, je propose de vous allouer une indemnité définitive de
+    <b>{{ montantIndemnisation|montant_litteral }}
+        ({{ montantIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
+    préjudices confondues. Cette proposition tient compte de la facture transmise.
+</p>
+
+<p>Je vous saurais gré de bien vouloir m’indiquer si cette proposition recueille votre assentiment et, dans
+    l’affirmative, me renvoyer la déclaration d’acceptation ci-jointe dûment renseignée et signée par une personne
+    compétente pour représenter la société, via votre espace personnel.</p>
+
+<p>Vous voudrez bien, dans l’hypothèse où la personne signataire de la déclaration d’acceptation ne figure pas sur
+    l’extrait Kbis, m’adresser un document attestant de la qualité de la personne signataire et de son lien avec cette
+    société (délégation de signature), ainsi que la copie (recto verso) de la carte nationale d’identité de ladite
+    personne.
+</p>
+
+<p>Je vous précise qu’en cas de désaccord avec cette proposition, vous pouvez engager une action contentieuse dirigée
+    contre l’agent judiciaire de l’État, devant la juridiction civile compétente. Il vous appartient de vous rapprocher
+    des services d’un avocat, notamment lorsque la représentation est requise.</p>
+
+<p>Je vous prie de croire, {{ dossier.requerant.personnePhysique.civilite.libelle }}, à l’expression de ma considération
+    distinguée.</p>

@@ -24,6 +24,7 @@ export abstract class BaseDossier {
   @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
   public redacteur: Redacteur | null = null;
   public estLieAttestation?: boolean;
+  public qualiteRequerant?: string;
 
   @Expose()
   get dateDepot(): null | Date {

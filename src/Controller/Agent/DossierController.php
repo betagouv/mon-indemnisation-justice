@@ -272,36 +272,49 @@ class DossierController extends AgentController
         $propositionIndemnisation = $dossier->getOrCreatePropositionIndemnisation();
 
         if ($indemnisation) {
-            $propositionIndemnisation->setCorps(
-                $this->twig->render('courrier/_corps_accepte.html.twig', [
-                    'dossier' => $dossier,
-                    'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
-                ])
-            );
+            if ($dossier->getRequerant()->getIsPersonneMorale()) {
+                $propositionIndemnisation->setCorps(
+                    $this->twig->render('courrier/_corps_accepte_personne_morale.html.twig', [
+                        'dossier' => $dossier,
+                        'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
+                    ])
+                );
+            } else {
+                $propositionIndemnisation->setCorps(
+                    $this->twig->render('courrier/_corps_accepte_personne_physique.html.twig', [
+                        'dossier' => $dossier,
+                        'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
+                    ])
+                );
+            }
         } else {
             $motifRefus = $request->getPayload()->get('motifRefus');
 
-            if ('est_vise' === $motifRefus) {
+            if ('est_bailleur' === $motifRefus) {
+                $propositionIndemnisation->setCorps(
+                    $this->twig->render('courrier/_corps_rejete_bailleur.html.twig', [
+                        'dossier' => $dossier,
+                    ])
+                );
+            } elseif ('est_vise' === $motifRefus) {
                 $propositionIndemnisation->setCorps(
                     $this->twig->render('courrier/_corps_rejete_est_vise.html.twig', [
                         'dossier' => $dossier,
                     ])
                 );
-            }
-
-            if ('est_hebergeant' === $motifRefus) {
+            } elseif ('est_hebergeant' === $motifRefus) {
                 $propositionIndemnisation->setCorps(
                     $this->twig->render('courrier/_corps_rejete_est_hebergeant.html.twig', [
                         'dossier' => $dossier,
                     ])
                 );
+            } else {
+                $propositionIndemnisation->setCorps(
+                    $this->twig->render('courrier/_corps_rejete.html.twig', [
+                        'dossier' => $dossier,
+                    ])
+                );
             }
-
-            $propositionIndemnisation->setCorps(
-                $this->twig->render('courrier/_corps_rejete.html.twig', [
-                    'dossier' => $dossier,
-                ])
-            );
         }
 
         $propositionIndemnisation = $this->imprimanteCourrier->imprimerDocument($propositionIndemnisation);
