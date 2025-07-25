@@ -7,8 +7,6 @@ import { sentryOptions } from "@/apps/sentry.ts";
 import React, { StrictMode } from "react";
 import { Provider } from "inversify-react";
 import { container } from "@/common/services/agent";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { ListeDossierATransmettre } from "@/apps/agent/dossiers/components/ListeDossierATransmettre.tsx";
 import { ListeDossierEnAttenteIndemnisation } from "@/apps/agent/dossiers/components/ListeDossierEnAttenteIndemnisation.tsx";
 
 startReactDsfr({ defaultColorScheme: "system" });

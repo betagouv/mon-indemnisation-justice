@@ -113,7 +113,13 @@ export function ListeDossierATransmettre() {
       </p>
 
       <h4>
-        {dossiers.length} dossier{dossiers.length > 1 ? "s" : ""}
+        {dossiers.length ? (
+          <>
+            {dossiers.length} dossier{dossiers.length > 1 ? "s" : ""}
+          </>
+        ) : (
+          <>Aucun dossier</>
+        )}
       </h4>
 
       <div>

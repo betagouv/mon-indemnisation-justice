@@ -447,6 +447,7 @@ class DossierController extends AgentController
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+            'document' => $this->normalizer->normalize($document, 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }
 
