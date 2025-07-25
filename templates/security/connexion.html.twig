@@ -7,8 +7,13 @@
 
 
     {% if message_erreur_connexion is defined and message_erreur_connexion is not null %}
-        <dialog aria-labelledby="fr-modal-flash-error" role="alertdialog" id="fr-modal-flash-error"
-                class="fr-modal fr-modal--opened">
+        <dialog
+                aria-labelledby="fr-modal-flash-error"
+                role="alertdialog"
+                id="fr-modal-flash-error"
+                class="fr-modal"
+                data-fr-js-opened="true"
+        >
             <div class="fr-container fr-container--fluid fr-container-md">
                 <div class="fr-grid-row fr-grid-row--center">
                     <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
@@ -29,14 +34,16 @@
                 </div>
             </div>
         </dialog>
-        <button data-fr-opened="true" aria-controls="fr-modal-flash-error" type="button" class="fr-btn fr-hidden">Modale
-            simple
-        </button>
     {% else %}
         {% set flash = app.flashes('success')|first %}
         {% if flash %}
-            <dialog aria-labelledby="fr-modal-flash-success" role="alertdialog" id="fr-modal-flash-success"
-                    class="fr-modal fr-modal--opened">
+            <dialog
+                    id="fr-modal-flash-success"
+                    aria-labelledby="fr-modal-flash-success"
+                    role="alertdialog"
+                    class="fr-modal fr-modal--opened"
+                    data-fr-js-opened="true"
+            >
                 <div class="fr-container fr-container--fluid fr-container-md">
                     <div class="fr-grid-row fr-grid-row--center">
                         <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
@@ -427,6 +434,9 @@
             }
         });
 
+        {# Afficher automatiquement le formulaire de connexion par email si une tentative de connexion vient d'être
+            soumise
+        #}
         {% if last_username|default(null) is null %}
         document.getElementById('bouton-afficher-formulaire-connexion-email').addEventListener('click', (event) => {
             document.getElementById('formulaire-connexion-email')?.classList.remove('fr-hidden');
@@ -437,5 +447,11 @@
         document.querySelector('input[type=password].fr-password__input')?.focus();
 
         {% endif %}
+
+        {# Ouvrir les modales #}
+        document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll('dialog.fr-modal[data-fr-js-opened]').forEach((modale) => window.dsfr(modale).modal.disclose())
+            }
+        );
     </script>
 {% endblock %}

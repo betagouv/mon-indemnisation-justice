@@ -206,9 +206,18 @@
                 {{ corps|raw }}
             {% else %}
                 {% if dossier.etatDossier.estAccepte() %}
-                    {% include 'courrier/_corps_accepte.html.twig' with {montantIndemnisation: dossier.propositionIndemnisation } %}
+                    {% if dossier.requerant.isPersonneMorale %}
+                        {% include 'courrier/_corps_accepte_personne_morale.html.twig' with {montantIndemnisation: dossier.propositionIndemnisation } %}
+                    {% else %}
+                        {% include 'courrier/_corps_accepte_personne_physique.html.twig' with {montantIndemnisation: dossier.propositionIndemnisation } %}
+                    {% endif %}
+
                 {% elseif dossier.etatDossier.estRejete() %}
-                    {% include 'courrier/_corps_rejete.html.twig' %}
+                    {% if dossier.qualiteRequerant == 'PRO' %}
+                        {% include 'courrier/_corps_rejete_bailleur.html.twig' %}
+                    {% else %}
+                        {% include 'courrier/_corps_rejete.html.twig' %}
+                    {% endif %}
                 {% endif %}
             {% endif %}
         </div>

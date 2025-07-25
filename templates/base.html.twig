@@ -86,17 +86,12 @@
 {% endblock modale %}
 
 {% block javascripts %}
-    {% block dsfrjs %}
-        <script>
-            window.dsfr = {
-                verbose: false,
-                production: true,
-            };
-        </script>
-        <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
-        <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
-    {% endblock dsfrjs %}
 {% endblock %}
+
+{% block dsfrjs %}
+    <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
+    <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
+{% endblock dsfrjs %}
 
 {# Sentry browser #}
 {% if vite_entree_existe('sentry') %}

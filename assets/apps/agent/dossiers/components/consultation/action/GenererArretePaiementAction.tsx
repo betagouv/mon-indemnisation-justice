@@ -88,6 +88,7 @@ export const GenererArretePaiementModale = observer(
       if (response.ok) {
         const data = await response.json();
         dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+        dossier.addDocument(plainToInstance(Document, data.document));
       }
       setSauvegardeEnCours(false);
     }, [dossier.id, fichierSigne]);

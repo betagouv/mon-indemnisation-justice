@@ -33,7 +33,7 @@ class Adresse
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $localite = null;
 
-    #[ORM\Column(name: 'commune_code', length: 5, nullable: true)]
+    #[ORM\Column(name: 'commune_code', type: 'string', length: 5, nullable: true)]
     #[ORM\ManyToOne(targetEntity: GeoCommune::class)]
     protected ?GeoCommune $commune = null;
 

@@ -24,7 +24,7 @@ const _modale = createModal({
 });
 
 type EtapeDecision = "choix_motif" | "choix_montant" | "edition_courrier";
-type MotifRefus = "est_vise" | "est_hebergeant" | "autre";
+type MotifRefus = "est_bailleur" | "est_vise" | "est_hebergeant" | "autre";
 
 class EtatDecision {
   decision?: boolean;
@@ -162,11 +162,13 @@ export const DeciderModale = observer(function DeciderActionModale({
     MotifRefus | null,
     (motif?: MotifRefus) => void,
   ] = useState(
-    dossier.testEligibilite.estVise
-      ? "est_vise"
-      : dossier.testEligibilite.estHebergeant
-        ? "est_hebergeant"
-        : "autre",
+    dossier.qualiteRequerant == "PRO"
+      ? "est_bailleur"
+      : dossier.testEligibilite.estVise
+        ? "est_vise"
+        : dossier.testEligibilite.estHebergeant
+          ? "est_hebergeant"
+          : "autre",
   );
 
   // Le mode en cours sur l'éditeur de document
@@ -251,6 +253,9 @@ export const DeciderModale = observer(function DeciderActionModale({
               defaultValue={motifRejet}
               onChange={(e) => setMotifRejet(e.target.value as MotifRefus)}
             >
+              <option value="est_bailleur">
+                Le requérant est le bailleur (art. 1732)
+              </option>
               <option value="est_vise">
                 Le requérant était visé par l'opération
               </option>
