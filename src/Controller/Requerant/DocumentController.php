@@ -87,7 +87,7 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/{filename}', name: 'document_download', methods: ['GET'])]
-    public function download(#[MapEntity(id: 'id')] Document $document, string $filename): Response
+    public function download(#[MapEntity(id: 'id')] Document $document, string $filename, Request $request): Response
     {
         if ($document->getFilename() !== $filename) {
             throw new NotFoundHttpException('Document non trouvé');
@@ -108,7 +108,7 @@ class DocumentController extends AbstractController
                 [
                     'Content-Transfer-Encoding', 'binary',
                     'Content-Type' => $document->getMime() ?? 'application/octet-stream',
-                    'Content-Disposition' => sprintf('attachment; filename="%s"', $document->getOriginalFilename()),
+                    'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', mb_convert_encoding($document->getOriginalFilename(), 'ISO-8859-1', 'UTF-8')),
                     'Content-Length' => fstat($stream)['size'],
                 ]
             );
