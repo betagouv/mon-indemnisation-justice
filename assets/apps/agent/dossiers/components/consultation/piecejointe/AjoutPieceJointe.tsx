@@ -86,9 +86,6 @@ const component = function AjoutPieceJointe({
         `/agent/redacteur/dossier/${dossier.id}/piece-jointe/ajouter.json`,
         {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
           body: payload,
         },
       );
