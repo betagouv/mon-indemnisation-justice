@@ -19,5 +19,5 @@ RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build
 
 WORKDIR /app/public
 
-CMD ["frankenphp", "php-server", "-a", "--worker", "./index.php"]
+CMD ["frankenphp", "php-server", "./index.php"]
 
