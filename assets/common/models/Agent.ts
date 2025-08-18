@@ -1,5 +1,5 @@
-import { BaseDossier } from "@/apps/agent/dossiers/models/Dossier";
-import { Redacteur } from "@/apps/agent/dossiers/models/Redacteur";
+import { BaseDossier } from "@/common/models/Dossier";
+import { Redacteur } from "@/common/models/Redacteur";
 import { Transform } from "class-transformer";
 
 export enum AgentPermissionType {

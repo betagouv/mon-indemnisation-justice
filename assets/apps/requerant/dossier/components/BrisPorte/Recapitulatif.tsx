@@ -143,10 +143,10 @@ const Recapitulatif = ({
           )}
 
           <Document
-            documents={dossier.documents.preuve_paiement_facture}
+            documents={dossier.documents.facture}
             lectureSeule={true}
-            libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
-            type={"preuve_paiement_facture"}
+            libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique"
+            type={"facture"}
           />
           <Document
             documents={dossier.documents.rib}
@@ -159,16 +159,16 @@ const Recapitulatif = ({
             type={"rib"}
           />
 
-          {dossier.requerant.qualiteRequerant === "PRO" && (
+          {dossier.qualiteRequerant === "PRO" && (
             <Document
-              documents={dossier.documents.titre_de_propriete}
+              documents={dossier.documents.titre_propriete}
               lectureSeule={true}
               libelle="Titre de propriété"
               type={"titre_propriete"}
             />
           )}
 
-          {dossier.requerant.qualiteRequerant === "LOC" && (
+          {dossier.qualiteRequerant === "LOC" && (
             <Document
               documents={dossier.documents.contrat_location}
               lectureSeule={true}
@@ -177,16 +177,24 @@ const Recapitulatif = ({
             />
           )}
 
-          {dossier.requerant.qualiteRequerant === "LOC" && (
+          {dossier.qualiteRequerant === "LOC" && (
             <Document
-              documents={dossier.documents.non_prise_en_charge_assurance}
+              documents={dossier.documents.non_prise_en_charge_bailleur}
               lectureSeule={true}
               libelle={
                 "Attestation de non prise en charge par l'assurance habitation"
               }
-              type={"non_prise_en_charge_assurance"}
+              type={"non_prise_en_charge_bailleur"}
             />
           )}
+          <Document
+            documents={dossier.documents.non_prise_en_charge_assurance}
+            lectureSeule={true}
+            libelle={
+              "Attestation de non prise en charge par l'assurance habitation"
+            }
+            type={"non_prise_en_charge_assurance"}
+          />
         </section>
       </div>
     </div>
