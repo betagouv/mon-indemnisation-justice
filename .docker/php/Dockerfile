@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:1.8-php8.3-bookworm AS frankenphp
+FROM dunglas/frankenphp:1.9-php8.3.24-bookworm AS frankenphp
 
 # Extra .bashrc config
 RUN echo "alias ll='ls -l'" > /root/.bashrc
