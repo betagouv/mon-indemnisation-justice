@@ -2564,16 +2564,16 @@
         },
         {
             "name": "league/flysystem-async-aws-s3",
-            "version": "3.29.0",
+            "version": "3.30.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-async-aws-s3.git",
-                "reference": "d2aaa84f93a362116ab16337c97179dc3283037b"
+                "reference": "d2ab45bd8a9672d0142cf408e7a76f3ad86b9301"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-async-aws-s3/zipball/d2aaa84f93a362116ab16337c97179dc3283037b",
-                "reference": "d2aaa84f93a362116ab16337c97179dc3283037b",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-async-aws-s3/zipball/d2ab45bd8a9672d0142cf408e7a76f3ad86b9301",
+                "reference": "d2ab45bd8a9672d0142cf408e7a76f3ad86b9301",
                 "shasum": ""
             },
             "require": {
@@ -2616,22 +2616,22 @@
                 "storage"
             ],
             "support": {
-                "source": "https://github.com/thephpleague/flysystem-async-aws-s3/tree/3.29.0"
+                "source": "https://github.com/thephpleague/flysystem-async-aws-s3/tree/3.30.0"
             },
-            "time": "2024-09-27T09:57:16+00:00"
+            "time": "2025-06-25T12:47:43+00:00"
         },
         {
             "name": "league/flysystem-bundle",
-            "version": "3.3.5",
+            "version": "3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-bundle.git",
-                "reference": "4fff744a247d360cb7b0b5f641d951f27d37013c"
+                "reference": "bf5ab3c072c0def47872e28f69876548d8669657"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-bundle/zipball/4fff744a247d360cb7b0b5f641d951f27d37013c",
-                "reference": "4fff744a247d360cb7b0b5f641d951f27d37013c",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-bundle/zipball/bf5ab3c072c0def47872e28f69876548d8669657",
+                "reference": "bf5ab3c072c0def47872e28f69876548d8669657",
                 "shasum": ""
             },
             "require": {
@@ -2654,6 +2654,8 @@
                 "league/flysystem-memory": "^3.1",
                 "league/flysystem-read-only": "^3.15",
                 "league/flysystem-sftp-v3": "^3.1",
+                "league/flysystem-webdav": "^3.29",
+                "platformcommunity/flysystem-bunnycdn": "^3.3",
                 "symfony/dotenv": "^5.4 || ^6.0 || ^7.0",
                 "symfony/framework-bundle": "^5.4 || ^6.0 || ^7.0",
                 "symfony/phpunit-bridge": "^5.4 || ^6.0 || ^7.0",
@@ -2676,12 +2678,18 @@
                     "email": "galopintitouan@gmail.com"
                 }
             ],
-            "description": "Symfony bundle integrating Flysystem into Symfony 5.4+ applications",
+            "description": "Symfony bundle integrating Flysystem into Symfony applications",
+            "keywords": [
+                "Flysystem",
+                "bundle",
+                "filesystem",
+                "symfony"
+            ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem-bundle/issues",
-                "source": "https://github.com/thephpleague/flysystem-bundle/tree/3.3.5"
+                "source": "https://github.com/thephpleague/flysystem-bundle/tree/3.5.0"
             },
-            "time": "2024-05-30T20:04:21+00:00"
+            "time": "2025-06-22T12:43:01+00:00"
         },
         {
             "name": "league/flysystem-local",
