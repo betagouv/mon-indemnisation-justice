@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
+use League\Flysystem\UnableToWriteFile;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
@@ -14,6 +15,8 @@ use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,13 +40,17 @@ class DocumentController extends AbstractController
     #[Route('/{id}/{type}', name: 'document_upload', methods: ['POST'])]
     public function upload(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, DocumentType $type): JsonResponse
     {
-        $files = $request->files->all();
-
         /** @var UploadedFile $file */
-        foreach ($files as $file) {
-            if (null !== $file->getPathname()) {
-                $content = $file->getContent();
-                $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+        $file = $request->files->get('piece-jointe');
+
+        if (null === $file?->getPathname()) {
+            throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
+        }
+
+        if (null !== $file?->getPathname()) {
+            $content = $file->getContent();
+            $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+            try {
                 $this->storage->write($filename, $content);
                 $document = (new Document())
                     ->setFilename($filename)
@@ -54,12 +61,12 @@ class DocumentController extends AbstractController
                     ->setMime($file->getClientMimeType());
 
                 $dossier->ajouterDocument($document);
-
                 $this->em->persist($dossier);
+                $this->em->flush();
+            } catch (UnableToWriteFile|FilesystemException $e) {
+                throw new FileException('La sauvegarde du fichier a échoué');
             }
         }
-
-        $this->em->flush();
 
         return new JsonResponse([
             'id' => $document->getId(),
