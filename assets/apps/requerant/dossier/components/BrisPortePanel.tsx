@@ -258,7 +258,7 @@ const BrisPortePanel = function () {
               </section>
             </div>
             {/* Est propriétaire */}
-            {dossier.requerant.personnePhysique.qualiteRequerant === "PRO" && (
+            {dossier.qualiteRequerant === "PRO" && (
               <div className="fr-col-12">
                 <section className="pr-form-section">
                   <Document
@@ -292,7 +292,7 @@ const BrisPortePanel = function () {
               </div>
             )}
             {/* Est locataire */}
-            {dossier.requerant.personnePhysique.qualiteRequerant === "LOC" && (
+            {dossier.qualiteRequerant === "LOC" && (
               <div className="fr-col-12">
                 <section className="pr-form-section">
                   <Document
@@ -326,7 +326,7 @@ const BrisPortePanel = function () {
               </div>
             )}
             {/* Est locataire */}
-            {dossier.requerant.personnePhysique.qualiteRequerant === "LOC" && (
+            {dossier.qualiteRequerant === "LOC" && (
               <div className="fr-col-12">
                 <section className="pr-form-section">
                   <Document
