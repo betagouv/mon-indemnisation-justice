@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\TypeInstitutionSecuritePublique;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -32,6 +33,7 @@ class DocumentController extends AbstractController
         #[Target('default.storage')]
         protected readonly FilesystemOperator $storage,
         protected readonly EntityManagerInterface $em,
+        protected readonly LoggerInterface $logger,
     ) {
     }
 
@@ -78,26 +80,30 @@ class DocumentController extends AbstractController
         }
 
         try {
-            if (!$this->storage->has(addslashes($document->getFilename()))) {
-                throw new NotFoundHttpException('Document non trouvé');
+            if (!$this->storage->has($document->getFilename())) {
+                return new Response('', Response::HTTP_NOT_FOUND);
             }
-
-            $stream = $this->storage->readStream(addslashes($document->getFilename()));
+            /** @var $stream resource */
+            $stream = $this->storage->readStream($document->getFilename());
 
             return new StreamedResponse(
                 function () use ($stream) {
-                    fpassthru($stream);
-                    exit;
+                    while (!feof($stream)) {
+                        echo fread($stream, 8192);
+                        flush();
+                    }
+
+                    fclose($stream);
                 },
                 200,
                 [
-                    'Content-Transfer-Encoding', 'binary',
                     'Content-Type' => $document->getMime() ?? 'application/octet-stream',
                     'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', mb_convert_encoding($document->getOriginalFilename(), 'ISO-8859-1', 'UTF-8')),
-                    'Content-Length' => fstat($stream)['size'],
                 ]
             );
         } catch (UnableToReadFile|FilesystemException|NoSuchKeyException $e) {
+            $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId()]);
+
             return new Response('', Response::HTTP_NOT_FOUND);
         }
     }

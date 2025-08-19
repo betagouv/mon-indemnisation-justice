@@ -9,6 +9,8 @@ services:
       - ./.docker/postgres/data:/var/lib/postgresql/data:rw
       # To run init scripts, wipe the data dir (`rm -Rf .docker/postgres/data/*`) first
       - ./.docker/postgres/scripts/:/docker-entrypoint-initdb.d
+      # Accès aux fichiers pour les requêtes nécessitant `pg_stat_file`
+      - .docker/php/fichiers:/app/fichiers
     networks:
       mijnet:
         aliases:
