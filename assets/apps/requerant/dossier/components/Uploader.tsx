@@ -36,14 +36,18 @@ export const Uploader = ({
       return;
     } else {
       const data = new FormData();
-      data.append("file", ev.target.files[0]);
+      data.append("piece-jointe", ev.target.files[0]);
       fetch(`/requerant/document/${dossier.id}/${type}`, {
         method: "POST",
         body: data,
       })
         .then((response) => response.json())
         .then((document) => onUploaded(document))
-        .catch(() => {});
+        .catch(() =>
+          setErreur(
+            "Un problème technique est survenu lors du téléversement. Nous vous invitons à ré-essayer.",
+          ),
+        );
     }
   };
 
@@ -60,7 +64,7 @@ export const Uploader = ({
         onChange={handleFileInput}
       />
       <span className="fr-hint-text">
-        Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf.
+        Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf, webp.
       </span>
       {erreur && <p className="fr-error-text">{erreur}</p>}
     </div>

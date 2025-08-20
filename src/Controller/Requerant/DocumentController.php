@@ -7,13 +7,17 @@ use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
+use League\Flysystem\UnableToWriteFile;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Requerant;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,19 +35,24 @@ class DocumentController extends AbstractController
         private EntityManagerInterface $em,
         #[Target('default.storage')]
         protected readonly FilesystemOperator $storage,
+        protected readonly LoggerInterface $logger,
     ) {
     }
 
     #[Route('/{id}/{type}', name: 'document_upload', methods: ['POST'])]
     public function upload(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, DocumentType $type): JsonResponse
     {
-        $files = $request->files->all();
-
         /** @var UploadedFile $file */
-        foreach ($files as $file) {
-            if (null !== $file->getPathname()) {
-                $content = $file->getContent();
-                $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+        $file = $request->files->get('piece-jointe');
+
+        if (null === $file?->getPathname()) {
+            throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
+        }
+
+        if (null !== $file?->getPathname()) {
+            $content = $file->getContent();
+            $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+            try {
                 $this->storage->write($filename, $content);
                 $document = (new Document())
                     ->setFilename($filename)
@@ -54,12 +63,12 @@ class DocumentController extends AbstractController
                     ->setMime($file->getClientMimeType());
 
                 $dossier->ajouterDocument($document);
-
                 $this->em->persist($dossier);
+                $this->em->flush();
+            } catch (UnableToWriteFile|FilesystemException $e) {
+                throw new FileException("La sauvegarde du fichier a échoué: {$e->getMessage()}");
             }
         }
-
-        $this->em->flush();
 
         return new JsonResponse([
             'id' => $document->getId(),
@@ -97,22 +106,27 @@ class DocumentController extends AbstractController
             if (!$this->storage->has($document->getFilename())) {
                 return new Response('', Response::HTTP_NOT_FOUND);
             }
+            /** @var $stream resource */
             $stream = $this->storage->readStream($document->getFilename());
 
             return new StreamedResponse(
                 function () use ($stream) {
-                    fpassthru($stream);
-                    exit;
+                    while (!feof($stream)) {
+                        echo fread($stream, 8192);
+                        flush();
+                    }
+
+                    fclose($stream);
                 },
                 200,
                 [
-                    'Content-Transfer-Encoding', 'binary',
                     'Content-Type' => $document->getMime() ?? 'application/octet-stream',
                     'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', mb_convert_encoding($document->getOriginalFilename(), 'ISO-8859-1', 'UTF-8')),
-                    'Content-Length' => fstat($stream)['size'],
                 ]
             );
         } catch (UnableToReadFile|FilesystemException|NoSuchKeyException $e) {
+            $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId()]);
+
             return new Response('', Response::HTTP_NOT_FOUND);
         }
     }

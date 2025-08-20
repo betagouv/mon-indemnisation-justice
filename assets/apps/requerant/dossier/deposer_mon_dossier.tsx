@@ -77,7 +77,7 @@ const apiPatch = () => {
   if (Object.keys(queuedChanges).length > 0) {
     window.appPendingChanges = true;
     // Run a PATCH call and store the result as state
-    fetch(`/api/requerant/dossier/${dossier.id}`, {
+    fetch(`/api-v1/requerant/dossier/${dossier.id}`, {
       method: "PATCH",
       redirect: "error",
       headers: { "Content-Type": "application/merge-patch+json" },
