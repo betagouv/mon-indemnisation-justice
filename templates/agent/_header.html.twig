@@ -10,7 +10,7 @@
                         {#  Menu mobile #}
                         <div class="fr-header__navbar">
                             <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499"
-                                    id="button-500" title="Menu">
+                                    id="button-modal-menu-header" title="Menu">
                                 Menu
                             </button>
                         </div>
@@ -49,9 +49,9 @@
         </div>
 
         {#  Version mobile #}
-        <div class="fr-header__menu fr-modal" id="modal-499" aria-labelledby="button-500">
+        <div class="fr-header__menu fr-modal" id="modal-menu-header" aria-labelledby="button-modal-menu-header">
             <div class="fr-container">
-                <button class="fr-btn--close fr-btn" aria-controls="modal-499" title="Fermer">
+                <button class="fr-btn--close fr-btn" aria-controls="modal-menu-header" title="Fermer">
                     Fermer
                 </button>
                 <div class="fr-header__menu-links">
@@ -76,10 +76,14 @@
                         {% if is_granted('ROLE_AGENT_DOSSIER') %}
                             {% if is_granted('ROLE_AGENT_LIAISON_BUDGET') %}
                                 <li class="fr-nav__item">
-                                    <button aria-expanded="false" aria-controls="menu-gestion-agents" type="menu"
-                                            class="fr-nav__btn">Dossiers
+                                    <button
+                                            aria-expanded="false"
+                                            aria-controls="header-menu-dossiers"
+                                            type="submit"
+                                            class="fr-nav__btn">
+                                        Dossiers
                                     </button>
-                                    <div class="fr-collapse fr-menu" id="menu-gestion-agents">
+                                    <div class="fr-collapse fr-menu" id="header-menu-dossiers">
                                         <ul class="fr-menu__list">
 
                                             <li>
@@ -120,10 +124,13 @@
 
                         {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}
                             <li class="fr-nav__item">
-                                <button aria-expanded="false" aria-controls="menu-gestion-agents" type="menu"
+                                <button
+                                        aria-expanded="false"
+                                        aria-controls="header-menu-gestion-agents"
+                                        type="button"
                                         class="fr-nav__btn">Gestion des agents
                                 </button>
-                                <div class="fr-collapse fr-menu" id="menu-gestion-agents">
+                                <div class="fr-collapse fr-menu" id="header-menu-gestion-agents">
                                     <ul class="fr-menu__list">
 
                                         <li>
