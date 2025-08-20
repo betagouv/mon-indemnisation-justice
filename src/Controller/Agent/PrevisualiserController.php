@@ -20,6 +20,7 @@ class PrevisualiserController extends AbstractController
     #[Route('/dossier/{id}/decision', name: 'agent_redacteur_courrier_dossier_previsualiser', methods: ['GET'])]
     public function previsualiserCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
+        // TODO à adapter pour pouvoir l'utiliser
         return $this->render('courrier/decision.html.twig', [
             'dossier' => $dossier,
             'web' => $request->query->getBoolean('w', true),
