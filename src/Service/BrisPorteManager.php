@@ -10,8 +10,6 @@ class BrisPorteManager implements EventSubscriberInterface
 {
     public function __construct(
         protected readonly Mailer $mailer,
-        protected readonly DocumentManager $documentManager,
-        protected readonly string $courrielEquipe,
     ) {
     }
 
@@ -25,14 +23,7 @@ class BrisPorteManager implements EventSubscriberInterface
 
     public function onDossierConstitue(DossierConstitueEvent $event): void
     {
-        $this->mailer
-            ->to($this->courrielEquipe)
-            ->subject("Mon Indemnisation Justice: nouveau dossier d'indemnisation de bris de porte déposé")
-            ->htmlTemplate('email/agent_nouveau_dossier_constitue.html.twig', [
-                'dossier' => $event->brisPorte,
-            ]);
-
-        $this->mailer->send();
+        // TODO prévenir l'agent attributeur qu'un dossier a été constitué et qu'il doit être attribué
     }
 
     public function onDossierDecide(DossierDecideEvent $event): void
