@@ -46,11 +46,10 @@ class ProConnectAuthenticator extends AbstractAuthenticator
         return
             $this->httpUtils->checkRequestPath($request, $this->loginCheckRoute)
             && $request->query->has('state')
-                && (
-                    $request->query->has('code')
-                    || $request->query->has('error')
-                )
-        ;
+            && (
+                $request->query->has('code')
+                || $request->query->has('error')
+            );
     }
 
     public function authenticate(Request $request): Passport
@@ -66,28 +65,29 @@ class ProConnectAuthenticator extends AbstractAuthenticator
 
             if (null === $agent) {
                 $agent = ($this->agentRepository->findOneBy(['email' => $userInfo['email']]) ?? new Agent())
-                ->setIdentifiant($userInfo['sub'])
-                ->setEmail($userInfo['email'])
-                ->setPrenom($userInfo['given_name'])
-                ->setNom($userInfo['usual_name'])
-                ->addRole(Agent::ROLE_AGENT)
-                ->setUid($userInfo['uid'])
-                ->setCree()
-                ->setFournisseurIdentite($this->fournisseurIdentiteAgentRepository->find($userInfo['idp_id']))
-                ->setDonnesAuthentification($userInfo)
-                ;
+                    ->setIdentifiant($userInfo['sub'])
+                    ->setEmail($userInfo['email'])
+                    ->setPrenom($userInfo['given_name'])
+                    ->setNom($userInfo['usual_name'])
+                    ->addRole(Agent::ROLE_AGENT)
+                    ->setUid($userInfo['uid'])
+                    ->setCree()
+                    ->setFournisseurIdentite($this->fournisseurIdentiteAgentRepository->find($userInfo['idp_id']))
+                    ->setDonnesAuthentification($userInfo);
 
                 if (in_array(sha1($agent->getEmail()), $this->autoPromotionHashes ?? [])) {
                     $agent
                         ->addRole(Agent::ROLE_AGENT_GESTION_PERSONNEL)
                         ->addRole(Agent::ROLE_AGENT_REDACTEUR)
+                        ->addRole(Agent::ROLE_AGENT_BETAGOUV)
                         ->setAdministration(Administration::MINISTERE_JUSTICE)
                         ->setValide();
                 }
             } else {
                 $agent->setEmail($userInfo['email'])
-                ->setPrenom($userInfo['given_name'])
-                ->setNom($userInfo['usual_name']);
+                    ->setPrenom($userInfo['given_name'])
+                    ->addRole(Agent::ROLE_AGENT_BETAGOUV)
+                    ->setNom($userInfo['usual_name']);
 
                 // Rattrapage des donées 'custom' pour les agents connectés avant l'intégration de ces données
                 // supplémentaires https://partenaires.proconnect.gouv.fr/docs/fournisseur-service/custom-scope

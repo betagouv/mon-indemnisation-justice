@@ -20,6 +20,7 @@ class Agent implements UserInterface
 {
     // Le role ROLE_AGENT est donné à chaque agent de la fonction publique
     public const ROLE_AGENT = 'ROLE_AGENT';
+    public const ROLE_AGENT_BETAGOUV = 'ROLE_AGENT_BETAGOUV';
     // Le role ROLE_AGENT_DOSSIER permet de chercher et consulter un dossier
     public const ROLE_AGENT_DOSSIER = 'ROLE_AGENT_DOSSIER';
 
