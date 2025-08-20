@@ -97,6 +97,7 @@ class DossierController extends AgentController
                         $this->getAgent()->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? ['REDACTEUR'] : [],
                         $this->getAgent()->hasRole(Agent::ROLE_AGENT_VALIDATEUR) ? ['VALIDATEUR'] : [],
                         $this->getAgent()->hasRole(Agent::ROLE_AGENT_LIAISON_BUDGET) ? ['LIAISON_BUDGET'] : [],
+                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_BETAGOUV) ? ['BETAGOUV'] : [],
                     ),
                 ],
                 'dossier' => $normalizer->normalize($dossier, 'json', ['groups' => 'agent:detail']),

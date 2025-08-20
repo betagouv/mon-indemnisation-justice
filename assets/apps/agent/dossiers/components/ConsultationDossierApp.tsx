@@ -15,6 +15,7 @@ import {
   ouvrirModaleSuppressionPieceJointe,
   SuppressionPieceJointe,
 } from "@/apps/agent/dossiers/components/consultation/piecejointe/SuppressionPieceJointe.tsx";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -242,7 +243,8 @@ export const ConsultationDossierApp = observer(
                           )}
                           <li>
                             <b>Adresse courriel: </b>{" "}
-                            {dossier.enAttenteInstruction() ? (
+                            {dossier.enAttenteInstruction() &&
+                            agent.estRedacteur() ? (
                               <>
                                 <span aria-describedby="tooltip-requerant-courriel">{`${dossier.requerant.courriel.substring(0, 2)}${"*".repeat(dossier.requerant.courriel.length - 2)}`}</span>
                                 <span
@@ -255,27 +257,60 @@ export const ConsultationDossierApp = observer(
                                 </span>
                               </>
                             ) : (
-                              <span>{dossier.requerant.courriel}</span>
+                              <>
+                                <span>{dossier.requerant.courriel}</span>
+                                <Button
+                                  iconId="fr-icon-clipboard-line"
+                                  onClick={() =>
+                                    navigator.clipboard.writeText(
+                                      dossier.requerant.courriel,
+                                    )
+                                  }
+                                  priority="tertiary no outline"
+                                  title="Copier dans le presse papier"
+                                  size="small"
+                                />
+                              </>
                             )}
                           </li>
+                          {agent.estRedacteur() ||
+                            agent.estValidateur() ||
+                            agent.estBetagouv()}
                           <li>
                             <b>N° téléphone: </b>
                             {dossier.requerant.telephone ? (
-                              dossier.enAttenteInstruction() ? (
-                                <>
-                                  <span aria-describedby="tooltip-requerant-telephone">{`${dossier.requerant.telephone.substring(0, 2)}${"*".repeat(dossier.requerant.telephone.length - 2)}`}</span>
-                                  <span
-                                    className="fr-tooltip fr-placement"
-                                    id="tooltip-requerant-telephone"
-                                    role="tooltip"
-                                    aria-hidden="true"
-                                  >
-                                    Démarrer l'instruction pour révéler
-                                  </span>
-                                </>
-                              ) : (
-                                <>{dossier.requerant.telephone}</>
-                              )
+                              <>
+                                {dossier.enAttenteInstruction() &&
+                                agent.estRedacteur() ? (
+                                  <>
+                                    <span aria-describedby="tooltip-requerant-telephone">{`${dossier.requerant.telephone.substring(0, 2)}${"*".repeat(dossier.requerant.telephone.length - 2)}`}</span>
+                                    <span
+                                      className="fr-tooltip fr-placement"
+                                      id="tooltip-requerant-telephone"
+                                      role="tooltip"
+                                      aria-hidden="true"
+                                    >
+                                      Démarrer l'instruction pour révéler
+                                    </span>
+                                  </>
+                                ) : (
+                                  <>
+                                    {dossier.requerant.telephone}
+                                    <Button
+                                      style={{ display: "inline-block" }}
+                                      iconId="fr-icon-clipboard-line"
+                                      onClick={() =>
+                                        navigator.clipboard.writeText(
+                                          dossier.requerant.telephone,
+                                        )
+                                      }
+                                      priority="tertiary no outline"
+                                      title="Copier dans le presse papier"
+                                      size="small"
+                                    />
+                                  </>
+                                )}
+                              </>
                             ) : (
                               <i>non renseigné</i>
                             )}
@@ -375,6 +410,14 @@ export const ConsultationDossierApp = observer(
                                   ? "Oui"
                                   : "Non"}
                               </>
+                            </li>
+                          )}
+                          {dossier.testEligibilite.description && (
+                            <li>
+                              <b>Commentaires du requérant:</b>
+                              <blockquote>
+                                {dossier.testEligibilite.description}
+                              </blockquote>
                             </li>
                           )}
                         </ul>
