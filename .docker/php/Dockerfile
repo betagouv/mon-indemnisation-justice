@@ -41,6 +41,9 @@ RUN apt install -y chromium
 
 ENV CHROMIUM_PATH=/usr/bin/chromium
 
+# Firefox
+RUN apt install -y firefox-esr
+
 # Cleanups
 
 RUN apt autoremove -y

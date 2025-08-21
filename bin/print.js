@@ -5,20 +5,13 @@ import fs from "fs";
 
 const source = process.argv.at(-2);
 const destination = process.argv.at(-1);
-const chromePath = process.env.CHROMIUM_PATH;
 
 (async () => {
   const browser = await puppeteer.launch({
-    args: [
-      "--no-sandbox",
-      "--disable-gpu",
-      "--disable-translate",
-      "--disable-extensions",
-    ],
-    headless: "new",
+    headless: true,
     timeout: 30000,
-    executablePath: chromePath,
-    browser: "chrome",
+    browser: "firefox",
+    executablePath: "/usr/bin/firefox",
   });
   const page = await browser.newPage();
 
@@ -32,7 +25,8 @@ const chromePath = process.env.CHROMIUM_PATH;
     displayHeaderFooter: false,
     headerTemplate: "",
     footerTemplate: "",
-    printBackground: false,
+    printBackground: true,
+    omitBackground: false,
     format: "A4",
     margin: {
       bottom: 0,

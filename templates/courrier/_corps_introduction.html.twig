@@ -2,8 +2,8 @@
     J’accuse réception de votre requête par laquelle vous
     sollicitez{% if dossier.qualiteRequerant != 'AUT' or not dossier.precisionRequerant %}, en qualité de {{ dossier.qualiteRequerant != 'AUT' ? dossier.qualiteRequerant.libelle|lower : dossier.precisionRequerant|lower }},{% endif %}
     l’indemnisation du préjudice subi en raison de la détérioration de la porte d’entrée du logement sis
-    {{ dossier.adresse.ligne1 }} à {{ dossier.adresse.localite|upper }}
+    {{ dossier.adresse.ligne1 }} à {{ dossier.adresse.localite|default }}
     ({{ dossier.adresse.codeDepartemental }}).
-    Cette dégradation aurait été occasionnée au cours d’une opération de police judiciaire menée le
-    {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}.
+    Cette dégradation aurait été occasionnée au cours d’une opération de police judiciaire{% if dossier.dateOperationPJ is not null %} menée le
+    {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}{% endif %}.
 </p>

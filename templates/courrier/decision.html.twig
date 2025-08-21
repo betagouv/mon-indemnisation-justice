@@ -34,7 +34,6 @@
                         margin: 10pt 0;
                         font-size: 10pt;
                         line-height: 13pt;
-                        text-wrap: wrap;
                     }
 
                     .contact-bureau {
@@ -203,30 +202,12 @@
             </p>
             {% if corps is defined and corps is not null %}
                 {{ corps|raw }}
-            {% else %}
-                {% if dossier.etatDossier.estAccepte() %}
-                    {% if dossier.requerant.isPersonneMorale %}
-                        {% include 'courrier/_corps_accepte_personne_morale.html.twig' with {montantIndemnisation: dossier.propositionIndemnisation } %}
-                    {% else %}
-                        {% include 'courrier/_corps_accepte_personne_physique.html.twig' with {montantIndemnisation: dossier.propositionIndemnisation } %}
-                    {% endif %}
-
-                {% elseif dossier.etatDossier.estRejete() %}
-                    {% if dossier.qualiteRequerant == 'PRO' %}
-                        {% include 'courrier/_corps_rejete_bailleur.html.twig' %}
-                    {% else %}
-                        {% include 'courrier/_corps_rejete.html.twig' %}
-                    {% endif %}
-                {% endif %}
             {% endif %}
         </div>
-
-
     </div>
 
-
-
-    {% if formulaire|default(dossier.estAccepte) %}
+    {# Formulaire de déclaration d'acceptation #}
+    {% if contexte.indemnisation|default(false) %}
         <div id="declaration-acceptation" class="page">
             <p class="formulaire-titre">
                 <b class="texte-majuscule">Déclaration d’acceptation</b>
@@ -235,8 +216,8 @@
             <p>
                 Je soussigné{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %},
                 …………………..………………………, déclare accepter l’indemnité définitive de
-                <b>{{ dossier.propositionIndemnisation|montant_litteral }}
-                    ({{ dossier.propositionIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
+                <b>{{ contexte.montantIndemnisation|montant_litteral }}
+                    ({{ contexte.montantIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
                 préjudice
                 confondues qui m’est proposée par le garde des Sceaux, ministre de la Justice, en réparation du
                 préjudice
@@ -309,10 +290,7 @@
             <p class="marge-plus">La déclaration d’acceptation doit être retournée via votre espace personnel</p>
 
             <p class="marge-plus-plus"><b><u>Référence à rappeler</u> :{{ dossier.reference }}</b></p>
-
-
         </div>
     {% endif %}
-
 
 {% endblock pages %}
