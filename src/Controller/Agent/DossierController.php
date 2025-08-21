@@ -268,49 +268,61 @@ class DossierController extends AgentController
     #[Route('/dossier/{id}/courrier/generer.json', name: 'agent_redacteur_generer_courrier_dossier', methods: ['POST'])]
     public function genererCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
+        // TODO ajouter en métadonnées l'info du rejet ou de l'acceptation, ainsi que du montant de l'indemnisation
         $indemnisation = $request->getPayload()->getBoolean('indemnisation');
 
-        $propositionIndemnisation = $dossier->getOrCreatePropositionIndemnisation();
+        $courrierMinistere = $dossier->getOrCreatePropositionIndemnisation();
 
         if ($indemnisation) {
+            $montantIndemnisation = floatval($request->getPayload()->getString('montantIndemnisation'));
+            $courrierMinistere->setMetaDonnees(['contexte' => [
+                'indemnisation' => true,
+                'montantIndemnisation' => $montantIndemnisation,
+            ]]);
+
             if ($dossier->getRequerant()->getIsPersonneMorale()) {
-                $propositionIndemnisation->setCorps(
+                $courrierMinistere->setCorps(
                     $this->twig->render('courrier/_corps_accepte_personne_morale.html.twig', [
                         'dossier' => $dossier,
-                        'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
+                        'montantIndemnisation' => $montantIndemnisation,
                     ])
                 );
             } else {
-                $propositionIndemnisation->setCorps(
+                $courrierMinistere->setCorps(
                     $this->twig->render('courrier/_corps_accepte_personne_physique.html.twig', [
                         'dossier' => $dossier,
-                        'montantIndemnisation' => floatval($request->getPayload()->getString('montantIndemnisation')),
+                        'montantIndemnisation' => $montantIndemnisation,
                     ])
                 );
             }
         } else {
             $motifRefus = $request->getPayload()->get('motifRefus');
 
+            $courrierMinistere->setMetaDonnees(['contexte' => [
+                'indemnisation' => false,
+                'motifRefux' => $motifRefus,
+            ]]);
+
             if ('est_bailleur' === $motifRefus) {
-                $propositionIndemnisation->setCorps(
+                $courrierMinistere->setCorps(
                     $this->twig->render('courrier/_corps_rejete_bailleur.html.twig', [
                         'dossier' => $dossier,
                     ])
                 );
             } elseif ('est_vise' === $motifRefus) {
-                $propositionIndemnisation->setCorps(
+                $courrierMinistere->setCorps(
                     $this->twig->render('courrier/_corps_rejete_est_vise.html.twig', [
                         'dossier' => $dossier,
                     ])
                 );
             } elseif ('est_hebergeant' === $motifRefus) {
-                $propositionIndemnisation->setCorps(
+                $courrierMinistere->setCorps(
                     $this->twig->render('courrier/_corps_rejete_est_hebergeant.html.twig', [
                         'dossier' => $dossier,
                     ])
                 );
             } else {
-                $propositionIndemnisation->setCorps(
+                $courrierMinistere->setCorps(
                     $this->twig->render('courrier/_corps_rejete.html.twig', [
                         'dossier' => $dossier,
                     ])
@@ -318,13 +330,13 @@ class DossierController extends AgentController
             }
         }
 
-        $propositionIndemnisation = $this->imprimanteCourrier->imprimerDocument($propositionIndemnisation);
+        $courrierMinistere = $this->imprimanteCourrier->imprimerDocument($courrierMinistere);
 
-        $this->em->persist($propositionIndemnisation);
+        $this->em->persist($courrierMinistere);
         $this->em->persist($dossier);
         $this->em->flush();
 
-        return new JsonResponse($this->normalizer->normalize($propositionIndemnisation, 'json', ['agent:detail']));
+        return new JsonResponse($this->normalizer->normalize($courrierMinistere, 'json', ['agent:detail']));
     }
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]

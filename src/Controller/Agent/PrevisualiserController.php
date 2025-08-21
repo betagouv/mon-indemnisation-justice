@@ -6,10 +6,12 @@ namespace MonIndemnisationJustice\Controller\Agent;
 
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\DocumentType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -20,11 +22,16 @@ class PrevisualiserController extends AbstractController
     #[Route('/dossier/{id}/decision', name: 'agent_redacteur_courrier_dossier_previsualiser', methods: ['GET'])]
     public function previsualiserCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
-        // TODO à adapter pour pouvoir l'utiliser
-        return $this->render('courrier/decision.html.twig', [
-            'dossier' => $dossier,
-            'web' => $request->query->getBoolean('w', true),
-            'formulaire' => $request->query->getBoolean('f', true),
+        $document = $dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
+
+        if (null === $document) {
+            throw new NotFoundHttpException();
+        }
+
+        return $this->render($document->getType()->getGabarit(), [
+            'dossier' => $document->getDossier(),
+            'corps' => $document?->getCorps(),
+            'contexte' => $document->getMetaDonnee('contexte') ?? [],
         ]);
     }
 
