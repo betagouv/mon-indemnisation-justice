@@ -52,7 +52,7 @@ class DossierControllerTest extends WebTestCase
                 'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
                 'adresse' => $dossier->getAdresse()->getLibelle(),
                 'estEligible' => true,
-                'estLieAttestation' => false,
+                'estLieAttestation' => null,
             ], $donneesDossier);
         }
     }
@@ -116,7 +116,7 @@ class DossierControllerTest extends WebTestCase
                 'raisonSociale' => $dossier->getRequerant()->getPersonneMorale()?->getRaisonSociale(),
                 'siren' => $dossier->getRequerant()->getPersonneMorale()?->getSirenSiret(),
             ],
-            'estLieAttestation' => false,
+            'estLieAttestation' => null,
         ]);
     }
 

@@ -288,8 +288,10 @@ export const RechercheDossierApp = observer(
                                     <br />
                                     {dossier.estLieAttestation ? (
                                       <b>Oui</b>
-                                    ) : (
+                                    ) : dossier.estLieAttestation === false ? (
                                       <>Non</>
+                                    ) : (
+                                      <i>-</i>
                                     )}
                                   </td>
                                   <td className="fr-col-2">

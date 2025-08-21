@@ -8,6 +8,9 @@ services:
             key: '%env(resolve:SCW_ACCESS_KEY)%'
             secret: '%env(resolve:SCW_SECRET_KEY)%'
         region: '%env(resolve:SCW_REGION)%'
+        http:
+            connect_timeout: 2
+            timeout: 5
 
 flysystem:
   storages:

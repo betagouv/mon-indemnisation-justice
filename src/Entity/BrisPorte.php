@@ -118,7 +118,7 @@ class BrisPorte
     private ?string $precisionRequerant = null;
 
     #[Groups(['agent:detail', 'agent:liste'])]
-    #[ORM\Column(name: 'est_lie_attestation', options: ['default' => false])]
+    #[ORM\Column(name: 'est_lie_attestation', nullable: true)]
     protected bool $estLieAttestation = false;
 
     #[Groups(['agent:detail'])]
@@ -591,9 +591,28 @@ class BrisPorte
         return $this;
     }
 
-    public function isEstLieAttestation(): bool
+    #[Groups(['agent:liste'])]
+    #[SerializedName('estLieAttestation')]
+    public function isEstLieAttestation(): ?bool
     {
-        return $this->estLieAttestation;
+        if ($this->testEligibilite->estIssuAttestation) {
+            return true;
+        }
+
+        $metadonnees = array_map(
+            fn (Document $d) => $d->getMetaDonnee('estAttestation'),
+            $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION),
+        );
+
+        if (array_any($metadonnees, fn (?bool $m) => true === $m)) {
+            return true;
+        }
+
+        if (empty($metadonnees) || array_any($metadonnees, fn (?bool $m) => null === $m)) {
+            return null;
+        }
+
+        return false;
     }
 
     /**
