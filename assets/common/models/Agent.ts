@@ -7,13 +7,15 @@ export enum AgentPermissionType {
   ATTRIBUTEUR = "ATTRIBUTEUR",
   VALIDATEUR = "VALIDATEUR",
   LIAISON_BUDGET = "LIAISON_BUDGET",
+  BETAGOUV = "BETAGOUV",
 }
 
 export type AgentPermission =
   | AgentPermissionType.REDACTEUR
   | AgentPermissionType.ATTRIBUTEUR
   | AgentPermissionType.VALIDATEUR
-  | AgentPermissionType.LIAISON_BUDGET;
+  | AgentPermissionType.LIAISON_BUDGET
+  | AgentPermissionType.BETAGOUV;
 
 export class Agent {
   public id: number;
@@ -35,6 +37,10 @@ export class Agent {
 
   public estLiaisonBudget(): boolean {
     return this.permissions.has(AgentPermissionType.LIAISON_BUDGET);
+  }
+
+  public estBetagouv(): boolean {
+    return this.permissions.has(AgentPermissionType.BETAGOUV);
   }
 
   public instruit(dossier: BaseDossier): boolean {
