@@ -244,7 +244,9 @@ export const ConsultationDossierApp = observer(
                           <li>
                             <b>Adresse courriel: </b>{" "}
                             {dossier.enAttenteInstruction() &&
-                            agent.estRedacteur() ? (
+                            agent.estRedacteur() &&
+                            !agent.estValidateur() &&
+                            !agent.estBetagouv() ? (
                               <>
                                 <span aria-describedby="tooltip-requerant-courriel">{`${dossier.requerant.courriel.substring(0, 2)}${"*".repeat(dossier.requerant.courriel.length - 2)}`}</span>
                                 <span
@@ -273,15 +275,14 @@ export const ConsultationDossierApp = observer(
                               </>
                             )}
                           </li>
-                          {agent.estRedacteur() ||
-                            agent.estValidateur() ||
-                            agent.estBetagouv()}
                           <li>
                             <b>N° téléphone: </b>
                             {dossier.requerant.telephone ? (
                               <>
                                 {dossier.enAttenteInstruction() &&
-                                agent.estRedacteur() ? (
+                                agent.estRedacteur() &&
+                                !agent.estValidateur() &&
+                                !agent.estBetagouv() ? (
                                   <>
                                     <span aria-describedby="tooltip-requerant-telephone">{`${dossier.requerant.telephone.substring(0, 2)}${"*".repeat(dossier.requerant.telephone.length - 2)}`}</span>
                                     <span

@@ -30,7 +30,7 @@ const component = function AjoutPieceJointe({
   onAjoute?: (nouvellePieceJointe: Document) => void;
 }) {
   // Ref sur le champ de sélection du fichier, pour pouvoir le réinitialiser
-  const refChampFichier = useRef<HTMLInputElement>();
+  const refChampFichier = useRef<HTMLInputElement>(null);
 
   // Type de document associé à la pièce jointe téléversée
   const [typePJ, setTypePj]: [DocumentType, (typePJ?: DocumentType) => void] =
@@ -148,52 +148,20 @@ const component = function AjoutPieceJointe({
           <option value="" disabled hidden>
             Sélectionnez un type
           </option>
-          {Document.types.map((type: DocumentType) => (
-            <option value={type.type} key={type.type}>
-              {type.libelle}
-            </option>
-          ))}
+          {Document.types
+            .filter(
+              (type: DocumentType) =>
+                ![
+                  DocumentType.TYPE_COURRIER_MINISTERE,
+                  DocumentType.TYPE_ARRETE_PAIEMENT,
+                ].includes(type),
+            )
+            .map((type: DocumentType) => (
+              <option value={type.type} key={type.type}>
+                {type.libelle}
+              </option>
+            ))}
         </Select>
-
-        {dossier.estAApprouver &&
-          typePJ == DocumentType.TYPE_COURRIER_MINISTERE && (
-            <Input
-              label="Montant de l'indemnisation"
-              iconId="fr-icon-money-euro-circle-line"
-              hintText="Également affiché au réquréant sur la page de consultation"
-              nativeInputProps={{
-                defaultValue: montantIndemnisation,
-                onPaste: (e: ClipboardEvent<HTMLInputElement>) => {
-                  (e.target as HTMLInputElement).value = e.clipboardData
-                    .getData("text")
-                    .replace(/\s/g, "");
-
-                  e.preventDefault();
-                  const value = (e.target as HTMLInputElement).value;
-                  const montant = value?.match(/^\d+(.\d{0,2})?$/)
-                    ? parseFloat(value?.replace(",", "."))
-                    : null;
-
-                  console.log(value, montant);
-
-                  setMontantIndemnisation(montant);
-                },
-                onChange: (e: FormEvent<HTMLInputElement>) => {
-                  const value = (e.target as HTMLInputElement).value;
-                  const montant = value?.match(/^\d+(.\d{0,2})?$/)
-                    ? parseFloat(value?.replace(",", "."))
-                    : null;
-
-                  console.log(value, montant);
-
-                  setMontantIndemnisation(montant);
-                },
-                type: "number",
-                step: ".01",
-                inputMode: "numeric",
-              }}
-            />
-          )}
 
         <Upload
           className="fr-my-2w"

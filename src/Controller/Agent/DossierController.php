@@ -175,8 +175,9 @@ class DossierController extends AgentController
         $content = $file->getContent();
         $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
-        $document = ($type->estUnique() ? $dossier->getDocumentParType($type) : (new Document())->setType($type)->ajouterAuDossier($dossier))
+        $document = ($type->estUnique() ? $dossier->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($dossier) : (new Document())->setType($type)->ajouterAuDossier($dossier))
             ->setFilename($filename)
+            ->setCorps(null)
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
             ->setAjoutRequerant(false)
@@ -186,19 +187,11 @@ class DossierController extends AgentController
             $metaDonnees = json_decode($request->request->get('metaDonnees'), true);
 
             $document->setMetaDonnees($metaDonnees);
-
-            if (isset($metaDonnees['montantIndemnisation'])) {
-                $dossier->setPropositionIndemnisation($metaDonnees['montantIndemnisation']);
-            }
         }
 
         $this->em->persist($document);
         $this->em->persist($dossier);
         $this->em->flush();
-
-        if (DocumentType::TYPE_COURRIER_MINISTERE === $type && EtatDossierType::DOSSIER_OK_A_APPROUVER === $dossier->getEtatDossier()->getEtat()) {
-            $eventDispatcher->dispatch(new DossierDecideEvent($dossier));
-        }
 
         return new JsonResponse($this->normalizer->normalize($document, 'json', ['agent:detail']), Response::HTTP_OK);
     }
@@ -300,7 +293,7 @@ class DossierController extends AgentController
 
             $courrierMinistere->setMetaDonnees(['contexte' => [
                 'indemnisation' => false,
-                'motifRefux' => $motifRefus,
+                'motifRefus' => $motifRefus,
             ]]);
 
             if ('est_bailleur' === $motifRefus) {
