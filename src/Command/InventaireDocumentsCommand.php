@@ -29,13 +29,12 @@ class InventaireDocumentsCommand extends Command
         /** @var Document $document */
         foreach ($this->em->getRepository(Document::class)->findAll() as $document) {
             if (!$this->storage->fileExists($document->getFilename())) {
-                $output->writeln("<error>Le document {$document->getId()} n'a pas de fichier correspondant</error>");
-            } elseif (($mime = $this->storage->mimeType($document->getFilename())) !== $document->getMime()) {
-                $output->writeln("<error>Le document {$document->getId()} n'a pas le bon type (attendu {$document->getMime()}, détecté {$mime})</error>");
-            } else {
-                $output->writeln("<info>Document {$document->getId()} valide</info>");
+                $this->em->remove($document);
+                $output->writeln("Document {$document->getId()} sans fichier associé; supprimé!");
             }
         }
+
+        $this->em->flush();
 
         return Command::SUCCESS;
     }
