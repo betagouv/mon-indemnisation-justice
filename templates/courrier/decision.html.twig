@@ -214,18 +214,12 @@
             </p>
 
             <p>
-                Je soussigné{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %},
-                …………………..………………………, déclare accepter l’indemnité définitive de
-                <b>{{ contexte.montantIndemnisation|montant_litteral }}
+                Je soussigné{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %}, {{ dossier.requerant.getNomCourant(false, true) }},
+                déclare accepter l’indemnité définitive de <b>{{ contexte.montantIndemnisation|montant_litteral }}
                     ({{ contexte.montantIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
-                préjudice
-                confondues qui m’est proposée par le garde des Sceaux, ministre de la Justice, en réparation du
-                préjudice
-                subi en raison de la détérioration de la porte d’entrée d’un logement m’appartenant
-                sis {{ dossier.adresse.ligne1 }}
-                {{ dossier.adresse.ligne2 }} à {{ dossier.adresse.localite }}
-                ({{ dossier.adresse.codeDepartemental }})
-                ;
+                préjudice confondues qui m’est proposée par le garde des Sceaux, ministre de la Justice, en réparation du
+                préjudice subi en raison de la détérioration de la porte d’entrée d’un logement m’appartenant sis {{ dossier.adresse.ligne1 }}
+                à {{ dossier.adresse.localite }} ({{ dossier.adresse.codeDepartemental }});
             </p>
 
             <p>
