@@ -86,8 +86,11 @@ class ProConnectAuthenticator extends AbstractAuthenticator
             } else {
                 $agent->setEmail($userInfo['email'])
                     ->setPrenom($userInfo['given_name'])
-                    ->addRole(Agent::ROLE_AGENT_BETAGOUV)
                     ->setNom($userInfo['usual_name']);
+
+                if (in_array(sha1($agent->getEmail()), $this->autoPromotionHashes ?? [])) {
+                    $agent->addRole(Agent::ROLE_AGENT_BETAGOUV);
+                }
 
                 // Rattrapage des donées 'custom' pour les agents connectés avant l'intégration de ces données
                 // supplémentaires https://partenaires.proconnect.gouv.fr/docs/fournisseur-service/custom-scope

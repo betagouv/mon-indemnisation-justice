@@ -111,12 +111,6 @@ class Document
         return $this->type;
     }
 
-    #[Ignore]
-    public function getTypeLibelle(): ?string
-    {
-        return $this->type->getLibelle();
-    }
-
     public function setType(DocumentType $type): static
     {
         $this->type = $type;

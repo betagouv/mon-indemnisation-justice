@@ -77,7 +77,11 @@ export class EtatDossierType implements EtatInterface {
   public readonly libelle: string;
 
   public static A_FINALISER = new EtatDossierType("A_FINALISER", "À finaliser");
-  public static A_INSTRUIRE = new EtatDossierType("A_INSTRUIRE", "À instruire");
+  public static A_ATTRIBUER = new EtatDossierType("A_ATTRIBUER", "À attribuer");
+  public static A_INSTRUIRE = new EtatDossierType(
+    "A_INSTRUIRE",
+    "Attribué - à instruire",
+  );
   public static EN_INSTRUCTION = new EtatDossierType(
     "EN_INSTRUCTION",
     "En cours d'instruction",
@@ -92,37 +96,40 @@ export class EtatDossierType implements EtatInterface {
 
   public static OK_A_APPROUVER = new EtatDossierType(
     "OK_A_APPROUVER",
-    "Accepté - à approuver",
+    "Accepté - en attente déclaration",
   );
 
   public static OK_A_VERIFIER = new EtatDossierType(
     "OK_A_VERIFIER",
-    "Accepté - à vérifier",
+    "Accepté - déclaration retournée",
   );
 
   public static OK_VERIFIE = new EtatDossierType(
     "OK_VERIFIE",
-    "Accepté - vérifié",
+    "Accepté - arrêté à signer",
   );
 
   public static OK_A_INDEMNISER = new EtatDossierType(
     "OK_A_INDEMNISER",
-    "Accepté - à indemniser",
+    "Accepté - arrêté à transmettre à FIP3",
   );
 
   public static OK_EN_ATTENTE_PAIEMENT = new EtatDossierType(
     "OK_EN_ATTENTE_PAIEMENT",
-    "Accepté - en attente versement",
+    "Accepté - arrêté transmis à FIP3",
   );
 
-  public static OK_INDEMNISE = new EtatDossierType("OK_INDEMNISE", "Indemnisé");
+  public static OK_INDEMNISE = new EtatDossierType(
+    "OK_INDEMNISE",
+    "Indemnisé par FIP3",
+  );
 
   public static KO_A_SIGNER = new EtatDossierType(
     "KO_A_SIGNER",
     "Rejeté - à signer",
   );
 
-  public static KO_REJETE = new EtatDossierType("KO_REJETE", "Rejeté");
+  public static KO_REJETE = new EtatDossierType("KO_REJETE", "Rejeté - envoyé");
 
   protected constructor(id: string, libelle: string) {
     this.id = id;

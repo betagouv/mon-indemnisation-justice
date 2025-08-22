@@ -46,6 +46,7 @@ class ImprimanteCourrier
             $this->filesystem->dumpFile($fichierHtml, $this->twig->render($document->getType()->getGabarit(), [
                 'dossier' => $document->getDossier(),
                 'corps' => $document?->getCorps(),
+                'contexte' => $document->getMetaDonnee('contexte') ?? [],
             ]));
 
             $impression = new Process([$this->binDirectory.'/print.js', $fichierHtml, $fichierPdf], $this->projectDirectory);
