@@ -1,0 +1,34 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% set depot_url = url('app_bris_porte_edit', {'id': dossier.id }) %}
+
+{% block entete %}
+    <b>Vous pouvez poursuivre votre demande d'indemnisation</b>
+{% endblock entete %}
+
+{% block contenu %}
+    Bonjour {{ dossier.requerant.nomCourant }},
+    <br/>
+    <br/>
+    Le {{ dossier.dateCreation|format_datetime(locale='fr',pattern="d MMMM", timezone: 'Europe/Paris') }} vous avez
+    initié une demande d'indemnisation sur l'application <b>Mon Indemnisation Justice</b>.
+    <br/>
+    <br/>
+    Des dysfonctionnements techniques sur notre plateforme ayant empêché la bonne saisie de vos informations, nous tenons
+    à nous excuser pour la gêne occasionnée. Nous vous informons que ces problèmes étant réglés, vous pouvez de nouveau
+    compléter votre dossier.
+    <br/>
+    <br/>
+    Pour finaliser votre demande, nous vous invitons à poursuivre en cliquant sur le bouton ci-dessous ou en vous rendant
+    à l'adresse suivante : <a href="{{ depot_url }}" title="Poursuivre ma demande d'indemnisation">{{ depot_url }}</a>
+    <br/>
+    <br/>
+    {{ email.bouton("Poursuivre ma demande d'indemnisation", depot_url) }}
+    <br/>
+    <br/>
+    Cordialement,<br/>
+    L'équipe Mon Indemnisation Justice
+{% endblock contenu %}
+
