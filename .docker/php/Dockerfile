@@ -8,7 +8,7 @@ RUN echo "export LANG='fr_FR.UTF8'" >> /root/.bashrc
 
 # Generic utils
 RUN apt-get update -y && \
-    apt-get upgrade -y && \
+    apt-get upgrade -y --fix-missing && \
     apt-get install -y vim wget
 
 # PHP extensions
@@ -43,6 +43,11 @@ ENV CHROMIUM_PATH=/usr/bin/chromium
 
 # Firefox
 RUN apt install -y firefox-esr
+ENV FIREFOX_PATH=/usr/bin/firefox
+
+# Extra
+RUN apt install -y postgresql-client
+RUN echo 'alias ll="psql \${DATABASE_URL/\?*/}"' > /root/.bashrc
 
 # Cleanups
 
