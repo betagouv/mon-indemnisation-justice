@@ -15,5 +15,6 @@ Les préjudices éligibles à une indemnisation sont:
 - [Installation](/docs/001-Installation.md)
 - [Structure du projet](/docs/002-Structure%20du%20projet.md)
 - [Base de données](/docs/003-Base%20de%20données.md)
-- [Tests](/docs/004-Tests.md)
-- [Manipulations diverses](/docs/005-Manipulations%20diverses.md)
+- [Cycle de vie d'un dossier](/docs/004-Cycle%20de%20vie%20d'un%20dossier.md)
+- [Tests](/docs/005-Tests.md)
+- [Manipulations diverses](/docs/006-Manipulations%20diverses.md)
