@@ -1,6 +1,6 @@
-import { EtatDossierType } from "@/common/models";
+import { EtatDossierType, Redacteur } from "@/common/models";
 import { action, computed, makeObservable, observable } from "mobx";
-import { Redacteur } from "./Redacteur.ts";
+import { parseInt } from "lodash";
 
 /**
  * Représente les critères de filtre sur la recherche de dossier en cours.
@@ -10,11 +10,13 @@ export class RechercheDossier {
   protected _etatsDossier: Map<EtatDossierType, boolean>;
   protected _attributaires: Set<Redacteur | null>;
   public motsClefs: string;
+  protected _page: number = 1;
 
   constructor(
     attributaires: Array<Redacteur | null> = [],
     etatsSelectionnes: EtatDossierType[],
     motsClefs: string = "",
+    page?: number,
   ) {
     this._attributaires = new Set(attributaires);
     this._etatsDossier = new Map(
@@ -24,9 +26,11 @@ export class RechercheDossier {
       ]),
     );
     this.motsClefs = motsClefs;
+    this._page = page ?? 1;
     makeObservable(this, {
       _attributaires: observable,
       _etatsDossier: observable,
+      _page: observable,
       motsClefs: observable,
       setMotsClefs: action,
       setAttributaire: action,
@@ -34,6 +38,7 @@ export class RechercheDossier {
       etatsDossier: computed,
       estSelectionneAttributaire: observable,
       changerEtatsDossier: action,
+      setPage: action,
     } as any);
   }
 
@@ -53,6 +58,23 @@ export class RechercheDossier {
     return this._etatsDossier.get(etatDossier);
   }
 
+  get page(): number {
+    return this._page;
+  }
+
+  setPage(page: number) {
+    this._page = page;
+  }
+
+  get state() {
+    return {
+      page: this._page,
+      attributaires: this._attributaires.values().toArray(),
+      etatsDossier: this.getEtatsDossierSelectionnes(),
+      recherche: this.motsClefs,
+    };
+  }
+
   getEtatsDossierSelectionnes(): EtatDossierType[] {
     return this._etatsDossier
       .entries()
@@ -65,6 +87,7 @@ export class RechercheDossier {
     for (const etat of EtatDossierType.liste) {
       this._etatsDossier.set(etat, etats.includes(etat));
     }
+    this._page = 1;
   }
 
   protected serialiserURLEtatsDossier(): string {
@@ -75,6 +98,7 @@ export class RechercheDossier {
 
   setMotsClefs(motsClefs: string) {
     this.motsClefs = motsClefs;
+    this._page = 1;
   }
 
   public setAttributaire(
@@ -86,6 +110,7 @@ export class RechercheDossier {
     } else {
       this._attributaires.delete(attributaire);
     }
+    this._page = 1;
   }
 
   public buildURLParameters(): URLSearchParams {
@@ -114,11 +139,14 @@ export class RechercheDossier {
               .join("|"),
           }
         : {}),
+      p: this._page.toString(),
     });
   }
 
   public toURL(): URL {
     const url = new URL(window.location.toString());
+
+    url.searchParams.set("p", this._page.toString());
 
     if (this._attributaires.size > 0) {
       url.searchParams.set(
@@ -179,6 +207,7 @@ export class RechercheDossier {
             EtatDossierType.KO_REJETE,
           ],
       query.has("r") ? query.get("r") : "",
+      parseInt(query.get("p")) || 1,
     );
   }
 }

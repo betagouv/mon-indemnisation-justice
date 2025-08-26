@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
@@ -32,12 +33,11 @@ class BrisPorteRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param int               $page          le numéro de la page (commence à 1)
      * @param EtatDossierType[] $etats
      * @param Agent[]           $attributaires
-     *
-     * @return BrisPorte[]
      */
-    public function rechercheDossiers(array $etats = [], array $attributaires = [], array $filtres = [], bool $nonAttribue = false): array
+    public function rechercheDossiers(int $page, int $taille, array $etats = [], array $attributaires = [], array $filtres = [], bool $nonAttribue = false): Paginator
     {
         $qb = $this
             ->createQueryBuilder('d')
@@ -77,7 +77,9 @@ class BrisPorteRepository extends ServiceEntityRepository
             $qb->andWhere('d.redacteur is null');
         }
 
-        return $qb->getQuery()->getResult();
+        $qb->setMaxResults($taille)->setFirstResult(($page - 1) * $taille);
+
+        return new Paginator($qb->getQuery(), fetchJoinCollection: true);
     }
 
     /**
