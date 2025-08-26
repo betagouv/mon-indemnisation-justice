@@ -185,18 +185,15 @@ export const RechercheDossierApp = observer(({ agent }: { agent: Agent }) => {
                 />
               </div>
             )}
-            <div className="fr-col-12">
-              <div
-                className="fr-table fr-m-0"
-                id="prec-tableau-dossiers-nouveauxs_container"
-              >
+            <div className="fr-col-12 fr-my-1w">
+              <div className="fr-table fr-m-0">
                 {isPending ? (
                   <Loader />
                 ) : (
                   <div className="fr-table__wrapper">
                     <div className="fr-table__container">
                       <div className="fr-table__content">
-                        <table id="prec-tableau-dossiers-nouveaux">
+                        <table data-testid="tableau-dossiers-resultats">
                           <thead>
                             <tr>
                               <th scope="col" className="fr-col-2">

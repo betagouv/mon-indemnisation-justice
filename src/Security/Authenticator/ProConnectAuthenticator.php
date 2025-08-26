@@ -124,6 +124,6 @@ class ProConnectAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new RedirectResponse($this->urlGenerator->generate($this->loginPageRoute, ['erreur' => 'proconnect']));
+        return new RedirectResponse($this->urlGenerator->generate($this->loginPageRoute, ['erreur' => $exception->getMessage()]));
     }
 }

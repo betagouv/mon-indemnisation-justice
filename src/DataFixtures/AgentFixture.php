@@ -17,21 +17,23 @@ class AgentFixture extends Fixture
                 ->setPrenom('Red')
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_REDACTEUR, Agent::ROLE_AGENT_DOSSIER])
                 ->setNom('Acteur')
-                ->setUid('1234'),
+                ->setUid('1234')
+                ->setValide(),
             'validateur' => (new Agent())
                 ->setIdentifiant('dda38b83-bca4-4a25-8e2a-d2eb4947f02d')
                 ->setEmail('validateur@justice.gouv.fr')
                 ->setPrenom('Walid')
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_VALIDATEUR, Agent::ROLE_AGENT_DOSSIER])
                 ->setNom('Hateur')
-                ->setUid('551'),
+                ->setUid('551')->setValide(),
             'attributeur' => (new Agent())
                 ->setIdentifiant('14ea0686-9179-447a-a0b0-cdff4419befc')
                 ->setEmail('attributeur@justice.gouv.fr')
                 ->setPrenom('Hat')
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_ATTRIBUTEUR])
                 ->setNom('Tributeur')
-                ->setUid('7301'),
+                ->setUid('7301')
+                ->setValide(),
         ] as $reference => $agent) {
             $manager->persist($agent);
             $this->addReference("agent-$reference", $agent);
