@@ -8,10 +8,15 @@ import {
 import { observer } from "mobx-react-lite";
 import _ from "lodash";
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { plainToInstance } from "class-transformer";
 import { Loader } from "@/common/components/Loader.tsx";
 import Pagination from "@codegouvfr/react-dsfr/Pagination";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import { Select } from "@codegouvfr/react-dsfr/Select";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import { periode } from "@/common/services/date.ts";
 
 type RechercheReponse = {
   resultats: DossierApercu[];
@@ -24,6 +29,8 @@ export const RechercheDossierApp = observer(({ agent }: { agent: Agent }) => {
   const [recherche] = useState<RechercheDossier>(() =>
     RechercheDossier.fromURL(),
   );
+
+  const [afficherCriteres, setAfficherCriteres] = useState(false);
 
   //const queryClient = useQueryClient();
   const {
@@ -58,147 +65,99 @@ export const RechercheDossierApp = observer(({ agent }: { agent: Agent }) => {
         <div className="fr-col-12">
           <h1>Les dossiers</h1>
 
-          <section className="fr-accordion">
-            <h3 className="fr-accordion__title">
-              <button
-                className="fr-accordion__btn"
-                aria-expanded="false"
-                aria-controls="accordeon-recherche-filtres"
-              >
-                Critères de recherche
-              </button>
-            </h3>
-            <div className="fr-collapse" id="accordeon-recherche-filtres">
-              <div className="fr-grid-row fr-grid-row--gutters">
-                <div className="fr-col-4">
-                  <div className="fr-input-group">
-                    <label
-                      className="fr-label"
-                      htmlFor="recherche-filtres-mots-clefs"
-                    >
-                      Filtre
-                      <span className="fr-hint-text">
-                        Nom, prénom du requérant, adresse, etc...
-                      </span>
-                    </label>
-                    <input
-                      className="fr-input"
-                      id="recherche-filtres-mots-clefs"
-                      placeholder="Paul, 75001 PARIS, GARNIER, ..."
-                      type="search"
-                      defaultValue={recherche.motsClefs}
-                      onChange={_.debounce((e) => {
-                        recherche.setMotsClefs(e.target.value);
-                      }, 500)}
-                    />
-                  </div>
-                </div>
+          <Accordion
+            label="Critères de recherche"
+            expanded={afficherCriteres}
+            onExpandedChange={(afficher) => setAfficherCriteres(afficher)}
+          >
+            <div className="fr-grid-row fr-grid-row--gutters">
+              <div className="fr-col-4">
+                <Input
+                  label="Filtre"
+                  hintText="Nom, prénom du requérant, adresse, etc..."
+                  state="default"
+                  nativeInputProps={{
+                    type: "search",
+                    placeholder: "Paul, 75001 PARIS, GARNIER, ...",
+                    defaultValue: recherche.motsClefs,
+                    onChange: _.debounce((e) => {
+                      recherche.setMotsClefs(e.target.value);
+                    }, 500),
+                  }}
+                />
+              </div>
 
-                <div className="fr-col-4" style={{ justifySelf: "stretch" }}>
-                  <div
-                    className="fr-select-group"
-                    style={{ minHeight: "100%" }}
-                  >
-                    <label
-                      className="fr-label"
-                      htmlFor="recherche-filtres-etat-dossier"
-                    >
-                      Statut du dossier
-                      <span className="fr-hint-text">&zwnj;</span>
-                    </label>
-                    <select
-                      className="fr-select"
-                      id="recherche-filtres-etat-dossier"
-                      defaultValue={recherche
-                        .getEtatsDossierSelectionnes()
-                        .map((etat) => etat.id)}
-                      multiple={true}
-                      style={{ height: "100%" }}
-                      size={EtatDossierType.liste.length}
-                      onChange={(e) => {
-                        recherche.changerEtatsDossier(
-                          Array.from(e.target.selectedOptions).map(
-                            (option: HTMLOptionElement) =>
-                              EtatDossierType.resoudre(option.value),
-                          ),
-                        );
-                      }}
-                    >
-                      {EtatDossierType.liste.map((etat) => (
-                        <option value={etat.id} key={etat.id}>
-                          {etat.libelle}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+              <div className="fr-col-4" style={{ justifySelf: "stretch" }}>
+                <Select
+                  label="Statut du dossier"
+                  hint="&zwnj;"
+                  style={{ height: "100%" }}
+                  nativeSelectProps={{
+                    multiple: true,
+                    size: EtatDossierType.liste.length,
+                    defaultValue: recherche
+                      .getEtatsDossierSelectionnes()
+                      .map((etat) => etat.id),
 
-                <div className="fr-col-4">
-                  <fieldset
-                    className="fr-fieldset"
-                    id="recherche-filtres-champs-attributaire"
-                    aria-labelledby="recherche-filtres-champs-attributaire-legende"
-                  >
-                    <legend
-                      className="fr-fieldset__legend--regular fr-fieldset__legend"
-                      id="recherche-filtres-champs-attributaire-legende"
-                    >
-                      Rédacteur attribué
-                      <span className="fr-hint-text">&zwnj;</span>
-                    </legend>
-                    <div className="fr-fieldset__element">
-                      <div className="fr-checkbox-group">
-                        <input
-                          id="recherche-filtres-attributaire-non-attribue"
-                          onChange={(e) =>
-                            recherche.setAttributaire(null, e.target.checked)
-                          }
-                          checked={recherche.estSelectionneAttributaire(null)}
-                          type="checkbox"
-                        />
-                        <label
-                          className="fr-label"
-                          htmlFor="recherche-filtres-attributaire-non-attribue"
-                        >
+                    onChange: (e) => {
+                      recherche.changerEtatsDossier(
+                        Array.from(e.target.selectedOptions).map(
+                          (option: HTMLOptionElement) =>
+                            EtatDossierType.resoudre(option.value),
+                        ),
+                      );
+                    },
+                  }}
+                >
+                  {EtatDossierType.liste.map((etat) => (
+                    <option value={etat.id} key={etat.id}>
+                      {etat.libelle}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+
+              <div className="fr-col-4">
+                <Checkbox
+                  legend="Rédacteur attribué"
+                  hintText="&zwnj;"
+                  options={[
+                    {
+                      label: (
+                        <>
                           Aucun <i className="fr-mx-1v">(non attribué)</i>
-                        </label>
-                      </div>
-                    </div>
+                        </>
+                      ),
+                      nativeInputProps: {
+                        value: "",
 
-                    {Redacteur.catalog().map((redacteur) => (
-                      <div className="fr-fieldset__element" key={redacteur.id}>
-                        <div className="fr-checkbox-group">
-                          <input
-                            id={`recherche-filtres-attributaire-${redacteur.id}`}
-                            type="checkbox"
-                            onChange={(e) =>
-                              recherche.setAttributaire(
-                                redacteur,
-                                e.target.checked,
-                              )
-                            }
-                            checked={recherche.estSelectionneAttributaire(
-                              redacteur,
-                            )}
-                          />
-                          <label
-                            className="fr-label"
-                            htmlFor={`recherche-filtres-attributaire-${redacteur.id}`}
-                          >
-                            {agent.equals(redacteur) ? (
-                              <b>Moi</b>
-                            ) : (
-                              redacteur.nom
-                            )}
-                          </label>
-                        </div>
-                      </div>
-                    ))}
-                  </fieldset>
-                </div>
+                        onChange: (e) =>
+                          recherche.setAttributaire(null, e.target.checked),
+                        checked: recherche.estSelectionneAttributaire(null),
+                      },
+                    },
+                    ...Redacteur.catalog().map((redacteur) => ({
+                      label: agent.equals(redacteur) ? (
+                        <b>Moi</b>
+                      ) : (
+                        redacteur.nom
+                      ),
+                      nativeInputProps: {
+                        onChange: (e) =>
+                          recherche.setAttributaire(
+                            redacteur,
+                            e.target.checked,
+                          ),
+                        checked:
+                          recherche.estSelectionneAttributaire(redacteur),
+                      },
+                    })),
+                  ]}
+                  state="default"
+                />
               </div>
             </div>
-          </section>
+          </Accordion>
 
           <div className="fr-grid-row">
             <div className="fr-col-12 fr-my-2w">
@@ -293,15 +252,7 @@ export const RechercheDossierApp = observer(({ agent }: { agent: Agent }) => {
                                         </span>
                                       )}
                                       <br />
-                                      depuis{" "}
-                                      {Math.floor(
-                                        Math.abs(
-                                          new Date().getTime() -
-                                            dossier.etat.dateEntree.getTime(),
-                                        ) /
-                                          (1000 * 60 * 60 * 24),
-                                      )}{" "}
-                                      jours
+                                      depuis {periode(dossier.etat.dateEntree)}
                                     </td>
                                     <td
                                       className="fr-col-4"
