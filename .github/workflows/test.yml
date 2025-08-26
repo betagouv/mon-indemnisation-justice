@@ -225,6 +225,23 @@ jobs:
             "postal_code" : "75107",
             "street_address" : "20 avenue de Ségur"}
             ]'
+      proconnect:
+        image: pierrelemee/mock-oidc-server
+        ports:
+          - 9998:9998
+        env:
+          PORT: 9998
+          HOST: '0.0.0.0'
+          # Liste exhaustive des exemples : https://github.com/france-connect/sources/blob/main/docker/volumes/fcp-low/mocks/idp/databases/citizen/base.csv
+          USERS: '[{
+              "_title": "Rédacteur",
+              "sub": "c1722a03-4172-4015-9f0d-d1995d4cbe5c",
+              "email": "redacteur@justice.gouv.fr",
+              "given_name": "Red",
+              "usual_name": "Acteur",
+              "uid": "1234",
+              "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
+            }]'
     env:
       CI: 1
       APP_ENV: test
@@ -244,7 +261,7 @@ jobs:
       FRANCE_CONNECT_WELL_KNOWN_URL: http://localhost:9997/.well-known/openid-configuration
       FRANCE_CONNECT_CLIENT_ID: client_id
       FRANCE_CONNECT_CLIENT_SECRET: client_secret
-      PRO_CONNECT_WELL_KNOWN_URL: https://domain.null/.well-known/openid-configuration
+      PRO_CONNECT_WELL_KNOWN_URL: http://localhost:9998/.well-known/openid-configuration
       PRO_CONNECT_CLIENT_ID: proconnect-mock
       PRO_CONNECT_CLIENT_SECRET: bar
       PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-result-end2end.xml
