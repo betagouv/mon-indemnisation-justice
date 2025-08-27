@@ -33,7 +33,7 @@ test("recherche dossier", async ({ page }) => {
 
   await page
     .getByLabel("Statut du dossier")
-    .selectOption(["À finaliser", "Attribué - à instruire"]);
+    .selectOption(["À finaliser", "À attribuer"]);
 
   await expect(locatorCorpsTableResultats).toBeVisible();
   await expect(locatorCorpsTableResultats.locator("tr")).toHaveCount(2);
