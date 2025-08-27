@@ -39,7 +39,7 @@ test("recherche dossier", async ({ page }) => {
   await expect(locatorCorpsTableResultats.locator("tr")).toHaveCount(2);
 
   const locatorsRequerants = await locatorCorpsTableResultats
-    .locator("tr td:nth-child(2)")
+    .locator("tr td:nth-child(2) span:first-child")
     .all();
   await expect(locatorsRequerants.at(0)).toHaveText("Raquel RANDT");
   await expect(locatorsRequerants.at(1)).toHaveText("Ray KERAN");
