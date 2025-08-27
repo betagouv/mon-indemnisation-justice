@@ -63,6 +63,11 @@ class EtatDossier
         return $this;
     }
 
+    public function estAAttribuer(): bool
+    {
+        return $this->etat->estAAttribuer();
+    }
+
     public function estASigner(): bool
     {
         return $this->etat->estASigner();

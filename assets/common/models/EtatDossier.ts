@@ -139,6 +139,7 @@ export class EtatDossierType implements EtatInterface {
 
   protected static _catalog: EtatDossierType[] = [
     EtatDossierType.A_FINALISER,
+    EtatDossierType.A_ATTRIBUER,
     EtatDossierType.A_INSTRUIRE,
     EtatDossierType.EN_INSTRUCTION,
     EtatDossierType.CLOTURE,

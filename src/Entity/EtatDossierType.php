@@ -7,6 +7,7 @@ enum EtatDossierType: string
     // Le requérant a initié un dossier qu'il n'a pas encore déposé
     case DOSSIER_A_FINALISER = 'A_FINALISER';
     // Le requérant a finalisé et déposé son dossier
+    case DOSSIER_A_ATTRIBUER = 'A_ATTRIBUER';
     case DOSSIER_A_INSTRUIRE = 'A_INSTRUIRE';
     case DOSSIER_EN_INSTRUCTION = 'EN_INSTRUCTION';
 
@@ -63,6 +64,11 @@ enum EtatDossierType: string
             self::REFUS_OFFRE => "Proposition d'indemnisation rejetée",
             */
         };
+    }
+
+    public function estAAttribuer(): bool
+    {
+        return self::DOSSIER_A_ATTRIBUER === $this;
     }
 
     public function estASigner(): bool
