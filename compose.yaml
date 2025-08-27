@@ -68,10 +68,10 @@ services:
       - APP_ENV=dev
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
-      #- MIJ_DOMAINE_PRIMAIRE=mon-indemnisation.justice.gouv.dev
       - SERVER_NAME=:80
       - HTTPS=true;
       - REQUEST_SCHEME=https
+      - FIREFOX_PATH=/usr/bin/firefox
     restart: always
     depends_on:
       - postgres

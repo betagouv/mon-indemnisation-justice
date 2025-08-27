@@ -494,35 +494,48 @@ class DossierController extends AgentController
     #[Route('/dossiers.json', name: 'agent_redacteur_dossiers_json', methods: ['GET'])]
     public function dossiersJson(Request $request, NormalizerInterface $normalizer): Response
     {
-        return new JsonResponse(
-            $normalizer->normalize(
-                $this->dossierRepository->rechercheDossiers(
-                    $request->query->has('e') ?
-                        array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')) :
-                        [
-                            // EtatDossierType::DOSSIER_CLOTURE,
-                            // EtatDossierType::DOSSIER_A_FINALISER,
-                            EtatDossierType::DOSSIER_A_INSTRUIRE,
-                            EtatDossierType::DOSSIER_EN_INSTRUCTION,
-                            EtatDossierType::DOSSIER_OK_A_SIGNER,
-                            EtatDossierType::DOSSIER_OK_A_APPROUVER,
-                            EtatDossierType::DOSSIER_OK_A_VERIFIER,
-                            EtatDossierType::DOSSIER_OK_A_INDEMNISER,
-                            EtatDossierType::DOSSIER_OK_INDEMNISE,
-                            EtatDossierType::DOSSIER_KO_A_SIGNER,
-                            EtatDossierType::DOSSIER_KO_REJETE,
-                        ],
-                    $this->agentRepository->findBy([
-                        'id' => array_filter(
-                            self::extraireCritereRecherche($request, 'a'),
-                            fn ($a) => is_numeric($a)
-                        ),
-                    ]),
-                    self::extraireCritereRecherche($request, 'r'),
-                    in_array('_', self::extraireCritereRecherche($request, 'a'))
+        $taille = 20;
+        $page = $request->query->getInt('p', 1);
+        $paginator = $this->dossierRepository->rechercheDossiers(
+            $page,
+            $taille,
+            $request->query->has('e') ?
+                array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')) :
+                [
+                    // EtatDossierType::DOSSIER_CLOTURE,
+                    // EtatDossierType::DOSSIER_A_FINALISER,
+                    EtatDossierType::DOSSIER_A_INSTRUIRE,
+                    EtatDossierType::DOSSIER_EN_INSTRUCTION,
+                    EtatDossierType::DOSSIER_OK_A_SIGNER,
+                    EtatDossierType::DOSSIER_OK_A_APPROUVER,
+                    EtatDossierType::DOSSIER_OK_A_VERIFIER,
+                    EtatDossierType::DOSSIER_OK_A_INDEMNISER,
+                    EtatDossierType::DOSSIER_OK_INDEMNISE,
+                    EtatDossierType::DOSSIER_KO_A_SIGNER,
+                    EtatDossierType::DOSSIER_KO_REJETE,
+                ],
+            $this->agentRepository->findBy([
+                'id' => array_filter(
+                    self::extraireCritereRecherche($request, 'a'),
+                    fn ($a) => is_numeric($a)
                 ),
-                'json', ['groups' => 'agent:liste']
-            )
+            ]),
+            self::extraireCritereRecherche($request, 'r'),
+            in_array('_', self::extraireCritereRecherche($request, 'a'))
+        );
+
+        return new JsonResponse(
+            [
+                'page' => $page,
+                'taille' => $taille,
+                'total' => $paginator->count(),
+                'resultats' => $normalizer->normalize(
+                    iterator_to_array(
+                        $paginator->getIterator()
+                    ),
+                    'json', ['groups' => 'agent:liste']
+                ),
+            ]
         );
     }
 

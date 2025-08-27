@@ -30,8 +30,10 @@ class DossierControllerTest extends WebTestCase
         $this->client->request('GET', '/agent/redacteur/dossiers.json', ['e' => 'a-finaliser']);
 
         $this->assertTrue($this->client->getResponse()->isOk());
-        $dossiers = json_decode($this->client->getResponse()->getContent(), true);
+        ['page' => $page, 'taille' => $taille, 'total' => $total, 'resultats' => $dossiers] = json_decode($this->client->getResponse()->getContent(), true);
 
+        $this->assertEquals(1, $page);
+        $this->assertEquals(2, $total);
         $this->assertCount(2, $dossiers);
 
         foreach ($dossiers as $donneesDossier) {

@@ -180,7 +180,7 @@ const PersonnePhysique = function PersonnePhysique() {
               Sélectionnez un pays
             </option>
             {pays.map((p) => (
-              <option key={p.code} value={`/api/geo_pays/${p.code}`}>
+              <option key={p.code} value={`/api-v1/geo_pays/${p.code}`}>
                 {p.nom}
               </option>
             ))}
