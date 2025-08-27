@@ -45,6 +45,16 @@ class DocumentController extends AbstractController
         /** @var UploadedFile $file */
         $file = $request->files->get('piece-jointe');
 
+        if (!$file->isValid()) {
+            $this->logger->warning('Téléversement échoué', [
+                'erreur' => $file->getError(),
+                'original_name' => $file->getClientOriginalName(),
+                'mime' => $file->getClientMimeType(),
+            ]);
+
+            throw new BadRequestException($file->getError());
+        }
+
         if (null === $file?->getPathname()) {
             throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
         }
