@@ -1,8 +1,9 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
-import { Agent, DossierDetail, Redacteur } from "@/common/models";
+import { Agent, DossierDetail, EtatDossier, Redacteur } from "@/common/models";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { plainToInstance } from "class-transformer";
 
 const _modale = createModal({
   id: "modale-action-attribution",
@@ -30,7 +31,14 @@ const attribuer = async ({
     },
   );
 
-  return response.ok;
+  if (response.ok) {
+    const data = await response.json();
+    dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+
+    return true;
+  }
+
+  return false;
 };
 
 const estAAttribuer = ({

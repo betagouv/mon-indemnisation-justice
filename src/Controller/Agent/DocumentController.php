@@ -8,7 +8,6 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\TypeInstitutionSecuritePublique;
@@ -56,16 +55,6 @@ class DocumentController extends AbstractController
                 'PATCH' === $request->getMethod()
             );
             $this->em->persist($document);
-            $this->em->flush();
-
-            // En cas de mise à jour de la méta-donnée "estAttestation", recalculer l'info pour le dossier :
-            if ($request->getPayload()->has('estAttestation')) {
-                $em = $this->em;
-                $document->getDossiers()->map(function (BrisPorte $brisPorte) use ($em) {
-                    $brisPorte->recalculerEstLieAttestation();
-                    $em->persist($brisPorte);
-                });
-            }
             $this->em->flush();
         }
 

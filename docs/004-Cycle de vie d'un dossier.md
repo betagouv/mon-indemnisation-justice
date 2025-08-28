@@ -4,7 +4,8 @@
 
 Voici la liste des différents états par lesquels passe un dossier :
 - **À finaliser** (`A_FINALISER`): le dossier a été initié par le requérant et est en cours de complétion
-- **À instruire** (`A_INSTRUIRE`): le requérant a déposé son dossier. Il est désormais à instruire par le rédacteur qui lui est attribué
+- **À attribuer** (`A_ATTRIBUER`): le requérant a déposé son dossier. Il faut d'abord que l'agent attributeur lui attribue un rédacteur
+- **Attribué- à instruire** (`A_INSTRUIRE`): le dossier est à instruire par le rédacteur qui lui est attribué
 - **En cours d'instruction** (`EN_INSTRUCTION`): quand le rédacteur démarre l'instruction, il marque le dossier en cours d'instruction. Il a
 alors accès aux coordonnées du requérant ainsi que la prise de notes sur le dossier
 - **Clôturé** (`CLOTURE`): le dossier a été clôturé et ne sera pas traité. Ex: pas pertinent car ne concerne pas un
@@ -34,6 +35,7 @@ stateDiagram-v2
     direction TB
 
     classDef a_finaliser font-weight:bold,text-transform:uppercase,color:#6a6156,fill:#f3ede5
+    classDef a_attribuer font-weight:bold,text-transform:uppercase,color:#2f4077,fill:#f4f6fe
     classDef a_instruire font-weight:bold,text-transform:uppercase,color:#2f4077,fill:#f4f6fe
     classDef en_instruction font-weight:bold,text-transform:uppercase,color:#0063cb,fill:#e8edff
     classDef cloture font-weight:bold,text-transform:uppercase,color:#6a6156,fill:#f3ede5
@@ -48,7 +50,8 @@ stateDiagram-v2
     classDef ko_rejete font-weight:bold,text-transform:uppercase,color:#ce0500,fill:#ffe9e9
 
     A_FINALISER: À finaliser
-    A_INSTRUIRE: À instruire
+    A_ATTRIBUER: À instruire
+    A_INSTRUIRE: Attribué - à instruire
     EN_INSTRUCTION: En instruction
     CLOTURE: Clôturé
     OK_A_SIGNER: Accepté - à signer
@@ -62,7 +65,8 @@ stateDiagram-v2
     KO_REJETE: Rejeté - envoyé
 
     [*] --> A_FINALISER :::a_finaliser : Requérant initie son dossier
-    A_FINALISER --> A_INSTRUIRE ::: a_instruire : Requérant dépose son dossier
+    A_FINALISER --> A_ATTRIBUER ::: a_instruire : Requérant dépose son dossier
+    A_ATTRIBUER --> A_INSTRUIRE ::: a_instruire : Attributeur attribue le dossier à un rédacteur
     A_INSTRUIRE --> EN_INSTRUCTION ::: en_instruction : Rédacteur démarre l'instruction
     A_INSTRUIRE --> CLOTURE ::: cloture : Rédacteur clos le dossier
     EN_INSTRUCTION --> CLOTURE ::: cloture : Rédacteur clos le dossier

@@ -117,10 +117,6 @@ class BrisPorte
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
 
-    #[Groups(['agent:detail', 'agent:liste'])]
-    #[ORM\Column(name: 'est_lie_attestation', nullable: true)]
-    protected bool $estLieAttestation = false;
-
     #[Groups(['agent:detail'])]
     #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
@@ -270,6 +266,11 @@ class BrisPorte
         $this->etatDossier = $this->historiqueEtats->last();
     }
 
+    public function estAAttribuer(): bool
+    {
+        return $this->etatDossier->estAAttribuer();
+    }
+
     public function estASigner(): bool
     {
         return $this->etatDossier->estASigner();
@@ -325,7 +326,8 @@ class BrisPorte
     #[Groups('dossier:lecture')]
     public function getDateDeclaration(): ?\DateTimeInterface
     {
-        return $this->getDateEtat(EtatDossierType::DOSSIER_A_INSTRUIRE);
+        // La date de déclaration est la date d'entrée à l'état `A_ATTRIBUER` ou à défaut à l'état `A_INSTRUIRE`
+        return $this->getDateEtat(EtatDossierType::DOSSIER_A_ATTRIBUER) ?? $this->getDateEtat(EtatDossierType::DOSSIER_A_INSTRUIRE);
     }
 
     public function getDateSignatureAgent(): ?\DateTimeInterface
@@ -348,7 +350,7 @@ class BrisPorte
     public function setDeclare(): self
     {
         return $this
-            ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, requerant: true);
+            ->changerStatut(EtatDossierType::DOSSIER_A_ATTRIBUER, requerant: true);
     }
 
     public function getReference(): ?string
@@ -591,10 +593,13 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups(['agent:liste'])]
+    #[Groups(['agent:liste', 'agent:detail'])]
     #[SerializedName('estLieAttestation')]
     public function isEstLieAttestation(): ?bool
     {
+        // Un dossier est considéré comme lié à la nouvelle attestation si ...
+
+        // ... le test d'éligibilité a été inité suite à un scan du QR code
         if ($this->testEligibilite->estIssuAttestation) {
             return true;
         }
@@ -604,34 +609,19 @@ class BrisPorte
             $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION),
         );
 
+        // ... sinon si au moins une PJ d'attestation est marquée comme nouvelle attestation
         if (array_any($metadonnees, fn (?bool $m) => true === $m)) {
             return true;
         }
 
+        // ... sinon si au moins une PJ d'attestation n'est pas marquée  comme nouvelle attestation alors on ne se
+        // prononce pas
         if (empty($metadonnees) || array_any($metadonnees, fn (?bool $m) => null === $m)) {
             return null;
         }
 
+        // ... sinon non
         return false;
-    }
-
-    /**
-     *Un dossier est considéré comme lié à la "nouvelle attestation" s'il a été initié à partir d'un flash du QR code
-     * (i.e. route "") ou sinon si au moins des documents de type `TYPE_ATTESTATION_INFORMATION` est marqué comme nouvelle
-     * attestation dans ses méta-données (champs `estAttestation`).
-     *
-     * @return $this
-     */
-    public function recalculerEstLieAttestation(): self
-    {
-        $this->estLieAttestation &= count(array_filter(
-            $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION),
-            function (Document $document): bool {
-                return true === $document->getMetaDonnee('estAttestation');
-            }
-        )) > 0;
-
-        return $this;
     }
 
     public function getInstitutionSecuritePublique(): ?InstitutionSecuritePublique

@@ -14,6 +14,10 @@ a:not([href])[role="button"] {
     --var-couleur-pp-a-finaliser: #6a6156;
     --var-couleur-ap-a-finaliser: #f3ede5;
 
+    /* A_ATTRIBUER = 'blue-ecume' */
+    --var-couleur-pp-a-attribuer: #2f4077;
+    --var-couleur-ap-a-attribuer: #f4f6fe;
+
     /* A_INSTRUIRE = 'blue-ecume' */
     --var-couleur-pp-a-instruire: #2f4077;
     --var-couleur-ap-a-instruire: #f4f6fe;
@@ -86,6 +90,10 @@ a:not([href]) {
         border-left-color: var(--var-couleur-pp-a-finaliser);
     }
 
+    &--a-attribuer {
+        border-left-color: var(--var-couleur-pp-a-attribuer);
+    }
+
     &--a-instruire {
         border-left-color: var(--var-couleur-pp-a-instruire);
     }
@@ -139,6 +147,11 @@ a:not([href]) {
     &--a-finaliser {
         color: var(--var-couleur-pp-a-finaliser);
         background-color: var(--var-couleur-ap-a-finaliser);
+    }
+
+    &--a-attribuer {
+        color: var(--var-couleur-pp-a-attribuer);
+        background-color: var(--var-couleur-ap-a-attribuer);
     }
 
     &--a-instruire {
