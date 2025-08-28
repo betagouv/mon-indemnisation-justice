@@ -7,16 +7,16 @@
                         <div class="fr-header__logo">
                             <p class="fr-logo">Ministère<br>justice</p>
                         </div>
-                        {#  Menu mobile #}
+                        {# Bouton d'ouverture du menu mobile #}
                         <div class="fr-header__navbar">
-                            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499"
+                            <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modale-menu"
                                     id="button-500" title="Menu">
                                 Menu
                             </button>
                         </div>
                     </div>
                     <div class="fr-header__service">
-                        <a href="{{ path('app_homepage') }}" title="Mon Indemnisation Justice"></a>
+                        <a href="{{ url('requerant_home_dossiers') }}" title="Mon Indemnisation Justice"></a>
                         <p class="fr-header__service-title">Mon Indemnisation Justice</p>
                         {% if app.environment != 'prod' %}
                             <div>
@@ -30,7 +30,8 @@
                         <ul class="fr-btns-group">
                             <li>
                                 <a class="fr-btn fr-icon-user-line"
-                                   href="{{ url('requerant_home_index') }}">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}</a>
+                                   href="{{ url('requerant_home_index') }}">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}
+                                </a>
                             </li>
                             <li>
                                 <a class="fr-btn fr-icon-logout-box-r-line"
@@ -40,26 +41,22 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="fr-header__search fr-modal" id="modal-474">
-                        <div class="fr-container fr-container-lg--fluid">
-                            <button class="fr-btn--close fr-btn" aria-controls="modal-474" title="Fermer">Fermer
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
 
         {#  Version mobile #}
-        <div class="fr-header__menu fr-modal" id="modal-499" aria-labelledby="button-500">
+        <div class="fr-header__menu fr-modal" id="modale-menu" aria-labelledby="button-500">
             <div class="fr-container">
-                <button class="fr-btn--close fr-btn" aria-controls="modal-499" title="Fermer">
+                <button class="fr-btn--close fr-btn" aria-controls="modale-menu" title="Fermer">
                     Fermer
                 </button>
                 <div class="fr-header__menu-links">
                     <ul class="fr-btns-group">
                         <li>
-                            <span class="fr-btn fr-icon-user-line">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}</span>
+                            <a class="fr-btn fr-icon-user-line"
+                               href="{{ url('requerant_home_index') }}">{{ app.user.personnePhysique.prenom1 }} {{ app.user.personnePhysique.nom|capitalize }}
+                            </a>
                         </li>
                         <li>
                             <a class="fr-btn fr-icon-logout-box-r-line"
@@ -73,12 +70,6 @@
                 {# Menu principal #}
                 <nav id="fr-header-main-navigation" class="fr-nav" role="navigation" aria-label="Menu principal">
                     <ul class="fr-nav__list">
-                        <li class="fr-nav__item" data-fr-js-navigation-item="true">
-                            <a href="{{ path('requerant_home_index') }}" class="fr-nav__link">
-                                <span class="fr-icon-home-4-line fr-text--bold" aria-hidden="true"></span>
-                            </a>
-                        </li>
-
                         <li class="fr-nav__item" data-fr-js-navigation-item="true">
                             <a href="{{ url('requerant_home_dossiers') }}" class="fr-nav__link">Mes demandes</a>
                         </li>
