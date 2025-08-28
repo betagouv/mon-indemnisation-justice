@@ -1,0 +1,102 @@
+{% from '_macros_javascript.twig' import revelerCourriel %}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Déclaration d'accessibilité{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        h2 {
+            margin: 2rem 0;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block main %}
+    <div class="fr-container fr-container--fluid fr-my-3w">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+
+                <h1>Déclaration d'accessibilité</h1>
+
+                <p>Mon Indemnisation Justice s’engage à rendre son site internet accessible conformément à l’article 47
+                    de la loi n°2005-102 du 11 février 2005. À cette fin, elle met en œuvre la stratégie et les actions
+                    suivantes :</p>
+
+
+                <ul>
+                    <li>Fournir un site web accessible.</li>
+                    <li>
+                        Prêter attention aux informations d’accessibilité des données.
+                    </li>
+                </ul>
+
+                <h2>État de conformité</h2>
+
+                <p>Mon Indemnisation Justice est non conforme avec le référentiel général d’amélioration de
+                    l’accessibilité (RGAA), version 4 en raison d'absence d'audit achevé, ce qui ne permet pas
+                    aujourd'hui de lister les non-conformités du site.</p>
+
+
+                <h2>Établissement de cette déclaration d’accessibilité</h2>
+
+                <p>Cette déclaration d’accessibilité a été mise à jour le 15 août 2025 et s’applique à
+                    Mon Indemnisation Justice.</p>
+
+                <h2>Technologies utilisées pour la réalisation du site adresse.data.gouv.fr</h2>
+
+                <ul>
+                    <li>HTML5</li>
+                    <li>CSS</li>
+                    <li>JavaScript</li>
+                    <li>React</li>
+                    <li>PHP</li>
+                    <li>Symfony</li>
+                    <li>PostgreSQL</li>
+                    <li>Markdown</li>
+                </ul>
+
+                <h2>Retour d'information et contact</h2>
+
+                <p>Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable
+                    du site internet pour être orienté vers une alternative accessible ou obtenir le contenu sous une
+                    autre forme.</p>
+
+                <p>Envoyer un message à <a data-courriel="precontentieux,beta.gouv.fr"></a></p>
+
+                <h2>Voies de recours</h2>
+
+                <p>Si vous constatez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une
+                    fonctionnalité du site, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse
+                    de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au
+                    Défenseur des droits.</p>
+
+                <p>Plusieurs moyens sont à votre disposition :</p>
+
+                <ul>
+                    <li><a href="https://www.defenseurdesdroits.fr/nous-contacter-355"
+                           title="Écrire un message au Défenseur des droits">Écrire un message au Défenseur des
+                            droits</a></li>
+
+                    <li><a href="https://www.defenseurdesdroits.fr/carte-des-delegues"
+                           title="Contacter le délégué du Défenseur des droits dans votre région<">Contacter le délégué
+                            du Défenseur des droits dans votre région<</a>
+                    </li>
+
+                    <li>Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre).
+                        <address>Défenseur des droits Libre
+                            réponse 71120 75342 Paris CEDEX 07
+                        </address>
+                    </li>
+
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {{ revelerCourriel() }}
+{% endblock javascripts %}
