@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test("test éligibilité", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByText("Déposer votre demande d’indemnisation").first().click();
+  await page.getByText("Tester votre éligibilité").first().click();
 
   await expect(page).toHaveURL("/bris-de-porte/tester-mon-eligibilite");
 
@@ -86,7 +86,7 @@ test("test éligibilité", async ({ page }) => {
     .getByLabel("Oui")
     .check();
 
-  await page.getByText("Commencer la demande d'indemnisation").click();
+  await page.getByText("Créer votre compte").click();
 
   await expect(page).toHaveURL("/bris-de-porte/creation-de-compte");
 
