@@ -19,5 +19,5 @@ RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build
 
 WORKDIR /app/public
 
-CMD ["frankenphp", "php-server", "./index.php"]
+CMD ["/bin/bash", "-c", "/app/bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && frankenphp php-server ./index.php"]
 

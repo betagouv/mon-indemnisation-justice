@@ -47,7 +47,7 @@ ENV FIREFOX_PATH=/usr/bin/firefox
 
 # Extra
 RUN apt install -y postgresql-client
-RUN echo 'alias ll="psql \${DATABASE_URL/\?*/}"' > /root/.bashrc
+RUN echo 'alias database="psql \${DATABASE_URL/\?*/}"' > /root/.bashrc
 
 # Cleanups
 
