@@ -12,16 +12,10 @@ test("test éligibilité", async ({ page }) => {
     .getByLabel("Dans quel département se situe le logement ?")
     .selectOption("13 - Bouches-du-Rhône");
 
-  await expect(
-    page.getByLabel(
-      "Vous souhaitez nous apporter des précisions sur l'intervention ? ",
-    ),
-  ).toBeVisible();
+  await expect(page.getByLabel("Décrivez-nous l’intervention")).toBeVisible();
 
   await page
-    .getByLabel(
-      "Vous souhaitez nous apporter des précisions sur l'intervention ? ",
-    )
+    .getByLabel("Décrivez-nous l’intervention")
     .fill("Porte fracassée à l'aube");
 
   await page.getByText("Question suivante").click();
