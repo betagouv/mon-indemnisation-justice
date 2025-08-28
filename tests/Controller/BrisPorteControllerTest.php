@@ -120,7 +120,7 @@ class BrisPorteControllerTest extends WebTestCase
         $this->client->request('GET', '/bris-de-porte/tester-mon-eligibilite');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        $form = $this->client->getCrawler()->selectButton("Commencer la demande d'indemnisation")->form();
+        $form = $this->client->getCrawler()->selectButton('Créer votre compte')->form();
 
         $this->client->request($form->getMethod(), $form->getUri(), [
             '_token' => $this->client->getCrawler()->filter('input[name="_token"]')->first()->attr('value'),
