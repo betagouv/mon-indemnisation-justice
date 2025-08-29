@@ -443,33 +443,50 @@ export const TestEligibiliteForm = ({
               <Alert
                 className="fr-my-3w"
                 severity="warning"
-                title={
-                  <>
-                    Nous serons en mesure de traiter votre demande
-                    d’indemnisation{" "}
-                    <u>uniquement si votre dossier est complet</u>. Cependant,
-                    vous pouvez créer votre compte et commencer à constituer
-                    votre dossier en ligne
-                  </>
-                }
+                title={<>Votre dossier est incomplet</>}
                 description={
                   <>
-                    {false === test.aContacteAssurance && (
+                    {false === test.aContacteAssurance ? (
+                      <>
+                        <p>
+                          Avant de déposer une demande,{" "}
+                          <b>
+                            merci de vous rapprocher de votre assurance
+                            habitation dès que possible
+                          </b>
+                          .
+                        </p>
+                        <p>
+                          En cas de refus de prise en charge du sinistre, il est
+                          important de demander une attestation de non prise en
+                          charge.
+                        </p>
+                        {false === test.aContacteBailleur && (
+                          <p>
+                            De plus, nous vous recommandons de{" "}
+                            <b>
+                              prendre contact avec votre bailleur dès que
+                              possible
+                            </b>
+                            , pour obtenir l’attestation de non prise en charge
+                            des réparations
+                          </p>
+                        )}
+                      </>
+                    ) : (
                       <p>
-                        Nous vous recommandons de prendre contact avec votre
-                        assurance {test.estProprietaire && <>habitation</>} dès
-                        que possible. En cas de refus de prise en charge du
-                        sinistre, il est important de demander une attestation
-                        de non prise en charge.
+                        Avant de déposer une demande, nous vous recommandons{" "}
+                        <b>
+                          prendre contact avec votre bailleur dès que possible
+                        </b>
+                        , pour obtenir l’attestation de non prise en charge des
+                        réparations.
                       </p>
                     )}
-                    {false === test.aContacteBailleur && (
-                      <p>
-                        Nous vous recommandons de prendre contact avec votre
-                        bailleur dès que possible, pour obtenir l’attestation de
-                        non prise en charge des réparations.
-                      </p>
-                    )}
+                    <p>
+                      Une fois tous les éléments rassemblés, nous pourrons
+                      traiter votre demande.
+                    </p>
                   </>
                 }
               />
