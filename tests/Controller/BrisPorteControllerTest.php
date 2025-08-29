@@ -4,7 +4,6 @@ namespace MonIndemnisationJustice\Tests\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController;
-use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -42,8 +41,7 @@ class BrisPorteControllerTest extends WebTestCase
     {
         return function (EntityManagerInterface $em) {
             $test = TestEligibilite::fromArray([
-                'departement' => $em->getRepository(GeoDepartement::class)->find('35'),
-                'description' => 'Test en expérimentation complet',
+                'description' => 'Test complet',
                 'estVise' => true,
                 'requerant' => $em->getRepository(Requerant::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
                 'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
@@ -59,24 +57,7 @@ class BrisPorteControllerTest extends WebTestCase
     {
         return function (EntityManagerInterface $em) {
             $test = TestEligibilite::fromArray([
-                'departement' => $em->getRepository(GeoDepartement::class)->find('35'),
-                'description' => 'Test en expérimentation incomplet',
-                'estVise' => true,
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
-
-            $em->persist($test);
-            $em->flush();
-
-            return $test;
-        };
-    }
-
-    protected function getTestEligibiliteHorsXp(): callable
-    {
-        return function (EntityManagerInterface $em) {
-            $test = TestEligibilite::fromArray([
-                'departement' => $em->getRepository(GeoDepartement::class)->find('44'),
-                'description' => 'Test hors expérimentation',
+                'description' => 'Test incomplet',
                 'estVise' => true,
                 'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
 
@@ -91,9 +72,8 @@ class BrisPorteControllerTest extends WebTestCase
     {
         return [
             'sans_test' => [null, '/bris-de-porte/creation-de-compte'],
-            'test_en_xp_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
-            'test_en_xp_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation', true],
-            'test_hors_xp' => [$this->getTestEligibiliteHorsXp(), '/bris-de-porte/creation-de-compte'],
+            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation', true],
         ];
     }
 
@@ -101,9 +81,7 @@ class BrisPorteControllerTest extends WebTestCase
      * ETQ visiteur, je dois pouvoir remplir le formulaire de test d'éligibilité.
      *
      * Variantes :
-     * * Si j'ai choisi un département hors expérimentation, alors je dois être redirigé vers la page "Contactez-nous"
      * * Si j'ai déjà rempli le questionnaire, alors je dois être automatiquement renvoyé vers la page suivante
-     * ("Création de compte" si département en expérimentation, "Contactez-nous" sinon)
      * * Si j'ai déjà rempli mon questionnaire ET créé mon compte, alors je dois être automatiquement renvoyé sur la page
      * "Finaliser la création de votre compte"
      *
@@ -120,12 +98,11 @@ class BrisPorteControllerTest extends WebTestCase
         $this->client->request('GET', '/bris-de-porte/tester-mon-eligibilite');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
-        $form = $this->client->getCrawler()->selectButton('Créer votre compte')->form();
+        $reactArgs = json_decode($this->client->getCrawler()->filter('#react-arguments')->first()->innerText());
 
-        $this->client->request($form->getMethod(), $form->getUri(), [
-            '_token' => $this->client->getCrawler()->filter('input[name="_token"]')->first()->attr('value'),
+        $this->client->request('POST', '/bris-de-porte/tester-mon-eligibilite', [
+            '_token' => $reactArgs->_token,
             'estIssuAttestation' => 'false',
-            'departement' => '77',
             'description' => 'Perquisition pendant mon absence, ce matin',
             'estVise' => 'false',
             'estHebergeant' => 'false',
@@ -146,7 +123,6 @@ class BrisPorteControllerTest extends WebTestCase
             ->getQuery()
             ->getOneOrNullResult();
         $this->assertNotNull($testEligibilite);
-        $this->assertEquals('77', $testEligibilite->departement->getCode());
         $this->assertEquals('Perquisition pendant mon absence, ce matin', $testEligibilite->description);
         $this->assertNotNull($testEligibilite->dateSoumission);
         $this->assertFalse($testEligibilite->estVise);
@@ -162,46 +138,12 @@ class BrisPorteControllerTest extends WebTestCase
         $this->assertTrue($testEligibilite->estEligibleExperimentation);
     }
 
-    public function donnesContactezNous()
-    {
-        return [
-            'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_en_xp_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
-            'test_en_xp_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
-            'test_hors_xp' => [$this->getTestEligibiliteHorsXp()],
-        ];
-    }
-
-    /**
-     * ETQ visiteur, après avoir rempli le formulaire de test d'éligibilité, si j'ai choisi un département hors
-     * expérimentation, je dois être invité à contacter le bureau per courriel.
-     *
-     * @dataProvider donnesContactezNous
-     */
-    public function testContactezNous(?callable $getTestEligibilite = null, ?string $redirection = null): void
-    {
-        if ($getTestEligibilite) {
-            /** @var TestEligibilite $testEligibilite */
-            $testEligibilite = $getTestEligibilite($this->em);
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
-        }
-
-        $this->client->request('GET', '/bris-de-porte/contactez-nous');
-
-        if (null !== $redirection) {
-            $this->assertTrue($this->client->getResponse()->isRedirect($redirection));
-        } else {
-            $this->assertTrue($this->client->getResponse()->isSuccessful());
-        }
-    }
-
     public function donnesCreationDeCompte()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_en_xp_incomplet' => [$this->getTestEligibiliteEnXpIncomplet()],
-            'test_en_xp_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
-            'test_hors_xp' => [$this->getTestEligibiliteHorsXp(), '/bris-de-porte/contactez-nous'],
+            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet()],
+            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
         ];
     }
 
@@ -254,9 +196,8 @@ class BrisPorteControllerTest extends WebTestCase
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_en_xp_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
-            'test_en_xp_complet' => [$this->getTestEligibiliteEnXpComplet()],
-            'test_hors_xp' => [$this->getTestEligibiliteHorsXp(), '/bris-de-porte/contactez-nous'],
+            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_complet' => [$this->getTestEligibiliteEnXpComplet()],
         ];
     }
 
