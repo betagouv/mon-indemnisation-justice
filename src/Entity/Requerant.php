@@ -424,6 +424,11 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->dossiers;
     }
 
+    public function nbDossiersEnAttente(): int
+    {
+        return $this->dossiers->filter(fn (BrisPorte $dossier) => !$dossier->estDepose())->count();
+    }
+
     public function __toString(): string
     {
         return $this->getPersonnePhysique()->__toString();

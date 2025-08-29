@@ -17,8 +17,8 @@ class TestEligibilite
     public ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: GeoDepartement::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code', nullable: false, onDelete: 'SET NULL')]
-    public GeoDepartement $departement;
+    #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code', nullable: true, onDelete: 'SET NULL')]
+    public ?GeoDepartement $departement;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]

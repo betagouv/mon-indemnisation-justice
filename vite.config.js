@@ -75,7 +75,7 @@ export default defineConfig(({ command, mode }) => {
         input: {
           ...{
             "requerant/dossier/tester_mon_eligibilite":
-              "./assets/apps/requerant/dossier/tester_mon_eligibilite.ts",
+              "./assets/apps/requerant/dossier/tester_mon_eligibilite.tsx",
             "requerant/dossier/creation_de_compte":
               "./assets/apps/requerant/dossier/creation_de_compte.tsx",
             "requerant/dossier/deposer_mon_dossier":

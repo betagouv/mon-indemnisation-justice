@@ -7,7 +7,7 @@
     {% set flash = app.flashes('dossier')|first %}
     {% if flash %}
         <dialog aria-labelledby="fr-modal-flash-dossier--title" role="dialog" id="fr-modal-flash-dossier"
-                class="fr-modal fr-modal--opened">
+                class="fr-modal" data-fr-js-opened>
             <div class="fr-container fr-container--fluid fr-container-md">
                 <div class="fr-grid-row fr-grid-row--center">
                     <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
@@ -18,7 +18,7 @@
                                 </button>
                             </div>
                             <div class="fr-modal__content">
-                                <div class="fr-alert fr-alert--success">
+                                <div class="fr-alert fr-alert--success fr-my-1w">
                                     <h3 class="fr-alert__title" id="fr-modal-flash-dossier--title">
                                         Votre dossier {{ flash.dossier.reference }} a bien été déposé
                                     </h3>
@@ -117,6 +117,18 @@
                                 </td>
                             </tr>
                         {% endfor %}
+                        {% if app.user.nbDossiersEnAttente() == 0 %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; vertical-align: middle;">
+                                    <a class="fr-btn fr-btn--primary fr-icon-add-line fr-btn--icon-right"
+                                       style="margin: auto;"
+                                       href="{{ url('bris_porte_tester_eligibilite') }}">Déposer
+                                        une nouvelle demande</a>
+
+
+                                </td>
+                            </tr>
+                        {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -124,4 +136,15 @@
             <div class="fr-col-9"></div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        {# Ouvrir les modales #}
+        document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll('dialog.fr-modal[data-fr-js-opened]').forEach((modale) => window.dsfr(modale).modal.disclose())
+            }
+        );
+    </script>
 {% endblock %}
