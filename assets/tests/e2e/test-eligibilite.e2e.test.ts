@@ -7,11 +7,6 @@ test("test éligibilité", async ({ page }) => {
 
   await expect(page).toHaveURL("/bris-de-porte/tester-mon-eligibilite");
 
-  // Single selection matching the value or label
-  await page
-    .getByLabel("Dans quel département se situe le logement ?")
-    .selectOption("13 - Bouches-du-Rhône");
-
   await expect(page.getByLabel("Décrivez-nous l’intervention")).toBeVisible();
 
   await page
