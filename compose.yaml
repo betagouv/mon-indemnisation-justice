@@ -76,11 +76,14 @@ services:
     depends_on:
       - postgres
       - mailpit
+      - vite
       - franceconnect
       - proconnect
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
-      - .:/app
+      - ./backend:/app
+      - assets-build:/app/public/build:ro
+      - assets-preview:/app/public/preview:ro
       - .docker/php/fichiers:/app/fichiers
       - /app/vendor
       - /app/var
@@ -115,7 +118,6 @@ services:
 
   # Vite dev server (frontend assets)
   vite:
-
     hostname: vite
     stdin_open: true
     tty: true
@@ -130,7 +132,9 @@ services:
     command: bash -c 'yarn install && yarn dev -l info'
     working_dir: /app
     volumes:
-      - .:/app
+      - ./frontend:/app
+      - assets-build:/app/build
+      - assets-preview:/app/preview
       # Dossier à ne pas partager entre guest et host
       - /app/node_modules
     ports:
@@ -184,10 +188,14 @@ services:
           - playwright
     command: npx playwright test --ui-port=8080 --ui-host=0.0.0.0 --project firefox
     volumes:
-      - .:/app
+      - ./tests:/app
     ports:
       - "8080:8080"
       - "3000:3000"
 
 networks:
   mijnet:
+
+volumes:
+  assets-preview:
+  assets-build:

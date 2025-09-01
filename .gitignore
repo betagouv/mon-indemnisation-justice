@@ -1,7 +1,6 @@
 # Docker
 .docker/postgres/data/
 
-
 # Playwright
 node_modules/
 /test-results/
