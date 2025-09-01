@@ -82,8 +82,7 @@ services:
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
       - ./backend:/app
-      - assets-build:/app/public/build:ro
-      - assets-preview:/app/public/preview:ro
+      - ./frontend/vite:/app/public/vite:ro
       - .docker/php/fichiers:/app/fichiers
       - /app/vendor
       - /app/var
@@ -115,7 +114,6 @@ services:
     ports:
       - "8002:80"
 
-
   # Vite dev server (frontend assets)
   vite:
     hostname: vite
@@ -133,8 +131,6 @@ services:
     working_dir: /app
     volumes:
       - ./frontend:/app
-      - assets-build:/app/build
-      - assets-preview:/app/preview
       # Dossier à ne pas partager entre guest et host
       - /app/node_modules
     ports:
@@ -195,7 +191,3 @@ services:
 
 networks:
   mijnet:
-
-volumes:
-  assets-preview:
-  assets-build:
