@@ -115,8 +115,14 @@ services:
 
   # Vite dev server (frontend assets)
   vite:
-    image: node:22
+
     hostname: vite
+    stdin_open: true
+    tty: true
+    # En attendant un accès à Harbor
+    build:
+      context: .
+      dockerfile: .docker/vite/Dockerfile
     networks:
       mijnet:
         aliases:
