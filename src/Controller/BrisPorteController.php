@@ -8,7 +8,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use MonIndemnisationJustice\Dto\Inscription;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Forms\TestEligibiliteType;
@@ -47,7 +46,7 @@ class BrisPorteController extends AbstractController
         if ($this->getUser() instanceof Requerant) {
             /** @var Requerant $requerant */
             $requerant = $this->getUser();
-            if (null !== $requerant->getDernierDossier() && !$requerant->getDernierDossier()->estConstitue()) {
+            if (null !== $requerant->getDernierDossier() && !$requerant->getDernierDossier()->estDepose()) {
                 return $this->redirectToRoute('app_bris_porte_edit', ['id' => $requerant->getDernierDossier()->getId()]);
             }
 
@@ -70,7 +69,7 @@ class BrisPorteController extends AbstractController
                 /** @var TestEligibilite $testEligibilite */
                 $testEligibilite = $form->getData();
 
-                $testEligibilite->estEligibleExperimentation = $testEligibilite->departement->estDeploye();
+                $testEligibilite->estEligibleExperimentation = true;
                 $testEligibilite->dateSoumission = new \DateTime();
 
                 $this->entityManager->persist($testEligibilite);
@@ -93,11 +92,7 @@ class BrisPorteController extends AbstractController
 
                 $this->setTestEligibilite($testEligibilite, $request);
 
-                if ($testEligibilite->departement->estDeploye()) {
-                    return $this->redirectToRoute('bris_porte_creation_de_compte');
-                }
-
-                return $this->redirectToRoute('bris_porte_contactez_nous');
+                return $this->redirectToRoute('bris_porte_creation_de_compte');
             }
         }
 
@@ -105,7 +100,6 @@ class BrisPorteController extends AbstractController
             'brisPorte/tester_mon_eligibilite.html.twig',
             [
                 'form' => $form,
-                'departements' => $this->entityManager->getRepository(GeoDepartement::class)->getListeTriee(),
             ]
         );
     }
@@ -130,28 +124,6 @@ class BrisPorteController extends AbstractController
         $request->getSession()->set(self::SESSION_CONTEXT_KEY, $testEligibilite?->id);
     }
 
-    #[Route('/contactez-nous', name: 'bris_porte_contactez_nous', methods: ['GET'])]
-    public function contactezNous(Request $request): Response
-    {
-        $testEligibilite = $this->getTestEligibilite($request);
-
-        if (null === $testEligibilite) {
-            return $this->redirectToRoute('bris_porte_tester_eligibilite');
-        }
-
-        if (null !== $testEligibilite->requerant) {
-            return $this->redirectToRoute('bris_porte_finaliser_la_creation');
-        }
-
-        if ($testEligibilite->departement->estDeploye()) {
-            return $this->redirectToRoute('bris_porte_creation_de_compte');
-        }
-
-        return $this->render('brisPorte/contactez_nous.html.twig', [
-            'testEligibilite' => $testEligibilite,
-        ]);
-    }
-
     #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET'])]
     public function creationDeCompte(
         Request $request,
@@ -171,10 +143,6 @@ class BrisPorteController extends AbstractController
 
         if (null !== $testEligibilite->requerant) {
             return $this->redirectToRoute('bris_porte_finaliser_la_creation');
-        }
-
-        if (!$testEligibilite->departement->estDeploye()) {
-            return $this->redirectToRoute('bris_porte_contactez_nous');
         }
 
         return $this->render('brisPorte/creation_de_compte.html.twig', [
@@ -262,10 +230,6 @@ class BrisPorteController extends AbstractController
         if (null === $testEligibilite) {
             return $this->redirectToRoute('bris_porte_tester_eligibilite');
         } else {
-            if (!$testEligibilite->departement->estDeploye()) {
-                return $this->redirectToRoute('bris_porte_contactez_nous');
-            }
-
             if (null === $testEligibilite->requerant) {
                 return $this->redirectToRoute('bris_porte_creation_de_compte');
             }

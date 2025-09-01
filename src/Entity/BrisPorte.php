@@ -306,9 +306,17 @@ class BrisPorte
         return EtatDossierType::DOSSIER_CLOTURE === $this->getEtatDossier()->getEtat();
     }
 
-    public function estConstitue(): bool
+    public function estDepose(): bool
     {
         return null !== $this->getDateDeclaration();
+    }
+
+    /**
+     * @deprecated préférer `estDepose()` à la place
+     */
+    public function estConstitue(): bool
+    {
+        return $this->estDepose();
     }
 
     public function getDateCreation(): \DateTimeInterface

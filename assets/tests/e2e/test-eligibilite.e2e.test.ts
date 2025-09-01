@@ -3,25 +3,14 @@ import { test, expect } from "@playwright/test";
 test("test éligibilité", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByText("Déposer votre demande d’indemnisation").first().click();
+  await page.getByText("Tester votre éligibilité").first().click();
 
   await expect(page).toHaveURL("/bris-de-porte/tester-mon-eligibilite");
 
-  // Single selection matching the value or label
-  await page
-    .getByLabel("Dans quel département se situe le logement ?")
-    .selectOption("13 - Bouches-du-Rhône");
-
-  await expect(
-    page.getByLabel(
-      "Vous souhaitez nous apporter des précisions sur l'intervention ? ",
-    ),
-  ).toBeVisible();
+  await expect(page.getByLabel("Décrivez-nous l’intervention")).toBeVisible();
 
   await page
-    .getByLabel(
-      "Vous souhaitez nous apporter des précisions sur l'intervention ? ",
-    )
+    .getByLabel("Décrivez-nous l’intervention")
     .fill("Porte fracassée à l'aube");
 
   await page.getByText("Question suivante").click();
@@ -86,7 +75,7 @@ test("test éligibilité", async ({ page }) => {
     .getByLabel("Oui")
     .check();
 
-  await page.getByText("Commencer la demande d'indemnisation").click();
+  await page.getByText("Créer votre compte").click();
 
   await expect(page).toHaveURL("/bris-de-porte/creation-de-compte");
 

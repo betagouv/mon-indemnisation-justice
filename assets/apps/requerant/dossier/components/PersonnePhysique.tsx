@@ -1,11 +1,4 @@
-import React, {
-  KeyboardEvent,
-  KeyboardEventHandler,
-  useContext,
-  useDeferredValue,
-  useEffect,
-  useState,
-} from "react";
+import React, { KeyboardEvent, useContext, useEffect, useState } from "react";
 import Civilite from "@/apps/requerant/dossier/components/Civilite";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import {
@@ -15,6 +8,7 @@ import {
 import { PaysContext } from "@/apps/requerant/dossier/contexts/PaysContext.ts";
 import { randomId } from "@/apps/requerant/dossier/services/Random.ts";
 import { Select } from "@codegouvfr/react-dsfr/Select";
+import { parse as parseDate } from "date-fns";
 
 interface GeoCommune {
   id: number;
@@ -147,14 +141,21 @@ const PersonnePhysique = function PersonnePhysique() {
               id: randomId(),
               type: "date",
               value: dossier.requerant.personnePhysique.dateNaissance || "",
-              onChange: (e) =>
-                patchDossier({
-                  requerant: {
-                    personnePhysique: {
-                      dateNaissance: e.target.value || null,
-                    },
-                  },
-                }),
+              onChange: (e) => {
+                try {
+                  if (
+                    e.target.value &&
+                    /^\d{4}-\d{1,2}-\d{1,2}$/.test(e.target.value)
+                  ) {
+                    parseDate(e.target.value, "yyyy-MM-dd", new Date());
+                    patchDossier({
+                      requerant: {
+                        personnePhysique: { dateNaissance: e.target.value },
+                      },
+                    });
+                  }
+                } catch (e) {}
+              },
             }}
           />
         </div>
