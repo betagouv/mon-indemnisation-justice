@@ -106,31 +106,44 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --optimize-autoloader
 
-      - name: Cache yarn dependencies
+      - name: Cache backend yarn dependencies
         uses: actions/cache@v3
         with:
-          path: node_modules
-          key: backend-yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          path: backend/node_modules
+          key: backend-yarn-backend-${{ runner.os }}-${{ hashFiles('backend/yarn.lock') }}
+
+      - name: Cache frontend yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: frontend/node_modules
+          key: backend-yarn-frontend-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
 
       - uses: browser-actions/setup-firefox@v1
         id: setup-firefox
         with:
           firefox-version: 'latest-esr'
 
-      - name: Install Yarn dependencies
-        run: yarn install --no-progress --non-interactive --frozen-lockfile
-
       - name: Build frontend assets
-        run: yarn build
+        run: |
+          yarn install --no-progress --non-interactive --frozen-lockfile
+          yarn build --outDir=../backend/public/build
+        working-directory: frontend
+
+      - name: Install Puppeteer
+        run: yarn install
+        working-directory: backend
 
       - name: Run migration
         run: bin/console -e test doctrine:migrations:migrate --no-interaction --all-or-nothing
+        working-directory: backend
 
       - name: Load data fixtures
         run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate
+        working-directory: backend
 
       - name: Run backend unit tests
         run: bin/phpunit --log-junit test-result-backend.xml
+        working-directory: backend
         env:
           FIREFOX_PATH: ${{ steps.setup-firefox.outputs.firefox-path }}
 
@@ -154,17 +167,20 @@ jobs:
       - name: Cache yarn dependencies
         uses: actions/cache@v3
         with:
-          path: node_modules
-          key: frontend-yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          path: frontend/node_modules
+          key: frontend-yarn-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
 
       - name: Install Yarn dependencies
         run: yarn install --no-progress --non-interactive --frozen-lockfile
+        working-directory: frontend
 
       - name: Build frontend assets
         run: yarn build
+        working-directory: frontend
 
       - name: Run frontend unit tests
         run: yarn vitest run --reporter=junit --outputFile=test-result-frontend.xml --reporter=verbose
+        working-directory: frontend
 
       - name: Frontend test report
         uses: dorny/test-reporter@v2
@@ -286,8 +302,8 @@ jobs:
         id: cache-composer
         uses: actions/cache@v3
         with:
-          path: vendor
-          key: end2end-composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          path: backend/vendor
+          key: end2end-composer-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --optimize-autoloader
@@ -298,9 +314,16 @@ jobs:
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: end2end-yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          key: end2end-yarn-end2end-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
-      - name: Install Yarn dependencies
+      - name: Cache yarn dependencies
+        id: cache-yarn
+        uses: actions/cache@v3
+        with:
+          path: frontend/node_modules
+          key: end2end-yarn-frontend-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
+
+      - name: Install Playwright
         run: yarn install --no-progress --non-interactive --frozen-lockfile
         if: steps.cache-yarn.outputs.cache-hit != 'true'
 
@@ -321,13 +344,16 @@ jobs:
         if: steps.cache-playwright.outputs.cache-hit != 'true'
 
       - name: Build frontend assets
-        run: yarn build
+        run: |
+          yarn install --no-progress --non-interactive --frozen-lockfile
+          yarn build
+        working-directory: frontend
 
-      - name: Run migration
-        run: bin/console -e test doctrine:migrations:migrate --no-interaction --all-or-nothing
-
-      - name: Load data fixtures
-        run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate
+      - name: Run migration & load data fixtures
+        run: |
+          bin/console -e test doctrine:migrations:migrate --no-interaction --all-or-nothing
+          bin/console -e test -n doctrine:fixture:load --purge-with-truncate
+        working-directory: backend
 
       - name: Run end-to-end tests
         # Pour l'heure on se limite à Firefox car on ne sait pas encore créer des fixtures par Browser

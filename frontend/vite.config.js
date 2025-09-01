@@ -20,7 +20,6 @@ Object.entries(process.env)
 
 export default defineConfig(({ command, mode }) => {
   const base = mode === "production" ? "/build/" : "/preview/";
-  const outDir = `public/${base}`;
 
   return {
     base,
@@ -44,7 +43,7 @@ export default defineConfig(({ command, mode }) => {
         stimulus: false,
         build: {
           manifest: true,
-          outDir,
+          outDir: "." + base,
         },
       }),
       reactPlugin(),
@@ -61,12 +60,12 @@ export default defineConfig(({ command, mode }) => {
     ],
     resolve: {
       alias: {
-        "@": fileURLToPath(new URL("./assets", import.meta.url)),
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     }, // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
     esbuild: false,
     build: {
-      outDir,
+      outDir: "." + base,
       target: "es2015",
       modulePreload: false,
       sourcemap: false,
@@ -75,23 +74,23 @@ export default defineConfig(({ command, mode }) => {
         input: {
           ...{
             "requerant/dossier/tester_mon_eligibilite":
-              "./assets/apps/requerant/dossier/tester_mon_eligibilite.tsx",
+              "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
             "requerant/dossier/creation_de_compte":
-              "./assets/apps/requerant/dossier/creation_de_compte.tsx",
+              "./src/apps/requerant/dossier/creation_de_compte.tsx",
             "requerant/dossier/deposer_mon_dossier":
-              "./assets/apps/requerant/dossier/deposer_mon_dossier.tsx",
+              "./src/apps/requerant/dossier/deposer_mon_dossier.tsx",
             "requerant/dossier/consulter_la_decision":
-              "./assets/apps/requerant/dossier/consulter_la_decision.tsx",
+              "./src/apps/requerant/dossier/consulter_la_decision.tsx",
             "agent/gestion_agents":
-              "./assets/apps/agent/gestion_agents/gestion_agents_app.tsx",
+              "./src/apps/agent/gestion_agents/gestion_agents_app.tsx",
             "agent/dossiers/recherche":
-              "./assets/apps/agent/dossiers/recherche_app.tsx",
+              "./src/apps/agent/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
-              "./assets/apps/agent/dossiers/consultation_app.tsx",
+              "./src/apps/agent/dossiers/consultation_app.tsx",
             "agent/dossiers/dossiers_a_transmettre":
-              "./assets/apps/agent/dossiers/dossiers_a_transmettre.tsx",
+              "./src/apps/agent/dossiers/dossiers_a_transmettre.tsx",
             "agent/dossiers/dossiers_en_attente_indemnisation":
-              "./assets/apps/agent/dossiers/dossiers_en_attente_indemnisation.tsx",
+              "./src/apps/agent/dossiers/dossiers_en_attente_indemnisation.tsx",
           },
         },
         output: {
