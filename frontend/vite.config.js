@@ -7,7 +7,6 @@ import copy from "rollup-plugin-copy";
 import legacy from "@vitejs/plugin-legacy";
 import autoprefixer from "autoprefixer";
 import nested from "postcss-nested";
-import { configDefaults } from "vitest/config";
 
 // Vite will ignore native environment variables, unless they're declared in local `.env` file
 // (see https://github.com/vitejs/vite/issues/562)
@@ -19,7 +18,8 @@ Object.entries(process.env)
   .forEach(([key, value]) => (import.meta.env[key] = value));
 
 export default defineConfig(({ command, mode }) => {
-  const base = mode === "production" ? "/build/" : "/preview/";
+  const outDir = `vite/${mode === "production" ? "build" : "preview"}`;
+  const base = `/${outDir}`;
 
   return {
     base,
@@ -43,16 +43,16 @@ export default defineConfig(({ command, mode }) => {
         stimulus: false,
         build: {
           manifest: true,
-          outDir: "." + base,
+          //outDir,
         },
       }),
       reactPlugin(),
       copy({
         targets: [
-          { src: "node_modules/@gouvfr/dsfr/dist/*", dest: "public/dsfr" },
+          { src: "node_modules/@gouvfr/dsfr/dist/*", dest: "vite/dsfr" },
           {
             src: "node_modules/remixicon/*",
-            dest: "public/remixicon",
+            dest: "vite/remixicon",
           },
         ],
         hook: "writeBundle",
@@ -65,10 +65,12 @@ export default defineConfig(({ command, mode }) => {
     }, // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
     esbuild: false,
     build: {
-      outDir: "." + base,
+      outDir,
       target: "es2015",
       modulePreload: false,
       sourcemap: false,
+      minify: mode === "production",
+      emptyOutDir: mode === "production",
       rollupOptions: {
         // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
         input: {

@@ -5,6 +5,7 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import CallOut from "@codegouvfr/react-dsfr/CallOut";
 
 type LibelleAvancementTest =
   | "description"
@@ -171,29 +172,27 @@ export const TestEligibiliteForm = ({
         severity="info"
         small
       />
-      <div className="fr-callout">
-        <h3 className="fr-callout__title">Avant de remplir le questionnaire</h3>
-        <p className="fr-callout__text">
-          Il est important de noter que la victime d’un dommage ne peut obtenir
-          des indemnisations distinctes en réparation du même préjudice. Afin de
-          garantir{" "}
-          <Tooltip
-            title="En vertu du principe de réparation intégrale du préjudice sans
+      <CallOut title="Avant de remplir le questionnaire">
+        Il est important de noter que la victime d’un dommage ne peut obtenir
+        des indemnisations distinctes en réparation du même préjudice. Afin de
+        garantir{" "}
+        <Tooltip
+          title="En vertu du principe de réparation intégrale du préjudice sans
               perte ni profit, la victime d'un dommage ne peut obtenir deux
               indemnisations distinctes en réparation du même préjudice (Cour de
               cassation, civile, Chambre civile 2, 16 décembre 2021, 19-11.294,
               Inédit ; Cour de cassation, civile, Chambre civile 2, 9 février
               2023, 21-21.217, Publié au bulletin)"
-            kind="hover"
-          >
-            <a className="fr-link" href="#">
-              le respect de ce principe
-            </a>
-          </Tooltip>{" "}
-          et vérifier vot re éligibilité à l'indemnisation, vous devez répondre
-          aux questions suivantes.
-        </p>
-      </div>
+          kind="hover"
+        >
+          <a className="fr-link" href="#">
+            le respect de ce principe
+          </a>
+        </Tooltip>{" "}
+        et vérifier vot re éligibilité à l'indemnisation, vous devez répondre
+        aux questions suivantes.
+      </CallOut>
+
       {/* Questions */}
       {estQuestionVisible("description") && (
         <div className="pr-section-formulaire fr-my-3w">
