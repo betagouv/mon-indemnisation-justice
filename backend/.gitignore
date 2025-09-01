@@ -1,0 +1,39 @@
+###> symfony/framework-bundle ###
+.env.dev
+.env.prod
+.env.test
+.env.ci
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+###< symfony/phpunit-bridge ###
+/public/dsfr/
+/public/remixicon/
+/public/screenshots/
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+
+###> pentatrion/vite-bundle ###
+/public/build/
+/public/preview/
+###< pentatrion/vite-bundle ###
+
+
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###
