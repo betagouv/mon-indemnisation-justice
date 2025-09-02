@@ -18,9 +18,7 @@
 
 ###> symfony/phpunit-bridge ###
 ###< symfony/phpunit-bridge ###
-/public/dsfr/
-/public/remixicon/
-/public/screenshots/
+/public/vite/
 ###> friendsofphp/php-cs-fixer ###
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
