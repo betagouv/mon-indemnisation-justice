@@ -13,7 +13,7 @@ import * as process from "node:process";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: "./assets/tests/e2e",
+  testDir: "./tests",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -81,7 +81,7 @@ export default defineConfig({
   ...(process.env.CI
     ? {
         webServer: {
-          command: `cd backend && APP_ENV=${process.env.APP_ENV ?? "ci"} symfony server:start --allow-http --no-tls`,
+          command: `cd ../backend && APP_ENV=${process.env.APP_ENV ?? "ci"} symfony server:start --allow-http --no-tls`,
           url: "http://127.0.0.1:8000",
           reuseExistingServer: !process.env.CI,
         },

@@ -120,7 +120,7 @@ test("dépôt de dossier", async ({ page }) => {
     .setInputFiles(
       path.join(
         __dirname,
-        "../ressources/attestation_completee_par_les_forces_de_l_ordre.pdf",
+        "./ressources/attestation_completee_par_les_forces_de_l_ordre.pdf",
       ),
     );
 

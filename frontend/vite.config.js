@@ -70,7 +70,7 @@ export default defineConfig(({ command, mode }) => {
       modulePreload: false,
       sourcemap: false,
       minify: mode === "production",
-      emptyOutDir: mode === "production",
+      emptyOutDir: false,
       rollupOptions: {
         // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
         input: {

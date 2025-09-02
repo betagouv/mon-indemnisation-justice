@@ -55,7 +55,6 @@ services:
     hostname: symfony
     stdin_open: true
     tty: true
-    # En attendant un accès à Harbor
     build:
       context: .
       dockerfile: .docker/php/dev.dockerfile
@@ -94,8 +93,19 @@ services:
       - "8001:80"
 
   test:
-    <<: *sf
     hostname: test
+    build:
+      context: .
+      dockerfile: .docker/php/prod.dockerfile
+      args:
+        - APP_ENV=test
+        - APP_DEBUG=false
+        - APP_SECRET=bafc23a0315b735289c499a886798934
+        - DATABASE_URL=pgsql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&charset=utf8
+        - BASE_URL=https://mon-indemnisation.justice.gouv.test
+        - COMPOSER_OPTS=
+    networks:
+      mijnet:
     environment:
       - APP_ENV=test
       - SYMFONY_DEPRECATIONS_HELPER=disabled
@@ -104,17 +114,13 @@ services:
       - SERVER_NAME=:80
       - HTTPS=true;
       - REQUEST_SCHEME=https
-    command: |
-      bash -c "composer install --no-interaction --optimize-autoloader && \
-      bin/console -e test doctrine:migration:migrate --no-interaction --all-or-nothing && \
-      yarn install --prod --frozen-lockfile && \
-      yarn build && \
-      cd /app/public && \
-      frankenphp php-server -a ./index.php"
+    volumes:
+      - .docker/php/fichiers:/app/fichiers
+      - ./backend/.env.test:/app/.env.test
     ports:
       - "8002:80"
 
-  # Vite dev server (frontend assets)
+  # Vite dev server
   vite:
     hostname: vite
     stdin_open: true
@@ -184,7 +190,7 @@ services:
           - playwright
     command: npx playwright test --ui-port=8080 --ui-host=0.0.0.0 --project firefox
     volumes:
-      - ./tests:/app
+      - ./end2end/tests:/app/tests
     ports:
       - "8080:8080"
       - "3000:3000"
