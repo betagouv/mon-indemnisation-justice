@@ -127,7 +127,7 @@ jobs:
       - name: Build frontend assets
         run: |
           yarn install --no-progress --non-interactive --frozen-lockfile
-          yarn build --outDir=../backend/public/vite/build
+          yarn build --outDir=../backend/public/build
         working-directory: frontend
 
       - name: Install Puppeteer
@@ -342,7 +342,7 @@ jobs:
       - name: Build frontend assets
         run: |
           yarn install --no-progress --non-interactive --frozen-lockfile
-          yarn build
+          yarn build --outDir=../backend/public/build
         working-directory: frontend
 
       - name: Run migration & load data fixtures

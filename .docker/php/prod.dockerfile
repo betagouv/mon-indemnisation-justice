@@ -16,7 +16,8 @@ ARG COMPOSER_OPTS=--no-dev
 
 WORKDIR /app
 
-RUN --mount=type=cache,target=/root..cache/composer COMPOSER_CACHE_DIR=/root/.cache/composer composer install --no-ansi ${COMPOSER_OPTS} --no-progress --optimize-autoloader
+RUN --mount=type=cache,target=/root/.cache/composer COMPOSER_CACHE_DIR=/root/.cache/composer composer install --no-ansi ${COMPOSER_OPTS} --no-progress --optimize-autoloader
+RUN yarn install
 
 COPY frontend/package.json frontend/yarn.lock /app/assets/
 

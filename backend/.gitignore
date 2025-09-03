@@ -28,6 +28,8 @@
 ###> pentatrion/vite-bundle ###
 /public/build/
 /public/preview/
+/public/dsfr
+/public/remixicon
 ###< pentatrion/vite-bundle ###
 
 

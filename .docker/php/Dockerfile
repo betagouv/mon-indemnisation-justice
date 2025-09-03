@@ -36,11 +36,6 @@ RUN apt-get install -y nodejs
 RUN npm update -g
 RUN npm install --force -g yarn
 
-# Chrome
-RUN apt install -y chromium
-
-ENV CHROMIUM_PATH=/usr/bin/chromium
-
 # Firefox
 RUN apt install -y firefox-esr
 ENV FIREFOX_PATH=/usr/bin/firefox
