@@ -29,7 +29,5 @@ RUN cp -r /app/assets/vite /app/public/
 
 WORKDIR /app/public
 
-RUN rm -Rf /app/assets/vite/*
-
 CMD ["/bin/bash", "-c", "/app/bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && frankenphp php-server ./index.php"]
 

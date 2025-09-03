@@ -35,15 +35,15 @@ use Twig\Environment;
 class DossierController extends AgentController
 {
     public function __construct(
-        protected readonly BrisPorteRepository $dossierRepository,
-        protected readonly AgentRepository $agentRepository,
+        protected readonly BrisPorteRepository                             $dossierRepository,
+        protected readonly AgentRepository                                 $agentRepository,
         #[Target('default.storage')] protected readonly FilesystemOperator $storage,
-        protected readonly ImprimanteCourrier $imprimanteCourrier,
+        protected readonly ImprimanteCourrier                              $imprimanteCourrier,
         // A supprimer
-        protected readonly EntityManagerInterface $em,
-        protected readonly NormalizerInterface $normalizer,
-        protected readonly Mailer $mailer,
-        protected readonly Environment $twig,
+        protected readonly EntityManagerInterface                          $em,
+        protected readonly NormalizerInterface                             $normalizer,
+        protected readonly Mailer                                          $mailer,
+        protected readonly Environment                                     $twig,
     ) {
     }
 
@@ -89,7 +89,7 @@ class DossierController extends AgentController
     public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {
         return $this->render('agent/dossier/consulter_bris_porte.html.twig', [
-            'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
+            'titre' => 'Traitement du bris de porte ' . $dossier->getReference(),
             'react' => [
                 'agent' => [
                     'id' => $this->getAgent()->getId(),
@@ -183,7 +183,7 @@ class DossierController extends AgentController
         $file = $request->files->get('file');
 
         $content = $file->getContent();
-        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+        $filename = hash('sha256', $content) . '.' . ($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
         $document = ($type->estUnique() ? $dossier->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($dossier) : (new Document())->setType($type)->ajouterAuDossier($dossier))
             ->setFilename($filename)
@@ -368,7 +368,7 @@ class DossierController extends AgentController
     #[Route('/dossier/{id}/arrete-paiement/generer.json', name: 'agent_redacteur_generer_arrete_paiement_dossier', methods: ['POST'])]
     public function genererArretePaiementDossier(
         #[MapEntity(id: 'id')] BrisPorte $dossier,
-        Request $request,
+        Request                          $request,
     ): Response {
         try {
             $arretePaiement = $dossier->getOrCreateArretePaiement()->setCorps($request->getPayload()->get('corps'));
@@ -420,7 +420,7 @@ class DossierController extends AgentController
         $file = $request->files->get('fichierSigne');
 
         $content = $file->getContent();
-        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+        $filename = hash('sha256', $content) . '.' . ($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
 
         $document = $dossier->getOrCreatePropositionIndemnisation()
@@ -457,7 +457,7 @@ class DossierController extends AgentController
         $file = $request->files->get('fichierSigne');
 
         $content = $file->getContent();
-        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+        $filename = hash('sha256', $content) . '.' . ($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
 
         $document = $dossier->getOrCreateArretePaiement()
@@ -510,10 +510,11 @@ class DossierController extends AgentController
             $page,
             $taille,
             $request->query->has('e') ?
-                array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')) :
+                array_map(fn($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')) :
                 [
                     // EtatDossierType::DOSSIER_CLOTURE,
                     // EtatDossierType::DOSSIER_A_FINALISER,
+                    EtatDossierType::DOSSIER_A_ATTRIBUER,
                     EtatDossierType::DOSSIER_A_INSTRUIRE,
                     EtatDossierType::DOSSIER_EN_INSTRUCTION,
                     EtatDossierType::DOSSIER_OK_A_SIGNER,
@@ -527,7 +528,7 @@ class DossierController extends AgentController
             $this->agentRepository->findBy([
                 'id' => array_filter(
                     self::extraireCritereRecherche($request, 'a'),
-                    fn ($a) => is_numeric($a)
+                    fn($a) => is_numeric($a)
                 ),
             ]),
             self::extraireCritereRecherche($request, 'r'),
@@ -543,7 +544,8 @@ class DossierController extends AgentController
                     iterator_to_array(
                         $paginator->getIterator()
                     ),
-                    'json', ['groups' => 'agent:liste']
+                    'json',
+                    ['groups' => 'agent:liste']
                 ),
             ]
         );
@@ -571,7 +573,7 @@ class DossierController extends AgentController
         $zipName = tempnam(sys_get_temp_dir(), "dossier_{$dossier->getReference()}.zip");
 
         if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
-            throw new \RuntimeException('Cannot open '.$zipName);
+            throw new \RuntimeException('Cannot open ' . $zipName);
         }
 
         foreach ($dossier->getDocumentsATransmettre()->toArray() as $document) {
@@ -626,7 +628,7 @@ class DossierController extends AgentController
 
         return array_filter(
             explode('|', $request->query->getString($nom, '')),
-            fn ($v) => !empty($v)
+            fn($v) => !empty($v)
         );
     }
 }

@@ -194,6 +194,7 @@ export class RechercheDossier {
             .map((e) => EtatDossierType.resoudreParSlug(e))
             .filter((e) => !!e)
         : [
+            EtatDossierType.A_ATTRIBUER,
             EtatDossierType.A_INSTRUIRE,
             EtatDossierType.EN_INSTRUCTION,
             EtatDossierType.OK_A_SIGNER,
