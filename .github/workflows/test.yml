@@ -343,7 +343,6 @@ jobs:
         run: |
           yarn install --no-progress --non-interactive --frozen-lockfile
           yarn build
-          cp -r vite ../backend/public
         working-directory: frontend
 
       - name: Run migration & load data fixtures

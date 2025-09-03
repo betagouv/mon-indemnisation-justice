@@ -7,13 +7,13 @@
     <meta name="theme-color" content="#000091"/>
     <meta name="author" content="Pierre LEMÉE"/>
 
-    <link rel="apple-touch-icon" href="{{ asset('vite/dsfr/favicon/apple-touch-icon.png') }}"/>
-    <link rel="icon" href="{{ asset('vite/dsfr/favicon/favicon.svg') }}" type="image/svg+xml"/>
-    <link rel="shortcut icon" href="{{ asset('vite//dsfr/favicon/favicon.ico') }}" type="image/x-icon"/>
-    <link rel="manifest" href="{{ asset('vite/dsfr/favicon/manifest.webmanifest') }}" crossorigin="use-credentials"/>
-    <link rel="stylesheet" href="{{ asset('vite/dsfr/utility/utility.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('vite/dsfr/dsfr.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('vite/remixicon/fonts/remixicon.css') }}"/>
+    <link rel="apple-touch-icon" href="{{ asset('dsfr/favicon/apple-touch-icon.png') }}"/>
+    <link rel="icon" href="{{ asset('dsfr/favicon/favicon.svg') }}" type="image/svg+xml"/>
+    <link rel="shortcut icon" href="{{ asset('/dsfr/favicon/favicon.ico') }}" type="image/x-icon"/>
+    <link rel="manifest" href="{{ asset('dsfr/favicon/manifest.webmanifest') }}" crossorigin="use-credentials"/>
+    <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('remixicon/fonts/remixicon.css') }}"/>
     {#  Search engine #}
     {% if app.environment != 'prod' %}
         <meta name="robots" content="noindex">
@@ -89,8 +89,8 @@
 {% endblock %}
 
 {% block dsfrjs %}
-    <script type="module" src="{{ asset('vite/dsfr/dsfr.module.min.js') }}"></script>
-    <script type="text/javascript" nomodule src="{{ asset('vite/dsfr/dsfr.nomodule.min.js') }}"></script>
+    <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
+    <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
 {% endblock dsfrjs %}
 
 {# Sentry browser #}

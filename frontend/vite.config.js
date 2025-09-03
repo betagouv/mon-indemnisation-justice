@@ -18,8 +18,8 @@ Object.entries(process.env)
   .forEach(([key, value]) => (import.meta.env[key] = value));
 
 export default defineConfig(({ command, mode }) => {
-  const outDir = `vite/${mode === "dev" ? "preview" : "build"}`;
-  const base = `/${outDir}`;
+  const outDir = `../public/${mode.startsWith("dev") ? "preview" : "build"}`;
+  const base = mode.startsWith("dev") ? "/preview" : "/build";
 
   return {
     base,
@@ -49,13 +49,13 @@ export default defineConfig(({ command, mode }) => {
       reactPlugin(),
       copy({
         targets: [
-          { src: "node_modules/@gouvfr/dsfr/dist/*", dest: "vite/dsfr" },
+          { src: "node_modules/@gouvfr/dsfr/dist/*", dest: "../public/dsfr" },
           {
             src: "node_modules/remixicon/*",
-            dest: "vite/remixicon",
+            dest: "../public/remixicon",
           },
         ],
-        hook: "writeBundle",
+        verbose: true,
       }),
     ],
     resolve: {
