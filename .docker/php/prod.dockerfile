@@ -18,18 +18,18 @@ WORKDIR /app
 
 RUN composer install --no-ansi ${COMPOSER_OPTS} --no-progress --optimize-autoloader
 
-COPY frontend /tmp/vite
+COPY frontend /app/assets/vite
 
-WORKDIR /tmp/vite
+WORKDIR /app/assets/vite
 
 RUN --mount=type=cache,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn yarn install --prod --frozen-lockfile
 RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build
 
-RUN cp -r /tmp/vite/vite /app/public/
+RUN cp -r /app/assets/vite /app/public/
 
 WORKDIR /app/public
 
-RUN rm -Rf /tmp/vite/*
+RUN rm -Rf /app/assets/vite/*
 
 CMD ["/bin/bash", "-c", "/app/bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && frankenphp php-server ./index.php"]
 
