@@ -18,14 +18,19 @@ WORKDIR /app
 
 RUN composer install --no-ansi ${COMPOSER_OPTS} --no-progress --optimize-autoloader
 
-COPY frontend /app/assets/vite
+COPY frontend/package.json frontend/yarn.lock /app/assets/vite/
 
 WORKDIR /app/assets/vite
 
-RUN --mount=type=cache,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn yarn install --prod --frozen-lockfile
-RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build
+#RUN --mount=type=cache,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn yarn install --prod --frozen-lockfile
+RUN yarn install --prod --frozen-lockfile
 
-RUN cp -r /app/assets/vite /app/public/
+COPY frontend /app/assets/vite
+
+#RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build
+RUN yarn build
+
+RUN cp -r /app/assets/vite /app/public/ && rm -Rf /app/assets/vite/*
 
 WORKDIR /app/public
 
