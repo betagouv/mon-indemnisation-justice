@@ -18,7 +18,7 @@ Object.entries(process.env)
   .forEach(([key, value]) => (import.meta.env[key] = value));
 
 export default defineConfig(({ command, mode }) => {
-  const outDir = `vite/${mode === "production" ? "build" : "preview"}`;
+  const outDir = `vite/${mode === "dev" ? "preview" : "build"}`;
   const base = `/${outDir}`;
 
   return {
