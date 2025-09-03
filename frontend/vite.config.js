@@ -67,8 +67,8 @@ export default defineConfig(({ command, mode }) => {
     build: {
       outDir,
       target: "es2015",
-      modulePreload: false,
-      sourcemap: false,
+      modulePreload: true,
+      sourcemap: true,
       minify: mode === "production",
       emptyOutDir: false,
       rollupOptions: {
