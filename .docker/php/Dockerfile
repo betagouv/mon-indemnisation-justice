@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:1.9-php8.3.24-bookworm AS frankenphp
+FROM dunglas/frankenphp:1.9.1-php8.3.24-trixie AS frankenphp
 
 # Extra .bashrc config
 RUN echo "alias ll='ls -l'" > /root/.bashrc
@@ -36,18 +36,13 @@ RUN apt-get install -y nodejs
 RUN npm update -g
 RUN npm install --force -g yarn
 
-# Chrome
-RUN apt install -y chromium
-
-ENV CHROMIUM_PATH=/usr/bin/chromium
-
 # Firefox
 RUN apt install -y firefox-esr
 ENV FIREFOX_PATH=/usr/bin/firefox
 
 # Extra
 RUN apt install -y postgresql-client
-RUN echo 'alias database="psql \${DATABASE_URL/\?*/}"' > /root/.bashrc
+RUN echo 'alias database="psql \${DATABASE_URL/\?*/}"' >> /root/.bashrc
 
 # Cleanups
 
