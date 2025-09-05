@@ -181,7 +181,7 @@ export const ConsultationDossierApp = observer(
                     { tabId: "pieces-jointes", label: "Pièces jointes" },
                     {
                       tabId: "courrier",
-                      label: "Décision et courrier",
+                      label: "Courrier",
                     },
                   ]}
                   onTabChange={changerOnglet}
