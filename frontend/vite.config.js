@@ -1,9 +1,8 @@
-import { defineConfig } from "vite";
+import {defineConfig} from "vite";
 
-import { fileURLToPath, URL } from "node:url";
+import {fileURLToPath, URL} from "node:url";
 import symfonyPlugin from "vite-plugin-symfony";
 import reactPlugin from "@vitejs/plugin-react";
-import copy from "rollup-plugin-copy";
 import legacy from "@vitejs/plugin-legacy";
 import autoprefixer from "autoprefixer";
 import nested from "postcss-nested";
@@ -18,11 +17,8 @@ Object.entries(process.env)
   .forEach(([key, value]) => (import.meta.env[key] = value));
 
 export default defineConfig(({ command, mode }) => {
-  const outDir = `../public/${mode.startsWith("dev") ? "preview" : "build"}`;
-  const base = mode.startsWith("dev") ? "/preview" : "/build";
 
   return {
-    base,
     cacheDir: import.meta.env.VITE_CACHE_DIR ?? "node_modules/.vite",
     css: {
       postcss: {
@@ -43,20 +39,9 @@ export default defineConfig(({ command, mode }) => {
         stimulus: false,
         build: {
           manifest: true,
-          //outDir,
         },
       }),
       reactPlugin(),
-      copy({
-        targets: [
-          { src: "node_modules/@gouvfr/dsfr/dist/*", dest: "../public/dsfr" },
-          {
-            src: "node_modules/remixicon/*",
-            dest: "../public/remixicon",
-          },
-        ],
-        verbose: true,
-      }),
     ],
     resolve: {
       alias: {
@@ -65,7 +50,6 @@ export default defineConfig(({ command, mode }) => {
     }, // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
     esbuild: false,
     build: {
-      outDir,
       target: "es2015",
       modulePreload: true,
       sourcemap: true,

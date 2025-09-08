@@ -27,7 +27,7 @@ RUN --mount=type=cache,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn yarn ins
 
 COPY frontend /app/assets
 
-RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build
+RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build --outDir=/app/public/build --base=/build
 
 RUN rm -Rf /assets/*
 

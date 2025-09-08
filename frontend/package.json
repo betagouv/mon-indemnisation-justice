@@ -3,7 +3,7 @@
   "private": true,
   "module": "esnext",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --base=/preview",
     "build": "vite build",
     "test": "vitest run"
   },
@@ -36,7 +36,6 @@
     "react-quill-new": "^3.3.3",
     "reflect-metadata": "^0.2.2",
     "remixicon": "^4.4.0",
-    "rollup-plugin-copy": "^3.5.0",
     "terser": "^5.36.0",
     "vite": "^7.0.5",
     "vite-plugin-symfony": "^8.2.0",
