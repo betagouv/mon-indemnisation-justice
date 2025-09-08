@@ -127,10 +127,10 @@ jobs:
       - name: Build frontend assets
         run: |
           yarn install --no-progress --non-interactive --frozen-lockfile
-          yarn build --outDir=../backend/public/build
+          yarn build --outDir=../backend/public/build --base=/build
         working-directory: frontend
 
-      - name: Install Puppeteer
+      - name: Install Puppeteer & DSFR
         run: yarn install
         working-directory: backend
 
@@ -163,7 +163,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-         node-version: 22.x
+          node-version: 22.x
 
       - name: Cache yarn dependencies
         uses: actions/cache@v4
@@ -176,7 +176,7 @@ jobs:
         working-directory: frontend
 
       - name: Build frontend assets
-        run: yarn build
+        run: yarn build --outDir=../backend/public/build --base=/build
         working-directory: frontend
 
       - name: Run frontend unit tests
@@ -342,13 +342,14 @@ jobs:
       - name: Build frontend assets
         run: |
           yarn install --no-progress --non-interactive --frozen-lockfile
-          yarn build --outDir=../backend/public/build
+          yarn build --outDir=../backend/public/build --base=/build
         working-directory: frontend
 
       - name: Run migration & load data fixtures
         run: |
           bin/console -e test doctrine:migrations:migrate --no-interaction --all-or-nothing
           bin/console -e test -n doctrine:fixture:load --purge-with-truncate
+          yarn install
         working-directory: backend
 
       - name: Run end-to-end tests

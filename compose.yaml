@@ -61,7 +61,6 @@ services:
     command: |
       bash -c "composer install --no-interaction --optimize-autoloader && \
       bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && \
-      cd /app/vite && yarn install && yarn build --mode development && \
       cd /app/public && \
       frankenphp php-server -a ./index.php"
     environment:
@@ -82,8 +81,7 @@ services:
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
       - ./backend:/app
-      - /app/vite/node_modules
-      - ./frontend:/app/vite
+      - ./frontend/public/preview:/app/public/preview
       - .docker/php/fichiers:/app/fichiers
       - /app/vendor
       - /app/var
@@ -135,7 +133,7 @@ services:
       mijnet:
         aliases:
           - vite
-    command: bash -c 'yarn install && yarn dev -l info'
+    command: bash -c 'yarn install && yarn dev'
     working_dir: /app
     volumes:
       - ./frontend:/app
