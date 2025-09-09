@@ -5,13 +5,12 @@ namespace MonIndemnisationJustice\Controller\Requerant;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Entity\Document;
-use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Event\DossierConstitueEvent;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
+use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -27,9 +26,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 #[IsGranted(Requerant::ROLE_REQUERANT)]
 #[Route('/requerant/bris-de-porte')]
@@ -39,19 +35,21 @@ class BrisPorteController extends RequerantController
         protected readonly BrisPorteRepository $brisPorteRepository,
         protected readonly EventDispatcherInterface $eventDispatcher,
         protected readonly GeoPaysRepository $geoPaysRepository,
-        #[Target('default.storage')] protected readonly FilesystemOperator $storage,
+        #[Target('default.storage')]
+        protected readonly FilesystemOperator $storage,
         // A supprimer
         protected readonly EntityManagerInterface $em,
         protected readonly Mailer $mailer,
         protected readonly Environment $twig,
         protected readonly ImprimanteCourrier $imprimanteCourrier,
-    ) {
-    }
+        protected readonly DocumentManager $documentManager,
+    ) {}
 
     #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function edit(
-        #[MapEntity(id: 'id')] BrisPorte $dossier): Response
-    {
+        #[MapEntity(id: 'id')]
+        BrisPorte $dossier
+    ): Response {
         if ($dossier->getRequerant() !== $this->getUser()) {
             throw new AccessDeniedHttpException();
         }
@@ -81,7 +79,8 @@ class BrisPorteController extends RequerantController
                 ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
                     'dossier' => $brisPorte,
                 ])
-                ->send();
+                ->send()
+            ;
 
             $this->eventDispatcher->dispatch(new DossierConstitueEvent($brisPorte));
 
@@ -129,24 +128,14 @@ class BrisPorteController extends RequerantController
             ->setFilename($filename)
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
-            ->setMime($file->getClientMimeType());
+            ->setMime($file->getClientMimeType())
+        ;
 
         $this->em->persist($acceptation);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
-        try {
-            // TODO créer le document de type arrêté de paiement à la place
-            $arretePaiement = (new Document())->setType(DocumentType::TYPE_ARRETE_PAIEMENT)->setCorps(
-                $this->twig->render('courrier/_corps_arretePaiement.html.twig', [
-                    'dossier' => $dossier,
-                ])
-            )->ajouterAuDossier($dossier);
 
-            $arretePaiement = $this->imprimanteCourrier->imprimerDocument($arretePaiement);
-            $this->em->persist($arretePaiement);
-        } catch (LoaderError|SyntaxError|RuntimeError $e) {
-            // TODO log
-        }
+        $this->documentManager->genererArretePaiement($dossier);
 
         $this->em->persist($dossier);
         $this->em->flush();
@@ -160,7 +149,8 @@ class BrisPorteController extends RequerantController
                     'dossier' => $dossier,
                     'agent' => $dossier->getRedacteur(),
                 ])
-                ->send();
+                ->send()
+            ;
         }
 
         return new JsonResponse([
