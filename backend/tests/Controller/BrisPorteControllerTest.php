@@ -4,12 +4,18 @@ namespace MonIndemnisationJustice\Tests\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController;
+use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class BrisPorteControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
@@ -19,62 +25,6 @@ class BrisPorteControllerTest extends WebTestCase
     {
         $this->client = self::createClient(['debug' => 0]);
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
-    }
-
-    protected function initializeSession(array $values = []): void
-    {
-        $session = $this->client->getContainer()->get('session.factory')->createSession();
-        foreach ($values as $key => $value) {
-            $session->set($key, $value);
-        }
-
-        $session->save();
-
-        $domains = array_unique(array_map(fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
-        foreach ($domains as $domain) {
-            $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
-            $this->client->getCookieJar()->set($cookie);
-        }
-    }
-
-    protected function getTestEligibiliteEnXpComplet(): callable
-    {
-        return function (EntityManagerInterface $em) {
-            $test = TestEligibilite::fromArray([
-                'description' => 'Test complet',
-                'estVise' => true,
-                'requerant' => $em->getRepository(Requerant::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
-
-            $em->persist($test);
-            $em->flush();
-
-            return $test;
-        };
-    }
-
-    protected function getTestEligibiliteEnXpIncomplet(): callable
-    {
-        return function (EntityManagerInterface $em) {
-            $test = TestEligibilite::fromArray([
-                'description' => 'Test incomplet',
-                'estVise' => true,
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
-
-            $em->persist($test);
-            $em->flush();
-
-            return $test;
-        };
-    }
-
-    public function donnesTesterMonEligibilite()
-    {
-        return [
-            'sans_test' => [null, '/bris-de-porte/creation-de-compte'],
-            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
-            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation', true],
-        ];
     }
 
     /**
@@ -103,10 +53,10 @@ class BrisPorteControllerTest extends WebTestCase
         $this->client->request('POST', '/bris-de-porte/tester-mon-eligibilite', [
             '_token' => $reactArgs->_token,
             'estIssuAttestation' => 'false',
-            'description' => 'Perquisition pendant mon absence, ce matin',
+            // 'description' => 'Perquisition pendant mon absence, ce matin',
+            'rapportAuLogement' => 'PRO',
             'estVise' => 'false',
             'estHebergeant' => 'false',
-            'estProprietaire' => 'true',
             'aContacteAssurance' => 'false',
         ]);
 
@@ -121,13 +71,13 @@ class BrisPorteControllerTest extends WebTestCase
             ->orderBy('t.dateSoumission', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getOneOrNullResult()
+        ;
         $this->assertNotNull($testEligibilite);
-        $this->assertEquals('Perquisition pendant mon absence, ce matin', $testEligibilite->description);
         $this->assertNotNull($testEligibilite->dateSoumission);
         $this->assertFalse($testEligibilite->estVise);
         $this->assertFalse($testEligibilite->estHebergeant);
-        $this->assertTrue($testEligibilite->estProprietaire);
+        $this->assertEquals(QualiteRequerant::PRO, $testEligibilite->rapportAuLogement);
         $this->assertFalse($testEligibilite->aContacteAssurance);
         if ($aRequerant) {
             $this->assertInstanceOf(Requerant::class, $testEligibilite->requerant);
@@ -138,12 +88,12 @@ class BrisPorteControllerTest extends WebTestCase
         $this->assertTrue($testEligibilite->estEligibleExperimentation);
     }
 
-    public function donnesCreationDeCompte()
+    public function donnesTesterMonEligibilite()
     {
         return [
-            'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet()],
-            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
+            'sans_test' => [null, '/bris-de-porte/creation-de-compte'],
+            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation', true],
         ];
     }
 
@@ -192,12 +142,12 @@ class BrisPorteControllerTest extends WebTestCase
         }
     }
 
-    public function donnesFinaliserLaCreation()
+    public function donnesCreationDeCompte()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
-            'test_complet' => [$this->getTestEligibiliteEnXpComplet()],
+            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet()],
+            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
         ];
     }
 
@@ -219,9 +169,65 @@ class BrisPorteControllerTest extends WebTestCase
         $this->client->request('GET', '/bris-de-porte/finaliser-la-creation');
 
         if ($redirection) {
-            $this->assertTrue($this->client->getResponse()->isRedirect($redirection), "Je dois être redirigé vers la page '$redirection'");
+            $this->assertTrue($this->client->getResponse()->isRedirect($redirection), "Je dois être redirigé vers la page '{$redirection}'");
         } else {
             $this->assertTrue($this->client->getResponse()->isSuccessful(), "Je dois pouvoir consulter la page de finalisation d'inscription");
         }
+    }
+
+    public function donnesFinaliserLaCreation()
+    {
+        return [
+            'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
+            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_complet' => [$this->getTestEligibiliteEnXpComplet()],
+        ];
+    }
+
+    protected function initializeSession(array $values = []): void
+    {
+        $session = $this->client->getContainer()->get('session.factory')->createSession();
+        foreach ($values as $key => $value) {
+            $session->set($key, $value);
+        }
+
+        $session->save();
+
+        $domains = array_unique(array_map(fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
+        foreach ($domains as $domain) {
+            $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
+            $this->client->getCookieJar()->set($cookie);
+        }
+    }
+
+    protected function getTestEligibiliteEnXpComplet(): callable
+    {
+        return function (EntityManagerInterface $em) {
+            $test = TestEligibilite::fromArray([
+                // 'description' => 'Test complet',
+                'estVise' => true,
+                'requerant' => $em->getRepository(Requerant::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
+                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
+
+            $em->persist($test);
+            $em->flush();
+
+            return $test;
+        };
+    }
+
+    protected function getTestEligibiliteEnXpIncomplet(): callable
+    {
+        return function (EntityManagerInterface $em) {
+            $test = TestEligibilite::fromArray([
+                // 'description' => 'Test incomplet',
+                'estVise' => true,
+                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
+
+            $em->persist($test);
+            $em->flush();
+
+            return $test;
+        };
     }
 }

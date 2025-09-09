@@ -90,6 +90,10 @@ class BrisPorte
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
     protected ?QualiteRequerant $qualiteRequerant = null;
 
+    #[\Symfony\Component\Serializer\Attribute\Groups(['agent:detail', 'requerant:detail'])]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    protected ?string $descriptionRequerant;
+
     #[Groups(['agent:detail'])]
     #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
@@ -592,6 +596,18 @@ class BrisPorte
     public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): BrisPorte
     {
         $this->qualiteRequerant = $qualiteRequerant;
+
+        return $this;
+    }
+
+    public function getDescriptionRequerant(): ?string
+    {
+        return $this->descriptionRequerant;
+    }
+
+    public function setDescriptionRequerant(?string $descriptionRequerant): self
+    {
+        $this->descriptionRequerant = $descriptionRequerant;
 
         return $this;
     }
