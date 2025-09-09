@@ -14,7 +14,6 @@ import {
 } from "@/common/models";
 import {ButtonProps} from "@codegouvfr/react-dsfr/Button";
 import {createModal} from "@codegouvfr/react-dsfr/Modal";
-import {makeMultiplexedTransport} from "@sentry/react";
 
 const _modale = createModal({
     id: "modale-action-verifier-acceptation",
