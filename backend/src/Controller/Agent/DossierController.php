@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Event\DossierDecideEvent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -35,17 +36,18 @@ use Twig\Environment;
 class DossierController extends AgentController
 {
     public function __construct(
-        protected readonly BrisPorteRepository                             $dossierRepository,
-        protected readonly AgentRepository                                 $agentRepository,
-        #[Target('default.storage')] protected readonly FilesystemOperator $storage,
-        protected readonly ImprimanteCourrier                              $imprimanteCourrier,
+        protected readonly BrisPorteRepository $dossierRepository,
+        protected readonly AgentRepository $agentRepository,
+        #[Target('default.storage')]
+        protected readonly FilesystemOperator $storage,
+        protected readonly ImprimanteCourrier $imprimanteCourrier,
         // A supprimer
-        protected readonly EntityManagerInterface                          $em,
-        protected readonly NormalizerInterface                             $normalizer,
-        protected readonly Mailer                                          $mailer,
-        protected readonly Environment                                     $twig,
-    ) {
-    }
+        protected readonly EntityManagerInterface $em,
+        protected readonly NormalizerInterface $normalizer,
+        protected readonly Mailer $mailer,
+        protected readonly Environment $twig,
+        protected readonly DocumentManager $documentManager,
+    ) {}
 
     #[Route('/', name: 'app_agent_redacteur_accueil')]
     public function index(): Response
@@ -89,7 +91,7 @@ class DossierController extends AgentController
     public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {
         return $this->render('agent/dossier/consulter_bris_porte.html.twig', [
-            'titre' => 'Traitement du bris de porte ' . $dossier->getReference(),
+            'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
             'react' => [
                 'agent' => [
                     'id' => $this->getAgent()->getId(),
@@ -124,7 +126,8 @@ class DossierController extends AgentController
             ->setRedacteur($agent)
             ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, agent: $this->getAgent(), contexte: [
                 'redacteur' => $agent,
-            ]);
+            ])
+        ;
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
@@ -155,7 +158,8 @@ class DossierController extends AgentController
             ->htmlTemplate('email/cloture_dossier.html.twig', [
                 'dossier' => $dossier,
             ])
-            ->send();
+            ->send()
+        ;
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
@@ -183,7 +187,7 @@ class DossierController extends AgentController
         $file = $request->files->get('file');
 
         $content = $file->getContent();
-        $filename = hash('sha256', $content) . '.' . ($file->guessExtension() ?? $file->getExtension());
+        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
         $document = ($type->estUnique() ? $dossier->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($dossier) : (new Document())->setType($type)->ajouterAuDossier($dossier))
             ->setFilename($filename)
@@ -191,7 +195,8 @@ class DossierController extends AgentController
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
             ->setAjoutRequerant(false)
-            ->setMime($file->getClientMimeType());
+            ->setMime($file->getClientMimeType())
+        ;
 
         if ($request->request->has('metaDonnees')) {
             $metaDonnees = json_decode($request->request->get('metaDonnees'), true);
@@ -221,7 +226,8 @@ class DossierController extends AgentController
         }
 
         $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_EN_INSTRUCTION, agent: $agent);
+            ->changerStatut(EtatDossierType::DOSSIER_EN_INSTRUCTION, agent: $agent)
+        ;
 
         $this->dossierRepository->save($dossier);
 
@@ -249,12 +255,14 @@ class DossierController extends AgentController
                 ->changerStatut(EtatDossierType::DOSSIER_OK_A_SIGNER, agent: $agent, contexte: $montantIndemnisation ? [
                     'montant' => $montantIndemnisation,
                 ] : null)
-                ->setPropositionIndemnisation($montantIndemnisation);
+                ->setPropositionIndemnisation($montantIndemnisation)
+            ;
         } else {
             $dossier
                 ->changerStatut(EtatDossierType::DOSSIER_KO_A_SIGNER, agent: $agent, contexte: $motif ? [
                     'motif' => $motif,
-                ] : null);
+                ] : null)
+            ;
         }
 
         $this->em->persist($dossier);
@@ -367,23 +375,19 @@ class DossierController extends AgentController
     )]
     #[Route('/dossier/{id}/arrete-paiement/generer.json', name: 'agent_redacteur_generer_arrete_paiement_dossier', methods: ['POST'])]
     public function genererArretePaiementDossier(
-        #[MapEntity(id: 'id')] BrisPorte $dossier,
-        Request                          $request,
+        #[MapEntity(id: 'id')]
+        BrisPorte $dossier,
+        Request $request,
     ): Response {
         try {
-            $arretePaiement = $dossier->getOrCreateArretePaiement()->setCorps($request->getPayload()->get('corps'));
-            $arretePaiement = $this->imprimanteCourrier->imprimerDocument($arretePaiement)
-                ->setOriginalFilename("Arrêté de paiement - dossier {$dossier->getReference()}");
-
-            $this->em->persist($arretePaiement);
-            $this->em->flush();
+            $this->documentManager->genererArretePaiement($dossier);
         } catch (\Throwable $e) {
             return new JsonResponse([
                 'error' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse(['document' => $this->normalizer->normalize($arretePaiement, 'json', ['groups' => ['agent:detail']])], Response::HTTP_CREATED);
+        return new JsonResponse(['document' => $this->normalizer->normalize($dossier->getArretePaiement(), 'json', ['groups' => ['agent:detail']])], Response::HTTP_CREATED);
     }
 
     #[IsGranted(
@@ -394,7 +398,8 @@ class DossierController extends AgentController
     )]
     #[Route('/dossier/{id}/arrete-paiement/valider.json', name: 'agent_redacteur_valider_arrete_paiement_dossier', methods: ['POST'])]
     public function validerArretePaiementDossier(
-        #[MapEntity(id: 'id')] BrisPorte $dossier,
+        #[MapEntity(id: 'id')]
+        BrisPorte $dossier,
     ): Response {
         if (null === $dossier->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT)) {
             return new JsonResponse([], Response::HTTP_NOT_FOUND);
@@ -420,14 +425,15 @@ class DossierController extends AgentController
         $file = $request->files->get('fichierSigne');
 
         $content = $file->getContent();
-        $filename = hash('sha256', $content) . '.' . ($file->guessExtension() ?? $file->getExtension());
+        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
 
         $document = $dossier->getOrCreatePropositionIndemnisation()
             ->setFilename($filename)
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
-            ->setMime($file->getClientMimeType());
+            ->setMime($file->getClientMimeType())
+        ;
 
         $this->em->persist($document);
         $this->em->flush();
@@ -457,14 +463,15 @@ class DossierController extends AgentController
         $file = $request->files->get('fichierSigne');
 
         $content = $file->getContent();
-        $filename = hash('sha256', $content) . '.' . ($file->guessExtension() ?? $file->getExtension());
+        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
         $this->storage->write($filename, $content);
 
         $document = $dossier->getOrCreateArretePaiement()
             ->setFilename($filename)
             ->setOriginalFilename($file->getClientOriginalName())
             ->setSize($file->getSize())
-            ->setMime($file->getMimeType());
+            ->setMime($file->getMimeType())
+        ;
 
         $this->em->persist($document);
         $this->em->flush();
@@ -488,10 +495,12 @@ class DossierController extends AgentController
 
         if ($dossier->estAccepte()) {
             $dossier
-                ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent);
+                ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent)
+            ;
         } else {
             $dossier
-                ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent);
+                ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent)
+            ;
         }
 
         $this->dossierRepository->save($dossier);
@@ -509,9 +518,9 @@ class DossierController extends AgentController
         $paginator = $this->dossierRepository->rechercheDossiers(
             $page,
             $taille,
-            $request->query->has('e') ?
-                array_map(fn($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e')) :
-                [
+            $request->query->has('e')
+                ? array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e'))
+                : [
                     // EtatDossierType::DOSSIER_CLOTURE,
                     // EtatDossierType::DOSSIER_A_FINALISER,
                     EtatDossierType::DOSSIER_A_ATTRIBUER,
@@ -528,7 +537,7 @@ class DossierController extends AgentController
             $this->agentRepository->findBy([
                 'id' => array_filter(
                     self::extraireCritereRecherche($request, 'a'),
-                    fn($a) => is_numeric($a)
+                    fn ($a) => is_numeric($a)
                 ),
             ]),
             self::extraireCritereRecherche($request, 'r'),
@@ -573,7 +582,7 @@ class DossierController extends AgentController
         $zipName = tempnam(sys_get_temp_dir(), "dossier_{$dossier->getReference()}.zip");
 
         if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
-            throw new \RuntimeException('Cannot open ' . $zipName);
+            throw new \RuntimeException('Cannot open '.$zipName);
         }
 
         foreach ($dossier->getDocumentsATransmettre()->toArray() as $document) {
@@ -583,7 +592,8 @@ class DossierController extends AgentController
         return (new BinaryFileResponse($zipName, headers: [
             'Content-Type' => 'application/zip',
         ]))
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
+            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"))
+        ;
     }
 
     #[IsGranted(
@@ -628,7 +638,7 @@ class DossierController extends AgentController
 
         return array_filter(
             explode('|', $request->query->getString($nom, '')),
-            fn($v) => !empty($v)
+            fn ($v) => !empty($v)
         );
     }
 }

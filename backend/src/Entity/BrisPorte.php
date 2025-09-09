@@ -70,10 +70,6 @@ class BrisPorte
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateCreation;
 
-    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
-    #[ORM\Column(length: 20, nullable: true)]
-    private ?string $reference = null;
-
     #[ORM\JoinTable(name: 'document_dossiers')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'dossiers', cascade: ['persist', 'remove'])]
@@ -81,13 +77,31 @@ class BrisPorte
     protected Collection $documents;
     protected ?array $documentsParType = null;
 
-    #[Groups('dossier:patch')]
-    #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
-    private ?float $propositionIndemnisation = null;
-
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     protected ?string $numeroPV = null;
+
+    #[Groups(['agent:detail', 'requerant:detail'])]
+    #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    protected ?TestEligibilite $testEligibilite = null;
+
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
+    protected ?QualiteRequerant $qualiteRequerant = null;
+
+    #[Groups(['agent:detail'])]
+    #[ORM\ManyToOne(cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
+    protected ?InstitutionSecuritePublique $institutionSecuritePublique = null;
+
+    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $reference = null;
+
+    #[Groups('dossier:patch')]
+    #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
+    private ?float $propositionIndemnisation = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste', 'requerant:detail'])]
     #[ORM\ManyToOne(cascade: ['persist', 'remove'], inversedBy: 'brisPortes')]
@@ -104,23 +118,9 @@ class BrisPorte
     #[ORM\Column(options: ['default' => false])]
     private bool $isPorteBlindee = false;
 
-    #[Groups(['agent:detail', 'requerant:detail'])]
-    #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    protected ?TestEligibilite $testEligibilite = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
-    protected ?QualiteRequerant $qualiteRequerant = null;
-
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $precisionRequerant = null;
-
-    #[Groups(['agent:detail'])]
-    #[ORM\ManyToOne(cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
-    protected ?InstitutionSecuritePublique $institutionSecuritePublique = null;
 
     public function __construct()
     {
@@ -149,7 +149,8 @@ class BrisPorte
                 $carry[$document->getType()->value][] = $document;
 
                 return $carry;
-            }, []
+            },
+            []
         );
     }
 
@@ -348,17 +349,11 @@ class BrisPorte
         return $this->getDateEtat(EtatDossierType::DOSSIER_OK_A_VERIFIER);
     }
 
-    protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
-    {
-        return $this->historiqueEtats
-            ->findFirst(fn (int $index, EtatDossier $e) => $etat === $e->getEtat()
-            )?->getDate();
-    }
-
     public function setDeclare(): self
     {
         return $this
-            ->changerStatut(EtatDossierType::DOSSIER_A_ATTRIBUER, requerant: true);
+            ->changerStatut(EtatDossierType::DOSSIER_A_ATTRIBUER, requerant: true)
+        ;
     }
 
     public function getReference(): ?string
@@ -390,7 +385,7 @@ class BrisPorte
     }
 
     /**
-     * @return Document[]|null
+     * @return null|Document[]
      */
     #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     public function getDocuments(): array
@@ -417,11 +412,6 @@ class BrisPorte
         return $this->documentsParType[$type->value][0] ?? null;
     }
 
-    protected function getOrCreateDocument(DocumentType $type): Document
-    {
-        return $this->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($this);
-    }
-
     public function getOrCreatePropositionIndemnisation(): Document
     {
         return $this->getOrCreateDocument(DocumentType::TYPE_COURRIER_MINISTERE);
@@ -443,6 +433,11 @@ class BrisPorte
     public function getDocumentsParType(DocumentType $type): array
     {
         return $this->documentsParType[$type->value] ?? [];
+    }
+
+    public function getArretePaiement(): ?Document
+    {
+        return $this->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT);
     }
 
     public function getPropositionIndemnisation(): ?string
@@ -642,5 +637,19 @@ class BrisPorte
     public function getLibelleInstitutionSecuritePublique(): ?string
     {
         return $this->institutionSecuritePublique?->getType()->value;
+    }
+
+    protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
+    {
+        return $this->historiqueEtats
+            ->findFirst(
+                fn (int $index, EtatDossier $e) => $etat === $e->getEtat()
+            )?->getDate()
+        ;
+    }
+
+    protected function getOrCreateDocument(DocumentType $type): Document
+    {
+        return $this->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($this);
     }
 }
