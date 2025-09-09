@@ -10,6 +10,7 @@ use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\GeoDepartement;
+use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 
@@ -30,18 +31,19 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         // Dossiers
         $dossierAFinaliser = (new BrisPorte())
             ->setRequerant($this->getReference('requerant-raquel', Requerant::class))
+            ->setDescriptionRequerant('Porte fracturée tôt ce matin')
             ->setTestEligibilite(
                 TestEligibilite::fromArray([
                     'departement' => $this->getReference('departement-bouches-du-rhone', GeoDepartement::class),
-                    'description' => 'Porte fracturée tôt ce matin',
                     'estVise' => false,
                     'estHebergeant' => false,
-                    'estProprietaire' => true,
+                    'rapportAuLogement' => QualiteRequerant::PRO,
                     'aContacteAssurance' => false,
                     'requerant' => $this->getReference('requerant-raquel', Requerant::class),
                     'dateSoumission' => new \DateTime('-30 seconds'),
                 ])
-            );
+            )
+        ;
 
         $manager->persist($dossierAFinaliser);
 
@@ -51,7 +53,8 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setRedacteur($this->getReference('agent-redacteur', Agent::class))
             ->setTestEligibilite(
                 $this->getReference('test-eligibilite-ray-keran', TestEligibilite::class)
-            );
+            )
+        ;
 
         $dossierEnInstruction->setHistoriqueEtats([
             (new EtatDossier())

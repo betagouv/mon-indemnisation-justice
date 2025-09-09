@@ -6,6 +6,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use MonIndemnisationJustice\Entity\GeoDepartement;
+use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 
@@ -27,7 +28,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
         foreach ([
             'en-xp-complet' => TestEligibilite::fromArray([
                 'departement' => $this->getReference('departement-ille-et-vilaine', GeoDepartement::class),
-                'description' => 'Test en expérimentation complet',
+                // 'description' => 'Test en expérimentation complet',
                 'estVise' => true,
                 'requerant' => $this->getReference('requerant-raquel', Requerant::class),
                 'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
@@ -35,23 +36,23 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
             'en-xp-incomplet' => TestEligibilite::fromArray([
                 'id' => self::ID_EN_XP_INCOMPLET,
                 'departement' => $this->getReference('departement-ille-et-vilaine', GeoDepartement::class),
-                'description' => 'Test en expérimentation incomplet',
+                // 'description' => 'Test en expérimentation incomplet',
                 'estVise' => true,
                 'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
             ]),
             'hors-xp' => TestEligibilite::fromArray([
                 'id' => self::ID_HORS_XP,
                 'departement' => $this->getReference('departement-loire-atlantique', GeoDepartement::class),
-                'description' => 'Test hors expérimentation',
+                // 'description' => 'Test hors expérimentation',
                 'estVise' => true,
                 'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
             ]),
             'ray-keran' => TestEligibilite::fromArray([
                 'departement' => $this->getReference('departement-ille-et-vilaine', GeoDepartement::class),
-                'description' => 'Porte fracturée tôt ce matin',
+                // 'description' => 'Porte fracturée tôt ce matin',
                 'estVise' => false,
                 'estHebergeant' => false,
-                'estProprietaire' => false,
+                'rapportAuLogement' => QualiteRequerant::LOC,
                 'aContacteAssurance' => false,
                 'aContacteBailleur' => false,
                 'requerant' => $this->getReference('requerant-ray', Requerant::class),
@@ -59,7 +60,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
             ]),
         ] as $reference => $testEligibilite) {
             $manager->persist($testEligibilite);
-            $this->addReference("test-eligibilite-$reference", $testEligibilite);
+            $this->addReference("test-eligibilite-{$reference}", $testEligibilite);
         }
 
         $manager->flush();

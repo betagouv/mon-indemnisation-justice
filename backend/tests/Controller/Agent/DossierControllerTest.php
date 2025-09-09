@@ -8,6 +8,11 @@ use MonIndemnisationJustice\Entity\BrisPorte;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class DossierControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
@@ -84,10 +89,9 @@ class DossierControllerTest extends WebTestCase
             'redacteur' => $agent->getId(),
             'notes' => null,
             'testEligibilite' => [
-                'description' => $dossier->getTestEligibilite()->description,
                 'estVise' => $dossier->getTestEligibilite()->estVise,
                 'estHebergeant' => $dossier->getTestEligibilite()->estHebergeant,
-                'estProprietaire' => $dossier->getTestEligibilite()->estProprietaire,
+                'rapportAuLogement' => $dossier->getTestEligibilite()->rapportAuLogement->value,
                 'aContacteAssurance' => $dossier->getTestEligibilite()->aContacteAssurance,
                 'aContacteBailleur' => $dossier->getTestEligibilite()->aContacteBailleur,
             ],
