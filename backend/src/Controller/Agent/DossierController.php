@@ -74,6 +74,13 @@ class DossierController extends AgentController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_LIAISON_BUDGET)]
+    #[Route('/dossiers/liste/{extra}', name: 'agent_redacteur_dossiers_tableaux_de_bord', requirements: ['extra' => '.*'])]
+    public function tableauxDeBordDossiers(): Response
+    {
+        return $this->render('agent/dossier/tableau_de_bord.html.twig');
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_LIAISON_BUDGET)]
     #[Route('/dossiers-a-transmettre', name: 'agent_redacteur_dossiers_a_transmettre')]
     public function dossiersATransmettre(NormalizerInterface $normalizer): Response
     {
