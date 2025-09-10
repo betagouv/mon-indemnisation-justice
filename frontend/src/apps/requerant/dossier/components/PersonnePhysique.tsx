@@ -192,7 +192,7 @@ const PersonnePhysique = function PersonnePhysique() {
                 <div className="fr-col-lg-2 fr-col-4">
                     <Input
                         label="Code postal"
-                        disabled={paysNaissance !== "/api/geo_pays/FRA"}
+                        disabled={paysNaissance !== "/api-v1/geo_pays/FRA"}
                         nativeInputProps={{
                             id: randomId(),
                             type: "text",

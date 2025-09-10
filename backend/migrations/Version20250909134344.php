@@ -34,6 +34,7 @@ SQL
         $this->addSql('ALTER TABLE eligibilite_tests DROP description');
         $this->addSql("update bris_porte set qualite_requerant = 'BAI' where qualite_requerant = 'HEB'");
         $this->addSql('ALTER TABLE eligibilite_tests ADD rapport_au_logement VARCHAR(255) DEFAULT NULL');
+        $this->addSql("update eligibilite_tests set rapport_au_logement = case when est_proprietaire then 'PRO' else 'LOC' end");
         $this->addSql('ALTER TABLE eligibilite_tests DROP est_proprietaire');
     }
 
@@ -41,6 +42,7 @@ SQL
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE eligibilite_tests ADD est_proprietaire BOOLEAN DEFAULT NULL');
+        $this->addSql("update eligibilite_tests set est_proprietaire =  case when rapport_au_logement = 'PRO' then true else false end");
         $this->addSql('ALTER TABLE eligibilite_tests DROP rapport_au_logement');
         $this->addSql("update bris_porte set qualite_requerant = 'HEB' where qualite_requerant = 'BAI'");
         $this->addSql('ALTER TABLE eligibilite_tests ADD description TEXT DEFAULT NULL');
