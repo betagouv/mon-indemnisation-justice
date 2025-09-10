@@ -1,33 +1,35 @@
 import "reflect-metadata";
 
-import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
-import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools";
+import {startReactDsfr} from "@codegouvfr/react-dsfr/spa";
+import {disableReactDevTools} from "@/apps/requerant/dossier/services/devtools";
 import ReactDOM from "react-dom/client";
-import { sentryOptions } from "@/apps/sentry.ts";
-import React, { StrictMode } from "react";
-import { Provider } from "inversify-react";
-import { container } from "@/common/services/agent";
-import { ListeDossierEnAttenteIndemnisation } from "@/apps/agent/dossiers/components/ListeDossierEnAttenteIndemnisation.tsx";
+import {sentryOptions} from "@/apps/sentry.ts";
+import React, {StrictMode} from "react";
+import {Provider} from "inversify-react";
+import {container} from "@/common/services/agent";
+import {
+    ListeDossierEnAttenteIndemnisation
+} from "@/apps/agent/dossiers/components/ListeDossierEnAttenteIndemnisation.tsx";
 
-startReactDsfr({ defaultColorScheme: "system" });
+startReactDsfr({defaultColorScheme: "system"});
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
-  import.meta.hot.on("vite:beforeUpdate", () => console.clear());
+    import.meta.hot.on("vite:beforeUpdate", () => console.clear());
 }
 
 // En production, désactivation de React devtools
 if (import.meta.env.PROD) {
-  disableReactDevTools();
+    disableReactDevTools();
 }
 
 ReactDOM.createRoot(
-  document.getElementById("react-app") as HTMLElement,
-  sentryOptions,
+    document.getElementById("react-app") as HTMLElement,
+    sentryOptions,
 ).render(
-  <StrictMode>
-    <Provider container={container}>
-      <ListeDossierEnAttenteIndemnisation />
-    </Provider>
-  </StrictMode>,
+    <StrictMode>
+        <Provider container={container}>
+
+        </Provider>
+    </StrictMode>,
 );
