@@ -29,7 +29,7 @@ if (import.meta.env.PROD) {
     disableReactDevTools();
 }
 
-const args = JSON.parse(document.getElementById("react-arguments").textContent);
+const args = JSON.parse(document.getElementById("react-arguments")?.textContent ?? "");
 
 const dossier = plainToInstance(DossierDetail, args.dossier, {
     enableImplicitConversion: true,
