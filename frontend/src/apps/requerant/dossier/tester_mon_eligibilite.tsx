@@ -4,8 +4,9 @@ import "@/style/requerant/dossier/test_mon_eligibilite.css";
 import {TestEligibiliteForm} from "@/apps/requerant/dossier/components/TestEligibiliteForm.tsx";
 import {Stepper} from "@codegouvfr/react-dsfr/Stepper";
 import {startReactDsfr} from "@codegouvfr/react-dsfr/spa";
+import {ColorScheme} from "@codegouvfr/react-dsfr/useIsDark";
 
-startReactDsfr({defaultColorScheme: "system"});
+startReactDsfr({defaultColorScheme: localStorage.getItem('scheme') as ColorScheme ?? "system"});
 
 const args = JSON.parse(document.getElementById("react-arguments").textContent);
 

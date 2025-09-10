@@ -7,8 +7,6 @@ test("test éligibilité", async ({page}) => {
 
     await expect(page).toHaveURL("/bris-de-porte/tester-mon-eligibilite");
 
-    await expect(page.getByLabel("Décrivez-nous l’intervention")).toBeVisible();
-
     await expect(
         page.getByText(
             "Quel est votre statut par rapport au logement ayant subi le bris de porte ?",
@@ -21,7 +19,7 @@ test("test éligibilité", async ({page}) => {
                 "Quel est votre statut par rapport au logement ayant subi le bris de porte ?",
             ),
         })
-        .getByLabel("Propriétaire")
+        .getByLabel("Propriétaire occupant")
         .check();
 
     await expect(

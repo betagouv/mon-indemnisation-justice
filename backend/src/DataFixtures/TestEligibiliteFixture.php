@@ -26,27 +26,6 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
     public function load(ObjectManager $manager): void
     {
         foreach ([
-            'en-xp-complet' => TestEligibilite::fromArray([
-                'departement' => $this->getReference('departement-ille-et-vilaine', GeoDepartement::class),
-                // 'description' => 'Test en expérimentation complet',
-                'estVise' => true,
-                'requerant' => $this->getReference('requerant-raquel', Requerant::class),
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
-            ]),
-            'en-xp-incomplet' => TestEligibilite::fromArray([
-                'id' => self::ID_EN_XP_INCOMPLET,
-                'departement' => $this->getReference('departement-ille-et-vilaine', GeoDepartement::class),
-                // 'description' => 'Test en expérimentation incomplet',
-                'estVise' => true,
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
-            ]),
-            'hors-xp' => TestEligibilite::fromArray([
-                'id' => self::ID_HORS_XP,
-                'departement' => $this->getReference('departement-loire-atlantique', GeoDepartement::class),
-                // 'description' => 'Test hors expérimentation',
-                'estVise' => true,
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes'),
-            ]),
             'ray-keran' => TestEligibilite::fromArray([
                 'departement' => $this->getReference('departement-ille-et-vilaine', GeoDepartement::class),
                 // 'description' => 'Porte fracturée tôt ce matin',

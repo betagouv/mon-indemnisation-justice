@@ -90,7 +90,7 @@ class BrisPorte
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
     protected ?QualiteRequerant $qualiteRequerant = null;
 
-    #[\Symfony\Component\Serializer\Attribute\Groups(['agent:detail', 'requerant:detail'])]
+    #[Groups(['dossier:patch', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     protected ?string $descriptionRequerant;
 
