@@ -2,10 +2,11 @@
 
 namespace MonIndemnisationJustice\Forms;
 
+use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Forms\Type\LiteralBooleanType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -30,11 +31,18 @@ class TestEligibiliteType extends AbstractType
     {
         $builder
             ->add('estIssuAttestation', LiteralBooleanType::class)
-            ->add('description', TextType::class)
-            ->add('estVise', LiteralBooleanType::class, ['required' => false])
+            ->add('estVise', LiteralBooleanType::class)
             ->add('estHebergeant', LiteralBooleanType::class)
-            ->add('estProprietaire', LiteralBooleanType::class)
+            ->add(
+                'rapportAuLogement',
+                EnumType::class,
+                [
+                    'class' => QualiteRequerant::class,
+                    'required' => true,
+                ]
+            )
             ->add('aContacteAssurance', LiteralBooleanType::class)
-            ->add('aContacteBailleur', LiteralBooleanType::class);
+            ->add('aContacteBailleur', LiteralBooleanType::class)
+        ;
     }
 }

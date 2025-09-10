@@ -2,15 +2,19 @@
 
 {% block title %}Bris de porte : tester mon éligibilité{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ vite_entry_link_tags('requerant/dossier/tester_mon_eligibilite') }}
+{% endblock stylesheets %}
+
 {% block main %}
     <div id="react-app"></div>
 {% endblock main %}
 
 {% block javascripts %}
     <script id="react-arguments" type="application/json">
-    {{ { "_token" : form._token.vars.value, "estIssuAttestation": form.estIssuAttestation.vars.value }|json_encode()|raw }}
-
-
+        {{ { "_token" : form._token.vars.value, "estIssuAttestation": form.estIssuAttestation.vars.value }|json_encode()|raw }}
 
     </script>
 

@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,8 +36,9 @@ class HomeController extends RequerantController
                     } else {
                         $dossier = (new BrisPorte())
                             ->setRequerant($requerant)
-                            ->setQualiteRequerant($testEligibilite->estProprietaire ? QualiteRequerant::PRO : QualiteRequerant::LOC)
-                            ->setTestEligibilite($testEligibilite);
+                            ->setQualiteRequerant($testEligibilite->rapportAuLogement)
+                            ->setTestEligibilite($testEligibilite)
+                        ;
                         $em->persist($dossier);
                     }
 

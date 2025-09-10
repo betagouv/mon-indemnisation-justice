@@ -21,10 +21,6 @@ class TestEligibilite
     public ?GeoDepartement $departement;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    public ?string $description;
-
-    #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true)]
     public bool $estVise = false;
 
@@ -33,8 +29,8 @@ class TestEligibilite
     public ?bool $estHebergeant = null;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
-    #[ORM\Column(nullable: true)]
-    public ?bool $estProprietaire = null;
+    #[ORM\Column(type: 'string', length: 3, enumType: QualiteRequerant::class)]
+    public ?QualiteRequerant $rapportAuLogement = null;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true)]
@@ -76,10 +72,9 @@ class TestEligibilite
 
         $testEligibilite->departement = $values['departement'] ?? null;
         $testEligibilite->estEligibleExperimentation = $testEligibilite->departement?->estDeploye() ?? false;
-        $testEligibilite->description = $values['description'] ?? null;
         $testEligibilite->estVise = $values['estVise'] ?? false;
         $testEligibilite->estHebergeant = $values['estHebergeant'] ?? null;
-        $testEligibilite->estProprietaire = $values['estProprietaire'] ?? null;
+        $testEligibilite->rapportAuLogement = $values['rapportAuLogement'] ?? null;
         $testEligibilite->aContacteAssurance = $values['aContacteAssurance'] ?? null;
         $testEligibilite->aContacteBailleur = $values['aContacteBailleur'] ?? null;
         $testEligibilite->requerant = $values['requerant'] ?? null;

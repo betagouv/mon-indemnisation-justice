@@ -1,9 +1,9 @@
 form[name="eligibilite-test-form"] {
     display: flex;
     flex-direction: column;
-}
+    gap: 1vh;
 
-.pr-section-formulaire {
-    padding: 1.5rem 2rem;
-    box-shadow: 0 0 8px 2px var(--shadow-color);
+    h4 {
+        margin:0;
+    }
 }

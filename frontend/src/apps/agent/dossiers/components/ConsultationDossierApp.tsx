@@ -391,12 +391,8 @@ export const ConsultationDossierApp = observer(
                                                         </>
                                                     </li>
                                                     <li>
-                                                        <b>Situation par rapport au logement ?</b>{" "}
-                                                        <>
-                                                            {dossier.testEligibilite.estProprietaire
-                                                                ? "Propriétaire"
-                                                                : "Locataire"}
-                                                        </>
+                                                        <b>Situation par rapport au logement
+                                                            ? </b>{dossier.testEligibilite.rapportAuLogement}
                                                     </li>
                                                     <li>
                                                         <b>A contacté l'assurance ?</b>{" "}
@@ -417,13 +413,12 @@ export const ConsultationDossierApp = observer(
                                                                 </>
                                                             </li>
                                                         )}
-                                                    {dossier.testEligibilite.description && (
+                                                    {dossier.descriptionRequerant && (
                                                         <li>
                                                             <b>Commentaires du requérant:</b>
                                                             <blockquote
                                                                 dangerouslySetInnerHTML={{
-                                                                    __html: dossier
-                                                                        .testEligibilite.description.replaceAll(/\n/g, '</br>')
+                                                                    __html: dossier.descriptionRequerant.replaceAll(/\n/g, '</br>')
                                                                 }}>
                                                             </blockquote>
                                                         </li>
