@@ -3,11 +3,17 @@ name: Deploy to app prod
 on:
   push:
     branches:
-    - prod
+      - prod
+  workflow_run:
+    workflows:
+      - "Merger dans prod"
+    types:
+      - completed
 
 jobs:
   deploy:
     runs-on: ubuntu-24.04
+    if: ${{ github.event.push || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
         with:

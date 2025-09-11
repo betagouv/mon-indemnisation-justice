@@ -13,7 +13,7 @@ RUN echo "export LANG='fr_FR.UTF8'" >> /root/.bashrc
 
 WORKDIR /app
 
-COPY end2end/package.json end2end/playwright.config.ts /app/
+COPY ./end2end/package.json end2end/playwright.config.ts /app/
 
 RUN yarn install
 

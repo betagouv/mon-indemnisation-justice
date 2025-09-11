@@ -1,0 +1,29 @@
+name: "Merger dans prod"
+
+on:
+  workflow_run:
+    workflows:
+      - "Test"
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  merge-to-prod:
+    name: "Merger main dans prod"
+    runs-on: ubuntu-latest
+    environment: "Déploiement"
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@master
+      - name: "Merger main dans prod"
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: main
+          target_branch: prod
+          github_token: ${{ secrets.GITHUB_TOKEN }}

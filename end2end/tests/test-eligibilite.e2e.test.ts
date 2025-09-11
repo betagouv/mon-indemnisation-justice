@@ -22,18 +22,11 @@ test("test éligibilité", async ({page}) => {
         .getByLabel("Propriétaire occupant")
         .check();
 
-    await expect(
-        page.getByText(
-            "Étiez-vous la personne recherchée par les forces de l’ordre lors de leur intervention ?",
-        ),
-    ).toBeVisible();
+    const locatorQuestionEstVise = page.getByLabel("Étiez-vous la personne recherchée par");
 
-    await page
-        .locator("fieldset", {
-            has: page.getByText(
-                "Étiez-vous la personne recherchée par les forces de l’ordre lors de leur intervention ?",
-            ),
-        })
+    await expect(locatorQuestionEstVise).toBeVisible();
+
+    await locatorQuestionEstVise
         .getByLabel("Non")
         .check();
 
