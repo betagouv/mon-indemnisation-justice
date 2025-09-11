@@ -52,43 +52,43 @@ export const TestEligibiliteForm = (
     const setRapportAuLogement = (rapportAuLogement: RapportAuLogementType) =>
         setTest({
             avancement: "est_vise",
-            estVise: test.estVise,
-            estHebergeant: test.estHebergeant,
             rapportAuLogement,
         });
 
     const setEstVise = (estVise: boolean) =>
         setTest({
+            avancement: estVise ? "est_vise" : "est_hebergeant",
+            rapportAuLogement: test.rapportAuLogement,
             estVise,
-            avancement: "est_hebergeant",
         });
 
     const setEstHebergeant = (estHebergeant: boolean) =>
         setTest({
-            avancement: "a_contacte_assurance",
+            avancement: estHebergeant ? "est_hebergeant" : "a_contacte_assurance",
+            rapportAuLogement: test.rapportAuLogement,
             estVise: test.estVise,
             estHebergeant,
         });
 
     const setAContacteAssurance = (aContacteAssurance: boolean) =>
         setTest({
-            estVise: test.estVise,
-            estHebergeant: test.estHebergeant,
-            rapportAuLogement: test.rapportAuLogement,
-            aContacteAssurance,
             avancement: test.rapportAuLogement != "locataire"
                 ? "a_contacte_assurance"
                 : "a_contacte_bailleur",
+            rapportAuLogement: test.rapportAuLogement,
+            estVise: test.estVise,
+            estHebergeant: test.estHebergeant,
+            aContacteAssurance,
         });
 
     const setAContacteBailleur = (aContacteBailleur: boolean) =>
         setTest({
+            avancement: "a_contacte_bailleur",
+            rapportAuLogement: test.rapportAuLogement,
             estVise: test.estVise,
             estHebergeant: test.estHebergeant,
-            rapportAuLogement: test.rapportAuLogement,
             aContacteAssurance: test.aContacteAssurance,
             aContacteBailleur,
-            avancement: "a_contacte_bailleur",
         });
 
     const estQuestionVisible = (avancement: LibelleAvancementTest) =>
@@ -127,20 +127,21 @@ export const TestEligibiliteForm = (
         if (estDecide) {
             refDecision.current?.scrollIntoView({behavior: "smooth"});
         } else {
-            if (test.avancement === "est_vise") {
-                refQuestionEstVise.current?.scrollIntoView({behavior: "smooth"});
-            }
-
-            if (test.avancement === "est_hebergeant") {
-                refQuestionEstHebergeant.current?.scrollIntoView({
-                    behavior: "smooth",
-                });
-            }
-
             if (test.avancement === "rapport_au_logement") {
                 refQuestionRapportAuLogement.current?.scrollIntoView({
                     behavior: "smooth",
                 });
+            }
+
+            if (test.avancement === "est_vise") {
+                refQuestionEstVise.current?.scrollIntoView({behavior: "smooth"});
+
+            }
+            if (test.avancement === "est_hebergeant") {
+                refQuestionEstHebergeant.current?.scrollIntoView({
+                    behavior: "smooth",
+                });
+
             }
 
             if (test.avancement === "a_contacte_assurance") {
@@ -191,7 +192,7 @@ export const TestEligibiliteForm = (
                         le respect de ce principe
                     </a>
                 </Tooltip>{" "}
-                et vérifier vot re éligibilité à l'indemnisation, vous devez répondre
+                et vérifier votre éligibilité à l'indemnisation, vous devez répondre
                 aux questions suivantes.
             </CallOut>
 
@@ -204,27 +205,27 @@ export const TestEligibiliteForm = (
                             {
                                 label: "Propriétaire occupant",
                                 nativeInputProps: {
-                                    name: "estProprietaire",
+                                    name: "rapportAuLogement",
                                     checked: test.rapportAuLogement === 'proprietaire',
-                                    value: "true",
+                                    value: 'PRO',
                                     onChange: () => setRapportAuLogement('proprietaire'),
                                 },
                             },
                             {
                                 label: "Locataire",
                                 nativeInputProps: {
-                                    name: "estProprietaire",
+                                    name: "rapportAuLogement",
                                     checked: test.rapportAuLogement === 'locataire',
-                                    value: "false",
+                                    value: 'LOC',
                                     onChange: () => setRapportAuLogement('locataire'),
                                 },
                             },
                             {
                                 label: "Propriétaire bailleur",
                                 nativeInputProps: {
-                                    name: "estProprietaire",
+                                    name: "rapportAuLogement",
                                     checked: test.rapportAuLogement === 'bailleur',
-                                    value: "true",
+                                    value: 'BAI',
                                     onChange: () => setRapportAuLogement('bailleur'),
                                 },
                             },
@@ -235,28 +236,25 @@ export const TestEligibiliteForm = (
             )}
 
             {estQuestionVisible("est_vise") && (
-                <h4>Personne recherchée par les{" "}<Tooltip
-                    title="La police judiciaire est chargée de constater les infractions
-              pénales, d'en rassembler les preuves, d'en rechercher les auteurs
-              et complices afin de les interpeller et de les déférer à
-              l'autorité judiciaire"
-                    kind="hover"
-                >
-                    <a
-                        className="fr-link"
-                        aria-describedby="tooltip-force-de-l-ordre"
-                        style={{fontSize: "1.5rem"}}
-                        id="link-force-de-l-ordre"
-                        href="#"
-                    >
-                        forces de l'ordre
-                    </a>
-                </Tooltip>
-                </h4>)}
-            {estQuestionVisible("est_vise") && (
                 <div className="fr-col-12">
                     <RadioButtons
-                        legend="Étiez-vous la personne recherchée par les forces de l’ordre lors de leur intervention ?"
+                        legend={<>
+                            Étiez-vous la personne recherchée par <Tooltip
+                            title="La police judiciaire est chargée de constater les infractions
+                  pénales, d'en rassembler les preuves, d'en rechercher les auteurs
+                  et complices afin de les interpeller et de les déférer à
+                  l'autorité judiciaire"
+                            kind="hover"
+                        >
+                            <a
+                                className="fr-link"
+                                aria-describedby="tooltip-force-de-l-ordre"
+                                id="link-force-de-l-ordre"
+                                href="#"
+                            >
+                                les forces de l'ordre
+                            </a>
+                        </Tooltip> lors de leur intervention ?</>}
                         orientation="horizontal"
                         options={[
                             {
