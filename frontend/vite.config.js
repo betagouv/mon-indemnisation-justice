@@ -27,6 +27,13 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     plugins: [
+       tanstackRouter({
+        target: 'react',
+        autoCodeSplitting: false,
+        routeFileIgnorePrefix: '/agent/fip3',
+        routesDirectory: './src/routes/source',
+        generatedRouteTree: './src/routes/agent-fip3.gen.ts',
+      }),
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
         //targets: ['defaults', 'not IE 11'],
@@ -42,13 +49,7 @@ export default defineConfig(({ command, mode }) => {
           manifest: true,
         },
       }),
-      tanstackRouter({
-        target: 'react',
-        autoCodeSplitting: true,
-          routeFileIgnorePrefix: '/agent/fip3',
-          routesDirectory: './src/routes/',
-          generatedRouteTree: './src/routes/agent-fip3.gen.ts',
-        }),
+
       react(),
     ],
     resolve: {
@@ -84,11 +85,6 @@ export default defineConfig(({ command, mode }) => {
               "./src/apps/agent/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
               "./src/apps/agent/dossiers/consultation_app.tsx",
-
-            "agent/dossiers/dossiers_a_transmettre":
-              "./src/apps/agent/dossiers/dossiers_a_transmettre.tsx",
-            "agent/dossiers/dossiers_en_attente_indemnisation":
-              "./src/apps/agent/dossiers/dossiers_en_attente_indemnisation.tsx",
           },
         },
         output: {

@@ -8,10 +8,10 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './__root'
-import { Route as AgentIndexRouteImport } from './agent/index'
-import { Route as AgentFip3DossiersEnAttenteIndemnisationRouteImport } from './agent/fip3/dossiers/en-attente-indemnisation'
-import { Route as AgentFip3DossiersATransmettreRouteImport } from './agent/fip3/dossiers/a-transmettre'
+import { Route as rootRouteImport } from './source/__root'
+import { Route as AgentIndexRouteImport } from './source/agent/index'
+import { Route as AgentFip3DossiersEnAttenteIndemnisationRouteImport } from './source/agent/fip3/dossiers/en-attente-indemnisation'
+import { Route as AgentFip3DossiersATransmettreRouteImport } from './source/agent/fip3/dossiers/a-transmettre'
 
 const AgentIndexRoute = AgentIndexRouteImport.update({
   id: '/agent/',
