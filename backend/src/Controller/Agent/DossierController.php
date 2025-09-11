@@ -73,13 +73,6 @@ class DossierController extends AgentController
         ]);
     }
 
-    #[IsGranted(Agent::ROLE_AGENT_LIAISON_BUDGET)]
-    #[Route('/dossiers/liste/{extra}', name: 'agent_redacteur_dossiers_tableaux_de_bord', requirements: ['extra' => '.*'])]
-    public function tableauxDeBordDossiers(): Response
-    {
-        return $this->render('agent/dossier/tableau_de_bord.html.twig');
-    }
-
     #[Route('/dossier/{id}', name: 'agent_redacteur_consulter_dossier')]
     public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {
