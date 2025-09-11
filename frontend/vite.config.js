@@ -2,7 +2,8 @@ import {defineConfig} from "vite";
 
 import {fileURLToPath, URL} from "node:url";
 import symfonyPlugin from "vite-plugin-symfony";
-import reactPlugin from "@vitejs/plugin-react";
+import {default as react} from "@vitejs/plugin-react";
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import legacy from "@vitejs/plugin-legacy";
 import autoprefixer from "autoprefixer";
 import nested from "postcss-nested";
@@ -41,7 +42,14 @@ export default defineConfig(({ command, mode }) => {
           manifest: true,
         },
       }),
-      reactPlugin(),
+      tanstackRouter({
+        target: 'react',
+        autoCodeSplitting: true,
+          routeFileIgnorePrefix: '/agent/fip3',
+          routesDirectory: './src/routes/',
+          generatedRouteTree: './src/routes/agent-fip3.gen.ts',
+        }),
+      react(),
     ],
     resolve: {
       alias: {
@@ -68,14 +76,15 @@ export default defineConfig(({ command, mode }) => {
             "requerant/dossier/consulter_la_decision":
               "./src/apps/requerant/dossier/consulter_la_decision.tsx",
             // Espace agent
+            "agent/fip3":
+              "./src/apps/agent/fip3.tsx",
             "agent/gestion_agents":
               "./src/apps/agent/gestion_agents/gestion_agents_app.tsx",
             "agent/dossiers/recherche":
               "./src/apps/agent/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
               "./src/apps/agent/dossiers/consultation_app.tsx",
-            "agent/dossiers/tableau_de_bord":
-              "./src/apps/agent/dossiers/tableau_de_bord.tsx",
+
             "agent/dossiers/dossiers_a_transmettre":
               "./src/apps/agent/dossiers/dossiers_a_transmettre.tsx",
             "agent/dossiers/dossiers_en_attente_indemnisation":

@@ -87,7 +87,7 @@
                                         <ul class="fr-menu__list">
 
                                             <li>
-                                                <a href="{{ url('agent_redacteur_dossiers_tableaux_de_bord', { extra: 'a-transmettre'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-transmettre'}) }}"
                                                    class="fr-nav__link">
                                                     À transmettre au Bureau du Budget
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_transmettre() }}</p>
@@ -95,7 +95,7 @@
                                             </li>
 
                                             <li>
-                                                <a href="{{ url('agent_redacteur_dossiers_tableaux_de_bord', { extra: 'en-attente-indemnisation'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/en-attente-indemnisation'}) }}"
                                                    class="fr-nav__link">
                                                     En attente de paiement
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_en_attente_indemnisation() }}</p>

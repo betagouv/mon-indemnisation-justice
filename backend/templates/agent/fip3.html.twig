@@ -1,0 +1,23 @@
+{% extends 'agent/base.html.twig' %}
+
+{% block title %}Dossiers{% endblock title %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ vite_entry_link_tags('agent/fip3') }}
+{% endblock stylesheets %}
+
+{% block main %}
+    <div id="react-app" class="fr-container fr-my-3w"></div>
+{% endblock main %}
+
+{% block javascripts %}
+    {% if est_vite_server_actif() %}
+        {% include '_vite_hmr_extra.html.twig' %}
+    {% endif %}
+
+    {{ vite_entry_script_tags('agent/fip3') }}
+
+    {{ parent() }}
+{% endblock javascripts %}
