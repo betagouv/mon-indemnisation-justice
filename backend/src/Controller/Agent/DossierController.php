@@ -80,20 +80,6 @@ class DossierController extends AgentController
         return $this->render('agent/dossier/tableau_de_bord.html.twig');
     }
 
-    #[IsGranted(Agent::ROLE_AGENT_LIAISON_BUDGET)]
-    #[Route('/dossiers-a-transmettre', name: 'agent_redacteur_dossiers_a_transmettre')]
-    public function dossiersATransmettre(NormalizerInterface $normalizer): Response
-    {
-        return $this->render('agent/dossier/dossiers_a_transmettre.html.twig');
-    }
-
-    #[IsGranted(Agent::ROLE_AGENT_LIAISON_BUDGET)]
-    #[Route('/dossiers-en-attente-indemnisation', name: 'agent_redacteur_dossiers_en_attente_indemnisation')]
-    public function dossiersEnAttenteIndemnisation(NormalizerInterface $normalizer): Response
-    {
-        return $this->render('agent/dossier/dossiers_en_attente_indemnisation.html.twig');
-    }
-
     #[Route('/dossier/{id}', name: 'agent_redacteur_consulter_dossier')]
     public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {
