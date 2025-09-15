@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Route API qui permet à un agent du bureau du Précontentieux d'éditer le corps d'un document et de générer le PDF via
+ * Route API qui permet à un agent FIP3 d'éditer le corps d'un document et de générer le PDF via
  * l'impression de la page web _templatée_.
  */
 #[Route('/api/agent/document/{id}/imprimer', name: 'api_agent_document_imprimer', methods: ['PUT'])]
@@ -29,12 +29,13 @@ class ImprimerDocumentEndpoint
         protected readonly ObjectMapperInterface $objectMapper,
         protected readonly EntityManagerInterface $entityManager,
         protected readonly NormalizerInterface $normalizer,
-    ) {
-    }
+    ) {}
 
     public function __invoke(
-        #[MapEntity] Document $document,
-        #[MapRequestPayload] ImprimerDocumentInput $input,
+        #[MapEntity]
+        Document $document,
+        #[MapRequestPayload]
+        ImprimerDocumentInput $input,
     ): Response {
         if (!$document->estEditable()) {
             throw new BadRequestHttpException('Ce document ne peut être édité');

@@ -15,10 +15,10 @@ import {action, computed, makeObservable, observable} from "mobx";
 export abstract class BaseDossier {
     public readonly id: number;
     public readonly reference: string;
-    public readonly montantIndemnisation?: number;
+    public montantIndemnisation: number | null = null;
 
     @Type(() => EtatDossier)
-    public etat: EtatDossier = null;
+    public etat: EtatDossier;
     protected _dateDepot: Date | null;
     @Expose()
     @Transform(({value}: { value: number }) => Redacteur.resoudre(value))
@@ -130,11 +130,11 @@ export class DossierDetail extends BaseDossier {
 
     @Expose()
     @Type(() => TestEligibilite)
-    public readonly testEligibilite?: TestEligibilite = null;
+    public readonly testEligibilite?: TestEligibilite;
 
     public descriptionRequerant?: string;
 
-    public notes?: string = null;
+    public notes?: string;
 
     @Expose()
     @Type(() => Adresse)
@@ -149,8 +149,6 @@ export class DossierDetail extends BaseDossier {
     public dateOperation: Date | null;
 
     public estPorteBlindee: boolean | null;
-
-    public montantIndemnisation: number | null = null;
 
     @Transform(
         ({value}: { value: object }) =>
@@ -199,8 +197,8 @@ export class DossierDetail extends BaseDossier {
         return this.getDocumentsType(type).length > 0;
     }
 
-    public getDocumentType(type: DocumentType): Document {
-        return this.documents.get(type.type)?.at(0);
+    public getDocumentType(type: DocumentType): Document | null {
+        return this.documents.get(type.type)?.at(0) || null;
     }
 
     public getDocumentsType(type: DocumentType): Document[] {
@@ -212,13 +210,13 @@ export class DossierDetail extends BaseDossier {
             this.documents.set(document.type.type, []);
         }
 
-        this.documents.get(document.type.type).push(document);
+        this.documents.get(document.type.type)?.push(document);
     }
 
     public removeDocument(document: Document): void {
         this.documents.set(
             document.type.type,
-            this.documents.get(document.type.type).filter((d) => d.id != document.id),
+            this.documents.get(document.type.type)?.filter((d) => d.id != document.id) || [],
         );
     }
 
@@ -226,10 +224,7 @@ export class DossierDetail extends BaseDossier {
         this.documents.set(type.type, []);
     }
 
-    public getCourrierAJour(): Document {
-        return (
-            this.documents.get(DocumentType.TYPE_COURRIER_REQUERANT.type)?.at(0) ??
-            this.documents.get(DocumentType.TYPE_COURRIER_MINISTERE.type)?.at(0)
-        );
+    public getCourrierAJour(): Document | null {
+        return this.documents.get(DocumentType.TYPE_COURRIER_REQUERANT.type)?.at(0) || null;
     }
 }

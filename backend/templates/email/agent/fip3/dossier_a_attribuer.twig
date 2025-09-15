@@ -1,0 +1,32 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% block subject %}Mon Indemnisation Justice: vous avez un nouveau dossier à attribuer{% endblock subject %}
+
+{% block entete %}
+    <b>Mon Indemnisation Justice: vous avez un nouveau dossier à attribuer</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+    Bonjour {{ agent.prenom }},
+    <br/>
+    <br/>
+    <p>
+        {% if dossier.requerant.estFeminin() %}La requérante{% else %}Le requérant{% endif %}
+        <b>{{ dossier.requerant.nomCourant }}</b>
+        vient de déposer le dossier de référence
+        <b>{{ dossier.reference }}</b>.
+    </p>
+    <p>
+        Vous pouvez voir la liste des dossiers à attribuer en cliquant sur le bouton ci-dessous :
+    </p>
+    <br/>
+    <p>
+        {{ email.bouton("Dossiers à attribuer", url('agent_fip3_react', {'extra': "/dossiers/a-attribuer"})) }}
+        <br/>
+    </p>
+    <br/>
+    Cordialement,<br/>
+{% endblock contenu %}

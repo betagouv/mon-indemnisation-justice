@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\Endpoint\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\Resources\Output\DossierATransmettreOutput;
+use MonIndemnisationJustice\Api\Agent\Resources\Output\DossierPropositionASignerOutput;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,7 +36,7 @@ class ListeDossierPropositionASignerEndpoint
                     mapper ... Et je n'ai pas non plus réussi à utiliser des _arrow function_ en guise de callable
                     transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
                     */
-                    fn (BrisPorte $dossier) => DossierATransmettreOutput::creerDepuisDossier($dossier),
+                    fn (BrisPorte $dossier) => DossierPropositionASignerOutput::creerDepuisDossier($dossier),
                     $dossiers
                 ),
                 'json'

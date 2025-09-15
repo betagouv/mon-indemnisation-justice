@@ -10,11 +10,15 @@ class DossierVoter extends Voter
 {
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if (!str_starts_with($attribute, 'lister:dossiers:')) {
-            return false;
+        if (str_starts_with($attribute, 'lister:dossiers:')) {
+            return true;
         }
 
-        return true;
+        if (in_array($attribute, ['attribuer'])) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -23,25 +27,31 @@ class DossierVoter extends Voter
             return false;
         }
 
-        $liste = explode(':', $attribute)[2] ?? null;
-
         /** @var Agent $agent */
         $agent = $token->getUser();
 
-        if (in_array($liste, ['a-attribuer'])) {
+        if (str_starts_with($attribute, 'lister:dossiers:')) {
+            $liste = explode(':', $attribute)[2] ?? null;
+
+            if (in_array($liste, ['a-attribuer'])) {
+                return $agent->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR);
+            }
+
+            if (in_array($liste, ['a-instruire', 'a-verifier'])) {
+                return $agent->hasRole(Agent::ROLE_AGENT_REDACTEUR);
+            }
+
+            if (in_array($liste, ['rejet-a-signer', 'proposition-a-signer', 'arrete-a-signer'])) {
+                return $agent->hasRole(Agent::ROLE_AGENT_VALIDATEUR);
+            }
+
+            if (in_array($liste, ['a-transmettre', 'en-attente-indemnisation'])) {
+                return $agent->hasRole(Agent::ROLE_AGENT_LIAISON_BUDGET);
+            }
+        }
+
+        if ('attribuer' === $attribute) {
             return $agent->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR);
-        }
-
-        if (in_array($liste, ['a-instruire', 'a-verifier'])) {
-            return $agent->hasRole(Agent::ROLE_AGENT_REDACTEUR);
-        }
-
-        if (in_array($liste, ['rejet-a-signer', 'proposition-a-signer', 'arrete-a-signer'])) {
-            return $agent->hasRole(Agent::ROLE_AGENT_VALIDATEUR);
-        }
-
-        if (in_array($liste, ['a-transmettre', 'en-attente-indemnisation'])) {
-            return $agent->hasRole(Agent::ROLE_AGENT_LIAISON_BUDGET);
         }
 
         return false;
