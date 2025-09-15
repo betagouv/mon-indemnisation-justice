@@ -6,7 +6,7 @@ use MonIndemnisationJustice\Entity\BrisPorte;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
-class DossierAAttribuerOutput
+class DossierAInstruireOutput
 {
     public function __construct(
         public readonly int $id,
@@ -14,9 +14,7 @@ class DossierAAttribuerOutput
         public readonly string $requerant,
         public readonly string $adresse,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        public readonly ?\DateTimeInterface $dateOperation,
-        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-        public readonly \DateTimeInterface $datePublication,
+        public readonly \DateTimeInterface $dateOperation,
     ) {}
 
     public static function creerDepuisDossier(BrisPorte $dossier): self
@@ -26,8 +24,7 @@ class DossierAAttribuerOutput
             reference: $dossier->getReference(),
             requerant: $dossier->getRequerant()->getNomCourant(),
             adresse: $dossier->getAdresse()->getLibelle(),
-            dateOperation: $dossier->getDateOperationPJ(),
-            datePublication: $dossier->getDateDeclaration()
+            dateOperation: $dossier->getDateOperationPJ()
         );
     }
 }
