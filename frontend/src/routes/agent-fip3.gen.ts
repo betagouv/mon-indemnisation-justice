@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './source/__root'
 import { Route as AgentIndexRouteImport } from './source/agent/index'
 import { Route as AgentFip3DossiersEnAttenteIndemnisationRouteImport } from './source/agent/fip3/dossiers/en-attente-indemnisation'
 import { Route as AgentFip3DossiersATransmettreRouteImport } from './source/agent/fip3/dossiers/a-transmettre'
+import { Route as AgentFip3DossiersAAttribuerRouteImport } from './source/agent/fip3/dossiers/a-attribuer'
 
 const AgentIndexRoute = AgentIndexRouteImport.update({
   id: '/agent/',
@@ -30,20 +31,29 @@ const AgentFip3DossiersATransmettreRoute =
     path: '/agent/fip3/dossiers/a-transmettre',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AgentFip3DossiersAAttribuerRoute =
+  AgentFip3DossiersAAttribuerRouteImport.update({
+    id: '/agent/fip3/dossiers/a-attribuer',
+    path: '/agent/fip3/dossiers/a-attribuer',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/agent': typeof AgentIndexRoute
+  '/agent/fip3/dossiers/a-attribuer': typeof AgentFip3DossiersAAttribuerRoute
   '/agent/fip3/dossiers/a-transmettre': typeof AgentFip3DossiersATransmettreRoute
   '/agent/fip3/dossiers/en-attente-indemnisation': typeof AgentFip3DossiersEnAttenteIndemnisationRoute
 }
 export interface FileRoutesByTo {
   '/agent': typeof AgentIndexRoute
+  '/agent/fip3/dossiers/a-attribuer': typeof AgentFip3DossiersAAttribuerRoute
   '/agent/fip3/dossiers/a-transmettre': typeof AgentFip3DossiersATransmettreRoute
   '/agent/fip3/dossiers/en-attente-indemnisation': typeof AgentFip3DossiersEnAttenteIndemnisationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/agent/': typeof AgentIndexRoute
+  '/agent/fip3/dossiers/a-attribuer': typeof AgentFip3DossiersAAttribuerRoute
   '/agent/fip3/dossiers/a-transmettre': typeof AgentFip3DossiersATransmettreRoute
   '/agent/fip3/dossiers/en-attente-indemnisation': typeof AgentFip3DossiersEnAttenteIndemnisationRoute
 }
@@ -51,22 +61,26 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/agent'
+    | '/agent/fip3/dossiers/a-attribuer'
     | '/agent/fip3/dossiers/a-transmettre'
     | '/agent/fip3/dossiers/en-attente-indemnisation'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/agent'
+    | '/agent/fip3/dossiers/a-attribuer'
     | '/agent/fip3/dossiers/a-transmettre'
     | '/agent/fip3/dossiers/en-attente-indemnisation'
   id:
     | '__root__'
     | '/agent/'
+    | '/agent/fip3/dossiers/a-attribuer'
     | '/agent/fip3/dossiers/a-transmettre'
     | '/agent/fip3/dossiers/en-attente-indemnisation'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AgentIndexRoute: typeof AgentIndexRoute
+  AgentFip3DossiersAAttribuerRoute: typeof AgentFip3DossiersAAttribuerRoute
   AgentFip3DossiersATransmettreRoute: typeof AgentFip3DossiersATransmettreRoute
   AgentFip3DossiersEnAttenteIndemnisationRoute: typeof AgentFip3DossiersEnAttenteIndemnisationRoute
 }
@@ -94,11 +108,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentFip3DossiersATransmettreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agent/fip3/dossiers/a-attribuer': {
+      id: '/agent/fip3/dossiers/a-attribuer'
+      path: '/agent/fip3/dossiers/a-attribuer'
+      fullPath: '/agent/fip3/dossiers/a-attribuer'
+      preLoaderRoute: typeof AgentFip3DossiersAAttribuerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AgentIndexRoute: AgentIndexRoute,
+  AgentFip3DossiersAAttribuerRoute: AgentFip3DossiersAAttribuerRoute,
   AgentFip3DossiersATransmettreRoute: AgentFip3DossiersATransmettreRoute,
   AgentFip3DossiersEnAttenteIndemnisationRoute:
     AgentFip3DossiersEnAttenteIndemnisationRoute,

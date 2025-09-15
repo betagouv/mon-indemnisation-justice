@@ -30,7 +30,7 @@ class AppRuntime implements RuntimeExtensionInterface
         protected readonly FranceConnectAuthenticator $franceConnectAuthenticator,
         protected readonly FirewallMapInterface $firewallMap,
     ) {
-        $this->publicDirectory = "$projectDirectory/public";
+        $this->publicDirectory = "{$projectDirectory}/public";
     }
 
     public function estRequerant(?UserInterface $user = null): bool
@@ -52,18 +52,23 @@ class AppRuntime implements RuntimeExtensionInterface
         switch ($dossier->getEtatDossier()->getEtat()) {
             case EtatDossierType::DOSSIER_A_FINALISER:
                 return 'Dossier à compléter';
+
             case EtatDossierType::DOSSIER_A_INSTRUIRE:
             case EtatDossierType::DOSSIER_EN_INSTRUCTION:
             case EtatDossierType::DOSSIER_OK_A_SIGNER:
             case EtatDossierType::DOSSIER_KO_A_SIGNER:
                 return 'Dossier déposé';
+
             case EtatDossierType::DOSSIER_OK_A_APPROUVER:
                 return 'Indemnisation à accepter';
+
             case EtatDossierType::DOSSIER_OK_A_INDEMNISER:
             case EtatDossierType::DOSSIER_OK_A_VERIFIER:
                 return "En attente d'indemnisation";
+
             case EtatDossierType::DOSSIER_OK_INDEMNISE:
                 return 'Indemnisé';
+
             case EtatDossierType::DOSSIER_KO_REJETE:
             case EtatDossierType::DOSSIER_CLOTURE:
                 return 'Dossier rejeté';
@@ -79,7 +84,7 @@ class AppRuntime implements RuntimeExtensionInterface
 
     public function toSnake(string $string): string
     {
-        return preg_replace('/(?<=\\w)(?=[A-Z])|(?<=[a-z])(?=[0-9])/', '_', $string);
+        return preg_replace('/(?<=\w)(?=[A-Z])|(?<=[a-z])(?=[0-9])/', '_', $string);
     }
 
     public function toKebab(string $string): string
@@ -93,14 +98,13 @@ class AppRuntime implements RuntimeExtensionInterface
         $numberParsing = explode('.', number_format(round($amount, 2, PHP_ROUND_HALF_DOWN), 2, '.', ''));
         $_1 = $t->format($numberParsing[0]);
         $_2 = $t->format($numberParsing[1]);
-        $output = str_replace(['$1', '$2', '$3'], [$_1, $_2, $numberParsing[1] > 1 ? 's' : ''], '$1 euros et $2 centime$3');
 
-        return $output;
+        return str_replace(['$1', '$2', '$3'], [$_1, $_2, $numberParsing[1] > 1 ? 's' : ''], '$1 euros et $2 centime$3');
     }
 
     public function absoluteAssetPath(string $path): string
     {
-        return "file://$this->publicDirectory/$path";
+        return "file://{$this->publicDirectory}/{$path}";
     }
 
     public function estViteServerActif(): bool
@@ -119,11 +123,16 @@ class AppRuntime implements RuntimeExtensionInterface
 
     public function base64Image(string $path)
     {
-        if (file_exists("$this->publicDirectory/$path")) {
-            return base64_encode(file_get_contents("$this->publicDirectory/$path"));
+        if (file_exists("{$this->publicDirectory}/{$path}")) {
+            return base64_encode(file_get_contents("{$this->publicDirectory}/{$path}"));
         }
 
         return '';
+    }
+
+    public function nbDossiersAAttribuer(): int
+    {
+        return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
     }
 
     public function nbDossiersATransmettre(): int

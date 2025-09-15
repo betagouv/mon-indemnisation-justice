@@ -32,6 +32,10 @@ class DossierVoter extends Voter
             return $agent->hasRole(Agent::ROLE_AGENT_LIAISON_BUDGET);
         }
 
+        if (in_array($liste, ['a-attribuer'])) {
+            return $agent->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR);
+        }
+
         return false;
     }
 }
