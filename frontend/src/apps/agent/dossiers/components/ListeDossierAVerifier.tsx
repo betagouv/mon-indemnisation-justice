@@ -2,12 +2,13 @@ import React, {useEffect, useMemo, useState} from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "./liste/dossier-liste-element.css";
 import {plainToInstance} from "class-transformer";
-import {DossierAAttribuer} from "./liste/DossierAAttribuer";
+import {DossierAVerifier} from './liste/DossierAVerifier';
+import {periode} from "@/common/services/date.ts";
 
-function DossierAAttribuerLigne({
-                                    dossier,
-                                }: {
-    dossier: DossierAAttribuer;
+function DossierAVerifierLigne({
+                                   dossier,
+                               }: {
+    dossier: DossierAVerifier;
 }) {
     const consulterDossierURL = useMemo<string>(
         () => `/agent/redacteur/dossier/${dossier.id}`,
@@ -25,18 +26,9 @@ function DossierAAttribuerLigne({
             <div className="fr-col-7 mij-dossier-details">
                 <ul>
                     <li>{dossier.requerant}</li>
-                    <li>{dossier.adresse}</li>
+                    <li>{dossier.montantIndemnisation}</li>
                     <li>
-                        survenu le{" "}
-                        {dossier.dateOperation.toLocaleString("fr-FR", {
-                            day: "numeric",
-                            month: "long",
-                            year:
-                                dossier.dateOperation.getFullYear() ===
-                                new Date().getFullYear()
-                                    ? undefined
-                                    : "numeric",
-                        })}{" "}
+                        accepté il y a {periode(dossier.dateAcceptation)}
                     </li>
                 </ul>
             </div>
@@ -66,27 +58,30 @@ function DossierAAttribuerLigne({
     );
 }
 
-export function ListeDossierAAttribuer() {
+export function ListeDossierAVerifier() {
     const [dossiers, setDossiers]: [
-        DossierAAttribuer[],
-        (dossiers: DossierAAttribuer[]) => void,
-    ] = useState<DossierAAttribuer[]>([]);
+        DossierAVerifier[],
+        (dossiers: DossierAVerifier[]) => void,
+    ] = useState<DossierAVerifier[]>([]);
 
     // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
     useEffect(() => {
-        fetch("/api/agent/dossiers/liste/a-instruire")
+        fetch("/api/agent/dossiers/liste/a-verifier")
             .then((response) => response.json())
             .then((data) =>
-                setDossiers(plainToInstance(DossierAAttribuer, data as any[])),
+                setDossiers(plainToInstance(DossierAVerifier, data as any[])),
             );
     }, []);
 
+    console.log(dossiers);
+
     return (
         <>
-            <h1>Dossiers à attribuer</h1>
+            <h1>Dossiers en attente d'arrêté de paiement</h1>
 
             <p>
-                Les dossiers ci-dessous ont été récemment déposés et attendent d'être attribués à un rédacteur.
+                Vos dossiers attribués, ci-dessous, ont reçu une déclaration d'acceptation à vérifier et attendent un
+                arrêté de paiement que vous pouvez désormais initier.
             </p>
 
             <h4>
@@ -99,8 +94,8 @@ export function ListeDossierAAttribuer() {
             </h4>
 
             <div>
-                {dossiers.map((dossier: DossierAAttribuer) => (
-                    <DossierAAttribuerLigne key={`dossier-a-attribuer-${dossier.id}`} dossier={dossier}/>
+                {dossiers.map((dossier: DossierAVerifier) => (
+                    <DossierAVerifierLigne key={`dossier-a-attribuer-${dossier.id}`} dossier={dossier}/>
                 ))}
             </div>
         </>

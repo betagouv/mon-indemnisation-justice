@@ -2,12 +2,13 @@ import React, {useEffect, useMemo, useState} from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "./liste/dossier-liste-element.css";
 import {plainToInstance} from "class-transformer";
-import {DossierAAttribuer} from "./liste/DossierAAttribuer";
+import {DossierAInstruire} from './liste/DossierAInstruire.ts';
+import {periode} from "@/common/services/date.ts";
 
-function DossierAAttribuerLigne({
+function DossierAInstruireLigne({
                                     dossier,
                                 }: {
-    dossier: DossierAAttribuer;
+    dossier: DossierAInstruire;
 }) {
     const consulterDossierURL = useMemo<string>(
         () => `/agent/redacteur/dossier/${dossier.id}`,
@@ -38,6 +39,9 @@ function DossierAAttribuerLigne({
                                     : "numeric",
                         })}{" "}
                     </li>
+                    <li>
+                        publié il y a {periode(dossier.datePublication)}
+                    </li>
                 </ul>
             </div>
 
@@ -66,27 +70,29 @@ function DossierAAttribuerLigne({
     );
 }
 
-export function ListeDossierAAttribuer() {
+export function ListeDossierAInstruire() {
     const [dossiers, setDossiers]: [
-        DossierAAttribuer[],
-        (dossiers: DossierAAttribuer[]) => void,
-    ] = useState<DossierAAttribuer[]>([]);
+        DossierAInstruire[],
+        (dossiers: DossierAInstruire[]) => void,
+    ] = useState<DossierAInstruire[]>([]);
 
     // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
     useEffect(() => {
         fetch("/api/agent/dossiers/liste/a-instruire")
             .then((response) => response.json())
             .then((data) =>
-                setDossiers(plainToInstance(DossierAAttribuer, data as any[])),
+                setDossiers(plainToInstance(DossierAInstruire, data as any[])),
             );
     }, []);
 
+    console.log(dossiers);
+
     return (
         <>
-            <h1>Dossiers à attribuer</h1>
+            <h1>Dossiers à instruire</h1>
 
             <p>
-                Les dossiers ci-dessous ont été récemment déposés et attendent d'être attribués à un rédacteur.
+                Vous êtes invités à mener l'instruction des dossiers ci-dessous.
             </p>
 
             <h4>
@@ -99,8 +105,8 @@ export function ListeDossierAAttribuer() {
             </h4>
 
             <div>
-                {dossiers.map((dossier: DossierAAttribuer) => (
-                    <DossierAAttribuerLigne key={`dossier-a-attribuer-${dossier.id}`} dossier={dossier}/>
+                {dossiers.map((dossier: DossierAInstruire) => (
+                    <DossierAInstruireLigne key={`dossier-a-attribuer-${dossier.id}`} dossier={dossier}/>
                 ))}
             </div>
         </>

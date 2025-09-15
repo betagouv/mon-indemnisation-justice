@@ -36,6 +36,10 @@ class DossierVoter extends Voter
             return $agent->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR);
         }
 
+        if (in_array($liste, ['a-instruire', 'a-verifier'])) {
+            return $agent->hasRole(Agent::ROLE_AGENT_REDACTEUR);
+        }
+
         return false;
     }
 }

@@ -96,6 +96,11 @@ class Agent implements UserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     protected ?\DateTimeInterface $dateCreation = null;
 
+    public function __toString(): string
+    {
+        return $this->getNomComplet();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -206,6 +211,11 @@ class Agent implements UserInterface
         return in_array($role, $this->getRoles());
     }
 
+    public function aRole(...$roles): bool
+    {
+        return count(array_intersect($roles, $this->getRoles())) > 0;
+    }
+
     public function addRole(string $role): self
     {
         $roles = $this->getRoles();
@@ -242,6 +252,32 @@ class Agent implements UserInterface
         $this->prenom = $prenom;
 
         return $this;
+    }
+
+    public function nbDossiersAInstruire(): int
+    {
+        return count($this->getDossiersAInstruire());
+    }
+
+    /**
+     * @return BrisPorte[]
+     */
+    public function getDossiersAInstruire(): array
+    {
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (BrisPorte $dossier) => in_array($dossier->getEtatDossier()->getEtat(), [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_EN_INSTRUCTION]))->toArray() : [];
+    }
+
+    public function nbDossiersAVerifier(): int
+    {
+        return count($this->getDossiersAVerifier());
+    }
+
+    /**
+     * @return BrisPorte[]
+     */
+    public function getDossiersAVerifier(): array
+    {
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (BrisPorte $dossier) => EtatDossierType::DOSSIER_OK_A_VERIFIER === $dossier->getEtatDossier()->getEtat())->toArray() : [];
     }
 
     /**
@@ -303,7 +339,7 @@ class Agent implements UserInterface
         return $this->donnesAuthentification ? json_decode($this->donnesAuthentification, true) : null;
     }
 
-    public function setDonnesAuthentification(array|string|null $donnesAuthentification): Agent
+    public function setDonnesAuthentification(null|array|string $donnesAuthentification): Agent
     {
         if (null !== $donnesAuthentification) {
             $this->donnesAuthentification = (is_array($donnesAuthentification) ? (json_encode($donnesAuthentification) ?? '') : $donnesAuthentification);
@@ -340,9 +376,7 @@ class Agent implements UserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials(): void
-    {
-    }
+    public function eraseCredentials(): void {}
 
     public function getUsername(): ?string
     {
@@ -371,10 +405,5 @@ class Agent implements UserInterface
         $this->dateCreation = new \DateTime();
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getNomComplet();
     }
 }

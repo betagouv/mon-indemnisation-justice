@@ -73,19 +73,18 @@
                         <li class="fr-nav__item">
                             <a href="{{ url('agent_mon_compte') }}" class="fr-nav__link">Mon compte</a>
                         </li>
-                        {% if is_granted('ROLE_AGENT_DOSSIER') %}
-                            {% if is_granted('ROLE_AGENT_ATTRIBUTEUR') %}
-                                <li class="fr-nav__item">
-                                    <button
-                                            aria-expanded="false"
-                                            aria-controls="header-menu-dossiers"
-                                            type="submit"
-                                            class="fr-nav__btn">
-                                        Dossiers
-                                    </button>
-                                    <div class="fr-collapse fr-menu" id="header-menu-dossiers">
-                                        <ul class="fr-menu__list">
-
+                        {% if app.user.aRole('ROLE_AGENT_ATTRIBUTEUR', 'ROLE_AGENT_REDACTEUR', 'ROLE_AGENT_VALIDATEUR', 'ROLE_AGENT_LIAISON_BUDGET') %}
+                            <li class="fr-nav__item">
+                                <button
+                                        aria-expanded="false"
+                                        aria-controls="header-menu-dossiers"
+                                        type="submit"
+                                        class="fr-nav__btn">
+                                    Dossiers
+                                </button>
+                                <div class="fr-collapse fr-menu" id="header-menu-dossiers">
+                                    <ul class="fr-menu__list">
+                                        {% if app.user.aRole('ROLE_AGENT_ATTRIBUTEUR') %}
                                             <li>
                                                 <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-attribuer'}) }}"
                                                    class="fr-nav__link">
@@ -93,29 +92,29 @@
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_attribuer() }}</p>
                                                 </a>
                                             </li>
+                                        {% endif %}
 
+                                        {% if app.user.aRole('ROLE_AGENT_REDACTEUR') %}
                                             <li>
-                                                <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">
-                                                    Rechercher un dossier
+                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-instruire'}) }}"
+                                                   class="fr-nav__link">
+                                                    À instruire
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ app.user.nbDossiersAInstruire() }}</p>
                                                 </a>
                                             </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                            {% endif %}
+                                        {% endif %}
 
-                            {% if is_granted('ROLE_AGENT_LIAISON_BUDGET') %}
-                                <li class="fr-nav__item">
-                                    <button
-                                            aria-expanded="false"
-                                            aria-controls="header-menu-dossiers"
-                                            type="submit"
-                                            class="fr-nav__btn">
-                                        Dossiers
-                                    </button>
-                                    <div class="fr-collapse fr-menu" id="header-menu-dossiers">
-                                        <ul class="fr-menu__list">
+                                        {% if app.user.aRole('ROLE_AGENT_REDACTEUR') %}
+                                            <li>
+                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-verifier'}) }}"
+                                                   class="fr-nav__link">
+                                                    À vérifier
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ app.user.nbDossiersAVerifier() }}</p>
+                                                </a>
+                                            </li>
+                                        {% endif %}
 
+                                        {% if app.user.aRole('ROLE_AGENT_LIAISON_BUDGET') %}
                                             <li>
                                                 <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-transmettre'}) }}"
                                                    class="fr-nav__link">
@@ -131,25 +130,21 @@
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_en_attente_indemnisation() }}</p>
                                                 </a>
                                             </li>
+                                        {% endif %}
 
-                                            <li>
-                                                <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">
-                                                    Rechercher un dossier
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-
-                                </li>
-                            {% else %}
-                                <li class="fr-nav__item">
-                                    <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Les
-                                        dossiers</a>
-                                </li>
-                            {% endif %}
-
-
+                                        <li>
+                                            <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">
+                                                Rechercher un dossier
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        {% else %}
+                            <li class="fr-nav__item">
+                                <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Les
+                                    dossiers</a>
+                            </li>
                         {% endif %}
 
                         {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}

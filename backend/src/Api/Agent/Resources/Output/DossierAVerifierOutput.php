@@ -3,31 +3,31 @@
 namespace MonIndemnisationJustice\Api\Agent\Resources\Output;
 
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
-class DossierAAttribuerOutput
+class DossierAVerifierOutput
 {
     public function __construct(
         public readonly int $id,
         public readonly string $reference,
         public readonly string $requerant,
-        public readonly string $adresse,
+        public readonly float $montantIndemnisation,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        public readonly ?\DateTimeInterface $dateOperation,
-        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-        public readonly \DateTimeInterface $datePublication,
+        public readonly \DateTimeImmutable $dateAcceptation,
     ) {}
 
     public static function creerDepuisDossier(BrisPorte $dossier): self
     {
+        $etatValidation = $dossier->getEtat(EtatDossierType::DOSSIER_OK_A_VERIFIER);
+
         return new self(
             id: $dossier->getId(),
             reference: $dossier->getReference(),
             requerant: $dossier->getRequerant()->getNomCourant(),
-            adresse: $dossier->getAdresse()->getLibelle(),
-            dateOperation: $dossier->getDateOperationPJ(),
-            datePublication: $dossier->getDateDeclaration()
+            montantIndemnisation: $dossier->getMontantIndemnisation(),
+            dateAcceptation: $dossier->getEtatDossier()->getDate()
         );
     }
 }
