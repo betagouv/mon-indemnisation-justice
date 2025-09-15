@@ -74,6 +74,36 @@
                             <a href="{{ url('agent_mon_compte') }}" class="fr-nav__link">Mon compte</a>
                         </li>
                         {% if is_granted('ROLE_AGENT_DOSSIER') %}
+                            {% if is_granted('ROLE_AGENT_ATTRIBUTEUR') %}
+                                <li class="fr-nav__item">
+                                    <button
+                                            aria-expanded="false"
+                                            aria-controls="header-menu-dossiers"
+                                            type="submit"
+                                            class="fr-nav__btn">
+                                        Dossiers
+                                    </button>
+                                    <div class="fr-collapse fr-menu" id="header-menu-dossiers">
+                                        <ul class="fr-menu__list">
+
+                                            <li>
+                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-attribuer'}) }}"
+                                                   class="fr-nav__link">
+                                                    À attribuer
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_attribuer() }}</p>
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">
+                                                    Rechercher un dossier
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            {% endif %}
+
                             {% if is_granted('ROLE_AGENT_LIAISON_BUDGET') %}
                                 <li class="fr-nav__item">
                                     <button
