@@ -2,14 +2,14 @@ import React, {useEffect, useMemo, useState} from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "./liste/dossier-liste-element.css";
 import {plainToInstance} from "class-transformer";
-import {DossierEnAttenteIndemnisation} from "@/apps/agent/dossiers/components/liste/DossierEnAttenteIndemnisation.ts";
+import {periode} from "@/common/services/date.ts";
+import {DossierArreteASigner} from "@/apps/agent/dossiers/components/liste/DossierArreteASigner";
 import {convertirEnEuros} from "@/common/services/devise.ts";
-import {dateSimple} from "@/common/services/date.ts";
 
-function DossierEnAttenteIndemnisationLigne({
-                                                dossier,
-                                            }: {
-    dossier: DossierEnAttenteIndemnisation;
+function DossierArreteASignerLigne({
+                                       dossier,
+                                   }: {
+    dossier: DossierArreteASigner;
 }) {
     const consulterDossierURL = useMemo<string>(
         () => `/agent/redacteur/dossier/${dossier.id}`,
@@ -29,8 +29,8 @@ function DossierEnAttenteIndemnisationLigne({
                     <li>{dossier.requerant}</li>
                     <li>{convertirEnEuros(dossier.montantIndemnisation)}</li>
                     <li>
-                        transmis le{" "}
-                        {dateSimple(dossier.dateTransmission)}{" "}
+                        arrêté édité il y a {periode(dossier.dateEdition)} par <span
+                        className="fr-text--bold">{dossier.agentEdition}</span>
                     </li>
                 </ul>
             </div>
@@ -60,29 +60,27 @@ function DossierEnAttenteIndemnisationLigne({
     );
 }
 
-export function ListeDossierEnAttenteIndemnisation() {
+export function ListeDossierArreteASigner() {
     const [dossiers, setDossiers]: [
-        DossierEnAttenteIndemnisation[],
-        (dossiers: DossierEnAttenteIndemnisation[]) => void,
-    ] = useState<DossierEnAttenteIndemnisation[]>([]);
+        DossierArreteASigner[],
+        (dossiers: DossierArreteASigner[]) => void,
+    ] = useState<DossierArreteASigner[]>([]);
 
+    // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
     useEffect(() => {
-        fetch("/api/agent/dossiers/liste/en-attente-indemnisation")
+        fetch("/api/agent/dossiers/liste/arrete-a-signer")
             .then((response) => response.json())
             .then((data) =>
-                setDossiers(
-                    plainToInstance(DossierEnAttenteIndemnisation, data as any[]),
-                ),
+                setDossiers(plainToInstance(DossierArreteASigner, data as any[])),
             );
     }, []);
 
     return (
         <>
-            <h1>Dossiers en attente de paiement</h1>
+            <h1>Dossiers en attente de signature PI</h1>
 
             <p>
-                Dossiers transmis au Bureau du Budget et pour lesquels le versement de
-                l'indemnisation est attendu.
+                Vous pouvez signer la proposition d'indemnisation des dossiers ci-dessous.
             </p>
 
             <h4>
@@ -90,17 +88,13 @@ export function ListeDossierEnAttenteIndemnisation() {
                     <>
                         {dossiers.length} dossier{dossiers.length > 1 ? "s" : ""}
                     </>
-                ) : (
-                    <>Aucun dossier</>
-                )}
+                ) : <>Aucun dossier</>
+                }
             </h4>
 
             <div>
-                {dossiers.map((dossier: DossierEnAttenteIndemnisation) => (
-                    <DossierEnAttenteIndemnisationLigne
-                        key={dossier.id}
-                        dossier={dossier}
-                    />
+                {dossiers.map((dossier: DossierArreteASigner) => (
+                    <DossierArreteASignerLigne key={`dossier-a-attribuer-${dossier.id}`} dossier={dossier}/>
                 ))}
             </div>
         </>

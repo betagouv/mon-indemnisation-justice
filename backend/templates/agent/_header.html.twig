@@ -104,12 +104,39 @@
                                             </li>
                                         {% endif %}
 
+                                        {% if app.user.aRole('ROLE_AGENT_VALIDATEUR') %}
+                                            <li>
+                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/rejet-a-signer'}) }}"
+                                                   class="fr-nav__link">
+                                                    Rejet à signer
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_rejet_a_signer() }}</p>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/proposition-a-signer'}) }}"
+                                                   class="fr-nav__link">
+                                                    Proposition d'indemnisation à signer
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_proposition_a_signer() }}</p>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+
                                         {% if app.user.aRole('ROLE_AGENT_REDACTEUR') %}
                                             <li>
                                                 <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-verifier'}) }}"
                                                    class="fr-nav__link">
                                                     À vérifier
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ app.user.nbDossiersAVerifier() }}</p>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+
+                                        {% if app.user.aRole('ROLE_AGENT_VALIDATEUR') %}
+                                            <li>
+                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/arrete-a-signer'}) }}"
+                                                   class="fr-nav__link">
+                                                    Rejet à signer
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_arrete_a_signer() }}</p>
                                                 </a>
                                             </li>
                                         {% endif %}

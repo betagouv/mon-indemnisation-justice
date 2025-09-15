@@ -3,6 +3,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "./liste/dossier-liste-element.css";
 import {plainToInstance} from "class-transformer";
 import {DossierATransmettre} from "./liste/DossierATransmettre.ts";
+import {dateSimple} from "@/common/services/date.ts";
 
 const formateurMontantEuro = new Intl.NumberFormat("fr-FR", {
     style: "currency",
@@ -13,8 +14,8 @@ const formateurMontantEuro = new Intl.NumberFormat("fr-FR", {
 });
 
 function DossierATransmettreLigne({
-    dossier,
-}: {
+                                      dossier,
+                                  }: {
     dossier: DossierATransmettre;
 }) {
     const telechargerDocumentsURL = useMemo<string>(
@@ -39,16 +40,7 @@ function DossierATransmettreLigne({
                     <li>{dossier.requerant}</li>
                     <li>{formateurMontantEuro.format(dossier.montantIndemnisation)}</li>
                     <li>
-                        validé le{" "}
-                        {dossier.dateValidation.toLocaleString("fr-FR", {
-                            day: "numeric",
-                            month: "long",
-                            year:
-                                dossier.dateValidation.getFullYear() ===
-                                new Date().getFullYear()
-                                    ? undefined
-                                    : "numeric",
-                        })}{" "}
+                        validé le {dateSimple(dossier.dateValidation)}{" "}
                         par {dossier.agentValidateur}
                     </li>
                 </ul>

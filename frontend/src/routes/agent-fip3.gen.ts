@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './source/__root'
 import { Route as AgentIndexRouteImport } from './source/agent/index'
+import { Route as AgentFip3DossiersRejetASignerRouteImport } from './source/agent/fip3/dossiers/rejet-a-signer'
+import { Route as AgentFip3DossiersPropositionASignerRouteImport } from './source/agent/fip3/dossiers/proposition-a-signer'
 import { Route as AgentFip3DossiersEnAttenteIndemnisationRouteImport } from './source/agent/fip3/dossiers/en-attente-indemnisation'
+import { Route as AgentFip3DossiersArreteASignerRouteImport } from './source/agent/fip3/dossiers/arrete-a-signer'
 import { Route as AgentFip3DossiersAVerifierRouteImport } from './source/agent/fip3/dossiers/a-verifier'
 import { Route as AgentFip3DossiersATransmettreRouteImport } from './source/agent/fip3/dossiers/a-transmettre'
 import { Route as AgentFip3DossiersAInstruireRouteImport } from './source/agent/fip3/dossiers/a-instruire'
@@ -21,10 +24,28 @@ const AgentIndexRoute = AgentIndexRouteImport.update({
   path: '/agent/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentFip3DossiersRejetASignerRoute =
+  AgentFip3DossiersRejetASignerRouteImport.update({
+    id: '/agent/fip3/dossiers/rejet-a-signer',
+    path: '/agent/fip3/dossiers/rejet-a-signer',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AgentFip3DossiersPropositionASignerRoute =
+  AgentFip3DossiersPropositionASignerRouteImport.update({
+    id: '/agent/fip3/dossiers/proposition-a-signer',
+    path: '/agent/fip3/dossiers/proposition-a-signer',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AgentFip3DossiersEnAttenteIndemnisationRoute =
   AgentFip3DossiersEnAttenteIndemnisationRouteImport.update({
     id: '/agent/fip3/dossiers/en-attente-indemnisation',
     path: '/agent/fip3/dossiers/en-attente-indemnisation',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AgentFip3DossiersArreteASignerRoute =
+  AgentFip3DossiersArreteASignerRouteImport.update({
+    id: '/agent/fip3/dossiers/arrete-a-signer',
+    path: '/agent/fip3/dossiers/arrete-a-signer',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AgentFip3DossiersAVerifierRoute =
@@ -58,7 +79,10 @@ export interface FileRoutesByFullPath {
   '/agent/fip3/dossiers/a-instruire': typeof AgentFip3DossiersAInstruireRoute
   '/agent/fip3/dossiers/a-transmettre': typeof AgentFip3DossiersATransmettreRoute
   '/agent/fip3/dossiers/a-verifier': typeof AgentFip3DossiersAVerifierRoute
+  '/agent/fip3/dossiers/arrete-a-signer': typeof AgentFip3DossiersArreteASignerRoute
   '/agent/fip3/dossiers/en-attente-indemnisation': typeof AgentFip3DossiersEnAttenteIndemnisationRoute
+  '/agent/fip3/dossiers/proposition-a-signer': typeof AgentFip3DossiersPropositionASignerRoute
+  '/agent/fip3/dossiers/rejet-a-signer': typeof AgentFip3DossiersRejetASignerRoute
 }
 export interface FileRoutesByTo {
   '/agent': typeof AgentIndexRoute
@@ -66,7 +90,10 @@ export interface FileRoutesByTo {
   '/agent/fip3/dossiers/a-instruire': typeof AgentFip3DossiersAInstruireRoute
   '/agent/fip3/dossiers/a-transmettre': typeof AgentFip3DossiersATransmettreRoute
   '/agent/fip3/dossiers/a-verifier': typeof AgentFip3DossiersAVerifierRoute
+  '/agent/fip3/dossiers/arrete-a-signer': typeof AgentFip3DossiersArreteASignerRoute
   '/agent/fip3/dossiers/en-attente-indemnisation': typeof AgentFip3DossiersEnAttenteIndemnisationRoute
+  '/agent/fip3/dossiers/proposition-a-signer': typeof AgentFip3DossiersPropositionASignerRoute
+  '/agent/fip3/dossiers/rejet-a-signer': typeof AgentFip3DossiersRejetASignerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -75,7 +102,10 @@ export interface FileRoutesById {
   '/agent/fip3/dossiers/a-instruire': typeof AgentFip3DossiersAInstruireRoute
   '/agent/fip3/dossiers/a-transmettre': typeof AgentFip3DossiersATransmettreRoute
   '/agent/fip3/dossiers/a-verifier': typeof AgentFip3DossiersAVerifierRoute
+  '/agent/fip3/dossiers/arrete-a-signer': typeof AgentFip3DossiersArreteASignerRoute
   '/agent/fip3/dossiers/en-attente-indemnisation': typeof AgentFip3DossiersEnAttenteIndemnisationRoute
+  '/agent/fip3/dossiers/proposition-a-signer': typeof AgentFip3DossiersPropositionASignerRoute
+  '/agent/fip3/dossiers/rejet-a-signer': typeof AgentFip3DossiersRejetASignerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -85,7 +115,10 @@ export interface FileRouteTypes {
     | '/agent/fip3/dossiers/a-instruire'
     | '/agent/fip3/dossiers/a-transmettre'
     | '/agent/fip3/dossiers/a-verifier'
+    | '/agent/fip3/dossiers/arrete-a-signer'
     | '/agent/fip3/dossiers/en-attente-indemnisation'
+    | '/agent/fip3/dossiers/proposition-a-signer'
+    | '/agent/fip3/dossiers/rejet-a-signer'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/agent'
@@ -93,7 +126,10 @@ export interface FileRouteTypes {
     | '/agent/fip3/dossiers/a-instruire'
     | '/agent/fip3/dossiers/a-transmettre'
     | '/agent/fip3/dossiers/a-verifier'
+    | '/agent/fip3/dossiers/arrete-a-signer'
     | '/agent/fip3/dossiers/en-attente-indemnisation'
+    | '/agent/fip3/dossiers/proposition-a-signer'
+    | '/agent/fip3/dossiers/rejet-a-signer'
   id:
     | '__root__'
     | '/agent/'
@@ -101,7 +137,10 @@ export interface FileRouteTypes {
     | '/agent/fip3/dossiers/a-instruire'
     | '/agent/fip3/dossiers/a-transmettre'
     | '/agent/fip3/dossiers/a-verifier'
+    | '/agent/fip3/dossiers/arrete-a-signer'
     | '/agent/fip3/dossiers/en-attente-indemnisation'
+    | '/agent/fip3/dossiers/proposition-a-signer'
+    | '/agent/fip3/dossiers/rejet-a-signer'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -110,7 +149,10 @@ export interface RootRouteChildren {
   AgentFip3DossiersAInstruireRoute: typeof AgentFip3DossiersAInstruireRoute
   AgentFip3DossiersATransmettreRoute: typeof AgentFip3DossiersATransmettreRoute
   AgentFip3DossiersAVerifierRoute: typeof AgentFip3DossiersAVerifierRoute
+  AgentFip3DossiersArreteASignerRoute: typeof AgentFip3DossiersArreteASignerRoute
   AgentFip3DossiersEnAttenteIndemnisationRoute: typeof AgentFip3DossiersEnAttenteIndemnisationRoute
+  AgentFip3DossiersPropositionASignerRoute: typeof AgentFip3DossiersPropositionASignerRoute
+  AgentFip3DossiersRejetASignerRoute: typeof AgentFip3DossiersRejetASignerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -122,11 +164,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agent/fip3/dossiers/rejet-a-signer': {
+      id: '/agent/fip3/dossiers/rejet-a-signer'
+      path: '/agent/fip3/dossiers/rejet-a-signer'
+      fullPath: '/agent/fip3/dossiers/rejet-a-signer'
+      preLoaderRoute: typeof AgentFip3DossiersRejetASignerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent/fip3/dossiers/proposition-a-signer': {
+      id: '/agent/fip3/dossiers/proposition-a-signer'
+      path: '/agent/fip3/dossiers/proposition-a-signer'
+      fullPath: '/agent/fip3/dossiers/proposition-a-signer'
+      preLoaderRoute: typeof AgentFip3DossiersPropositionASignerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agent/fip3/dossiers/en-attente-indemnisation': {
       id: '/agent/fip3/dossiers/en-attente-indemnisation'
       path: '/agent/fip3/dossiers/en-attente-indemnisation'
       fullPath: '/agent/fip3/dossiers/en-attente-indemnisation'
       preLoaderRoute: typeof AgentFip3DossiersEnAttenteIndemnisationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent/fip3/dossiers/arrete-a-signer': {
+      id: '/agent/fip3/dossiers/arrete-a-signer'
+      path: '/agent/fip3/dossiers/arrete-a-signer'
+      fullPath: '/agent/fip3/dossiers/arrete-a-signer'
+      preLoaderRoute: typeof AgentFip3DossiersArreteASignerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agent/fip3/dossiers/a-verifier': {
@@ -166,8 +229,12 @@ const rootRouteChildren: RootRouteChildren = {
   AgentFip3DossiersAInstruireRoute: AgentFip3DossiersAInstruireRoute,
   AgentFip3DossiersATransmettreRoute: AgentFip3DossiersATransmettreRoute,
   AgentFip3DossiersAVerifierRoute: AgentFip3DossiersAVerifierRoute,
+  AgentFip3DossiersArreteASignerRoute: AgentFip3DossiersArreteASignerRoute,
   AgentFip3DossiersEnAttenteIndemnisationRoute:
     AgentFip3DossiersEnAttenteIndemnisationRoute,
+  AgentFip3DossiersPropositionASignerRoute:
+    AgentFip3DossiersPropositionASignerRoute,
+  AgentFip3DossiersRejetASignerRoute: AgentFip3DossiersRejetASignerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -73,8 +73,6 @@ export function ListeDossierAVerifier() {
             );
     }, []);
 
-    console.log(dossiers);
-
     return (
         <>
             <h1>Dossiers en attente d'arrêté de paiement</h1>
