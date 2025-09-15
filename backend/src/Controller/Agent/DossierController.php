@@ -20,7 +20,6 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -95,32 +94,6 @@ class DossierController extends AgentController
         ]);
     }
 
-    #[IsGranted(Agent::ROLE_AGENT_ATTRIBUTEUR)]
-    #[Route('/dossier/{id}/attribuer.json', name: 'agent_redacteur_attribuer_dossier', methods: ['POST'])]
-    public function attribuerDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
-    {
-        if (!$dossier->estAAttribuer()) {
-            throw new BadRequestException("Ce dossier n'est pas à attribuer");
-        }
-        $agent = $this->agentRepository->find($request->getPayload()->getInt('redacteur_id', 0));
-
-        if (null === $agent || !$agent->hasRole(Agent::ROLE_AGENT_REDACTEUR)) {
-            throw new BadRequestException("Cet agent n'est pas rédacteur");
-        }
-
-        $dossier
-            ->setRedacteur($agent)
-            ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, agent: $this->getAgent(), contexte: [
-                'redacteur' => $agent,
-            ])
-        ;
-        $this->dossierRepository->save($dossier);
-
-        return new JsonResponse([
-            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
-        ], Response::HTTP_OK);
-    }
-
     // TODO créer un voter https://symfony.com/doc/current/security/voters.html
     #[IsGranted(
         attribute: new Expression('is_granted("ROLE_AGENT_ATTRIBUTEUR") or is_granted("ROLE_AGENT_VALIDATEUR") or user.instruit(subject["dossier"])'),
@@ -136,16 +109,6 @@ class DossierController extends AgentController
             'explication' => $request->getPayload()->get('explication'),
         ]);
         $this->dossierRepository->save($dossier);
-
-        // Envoi du mail de confirmation.
-        $this->mailer
-            ->toRequerant($dossier->getRequerant())
-            ->subject("Clôture du dossier {$dossier->getReference()}")
-            ->htmlTemplate('email/cloture_dossier.html.twig', [
-                'dossier' => $dossier,
-            ])
-            ->send()
-        ;
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),

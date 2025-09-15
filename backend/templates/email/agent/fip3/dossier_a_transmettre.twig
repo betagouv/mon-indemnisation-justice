@@ -1,0 +1,30 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% block subject %}Mon Indemnisation Justice: vous avez un nouveau dossier à transmettre à FIP6{% endblock subject %}
+
+{% block entete %}
+    <b>Mon Indemnisation Justice: vous avez un nouveau dossier à transmettre à FIP6</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+    Bonjour {{ agent.prenom }},
+    <br/>
+    <br/>
+    <p>
+        {{ dossier.etatDossier.agent.nomComplet }} vient de signer l'arrêté de paiement du
+        dossier <b>{{ dossier.reference }}</b>, il peut désormais être transmis au bureau du budget.
+    </p>
+    <p>
+        Vous pouvez voir la liste de tous les dossiers à transmettre en cliquant sur le bouton ci-dessous :
+    </p>
+    <br/>
+    <p>
+        {{ email.bouton("Dossiers à transmettre au bureau du budget", url('agent_fip3_react', {'extra': "/dossiers/a-transmettre"})) }}
+        <br/>
+    </p>
+    <br/>
+    Cordialement,<br/>
+{% endblock contenu %}

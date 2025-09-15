@@ -1,6 +1,6 @@
 # config/routes/attributes.yaml
 controllers:
-    resource:
-        path: ../../src/Api/Agent/Endpoint
-        namespace: MonIndemnisationJustice\Api\Agent\Endpoint
-    type: attribute
+  resource:
+    path: ../../src/Api/Agent
+    namespace: MonIndemnisationJustice\Api\Agent
+  type: attribute

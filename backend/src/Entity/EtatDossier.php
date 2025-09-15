@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\EtatDossierRepository;
 use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ApiResource(
@@ -35,6 +36,7 @@ class EtatDossier
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
+    #[Ignore]
     protected ?Agent $agent;
 
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: [])]
@@ -108,11 +110,6 @@ class EtatDossier
         return EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT === $this->etat;
     }
 
-    public function getLibelle(): string
-    {
-        return $this->etat->getLibelle();
-    }
-
     #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[SerializedName('dateEntree')]
     public function getDateEntreeTimestamp(): ?int
@@ -142,6 +139,13 @@ class EtatDossier
         $this->dossier = $dossier;
 
         return $this;
+    }
+
+    #[Groups(['agent:detail'])]
+    #[SerializedName('redacteur')]
+    public function getAgentId(): ?int
+    {
+        return $this->agent?->getId();
     }
 
     public function getAgent(): ?Agent

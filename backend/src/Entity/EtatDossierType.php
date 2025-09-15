@@ -2,6 +2,20 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use MonIndemnisationJustice\Event\Event\DossierArreteEditeEvent;
+use MonIndemnisationJustice\Event\Event\DossierArreteSigneEvent;
+use MonIndemnisationJustice\Event\Event\DossierAttribueEvent;
+use MonIndemnisationJustice\Event\Event\DossierClotureEvent;
+use MonIndemnisationJustice\Event\Event\DossierDeposeEvent;
+use MonIndemnisationJustice\Event\Event\DossierIndemniseEvent;
+use MonIndemnisationJustice\Event\Event\DossierInstruitPropositionEvent;
+use MonIndemnisationJustice\Event\Event\DossierInstruitRejetEvent;
+use MonIndemnisationJustice\Event\Event\DossierPropositionAccepteeEvent;
+use MonIndemnisationJustice\Event\Event\DossierPropositionEnvoyeeEvent;
+use MonIndemnisationJustice\Event\Event\DossierRejeteEvent;
+use MonIndemnisationJustice\Event\Event\DossierTransitionEvent;
+use MonIndemnisationJustice\Event\Event\DossierTransmisBudgetEvent;
+
 enum EtatDossierType: string
 {
     // Le requérant a initié un dossier qu'il n'a pas encore déposé
@@ -46,23 +60,22 @@ enum EtatDossierType: string
         return preg_replace('/_/', '-', strtolower($this->value));
     }
 
-    public function getLibelle(): string
+    public function creerTransitionEvent(BrisPorte $dossier): ?DossierTransitionEvent
     {
         return match ($this) {
-            self::DOSSIER_A_FINALISER => "Demande d'indemnisation en cours de constitution",
-            self::DOSSIER_A_INSTRUIRE => "Demande d'indemnisation déposée",
-            self::DOSSIER_OK_A_SIGNER => "Demande d'indemnisation validée (en attente de signature)",
-            self::DOSSIER_KO_A_SIGNER => "Demande d'indemnisation rejetée (en attente de signature)",
-            default => $this->value,
-            /*
-            self::RENVOI_EN_CONSTITUTION => "Demande de pièce(s) complémentaire(s) sur la demande d'indemnisation",
-            self::VALIDE => "Demande d'indemnisation validée (en attente signature)",
-            self::REJETE => "Demande d'indemnisation rejetée (en attente signature)",
-            self::SIGNATURE_VALIDEE => "Demande d'indemnisation validée",
-            self::SIGNATURE_REJETEE => "Demande d'indemnisation rejetée",
-            self::ACCORD_OFFRE => "Proposition d'indemnisation acceptée",
-            self::REFUS_OFFRE => "Proposition d'indemnisation rejetée",
-            */
+            self::DOSSIER_CLOTURE => new DossierClotureEvent($dossier),
+            self::DOSSIER_A_ATTRIBUER => new DossierDeposeEvent($dossier),
+            self::DOSSIER_A_INSTRUIRE => new DossierAttribueEvent($dossier),
+            self::DOSSIER_OK_A_SIGNER => new DossierInstruitPropositionEvent($dossier),
+            self::DOSSIER_OK_A_APPROUVER => new DossierPropositionEnvoyeeEvent($dossier),
+            self::DOSSIER_OK_A_VERIFIER => new DossierPropositionAccepteeEvent($dossier),
+            self::DOSSIER_OK_VERIFIE => new DossierArreteEditeEvent($dossier),
+            self::DOSSIER_OK_A_INDEMNISER => new DossierArreteSigneEvent($dossier),
+            self::DOSSIER_OK_EN_ATTENTE_PAIEMENT => new DossierTransmisBudgetEvent($dossier),
+            self::DOSSIER_OK_INDEMNISE => new DossierIndemniseEvent($dossier),
+            self::DOSSIER_KO_A_SIGNER => new DossierInstruitRejetEvent($dossier),
+            self::DOSSIER_KO_REJETE => new DossierRejeteEvent($dossier),
+            default => null,
         };
     }
 

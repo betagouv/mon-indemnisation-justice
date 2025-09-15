@@ -9,6 +9,7 @@ use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
@@ -65,6 +66,7 @@ class Agent implements UserInterface
     protected string $prenom;
 
     #[ORM\Column(type: 'string', nullable: true, enumType: Administration::class)]
+    #[Ignore]
     protected ?Administration $administration = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -81,6 +83,7 @@ class Agent implements UserInterface
 
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'redacteur', cascade: ['detach'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    #[Ignore]
     /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
 

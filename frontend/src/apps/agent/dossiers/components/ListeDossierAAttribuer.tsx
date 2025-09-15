@@ -66,7 +66,7 @@ export function ListeDossierAAttribuer() {
 
     // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
     useEffect(() => {
-        fetch("/api/agent/dossiers/liste/a-instruire")
+        fetch("/api/agent/dossiers/liste/a-attribuer")
             .then((response) => response.json())
             .then((data) =>
                 setDossiers(plainToInstance(DossierAAttribuer, data as any[])),
