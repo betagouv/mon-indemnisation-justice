@@ -28,16 +28,20 @@ class DossierVoter extends Voter
         /** @var Agent $agent */
         $agent = $token->getUser();
 
-        if (in_array($liste, ['a-transmettre', 'en-attente-indemnisation'])) {
-            return $agent->hasRole(Agent::ROLE_AGENT_LIAISON_BUDGET);
-        }
-
         if (in_array($liste, ['a-attribuer'])) {
             return $agent->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR);
         }
 
         if (in_array($liste, ['a-instruire', 'a-verifier'])) {
             return $agent->hasRole(Agent::ROLE_AGENT_REDACTEUR);
+        }
+
+        if (in_array($liste, ['rejet-a-signer', 'proposition-a-signer', 'arrete-a-signer'])) {
+            return $agent->hasRole(Agent::ROLE_AGENT_VALIDATEUR);
+        }
+
+        if (in_array($liste, ['a-transmettre', 'en-attente-indemnisation'])) {
+            return $agent->hasRole(Agent::ROLE_AGENT_LIAISON_BUDGET);
         }
 
         return false;

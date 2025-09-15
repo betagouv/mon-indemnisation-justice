@@ -33,6 +33,9 @@ class AppExtension extends AbstractExtension
             new TwigFunction('absolute_asset_path', [AppRuntime::class, 'absoluteAssetPath']),
             new TwigFunction('nb_dossiers_a_attribuer', [AppRuntime::class, 'nbDossiersAAttribuer']),
             new TwigFunction('nb_dossiers_a_transmettre', [AppRuntime::class, 'nbDossiersATransmettre']),
+            new TwigFunction('nb_dossiers_rejet_a_signer', [AppRuntime::class, 'nbDossiersRejetASigner']),
+            new TwigFunction('nb_dossiers_proposition_a_signer', [AppRuntime::class, 'nbDossiersPropositionASigner']),
+            new TwigFunction('nb_dossiers_arrete_a_signer', [AppRuntime::class, 'nbDossiersArreteASigner']),
             new TwigFunction('nb_dossiers_en_attente_indemnisation', [AppRuntime::class, 'nbDossiersEnAttenteIndemnisation']),
         ];
     }

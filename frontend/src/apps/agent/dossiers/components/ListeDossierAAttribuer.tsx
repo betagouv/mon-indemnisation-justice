@@ -3,6 +3,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "./liste/dossier-liste-element.css";
 import {plainToInstance} from "class-transformer";
 import {DossierAAttribuer} from "./liste/DossierAAttribuer";
+import {dateSimple} from "@/common/services/date.ts";
 
 function DossierAAttribuerLigne({
                                     dossier,
@@ -27,16 +28,7 @@ function DossierAAttribuerLigne({
                     <li>{dossier.requerant}</li>
                     <li>{dossier.adresse}</li>
                     <li>
-                        survenu le{" "}
-                        {dossier.dateOperation.toLocaleString("fr-FR", {
-                            day: "numeric",
-                            month: "long",
-                            year:
-                                dossier.dateOperation.getFullYear() ===
-                                new Date().getFullYear()
-                                    ? undefined
-                                    : "numeric",
-                        })}{" "}
+                        survenu le {dateSimple(dossier.dateOperation)}
                     </li>
                 </ul>
             </div>
