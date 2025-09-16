@@ -1,6 +1,6 @@
 <?php
 
-namespace MonIndemnisationJustice\Tests\Api\Agent\Document;
+namespace Api\Agent\Fip3\Endpoint\Document;
 
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
@@ -9,6 +9,11 @@ use MonIndemnisationJustice\Entity\BrisPorte;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ImprimerDocumentEndpointTest extends WebTestCase
 {
     protected KernelBrowser $client;
@@ -39,7 +44,7 @@ class ImprimerDocumentEndpointTest extends WebTestCase
         $this->em->flush();
 
         $this->client->loginUser($agent, 'agent');
-        $this->client->request('PUT', "/api/agent/document/{$document->getId()}/imprimer", [
+        $this->client->request('PUT', "/api/agent/fip3/document/{$document->getId()}/imprimer", [
             'corps' => 'Lorem ipsum',
         ]);
 

@@ -5,9 +5,8 @@ namespace MonIndemnisationJustice\Api\Agent\Fip3\Endpoint\Dossier;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip3\Output\DossierAAttribuerOutput;
 use MonIndemnisationJustice\Api\Agent\Fip3\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use Symfony\Bundle\SecurityBundle\Security;
+use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,21 +14,21 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Route API qui retourne à un agent rédacteur la liste de ses dossiers à instruire.
+ * Route API qui retourne à un agent chargé de l'attribution la liste des dossiers à assigner à un rédacteur pour
+ * instruction.
  */
-#[Route('/api/agent/fip3/dossiers/liste/a-instruire', name: 'api_agent_dossiers_liste_a_instruire', methods: ['GET'])]
-#[IsGranted(DossierVoter::ACTION_LISTER_A_INSTRUIRE)]
-class ListeDossierAInstruireEndpoint
+#[Route('/api/agent/fip3/dossiers/liste/a-attribuer', name: 'api_agent_dossiers_liste_a_attribuer', methods: ['GET'])]
+#[IsGranted(DossierVoter::ACTION_LISTER_A_ATTRIBUER)]
+class ListerDossierAAttribuerEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
         protected readonly NormalizerInterface $normalizer,
     ) {}
 
-    public function __invoke(Security $security): Response
+    public function __invoke(): Response
     {
-        /** @var Agent $agent */
-        $agent = $security->getUser();
+        $dossiers = $this->entityManager->getRepository(BrisPorte::class)->listerDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
 
         return new JsonResponse(
             $this->normalizer->normalize(
@@ -40,9 +39,9 @@ class ListeDossierAInstruireEndpoint
                     transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
                     */
                     fn (BrisPorte $dossier) => DossierAAttribuerOutput::creerDepuisDossier($dossier),
-                    array_values($agent->getDossiersAInstruire())
+                    $dossiers
                 ),
-                'json',
+                'json'
             )
         );
     }

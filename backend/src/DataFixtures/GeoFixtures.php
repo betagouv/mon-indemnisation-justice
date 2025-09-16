@@ -39,7 +39,7 @@ class GeoFixtures extends Fixture
                 ->setNom('Maroc'),
         ] as $reference => $pays) {
             $manager->persist($pays);
-            $this->addReference("pays-$reference", $pays);
+            $this->addReference("pays-{$reference}", $pays);
         }
     }
 
@@ -63,7 +63,7 @@ class GeoFixtures extends Fixture
                 ->setNom('Pays de la Loire'),
         ] as $reference => $region) {
             $manager->persist($region);
-            $this->addReference("region-$reference", $region);
+            $this->addReference("region-{$reference}", $region);
         }
     }
 
@@ -112,9 +112,28 @@ class GeoFixtures extends Fixture
                 ->setCode('35360')
                 ->setNom('Vitré')
                 ->setDepartement($this->getReference('departement-ille-et-vilaine', GeoDepartement::class)),
+            'melun' => (new GeoCommune())
+                ->setCode('77288')
+                ->setNom('Melun')
+                ->setDepartement($this->getReference('departement-seine-et-marne', GeoDepartement::class)),
+            'aix-en-provence' => (new GeoCommune())
+                ->setCode('13001')
+                ->setNom('Aix-en-Provence')
+                ->setDepartement($this->getReference('departement-bouches-du-rhone', GeoDepartement::class)),
+            'saint-malo' => (new GeoCommune())
+                ->setCode('35288')
+                ->setNom('Saint-Malo')
+                ->setDepartement($this->getReference('departement-ille-et-vilaine', GeoDepartement::class)),
+            'ancenis' => (new GeoCommune())
+                ->setCode('44003')
+                ->setNom('Ancenis-Saint-Géréon'),
+            'istres' => (new GeoCommune())
+                ->setCode('13047')
+                ->setNom('Istres')
+                ->setDepartement($this->getReference('departement-loire-atlantique', GeoDepartement::class)),
         ] as $reference => $commune) {
             $manager->persist($commune);
-            $this->addReference("commune-$reference", $commune);
+            $this->addReference("commune-{$reference}", $commune);
         }
 
         foreach ([
@@ -124,9 +143,24 @@ class GeoFixtures extends Fixture
             '35500' => (new GeoCodePostal())
                 ->setCommune($this->getReference('commune-vitre', GeoCommune::class))
                 ->setCodePostal('35500'),
+            '77000' => (new GeoCodePostal())
+                ->setCommune($this->getReference('commune-melun', GeoCommune::class))
+                ->setCodePostal('77000'),
+            '13290' => (new GeoCodePostal())
+                ->setCommune($this->getReference('commune-aix-en-provence', GeoCommune::class))
+                ->setCodePostal('13290'),
+            '35400' => (new GeoCodePostal())
+                ->setCommune($this->getReference('commune-saint-malo', GeoCommune::class))
+                ->setCodePostal('35400'),
+            '44150' => (new GeoCodePostal())
+                ->setCommune($this->getReference('commune-ancenis', GeoCommune::class))
+                ->setCodePostal('44150'),
+            '13800' => (new GeoCodePostal())
+                ->setCommune($this->getReference('commune-istres', GeoCommune::class))
+                ->setCodePostal('13800'),
         ] as $reference => $codePostal) {
             $manager->persist($codePostal);
-            $this->addReference("code-postal-$reference", $codePostal);
+            $this->addReference("code-postal-{$reference}", $codePostal);
         }
     }
 }

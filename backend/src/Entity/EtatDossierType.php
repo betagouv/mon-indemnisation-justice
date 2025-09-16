@@ -79,6 +79,24 @@ enum EtatDossierType: string
         };
     }
 
+    public function etatPrecedent(): ?EtatDossierType
+    {
+        return match ($this) {
+            self::DOSSIER_CLOTURE, self::DOSSIER_EN_INSTRUCTION => self::DOSSIER_A_INSTRUIRE,
+            self::DOSSIER_A_ATTRIBUER => self::DOSSIER_A_FINALISER,
+            self::DOSSIER_A_INSTRUIRE => self::DOSSIER_A_ATTRIBUER,
+            self::DOSSIER_OK_A_SIGNER, self::DOSSIER_KO_A_SIGNER => self::DOSSIER_EN_INSTRUCTION,
+            self::DOSSIER_OK_A_APPROUVER => self::DOSSIER_OK_A_SIGNER,
+            self::DOSSIER_OK_A_VERIFIER => self::DOSSIER_OK_A_APPROUVER,
+            self::DOSSIER_OK_VERIFIE => self::DOSSIER_OK_A_VERIFIER,
+            self::DOSSIER_OK_A_INDEMNISER => self::DOSSIER_OK_VERIFIE,
+            self::DOSSIER_OK_EN_ATTENTE_PAIEMENT => self::DOSSIER_OK_A_INDEMNISER,
+            self::DOSSIER_OK_INDEMNISE => self::DOSSIER_OK_EN_ATTENTE_PAIEMENT,
+            self::DOSSIER_KO_REJETE => self::DOSSIER_KO_A_SIGNER,
+            default => null,
+        };
+    }
+
     public function estAAttribuer(): bool
     {
         return self::DOSSIER_A_ATTRIBUER === $this;

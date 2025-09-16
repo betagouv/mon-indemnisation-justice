@@ -86,7 +86,7 @@
                                     <ul class="fr-menu__list">
                                         {% if app.user.aRole('ROLE_AGENT_ATTRIBUTEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-attribuer'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-attribuer'}) }}"
                                                    class="fr-nav__link">
                                                     À attribuer
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_attribuer() }}</p>
@@ -96,7 +96,7 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_REDACTEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-instruire'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-instruire'}) }}"
                                                    class="fr-nav__link">
                                                     À instruire
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ app.user.nbDossiersAInstruire() }}</p>
@@ -106,14 +106,14 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_VALIDATEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/rejet-a-signer'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/rejet-a-signer'}) }}"
                                                    class="fr-nav__link">
                                                     Rejet à signer
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_rejet_a_signer() }}</p>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/proposition-a-signer'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/proposition-a-signer'}) }}"
                                                    class="fr-nav__link">
                                                     Proposition d'indemnisation à signer
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_proposition_a_signer() }}</p>
@@ -123,7 +123,7 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_REDACTEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-verifier'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-verifier'}) }}"
                                                    class="fr-nav__link">
                                                     À vérifier
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ app.user.nbDossiersAVerifier() }}</p>
@@ -133,7 +133,7 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_VALIDATEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/arrete-a-signer'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/arrete-a-signer'}) }}"
                                                    class="fr-nav__link">
                                                     Rejet à signer
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_arrete_a_signer() }}</p>
@@ -143,7 +143,7 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_LIAISON_BUDGET') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/a-transmettre'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-transmettre'}) }}"
                                                    class="fr-nav__link">
                                                     À transmettre au Bureau du Budget
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_transmettre() }}</p>
@@ -151,7 +151,7 @@
                                             </li>
 
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: '/dossiers/en-attente-indemnisation'}) }}"
+                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/en-attente-indemnisation'}) }}"
                                                    class="fr-nav__link">
                                                     En attente de paiement
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_en_attente_indemnisation() }}</p>

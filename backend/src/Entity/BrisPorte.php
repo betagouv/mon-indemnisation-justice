@@ -140,7 +140,9 @@ class BrisPorte
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
     {
-        $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
+        if ($this->historiqueEtats->isEmpty()) {
+            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
+        }
     }
 
     #[ORM\PostLoad]
@@ -329,6 +331,13 @@ class BrisPorte
     public function getDateCreation(): \DateTimeInterface
     {
         return $this->dateCreation;
+    }
+
+    public function setDateCreation(\DateTimeInterface $dateCreation): static
+    {
+        $this->dateCreation = $dateCreation;
+
+        return $this;
     }
 
     #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]

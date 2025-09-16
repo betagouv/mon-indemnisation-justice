@@ -37,6 +37,14 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
                 'requerant' => $this->getReference('requerant-ray', Requerant::class),
                 'dateSoumission' => new \DateTime('-7 days'),
             ]),
+            'melun' => TestEligibilite::fromArray([
+                'estVise' => false,
+                'estHebergeant' => false,
+                'rapportAuLogement' => QualiteRequerant::BAI,
+                'aContacteAssurance' => false,
+                'requerant' => $this->getReference('requerant-melun', Requerant::class),
+                'dateSoumission' => \DateTime::createFromFormat('Y-m-d H:i:s', '2025-04-10 13:51:27'),
+            ]),
         ] as $reference => $testEligibilite) {
             $manager->persist($testEligibilite);
             $this->addReference("test-eligibilite-{$reference}", $testEligibilite);

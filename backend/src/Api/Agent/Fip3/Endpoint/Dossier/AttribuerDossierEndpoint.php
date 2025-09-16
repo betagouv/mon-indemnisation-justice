@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/api/agent/fip3/dossier/{id}/attribuer', name: 'api_agent_fip3_dossier_attribuer', methods: ['POST'])]
-#[IsGranted(DossierVoter::ACTION_ATTRIBUER, 'Seul un agent attributeur peut attribuer un dossier', 401)]
+#[IsGranted(DossierVoter::ACTION_ATTRIBUER, message: 'Seul un agent attributeur peut attribuer un dossier', statusCode: Response::HTTP_FORBIDDEN)]
 class AttribuerDossierEndpoint
 {
     public function __construct(
@@ -39,6 +39,10 @@ class AttribuerDossierEndpoint
             return new JsonResponse(['erreur' => "Ce dossier n'est pas à attribuer"], Response::HTTP_BAD_REQUEST);
         }
         $agent = $this->agentRepository->find($input->redacteur_id);
+
+        if (!$agent->estRedacteur()) {
+            return new JsonResponse(['erreur' => "Cet agent n'est pas rédacteur"], Response::HTTP_BAD_REQUEST);
+        }
 
         $dossier
             ->setRedacteur($agent)

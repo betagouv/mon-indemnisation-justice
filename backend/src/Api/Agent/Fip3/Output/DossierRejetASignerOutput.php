@@ -13,10 +13,10 @@ class DossierRejetASignerOutput
         public readonly int $id,
         public readonly string $reference,
         public readonly string $requerant,
-        public readonly string $motif,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
         public readonly \DateTimeImmutable $dateDecision,
         public readonly string $agentDecision,
+        public readonly ?string $motif = null,
     ) {}
 
     public static function creerDepuisDossier(BrisPorte $dossier): self
