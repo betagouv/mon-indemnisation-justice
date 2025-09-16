@@ -10,12 +10,18 @@
 
 {% block main %}
     <div id="react-app" class="fr-container fr-my-3w"></div>
+
 {% endblock main %}
 
 {% block javascripts %}
     {% if est_vite_server_actif() %}
         {% include '_vite_hmr_extra.html.twig' %}
     {% endif %}
+
+    <script type="application/json" id="react-args">
+        {{ react|default({})|json_encode()|raw }}
+
+    </script>
 
     {{ vite_entry_script_tags('agent/fip3') }}
 
