@@ -30,14 +30,14 @@ class DossierTransitionListener
 {
     public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository) {}
 
-    public function dossierCloture(DossierDeposeEvent $evenement): void
+    public function dossierCloture(DossierClotureEvent $evenement): void
     {
         // Informer le requérant que son dossier est clos :
         // Envoi du mail de confirmation.
         $this->mailer
             ->toRequerant($evenement->dossier->getRequerant())
             ->subject("Clôture du dossier {$evenement->dossier->getReference()}")
-            ->htmlTemplate('email/requerant/cloture_dossier.html.twig', [
+            ->htmlTemplate('email/requerant/dossier_cloture.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
             ->send()
@@ -119,6 +119,7 @@ class DossierTransitionListener
             ->toAgent($evenement->dossier->getRedacteur())
             ->subject("Mon Indemnisation Justice: vous avez reçu une déclaration d'acceptation à vérifier")
             ->htmlTemplate('email/agent/fip3/dossier_proposition_acceptee.twig', [
+                'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
             ])
         ;
