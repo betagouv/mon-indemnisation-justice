@@ -121,6 +121,7 @@ services:
       - ./backend/src:/app/src
       - ./backend/tests:/app/tests
       - ./backend/migrations:/app/migrations
+      - ./backend/templates:/app/templates
     ports:
       - "8002:80"
 

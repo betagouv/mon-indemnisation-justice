@@ -16,6 +16,9 @@ use MonIndemnisationJustice\Entity\TestEligibilite;
 
 class DossierFixture extends Fixture implements DependentFixtureInterface
 {
+    /** @var BrisPorte[] */
+    private static $REGISTRE_DOSSIERS = [];
+
     public function getDependencies(): array
     {
         return [
@@ -45,7 +48,47 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             )
         ;
 
+        $this->addReference('dossier-a-finaliser-nantes', $dossierAFinaliser);
+
         $manager->persist($dossierAFinaliser);
+
+        $dossierAAttribuer = (new BrisPorte())
+            ->setReference('BRI/20250410/001')
+            ->setRequerant($this->getReference('requerant-melun', Requerant::class))
+            ->setTestEligibilite(
+                $this->getReference('test-eligibilite-melun', TestEligibilite::class)
+            )
+        ;
+
+        $dossierAAttribuer->setHistoriqueEtats([
+            (new EtatDossier())
+                ->setEtat(EtatDossierType::DOSSIER_A_FINALISER)
+                ->setDateEntree(new \DateTimeImmutable('-7 days'))
+                ->setRequerant($this->getReference('requerant-melun', Requerant::class)),
+            (new EtatDossier())
+                ->setEtat(EtatDossierType::DOSSIER_A_ATTRIBUER)
+                ->setDateEntree(new \DateTimeImmutable('-6 days'))
+                ->setRequerant($this->getReference('requerant-melun', Requerant::class)),
+        ]);
+
+        $manager->persist($dossierAAttribuer);
+
+        $this->addReference('dossier-a-attribuer-melun', $dossierAAttribuer);
+
+        $dossierAInstruire = $this->creerDossier(
+            $this->getReference('requerant-melun', Requerant::class),
+            [
+                'rapportAuLogement' => QualiteRequerant::BAI,
+                'estVise' => true,
+            ],
+            new \DateTimeImmutable('-18 days'),
+            EtatDossierType::DOSSIER_A_INSTRUIRE,
+            $this->getReference('agent-redacteur', Agent::class)
+        );
+
+        $this->addReference('dossier-en-instruction-melun', $dossierAInstruire);
+
+        $manager->persist($dossierAInstruire);
 
         $dossierEnInstruction = (new BrisPorte())
             ->setReference('BRI/20250103/001')
@@ -62,9 +105,13 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                 ->setDateEntree(new \DateTimeImmutable('-7 days'))
                 ->setRequerant($this->getReference('requerant-ray', Requerant::class)),
             (new EtatDossier())
-                ->setEtat(EtatDossierType::DOSSIER_A_INSTRUIRE)
+                ->setEtat(EtatDossierType::DOSSIER_A_ATTRIBUER)
                 ->setDateEntree(new \DateTimeImmutable('-6 days'))
                 ->setRequerant($this->getReference('requerant-ray', Requerant::class)),
+            (new EtatDossier())
+                ->setEtat(EtatDossierType::DOSSIER_A_INSTRUIRE)
+                ->setDateEntree(new \DateTimeImmutable('-5 days'))
+                ->setAgent($this->getReference('agent-attributeur', Agent::class)),
             (new EtatDossier())
                 ->setEtat(EtatDossierType::DOSSIER_EN_INSTRUCTION)
                 ->setDateEntree(new \DateTimeImmutable('-4 days'))
@@ -73,6 +120,188 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $manager->persist($dossierEnInstruction);
 
+        $dossierRejetASigner = $this->creerDossier(
+            $this->getReference('requerant-saint-malo', Requerant::class),
+            [
+                'rapportAuLogement' => QualiteRequerant::PRO,
+                'estVise' => true,
+            ],
+            new \DateTimeImmutable('-35 days'),
+            EtatDossierType::DOSSIER_KO_A_SIGNER,
+            $this->getReference('agent-redacteur', Agent::class)
+        );
+
+        $this->addReference('dossier-rejet-a-signer-saint-malo', $dossierRejetASigner);
+
+        $manager->persist($dossierRejetASigner);
+
+        $dossierPropositionASigner = $this->creerDossier(
+            $this->getReference('requerant-aix-en-provence', Requerant::class),
+            [
+                'rapportAuLogement' => QualiteRequerant::LOC,
+                'estVise' => false,
+                'estHebergeant' => true,
+            ],
+            new \DateTimeImmutable('-37 days'),
+            EtatDossierType::DOSSIER_OK_A_SIGNER,
+            $this->getReference('agent-redacteur', Agent::class)
+        )->setPropositionIndemnisation('1167.89');
+
+        $this->addReference('dossier-a-signer-aix-en-provence', $dossierPropositionASigner);
+
+        $manager->persist($dossierPropositionASigner);
+
+        $dossierAVerifier = $this->creerDossier(
+            $this->getReference('requerant-melun', Requerant::class),
+            [
+                'rapportAuLogement' => QualiteRequerant::LOC,
+                'estVise' => false,
+                'estHebergeant' => false,
+                'aContacteAssurance' => true,
+                'aContacteBailleur' => true,
+            ],
+            new \DateTimeImmutable('-35 days'),
+            EtatDossierType::DOSSIER_OK_A_VERIFIER,
+            $this->getReference('agent-redacteur', Agent::class)
+        )->setPropositionIndemnisation('2031');
+
+        $this->addReference('dossier-a-verifier-melun', $dossierAVerifier);
+
+        $manager->persist($dossierAVerifier);
+
+        $dossierArreteASigner = $this->creerDossier(
+            $this->getReference('requerant-saint-malo', Requerant::class),
+            [
+                'rapportAuLogement' => QualiteRequerant::BAI,
+                'estVise' => false,
+                'estHebergeant' => false,
+                'aContacteAssurance' => true,
+            ],
+            new \DateTimeImmutable('-43 days'),
+            EtatDossierType::DOSSIER_OK_VERIFIE,
+            $this->getReference('agent-redacteur', Agent::class)
+        )->setPropositionIndemnisation('3084.97');
+
+        $this->addReference('dossier-arrete-a-signer-saint-malo', $dossierArreteASigner);
+
+        $manager->persist($dossierArreteASigner);
+
+        $dossierATransmettre = $this->creerDossier(
+            $this->getReference('requerant-ancenis', Requerant::class),
+            [
+                'rapportAuLogement' => QualiteRequerant::BAI,
+                'estVise' => false,
+                'estHebergeant' => false,
+                'aContacteAssurance' => true,
+            ],
+            new \DateTimeImmutable('-41 days'),
+            EtatDossierType::DOSSIER_OK_A_INDEMNISER,
+            $this->getReference('agent-redacteur', Agent::class)
+        )->setPropositionIndemnisation('774.25');
+
+        $this->addReference('dossier-a-transmettre-ancenis', $dossierATransmettre);
+
+        $manager->persist($dossierATransmettre);
+
+        $dossierEnAttenteIndemnisation = $this->creerDossier(
+            $this->getReference('requerant-istres', Requerant::class),
+            [
+                'rapportAuLogement' => QualiteRequerant::LOC,
+                'estVise' => false,
+                'estHebergeant' => false,
+                'aContacteAssurance' => true,
+                'aContacteBailleur' => false,
+            ],
+            new \DateTimeImmutable('-41 days'),
+            EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT,
+            $this->getReference('agent-redacteur', Agent::class)
+        )->setPropositionIndemnisation('1912.77');
+
+        $this->addReference('dossier-en-attente-indemnisation-istres', $dossierEnAttenteIndemnisation);
+
+        $manager->persist($dossierEnAttenteIndemnisation);
+
         $manager->flush();
+    }
+
+    /**
+     * @return EtatDossierType[]
+     */
+    public static function historiqueTheorique(EtatDossierType $etat): array
+    {
+        $etatPrecedent = $etat->etatPrecedent();
+
+        if ($etatPrecedent) {
+            return array_merge(self::historiqueTheorique($etatPrecedent), [$etat]);
+        }
+
+        return [$etat];
+    }
+
+    protected function creerDossier(Requerant $requerant, array $donneesTestEligibilite, \DateTimeInterface $dateCreation, EtatDossierType $etatActuel, ?Agent $redacteur = null): BrisPorte
+    {
+        $dossier = (new BrisPorte())
+            ->setRequerant($requerant)
+            ->setRedacteur($redacteur)
+            ->setDateCreation($dateCreation)
+        ;
+
+        $dossier
+            ->setTestEligibilite(
+                TestEligibilite::fromArray(
+                    array_merge(
+                        $donneesTestEligibilite,
+                        [
+                            'requerant' => $dossier->getRequerant(),
+                            'dateSoumission' => $dossier->getDateCreation(),
+                        ]
+                    ),
+                )
+            )
+        ;
+
+        foreach (self::historiqueTheorique($etatActuel) as $etat) {
+            $historique[] = (new EtatDossier())
+                ->setEtat($etat)
+                ->setDateEntree(
+                    empty($historique)
+                        ? $dossier->getDateCreation()
+                        : (clone ($historique[count($historique) - 1])->getDate())->modify(sprintf('+ %d minutes', random_int(10, 3 * 24 * 60)))
+                )
+                ->setRequerant(in_array($etat, [EtatDossierType::DOSSIER_A_FINALISER, EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_OK_A_VERIFIER]) ? $dossier->getRequerant() : null)
+                ->setAgent($this->getAgentPourEtat($dossier, $etat))
+            ;
+        }
+
+        $dossier->setHistoriqueEtats($historique);
+
+        if (EtatDossierType::DOSSIER_A_FINALISER !== $etatActuel) {
+            $dossier->setReference(
+                sprintf(
+                    'BRI/%s/%s',
+                    $date = $dossier->getEtat(EtatDossierType::DOSSIER_A_ATTRIBUER)->getDate()->format('Ymd'),
+                    str_pad(count(self::$REGISTRE_DOSSIERS[$date] ?? []) + 1, 3, '0', STR_PAD_LEFT)
+                )
+            );
+
+            self::$REGISTRE_DOSSIERS[$date][] = $dossier;
+        }
+
+        return $dossier;
+    }
+
+    protected function getAgentPourEtat(BrisPorte $dossier, EtatDossierType $etat): ?Agent
+    {
+        return match ($etat) {
+            EtatDossierType::DOSSIER_A_INSTRUIRE => $this->getReference('agent-attributeur', Agent::class),
+            EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER, EtatDossierType::DOSSIER_OK_VERIFIE => $dossier->getRedacteur(),
+            EtatDossierType::DOSSIER_KO_REJETE, EtatDossierType::DOSSIER_OK_A_APPROUVER, EtatDossierType::DOSSIER_OK_A_INDEMNISER => $this->getReference('agent-validateur', Agent::class),
+            default => null
+        };
+    }
+
+    protected function getCacheKey(): string
+    {
+        return 'fixture-dossier';
     }
 }

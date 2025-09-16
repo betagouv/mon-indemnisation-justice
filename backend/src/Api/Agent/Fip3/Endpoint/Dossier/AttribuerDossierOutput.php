@@ -19,7 +19,7 @@ final class AttribuerDossierOutput
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     public \DateTimeInterface $dateEntree;
     #[Map(source: 'agent', transform: [AgentIdTransformer::class])]
-    public int $redacteur;
+    public int $agent;
     // public string $redacteur;
     // public ?array $contexte;
 }

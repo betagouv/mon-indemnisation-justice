@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip3\Endpoint\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\Fip3\Output\DossierPropositionASignerOutput;
+use MonIndemnisationJustice\Api\Agent\Fip3\Output\DossierEnAttenteIndemnisationOutput;
 use MonIndemnisationJustice\Api\Agent\Fip3\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -14,11 +14,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Route API qui retourne à un agent validateur la liste des dossiers dont la proposition d'indemnisation est à signer.
+ * Route API qui retourne à un agent chargé de la liaison avec le Bureau du Budget la liste des dossiers à transmettre.
  */
-#[Route('/api/agent/fip3/dossiers/liste/proposition-a-signer', name: 'api_agent_dossiers_liste_proposition_a_signer', methods: ['GET'])]
-#[IsGranted(DossierVoter::ACTION_LISTER_PROPOSITION_A_SIGNER)]
-class ListeDossierPropositionASignerEndpoint
+#[Route('/api/agent/fip3/dossiers/liste/en-attente-indemnisation', name: 'api_agent_dossiers_en_attente_indemnisation', methods: ['GET'])]
+#[IsGranted(DossierVoter::ACTION_LISTER_EN_ATTENTE_INDEMNISATION)]
+class ListerDossierEnAttenteIndemnisationEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
@@ -27,7 +27,7 @@ class ListeDossierPropositionASignerEndpoint
 
     public function __invoke(): Response
     {
-        $dossiers = $this->entityManager->getRepository(BrisPorte::class)->listerDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER);
+        $dossiers = $this->entityManager->getRepository(BrisPorte::class)->listerDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
 
         return new JsonResponse(
             $this->normalizer->normalize(
@@ -37,7 +37,7 @@ class ListeDossierPropositionASignerEndpoint
                     mapper ... Et je n'ai pas non plus réussi à utiliser des _arrow function_ en guise de callable
                     transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
                     */
-                    fn (BrisPorte $dossier) => DossierPropositionASignerOutput::creerDepuisDossier($dossier),
+                    fn (BrisPorte $dossier) => DossierEnAttenteIndemnisationOutput::creerDepuisDossier($dossier),
                     $dossiers
                 ),
                 'json'

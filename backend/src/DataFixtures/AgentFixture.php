@@ -34,11 +34,24 @@ class AgentFixture extends Fixture
                 ->setNom('Tributeur')
                 ->setUid('7301')
                 ->setValide(),
+            'liaison' => (new Agent())
+                ->setIdentifiant('90d7335e-be32-4780-9bb3-6078f4482ece')
+                ->setEmail('liaison@justice.gouv.fr')
+                ->setPrenom('Lison')
+                ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_LIAISON_BUDGET])
+                ->setNom('Bude-Jay')
+                ->setUid('119')
+                ->setValide(),
         ] as $reference => $agent) {
             $manager->persist($agent);
-            $this->addReference("agent-$reference", $agent);
+            $this->addReference("agent-{$reference}", $agent);
         }
 
         $manager->flush();
+    }
+
+    protected function getCacheKey(): string
+    {
+        return 'fixture-agent';
     }
 }

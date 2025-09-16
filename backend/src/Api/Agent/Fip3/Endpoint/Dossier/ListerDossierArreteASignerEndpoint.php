@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip3\Endpoint\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\Fip3\Output\DossierRejetASignerOutput;
+use MonIndemnisationJustice\Api\Agent\Fip3\Output\DossierArreteASignerOutput;
 use MonIndemnisationJustice\Api\Agent\Fip3\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -14,11 +14,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Route API qui retourne à un agent validateur la liste des dossiers dont le courrier de rejet est à signer.
+ * Route API qui retourne à un agent validateur la liste des dossiers dont l'arrêté de paiement est à signer.
  */
-#[Route('/api/agent/fip3/dossiers/liste/rejet-a-signer', name: 'api_agent_dossiers_liste_rejet_a_signer', methods: ['GET'])]
-#[IsGranted(DossierVoter::ACTION_LISTER_REJET_A_SIGNER)]
-class ListeDossierRejetASignerEndpoint
+#[Route('/api/agent/fip3/dossiers/liste/arrete-a-signer', name: 'api_agent_dossiers_liste_arrete_a_signer', methods: ['GET'])]
+#[IsGranted(DossierVoter::ACTION_LISTER_ARRETE_A_SIGNER)]
+class ListerDossierArreteASignerEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
@@ -27,7 +27,7 @@ class ListeDossierRejetASignerEndpoint
 
     public function __invoke(): Response
     {
-        $dossiers = $this->entityManager->getRepository(BrisPorte::class)->listerDossierParEtat(EtatDossierType::DOSSIER_KO_A_SIGNER);
+        $dossiers = $this->entityManager->getRepository(BrisPorte::class)->listerDossierParEtat(EtatDossierType::DOSSIER_OK_VERIFIE);
 
         return new JsonResponse(
             $this->normalizer->normalize(
@@ -37,7 +37,7 @@ class ListeDossierRejetASignerEndpoint
                     mapper ... Et je n'ai pas non plus réussi à utiliser des _arrow function_ en guise de callable
                     transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
                     */
-                    fn (BrisPorte $dossier) => DossierRejetASignerOutput::creerDepuisDossier($dossier),
+                    fn (BrisPorte $dossier) => DossierArreteASignerOutput::creerDepuisDossier($dossier),
                     $dossiers
                 ),
                 'json'
