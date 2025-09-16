@@ -88,7 +88,7 @@ export function ListeDossierATransmettre() {
     ] = useState<DossierATransmettre[]>([]);
 
     useEffect(() => {
-        fetch("/api/agent/dossiers/liste/a-transmettre")
+        fetch("/api/agent/fip3/dossiers/liste/a-transmettre")
             .then((response) => response.json())
             .then((data) =>
                 setDossiers(plainToInstance(DossierATransmettre, data as any[])),
