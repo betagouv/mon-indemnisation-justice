@@ -78,6 +78,7 @@ test("test éligibilité", async ({page}) => {
     await page.getByText("S'inscrire avec une adresse email").click();
 
     // Remplissage du formulaire
+    // TODO générer des données avec https://www.npmjs.com/package/@faker-js/faker
     await page.getByLabel("Civilité").selectOption("Monsieur");
     await page.getByLabel("Prénom").fill("Rick");
     await page.getByLabel("Nom de naissance").fill("Errant");

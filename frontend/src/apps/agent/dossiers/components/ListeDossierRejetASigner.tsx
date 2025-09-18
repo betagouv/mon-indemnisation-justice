@@ -27,7 +27,7 @@ function DossierRejetASignerLigne({
             <div className="fr-col-7 mij-dossier-details">
                 <ul>
                     <li>{dossier.requerant}</li>
-                    <li><u>Motif: </u>{dossier.motif}</li>
+                    <li><u>Motif: </u>{dossier.motif ?? <i>non renseigné</i>}</li>
                     <li>
                         instruction finalisée il y a {periode(dossier.dateDecision)} par <span
                         className="fr-text--bold">{dossier.agentDecision}</span>
