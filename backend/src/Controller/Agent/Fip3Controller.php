@@ -30,19 +30,21 @@ class Fip3Controller extends AbstractController
                         'nom' => $agent->getNom(),
                         'permissions' => array_map(
                             fn (string $role) => preg_replace('/^ROLE_AGENT_/', '', $role),
-                            array_filter(
-                                $agent->getRoles(),
-                                fn (string $role) => in_array(
-                                    $role,
-                                    [
-                                        Agent::ROLE_AGENT_DOSSIER,
-                                        Agent::ROLE_AGENT_REDACTEUR,
-                                        Agent::ROLE_AGENT_GESTION_PERSONNEL,
-                                        Agent::ROLE_AGENT_ATTRIBUTEUR,
-                                        Agent::ROLE_AGENT_VALIDATEUR,
-                                        Agent::ROLE_AGENT_LIAISON_BUDGET,
-                                        Agent::ROLE_AGENT_BETAGOUV,
-                                    ]
+                            array_values(
+                                array_filter(
+                                    $agent->getRoles(),
+                                    fn (string $role) => in_array(
+                                        $role,
+                                        [
+                                            Agent::ROLE_AGENT_DOSSIER,
+                                            Agent::ROLE_AGENT_REDACTEUR,
+                                            Agent::ROLE_AGENT_GESTION_PERSONNEL,
+                                            Agent::ROLE_AGENT_ATTRIBUTEUR,
+                                            Agent::ROLE_AGENT_VALIDATEUR,
+                                            Agent::ROLE_AGENT_LIAISON_BUDGET,
+                                            Agent::ROLE_AGENT_BETAGOUV,
+                                        ]
+                                    )
                                 )
                             )
                         ),

@@ -13,7 +13,8 @@ import {Agent} from "@/common/models";
 import {plainToInstance} from "class-transformer";
 
 const args: any = JSON.parse(document.getElementById('react-args')?.textContent || "") ?? {};
-// Set up a Router instance
+
+// Création du router Tanstack
 const router = createRouter({
     routeTree,
     defaultPreload: 'intent',
