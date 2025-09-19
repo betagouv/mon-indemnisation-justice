@@ -68,7 +68,7 @@ export function ListeDossierArreteASigner() {
 
     // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
     useEffect(() => {
-        fetch("/api/agent/fip3/dossiers/liste/arrete-a-signer")
+        fetch("/api/agent/fip6/dossiers/liste/arrete-a-signer")
             .then((response) => response.json())
             .then((data) =>
                 setDossiers(plainToInstance(DossierArreteASigner, data as any[])),

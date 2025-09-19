@@ -68,7 +68,7 @@ export function ListeDossierPropositionASigner() {
 
     // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
     useEffect(() => {
-        fetch("/api/agent/fip3/dossiers/liste/proposition-a-signer")
+        fetch("/api/agent/fip6/dossiers/liste/proposition-a-signer")
             .then((response) => response.json())
             .then((data) =>
                 setDossiers(plainToInstance(DossierPropositionASigner, data as any[])),

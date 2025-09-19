@@ -60,7 +60,7 @@ class DossierTransitionListener
             $this->mailer
                 ->toAgent($attributeur)
                 ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à attribuer')
-                ->htmlTemplate('email/agent/fip3/dossier_a_attribuer.twig', [
+                ->htmlTemplate('email/agent/fip6/dossier_a_attribuer.twig', [
                     'agent' => $attributeur,
                     'dossier' => $evenement->dossier,
                 ])
@@ -75,7 +75,7 @@ class DossierTransitionListener
         $this->mailer
             ->toAgent($evenement->dossier->getRedacteur())
             ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à instruire')
-            ->htmlTemplate('email/agent/fip3/dossier_a_instruire.twig', [
+            ->htmlTemplate('email/agent/fip6/dossier_a_instruire.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
             ])
@@ -90,7 +90,7 @@ class DossierTransitionListener
             $this->mailer
                 ->toAgent($validateur)
                 ->subject("Mon Indemnisation Justice: vous avez une nouvelle proposition d'indemnisation à signer")
-                ->htmlTemplate('email/agent/fip3/dossier_proposition_a_signer.twig', [
+                ->htmlTemplate('email/agent/fip6/dossier_proposition_a_signer.twig', [
                     'agent' => $validateur,
                     'dossier' => $evenement->dossier,
                 ])
@@ -118,7 +118,7 @@ class DossierTransitionListener
         $this->mailer
             ->toAgent($evenement->dossier->getRedacteur())
             ->subject("Mon Indemnisation Justice: vous avez reçu une déclaration d'acceptation à vérifier")
-            ->htmlTemplate('email/agent/fip3/dossier_proposition_acceptee.twig', [
+            ->htmlTemplate('email/agent/fip6/dossier_proposition_acceptee.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
             ])
@@ -132,7 +132,7 @@ class DossierTransitionListener
             $this->mailer
                 ->toAgent($validateur)
                 ->subject('Mon Indemnisation Justice: vous avez un nouvel arrêté de paiement à signer')
-                ->htmlTemplate('email/agent/fip3/dossier_arrete_a_signer.twig', [
+                ->htmlTemplate('email/agent/fip6/dossier_arrete_a_signer.twig', [
                     'agent' => $validateur,
                     'dossier' => $evenement->dossier,
                 ])
@@ -148,7 +148,7 @@ class DossierTransitionListener
             $this->mailer
                 ->toAgent($agentLiaisonBudget)
                 ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à transmettre à FIP6')
-                ->htmlTemplate('email/agent/fip3/dossier_a_transmettre.twig', [
+                ->htmlTemplate('email/agent/fip6/dossier_a_transmettre.twig', [
                     'agent' => $agentLiaisonBudget,
                     'dossier' => $evenement->dossier,
                 ])

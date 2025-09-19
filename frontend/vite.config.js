@@ -30,9 +30,9 @@ export default defineConfig(({ command, mode }) => {
        tanstackRouter({
         target: 'react',
         autoCodeSplitting: false,
-        routeFileIgnorePrefix: '/agent/fip3',
+        routeFileIgnorePrefix: '/agent/fip6',
         routesDirectory: './src/routes/source',
-        generatedRouteTree: './src/routes/agent-fip3.gen.ts',
+        generatedRouteTree: './src/routes/agent-fip6.gen.ts',
       }),
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
@@ -77,8 +77,8 @@ export default defineConfig(({ command, mode }) => {
             "requerant/dossier/consulter_la_decision":
               "./src/apps/requerant/dossier/consulter_la_decision.tsx",
             // Espace agent
-            "agent/fip3":
-              "./src/apps/agent/fip3.tsx",
+            "agent/fip6":
+              "./src/apps/agent/fip6.tsx",
             "agent/gestion_agents":
               "./src/apps/agent/gestion_agents/gestion_agents_app.tsx",
             "agent/dossiers/recherche":

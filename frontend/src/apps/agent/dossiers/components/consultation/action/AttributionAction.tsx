@@ -21,7 +21,7 @@ const attribuer = async ({
     attributaire: Redacteur;
 }) => {
     const response = await fetch(
-        `/api/agent/fip3/dossier/${dossier.id}/attribuer`,
+        `/api/agent/fip6/dossier/${dossier.id}/attribuer`,
         {
             method: "POST",
             headers: {
