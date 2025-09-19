@@ -9,7 +9,7 @@ class APIDocumentManager implements DocumentManagerInterface {
     async imprimer(document: Document, corps: string): Promise<Document> {
         return new Promise(async (resolve, reject) => {
             const response = await fetch(
-                `/api/agent/fip3/document/${document.id}/imprimer`,
+                `/api/agent/fip6/document/${document.id}/imprimer`,
                 {
                     headers: {
                         "Content-type": "application/json",

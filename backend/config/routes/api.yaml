@@ -1,6 +1,6 @@
 # config/routes/attributes.yaml
-agent_fip3:
+agent_fip6:
   resource:
-    path: ../../src/Api/Agent/Fip3/Endpoint
-    namespace: MonIndemnisationJustice\Api\Agent\Fip3\Endpoint
+    path: ../../src/Api/Agent/Fip6/Endpoint
+    namespace: MonIndemnisationJustice\Api\Agent\Fip6\Endpoint
   type: attribute

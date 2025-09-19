@@ -67,7 +67,7 @@ export function ListeDossierEnAttenteIndemnisation() {
     ] = useState<DossierEnAttenteIndemnisation[]>([]);
 
     useEffect(() => {
-        fetch("/api/agent/fip3/dossiers/liste/en-attente-indemnisation")
+        fetch("/api/agent/fip6/dossiers/liste/en-attente-indemnisation")
             .then((response) => response.json())
             .then((data) =>
                 setDossiers(

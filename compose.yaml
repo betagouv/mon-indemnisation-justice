@@ -146,6 +146,11 @@ services:
       - /app/node_modules
     ports:
       - "5173:5173"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:5173" ]
+      interval: 6s
+      timeout: 5s
+      retries: 5
 
   franceconnect:
     image: pierrelemee/mock-oidc-server

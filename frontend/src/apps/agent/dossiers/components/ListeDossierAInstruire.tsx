@@ -69,7 +69,7 @@ export function ListeDossierAInstruire() {
 
     // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
     useEffect(() => {
-        fetch("/api/agent/fip3/dossiers/liste/a-instruire")
+        fetch("/api/agent/fip6/dossiers/liste/a-instruire")
             .then((response) => response.json())
             .then((data) =>
                 setDossiers(plainToInstance(DossierAInstruire, data as any[])),
