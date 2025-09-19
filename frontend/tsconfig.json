@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "strictNullChecks": true,
     "types": [
       "node",
       "vite/client",

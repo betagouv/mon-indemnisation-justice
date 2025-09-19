@@ -7,7 +7,6 @@ use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
-use MonIndemnisationJustice\Event\DossierConstitueEvent;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
 use MonIndemnisationJustice\Service\DocumentManager;
@@ -70,19 +69,8 @@ class BrisPorteController extends RequerantController
         $requerant = $this->getRequerant();
 
         if (EtatDossierType::DOSSIER_A_FINALISER === $brisPorte->getEtatDossier()->getEtat()) {
-            $brisPorte->setDeclare();
+            $brisPorte->changerStatut(EtatDossierType::DOSSIER_A_ATTRIBUER, requerant: true);
             $this->brisPorteRepository->save($brisPorte);
-
-            $this->mailer
-                ->toRequerant($requerant)
-                ->subject('Votre déclaration de bris de porte a bien été prise en compte')
-                ->htmlTemplate('email/bris_porte_dossier_constitue.html.twig', [
-                    'dossier' => $brisPorte,
-                ])
-                ->send()
-            ;
-
-            $this->eventDispatcher->dispatch(new DossierConstitueEvent($brisPorte));
 
             $this->addFlash('dossier', [
                 'dossier' => $brisPorte,

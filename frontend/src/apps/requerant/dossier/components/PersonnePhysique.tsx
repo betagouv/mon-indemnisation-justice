@@ -16,9 +16,9 @@ interface GeoCommune {
 }
 
 const PersonnePhysique = function PersonnePhysique() {
-    const dossier = useContext(DossierContext);
-    const pays = useContext(PaysContext);
-    const patchDossier = useContext(PatchDossierContext);
+    const dossier = useContext<any>(DossierContext);
+    const pays = useContext<any>(PaysContext);
+    const patchDossier = useContext<any>(PatchDossierContext);
 
     const [paysNaissance, setPaysNaissance] = useState<string>(
         dossier.requerant.personnePhysique.paysNaissance ?? null,
@@ -120,11 +120,17 @@ const PersonnePhysique = function PersonnePhysique() {
                 <div className="fr-col-lg-4 fr-col-6">
                     <Input
                         label="Téléphone"
+                        disabled={dossier.requerant.estFranceConnect}
                         nativeInputProps={{
                             id: randomId(),
                             type: "tel",
                             pattern: "(0,+){1}[0-9]{8,}",
-                            defaultValue: dossier.requerant.telephone || "",
+                            defaultValue: dossier.requerant.personnePhysique.telephone || "",
+                            onChange: (e) => patchDossier({
+                                requerant: {
+                                    personnePhysique: {telephone: e.target.value},
+                                },
+                            })
                         }}
                     />
                 </div>

@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Event\Listener\DossierEntitylistener;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -30,6 +31,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'bris_porte')]
+#[ORM\EntityListeners([DossierEntitylistener::class])]
 #[\AllowDynamicProperties]
 class BrisPorte
 {
@@ -138,7 +140,9 @@ class BrisPorte
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
     {
-        $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
+        if ($this->historiqueEtats->isEmpty()) {
+            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
+        }
     }
 
     #[ORM\PostLoad]
@@ -329,6 +333,13 @@ class BrisPorte
         return $this->dateCreation;
     }
 
+    public function setDateCreation(\DateTimeInterface $dateCreation): static
+    {
+        $this->dateCreation = $dateCreation;
+
+        return $this;
+    }
+
     #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
     #[SerializedName('dateDepot')]
     public function getDateDepotMillis(): ?int
@@ -351,13 +362,6 @@ class BrisPorte
     public function getDateSignatureRequerant(): ?\DateTimeInterface
     {
         return $this->getDateEtat(EtatDossierType::DOSSIER_OK_A_VERIFIER);
-    }
-
-    public function setDeclare(): self
-    {
-        return $this
-            ->changerStatut(EtatDossierType::DOSSIER_A_ATTRIBUER, requerant: true)
-        ;
     }
 
     public function getReference(): ?string

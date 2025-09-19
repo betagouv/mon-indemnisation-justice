@@ -9,8 +9,8 @@ use MonIndemnisationJustice\Entity\Agent;
 /**
  * @extends ServiceEntityRepository<Agent>
  *
- * @method Agent|null find($id, $lockMode = null, $lockVersion = null)
- * @method Agent|null findOneBy(array $criteria, array $orderBy = null)
+ * @method null|Agent find($id, $lockMode = null, $lockVersion = null)
+ * @method null|Agent findOneBy(array $criteria, array $orderBy = null)
  * @method Agent[]    findAll()
  * @method Agent[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
@@ -33,11 +33,12 @@ class AgentRepository extends ServiceEntityRepository
     {
         $qb = $this
             ->createQueryBuilder('a')
-            ->orderBy('a.nom');
+            ->orderBy('a.nom')
+        ;
 
         foreach ($roles as $index => $role) {
-            $qb->orWhere("a.roles LIKE :role$index");
-            $qb->setParameter("role$index", "%$role%");
+            $qb->orWhere("a.roles LIKE :role{$index}");
+            $qb->setParameter("role{$index}", "%{$role}%");
         }
 
         return $qb->getQuery()->getResult();
@@ -54,6 +55,36 @@ class AgentRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne la liste des agents disposant explicitement du rôle 'ROLE_AGENT_ATTRIBUTEUR'.
+     *
+     * @return Agent[]
+     */
+    public function getAttributeurs(): array
+    {
+        return $this->findByRoles([Agent::ROLE_AGENT_ATTRIBUTEUR]);
+    }
+
+    /**
+     * Retourne la liste des agents disposant explicitement du rôle 'ROLE_AGENT_VALIDATEUR'.
+     *
+     * @return Agent[]
+     */
+    public function getValidateurs(): array
+    {
+        return $this->findByRoles([Agent::ROLE_AGENT_VALIDATEUR]);
+    }
+
+    /**
+     * Retourne la liste des agents disposant explicitement du rôle 'ROLE_AGENT_LIAISON_BUDGET'.
+     *
+     * @return Agent[]
+     */
+    public function getAgentsLiaisonBudget(): array
+    {
+        return $this->findByRoles([Agent::ROLE_AGENT_LIAISON_BUDGET]);
+    }
+
+    /**
      * Retourne la liste des agents en attente d'être validés.
      *
      * @return Agent[]
@@ -65,7 +96,8 @@ class AgentRepository extends ServiceEntityRepository
             ->where('a.estValide = false')
             ->orderBy('a.dateCreation', 'DESC')
             ->getQuery()
-            ->getResult();
+            ->getResult()
+        ;
     }
 
     /**
@@ -80,6 +112,7 @@ class AgentRepository extends ServiceEntityRepository
             ->where('a.estValide = true')
             ->orderBy('a.dateCreation', 'DESC')
             ->getQuery()
-            ->getResult();
+            ->getResult()
+        ;
     }
 }

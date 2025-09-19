@@ -38,8 +38,8 @@ class DossierControllerTest extends WebTestCase
         ['page' => $page, 'taille' => $taille, 'total' => $total, 'resultats' => $dossiers] = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals(1, $page);
-        $this->assertEquals(2, $total);
-        $this->assertCount(2, $dossiers);
+        $this->assertEquals(1, $total);
+        $this->assertCount(1, $dossiers);
 
         foreach ($dossiers as $donneesDossier) {
             $dossier = $this->em->getRepository(BrisPorte::class)->find($donneesDossier['id']);
@@ -83,7 +83,7 @@ class DossierControllerTest extends WebTestCase
                 'id' => $dossier->getEtatDossier()->getId(),
                 'etat' => $dossier->getEtatDossier()->getEtat()->value,
                 'dateEntree' => $dossier->getEtatDossier()->getDate()->getTimestamp() * 1000,
-                'redacteur' => null,
+                'redacteur' => $agent->getId(),
             ],
             'dateDepot' => $dossier->getDateDeclaration()->getTimestamp() * 1000,
             'redacteur' => $agent->getId(),

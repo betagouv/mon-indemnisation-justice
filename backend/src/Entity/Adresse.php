@@ -11,6 +11,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: AdresseRepository::class)]
 class Adresse
 {
+    #[ORM\JoinColumn(name: 'commune_code', referencedColumnName: 'code', nullable: true, onDelete: 'SET NULL')]
+    #[ORM\ManyToOne(targetEntity: GeoCommune::class)]
+    protected ?GeoCommune $commune = null;
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -33,15 +36,16 @@ class Adresse
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $localite = null;
 
-    #[ORM\Column(name: 'commune_code', type: 'string', length: 5, nullable: true)]
-    #[ORM\ManyToOne(targetEntity: GeoCommune::class)]
-    protected ?GeoCommune $commune = null;
-
     /**
      * @var Collection<int, BrisPorte>
      */
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'adresse', cascade: [])]
     private Collection $brisPortes;
+
+    public function __construct()
+    {
+        $this->brisPortes = new ArrayCollection();
+    }
 
     public function __toString()
     {
@@ -51,11 +55,6 @@ class Adresse
     public function getLibelle(): string
     {
         return "{$this->getLigne1()} {$this->getCodePostal()} {$this->getLocalite()}";
-    }
-
-    public function __construct()
-    {
-        $this->brisPortes = new ArrayCollection();
     }
 
     public function getId(): ?int

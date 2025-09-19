@@ -2,7 +2,8 @@ import {defineConfig} from "vite";
 
 import {fileURLToPath, URL} from "node:url";
 import symfonyPlugin from "vite-plugin-symfony";
-import reactPlugin from "@vitejs/plugin-react";
+import {default as react} from "@vitejs/plugin-react";
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import legacy from "@vitejs/plugin-legacy";
 import autoprefixer from "autoprefixer";
 import nested from "postcss-nested";
@@ -26,6 +27,13 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     plugins: [
+       tanstackRouter({
+        target: 'react',
+        autoCodeSplitting: false,
+        routeFileIgnorePrefix: '/agent/fip6',
+        routesDirectory: './src/routes/source',
+        generatedRouteTree: './src/routes/agent-fip6.gen.ts',
+      }),
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
         //targets: ['defaults', 'not IE 11'],
@@ -41,7 +49,8 @@ export default defineConfig(({ command, mode }) => {
           manifest: true,
         },
       }),
-      reactPlugin(),
+
+      react(),
     ],
     resolve: {
       alias: {
@@ -67,16 +76,15 @@ export default defineConfig(({ command, mode }) => {
               "./src/apps/requerant/dossier/deposer_mon_dossier.tsx",
             "requerant/dossier/consulter_la_decision":
               "./src/apps/requerant/dossier/consulter_la_decision.tsx",
+            // Espace agent
+            "agent/fip6":
+              "./src/apps/agent/fip6.tsx",
             "agent/gestion_agents":
               "./src/apps/agent/gestion_agents/gestion_agents_app.tsx",
             "agent/dossiers/recherche":
               "./src/apps/agent/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
               "./src/apps/agent/dossiers/consultation_app.tsx",
-            "agent/dossiers/dossiers_a_transmettre":
-              "./src/apps/agent/dossiers/dossiers_a_transmettre.tsx",
-            "agent/dossiers/dossiers_en_attente_indemnisation":
-              "./src/apps/agent/dossiers/dossiers_en_attente_indemnisation.tsx",
           },
         },
         output: {

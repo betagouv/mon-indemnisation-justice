@@ -13,4 +13,8 @@ export class TestEligibilite {
     public rapportAuLogement: RapportAuLogement;
     public aContacteAssurance: boolean;
     public aContacteBailleur?: boolean;
+
+    get estProprietaire(): boolean {
+        return [RapportAuLogement.BAI, RapportAuLogement.PRO].includes(this.rapportAuLogement)
+    }
 }

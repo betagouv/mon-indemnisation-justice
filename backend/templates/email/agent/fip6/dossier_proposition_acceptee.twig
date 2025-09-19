@@ -1,0 +1,32 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% set url_tableau_de_bord = %}
+
+{% block subject %}Mon Indemnisation Justice: vous avez une nouvelle proposition d'indemnisation à signer{% endblock subject %}
+
+{% block entete %}
+    <b>Mon Indemnisation Justice: vous avez une nouvelle proposition d'indemnisation à signer</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+    Bonjour {{ agent.prenom }},
+    <br/>
+    <br/>
+    <p>
+        {% if dossier.etatDossier.agent.NomComplet %} vient de terminer l'instruction du dossier {{ dossier.reference }}
+        avec une proposition d'indemnisation.
+    </p>
+    <p>
+        Vous pouvez voir la liste des propositions d'indemnisation à signer en cliquant sur le bouton ci-dessous :
+    </p>
+    <br/>
+    <p>
+        {{ email.bouton("Dossiers en attente de signature de la proposition d'indemnisation", url('agent_fip3_react', {'extra': "/dossiers/proposition-a-signer"})) }}
+        <br/>
+    </p>
+    <br/>
+    Cordialement,<br/>
+{% endblock contenu %}
