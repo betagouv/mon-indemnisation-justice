@@ -12,6 +12,12 @@ import {Provider} from "inversify-react";
 import {Agent} from "@/common/models";
 import {plainToInstance} from "class-transformer";
 
+declare global {
+    interface Window {
+        dsfr: any;
+    }
+}
+
 const args: any = JSON.parse(document.getElementById('react-args')?.textContent || "") ?? {};
 
 // Création du router Tanstack
