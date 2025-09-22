@@ -12,6 +12,8 @@ import {
 import {Expose, plainToInstance, Transform, Type} from "class-transformer";
 import {action, computed, makeObservable, observable} from "mobx";
 
+export type TypeAttestation = "NOUVELLE_ATTESTATION" | "ANCIENNE_ATTESTATION" | "COURRIER_FDO" | "PAS_ATTESTATION";
+
 export abstract class BaseDossier {
     public readonly id: number;
     public readonly reference: string;
@@ -23,7 +25,7 @@ export abstract class BaseDossier {
     @Expose()
     @Transform(({value}: { value: number }) => Redacteur.resoudre(value))
     public redacteur: Redacteur | null = null;
-    public estLieAttestation?: boolean;
+    public typeAttestation?: TypeAttestation;
     public qualiteRequerant?: string;
 
     @Expose()

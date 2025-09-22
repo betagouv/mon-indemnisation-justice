@@ -12,8 +12,8 @@ use MonIndemnisationJustice\Entity\EtatDossierType;
 /**
  * @extends ServiceEntityRepository<BrisPorte>
  *
- * @method BrisPorte|null find($id, $lockMode = null, $lockVersion = null)
- * @method BrisPorte|null findOneBy(array $criteria, array $orderBy = null)
+ * @method null|BrisPorte find($id, $lockMode = null, $lockVersion = null)
+ * @method null|BrisPorte findOneBy(array $criteria, array $orderBy = null)
  * @method BrisPorte[]    findAll()
  * @method BrisPorte[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
@@ -45,24 +45,27 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->join('d.adresse', 'a')
             ->join('d.requerant', 'r')
             ->join('r.personnePhysique', 'pp')
-            ->orderBy('e.dateEntree', 'DESC');
+            ->orderBy('e.dateEntree', 'DESC')
+        ;
 
         if (!empty($etats)) {
             $qb
                 ->andWhere('e.etat in (:etats)')
-                ->setParameter('etats', $etats);
+                ->setParameter('etats', $etats)
+            ;
         }
 
         if (!empty($filtres)) {
             $wheres = [];
 
             foreach ($filtres as $index => $filtre) {
-                $wheres[] = "LOWER(a.codePostal) LIKE :filtre$index";
-                $wheres[] = "LOWER(a.ligne1) LIKE :filtre$index";
-                $wheres[] = "LOWER(a.localite) LIKE :filtre$index";
-                $wheres[] = "LOWER(pp.nom) LIKE :filtre$index";
-                $wheres[] = "LOWER(pp.prenom1) LIKE :filtre$index";
-                $qb->setParameter("filtre$index", strtolower("%$filtre%"));
+                $wheres[] = "LOWER(a.codePostal) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(a.ligne1) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(a.localite) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(pp.nom) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(pp.prenom1) LIKE :filtre{$index}";
+                $wheres[] = "d.reference LIKE UPPER(:filtre{$index})";
+                $qb->setParameter("filtre{$index}", strtolower("%{$filtre}%"));
             }
             $qb->andWhere($qb->expr()->orX(...$wheres));
         }
@@ -72,7 +75,8 @@ class BrisPorteRepository extends ServiceEntityRepository
                 ->andWhere(
                     'd.redacteur in (:redacteurs)'.($nonAttribue ? ' or d.redacteur is null' : '')
                 )
-                ->setParameter('redacteurs', array_map(fn ($a) => $a->getId(), $attributaires));
+                ->setParameter('redacteurs', array_map(fn ($a) => $a->getId(), $attributaires))
+            ;
         } elseif ($nonAttribue) {
             $qb->andWhere('d.redacteur is null');
         }
@@ -100,7 +104,8 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->where('ed.etat = :etat')
             ->setParameter('etat', $etat)
             ->getQuery()
-            ->getResult();
+            ->getResult()
+        ;
     }
 
     /**
