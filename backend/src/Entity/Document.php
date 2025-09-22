@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Entity\Metadonnees\MetadonneesAttestation;
 use MonIndemnisationJustice\Repository\DocumentRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
@@ -247,6 +248,14 @@ class Document
     public function getMetaDonnees(): ?array
     {
         return $this->metaDonnees;
+    }
+
+    public function getMetaDonneesAttestation(): ?MetadonneesAttestation
+    {
+        return new MetadonneesAttestation(
+            typeAttestation: $this->getMetaDonnee('typeAttestation'),
+            typeInstitutionSecuritePublique: $this->getMetaDonnee('typeInstitutionSecuritePublique'),
+        );
     }
 
     public function setMetaDonnees(array $metaDonnees, bool $merge = false): static

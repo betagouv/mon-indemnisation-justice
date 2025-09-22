@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Event\Listener\DossierEntitylistener;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
@@ -101,6 +102,10 @@ class BrisPorte
     #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
     protected ?InstitutionSecuritePublique $institutionSecuritePublique = null;
 
+    #[Groups(['agent:liste', 'agent:detail'])]
+    #[ORM\Column(length: 20, enumType: TypeAttestation::class, nullable: true)]
+    private ?TypeAttestation $typeAttestation = null;
+
     #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $reference = null;
@@ -142,6 +147,23 @@ class BrisPorte
     {
         if ($this->historiqueEtats->isEmpty()) {
             $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
+        }
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(PreUpdateEventArgs $args): void
+    {
+        if (isset($args->getEntityChangeSet()['documents'])) {
+            $this->typeAttestation = array_reduce(
+                array_filter(
+                    array_map(
+                        fn (Document $document) => $document->getMetaDonneesAttestation()?->typeAttestation,
+                        $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
+                    ),
+                    fn (?TypeAttestation $typeAttestation) => null !== $typeAttestation
+                ),
+                fn (?TypeAttestation $cumul, TypeAttestation $typeAttestation) => $typeAttestation->getPrioritaire($cumul)
+            );
         }
     }
 
@@ -616,37 +638,6 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups(['agent:liste', 'agent:detail'])]
-    #[SerializedName('estLieAttestation')]
-    public function isEstLieAttestation(): ?bool
-    {
-        // Un dossier est considéré comme lié à la nouvelle attestation si ...
-
-        // ... le test d'éligibilité a été inité suite à un scan du QR code
-        if ($this->testEligibilite->estIssuAttestation) {
-            return true;
-        }
-
-        $metadonnees = array_map(
-            fn (Document $d) => $d->getMetaDonnee('estAttestation'),
-            $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION),
-        );
-
-        // ... sinon si au moins une PJ d'attestation est marquée comme nouvelle attestation
-        if (array_any($metadonnees, fn (?bool $m) => true === $m)) {
-            return true;
-        }
-
-        // ... sinon si au moins une PJ d'attestation n'est pas marquée  comme nouvelle attestation alors on ne se
-        // prononce pas
-        if (empty($metadonnees) || array_any($metadonnees, fn (?bool $m) => null === $m)) {
-            return null;
-        }
-
-        // ... sinon non
-        return false;
-    }
-
     public function getInstitutionSecuritePublique(): ?InstitutionSecuritePublique
     {
         return $this->institutionSecuritePublique;
@@ -657,6 +648,11 @@ class BrisPorte
     public function getLibelleInstitutionSecuritePublique(): ?string
     {
         return $this->institutionSecuritePublique?->getType()->value;
+    }
+
+    public function getTypeAttestation(): ?TypeAttestation
+    {
+        return $this->typeAttestation;
     }
 
     protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
