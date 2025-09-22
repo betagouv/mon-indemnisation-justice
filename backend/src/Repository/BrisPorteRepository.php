@@ -7,6 +7,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 
 /**
@@ -119,6 +120,35 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->where('ed.etat = :etat')
             ->setParameter('etat', $etat)
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getSingleScalarResult()
+        ;
+    }
+
+    /**
+     * @return BrisPorte[]
+     */
+    public function getDossierACategoriser(): array
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->select('d')
+            ->distinct()
+            ->join('d.documents', 'dd')
+            ->where('d.typeAttestation is null')
+            ->andWhere('d.reference is not null')
+            ->andWhere('dd.type = :type_document')
+            ->setParameter('type_document', DocumentType::TYPE_ATTESTATION_INFORMATION->value)
+            ->groupBy('d.id')
+            ->having('count(dd.id) > 0')
+        ;
+
+        return $qb
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function compterDossierACategoriser(): int
+    {
+        return count($this->getDossierACategoriser());
     }
 }

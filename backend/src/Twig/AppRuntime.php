@@ -130,6 +130,11 @@ class AppRuntime implements RuntimeExtensionInterface
         return '';
     }
 
+    public function nbDossiersACategoriser(): int
+    {
+        return $this->em->getRepository(BrisPorte::class)->compterDossierACategoriser();
+    }
+
     public function nbDossiersAAttribuer(): int
     {
         return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);

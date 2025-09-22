@@ -84,6 +84,16 @@
                                 </button>
                                 <div class="fr-collapse fr-menu" id="header-menu-dossiers">
                                     <ul class="fr-menu__list">
+                                        {% if app.user.aRole('ROLE_AGENT_BETAGOUV') %}
+                                            <li>
+                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-categoriser'}) }}"
+                                                   class="fr-nav__link">
+                                                    À catégoriser
+                                                    <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_categoriser() }}</p>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+
                                         {% if app.user.aRole('ROLE_AGENT_ATTRIBUTEUR') %}
                                             <li>
                                                 <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-attribuer'}) }}"

@@ -1,5 +1,6 @@
 import {Transform} from "class-transformer";
-import {Agent, DossierDetail} from "@/common/models";
+import {Agent, DossierDetail, TypeInstitutionSecuritePublique} from "@/common/models";
+import {TypeAttestation} from "@/common/models/Dossier.ts";
 
 export class DocumentType {
     private constructor(
@@ -69,6 +70,11 @@ export class DocumentType {
     );
 }
 
+export interface MetaDonneesAttestation {
+    typeAttestation?: TypeAttestation;
+    typeInstitutionSecuritePublique?: TypeInstitutionSecuritePublique;
+}
+
 export class Document {
     public readonly id: number;
     public readonly originalFilename: string;
@@ -84,7 +90,7 @@ export class Document {
             Document.types.find((type: DocumentType) => type.type === value),
     )
     public readonly type: DocumentType;
-    public metaDonnees: any;
+    public metaDonnees: MetaDonneesAttestation | any;
 
     public estEditable(dossier: DossierDetail, agent: Agent): boolean {
         return (
