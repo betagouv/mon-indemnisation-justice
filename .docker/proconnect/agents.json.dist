@@ -9,15 +9,6 @@
         "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
     },
     {
-        "_title": "Policier",
-        "sub": "e316bde4-3d37-4ed8-9001-c40d9b07fe06",
-        "email": "policier@interieur.gouv.fr",
-        "given_name": "Jerome",
-        "usual_name": "Policier",
-        "uid": "567",
-        "idp_id": "e2f13a1f-9f43-4def-a5ed-06dce37d00e6"
-    },
-    {
         "_title": "Liaison budget",
         "sub": "90d7335e-be32-4780-9bb3-6078f4482ece",
         "email": "liaison@justice.gouv.fr",
@@ -45,12 +36,21 @@
         "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
     },
     {
-        "_title": "Pierre (beta)",
-        "sub": "eeb5c5d6-88eb-4d1c-b870-01bb26a84a0a",
-        "email": "pierre.lemee@beta.gouv.fr",
-        "given_name": "Pierre",
-        "usual_name": "Lemée",
-        "uid": "7654",
+        "_title": "Betagouv",
+        "sub": "fd38a059-9f32-4b59-8f01-96d3284bf1cc",
+        "email": "agent@beta.gouv.fr",
+        "given_name": "Betta",
+        "usual_name": "Gouve",
+        "uid": "1337",
         "idp_id": "71144ab3-ee1a-4401-b7b3-79b44f7daeeb"
+    },
+    {
+        "_title": "Policier",
+        "sub": "e316bde4-3d37-4ed8-9001-c40d9b07fe06",
+        "email": "policier@interieur.gouv.fr",
+        "given_name": "Jerome",
+        "usual_name": "Policier",
+        "uid": "567",
+        "idp_id": "e2f13a1f-9f43-4def-a5ed-06dce37d00e6"
     }
 ]

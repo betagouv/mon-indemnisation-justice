@@ -10,6 +10,8 @@ use Faker\Generator;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\GeoCommune;
@@ -91,6 +93,16 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                 ->setDateEntree(new \DateTimeImmutable('-6 days'))
                 ->setRequerant($this->getReference('requerant-melun', Requerant::class)),
         ]);
+
+        $dossierAAttribuer->ajouterDocument(
+            (new Document())
+                ->setFilename('dd84b8ed97fd350cf29bbb229a1f330cb9d89f69e47832e51b18abbcffe425e6.pdf')
+                ->setOriginalFilename("Attestation POLICE")
+                ->setSize(428116)
+                ->setType(DocumentType::TYPE_ATTESTATION_INFORMATION)
+                ->setAjoutRequerant(true)
+                ->setMime('application/pdf')
+        );
 
         $manager->persist($dossierAAttribuer);
 
