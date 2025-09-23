@@ -1,3 +1,4 @@
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import React, {StrictMode} from 'react'
 import '@/apps/_init'
 import {
@@ -19,6 +20,9 @@ declare global {
 }
 
 const args: any = JSON.parse(document.getElementById('react-args')?.textContent || "") ?? {};
+
+// Création du query client Tanstack
+const queryClient = new QueryClient()
 
 // Création du router Tanstack
 const router = createRouter({
@@ -45,9 +49,11 @@ if (!rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement)
     root.render(
         <StrictMode>
-            <Provider container={container}>
-                <RouterProvider router={router}/>
-            </Provider>
+            <QueryClientProvider client={queryClient}>
+                <Provider container={container}>
+                    <RouterProvider router={router}/>
+                </Provider>
+            </QueryClientProvider>
         </StrictMode>
     );
 }

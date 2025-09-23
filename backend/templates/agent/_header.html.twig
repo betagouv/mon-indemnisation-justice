@@ -73,7 +73,7 @@
                         <li class="fr-nav__item">
                             <a href="{{ url('agent_mon_compte') }}" class="fr-nav__link">Mon compte</a>
                         </li>
-                        {% if app.user.aRole('ROLE_AGENT_ATTRIBUTEUR', 'ROLE_AGENT_REDACTEUR', 'ROLE_AGENT_VALIDATEUR', 'ROLE_AGENT_LIAISON_BUDGET') %}
+                        {% if app.user.aRole('ROLE_AGENT_ATTRIBUTEUR', 'ROLE_AGENT_REDACTEUR', 'ROLE_AGENT_VALIDATEUR', 'ROLE_AGENT_LIAISON_BUDGET', 'ROLE_AGENT_BETAGOUV') %}
                             <li class="fr-nav__item">
                                 <button
                                         aria-expanded="false"
