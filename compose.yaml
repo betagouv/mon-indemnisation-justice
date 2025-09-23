@@ -182,7 +182,7 @@ services:
     environment:
       PORT: 9998
       HOST: '0.0.0.0'
-      USERS: "/app/data/users.json"
+      USERS: "/app/data/agents.json"
     working_dir: /app
     volumes:
       - ./.docker/proconnect:/app/data/

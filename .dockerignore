@@ -5,7 +5,9 @@ frontend/node_modules/
 frontend/.vite/
 frontend/preview/
 docs/
-end2end/
+end2end/**
+!end2end/package.json
+!end2end/playwright.config.ts
 fichiers/
 **/.gitkeep
 **/.gitignore
