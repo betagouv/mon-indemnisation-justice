@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Agent\Fip6\Endpoint\Document;
+namespace MonIndemnisationJustic\Tests\Api\Agent\Fip6\Endpoint\Document;
 
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;

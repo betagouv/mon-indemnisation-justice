@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "./liste/dossier-liste-element.css";
 import {plainToInstance} from "class-transformer";
@@ -11,6 +11,116 @@ import {Select} from "@codegouvfr/react-dsfr/Select";
 import {libellesTypeAttestation} from "@/common/models/TypeAttestation.ts";
 import {TypeAttestation} from "@/common/models/Dossier.ts";
 import {MetaDonneesAttestation} from "@/common/models/Document.ts";
+
+export function FormulaireCategorisationAttestation({pieceJointe, suivant}: {
+    pieceJointe: Document,
+    suivant: () => void
+}) {
+
+    const [metaDonnees, setMetaDonnees] = useState<MetaDonneesAttestation>({
+        typeAttestation: undefined,
+        typeInstitutionSecuritePublique: undefined,
+        ...pieceJointe.metaDonnees as MetaDonneesAttestation
+    })
+
+    const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
+
+    const renseignerMetaDonnees = useCallback(
+        async (metaDonnees: MetaDonneesAttestation) => {
+            setSauvegardeEnCours(true);
+            const reponse = await fetch(`/api/agent/fip6/document/attestation/${pieceJointe.id}/meta-donnees/renseigner`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': "application/json",
+                    'Accept': "application/json",
+                },
+                body: JSON.stringify({
+                    ...metaDonnees,
+                }),
+            })
+
+            if (reponse.ok) {
+                pieceJointe.metaDonnees = metaDonnees;
+                setSauvegardeEnCours(false);
+                setMetaDonnees({
+                    typeAttestation: undefined,
+                    typeInstitutionSecuritePublique: undefined,
+                })
+                suivant()
+            }
+        },
+        [pieceJointe.id]
+    );
+
+
+    return <div className="fr-grid-row fr-grid-row--gutters">
+
+        <div className="fr-col-9">
+            <PieceJointe pieceJointe={pieceJointe}/>
+        </div>
+
+        <div className="fr-col-3">
+            <Select
+                label="Type d'attestation"
+                className="fr-col-12"
+                nativeSelectProps={{
+                    value: metaDonnees.typeAttestation || "",
+                    onChange: (event) => {
+                        setMetaDonnees({
+                            ...metaDonnees,
+                            typeAttestation: event.target.value as TypeAttestation,
+                        });
+                    }
+                }}
+            >
+                <option value="">Inconnu</option>
+                {libellesTypeAttestation.map(([typeAttestation, libelle]) => (
+                    <option value={typeAttestation} key={typeAttestation}>
+                        {libelle}
+                    </option>
+                ))}
+            </Select>
+
+            <Select
+                label="Type de forces de l'ordre"
+                className="fr-col-12"
+                nativeSelectProps={{
+                    value: metaDonnees.typeInstitutionSecuritePublique || "",
+                    onChange: (event) => {
+                        setMetaDonnees({
+                            ...metaDonnees,
+                            typeInstitutionSecuritePublique: event.target.value as TypeInstitutionSecuritePublique || null
+                        });
+                    }
+                }}
+            >
+                <option value={""}>Inconnu</option>
+                {InstitutionSecuritePublique.entries().map(([type, institution]) => (
+                    <option value={type} key={type}>
+                        {institution.libelle()}
+                    </option>
+                ))}
+            </Select>
+
+
+            <ButtonsGroup
+                inlineLayoutWhen="always"
+                alignment="right"
+                buttonsIconPosition="left"
+                buttonsEquisized={false}
+                buttonsSize="medium"
+                buttons={[
+                    {
+                        priority: sauvegardeEnCours ? "tertiary no outline" : "primary",
+                        children: sauvegardeEnCours ? "Sauvegarde..." : "Valider",
+                        disabled: sauvegardeEnCours || metaDonnees.typeAttestation === undefined,
+                        onClick: async () => renseignerMetaDonnees(metaDonnees)
+                    },
+                ]}
+            />
+        </div>
+    </div>
+}
 
 function DossierACategoriserLigne({dossier, estSelectionnee, selection}: {
     dossier: DossierACategoriser;
@@ -51,93 +161,6 @@ function DossierACategoriserLigne({dossier, estSelectionnee, selection}: {
     );
 }
 
-export function FormulaireCategorisationAttestation({pieceJointe, suivant}: {
-    pieceJointe: Document,
-    suivant: () => void
-}) {
-
-    const [metaDonnees, setMetaDonnees] = useState<MetaDonneesAttestation>({
-        typeAttestation: undefined,
-        typeInstitutionSecuritePublique: undefined,
-        ...pieceJointe.metaDonnees as MetaDonneesAttestation
-    })
-
-
-    return <div className="fr-grid-row fr-grid-row--gutters">
-
-        <div className="fr-col-9">
-            <PieceJointe pieceJointe={pieceJointe}/>
-        </div>
-
-        <div className="fr-col-3">
-            <Select
-                label="Type d'attestation"
-                className="fr-col-12"
-                nativeSelectProps={{
-                    value: metaDonnees.typeInstitutionSecuritePublique || "",
-                    onChange: (event) => {
-                        setMetaDonnees({
-                            ...metaDonnees,
-                            typeAttestation: event.target.value as TypeAttestation,
-                        });
-                    }
-                }}
-            >
-                <option value="">Inconnu</option>
-                {libellesTypeAttestation.map(([typeAttestation, libelle]) => (
-                    <option value={typeAttestation} key={typeAttestation}>
-                        {libelle}
-                    </option>
-                ))}
-            </Select>
-
-            <Select
-                label="Forces de l'ordre"
-                className="fr-col-12"
-                nativeSelectProps={{
-                    value: metaDonnees.typeInstitutionSecuritePublique || "",
-                    onChange: (event) => {
-                        setMetaDonnees({
-                            ...metaDonnees,
-                            typeInstitutionSecuritePublique: event.target.value as TypeInstitutionSecuritePublique || null
-                        });
-                    }
-                }}
-            >
-                <option value={""}>Inconnu</option>
-                {InstitutionSecuritePublique.entries().map(([type, institution]) => (
-                    <option value={type} key={type}>
-                        {institution.libelle()}
-                    </option>
-                ))}
-            </Select>
-
-
-            <ButtonsGroup
-                inlineLayoutWhen="always"
-                alignment="right"
-                buttonsIconPosition="left"
-                buttonsEquisized={false}
-                buttonsSize="medium"
-                buttons={[
-                    {
-                        priority: "primary",
-                        children: "Suivant",
-                        disabled: metaDonnees.typeAttestation === undefined || metaDonnees.typeInstitutionSecuritePublique === undefined,
-                        onClick: () => {
-                            setMetaDonnees({
-                                typeAttestation: undefined,
-                                typeInstitutionSecuritePublique: undefined,
-                            })
-                            suivant()
-                        }
-                    },
-                ]}
-            />
-        </div>
-    </div>
-}
-
 export function ListeDossierACategoriser() {
     const [dossiers, setDossiers]: [
         DossierACategoriser[],
@@ -157,6 +180,11 @@ export function ListeDossierACategoriser() {
         } else {
             setSelection(new Set([...selection, dossier]));
         }
+    }
+
+    const retirerDossier = (dossier: DossierACategoriser) => {
+        setDossiers(dossiers.filter((d: DossierACategoriser) => d != dossier))
+        setSelection(new Set([...selection].filter(((d: DossierACategoriser) => d != dossier))))
     }
 
     // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
@@ -203,6 +231,7 @@ export function ListeDossierACategoriser() {
                                                         setDossier([...selection][[...selection].indexOf(dossier) + 1]);
                                                         setIndiceDocument(0);
                                                     }
+                                                    retirerDossier(dossier)
 
                                                 } else {
                                                     setIndiceDocument((indiceDocument) => indiceDocument + 1)
