@@ -1,3 +1,4 @@
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "./liste/dossier-liste-element.css";
@@ -162,10 +163,17 @@ function DossierACategoriserLigne({dossier, estSelectionnee, selection}: {
 }
 
 export function ListeDossierACategoriser() {
-    const [dossiers, setDossiers]: [
-        DossierACategoriser[],
-        (dossiers: DossierACategoriser[]) => void,
-    ] = useState<DossierACategoriser[]>([]);
+    const queryClient = useQueryClient();
+
+    const { isPending, isError, data: dossiers = [], error } = useQuery<DossierACategoriser[]>(
+        {
+            queryKey: ['dossier-a-categoriser'],
+            queryFn: async () => {
+                const reponse = await fetch("/api/agent/fip6/dossiers/liste/a-categoriser")
+                return plainToInstance(DossierACategoriser, await reponse.json() as any[]);
+            }
+
+    });
 
     const refModale = useRef(null);
 
@@ -183,18 +191,9 @@ export function ListeDossierACategoriser() {
     }
 
     const retirerDossier = (dossier: DossierACategoriser) => {
-        setDossiers(dossiers.filter((d: DossierACategoriser) => d != dossier))
+        queryClient.setQueryData(['dossier-a-categoriser'], dossiers?.filter((d: DossierACategoriser) => d != dossier) || [])
         setSelection(new Set([...selection].filter(((d: DossierACategoriser) => d != dossier))))
     }
-
-    // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
-    useEffect(() => {
-        fetch("/api/agent/fip6/dossiers/liste/a-categoriser")
-            .then((response) => response.json())
-            .then((data) =>
-                setDossiers(plainToInstance(DossierACategoriser, data as any[])),
-            );
-    }, []);
 
     return (
         <>
@@ -254,14 +253,17 @@ export function ListeDossierACategoriser() {
                 éléments figurant sur l'attestation.
             </p>
 
-            <h4>
-                {dossiers.length ? (
-                    <>
-                        {dossiers.length} dossier{dossiers.length > 1 ? "s" : ""}
-                    </>
-                ) : <>Aucun dossier</>
-                }
-            </h4>
+            {isPending ?
+                <h4>Chargement des dossiers...</h4> :
+                <h4>
+                    {dossiers?.length ? (
+                        <>
+                            {dossiers.length} dossier{dossiers.length > 1 ? "s" : ""}
+                        </>
+                    ) : <>Aucun dossier</>
+                    }
+                </h4>
+            }
 
             <div className="fr-grid-row">
                 <div className="fr-col-6">

@@ -17,12 +17,12 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  * pièces jointes d'attestation.
  */
 #[Route('/api/agent/fip6/dossiers/liste/a-categoriser', name: 'api_agent_dossiers_liste_a_categoriser', methods: ['GET'])]
-#[IsGranted(DossierVoter::ACTION_LISTER_A_ATTRIBUER)]
-class ListerDossierACategoriserEndpoint
+#[IsGranted(DossierVoter::ACTION_LISTER_A_CATEGORISER, message:"La liste des dossiers à catégoriser est réservée aux membres de la Startup d'État", statusCode: Response::HTTP_UNAUTHORIZED)]
+readonly class ListerDossierACategoriserEndpoint
 {
     public function __construct(
-        protected readonly EntityManagerInterface $entityManager,
-        protected readonly NormalizerInterface $normalizer,
+        protected EntityManagerInterface $entityManager,
+        protected NormalizerInterface    $normalizer,
     ) {}
 
     public function __invoke(): Response
