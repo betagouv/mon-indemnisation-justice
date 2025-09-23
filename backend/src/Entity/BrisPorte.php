@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Event\Listener\DossierEntitylistener;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
@@ -103,8 +102,8 @@ class BrisPorte
     protected ?InstitutionSecuritePublique $institutionSecuritePublique = null;
 
     #[Groups(['agent:liste', 'agent:detail'])]
-    #[ORM\Column(length: 20, enumType: TypeAttestation::class, nullable: true)]
-    private ?TypeAttestation $typeAttestation = null;
+    #[ORM\Column(length: 20, nullable: true, enumType: TypeAttestation::class)]
+    protected ?TypeAttestation $typeAttestation = null;
 
     #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(length: 20, nullable: true)]
@@ -147,23 +146,6 @@ class BrisPorte
     {
         if ($this->historiqueEtats->isEmpty()) {
             $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
-        }
-    }
-
-    #[ORM\PreUpdate]
-    public function onPreUpdate(PreUpdateEventArgs $args): void
-    {
-        if (isset($args->getEntityChangeSet()['documents'])) {
-            $this->typeAttestation = array_reduce(
-                array_filter(
-                    array_map(
-                        fn (Document $document) => $document->getMetaDonneesAttestation()?->typeAttestation,
-                        $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
-                    ),
-                    fn (?TypeAttestation $typeAttestation) => null !== $typeAttestation
-                ),
-                fn (?TypeAttestation $cumul, TypeAttestation $typeAttestation) => $typeAttestation->getPrioritaire($cumul)
-            );
         }
     }
 
@@ -653,6 +635,30 @@ class BrisPorte
     public function getTypeAttestation(): ?TypeAttestation
     {
         return $this->typeAttestation;
+    }
+
+    public function recalculerMetaDonnees(): void
+    {
+        $this->typeAttestation = array_reduce(
+            array_filter(
+                array_map(
+                    fn (Document $document) => $document->getMetaDonneesAttestation()?->typeAttestation,
+                    $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
+                ),
+                fn (?TypeAttestation $typeAttestation) => null !== $typeAttestation
+            ),
+            fn (?TypeAttestation $cumul, TypeAttestation $typeAttestation) => $typeAttestation->getPrioritaire($cumul)
+        );
+
+        /*
+        $this->institutionSecuritePublique = array_filter(
+            array_map(
+                fn (Document $document) => $document->getMetaDonneesAttestation()?->typeInstitutionSecuritePublique,
+                $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
+            ),
+            fn (?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique) => null !== $typeInstitutionSecuritePublique
+        )[0] ?? null;
+        */
     }
 
     protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface

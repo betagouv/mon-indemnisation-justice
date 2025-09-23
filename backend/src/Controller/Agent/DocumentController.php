@@ -9,8 +9,6 @@ use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Document;
-use MonIndemnisationJustice\Entity\DocumentType;
-use MonIndemnisationJustice\Entity\TypeInstitutionSecuritePublique;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,33 +31,7 @@ class DocumentController extends AbstractController
         protected readonly FilesystemOperator $storage,
         protected readonly EntityManagerInterface $em,
         protected readonly LoggerInterface $logger,
-    ) {
-    }
-
-    #[Route('/{id}/meta-donnees', name: 'agent_document_metadonnees', methods: ['PUT', 'PATCH'])]
-    public function metaDonnees(#[MapEntity(id: 'id')] Document $document, Request $request): Response
-    {
-        if (DocumentType::TYPE_ATTESTATION_INFORMATION === $document->getType()) {
-            $document->setMetaDonnees(
-                array_merge(
-                    $request->getPayload()->has('estAttestation') ? [
-                        'estAttestation' => $request->getPayload()->getBoolean('estAttestation'),
-                    ] : [],
-                    $request->getPayload()->has('typeInstitutionSecuritePublique') ? [
-                        'typeInstitutionSecuritePublique' => TypeInstitutionSecuritePublique::tryFrom(
-                            $request->getPayload()->getString('typeInstitutionSecuritePublique')
-                        ),
-                    ] : []
-                ),
-
-                'PATCH' === $request->getMethod()
-            );
-            $this->em->persist($document);
-            $this->em->flush();
-        }
-
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
+    ) {}
 
     #[Route('/{id}/{hash}', name: 'agent_document_download', methods: ['GET'])]
     public function download(#[MapEntity] Document $document, string $hash, Request $request): Response
@@ -72,7 +44,8 @@ class DocumentController extends AbstractController
             if (!$this->storage->has($document->getFilename())) {
                 return new Response('', Response::HTTP_NOT_FOUND);
             }
-            /** @var $stream resource */
+
+            /** @var resource $stream */
             $stream = $this->storage->readStream($document->getFilename());
 
             return new StreamedResponse(
@@ -90,7 +63,7 @@ class DocumentController extends AbstractController
                     'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', mb_convert_encoding($document->getOriginalFilename(), 'ISO-8859-1', 'UTF-8')),
                 ]
             );
-        } catch (UnableToReadFile|FilesystemException|NoSuchKeyException $e) {
+        } catch (FilesystemException|NoSuchKeyException|UnableToReadFile $e) {
             $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId()]);
 
             return new Response('', Response::HTTP_NOT_FOUND);
