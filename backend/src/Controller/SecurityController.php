@@ -35,8 +35,7 @@ class SecurityController extends AbstractController
         protected readonly OidcClient $oidcClientRequerant,
         #[Autowire(service: 'oidc_client_pro_connect')]
         protected readonly OidcClient $oidcClientAgent,
-    ) {
-    }
+    ) {}
 
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(Request $request): Response
@@ -58,7 +57,7 @@ class SecurityController extends AbstractController
         }
 
         return $this->render('security/connexion.html.twig', [
-            'last_username' => $lastUsername,
+            'last_username' => $request->getSession()->getFlashBag()->get('connexion', [null])[0] ?? $lastUsername,
             'error_message' => $errorMessage,
             'france_connect_url' => $this->oidcClientRequerant->buildAuthorizeUrl($request, 'requerant_securite_connexion'),
             'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
@@ -113,7 +112,8 @@ class SecurityController extends AbstractController
                         ->htmlTemplate('email/mot_de_passe_oublie.html.twig', [
                             'requerant' => $requerant,
                         ])
-                        ->send();
+                        ->send()
+                    ;
                 }
 
                 $this->addFlash('success', [
@@ -161,11 +161,11 @@ class SecurityController extends AbstractController
                     ]);
 
                     return $this->redirectToRoute('app_login');
-                } else {
-                    /** @var FormError $error */
-                    foreach ($form->getErrors(true) as $key => $error) {
-                        $errors[$error->getOrigin()?->getName()] = $error->getMessage();
-                    }
+                }
+
+                /** @var FormError $error */
+                foreach ($form->getErrors(true) as $key => $error) {
+                    $errors[$error->getOrigin()?->getName()] = $error->getMessage();
                 }
             }
         }
