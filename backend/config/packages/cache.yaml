@@ -1,7 +1,21 @@
+services:
+  adapter_limitateur_connexion:
+    parent: cache.adapter.doctrine_dbal
+    arguments:
+      $connOrDsn: '@doctrine.dbal.default_connection'
+      $options:
+        db_table: '_cache_limitateur_connexion'
+
+
 framework:
-    cache:
-        app: cache.adapter.filesystem
-        system: cache.adapter.system
-        pools:
-            oidc:
-                adapter: cache.adapter.filesystem
+  cache:
+    app: cache.adapter.filesystem
+    system: cache.adapter.system
+    default_doctrine_dbal_provider: 'doctrine.dbal.default_connection'
+    pools:
+      oidc:
+        adapter: cache.adapter.filesystem
+      limitateur_connexion:
+        adapter: 'adapter_limitateur_connexion'
+
+
