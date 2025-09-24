@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Exception\TooManyLoginAttemptsAuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
@@ -35,7 +36,8 @@ class SecurityController extends AbstractController
         protected readonly OidcClient $oidcClientRequerant,
         #[Autowire(service: 'oidc_client_pro_connect')]
         protected readonly OidcClient $oidcClientAgent,
-    ) {}
+    ) {
+    }
 
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(Request $request): Response
@@ -44,6 +46,10 @@ class SecurityController extends AbstractController
         $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
 
         $errorMessage = '';
+
+        if ($error instanceof TooManyLoginAttemptsAuthenticationException) {
+            $errorMessage = 'Trop de tentatives de connexion, veuillez attendre quelques minutes avant de ré-essayer';
+        }
         if ($error && $error->getMessage()) {
             $errorMessage = 'Identifiants invalides';
         }
