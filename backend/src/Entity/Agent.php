@@ -214,6 +214,11 @@ class Agent implements UserInterface
         return in_array($role, $this->getRoles());
     }
 
+    /**
+     * Indique si l'agent possède *au moins un* des rôles.
+     *
+     * @param string[] $roles
+     */
     public function aRole(...$roles): bool
     {
         return count(array_intersect($roles, $this->getRoles())) > 0;

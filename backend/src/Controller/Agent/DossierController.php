@@ -489,8 +489,8 @@ class DossierController extends AgentController
                     fn ($a) => is_numeric($a)
                 ),
             ]),
-            self::extraireCritereRecherche($request, 'r'),
-            in_array('_', self::extraireCritereRecherche($request, 'a'))
+            filtres: self::extraireCritereRecherche($request, 'r'),
+            nonAttribue: in_array('_', self::extraireCritereRecherche($request, 'a'))
         );
 
         return new JsonResponse(

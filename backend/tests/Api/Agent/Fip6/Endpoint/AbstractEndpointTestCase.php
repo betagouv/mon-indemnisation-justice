@@ -57,6 +57,11 @@ abstract class AbstractEndpointTestCase extends WebTestCase
         $this->apiRequest('POST', $contenu, $parametresDeRoute);
     }
 
+    protected function apiPut(array|string $contenu, array $parametresDeRoute = []): void
+    {
+        $this->apiRequest('PUT', $contenu, $parametresDeRoute);
+    }
+
     protected function construireApiRoute(array $parametres = []): string
     {
         $route = $this->getApiRoute();

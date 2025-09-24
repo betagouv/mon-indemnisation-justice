@@ -585,15 +585,6 @@ export const ConsultationDossierApp = observer(
                                                                     </>
                                                                 )}
 
-                                                                {/* Partie spécifique au type de pièce jointe */}
-                                                                {pieceJointe.type ==
-                                                                    DocumentType.TYPE_ATTESTATION_INFORMATION && (
-                                                                        <MetaDonneesAttestationForm
-                                                                            className="fr-col-12 fr-mb-2w"
-                                                                            document={pieceJointe}
-                                                                        />
-                                                                    )}
-
                                                                 <PieceJointe
                                                                     pieceJointe={pieceJointe}
                                                                     className="fr-col-12"

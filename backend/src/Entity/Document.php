@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Entity\Metadonnees\MetadonneesAttestation;
 use MonIndemnisationJustice\Repository\DocumentRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
@@ -16,31 +17,24 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 #[\AllowDynamicProperties]
 class Document
 {
+    #[ORM\Column(nullable: true)]
+    public ?bool $estValide = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    public ?\DateTimeInterface $dateValidation = null;
+
+    #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    public ?Agent $validateur = null;
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     protected ?int $id = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Groups(['dossier:lecture', 'requerant:detail'])]
-    private ?string $filename = null;
-
-    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
-    #[ORM\Column(length: 40, enumType: DocumentType::class)]
-    private DocumentType $type;
-
     #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true)]
     protected ?string $mime = null;
-
-    #[Groups(['dossier:lecture', 'agent:detail'])]
-    #[ORM\Column(nullable: true)]
-    private ?int $size = null;
-
-    #[Groups(['dossier:lecture', 'requerant:detail', 'agent:detail'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $originalFilename = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected \DateTimeInterface $dateAjout;
@@ -55,16 +49,6 @@ class Document
     #[Groups(['agent:detail'])]
     protected ?bool $estAjoutRequerant = null;
 
-    #[ORM\Column(nullable: true)]
-    public ?bool $estValide = null;
-
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    public ?\DateTimeInterface $dateValidation = null;
-
-    #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    public ?Agent $validateur = null;
-
     #[Groups(['agent:detail'])]
     #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $corps = null;
@@ -77,6 +61,22 @@ class Document
     #[Ignore]
     /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['dossier:lecture', 'requerant:detail'])]
+    private ?string $filename = null;
+
+    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
+    #[ORM\Column(length: 40, enumType: DocumentType::class)]
+    private DocumentType $type;
+
+    #[Groups(['dossier:lecture', 'agent:detail'])]
+    #[ORM\Column(nullable: true)]
+    private ?int $size = null;
+
+    #[Groups(['dossier:lecture', 'requerant:detail', 'agent:detail'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $originalFilename = null;
 
     public function __construct()
     {
@@ -220,15 +220,6 @@ class Document
         return $this->setValidation(false, $agent);
     }
 
-    protected function setValidation(bool $estValide, Agent $agent): self
-    {
-        $this->estValide = $estValide;
-        $this->dateValidation = new \DateTimeImmutable();
-        $this->validateur = $agent;
-
-        return $this;
-    }
-
     #[Groups(['agent:detail', 'requerant:detail'])]
     public function getFileHash(): string
     {
@@ -249,9 +240,34 @@ class Document
         return $this->metaDonnees;
     }
 
+    public function getMetaDonneesAttestation(): ?MetadonneesAttestation
+    {
+        return new MetadonneesAttestation(
+            typeAttestation: ($typeAttestation = $this->getMetaDonnee('typeAttestation')) instanceof TypeAttestation ? $typeAttestation : TypeAttestation::tryFrom($typeAttestation),
+            typeInstitutionSecuritePublique: ($typeInstitutionSecuritePublique = $this->getMetaDonnee('typeInstitutionSecuritePublique')) instanceof TypeInstitutionSecuritePublique ? $typeInstitutionSecuritePublique : TypeInstitutionSecuritePublique::tryFrom($typeInstitutionSecuritePublique),
+        );
+    }
+
+    public function setMetaDonneesAttestation(MetadonneesAttestation $metaDonnees, bool $merge = false): static
+    {
+        return $this->setMetaDonnees([
+            'typeAttestation' => $metaDonnees->typeAttestation,
+            'typeInstitutionSecuritePublique' => $metaDonnees->typeInstitutionSecuritePublique,
+        ], $merge);
+    }
+
     public function setMetaDonnees(array $metaDonnees, bool $merge = false): static
     {
         $this->metaDonnees = $merge ? array_merge($this->metaDonnees ?? [], $metaDonnees) : $metaDonnees;
+
+        return $this;
+    }
+
+    protected function setValidation(bool $estValide, Agent $agent): self
+    {
+        $this->estValide = $estValide;
+        $this->dateValidation = new \DateTimeImmutable();
+        $this->validateur = $agent;
 
         return $this;
     }

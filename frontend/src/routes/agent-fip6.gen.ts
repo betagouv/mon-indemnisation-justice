@@ -17,6 +17,7 @@ import { Route as AgentFip6DossiersArreteASignerRouteImport } from './source/age
 import { Route as AgentFip6DossiersAVerifierRouteImport } from './source/agent/fip6/dossiers/a-verifier'
 import { Route as AgentFip6DossiersATransmettreRouteImport } from './source/agent/fip6/dossiers/a-transmettre'
 import { Route as AgentFip6DossiersAInstruireRouteImport } from './source/agent/fip6/dossiers/a-instruire'
+import { Route as AgentFip6DossiersACategoriserRouteImport } from './source/agent/fip6/dossiers/a-categoriser'
 import { Route as AgentFip6DossiersAAttribuerRouteImport } from './source/agent/fip6/dossiers/a-attribuer'
 
 const AgentIndexRoute = AgentIndexRouteImport.update({
@@ -66,6 +67,12 @@ const AgentFip6DossiersAInstruireRoute =
     path: '/agent/fip6/dossiers/a-instruire',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AgentFip6DossiersACategoriserRoute =
+  AgentFip6DossiersACategoriserRouteImport.update({
+    id: '/agent/fip6/dossiers/a-categoriser',
+    path: '/agent/fip6/dossiers/a-categoriser',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AgentFip6DossiersAAttribuerRoute =
   AgentFip6DossiersAAttribuerRouteImport.update({
     id: '/agent/fip6/dossiers/a-attribuer',
@@ -76,6 +83,7 @@ const AgentFip6DossiersAAttribuerRoute =
 export interface FileRoutesByFullPath {
   '/agent': typeof AgentIndexRoute
   '/agent/fip6/dossiers/a-attribuer': typeof AgentFip6DossiersAAttribuerRoute
+  '/agent/fip6/dossiers/a-categoriser': typeof AgentFip6DossiersACategoriserRoute
   '/agent/fip6/dossiers/a-instruire': typeof AgentFip6DossiersAInstruireRoute
   '/agent/fip6/dossiers/a-transmettre': typeof AgentFip6DossiersATransmettreRoute
   '/agent/fip6/dossiers/a-verifier': typeof AgentFip6DossiersAVerifierRoute
@@ -87,6 +95,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/agent': typeof AgentIndexRoute
   '/agent/fip6/dossiers/a-attribuer': typeof AgentFip6DossiersAAttribuerRoute
+  '/agent/fip6/dossiers/a-categoriser': typeof AgentFip6DossiersACategoriserRoute
   '/agent/fip6/dossiers/a-instruire': typeof AgentFip6DossiersAInstruireRoute
   '/agent/fip6/dossiers/a-transmettre': typeof AgentFip6DossiersATransmettreRoute
   '/agent/fip6/dossiers/a-verifier': typeof AgentFip6DossiersAVerifierRoute
@@ -99,6 +108,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/agent/': typeof AgentIndexRoute
   '/agent/fip6/dossiers/a-attribuer': typeof AgentFip6DossiersAAttribuerRoute
+  '/agent/fip6/dossiers/a-categoriser': typeof AgentFip6DossiersACategoriserRoute
   '/agent/fip6/dossiers/a-instruire': typeof AgentFip6DossiersAInstruireRoute
   '/agent/fip6/dossiers/a-transmettre': typeof AgentFip6DossiersATransmettreRoute
   '/agent/fip6/dossiers/a-verifier': typeof AgentFip6DossiersAVerifierRoute
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/agent'
     | '/agent/fip6/dossiers/a-attribuer'
+    | '/agent/fip6/dossiers/a-categoriser'
     | '/agent/fip6/dossiers/a-instruire'
     | '/agent/fip6/dossiers/a-transmettre'
     | '/agent/fip6/dossiers/a-verifier'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
   to:
     | '/agent'
     | '/agent/fip6/dossiers/a-attribuer'
+    | '/agent/fip6/dossiers/a-categoriser'
     | '/agent/fip6/dossiers/a-instruire'
     | '/agent/fip6/dossiers/a-transmettre'
     | '/agent/fip6/dossiers/a-verifier'
@@ -134,6 +146,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/agent/'
     | '/agent/fip6/dossiers/a-attribuer'
+    | '/agent/fip6/dossiers/a-categoriser'
     | '/agent/fip6/dossiers/a-instruire'
     | '/agent/fip6/dossiers/a-transmettre'
     | '/agent/fip6/dossiers/a-verifier'
@@ -146,6 +159,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AgentIndexRoute: typeof AgentIndexRoute
   AgentFip6DossiersAAttribuerRoute: typeof AgentFip6DossiersAAttribuerRoute
+  AgentFip6DossiersACategoriserRoute: typeof AgentFip6DossiersACategoriserRoute
   AgentFip6DossiersAInstruireRoute: typeof AgentFip6DossiersAInstruireRoute
   AgentFip6DossiersATransmettreRoute: typeof AgentFip6DossiersATransmettreRoute
   AgentFip6DossiersAVerifierRoute: typeof AgentFip6DossiersAVerifierRoute
@@ -213,6 +227,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentFip6DossiersAInstruireRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agent/fip6/dossiers/a-categoriser': {
+      id: '/agent/fip6/dossiers/a-categoriser'
+      path: '/agent/fip6/dossiers/a-categoriser'
+      fullPath: '/agent/fip6/dossiers/a-categoriser'
+      preLoaderRoute: typeof AgentFip6DossiersACategoriserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agent/fip6/dossiers/a-attribuer': {
       id: '/agent/fip6/dossiers/a-attribuer'
       path: '/agent/fip6/dossiers/a-attribuer'
@@ -226,6 +247,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   AgentIndexRoute: AgentIndexRoute,
   AgentFip6DossiersAAttribuerRoute: AgentFip6DossiersAAttribuerRoute,
+  AgentFip6DossiersACategoriserRoute: AgentFip6DossiersACategoriserRoute,
   AgentFip6DossiersAInstruireRoute: AgentFip6DossiersAInstruireRoute,
   AgentFip6DossiersATransmettreRoute: AgentFip6DossiersATransmettreRoute,
   AgentFip6DossiersAVerifierRoute: AgentFip6DossiersAVerifierRoute,

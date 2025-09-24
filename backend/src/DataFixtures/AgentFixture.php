@@ -42,6 +42,14 @@ class AgentFixture extends Fixture
                 ->setNom('Bude-Jay')
                 ->setUid('119')
                 ->setValide(),
+            'betagouv' => (new Agent())
+                ->setIdentifiant('fd38a059-9f32-4b59-8f01-96d3284bf1cc')
+                ->setEmail('betagouv@justice.gouv.fr')
+                ->setPrenom('Betta')
+                ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_BETAGOUV, Agent::ROLE_AGENT_DOSSIER])
+                ->setNom('Gouve')
+                ->setUid('1337')
+                ->setValide(),
         ] as $reference => $agent) {
             $manager->persist($agent);
             $this->addReference("agent-{$reference}", $agent);
