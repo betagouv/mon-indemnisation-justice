@@ -33,5 +33,3 @@ RUN rm -Rf /assets/*
 
 WORKDIR /app/public
 
-CMD ["/bin/bash", "-c", "/app/bin/console doctrine:migration:migrate --no-interaction --all-or-nothing && frankenphp php-server ./index.php"]
-
