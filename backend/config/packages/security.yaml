@@ -48,6 +48,10 @@ security:
         check_path: app_login
         enable_csrf: true
         default_target_path: requerant_home_index
+      login_throttling:
+        max_attempts: 5
+        interval: '20 minutes'
+        limiter: security.limitateur_connexion
       custom_authenticators:
         - MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator
       logout:

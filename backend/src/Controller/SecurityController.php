@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Exception\TooManyLoginAttemptsAuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
@@ -45,6 +46,10 @@ class SecurityController extends AbstractController
         $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
 
         $errorMessage = '';
+
+        if ($error instanceof TooManyLoginAttemptsAuthenticationException) {
+            $errorMessage = 'Trop de tentatives de connexion, veuillez attendre quelques minutes avant de ré-essayer';
+        }
         if ($error && $error->getMessage()) {
             $errorMessage = 'Identifiants invalides';
         }
@@ -58,7 +63,7 @@ class SecurityController extends AbstractController
         }
 
         return $this->render('security/connexion.html.twig', [
-            'last_username' => $lastUsername,
+            'last_username' => $request->getSession()->getFlashBag()->get('connexion', [null])[0] ?? $lastUsername,
             'error_message' => $errorMessage,
             'france_connect_url' => $this->oidcClientRequerant->buildAuthorizeUrl($request, 'requerant_securite_connexion'),
             'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
@@ -113,7 +118,8 @@ class SecurityController extends AbstractController
                         ->htmlTemplate('email/mot_de_passe_oublie.html.twig', [
                             'requerant' => $requerant,
                         ])
-                        ->send();
+                        ->send()
+                    ;
                 }
 
                 $this->addFlash('success', [
@@ -161,11 +167,11 @@ class SecurityController extends AbstractController
                     ]);
 
                     return $this->redirectToRoute('app_login');
-                } else {
-                    /** @var FormError $error */
-                    foreach ($form->getErrors(true) as $key => $error) {
-                        $errors[$error->getOrigin()?->getName()] = $error->getMessage();
-                    }
+                }
+
+                /** @var FormError $error */
+                foreach ($form->getErrors(true) as $key => $error) {
+                    $errors[$error->getOrigin()?->getName()] = $error->getMessage();
                 }
             }
         }

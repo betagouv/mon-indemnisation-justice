@@ -1,0 +1,18 @@
+framework:
+    rate_limiter:
+        # Utilisé pour limiter le nombre de tentatives de connexion via adresse courriel
+        limitateur_connexion:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '20 minutes'
+            cache_pool: limitateur_connexion
+
+services:
+  security.limitateur_connexion:
+        class: Symfony\Component\Security\Http\RateLimiter\DefaultLoginRateLimiter
+        arguments:
+            # globalFactory is the limiter for IP
+            $globalFactory: '@limiter.limitateur_connexion'
+            # localFactory is the limiter for username+IP
+            $localFactory: '@limiter.limitateur_connexion'
+            $secret: '%kernel.secret%'

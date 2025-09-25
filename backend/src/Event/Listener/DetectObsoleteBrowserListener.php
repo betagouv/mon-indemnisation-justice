@@ -1,6 +1,6 @@
 <?php
 
-namespace MonIndemnisationJustice\Event;
+namespace MonIndemnisationJustice\Event\Listener;
 
 use DeviceDetector\DeviceDetector;
 use DeviceDetector\Parser\Device\AbstractDeviceParser;
