@@ -300,13 +300,12 @@ export const RechercheDossierApp = observer(({agent}: { agent: Agent }) => {
                                                                             </p>
                                                                         )}
                                                                         <br/>
-                                                                        {dossier.typeAttestation ? (
-                                                                            <b>Oui</b>
-                                                                        ) : dossier.typeAttestation === 'NOUVELLE_ATTESTATION' ? (
-                                                                            <>Non</>
-                                                                        ) : (
-                                                                            <i>-</i>
-                                                                        )}
+                                                                        {
+                                                                            dossier.typeAttestation === 'NOUVELLE_ATTESTATION' ?
+                                                                                <b>Oui</b> :
+                                                                                !!dossier.typeAttestation ? <>Non</> :
+                                                                                    <i>-</i>
+                                                                        }
                                                                     </td>
                                                                     <td className="fr-col-2">
                                                                         {dossier.redacteur ? (

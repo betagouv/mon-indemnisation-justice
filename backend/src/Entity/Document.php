@@ -229,7 +229,7 @@ class Document
     public function getMetaDonnee(string $key): mixed
     {
         if (is_array($this->metaDonnees)) {
-            return @$this->metaDonnees[$key];
+            return @$this->metaDonnees[$key] ?? null;
         }
 
         return null;
@@ -243,16 +243,16 @@ class Document
     public function getMetaDonneesAttestation(): ?MetadonneesAttestation
     {
         return new MetadonneesAttestation(
-            typeAttestation: ($typeAttestation = $this->getMetaDonnee('typeAttestation')) instanceof TypeAttestation ? $typeAttestation : TypeAttestation::tryFrom($typeAttestation),
-            typeInstitutionSecuritePublique: ($typeInstitutionSecuritePublique = $this->getMetaDonnee('typeInstitutionSecuritePublique')) instanceof TypeInstitutionSecuritePublique ? $typeInstitutionSecuritePublique : TypeInstitutionSecuritePublique::tryFrom($typeInstitutionSecuritePublique),
+            typeAttestation: TypeAttestation::tryFrom($this->getMetaDonnee('typeAttestation')),
+            typeInstitutionSecuritePublique: TypeInstitutionSecuritePublique::tryFrom($this->getMetaDonnee('typeInstitutionSecuritePublique'))
         );
     }
 
     public function setMetaDonneesAttestation(MetadonneesAttestation $metaDonnees, bool $merge = false): static
     {
         return $this->setMetaDonnees([
-            'typeAttestation' => $metaDonnees->typeAttestation,
-            'typeInstitutionSecuritePublique' => $metaDonnees->typeInstitutionSecuritePublique,
+            'typeAttestation' => $metaDonnees->typeAttestation?->value ?? null,
+            'typeInstitutionSecuritePublique' => $metaDonnees->typeInstitutionSecuritePublique?->value ?? null,
         ], $merge);
     }
 

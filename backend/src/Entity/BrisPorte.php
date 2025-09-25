@@ -97,9 +97,8 @@ class BrisPorte
     protected ?string $descriptionRequerant;
 
     #[Groups(['agent:detail'])]
-    #[ORM\ManyToOne(cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'type_institution_securite_publique', nullable: true, referencedColumnName: 'type')]
-    protected ?InstitutionSecuritePublique $institutionSecuritePublique = null;
+    #[ORM\Column(length: 2, nullable: true, enumType: TypeInstitutionSecuritePublique::class)]
+    protected ?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique = null;
 
     #[Groups(['agent:liste', 'agent:detail'])]
     #[ORM\Column(length: 20, nullable: true, enumType: TypeAttestation::class)]
@@ -620,18 +619,6 @@ class BrisPorte
         return $this;
     }
 
-    public function getInstitutionSecuritePublique(): ?InstitutionSecuritePublique
-    {
-        return $this->institutionSecuritePublique;
-    }
-
-    #[Groups(['agent:detail'])]
-    #[SerializedName('institutionSecuritePublique')]
-    public function getLibelleInstitutionSecuritePublique(): ?string
-    {
-        return $this->institutionSecuritePublique?->getType()->value;
-    }
-
     public function getTypeAttestation(): ?TypeAttestation
     {
         return $this->typeAttestation;
@@ -650,15 +637,17 @@ class BrisPorte
             fn (?TypeAttestation $cumul, TypeAttestation $typeAttestation) => $typeAttestation->getPrioritaire($cumul)
         );
 
-        /*
-        $this->institutionSecuritePublique = array_filter(
+        $typeInstitutionSecuritePublique = current(array_filter(
             array_map(
                 fn (Document $document) => $document->getMetaDonneesAttestation()?->typeInstitutionSecuritePublique,
                 $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
             ),
             fn (?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique) => null !== $typeInstitutionSecuritePublique
-        )[0] ?? null;
-        */
+        )) ?? null;
+
+        if (false !== $typeInstitutionSecuritePublique) {
+            $this->typeInstitutionSecuritePublique = $typeInstitutionSecuritePublique;
+        }
     }
 
     protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
