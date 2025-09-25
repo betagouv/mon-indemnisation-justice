@@ -7,7 +7,7 @@ import {
     Redacteur,
     Requerant,
     TestEligibilite,
-    InstitutionSecuritePublique,
+    InstitutionSecuritePublique, TypeInstitutionSecuritePublique,
 } from ".";
 import {Expose, plainToInstance, Transform, Type} from "class-transformer";
 import {action, computed, makeObservable, observable} from "mobx";
@@ -165,7 +165,7 @@ export class DossierDetail extends BaseDossier {
         Document.types.map((type: DocumentType) => [type.type, []]),
     );
 
-    public institutionSecuritePublique?: InstitutionSecuritePublique;
+    public typeInstitutionSecuritePublique?: TypeInstitutionSecuritePublique;
 
     constructor() {
         super();
