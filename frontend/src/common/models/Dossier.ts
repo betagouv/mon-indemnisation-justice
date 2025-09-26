@@ -17,7 +17,7 @@ export type TypeAttestation = "NOUVELLE_ATTESTATION" | "ANCIENNE_ATTESTATION" | 
 export abstract class BaseDossier {
     public readonly id: number;
     public readonly reference: string;
-    public montantIndemnisation: number | null = null;
+    public montantIndemnisation?: number;
 
     @Type(() => EtatDossier)
     public etat: EtatDossier;

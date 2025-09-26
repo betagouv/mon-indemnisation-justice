@@ -1,0 +1,7 @@
+{
+   "rules": {
+      "avoidEscape": true,
+      "allowTemplateLiterals": true,
+     "quotes": "off"
+   }
+}
