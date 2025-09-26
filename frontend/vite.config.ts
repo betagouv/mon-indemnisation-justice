@@ -1,38 +1,31 @@
-import {defineConfig} from "vite";
+/// <reference types="./types" />
 
-import {fileURLToPath, URL} from "node:url";
+import { defineConfig, loadEnv, UserConfig, UserConfigExport } from "vite";
+import { fileURLToPath, URL } from "node:url";
 import symfonyPlugin from "vite-plugin-symfony";
-import {default as react} from "@vitejs/plugin-react";
-import { tanstackRouter } from '@tanstack/router-plugin/vite'
+import { default as react } from "@vitejs/plugin-react";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import legacy from "@vitejs/plugin-legacy";
+import postcssNesting from "postcss-nesting";
 import autoprefixer from "autoprefixer";
-import nested from "postcss-nested";
 
-// Vite will ignore native environment variables, unless they're declared in local `.env` file
-// (see https://github.com/vitejs/vite/issues/562)
-// Here we load them dynamically
-import.meta.env = import.meta.env ?? {};
-
-Object.entries(process.env)
-  .filter(([key, value]) => key.startsWith("VITE_"))
-  .forEach(([key, value]) => (import.meta.env[key] = value));
-
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(({ mode }: UserConfig): UserConfigExport => {
+  process.env = mode ? { ...process.env, ...loadEnv(mode, process.cwd()) } : {};
 
   return {
-    cacheDir: import.meta.env.VITE_CACHE_DIR ?? "node_modules/.vite",
+    cacheDir: process.env.VITE_CACHE_DIR ?? "node_modules/.vite",
     css: {
       postcss: {
-        plugins: [autoprefixer(), nested()],
+        map: true,
       },
     },
     plugins: [
-       tanstackRouter({
-        target: 'react',
+      tanstackRouter({
+        target: "react",
         autoCodeSplitting: false,
-        routeFileIgnorePrefix: '/agent/fip6',
-        routesDirectory: './src/routes/source',
-        generatedRouteTree: './src/routes/agent-fip6.gen.ts',
+        routeFileIgnorePrefix: "/agent/fip6",
+        routesDirectory: "./src/routes/source",
+        generatedRouteTree: "./src/routes/agent-fip6.gen.ts",
       }),
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
@@ -45,9 +38,6 @@ export default defineConfig(({ command, mode }) => {
       symfonyPlugin({
         originOverride: "https://mon-indemnisation.justice.gouv.dev",
         stimulus: false,
-        build: {
-          manifest: true,
-        },
       }),
 
       react(),
@@ -60,7 +50,7 @@ export default defineConfig(({ command, mode }) => {
     esbuild: false,
     build: {
       target: "es2015",
-      modulePreload: true,
+      modulePreload: false,
       sourcemap: true,
       minify: mode === "production",
       emptyOutDir: false,
@@ -77,8 +67,7 @@ export default defineConfig(({ command, mode }) => {
             "requerant/dossier/consulter_la_decision":
               "./src/apps/requerant/dossier/consulter_la_decision.tsx",
             // Espace agent
-            "agent/fip6":
-              "./src/apps/agent/fip6.tsx",
+            "agent/fip6": "./src/apps/agent/fip6.tsx",
             "agent/gestion_agents":
               "./src/apps/agent/gestion_agents/gestion_agents_app.tsx",
             "agent/dossiers/recherche":

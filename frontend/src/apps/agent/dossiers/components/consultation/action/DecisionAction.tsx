@@ -1,6 +1,6 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { plainToInstance } from "class-transformer";
-import React, { FormEvent, useState } from "react";
+import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
 
 import {
   Agent,
@@ -11,24 +11,76 @@ import {
 } from "@/common/models";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { observer } from "mobx-react-lite";
-import { makeAutoObservable, makeObservable } from "mobx";
+import { makeAutoObservable } from "mobx";
 import {
   EditeurDocument,
   EditeurMode,
 } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 
 const _modale = createModal({
   id: "modale-action-decider",
   isOpenedByDefault: false,
 });
 
-type EtapeDecision = "choix_motif" | "choix_montant" | "edition_courrier";
+// TODO convertir en class https://stackoverflow.com/a/47443987/4558679 pour connaitre le rang de l'étape
+class EtapeDecision {
+  public static VERIFICATION_PI = new EtapeDecision(
+    4,
+    "Vérifier et valider les informations",
+  );
+  public static EDITION_DECLARATION_ACCEPTATION = new EtapeDecision(
+    3,
+    "Éditer la déclaration d'acceptation",
+    EtapeDecision.VERIFICATION_PI,
+  );
+  public static EDITION_COURRIER_PI = new EtapeDecision(
+    2,
+    "Éditer de la proposition d'indemnisation",
+    EtapeDecision.EDITION_DECLARATION_ACCEPTATION,
+  );
+  public static CHOIX_MONTANT_INDEMNISATION = new EtapeDecision(
+    1,
+    "Définir le montant de l'indemnisation",
+    EtapeDecision.EDITION_COURRIER_PI,
+  );
+  public static VERIFICATION_REJET = new EtapeDecision(
+    3,
+    "Vérifier et valider les informations",
+  );
+  public static EDITION_COURRIER_REJET = new EtapeDecision(
+    2,
+    "Éditer du courrier de rejet",
+    EtapeDecision.VERIFICATION_REJET,
+  );
+  public static readonly CHOIX_MOTIF_REJET = new EtapeDecision(
+    1,
+    "Définir le motif de refus",
+    EtapeDecision.EDITION_COURRIER_REJET,
+  );
+
+  private constructor(
+    public readonly rang: number,
+    public readonly titre: string,
+    public readonly suivant: EtapeDecision | null = null,
+  ) {}
+
+  get longueur(): number {
+    return this.rang + (this.suivant?.profondeur ?? 0);
+  }
+
+  protected get profondeur(): number {
+    return 1 + (this.suivant?.profondeur ?? 0);
+  }
+}
+
+//type EtapeDecision = "choix_motif" | "choix_montant" | "edition_courrier";
 type MotifRefus = "est_bailleur" | "est_vise" | "est_hebergeant" | "autre";
 
 class EtatDecision {
-  decision?: boolean;
-  etape?: EtapeDecision;
+  decision: boolean;
+  etape: EtapeDecision;
   montantIndemnisation?: number;
   motifRefus?: MotifRefus;
   courrier?: Document;
@@ -39,40 +91,36 @@ class EtatDecision {
 
   opterAcceptation() {
     this.decision = true;
-    this.etape = "choix_montant";
+    this.etape = EtapeDecision.CHOIX_MONTANT_INDEMNISATION;
   }
 
   async accepter(dossier: DossierDetail, montantIndemnisation?: number) {
-    if (
-      this.decision !== true ||
-      montantIndemnisation !== this.montantIndemnisation
-    ) {
+    if (!this.decision || montantIndemnisation !== this.montantIndemnisation) {
       this.decision = true;
       this.montantIndemnisation = montantIndemnisation;
 
       await this.genererCourrier(dossier);
     }
-    this.etape = "edition_courrier";
+
+    if (this.etape.suivant) this.etape = this.etape.suivant;
   }
 
   opterRejet() {
     this.decision = false;
-    this.etape = "choix_motif";
+    this.etape = EtapeDecision.CHOIX_MOTIF_REJET;
   }
 
   async rejeter(dossier: DossierDetail, motifRefus?: MotifRefus) {
-    if (this.decision !== false || motifRefus !== this.motifRefus) {
+    if (this.decision || motifRefus !== this.motifRefus) {
       this.decision = false;
       this.motifRefus = motifRefus;
 
       await this.genererCourrier(dossier);
     }
-    this.etape = "edition_courrier";
+    if (this.etape.suivant) this.etape = this.etape.suivant;
   }
 
-  annuler() {
-    this.decision = null;
-  }
+  annuler() {}
 
   setCourrier(courrier: Document): void {
     this.courrier = courrier;
@@ -134,6 +182,89 @@ const estEnAttenteDecision = ({
 }) =>
   dossier.enAttenteDecision && agent.estRedacteur() && agent.instruit(dossier);
 
+const DefinirMotifRefus = ({
+  motifRejet,
+  setMotifRejet,
+}: {
+  motifRejet?: MotifRefus;
+  setMotifRejet: Dispatch<SetStateAction<MotifRefus>>;
+}) => {
+  return (
+    <>
+      <div className="fr-select-group fr-col-12">
+        <label
+          className="fr-label"
+          htmlFor="dossier-decision-acceptation-motif-champs"
+        >
+          Motif du refus
+        </label>
+
+        <select
+          className="fr-select"
+          defaultValue={motifRejet}
+          onChange={(e) => setMotifRejet(e.target.value as MotifRefus)}
+        >
+          <option value="est_bailleur">
+            Le requérant est le bailleur (art. 1732)
+          </option>
+          <option value="est_vise">
+            Le requérant était visé par l'opération
+          </option>
+          <option value="est_hebergeant">
+            Le requérant hébergeait la personne visé par l'opération
+          </option>
+          <option value="autre">Autre raison</option>
+        </select>
+      </div>
+    </>
+  );
+};
+
+const DefinirMontantIndemnisation = ({
+  montantIndemnisation,
+  setMontantIndemnisation,
+}: {
+  montantIndemnisation: number;
+  setMontantIndemnisation: Dispatch<SetStateAction<number>>;
+}) => {
+  return (
+    <div className="fr-input-group fr-col-12">
+      <label
+        className="fr-label"
+        htmlFor="dossier-decision-acceptation-indemnisation-champs"
+      >
+        Montant de l'indemnisation
+      </label>
+      <div className="fr-input-wrap fr-icon-money-euro-circle-line">
+        <input
+          className="fr-input"
+          defaultValue={montantIndemnisation}
+          onInput={(e: FormEvent<HTMLInputElement>) => {
+            const value = (e.target as HTMLInputElement).value;
+            if (value?.match(/^\d+(.\d{0,2})?$/)) {
+              setMontantIndemnisation(parseFloat(value?.replace(",", ".")));
+            }
+          }}
+          aria-describedby="dossier-decision-acceptation-indemnisation-messages"
+          id="dossier-decision-acceptation-indemnisation-champs"
+          type="number"
+          step=".01"
+          inputMode="numeric"
+        />
+      </div>
+      {!montantIndemnisation && (
+        <div
+          className="fr-messages-group fr-message--error fr-my-1w"
+          id="dossier-decision-acceptation-indemnisation-messages"
+          aria-live="polite"
+        >
+          <span>Vous devez définir un montant d'indemnisation</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const DeciderModale = observer(function DeciderActionModale({
   dossier,
   agent,
@@ -158,15 +289,12 @@ export const DeciderModale = observer(function DeciderActionModale({
   ] = useState(100);
 
   // Mémorise le motif de rejet
-  const [motifRejet, setMotifRejet]: [
-    MotifRefus | null,
-    (motif?: MotifRefus) => void,
-  ] = useState(
+  const [motifRejet, setMotifRejet] = useState<MotifRefus>(
     dossier.qualiteRequerant == "PRO"
       ? "est_bailleur"
-      : dossier.testEligibilite.estVise
+      : dossier.testEligibilite?.estVise
         ? "est_vise"
-        : dossier.testEligibilite.estHebergeant
+        : dossier.testEligibilite?.estHebergeant
           ? "est_hebergeant"
           : "autre",
   );
@@ -176,7 +304,6 @@ export const DeciderModale = observer(function DeciderActionModale({
 
   const annuler = () => {
     _modale.close();
-    etatDecision.annuler();
   };
 
   const deciderDossier = async ({
@@ -212,7 +339,7 @@ export const DeciderModale = observer(function DeciderActionModale({
       dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
       // TODO améliorer ça en gérant le cas des documents multiple ou non
       dossier.viderDocumentParType(DocumentType.TYPE_ARRETE_PAIEMENT);
-      dossier.addDocument(etatDecision.courrier);
+      if (etatDecision.courrier) dossier.addDocument(etatDecision.courrier);
     }
 
     _modale.close();
@@ -237,34 +364,20 @@ export const DeciderModale = observer(function DeciderActionModale({
       }
       size="large"
     >
-      {/* Choix du motif de rejet */}
-      {etatDecision.etape === "choix_motif" && (
-        <>
-          <div className="fr-select-group fr-col-12">
-            <label
-              className="fr-label"
-              htmlFor="dossier-decision-acceptation-motif-champs"
-            >
-              Motif du refus
-            </label>
+      <Stepper
+        currentStep={etatDecision.etape?.rang}
+        stepCount={etatDecision.etape?.longueur}
+        title={etatDecision.etape?.titre}
+        nextTitle={etatDecision.etape?.suivant?.titre}
+      />
 
-            <select
-              className="fr-select"
-              defaultValue={motifRejet}
-              onChange={(e) => setMotifRejet(e.target.value as MotifRefus)}
-            >
-              <option value="est_bailleur">
-                Le requérant est le bailleur (art. 1732)
-              </option>
-              <option value="est_vise">
-                Le requérant était visé par l'opération
-              </option>
-              <option value="est_hebergeant">
-                Le requérant hébergeait la personne visé par l'opération
-              </option>
-              <option value="autre">Autre raison</option>
-            </select>
-          </div>
+      {/* Choix du motif de rejet */}
+      {etatDecision.etape === EtapeDecision.CHOIX_MOTIF_REJET && (
+        <>
+          <DefinirMotifRefus
+            motifRejet={etatDecision.motifRefus}
+            setMotifRejet={etatDecision.opterRejet}
+          />
           <ButtonsGroup
             inlineLayoutWhen="always"
             buttonsIconPosition="right"
@@ -276,7 +389,6 @@ export const DeciderModale = observer(function DeciderActionModale({
                 priority: "tertiary no outline",
                 onClick: () => {
                   _modale.close();
-                  etatDecision.annuler();
                 },
               },
               {
@@ -295,44 +407,8 @@ export const DeciderModale = observer(function DeciderActionModale({
       )}
 
       {/* Choix du montant de l'indemnisation */}
-      {etatDecision.etape === "choix_montant" && (
+      {etatDecision.etape === EtapeDecision.CHOIX_MONTANT_INDEMNISATION && (
         <>
-          <div className="fr-input-group fr-col-12">
-            <label
-              className="fr-label"
-              htmlFor="dossier-decision-acceptation-indemnisation-champs"
-            >
-              Montant de l'indemnisation
-            </label>
-            <div className="fr-input-wrap fr-icon-money-euro-circle-line">
-              <input
-                className="fr-input"
-                defaultValue={montantIndemnisation}
-                onInput={(e: FormEvent<HTMLInputElement>) => {
-                  const value = (e.target as HTMLInputElement).value;
-                  setMontantIndemnisation(
-                    value?.match(/^\d+(.\d{0,2})?$/)
-                      ? parseFloat(value?.replace(",", "."))
-                      : null,
-                  );
-                }}
-                aria-describedby="dossier-decision-acceptation-indemnisation-messages"
-                id="dossier-decision-acceptation-indemnisation-champs"
-                type="number"
-                step=".01"
-                inputMode="numeric"
-              />
-            </div>
-            {!montantIndemnisation && (
-              <div
-                className="fr-messages-group fr-message--error fr-my-1w"
-                id="dossier-decision-acceptation-indemnisation-messages"
-                aria-live="polite"
-              >
-                <span>Vous devez définir un montant d'indemnisation</span>
-              </div>
-            )}
-          </div>
           <ButtonsGroup
             inlineLayoutWhen="always"
             buttonsIconPosition="right"
@@ -344,7 +420,6 @@ export const DeciderModale = observer(function DeciderActionModale({
                 priority: "tertiary no outline",
                 onClick: () => {
                   _modale.close();
-                  etatDecision.annuler();
                 },
               },
               {
@@ -362,12 +437,11 @@ export const DeciderModale = observer(function DeciderActionModale({
         </>
       )}
 
-      {etatDecision.etape === "edition_courrier" && (
+      {etatDecision.etape === EtapeDecision.EDITION_COURRIER_PI && (
         <>
           <EditeurDocument
             className="fr-my-2w"
             document={etatDecision.courrier}
-            mode={editeurMode}
             onImprime={(document: Document) =>
               etatDecision.setCourrier(document)
             }
@@ -398,9 +472,10 @@ export const DeciderModale = observer(function DeciderActionModale({
                   : "fr-icon-chat-delete-line",
                 onClick: () => {
                   if (etatDecision.decision) {
-                    etatDecision.etape = "choix_montant";
+                    etatDecision.etape =
+                      EtapeDecision.CHOIX_MONTANT_INDEMNISATION;
                   } else {
-                    etatDecision.etape = "choix_motif";
+                    etatDecision.etape = EtapeDecision.CHOIX_MOTIF_REJET;
                   }
                 },
               },

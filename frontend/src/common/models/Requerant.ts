@@ -21,7 +21,7 @@ export class Requerant {
   }
 
   get prenom(): string {
-    return this.prenoms.at(0);
+    return this.prenoms[0] ?? "";
   }
 
   @Expose()
