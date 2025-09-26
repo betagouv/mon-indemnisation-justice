@@ -5,18 +5,30 @@ namespace MonIndemnisationJustice\Event\Listener;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-#[AsEntityListener]
+#[AsEntityListener(BrisPorte::class)]
 class DossierEntitylistener
 {
     public function __construct(
-        protected readonly EventDispatcherInterface $eventDispatcher
-    ) {}
+        protected readonly EventDispatcherInterface $eventDispatcher,
+        protected readonly BrisPorteRepository      $brisPorteRepository
+    ) {
+    }
 
     public function preUpdate(BrisPorte $dossier, PreUpdateEventArgs $args)
     {
-        if (isset($args->getEntityChangeSet()['etatDossier'])) {
+
+        if ($args->hasChangedField('etatDossier')) {
+            if (
+                $args->getNewValue('etatDossier')->getEtat() === EtatDossierType::DOSSIER_A_ATTRIBUER &&
+                null === $dossier->getReference()
+            ) {
+                $dossier->setReference($this->brisPorteRepository->calculerReference($dossier));
+            }
+
             $evenement = $dossier->getEtatDossier()->getEtat()->creerTransitionEvent($dossier);
 
             if (null !== $evenement) {

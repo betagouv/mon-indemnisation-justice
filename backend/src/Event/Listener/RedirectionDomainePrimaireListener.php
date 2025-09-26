@@ -1,6 +1,6 @@
 <?php
 
-namespace MonIndemnisationJustice\Event;
+namespace MonIndemnisationJustice\Event\Listener;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -17,7 +17,7 @@ class RedirectionDomainePrimaireListener implements EventSubscriberInterface
 {
     public function __construct(
         #[Autowire(env: 'default::MIJ_DOMAINE_PRIMAIRE')]
-        protected readonly ?string $domainePrimaire,
+        protected readonly ?string         $domainePrimaire,
         protected readonly LoggerInterface $logger,
     ) {
     }
@@ -34,7 +34,7 @@ class RedirectionDomainePrimaireListener implements EventSubscriberInterface
         if (!empty($this->domainePrimaire)) {
             if ($event->getRequest()->getHost() !== $this->domainePrimaire) {
                 $this->logger->warning("Redirection depuis {$event->getRequest()->getUri()}");
-                $event->setResponse(new RedirectResponse('https://'.$this->domainePrimaire.$event->getRequest()->getRequestUri(), 301));
+                $event->setResponse(new RedirectResponse('https://' . $this->domainePrimaire . $event->getRequest()->getRequestUri(), 301));
             }
         }
     }
