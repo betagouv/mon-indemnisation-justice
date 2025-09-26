@@ -33,3 +33,4 @@ RUN rm -Rf /assets/*
 
 WORKDIR /app/public
 
+CMD ["/bin/bash", "-c", "frankenphp php-server ./index.php"]
