@@ -1,29 +1,30 @@
-import {defineConfig} from "vite";
+/// <reference types="./types" />
 
+import {defineConfig, loadEnv, UserConfig, UserConfigExport} from "vite";
 import {fileURLToPath, URL} from "node:url";
 import symfonyPlugin from "vite-plugin-symfony";
 import {default as react} from "@vitejs/plugin-react";
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import legacy from "@vitejs/plugin-legacy";
-import autoprefixer from "autoprefixer";
-import nested from "postcss-nested";
 
 // Vite will ignore native environment variables, unless they're declared in local `.env` file
 // (see https://github.com/vitejs/vite/issues/562)
 // Here we load them dynamically
-import.meta.env = import.meta.env ?? {};
-
+/*
 Object.entries(process.env)
   .filter(([key, value]) => key.startsWith("VITE_"))
   .forEach(([key, value]) => (import.meta.env[key] = value));
 
-export default defineConfig(({ command, mode }) => {
+ */
+
+export default defineConfig(({ mode }) => {
+    process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   return {
-    cacheDir: import.meta.env.VITE_CACHE_DIR ?? "node_modules/.vite",
+    cacheDir: process.env.VITE_CACHE_DIR ?? "node_modules/.vite",
     css: {
       postcss: {
-        plugins: [autoprefixer(), nested()],
+        plugins: [],
       },
     },
     plugins: [
@@ -45,9 +46,6 @@ export default defineConfig(({ command, mode }) => {
       symfonyPlugin({
         originOverride: "https://mon-indemnisation.justice.gouv.dev",
         stimulus: false,
-        build: {
-          manifest: true,
-        },
       }),
 
       react(),
@@ -60,7 +58,7 @@ export default defineConfig(({ command, mode }) => {
     esbuild: false,
     build: {
       target: "es2015",
-      modulePreload: true,
+      modulePreload: false,
       sourcemap: true,
       minify: mode === "production",
       emptyOutDir: false,
