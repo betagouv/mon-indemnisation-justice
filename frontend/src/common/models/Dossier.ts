@@ -227,6 +227,6 @@ export class DossierDetail extends BaseDossier {
     }
 
     public getCourrierAJour(): Document | null {
-        return this.documents.get(DocumentType.TYPE_COURRIER_REQUERANT.type)?.at(0) || null;
+        return this.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE);
     }
 }
