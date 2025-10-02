@@ -1139,10 +1139,10 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
-"@codegouvfr/react-dsfr@^1.26":
-  version "1.26.0"
-  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.26.0.tgz#7358adbaf0c25ef98ec9996c0a0a38ac4f1853ef"
-  integrity sha512-yfevs/blAVDqw03/w7Gb/rumTlFC2i//ly0SHwrs6ZXmxRayc+UiKoou71uZSAwu1lZ9J9wyCYUbvQug57uStg==
+"@codegouvfr/react-dsfr@^1.28.0":
+  version "1.28.0"
+  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.28.0.tgz#49104047486a06e5627d31a01e064cb620ed3d8e"
+  integrity sha512-/RnN9KcBPrye/gfd6eK0M8f/Mj/6x+6rmVDE4f5qvPtxeICRX2IuJtkUu6VcMroQLBwtk8uypfjQdSKd5uiuAA==
   dependencies:
     tsafe "^1.8.5"
     yargs-parser "^21.1.1"
@@ -4891,6 +4891,11 @@ proxy-agent@^6.5.0:
     proxy-from-env "^1.1.0"
     socks-proxy-agent "^8.0.5"
 
+proxy-compare@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/proxy-compare/-/proxy-compare-3.0.1.tgz#3262cff3a25a6dedeaa299f6cf2369d6f7588a94"
+  integrity sha512-V9plBAt3qjMlS1+nC8771KNf6oJ12gExvaxnNzN/9yVRLdTv/lc+oJlnSzrdYDAvBfTStPCoiaCOTmTs0adv7Q==
+
 proxy-from-env@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
@@ -5932,6 +5937,13 @@ validator@^13.9.0:
   version "13.15.0"
   resolved "https://registry.yarnpkg.com/validator/-/validator-13.15.0.tgz#2dc7ce057e7513a55585109eec29b2c8e8c1aefd"
   integrity sha512-36B2ryl4+oL5QxZ3AzD0t5SsMNGvTtQHpjgFO5tbNxfXbMFkY822ktCDe1MnlqV3301QQI9SLHDNJokDI+Z9pA==
+
+valtio@^2.1.8:
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/valtio/-/valtio-2.1.8.tgz#235b14dfe93f593227aeb4981a5641cfcb72b056"
+  integrity sha512-fjTPbJyKEmfVBZUOh3V0OtMHoFUGr4+4XpejjxhNJE/IS2l8rDbyJuzi3w/fZWBDyk7BJOpG+lmvTK5iiVhXuQ==
+  dependencies:
+    proxy-compare "^3.0.1"
 
 vite-node@3.1.4:
   version "3.1.4"

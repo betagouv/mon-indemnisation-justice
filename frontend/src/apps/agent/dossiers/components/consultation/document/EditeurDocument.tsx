@@ -10,7 +10,7 @@ import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 
 export type EditeurMode = "edition" | "visualisation";
 
-export const EditeurDocument = observer(function EditeurDocumentComponent({
+export const EditeurDocument = function EditeurDocumentComponent({
   document,
   // Callback générant un document
   //regenererDocument,
@@ -23,7 +23,7 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
   // Callback appelé avant / après l'impression
   onImpression,
 }: {
-  document?: Document;
+  document: Document;
   //regenererDocument: () => Document | Promise<Document>
   className?: string;
   lectureSeule?: boolean;
@@ -47,17 +47,16 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
   };
 
   const imprimer = useCallback(async () => {
-      if (corps) {
-          onImpression?.(impressionEnCours);
-          setImpressionEnCours(true);
-          onImpression?.(impressionEnCours);
-          document = await documentManager.imprimer(document, corps);
-          onImprime?.(document);
+    if (corps) {
+      onImpression?.(impressionEnCours);
+      setImpressionEnCours(true);
+      onImpression?.(impressionEnCours);
+      document = await documentManager.imprimer(document, corps);
+      onImprime?.(document);
 
-          setImpressionEnCours(false);
-          setModificationsEnAttente(false);
-      }
-
+      setImpressionEnCours(false);
+      setModificationsEnAttente(false);
+    }
   }, [document.id, corps]);
 
   // Lancer l'impression lorsque l'on bascule en mode visualisation et que le document a été édité
@@ -76,50 +75,52 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
 
   return (
     <div className={className}>
-
-    <div className="fr-col-12 fr-mb-2w">
-      <ButtonsGroup
-        inlineLayoutWhen="always"
-        alignment="right"
-        buttonsIconPosition="right"
-        buttons={[
-          modeEdition
-            ? {
-                children: "Visualiser",
-                priority: "secondary",
-                iconId:
-                  corps !== document.corps
-                    ? "fr-icon-printer-line"
-                    : "fr-icon-eye-line",
-                disabled: impressionEnCours,
-                onClick: async () => visualiser(),
-              }
-            : {
-                children: "Éditer",
-                priority: "secondary",
-                disabled: impressionEnCours,
-                iconId: "fr-icon-pencil-line",
-                onClick: () => {
-                  setModeEdition(true);
+      <div className="fr-col-12 fr-mb-2w">
+        <ButtonsGroup
+          inlineLayoutWhen="always"
+          alignment="right"
+          buttonsSize="small"
+          buttonsIconPosition="right"
+          buttons={[
+            modeEdition
+              ? {
+                  children: "Visualiser le PDF",
+                  priority: "secondary",
+                  iconId:
+                    corps !== document?.corps
+                      ? "fr-icon-printer-line"
+                      : "fr-icon-eye-line",
+                  disabled: impressionEnCours,
+                  onClick: async () => visualiser(),
+                }
+              : {
+                  children: "Éditer le corps",
+                  priority: "secondary",
+                  disabled: impressionEnCours,
+                  iconId: "fr-icon-pencil-line",
+                  onClick: () => {
+                    setModeEdition(true);
+                  },
                 },
-              },
-        ]}
-      />
-    </div>
+          ]}
+        />
+      </div>
       <div className="fr-col-12">
-        {(null !== mode ? mode === "edition" : modeEdition) && (
-            <>
-                {corps &&
-                  <QuillEditor
-                    value={corps}
-                    onChange={(value) => modifier(value)}
-                    readOnly={impressionEnCours || lectureSeule}
-                  />}
-            </>
-
-        )}
-
-        {mode === "visualisation" && (
+        {modeEdition ? (
+          <>
+            {corps ? (
+              <QuillEditor
+                value={corps}
+                onChange={(value) => modifier(value)}
+                readOnly={impressionEnCours || lectureSeule}
+              />
+            ) : (
+              <>
+                <p>Ce document a été édité en dehors de la plateforme</p>
+              </>
+            )}
+          </>
+        ) : (
           <>
             {impressionEnCours ? (
               <p>Impression en cours...</p>
@@ -131,4 +132,4 @@ export const EditeurDocument = observer(function EditeurDocumentComponent({
       </div>
     </div>
   );
-});
+};
