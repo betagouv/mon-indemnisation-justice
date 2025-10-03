@@ -34,6 +34,7 @@ import {
   MarquerIndemniseActionModale,
   marquerIndemniseBoutons,
 } from "@/apps/agent/dossiers/components/consultation/action/MarquerIndemniseActionModale.tsx";
+import { demarrerInstructionBoutons } from "@/apps/agent/dossiers/components/consultation/action/DemarrerInstructionAction.tsx";
 
 export const DossierActions = function DossierActionBar({
   dossier,
@@ -59,6 +60,7 @@ export const DossierActions = function DossierActionBar({
           [
             ...cloturerBoutons({ dossier, agent }),
             ...attribuerBoutons({ dossier, agent }),
+            ...demarrerInstructionBoutons({ dossier, agent }),
             ...deciderBoutons({
               dossier,
               agent,

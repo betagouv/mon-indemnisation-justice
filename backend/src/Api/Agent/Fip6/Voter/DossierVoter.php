@@ -3,12 +3,14 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Voter;
 
 use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DossierVoter extends Voter
 {
     public const ACTION_ATTRIBUER = 'dossier:attribuer';
+    public const ACTION_INSTRUIRE = 'dossier:instruire';
 
     public const ACTION_LISTER_A_CATEGORISER = 'dossier:lister:a-categoriser';
     public const ACTION_LISTER_A_ATTRIBUER = 'dossier:lister:a-attribuer';
@@ -24,7 +26,20 @@ class DossierVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::ACTION_ATTRIBUER, self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION]);
+        return in_array($attribute, [
+            self::ACTION_ATTRIBUER,
+            self::ACTION_INSTRUIRE,
+            self::ACTION_LISTER_A_CATEGORISER,
+            self::ACTION_LISTER_A_ATTRIBUER,
+            self::ACTION_LISTER_A_INSTRUIRE,
+            self::ACTION_LISTER_REJET_A_SIGNER,
+            self::ACTION_LISTER_PROPOSITION_A_SIGNER,
+            self::ACTION_LISTER_ARRETE_A_SIGNER,
+            self::ACTION_LISTER_A_VERIFIER,
+            self::ACTION_LISTER_ARRETE_A_SIGNER,
+            self::ACTION_LISTER_A_TRANSMETTRE,
+            self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION,
+        ]);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -38,6 +53,7 @@ class DossierVoter extends Voter
 
         return match ($attribute) {
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
+            self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
             self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
             default => false
         };
@@ -46,6 +62,11 @@ class DossierVoter extends Voter
     protected function agentPeutAttribuer(Agent $agent): bool
     {
         return $agent->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR);
+    }
+
+    protected function agentPeutInstruire(Agent $agent, BrisPorte $dossier): bool
+    {
+        return $agent->estRedacteur() && $agent->instruit($dossier);
     }
 
     protected function agentPeutLister(Agent $agent, string $action): bool

@@ -1,6 +1,5 @@
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
-import { size } from "lodash";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
 import {
@@ -18,6 +17,7 @@ import {
   EditeurMode,
 } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { TelechargerPieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
+import { Upload } from "@codegouvfr/react-dsfr/Upload";
 
 const _modale = createModal({
   id: "modale-action-generer-arrete-paiement",
@@ -52,7 +52,7 @@ export const GenererArretePaiementModale = observer(
     const [fichierSigne, setFichierSigne]: [
       File | null,
       (fichierSigne: File) => void,
-    ] = useState(null);
+    ] = useState<File | null>(null);
 
     const estTailleFichierOk = (fichier?: File) =>
       fichier && fichier.size < 10 * 1024 * 1024;
@@ -68,29 +68,32 @@ export const GenererArretePaiementModale = observer(
     const [editeurMode, setEditeurMode] = useState<EditeurMode>("edition");
 
     const envoyer = useCallback(async () => {
-      setSauvegardeEnCours(true);
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/signer.json`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
+      if (fichierSigne) {
+        setSauvegardeEnCours(true);
+
+        const response = await fetch(
+          `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/signer.json`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+            },
+            body: (() => {
+              const data = new FormData();
+              data.append("fichierSigne", fichierSigne);
+
+              return data;
+            })(),
           },
-          body: (() => {
-            const data = new FormData();
-            data.append("fichierSigne", fichierSigne);
+        );
 
-            return data;
-          })(),
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-        dossier.addDocument(plainToInstance(Document, data.document));
+        if (response.ok) {
+          const data = await response.json();
+          dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+          dossier.addDocument(plainToInstance(Document, data.document));
+        }
+        setSauvegardeEnCours(false);
       }
-      setSauvegardeEnCours(false);
     }, [dossier.id, fichierSigne]);
 
     return estEnAttenteEditionArretePaiement({ dossier, agent }) ? (
@@ -162,33 +165,33 @@ export const GenererArretePaiementModale = observer(
               )}
             />
 
-            <div className="fr-upload-group">
-              <label className="fr-label" htmlFor="file-upload">
-                Téléverser le fichier pour signature
-                <span className="fr-hint-text">
+            <Upload
+              label="Téléverser le fichier pour signature"
+              hint={
+                <>
                   <span
-                    className={`${!estTailleFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
+                    className={`${fichierSigne && !estTailleFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
                   >
                     Taille maximale : 10 Mo.&nbsp;
                   </span>
                   <span
-                    className={`${!estTypeFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
+                    className={`${fichierSigne && !estTypeFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
                   >
                     Format pdf uniquement.&nbsp;
                   </span>
-                </span>
-              </label>{" "}
-              <input
-                className="fr-upload"
-                type="file"
-                id="file-upload"
-                name="file-upload"
-                accept="application/pdf"
-                onChange={(e) => {
-                  setFichierSigne(e.target.files[0] ?? null);
-                }}
-              />
-            </div>
+                </>
+              }
+              state="default"
+              stateRelatedMessage="Text de validation / d'explication de l'erreur"
+              nativeInputProps={{
+                accept: "application/pdf",
+                onChange: (e) => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    setFichierSigne(e.target.files.item(0) as File);
+                  }
+                },
+              }}
+            />
 
             <ButtonsGroup
               inlineLayoutWhen="always"
