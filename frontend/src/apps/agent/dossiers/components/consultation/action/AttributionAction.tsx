@@ -78,7 +78,7 @@ export const AttribuerModale = observer(function AttribuerActionModale({
   ] = useState(false);
 
   const valider = useCallback(async () => {
-    if (!attributaire.equals(dossier.redacteur)) {
+    if (attributaire && !attributaire.equals(dossier.redacteur)) {
       setSauvegarderEnCours(true);
       const succes = await attribuer({ dossier, attributaire });
 
