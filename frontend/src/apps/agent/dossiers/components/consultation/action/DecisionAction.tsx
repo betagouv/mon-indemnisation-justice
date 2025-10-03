@@ -5,8 +5,6 @@ import React, {
   FormEvent,
   SetStateAction,
   useCallback,
-  useEffect,
-  useMemo,
   useState,
 } from "react";
 
@@ -131,32 +129,13 @@ const definirMontantIndemnisation = (montantIndemnisation: number) => {
   store.montantIndemnisation = montantIndemnisation;
 };
 
-const demarrerInstruction = async ({ dossier }: { dossier: DossierDetail }) => {
-  const response = await fetch(
-    `/agent/redacteur/dossier/${dossier.id}/demarrer-instruction.json`,
-    {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-    },
-  );
-
-  if (response.ok) {
-    const data = await response.json();
-    dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-  }
-};
-
 const estEnAttenteDecision = ({
   dossier,
   agent,
 }: {
   dossier: DossierDetail;
   agent: Agent;
-}) =>
-  dossier.enAttenteDecision && agent.estRedacteur() && agent.instruit(dossier);
+}) => dossier.enInstruction() && agent.instruit(dossier);
 
 const DefinirMotifRefus = ({
   motifRejet,
@@ -385,7 +364,7 @@ export const DeciderModale = function ({
     [dossier],
   );
 
-  return estEnAttenteDecision({ dossier, agent }) && dossier.enInstruction() ? (
+  return estEnAttenteDecision({ dossier, agent }) ? (
     <_modale.Component
       title={
         etatDecision.etape.nom.endsWith("REJET")
@@ -600,42 +579,29 @@ export const deciderBoutons = ({
 }: {
   dossier: DossierDetail;
   agent: Agent;
-  etat?: EtatDecision;
 }): ButtonProps[] => {
   return estEnAttenteDecision({ dossier, agent })
-    ? dossier.enInstruction()
-      ? [
-          {
-            children: "Rejeter",
-            priority: "secondary",
-            disabled: false,
-            iconId: "fr-icon-close-line",
-            onClick: () => {
-              versEtape(EtapeDecision.CHOIX_MOTIF_REJET);
-              ouvrirModale();
-            },
-          } as ButtonProps,
-          {
-            children: "Accepter",
-            priority: "primary",
-            disabled: false,
-            iconId: "fr-icon-check-line",
-            onClick: () => {
-              versEtape(EtapeDecision.CHOIX_MONTANT_INDEMNISATION);
-              ouvrirModale();
-            },
-          } as ButtonProps,
-        ]
-      : [
-          {
-            children: "Démarrer l'instruction",
-            priority: "primary",
-            iconId: "fr-icon-play-line",
-            onClick: async (e) => {
-              (e.target as HTMLButtonElement).disabled = true;
-              await demarrerInstruction({ dossier });
-            },
-          } as ButtonProps,
-        ]
+    ? [
+        {
+          children: "Rejeter",
+          priority: "secondary",
+          disabled: false,
+          iconId: "fr-icon-close-line",
+          onClick: () => {
+            versEtape(EtapeDecision.CHOIX_MOTIF_REJET);
+            ouvrirModale();
+          },
+        } as ButtonProps,
+        {
+          children: "Accepter",
+          priority: "primary",
+          disabled: false,
+          iconId: "fr-icon-check-line",
+          onClick: () => {
+            versEtape(EtapeDecision.CHOIX_MONTANT_INDEMNISATION);
+            ouvrirModale();
+          },
+        } as ButtonProps,
+      ]
     : [];
 };

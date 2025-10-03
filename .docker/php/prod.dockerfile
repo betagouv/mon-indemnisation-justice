@@ -31,4 +31,6 @@ RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build 
 
 RUN rm -Rf /assets/*
 
+WORKDIR /app
+
 CMD ["bash", "-c", "frankenphp php-server -r /app/public -a /app/public/index.php"]
