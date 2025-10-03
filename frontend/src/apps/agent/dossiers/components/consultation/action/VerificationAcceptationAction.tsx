@@ -1,11 +1,10 @@
 import {
   EditeurDocument,
-  EditeurMode,
 } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Agent,
   Document,
@@ -14,6 +13,11 @@ import {
   EtatDossier,
 } from "@/common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import {
+  DocumentManagerImpl,
+  DocumentManagerInterface,
+} from "@/common/services/agent";
+import { useInjection } from "inversify-react";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
 const _modale = createModal({
@@ -32,7 +36,6 @@ const estAVerifier = ({ dossier, agent }): boolean =>
   dossier.estAVerifier && agent.instruit(dossier);
 
 /**
- *
  * Le rédacteur vérifie la déclaration d'acceptation et la valide
  */
 export const VerifierAcceptationModale =
@@ -43,11 +46,6 @@ export const VerifierAcceptationModale =
     dossier: DossierDetail;
     agent: Agent;
   }) {
-    const estTailleFichierOk = (fichier?: File) =>
-      fichier && fichier.size < 10 * 1024 * 1024;
-    const estTypeFichierOk = (fichier?: File) =>
-      fichier && ["application/pdf"].includes(fichier.type);
-
     // Indique l'état de la validation en cours
     const [etatValidation, setEtatValidation]: [
       ValidationAcceptationEtat,
@@ -56,9 +54,6 @@ export const VerifierAcceptationModale =
       sauvegardeEnCours: false,
       action: "verification",
     } as ValidationAcceptationEtat);
-
-    // Le mode en cours sur l'éditeur de document
-    const [editeurMode, setEditeurMode] = useState<EditeurMode>("edition");
 
     // Actions
     const annuler = () => {
@@ -71,6 +66,13 @@ export const VerifierAcceptationModale =
       } as ValidationAcceptationEtat);
       _modale.close();
     };
+
+    const [arretePaiement, setArretePaiement] = useState<Document | null>(
+      dossier.getDocumentType(DocumentType.TYPE_ARRETE_PAIEMENT),
+    );
+
+    const documentManager: DocumentManagerInterface =
+      useInjection<DocumentManagerInterface>(DocumentManagerImpl);
 
     const genererArretePaiement = useCallback(async () => {
       // Appel à l'API pour valider le document
@@ -90,6 +92,14 @@ export const VerifierAcceptationModale =
         dossier.addDocument(plainToInstance(Document, data.document));
       }
     }, [dossier.id]);
+
+    // Si à l'étape de l'édition de l'arrêté de paiement, le document (corps et PDF) n'existe pas, on doit alors le
+    // générer.
+    useEffect(() => {
+      if (etatValidation.action === "generation" && !arretePaiement) {
+        genererArretePaiement();
+      }
+    }, [dossier.id, etatValidation.action]);
 
     const setSauvegardeEnCours = (sauvegardeEnCours: boolean = true) =>
       setEtatValidation({ ...etatValidation, sauvegardeEnCours });
@@ -147,9 +157,11 @@ export const VerifierAcceptationModale =
             </p>
             <PieceJointe
               className="fr-my-2w"
-              pieceJointe={dossier
-                .getDocumentsType(DocumentType.TYPE_COURRIER_REQUERANT)
-                .at(0)}
+              pieceJointe={
+                dossier.getDocumentType(
+                  DocumentType.TYPE_COURRIER_REQUERANT,
+                ) as Document
+              }
             />
             <ButtonsGroup
               inlineLayoutWhen="always"
@@ -158,7 +170,7 @@ export const VerifierAcceptationModale =
               buttons={[
                 {
                   children: "Valider et éditer l'arrêté de paiement",
-                  onClick: () => {
+                  onClick: async () => {
                     if (
                       dossier.hasDocumentsType(
                         DocumentType.TYPE_ARRETE_PAIEMENT,
@@ -193,20 +205,21 @@ export const VerifierAcceptationModale =
         )}
         {etatValidation.action === "edition" && (
           <>
-            <EditeurDocument
-              className="fr-input-group fr-my-2w"
-              mode={editeurMode}
-              document={dossier.getDocumentType(
-                DocumentType.TYPE_ARRETE_PAIEMENT,
-              )}
-              onImpression={(impressionEnCours) =>
-                setSauvegardeEnCours(impressionEnCours)
-              }
-              onImprime={(arretePaiement) =>
-                dossier.addDocument(arretePaiement)
-              }
-              lectureSeule={etatValidation.sauvegardeEnCours}
-            />
+            {arretePaiement ? (
+              <EditeurDocument
+                className="fr-input-group fr-my-2w"
+                document={arretePaiement}
+                onImpression={(impressionEnCours) =>
+                  setSauvegardeEnCours(impressionEnCours)
+                }
+                onImprime={(arretePaiement) =>
+                  dossier.addDocument(arretePaiement)
+                }
+                lectureSeule={etatValidation.sauvegardeEnCours}
+              />
+            ) : (
+              <>Génération de l'arrêté de paiement en cours...</>
+            )}
 
             <ButtonsGroup
               inlineLayoutWhen="always"
@@ -223,32 +236,14 @@ export const VerifierAcceptationModale =
                   priority: "secondary",
                   onClick: () => verifierDeclarationAcceptation(),
                 } as ButtonProps,
-                ...(editeurMode === "edition"
-                  ? ([
-                      {
-                        iconId: "fr-icon-eye-line",
-                        children: "Visualiser",
-                        priority: "secondary",
-                        disabled: etatValidation.sauvegardeEnCours,
-                        onClick: () => setEditeurMode("visualisation"),
-                      },
-                    ] as ButtonProps[])
-                  : ([
-                      {
-                        iconId: "fr-icon-edit-box-line",
-                        children: "Éditer",
-                        disabled: etatValidation.sauvegardeEnCours,
-                        priority: "secondary",
-                        onClick: () => setEditeurMode("edition"),
-                      },
-                      {
-                        children: "Valider l'arrêté de paiement",
-                        iconId: "fr-icon-send-plane-line",
-                        priority: "primary",
-                        disabled: etatValidation.sauvegardeEnCours,
-                        onClick: async () => valider(),
-                      },
-                    ] as ButtonProps[])),
+
+                {
+                  children: "Valider l'arrêté de paiement",
+                  iconId: "fr-icon-send-plane-line",
+                  priority: "primary",
+                  disabled: etatValidation.sauvegardeEnCours,
+                  onClick: async () => valider(),
+                },
               ]}
             />
           </>
