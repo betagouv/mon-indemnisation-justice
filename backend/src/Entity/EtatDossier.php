@@ -41,11 +41,11 @@ class EtatDossier
 
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: [])]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id')]
-    protected ?Requerant $requerant;
+    protected ?Requerant $requerant = null;
 
     #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'json', nullable: true)]
-    protected ?array $contexte;
+    protected ?array $contexte = null;
 
     #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     public function getId(): ?int
@@ -198,7 +198,7 @@ class EtatDossier
         return $this;
     }
 
-    public function getContexte(): array
+    public function getContexte(): ?array
     {
         return $this->contexte;
     }
