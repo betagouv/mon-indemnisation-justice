@@ -23,6 +23,11 @@ import {
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { proxy, useSnapshot } from "valtio";
+import {
+  DocumentManagerImpl,
+  DocumentManagerInterface,
+} from "@/common/services/agent";
+import { useInjection } from "inversify-react";
 
 const _modale = createModal({
   id: "modale-action-decider",
@@ -272,45 +277,33 @@ export const DeciderModale = function ({
 
   const annuler = () => fermerModale();
 
-  const genererCourrier = useCallback(
-    async ({
-      dossier,
-      motifRejet,
-      montantIndemnisation,
-    }: {
-      dossier: DossierDetail;
-      motifRejet?: MotifRefus;
-      montantIndemnisation?: number;
-    }) => {
+  const documentManager: DocumentManagerInterface =
+    useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+
+  const genererCourrierPropositionIndemnisation = useCallback(
+    async (dossier: DossierDetail, montantIndemnisation: number) => {
       setGenerationEnCours(true);
-      const body = !!montantIndemnisation
-        ? {
-            indemnisation: true,
-            montantIndemnisation,
-          }
-        : { indemnisation: false, motif: motifRejet };
+      const courrierPI =
+        await documentManager.genererCourrierPropositionIndemnisation(
+          dossier,
+          montantIndemnisation,
+        );
+      dossier.addDocument(courrierPI);
+      setCourrier(courrierPI);
+      setGenerationEnCours(false);
+    },
+    [dossier.id],
+  );
 
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/courrier/generer.json`,
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(body),
-        },
+  const genererCourrierRejet = useCallback(
+    async (dossier: DossierDetail, motifRejet: MotifRefus) => {
+      setGenerationEnCours(true);
+      const courrierRejet = await documentManager.genererCourrierRejet(
+        dossier,
+        motifRejet,
       );
-
-      if (response.ok) {
-        const data = await response.json();
-        const courrier = plainToInstance(Document, data);
-        if (courrier) {
-          dossier.addDocument(courrier);
-          setCourrier(courrier);
-        }
-      }
-
+      dossier.addDocument(courrierRejet);
+      setCourrier(courrierRejet);
       setGenerationEnCours(false);
     },
     [dossier],
@@ -417,8 +410,9 @@ export const DeciderModale = function ({
                   definirMotifRejet(motifRejet);
                   versEtape(EtapeDecision.EDITION_COURRIER_REJET);
 
-                  if (regenererDocument)
-                    genererCourrier({ dossier, motifRejet });
+                  if (regenererDocument) {
+                    genererCourrierRejet(dossier, motifRejet);
+                  }
                 },
                 children: "Éditer le courrier",
               },
@@ -460,7 +454,10 @@ export const DeciderModale = function ({
                   versEtape(EtapeDecision.EDITION_COURRIER_PI);
 
                   if (regenererDocument)
-                    genererCourrier({ dossier, montantIndemnisation });
+                    genererCourrierPropositionIndemnisation(
+                      dossier,
+                      montantIndemnisation,
+                    );
                 },
                 children: "Éditer le courrier",
               },
