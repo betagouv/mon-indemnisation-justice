@@ -48,7 +48,7 @@ class APIDocumentManager implements DocumentManagerInterface {
     montantIndemnisation: number,
   ): Promise<Document> {
     const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/courrier/generer.json`,
+      `/api/agent/fip6/dossier/${dossier.id}/generer-courrier-proposition-indemnisation`,
       {
         method: "POST",
         headers: {
@@ -56,7 +56,6 @@ class APIDocumentManager implements DocumentManagerInterface {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          indemnisation: true,
           montantIndemnisation,
         }),
       },
@@ -65,7 +64,7 @@ class APIDocumentManager implements DocumentManagerInterface {
     const data = await response.json();
 
     if (response.ok) {
-      return plainToInstance(Document, data);
+      return plainToInstance(Document, data.document);
     }
 
     throw new Error(
@@ -76,10 +75,10 @@ class APIDocumentManager implements DocumentManagerInterface {
 
   async genererCourrierRejet(
     dossier: BaseDossier,
-    motif: string,
+    motifRejet: string,
   ): Promise<Document> {
     const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/courrier/generer.json`,
+      `/api/agent/fip6/dossier/${dossier.id}/generer-courrier-rejet`,
       {
         method: "POST",
         headers: {
@@ -87,8 +86,7 @@ class APIDocumentManager implements DocumentManagerInterface {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          indemnisation: true,
-          motif: motif,
+          motifRejet,
         }),
       },
     );
@@ -96,7 +94,7 @@ class APIDocumentManager implements DocumentManagerInterface {
     const data = await response.json();
 
     if (response.ok) {
-      return plainToInstance(Document, data);
+      return plainToInstance(Document, data.document);
     }
 
     throw new Error(
@@ -108,7 +106,7 @@ class APIDocumentManager implements DocumentManagerInterface {
   async genererArretePaiement(dossier: BaseDossier): Promise<Document> {
     // Appel à l'API pour valider le document
     const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/generer.json`,
+      `/api/agent/fip6/dossier/${dossier.id}/generer-arrete-paiement`,
       {
         method: "POST",
         headers: {

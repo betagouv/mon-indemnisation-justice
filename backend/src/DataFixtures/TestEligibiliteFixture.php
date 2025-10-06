@@ -12,10 +12,6 @@ use MonIndemnisationJustice\Entity\TestEligibilite;
 
 class TestEligibiliteFixture extends Fixture implements DependentFixtureInterface
 {
-    public const int ID_EN_XP_INCOMPLET = 1;
-    public const int ID_EN_XP_COMPLET = 2;
-    public const int ID_HORS_XP = 3;
-
     public function getDependencies(): array
     {
         return [

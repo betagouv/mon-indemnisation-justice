@@ -11,9 +11,6 @@ use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
-use MonIndemnisationJustice\Service\DocumentManager;
-use MonIndemnisationJustice\Service\ImprimanteCourrier;
-use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -27,7 +24,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Twig\Environment;
 
 #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
 #[Route('/agent/redacteur')]
@@ -38,13 +34,8 @@ class DossierController extends AgentController
         protected readonly AgentRepository $agentRepository,
         #[Target('default.storage')]
         protected readonly FilesystemOperator $storage,
-        protected readonly ImprimanteCourrier $imprimanteCourrier,
-        // A supprimer
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
-        protected readonly Mailer $mailer,
-        protected readonly Environment $twig,
-        protected readonly DocumentManager $documentManager,
     ) {}
 
     #[Route('/', name: 'app_agent_redacteur_accueil')]
@@ -198,81 +189,6 @@ class DossierController extends AgentController
         ], Response::HTTP_OK);
     }
 
-    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
-    #[Route('/dossier/{id}/courrier/generer.json', name: 'agent_redacteur_generer_courrier_dossier', methods: ['POST'])]
-    public function genererCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
-    {
-        // TODO ajouter en métadonnées l'info du rejet ou de l'acceptation, ainsi que du montant de l'indemnisation
-        $indemnisation = $request->getPayload()->getBoolean('indemnisation');
-
-        $courrierMinistere = $dossier->getOrCreatePropositionIndemnisation();
-
-        if ($indemnisation) {
-            $montantIndemnisation = floatval($request->getPayload()->getString('montantIndemnisation'));
-            $courrierMinistere->setMetaDonnees(['contexte' => [
-                'indemnisation' => true,
-                'montantIndemnisation' => $montantIndemnisation,
-            ]]);
-
-            if ($dossier->getRequerant()->getIsPersonneMorale()) {
-                $courrierMinistere->setCorps(
-                    $this->twig->render('courrier/_corps_accepte_personne_morale.html.twig', [
-                        'dossier' => $dossier,
-                        'montantIndemnisation' => $montantIndemnisation,
-                    ])
-                );
-            } else {
-                $courrierMinistere->setCorps(
-                    $this->twig->render('courrier/_corps_accepte_personne_physique.html.twig', [
-                        'dossier' => $dossier,
-                        'montantIndemnisation' => $montantIndemnisation,
-                    ])
-                );
-            }
-        } else {
-            $motifRefus = $request->getPayload()->get('motifRefus');
-
-            $courrierMinistere->setMetaDonnees(['contexte' => [
-                'indemnisation' => false,
-                'motifRefus' => $motifRefus,
-            ]]);
-
-            if ('est_bailleur' === $motifRefus) {
-                $courrierMinistere->setCorps(
-                    $this->twig->render('courrier/_corps_rejete_bailleur.html.twig', [
-                        'dossier' => $dossier,
-                    ])
-                );
-            } elseif ('est_vise' === $motifRefus) {
-                $courrierMinistere->setCorps(
-                    $this->twig->render('courrier/_corps_rejete_est_vise.html.twig', [
-                        'dossier' => $dossier,
-                    ])
-                );
-            } elseif ('est_hebergeant' === $motifRefus) {
-                $courrierMinistere->setCorps(
-                    $this->twig->render('courrier/_corps_rejete_est_hebergeant.html.twig', [
-                        'dossier' => $dossier,
-                    ])
-                );
-            } else {
-                $courrierMinistere->setCorps(
-                    $this->twig->render('courrier/_corps_rejete.html.twig', [
-                        'dossier' => $dossier,
-                    ])
-                );
-            }
-        }
-
-        $courrierMinistere = $this->imprimanteCourrier->imprimerDocument($courrierMinistere);
-
-        $this->em->persist($courrierMinistere);
-        $this->em->persist($dossier);
-        $this->em->flush();
-
-        return new JsonResponse($this->normalizer->normalize($courrierMinistere, 'json', ['agent:detail']));
-    }
-
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/proposition-indemnisation/changer-montant.json', name: 'agent_redacteur_editer_courrier_dossier', methods: ['PUT'])]
     public function changerMontantIndemnisation(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
@@ -288,29 +204,6 @@ class DossierController extends AgentController
         $this->em->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
-    #[IsGranted(
-        attribute: new Expression('user.instruit(subject["dossier"])'),
-        subject: [
-            'dossier' => new Expression('args["dossier"]'),
-        ]
-    )]
-    #[Route('/dossier/{id}/arrete-paiement/generer.json', name: 'agent_redacteur_generer_arrete_paiement_dossier', methods: ['POST'])]
-    public function genererArretePaiementDossier(
-        #[MapEntity(id: 'id')]
-        BrisPorte $dossier,
-        Request $request,
-    ): Response {
-        try {
-            $this->documentManager->genererArretePaiement($dossier);
-        } catch (\Throwable $e) {
-            return new JsonResponse([
-                'error' => $e->getMessage(),
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-        return new JsonResponse(['document' => $this->normalizer->normalize($dossier->getArretePaiement(), 'json', ['groups' => ['agent:detail']])], Response::HTTP_CREATED);
     }
 
     #[IsGranted(

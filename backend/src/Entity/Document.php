@@ -243,8 +243,8 @@ class Document
     public function getMetaDonneesAttestation(): ?MetadonneesAttestation
     {
         return new MetadonneesAttestation(
-            typeAttestation: TypeAttestation::tryFrom($this->getMetaDonnee('typeAttestation')),
-            typeInstitutionSecuritePublique: TypeInstitutionSecuritePublique::tryFrom($this->getMetaDonnee('typeInstitutionSecuritePublique'))
+            typeAttestation: null !== ($typeAttestation = $this->getMetaDonnee('typeAttestation')) ? TypeAttestation::tryFrom($typeAttestation) : null,
+            typeInstitutionSecuritePublique: null !== ($typeInstitutionSecuritePublique = $this->getMetaDonnee('typeInstitutionSecuritePublique')) ? TypeInstitutionSecuritePublique::tryFrom($typeInstitutionSecuritePublique) : null
         );
     }
 
