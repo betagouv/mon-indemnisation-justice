@@ -417,7 +417,7 @@ export const TestEligibiliteForm = ({
                     {false === test.aContacteAssurance ? (
                       <>
                         <p>
-                          Avant de déposer une demande,{" "}
+                          Avant de déposer votre demande d'indemnisation,{" "}
                           <b>
                             merci de vous rapprocher de votre assurance
                             habitation dès que possible
@@ -436,24 +436,24 @@ export const TestEligibiliteForm = ({
                               prendre contact avec votre bailleur dès que
                               possible
                             </b>
-                            , pour obtenir l’attestation de non prise en charge
-                            des réparations
+                            , pour obtenir une attestation de non prise en
+                            charge des réparations
                           </p>
                         )}
                       </>
                     ) : (
                       <p>
-                        Avant de déposer une demande, nous vous recommandons{" "}
+                        Avant de déposer votre demande d'indemnisation, merci de{" "}
                         <b>
                           prendre contact avec votre bailleur dès que possible
                         </b>
-                        , pour obtenir l’attestation de non prise en charge des
-                        réparations.
+                        , pour obtenir une attestation de non prise en charge
+                        des réparations.
                       </p>
                     )}
                     <p>
-                      Une fois tous les éléments rassemblés, nous pourrons
-                      traiter votre demande.
+                      Une fois tous les éléments rassemblés, vous pourrez
+                      déposer votre demande.
                     </p>
                   </>
                 }
