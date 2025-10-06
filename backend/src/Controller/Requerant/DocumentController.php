@@ -36,8 +36,7 @@ class DocumentController extends AbstractController
         #[Target('default.storage')]
         protected readonly FilesystemOperator $storage,
         protected readonly LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     #[Route('/{id}/{type}', name: 'document_upload', methods: ['POST'])]
     public function upload(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, DocumentType $type): JsonResponse
@@ -62,20 +61,22 @@ class DocumentController extends AbstractController
         if (null !== $file?->getPathname()) {
             $content = $file->getContent();
             $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
+
             try {
                 $this->storage->write($filename, $content);
                 $document = (new Document())
                     ->setFilename($filename)
                     ->setOriginalFilename($file->getClientOriginalName())
                     ->setAjoutRequerant(true)
-                    ->setSize($file->getSize())
+                    ->setSize($this->storage->fileSize($filename))
                     ->setType($type)
-                    ->setMime($file->getClientMimeType());
+                    ->setMime($file->getClientMimeType())
+                ;
 
                 $dossier->ajouterDocument($document);
                 $this->em->persist($dossier);
                 $this->em->flush();
-            } catch (UnableToWriteFile|FilesystemException $e) {
+            } catch (FilesystemException|UnableToWriteFile $e) {
                 throw new FileException("La sauvegarde du fichier a échoué: {$e->getMessage()}");
             }
         }
@@ -116,7 +117,8 @@ class DocumentController extends AbstractController
             if (!$this->storage->has($document->getFilename())) {
                 return new Response('', Response::HTTP_NOT_FOUND);
             }
-            /** @var $stream resource */
+
+            /** @var resource $stream */
             $stream = $this->storage->readStream($document->getFilename());
 
             return new StreamedResponse(
@@ -134,7 +136,7 @@ class DocumentController extends AbstractController
                     'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', mb_convert_encoding($document->getOriginalFilename(), 'ISO-8859-1', 'UTF-8')),
                 ]
             );
-        } catch (UnableToReadFile|FilesystemException|NoSuchKeyException $e) {
+        } catch (FilesystemException|NoSuchKeyException|UnableToReadFile $e) {
             $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId()]);
 
             return new Response('', Response::HTTP_NOT_FOUND);

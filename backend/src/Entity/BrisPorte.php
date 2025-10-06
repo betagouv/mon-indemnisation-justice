@@ -236,6 +236,7 @@ class BrisPorte
         }
 
         $this->etatDossier = $this->historiqueEtats->last();
+        $this->etatDossier->postActivation();
 
         return $this;
     }
@@ -463,7 +464,7 @@ class BrisPorte
         return $this->propositionIndemnisation ? floatval($this->propositionIndemnisation) : null;
     }
 
-    public function setPropositionIndemnisation(?string $propositionIndemnisation): self
+    public function setPropositionIndemnisation(float $propositionIndemnisation): self
     {
         $this->propositionIndemnisation = $propositionIndemnisation;
 
