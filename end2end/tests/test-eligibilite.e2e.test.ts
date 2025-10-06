@@ -32,14 +32,14 @@ test("test éligibilité", async ({page}) => {
 
     await expect(
         page.getByText(
-            "Est-ce que la personne recherchée par les forces de l'ordre réside ou est hébergée à l'adresse du logement ayant subi le bris de porte ?",
+            "Est-ce que la personne recherchée par les forces de l'ordre réside ou est hébergée à votre domicile ?",
         ),
     ).toBeVisible();
 
     await page
         .locator("fieldset", {
             has: page.getByText(
-                "Est-ce que la personne recherchée par les forces de l'ordre réside ou est hébergée à l'adresse du logement ayant subi le bris de porte ?",
+                "Est-ce que la personne recherchée par les forces de l'ordre réside ou est hébergée à votre domicile ?",
             ),
         })
         .getByLabel("Non")
