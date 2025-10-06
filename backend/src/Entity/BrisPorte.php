@@ -447,6 +447,11 @@ class BrisPorte
         return $this->documentsParType[$type->value] ?? [];
     }
 
+    public function getCourrierDecision(): ?Document
+    {
+        return $this->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
+    }
+
     public function getArretePaiement(): ?Document
     {
         return $this->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT);

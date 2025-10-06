@@ -11,6 +11,7 @@ class DossierVoter extends Voter
 {
     public const ACTION_ATTRIBUER = 'dossier:attribuer';
     public const ACTION_INSTRUIRE = 'dossier:instruire';
+    public const ACTION_GENERER_DOCUMENT = 'dossier:generer-document';
 
     public const ACTION_LISTER_A_CATEGORISER = 'dossier:lister:a-categoriser';
     public const ACTION_LISTER_A_ATTRIBUER = 'dossier:lister:a-attribuer';
@@ -29,6 +30,7 @@ class DossierVoter extends Voter
         return in_array($attribute, [
             self::ACTION_ATTRIBUER,
             self::ACTION_INSTRUIRE,
+            self::ACTION_GENERER_DOCUMENT,
             self::ACTION_LISTER_A_CATEGORISER,
             self::ACTION_LISTER_A_ATTRIBUER,
             self::ACTION_LISTER_A_INSTRUIRE,
@@ -54,6 +56,7 @@ class DossierVoter extends Voter
         return match ($attribute) {
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
+            self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
             self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
             default => false
         };
@@ -67,6 +70,11 @@ class DossierVoter extends Voter
     protected function agentPeutInstruire(Agent $agent, BrisPorte $dossier): bool
     {
         return $agent->estRedacteur() && $agent->instruit($dossier);
+    }
+
+    protected function agentPeutGenererDocument(Agent $agent, BrisPorte $dossier): bool
+    {
+        return ($agent->estRedacteur() && $agent->instruit($dossier)) || $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR);
     }
 
     protected function agentPeutLister(Agent $agent, string $action): bool
