@@ -65,6 +65,17 @@ class EtatDossier
         return $this;
     }
 
+    public function postActivation(): void
+    {
+        // Répercuter le montant de l'indemnisation sur le dossier :
+        if (
+            in_array($this->etat, [EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_OK_A_APPROUVER])
+            && isset($this->contexte['montant'])
+        ) {
+            $this->dossier->setPropositionIndemnisation($this->contexte['montant']);
+        }
+    }
+
     public function estAAttribuer(): bool
     {
         return $this->etat->estAAttribuer();
