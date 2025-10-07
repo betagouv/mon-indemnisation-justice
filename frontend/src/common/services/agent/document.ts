@@ -16,6 +16,11 @@ interface DocumentManagerInterface {
     motifRejet: string,
   ): Promise<Document>;
 
+  genererDeclarationAcceptation(
+    dossier: BaseDossier,
+    montantIndemnisation: number,
+  ): Promise<Document>;
+
   genererArretePaiement(dossier: BaseDossier): Promise<Document>;
 }
 
@@ -100,6 +105,36 @@ class APIDocumentManager implements DocumentManagerInterface {
     throw new Error(
       data.erreur ??
         "Une erreur indéterminée est survenue lors de la génération de courrier de proposition d'indemnisation",
+    );
+  }
+
+  async genererDeclarationAcceptation(
+    dossier: BaseDossier,
+    montantIndemnisation: number,
+  ): Promise<Document> {
+    const response = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/generer-declaration-acceptation`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          montantIndemnisation,
+        }),
+      },
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return plainToInstance(Document, data.document);
+    }
+
+    throw new Error(
+      data.erreur ??
+        "Une erreur indéterminée est survenue lors de la génération de la déclaration d'acceptation",
     );
   }
 

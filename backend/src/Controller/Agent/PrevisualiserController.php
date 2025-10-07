@@ -19,7 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class PrevisualiserController extends AbstractController
 {
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
-    #[Route('/dossier/{id}/decision', name: 'agent_redacteur_courrier_dossier_previsualiser', methods: ['GET'])]
+    #[Route('/dossier/{id}/decision', name: 'agent_previsualiser_courrier_decision', methods: ['GET'])]
     public function previsualiserCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
         $document = $dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
@@ -36,7 +36,17 @@ class PrevisualiserController extends AbstractController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
-    #[Route('/dossier/{id}/arrete-paiement', name: 'agent_redacteur_courrier_arrete_paiement_previsualiser', methods: ['GET'])]
+    #[Route('/dossier/{id}/declaration-acceptation', name: 'agent_previsualiser_declaration_acceptation', methods: ['GET'])]
+    public function previsualiserDeclarationAcceptation(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    {
+        return $this->render('courrier/declarationAcceptation.html.twig', [
+            'dossier' => $dossier,
+            'web' => $request->query->getBoolean('w', true),
+        ]);
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/dossier/{id}/arrete-paiement', name: 'agent_previsualiser_courrier_decision', methods: ['GET'])]
     public function previsualiserArretePaiementDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
     {
         return $this->render('courrier/arretePaiement.html.twig', [

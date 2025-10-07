@@ -234,18 +234,30 @@ export const DeciderModale = function ({
   agent: Agent;
   onDecide?: () => void;
 }) {
+  const etatDecision = useSnapshot(store);
+
+  const [courrier, setCourrier] = useState<Document | null>(
+    dossier.getCourrierAJour(),
+  );
+
+  const [declarationAcceptation, setDeclarationAcceptation] =
+    useState<Document | null>(
+      dossier.getDocumentType(DocumentType.TYPE_COURRIER_REQUERANT),
+    );
+
   // Mémorise le montant de l'indemnisation
   const [montantIndemnisation, setMontantIndemnisation]: [
     number,
     (montant: number) => void,
-  ] = useState(100);
+  ] = useState(courrier?.metaDonnees?.contexte?.montantIndemnisation ?? 100);
 
   // Mémorise le motif de rejet
   const [motifRejet, setMotifRejet]: [
     MotifRefus | null,
     (motif: MotifRefus) => void,
   ] = useState<MotifRefus>(
-    dossier.qualiteRequerant == "PRO"
+    (courrier?.metaDonnees?.contexte?.motifRefus ??
+      dossier.qualiteRequerant == "PRO")
       ? "est_bailleur"
       : dossier.testEligibilite.estVise
         ? "est_vise"
@@ -265,15 +277,6 @@ export const DeciderModale = function ({
     boolean,
     (mode: boolean) => void,
   ] = useState(false);
-
-  const etatDecision = useSnapshot(store);
-
-  const [courrier, setCourrier] = useState<Document | null>(
-    dossier.getCourrierAJour(),
-  );
-
-  // Le mode en cours sur l'éditeur de document
-  const [editeurMode, setEditeurMode] = useState<EditeurMode>("edition");
 
   const annuler = () => fermerModale();
 
@@ -304,6 +307,20 @@ export const DeciderModale = function ({
       );
       dossier.addDocument(courrierRejet);
       setCourrier(courrierRejet);
+      setGenerationEnCours(false);
+    },
+    [dossier],
+  );
+
+  const genererDeclarationAcceptation = useCallback(
+    async (dossier: DossierDetail, montantIndemnisation: number) => {
+      setGenerationEnCours(true);
+      const document = await documentManager.genererDeclarationAcceptation(
+        dossier,
+        montantIndemnisation,
+      );
+      dossier.addDocument(document);
+      setDeclarationAcceptation(document);
       setGenerationEnCours(false);
     },
     [dossier],
@@ -425,7 +442,7 @@ export const DeciderModale = function ({
       {etatDecision.etape.nom === "CHOIX_MONTANT_INDEMNISATION" && (
         <>
           <DefinirMontantIndemnisation
-            montantIndemnisation={etatDecision.montantIndemnisation}
+            montantIndemnisation={montantIndemnisation}
             setMontantIndemnisation={(montantIndemnisation: number) =>
               setMontantIndemnisation(montantIndemnisation)
             }
@@ -518,7 +535,10 @@ export const DeciderModale = function ({
             <EditeurDocument
               className="fr-my-2w"
               document={courrier as Document}
-              onImprime={(document: Document) => dossier.addDocument(document)}
+              onImprime={(document: Document) => {
+                setDeclarationAcceptation(document);
+                dossier.addDocument(document);
+              }}
               onImpression={(impressionEnCours) =>
                 setSauvegarderEnCours(impressionEnCours)
               }
@@ -547,7 +567,20 @@ export const DeciderModale = function ({
               {
                 disabled: !courrier,
                 iconId: "fr-icon-edit-box-line",
-                onClick: () => versEtape(EtapeDecision.VERIFICATION_PI),
+                onClick: () => {
+                  if (
+                    !declarationAcceptation ||
+                    declarationAcceptation.metaDonnees?.montant !==
+                      etatDecision.montantIndemnisation
+                  ) {
+                    genererDeclarationAcceptation(
+                      dossier,
+                      etatDecision.montantIndemnisation,
+                    );
+                  }
+
+                  versEtape(EtapeDecision.EDITION_DECLARATION_ACCEPTATION);
+                },
                 children: "Éditer la déclaration d'acceptation",
               },
             ]}
@@ -556,7 +589,47 @@ export const DeciderModale = function ({
       )}
 
       {etatDecision.etape.nom === "EDITION_DECLARATION_ACCEPTATION" && (
-        <>Edition décla acceptation</>
+        <>
+          {generationEnCours ? (
+            <>Génération de la déclaration en cours...</>
+          ) : (
+            <EditeurDocument
+              className="fr-my-2w"
+              document={declarationAcceptation as Document}
+              onImprime={(document: Document) => dossier.addDocument(document)}
+              onImpression={(impressionEnCours) =>
+                setSauvegarderEnCours(impressionEnCours)
+              }
+            />
+          )}
+          <ButtonsGroup
+            inlineLayoutWhen="always"
+            buttonsIconPosition="right"
+            alignment="right"
+            buttonsSize="small"
+            buttons={[
+              {
+                children: "Annuler",
+                priority: "tertiary no outline",
+                onClick: () => {
+                  annuler();
+                },
+              },
+              {
+                children: "Éditer la PI",
+                priority: "secondary",
+                iconId: "fr-icon-edit-box-line",
+                onClick: () => versEtape(EtapeDecision.EDITION_COURRIER_PI),
+              },
+              {
+                disabled: !courrier,
+                iconId: "fr-icon-edit-box-line",
+                onClick: () => versEtape(EtapeDecision.VERIFICATION_PI),
+                children: "Éditer la déclaration d'acceptation",
+              },
+            ]}
+          />
+        </>
       )}
 
       {etatDecision.etape.nom === "VERIFICATION_PI" && <>Vérification PI</>}

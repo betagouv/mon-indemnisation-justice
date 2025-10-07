@@ -1,0 +1,160 @@
+{% extends 'courrier/_base_courrier.html.twig' %}
+
+{% block style %}
+    <style>
+        body {
+
+            header {
+
+                .courrier-decision-courrier-titre {
+                    font-family: 'Marianne', sans-serif;
+                    width: 33%;
+                    text-align: right;
+                    font-weight: bold;
+                    font-size: 12pt;
+                    letter-spacing: -.5pt;
+                }
+            }
+
+            #declaration-acceptation {
+                * {
+                    letter-spacing: .8pt;
+                    font-size: 11pt;
+                    line-height: 12pt;
+                    font-family: Arial, sans-serif;
+                }
+
+                input {
+                    border: none;
+                }
+
+                p {
+                    &.formulaire-titre {
+                        width: 100%;
+                        text-align: center;
+                    }
+
+                    &:first-child {
+                        margin: 0 0 1.5cm 0;
+                    }
+
+                    &.marge-plus {
+                        margin: 1.5cm 0 0 0;
+                    }
+
+                    &.marge-plus-plus {
+                        margin: 3cm 0 0 0;
+                    }
+
+                    margin: 10pt 0;
+                }
+
+                ul.formulaire {
+                    margin: 1cm;
+                    padding: 0;
+                    list-style-type: none;
+                    list-style-position: inside;
+
+                    li {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: end;
+
+                        *:first-child {
+                            flex: 2 1 0;
+                        }
+
+                        * {
+                            flex: 3 1 0;
+                        }
+
+
+                        &.formulaire-section {
+                            margin-top: 1cm;
+                        }
+
+                        input {
+                            border-bottom: 2px dotted #333 !important;
+                        }
+                    }
+                }
+
+                #declaration-acceptation-champs-lieu-signature, #declaration-acceptation-champs-date-signature {
+                    margin: 0 1rem;
+                }
+            }
+        }
+
+    </style>
+{% endblock style %}
+
+{% block pages %}
+
+    <div id="declaration-acceptation" class="page">
+        <p class="formulaire-titre">
+            <b class="texte-majuscule">Déclaration d’acceptation</b>
+        </p>
+
+        {% if corps is defined and corps is not null %}
+            {{ corps|raw }}
+        {% endif %}
+
+
+        <p>
+            Je déclare renoncer à exercer toute action ultérieure à raison de ces faits contre l’État.
+        </p>
+
+        <p>
+            Je demande que l’indemnité soit versée sur le compte référencé ci-dessous :</p>
+
+        <ul class="formulaire">
+            <li>
+                <label for="declaration-acceptation-champs-etablissement">Établissement :</label><input
+                        id="declaration-acceptation-champs-etablissement" type="text"/>
+            </li>
+            <li>
+                <label for="declaration-acceptation-champs-code-banque">Code banque :</label><input
+                        id="declaration-acceptation-champs-code-banque" type="text"/>
+            </li>
+            <li>
+                <label for="declaration-acceptation-champs-code-guichet">Code guichet :</label><input
+                        id="declaration-acceptation-champs-code-guichet" type="text"/>
+            </li>
+            <li>
+                <label for="declaration-acceptation-champs-numero-compte">Numéro de compte :</label><input
+                        id="declaration-acceptation-champs-numero-compte" type="text"/>
+            </li>
+            <li>
+                <label for="declaration-acceptation-champs-cle-rib">Clé RIB :</label><input
+                        id="declaration-acceptation-champs-cle-rib" type="text"/>
+            </li>
+
+            <li class="formulaire-section">
+                <label for="declaration-acceptation-champs-numero-ss">Numéro de sécurité sociale
+                    :</label><input
+                        id="declaration-acceptation-champs-numero-ss" type="text"
+                        {# value="{{ dossier.requerant.personnePhysique.numeroSecuriteSociale }}" #}/>
+            </li>
+            <li>
+                <label for="declaration-acceptation-champs-naissance">Date et lieu de naissance
+                    :</label><input
+                        id="declaration-acceptation-champs-naissance" type="text"/>
+            </li>
+        </ul>
+
+        {# Formulaire ici #}
+
+        <p><label for="declaration-acceptation-champs-lieu-signature">Fait à</label> <input
+                    id="declaration-acceptation-champs-lieu-signature" type="text"/>
+            <label for="declaration-acceptation-champs-date-signature">le</label> <input
+                    id="declaration-acceptation-champs-date-signature" type="text"/>
+        </p>
+
+        <p class="marge-plus">Signature (précédée de la mention « lu et approuvé »)</p>
+
+        <p class="marge-plus">La déclaration d’acceptation doit être retournée via votre espace personnel</p>
+
+        <p class="marge-plus-plus"><b><u>Référence à rappeler</u> :{{ dossier.reference }}</b></p>
+    </div>
+
+{% endblock pages %}
