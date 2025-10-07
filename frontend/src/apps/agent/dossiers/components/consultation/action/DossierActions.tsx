@@ -7,9 +7,9 @@ import {
   AttribuerModale as AttribuerActionModale,
 } from "./AttributionAction";
 import {
-  verifierAcceptationBoutons,
-  VerifierAcceptationModale as VerifierAcceptationActionModale,
-} from "./VerificationAcceptationAction";
+  signerArretePaiementBoutons,
+  SignerArretePaiementModale,
+} from "./SignerArretePaiementAction.tsx";
 import {
   cloturerBoutons,
   CloturerModale as CloturerActionModale,
@@ -66,8 +66,8 @@ export const DossierActions = function DossierActionBar({
               agent,
             }),
             ...confirmerBoutons({ dossier, agent }),
-            ...verifierAcceptationBoutons({ dossier, agent }),
             ...genererArretePaiementBoutons({ dossier, agent }),
+            ...signerArretePaiementBoutons({ dossier, agent }),
             ...envoyerPourIndemnisationBoutons({ dossier, agent }),
             ...marquerIndemniseBoutons({ dossier, agent }),
           ] as [ButtonProps, ...ButtonProps[]]
@@ -84,8 +84,8 @@ export const DossierActions = function DossierActionBar({
         onEdite={onEdite}
         onSigne={onSigne}
       />
-      <VerifierAcceptationActionModale dossier={dossier} agent={agent} />
       <GenererArretePaiementModale dossier={dossier} agent={agent} />
+      <SignerArretePaiementModale dossier={dossier} agent={agent} />
       <EnvoyerPourIndemnisationActionModale dossier={dossier} agent={agent} />
       <MarquerIndemniseActionModale dossier={dossier} agent={agent} />
     </>

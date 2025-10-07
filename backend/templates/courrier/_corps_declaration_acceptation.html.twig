@@ -1,0 +1,20 @@
+<p>
+    Je soussigné{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %}
+    , {{ dossier.requerant.getNomCourant(false, true) }},
+    déclare accepter l’indemnité définitive de <b>{{ contexte.montantIndemnisation|montant_litteral }}
+        ({{ contexte.montantIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
+    préjudice confondues qui m’est proposée par le garde des Sceaux, ministre de la Justice, en réparation
+    du
+    préjudice subi en raison de la détérioration de la porte d’entrée d’un logement m’appartenant
+    sis {{ dossier.adresse.ligne1 }}
+    à {{ dossier.adresse.localite }} ({{ dossier.adresse.codeDepartemental }});
+</p>
+
+<p>
+    Je reconnais que, moyennant le versement de cette somme, je serai intégralement
+    désintéressé{% if dossier.requerant.personnePhysique.civilite.estFeminin %}e{% endif %} du préjudice
+    subi au cours de l’opération de police judiciaire intervenue
+    {% if dossier.dateOperationPJ is not null %}le {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}{% endif %}
+    à l’adresse susmentionnée
+    ;
+</p>
