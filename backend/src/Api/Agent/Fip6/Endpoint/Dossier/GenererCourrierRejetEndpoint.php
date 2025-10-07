@@ -37,10 +37,9 @@ class GenererCourrierRejetEndpoint
     ) {
         $courrierMinistere = $dossier->getOrCreatePropositionIndemnisation();
 
-        $courrierMinistere->setMetaDonnees(['contexte' => [
-            'indemnisation' => false,
+        $courrierMinistere->setMetaDonnees(['indemnisation' => false,
             'motifRejet' => $input->motifRejet,
-        ]]);
+        ]);
 
         $gabarit = match ($input->motifRejet) {
             'est_bailleur' => 'courrier/_corps_rejete_bailleur.html.twig',

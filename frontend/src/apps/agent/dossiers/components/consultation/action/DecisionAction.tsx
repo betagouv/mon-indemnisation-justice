@@ -105,13 +105,13 @@ class EtapeDecision {
 }
 
 //type EtapeDecision = "choix_motif" | "choix_montant" | "edition_courrier";
-type MotifRefus = "est_bailleur" | "est_vise" | "est_hebergeant" | "autre";
+type MotifRejet = "est_bailleur" | "est_vise" | "est_hebergeant" | "autre";
 
 interface EtatDecision {
   decision: boolean;
   etape: EtapeDecision;
   montantIndemnisation: number;
-  motifRefus?: MotifRefus;
+  motifRejet?: MotifRejet;
 }
 
 const store = proxy<EtatDecision>({
@@ -125,9 +125,9 @@ const opterDecision = (decision: boolean) => {
   store.decision = decision;
 };
 
-const definirMotifRejet = (motifRejet: MotifRefus) => {
+const definirMotifRejet = (motifRejet: MotifRejet) => {
   store.decision = false;
-  store.motifRefus = motifRejet;
+  store.motifRejet = motifRejet;
 };
 const definirMontantIndemnisation = (montantIndemnisation: number) => {
   store.decision = true;
@@ -146,8 +146,8 @@ const DefinirMotifRefus = ({
   motifRejet,
   setMotifRejet,
 }: {
-  motifRejet?: MotifRefus;
-  setMotifRejet: Dispatch<SetStateAction<MotifRefus>>;
+  motifRejet?: MotifRejet;
+  setMotifRejet: Dispatch<SetStateAction<MotifRejet>>;
 }) => {
   return (
     <>
@@ -162,7 +162,7 @@ const DefinirMotifRefus = ({
         <select
           className="fr-select"
           defaultValue={motifRejet}
-          onChange={(e) => setMotifRejet(e.target.value as MotifRefus)}
+          onChange={(e) => setMotifRejet(e.target.value as MotifRejet)}
         >
           <option value="est_bailleur">
             Le requérant est le bailleur (art. 1732)
@@ -249,15 +249,14 @@ export const DeciderModale = function ({
   const [montantIndemnisation, setMontantIndemnisation]: [
     number,
     (montant: number) => void,
-  ] = useState(courrier?.metaDonnees?.contexte?.montantIndemnisation ?? 100);
+  ] = useState(courrier?.metaDonnees?.montantIndemnisation ?? 100);
 
   // Mémorise le motif de rejet
   const [motifRejet, setMotifRejet]: [
-    MotifRefus | null,
-    (motif: MotifRefus) => void,
-  ] = useState<MotifRefus>(
-    (courrier?.metaDonnees?.contexte?.motifRefus ??
-      dossier.qualiteRequerant == "PRO")
+    MotifRejet | null,
+    (motif: MotifRejet) => void,
+  ] = useState<MotifRejet>(
+    (courrier?.metaDonnees?.motifRejet ?? dossier.qualiteRequerant == "PRO")
       ? "est_bailleur"
       : dossier.testEligibilite.estVise
         ? "est_vise"
@@ -299,7 +298,7 @@ export const DeciderModale = function ({
   );
 
   const genererCourrierRejet = useCallback(
-    async (dossier: DossierDetail, motifRejet: MotifRefus) => {
+    async (dossier: DossierDetail, motifRejet: MotifRejet) => {
       setGenerationEnCours(true);
       const courrierRejet = await documentManager.genererCourrierRejet(
         dossier,
@@ -350,7 +349,7 @@ export const DeciderModale = function ({
                   indemnisation: true,
                   montantIndemnisation: etatDecision.montantIndemnisation,
                 }
-              : { indemnisation: false, motif: etatDecision.motifRefus },
+              : { indemnisation: false, motif: etatDecision.motifRejet },
           ),
         },
       );
@@ -399,8 +398,8 @@ export const DeciderModale = function ({
       {etatDecision.etape.nom === "CHOIX_MOTIF_REJET" && (
         <>
           <DefinirMotifRefus
-            motifRejet={etatDecision.motifRefus}
-            setMotifRejet={(motifRejet: MotifRefus) =>
+            motifRejet={etatDecision.motifRejet}
+            setMotifRejet={(motifRejet: MotifRejet) =>
               setMotifRejet(motifRejet)
             }
           />
@@ -422,7 +421,7 @@ export const DeciderModale = function ({
                 onClick: () => {
                   const regenererDocument =
                     etatDecision.decision ||
-                    motifRejet !== etatDecision.motifRefus;
+                    motifRejet !== etatDecision.motifRejet;
 
                   definirMotifRejet(motifRejet);
                   versEtape(EtapeDecision.EDITION_COURRIER_REJET);

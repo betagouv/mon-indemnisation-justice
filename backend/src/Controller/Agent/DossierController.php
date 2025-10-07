@@ -160,21 +160,19 @@ class DossierController extends AgentController
             return new JsonResponse(['error' => "Vous n'êtes pas attribué à l'instruction de ce dossier"], Response::HTTP_UNAUTHORIZED);
         }
 
-        $indemnisation = floatval($request->getPayload()->getBoolean('indemnisation'));
         $montantIndemnisation = floatval($request->getPayload()->get('montantIndemnisation'));
-        $motif = $request->getPayload()->getString('motif');
+        $motifRejet = $request->getPayload()->getString('motifRejet');
 
-        if ($indemnisation) {
+        if ($montantIndemnisation) {
             $dossier
-                ->changerStatut(EtatDossierType::DOSSIER_OK_A_SIGNER, agent: $agent, contexte: $montantIndemnisation ? [
-                    'montant' => $montantIndemnisation,
-                ] : null)
-                ->setPropositionIndemnisation($montantIndemnisation)
+                ->changerStatut(EtatDossierType::DOSSIER_OK_A_SIGNER, agent: $agent, contexte: [
+                    'montantIndemnisation' => $montantIndemnisation,
+                ])
             ;
         } else {
             $dossier
-                ->changerStatut(EtatDossierType::DOSSIER_KO_A_SIGNER, agent: $agent, contexte: $motif ? [
-                    'motif' => $motif,
+                ->changerStatut(EtatDossierType::DOSSIER_KO_A_SIGNER, agent: $agent, contexte: $motifRejet ? [
+                    'motifRejet' => $motifRejet,
                 ] : null)
             ;
         }

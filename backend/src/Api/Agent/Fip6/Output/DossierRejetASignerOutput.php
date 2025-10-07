@@ -25,7 +25,7 @@ class DossierRejetASignerOutput
             id: $dossier->getId(),
             reference: $dossier->getReference(),
             requerant: $dossier->getRequerant()->getNomCourant(),
-            motif: $dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE)?->getMetaDonnee('contexte')['motifRefus'] ?? null,
+            motif: $dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE)?->getMetaDonnee('motifRejet') ?? null,
             dateDecision: $dossier->getEtatDossier()->getDate(),
             agentDecision: $dossier->getEtatDossier()->getAgent()->getNomComplet()
         );

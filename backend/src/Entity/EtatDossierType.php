@@ -103,7 +103,7 @@ enum EtatDossierType: string
             self::DOSSIER_A_FINALISER => self::DOSSIER_A_ATTRIBUER,
             self::DOSSIER_A_ATTRIBUER => self::DOSSIER_A_INSTRUIRE,
             self::DOSSIER_A_INSTRUIRE => self::DOSSIER_EN_INSTRUCTION,
-            self::DOSSIER_EN_INSTRUCTION => isset($contexte['montant']) ? self::DOSSIER_OK_A_SIGNER : self::DOSSIER_KO_A_SIGNER,
+            self::DOSSIER_EN_INSTRUCTION => isset($contexte['montantIndemnisation']) ? self::DOSSIER_OK_A_SIGNER : self::DOSSIER_KO_A_SIGNER,
             self::DOSSIER_OK_A_SIGNER => self::DOSSIER_OK_A_APPROUVER,
             self::DOSSIER_OK_A_APPROUVER => self::DOSSIER_OK_A_VERIFIER,
             self::DOSSIER_OK_A_VERIFIER => self::DOSSIER_OK_VERIFIE,

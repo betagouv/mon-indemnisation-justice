@@ -37,10 +37,10 @@ class GenererCourrierPropositionIndemnisationEndpoint
     ) {
         $courrierPropositionIndemnisation = $dossier->getOrCreatePropositionIndemnisation();
 
-        $courrierPropositionIndemnisation->setMetaDonnees(['contexte' => [
+        $courrierPropositionIndemnisation->setMetaDonnees([
             'indemnisation' => true,
             'montantIndemnisation' => $input->montantIndemnisation,
-        ]]);
+        ]);
 
         $gabarit = $dossier->getRequerant()->getIsPersonneMorale() ? 'courrier/_corps_accepte_personne_morale.html.twig' : 'courrier/_corps_accepte_personne_physique.html.twig';
 
