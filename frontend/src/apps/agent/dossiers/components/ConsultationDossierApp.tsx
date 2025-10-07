@@ -116,7 +116,7 @@ export const ConsultationDossierApp = observer(
                     id={`tooltip-etat-dossier-${dossier.id}`}
                     role="tooltip"
                   >
-                    {dossier.etat.contexte?.motif || <i>Aucun motif</i>}
+                    {dossier.etat.contexte?.motifRejet || <i>Aucun motif</i>}
                   </span>
                 )}
 

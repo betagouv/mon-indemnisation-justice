@@ -70,9 +70,9 @@ class EtatDossier
         // Répercuter le montant de l'indemnisation sur le dossier :
         if (
             in_array($this->etat, [EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_OK_A_APPROUVER])
-            && isset($this->contexte['montant'])
+            && isset($this->contexte['montantIndemnisation'])
         ) {
-            $this->dossier->setPropositionIndemnisation($this->contexte['montant']);
+            $this->dossier->setPropositionIndemnisation($this->contexte['montantIndemnisation']);
         }
     }
 

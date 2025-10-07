@@ -37,9 +37,9 @@ class GenererDeclarationAcceptationEndpoint
     ) {
         $declarationAcceptation = $dossier->getOrCreateDeclarationAcceptation();
 
-        $declarationAcceptation->setMetaDonnees(['contexte' => [
+        $declarationAcceptation->setMetaDonnees([
             'montantIndemnisation' => $input->montantIndemnisation,
-        ]]);
+        ]);
 
         $declarationAcceptation->setCorps(
             $this->twig->render('courrier/_corps_declaration_acceptation.html.twig', [
