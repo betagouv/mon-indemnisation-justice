@@ -100,7 +100,7 @@ class DocumentController extends AbstractController
                 ]
             );
         } catch (FileException $e) {
-            $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId()]);
+            $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
 
             return new Response('', Response::HTTP_NOT_FOUND);
         }

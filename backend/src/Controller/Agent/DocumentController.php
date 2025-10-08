@@ -2,18 +2,14 @@
 
 namespace MonIndemnisationJustice\Controller\Agent;
 
-use AsyncAws\S3\Exception\NoSuchKeyException;
-use Doctrine\ORM\EntityManagerInterface;
-use League\Flysystem\FilesystemException;
-use League\Flysystem\FilesystemOperator;
-use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Service\DocumentManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,9 +23,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DocumentController extends AbstractController
 {
     public function __construct(
-        #[Target('default.storage')]
-        protected readonly FilesystemOperator $storage,
-        protected readonly EntityManagerInterface $em,
+        protected readonly DocumentManager $documentManager,
         protected readonly LoggerInterface $logger,
     ) {}
 
@@ -41,12 +35,7 @@ class DocumentController extends AbstractController
         }
 
         try {
-            if (!$this->storage->has($document->getFilename())) {
-                return new Response('', Response::HTTP_NOT_FOUND);
-            }
-
-            /** @var resource $stream */
-            $stream = $this->storage->readStream($document->getFilename());
+            $stream = $this->documentManager->getContenuRessource($document);
 
             return new StreamedResponse(
                 function () use ($stream) {
@@ -63,8 +52,8 @@ class DocumentController extends AbstractController
                     'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', mb_convert_encoding($document->getOriginalFilename(), 'ISO-8859-1', 'UTF-8')),
                 ]
             );
-        } catch (FilesystemException|NoSuchKeyException|UnableToReadFile $e) {
-            $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId()]);
+        } catch (FileException $e) {
+            $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
 
             return new Response('', Response::HTTP_NOT_FOUND);
         }
@@ -85,9 +74,8 @@ class DocumentController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->em->remove($document);
-        $this->em->flush();
+        $this->documentManager->supprimer($document);
 
-        return new JsonResponse('', Response::HTTP_NO_CONTENT);
+        return JsonResponse::fromJsonString('', Response::HTTP_NO_CONTENT);
     }
 }
