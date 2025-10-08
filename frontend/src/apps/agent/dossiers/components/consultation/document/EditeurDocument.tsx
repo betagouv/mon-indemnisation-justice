@@ -7,6 +7,7 @@ import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piece
 import { DocumentManagerImpl } from "@/common/services/agent";
 import { useInjection } from "inversify-react";
 import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
 export type EditeurMode = "edition" | "visualisation";
 
@@ -41,7 +42,8 @@ export const EditeurDocument = function EditeurDocumentComponent({
   const [corps, setCorps] = useState<string | null>(document.corps ?? null);
 
   const modifier = (corps: string) => {
-    setModificationsEnAttente(true);
+    setModificationsEnAttente(corps != document.corps);
+    // TODO debouncer un appel à `imprimer()` après 5s d'inactivité
     setCorps(corps);
     onEdite?.(corps);
   };
@@ -82,6 +84,11 @@ export const EditeurDocument = function EditeurDocumentComponent({
           buttonsSize="small"
           buttonsIconPosition="right"
           buttons={[
+            {
+              children: "Regénération du PDF en cours ...",
+              priority: "tertiary no outline",
+              disabled: true,
+            },
             modeEdition
               ? {
                   children: "Visualiser le PDF",
@@ -117,6 +124,17 @@ export const EditeurDocument = function EditeurDocumentComponent({
             ) : (
               <>
                 <p>Ce document a été édité en dehors de la plateforme</p>
+
+                <p>
+                  Si vous voulez l'éditer vous pouvez le re-générer mais le PDF
+                  actuel <b>sera perdu</b>
+                </p>
+
+                <Button
+                  title="Re-générer"
+                  iconId="fr-icon-restart-line"
+                  linkProps={{}}
+                />
               </>
             )}
           </>
