@@ -5,6 +5,7 @@ import React, {
   FormEvent,
   SetStateAction,
   useCallback,
+  useEffect,
   useState,
 } from "react";
 
@@ -126,6 +127,11 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
   const [courrier, setCourrier] = useState<Document | null>(
     dossier.getCourrierAJour(),
   );
+
+  // Actualiser le courrier de décision dès lors qu'il aurait été changé en dehors (ex : décision de rejet)
+  useEffect(() => {
+    setCourrier(dossier.getCourrierAJour());
+  }, [dossier.id, dossier.getCourrierAJour()?.fileHash]);
 
   // L'étape en cours :
   const [etape, setEtape] = useState<IdEtape>("CHOIX_MOTIF_REJET");
