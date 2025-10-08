@@ -44,7 +44,7 @@ class GenererDeclarationAcceptationEndpoint
         $declarationAcceptation->setCorps(
             $this->twig->render('courrier/_corps_declaration_acceptation.html.twig', [
                 'dossier' => $dossier,
-                'contexte' => $declarationAcceptation->getMetaDonnee('contexte') ?? [],
+                'contexte' => $declarationAcceptation->getMetaDonnees() ?? [],
             ])
         );
 
