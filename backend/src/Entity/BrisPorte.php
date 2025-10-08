@@ -651,6 +651,11 @@ class BrisPorte
         }
     }
 
+    public function getOrCreateDocument(DocumentType $type): Document
+    {
+        return $this->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($this);
+    }
+
     protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
     {
         return $this->historiqueEtats
@@ -658,10 +663,5 @@ class BrisPorte
                 fn (int $index, EtatDossier $e) => $etat === $e->getEtat()
             )?->getDate()
         ;
-    }
-
-    protected function getOrCreateDocument(DocumentType $type): Document
-    {
-        return $this->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($this);
     }
 }
