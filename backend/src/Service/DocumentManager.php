@@ -44,7 +44,7 @@ class DocumentManager
 
         $this->ajouterDocument(
             $dossier,
-            (new Document())
+            $dossier->getOrCreateDocument($type)
                 ->setOriginalFilename(pathinfo($cheminFichier, PATHINFO_FILENAME))
                 ->setType($type)
                 ->setMime($mime)
@@ -54,11 +54,11 @@ class DocumentManager
         );
     }
 
-    public function ajouterFichierTeleverse(BrisPorte $dossier, UploadedFile $fichierTeleverse, DocumentType $type, bool $estAjoutRequerant = true): void
+    public function ajouterFichierTeleverse(BrisPorte $dossier, UploadedFile $fichierTeleverse, DocumentType $type, bool $estAjoutRequerant = true): Document
     {
-        $this->ajouterDocument(
+        return $this->ajouterDocument(
             $dossier,
-            (new Document())
+            $dossier->getOrCreateDocument($type)
                 ->setOriginalFilename($fichierTeleverse->getClientOriginalName())
                 ->setAjoutRequerant(true)
                 ->setType($type)
@@ -69,12 +69,17 @@ class DocumentManager
         );
     }
 
-    public function ajouterDocument(BrisPorte $dossier, Document $document, string $contenu, string $extension): void
+    public function ajouterDocument(BrisPorte $dossier, Document $document, string $contenu, string $extension): Document
     {
         $nom = sprintf('%s.%s', hash('sha256', $contenu), $extension);
 
         try {
             $this->storage->write($nom, $contenu);
+
+            if (!$this->storage->fileExists($nom)) {
+                throw new FileException("L'enregistrement du fichier a échoué");
+            }
+
             $document
                 ->setFilename($nom)
                 ->setSize($this->storage->fileSize($nom))
@@ -83,9 +88,29 @@ class DocumentManager
             $dossier->ajouterDocument($document);
             $this->em->persist($dossier);
             $this->em->flush();
+
+            return $document;
         } catch (FilesystemException|UnableToWriteFile $e) {
             throw new FileException("La sauvegarde du fichier a échoué: {$e->getMessage()}");
         }
+    }
+
+    public function supprimer(Document $document)
+    {
+        $this->storage->delete($document->getFilename());
+
+        $this->em->remove($document);
+        $this->em->flush();
+    }
+
+    /** @return resource */
+    public function getContenuRessource(Document $document)
+    {
+        if (!$this->storage->has($document->getFilename())) {
+            throw new FileException("Le fichier associé à ce document n'existe pas.");
+        }
+
+        return $this->storage->readStream($document->getFilename());
     }
 
     public function genererArretePaiement(BrisPorte $dossier): void

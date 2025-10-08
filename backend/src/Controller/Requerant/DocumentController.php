@@ -2,20 +2,14 @@
 
 namespace MonIndemnisationJustice\Controller\Requerant;
 
-use AsyncAws\S3\Exception\NoSuchKeyException;
-use Doctrine\ORM\EntityManagerInterface;
-use League\Flysystem\FilesystemException;
-use League\Flysystem\FilesystemOperator;
-use League\Flysystem\UnableToReadFile;
-use League\Flysystem\UnableToWriteFile;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Service\DocumentManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -32,9 +26,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DocumentController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        #[Target('default.storage')]
-        protected readonly FilesystemOperator $storage,
+        protected readonly DocumentManager $documentManager,
         protected readonly LoggerInterface $logger,
     ) {}
 
@@ -58,28 +50,7 @@ class DocumentController extends AbstractController
             throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
         }
 
-        if (null !== $file?->getPathname()) {
-            $content = $file->getContent();
-            $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
-
-            try {
-                $this->storage->write($filename, $content);
-                $document = (new Document())
-                    ->setFilename($filename)
-                    ->setOriginalFilename($file->getClientOriginalName())
-                    ->setAjoutRequerant(true)
-                    ->setSize($this->storage->fileSize($filename))
-                    ->setType($type)
-                    ->setMime($file->getClientMimeType())
-                ;
-
-                $dossier->ajouterDocument($document);
-                $this->em->persist($dossier);
-                $this->em->flush();
-            } catch (FilesystemException|UnableToWriteFile $e) {
-                throw new FileException("La sauvegarde du fichier a échoué: {$e->getMessage()}");
-            }
-        }
+        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, $type);
 
         return new JsonResponse([
             'id' => $document->getId(),
@@ -98,10 +69,7 @@ class DocumentController extends AbstractController
             throw new NotFoundHttpException('Document non trouvé');
         }
 
-        $this->storage->delete($document->getFilename());
-
-        $this->em->remove($document);
-        $this->em->flush();
+        $this->documentManager->supprimer($document);
 
         return JsonResponse::fromJsonString('', Response::HTTP_NO_CONTENT);
     }
@@ -114,12 +82,7 @@ class DocumentController extends AbstractController
         }
 
         try {
-            if (!$this->storage->has($document->getFilename())) {
-                return new Response('', Response::HTTP_NOT_FOUND);
-            }
-
-            /** @var resource $stream */
-            $stream = $this->storage->readStream($document->getFilename());
+            $stream = $this->documentManager->getContenuRessource($document);
 
             return new StreamedResponse(
                 function () use ($stream) {
@@ -136,7 +99,7 @@ class DocumentController extends AbstractController
                     'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', mb_convert_encoding($document->getOriginalFilename(), 'ISO-8859-1', 'UTF-8')),
                 ]
             );
-        } catch (FilesystemException|NoSuchKeyException|UnableToReadFile $e) {
+        } catch (FileException $e) {
             $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId()]);
 
             return new Response('', Response::HTTP_NOT_FOUND);
