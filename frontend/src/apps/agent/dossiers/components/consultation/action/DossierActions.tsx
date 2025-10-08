@@ -1,7 +1,11 @@
 import {
-  deciderBoutons,
-  DeciderModale,
-} from "@/apps/agent/dossiers/components/consultation/action/DecisionAction";
+  deciderIndemnisationBoutons,
+  DeciderIndemnisationModale,
+} from "@/apps/agent/dossiers/components/consultation/action/DeciderIndemnisationAction.tsx";
+import {
+  deciderRejetBoutons,
+  DeciderRejetModale,
+} from "@/apps/agent/dossiers/components/consultation/action/DeciderRejetAction.tsx";
 import {
   attribuerBoutons,
   AttribuerModale as AttribuerActionModale,
@@ -61,7 +65,11 @@ export const DossierActions = function DossierActionBar({
             ...cloturerBoutons({ dossier, agent }),
             ...attribuerBoutons({ dossier, agent }),
             ...demarrerInstructionBoutons({ dossier, agent }),
-            ...deciderBoutons({
+            ...deciderRejetBoutons({
+              dossier,
+              agent,
+            }),
+            ...deciderIndemnisationBoutons({
               dossier,
               agent,
             }),
@@ -77,7 +85,12 @@ export const DossierActions = function DossierActionBar({
       {/** Modales d'action sur le dossier */}
       <CloturerActionModale dossier={dossier} agent={agent} />
       <AttribuerActionModale dossier={dossier} agent={agent} />
-      <DeciderModale dossier={dossier} agent={agent} onDecide={onDecide} />
+      <DeciderRejetModale dossier={dossier} agent={agent} onDecide={onDecide} />
+      <DeciderIndemnisationModale
+        dossier={dossier}
+        agent={agent}
+        onDecide={onDecide}
+      />
       <ConfirmerModale
         dossier={dossier}
         agent={agent}
