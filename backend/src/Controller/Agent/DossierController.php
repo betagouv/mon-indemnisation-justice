@@ -6,16 +6,18 @@ use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Service\DocumentManager;
+use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +36,8 @@ class DossierController extends AgentController
         protected readonly AgentRepository $agentRepository,
         #[Target('default.storage')]
         protected readonly FilesystemOperator $storage,
+        protected readonly DossierManager $dossierManager,
+        protected readonly DocumentManager $documentManager,
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
     ) {}
@@ -125,23 +129,11 @@ class DossierController extends AgentController
         /** @var UploadedFile $file */
         $file = $request->files->get('file');
 
-        $content = $file->getContent();
-        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
-        $this->storage->write($filename, $content);
-        $document = ($type->estUnique() ? $dossier->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($dossier) : (new Document())->setType($type)->ajouterAuDossier($dossier))
-            ->setFilename($filename)
-            ->setCorps(null)
-            ->setOriginalFilename($file->getClientOriginalName())
-            ->setSize($file->getSize())
-            ->setAjoutRequerant(false)
-            ->setMime($file->getClientMimeType())
-        ;
-
-        if ($request->request->has('metaDonnees')) {
-            $metaDonnees = json_decode($request->request->get('metaDonnees'), true);
-
-            $document->setMetaDonnees($metaDonnees);
+        if (null === $file?->getPathname()) {
+            throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
         }
+
+        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, $type);
 
         $this->em->persist($document);
         $this->em->persist($dossier);
@@ -160,30 +152,14 @@ class DossierController extends AgentController
             return new JsonResponse(['error' => "Vous n'êtes pas attribué à l'instruction de ce dossier"], Response::HTTP_UNAUTHORIZED);
         }
 
-        $montantIndemnisation = floatval($request->getPayload()->get('montantIndemnisation'));
-        $motifRejet = $request->getPayload()->getString('motifRejet');
-
-        if ($montantIndemnisation) {
-            $dossier
-                ->changerStatut(EtatDossierType::DOSSIER_OK_A_SIGNER, agent: $agent, contexte: [
-                    'montantIndemnisation' => $montantIndemnisation,
-                ])
-            ;
-        } else {
-            $dossier
-                ->changerStatut(EtatDossierType::DOSSIER_KO_A_SIGNER, agent: $agent, contexte: $motifRejet ? [
-                    'motifRejet' => $motifRejet,
-                ] : null)
-            ;
-        }
-
-        $this->em->persist($dossier);
-
-        $this->em->flush();
+        $this->dossierManager->avancer(
+            $dossier,
+            $agent,
+            contexte: $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : null,
+        );
 
         return new JsonResponse([
             'etat' => $normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
-            'document' => $this->normalizer->normalize($dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE), 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }
 
@@ -235,31 +211,23 @@ class DossierController extends AgentController
             return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
         }
 
-        /** @var UploadedFile $file */
-        $file = $request->files->get('fichierSigne');
+        $document = $dossier->getCourrierDecision();
 
-        $content = $file->getContent();
-        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
-        $this->storage->write($filename, $content);
+        if ($request->files->has('courrier')) {
+            /** @var UploadedFile $file */
+            $file = $request->files->get('courrier');
 
-        $document = $dossier->getOrCreatePropositionIndemnisation()
-            ->setFilename($filename)
-            ->setOriginalFilename($file->getClientOriginalName())
-            ->setSize($file->getSize())
-            ->setMime($file->getClientMimeType())
-        ;
+            if (null === $file?->getPathname()) {
+                throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
+            }
 
-        $this->em->persist($document);
-        $this->em->flush();
-
-        $dossier->ajouterDocument($document);
-        $dossier->changerStatut($dossier->getEtatDossier()->estAccepte() ? EtatDossierType::DOSSIER_OK_A_APPROUVER : EtatDossierType::DOSSIER_KO_REJETE, agent: $this->getAgent());
+            $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_COURRIER_MINISTERE);
+        }
 
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
             'document' => $this->normalizer->normalize($document, 'json', ['agent:detail']),
-            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }
 
@@ -271,31 +239,15 @@ class DossierController extends AgentController
             return new JsonResponse(['error' => "Cet dossier n'est pas à signer"], Response::HTTP_BAD_REQUEST);
         }
 
-        /** @var UploadedFile $file */
-        $file = $request->files->get('fichierSigne');
-
-        $content = $file->getContent();
-        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
-        $this->storage->write($filename, $content);
-
-        $document = $dossier->getOrCreateArretePaiement()
-            ->setFilename($filename)
-            ->setOriginalFilename($file->getClientOriginalName())
-            ->setSize($file->getSize())
-            ->setMime($file->getMimeType())
-        ;
-
-        $this->em->persist($document);
-        $this->em->flush();
-
-        $dossier->ajouterDocument($document);
-        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_INDEMNISER, agent: $this->getAgent());
+        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_INDEMNISER, agent: $this->getAgent(), contexte: array_merge(
+            $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : [],
+            $request->getPayload()->has('motifRejet') ? ['motifRejet' => $request->getPayload()->getString('motifRejet')] : [],
+        ));
 
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
-            'document' => $this->normalizer->normalize($document, 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }
 
@@ -305,17 +257,10 @@ class DossierController extends AgentController
     {
         $agent = $this->getAgent();
 
-        if ($dossier->estAccepte()) {
-            $dossier
-                ->changerStatut(EtatDossierType::DOSSIER_OK_A_APPROUVER, agent: $agent)
-            ;
-        } else {
-            $dossier
-                ->changerStatut(EtatDossierType::DOSSIER_KO_REJETE, agent: $agent)
-            ;
-        }
-
-        $this->dossierRepository->save($dossier);
+        $this->dossierManager->avancer($dossier, $agent, contexte: array_merge(
+            $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : [],
+            $request->getPayload()->has('motifRejet') ? ['motifRejet' => $request->getPayload()->get('motifRejet')] : [],
+        ));
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),

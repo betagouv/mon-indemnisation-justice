@@ -110,10 +110,11 @@ export const SignerArretePaiementModale = observer(
           <>
             <EditeurDocument
               className="fr-my-2w"
-              mode={editeurMode}
-              document={dossier
-                .getDocumentsType(DocumentType.TYPE_ARRETE_PAIEMENT)
-                .at(0)}
+              document={
+                dossier.getDocumentType(
+                  DocumentType.TYPE_ARRETE_PAIEMENT,
+                ) as Document
+              }
               onImprime={(document: Document) => dossier.addDocument(document)}
             />
 
@@ -128,41 +129,24 @@ export const SignerArretePaiementModale = observer(
                   priority: "tertiary no outline",
                   onClick: () => _modale.close(),
                 },
-                ...(editeurMode === "edition"
-                  ? ([
-                      {
-                        iconId: "fr-icon-eye-line",
-                        children: "Visualiser",
-                        priority: "secondary",
-                        disabled: sauvegardeEnCours,
-                        onClick: () => setEditeurMode("visualisation"),
-                      },
-                    ] as ButtonProps[])
-                  : ([
-                      {
-                        iconId: "fr-icon-edit-box-line",
-                        children: "Éditer",
-                        disabled: sauvegardeEnCours,
-                        priority: "secondary",
-                        onClick: () => setEditeurMode("edition"),
-                      },
-                      {
-                        children: "Signer et envoyer",
-                        priority: "secondary",
-                        disabled: sauvegardeEnCours,
-                        iconId: "fr-icon-send-plane-line",
-                        onClick: () => setEdition(false),
-                      },
-                    ] as ButtonProps[])),
+                {
+                  children: "Signer et envoyer",
+                  priority: "secondary",
+                  disabled: sauvegardeEnCours,
+                  iconId: "fr-icon-send-plane-line",
+                  onClick: () => setEdition(false),
+                },
               ]}
             />
           </>
         ) : (
           <>
             <TelechargerPieceJointe
-              pieceJointe={dossier.getDocumentType(
-                DocumentType.TYPE_ARRETE_PAIEMENT,
-              )}
+              pieceJointe={
+                dossier.getDocumentType(
+                  DocumentType.TYPE_ARRETE_PAIEMENT,
+                ) as Document
+              }
             />
 
             <Upload

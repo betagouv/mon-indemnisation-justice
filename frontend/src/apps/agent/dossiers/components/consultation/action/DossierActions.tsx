@@ -23,9 +23,9 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import React from "react";
 import { Agent, DossierDetail } from "@/common/models";
 import {
-  confirmerBoutons,
-  ConfirmerModale,
-} from "@/apps/agent/dossiers/components/consultation/action/ConfirmationAction.tsx";
+  signerCourrierBoutons,
+  SignerCourrierModale,
+} from "@/apps/agent/dossiers/components/consultation/action/SignerCourrierAction.tsx";
 import {
   genererArretePaiementBoutons,
   GenererArretePaiementModale,
@@ -59,6 +59,7 @@ export const DossierActions = function DossierActionBar({
       <ButtonsGroup
         inlineLayoutWhen="always"
         alignment="right"
+        buttonsSize="medium"
         buttonsIconPosition="right"
         buttons={
           [
@@ -73,7 +74,7 @@ export const DossierActions = function DossierActionBar({
               dossier,
               agent,
             }),
-            ...confirmerBoutons({ dossier, agent }),
+            ...signerCourrierBoutons({ dossier, agent }),
             ...genererArretePaiementBoutons({ dossier, agent }),
             ...signerArretePaiementBoutons({ dossier, agent }),
             ...envoyerPourIndemnisationBoutons({ dossier, agent }),
@@ -91,12 +92,7 @@ export const DossierActions = function DossierActionBar({
         agent={agent}
         onDecide={onDecide}
       />
-      <ConfirmerModale
-        dossier={dossier}
-        agent={agent}
-        onEdite={onEdite}
-        onSigne={onSigne}
-      />
+      <SignerCourrierModale dossier={dossier} agent={agent} onSigne={onSigne} />
       <GenererArretePaiementModale dossier={dossier} agent={agent} />
       <SignerArretePaiementModale dossier={dossier} agent={agent} />
       <EnvoyerPourIndemnisationActionModale dossier={dossier} agent={agent} />
