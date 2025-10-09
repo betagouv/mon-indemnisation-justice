@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { observer } from "mobx-react-lite";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Document } from "@/common/models";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
@@ -8,6 +7,7 @@ import { DocumentManagerImpl } from "@/common/services/agent";
 import { useInjection } from "inversify-react";
 import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Loader } from "@/common/components/Loader.tsx";
 
 export type EditeurMode = "edition" | "visualisation";
 
@@ -42,31 +42,41 @@ export const EditeurDocument = function EditeurDocumentComponent({
   const [corps, setCorps] = useState<string | null>(document.corps ?? null);
 
   const modifier = (corps: string) => {
-    setModificationsEnAttente(corps != document.corps);
-    // TODO debouncer un appel à `imprimer()` après 5s d'inactivité
+    setModificationsEnAttente(true);
     setCorps(corps);
     onEdite?.(corps);
   };
 
   const imprimer = useCallback(async () => {
     if (corps) {
-      onImpression?.(impressionEnCours);
+      onImpression?.(true);
       setImpressionEnCours(true);
-      onImpression?.(impressionEnCours);
       document = await documentManager.imprimer(document, corps);
       onImprime?.(document);
 
       setImpressionEnCours(false);
+      onImpression?.(false);
       setModificationsEnAttente(false);
     }
   }, [document.id, corps]);
 
-  // Lancer l'impression lorsque l'on bascule en mode visualisation et que le document a été édité
+  // Lancer l'impression lorsque l'on bascule en mode visualisation et que le document a été édité ou que le corps du
+  // document est édité depuis 3s
   useEffect(() => {
-    if (!modeEdition && modificationsEnAttente) {
-      imprimer();
+    if (modificationsEnAttente && !impressionEnCours) {
+      if (modeEdition) {
+        const impressionProgrammee = setTimeout(() => imprimer(), 3000);
+
+        return () => clearTimeout(impressionProgrammee);
+      } else {
+        imprimer();
+      }
     }
-  }, [modeEdition]);
+  }, [modeEdition, modificationsEnAttente, impressionEnCours]);
+
+  useEffect(() => {
+    setCorps(document.corps ?? null);
+  }, [document.id]);
 
   const visualiser = async () => {
     if (modificationsEnAttente) {
@@ -78,39 +88,58 @@ export const EditeurDocument = function EditeurDocumentComponent({
   return (
     <div className={className}>
       <div className="fr-col-12 fr-mb-2w">
-        <ButtonsGroup
-          inlineLayoutWhen="always"
-          alignment="right"
-          buttonsSize="small"
-          buttonsIconPosition="right"
-          buttons={[
-            {
-              children: "Regénération du PDF en cours ...",
-              priority: "tertiary no outline",
-              disabled: true,
-            },
-            modeEdition
-              ? {
-                  children: "Visualiser le PDF",
-                  priority: "secondary",
-                  iconId:
-                    corps !== document?.corps
-                      ? "fr-icon-printer-line"
-                      : "fr-icon-eye-line",
-                  disabled: impressionEnCours,
-                  onClick: async () => visualiser(),
-                }
-              : {
-                  children: "Éditer le corps",
-                  priority: "secondary",
-                  disabled: impressionEnCours,
-                  iconId: "fr-icon-pencil-line",
-                  onClick: () => {
-                    setModeEdition(true);
+        <div className="fr-grid-row fr-grid-row--right" style={{ gap: "1rem" }}>
+          <span className="fr-text--sm fr-mx-0 fr-my-auto">
+            {impressionEnCours ? (
+              <>
+                <i>Regénération du PDF en cours </i>
+                <span aria-hidden="true" className="fr-icon-more-line"></span>
+              </>
+            ) : modificationsEnAttente ? (
+              <>
+                Modifications en attente{" "}
+                <span
+                  className="fr-icon-refresh-line"
+                  aria-hidden="true"
+                ></span>
+              </>
+            ) : (
+              <>
+                Document PDF à jour{" "}
+                <span aria-hidden="true" className="fr-icon-check-line"></span>
+              </>
+            )}
+          </span>
+
+          <ButtonsGroup
+            inlineLayoutWhen="always"
+            alignment="right"
+            buttonsSize="small"
+            buttonsIconPosition="right"
+            buttons={[
+              modeEdition
+                ? {
+                    children: "Visualiser le PDF",
+                    priority: "secondary",
+                    iconId:
+                      corps !== document?.corps
+                        ? "fr-icon-printer-line"
+                        : "fr-icon-eye-line",
+                    disabled: impressionEnCours,
+                    onClick: async () => visualiser(),
+                  }
+                : {
+                    children: "Éditer le corps",
+                    priority: "secondary",
+                    disabled: impressionEnCours,
+                    iconId: "fr-icon-pencil-line",
+                    onClick: () => {
+                      setModeEdition(true);
+                    },
                   },
-                },
-          ]}
-        />
+            ]}
+          />
+        </div>
       </div>
       <div className="fr-col-12">
         {modeEdition ? (
@@ -141,7 +170,7 @@ export const EditeurDocument = function EditeurDocumentComponent({
         ) : (
           <>
             {impressionEnCours ? (
-              <p>Impression en cours...</p>
+              <Loader />
             ) : (
               <PieceJointe pieceJointe={document} />
             )}
