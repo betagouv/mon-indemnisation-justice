@@ -6,6 +6,7 @@
     "require": {
         "php": ">=8.3",
         "ext-ctype": "*",
+        "ext-fileinfo": "*",
         "ext-iconv": "*",
         "ext-openssl": "*",
         "ext-zip": "*",
@@ -29,6 +30,7 @@
         "rogervila/array-diff-multidimensional": "^2.1",
         "runtime/frankenphp-symfony": "^0.2.0",
         "sentry/sentry-symfony": "^5.3.0",
+        "smalot/pdfparser": "^2.12",
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "7.3.*",
         "symfony/cache": "7.3.*",
@@ -59,8 +61,7 @@
         "symfony/yaml": "7.3.*",
         "twig/extra-bundle": "^3.0",
         "twig/intl-extra": "~3.8.0",
-        "twig/twig": "^v3.21",
-      "ext-fileinfo": "*"
+        "twig/twig": "^v3.21"
     },
     "config": {
         "allow-plugins": {

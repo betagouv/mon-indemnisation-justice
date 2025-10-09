@@ -113,6 +113,16 @@ class DocumentManager
         return $this->storage->readStream($document->getFilename());
     }
 
+    /** @return string */
+    public function getContenuTexte(Document $document)
+    {
+        if (!$this->storage->has($document->getFilename())) {
+            throw new FileException("Le fichier associé à ce document n'existe pas.");
+        }
+
+        return $this->storage->read($document->getFilename());
+    }
+
     public function genererArretePaiement(BrisPorte $dossier): void
     {
         $arretePaiement = $dossier->getOrCreateArretePaiement()->setCorps(
