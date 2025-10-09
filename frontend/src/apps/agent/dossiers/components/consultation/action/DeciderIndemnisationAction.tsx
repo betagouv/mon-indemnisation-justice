@@ -31,6 +31,7 @@ import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piece
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import Highlight from "@codegouvfr/react-dsfr/Highlight";
 import { observer } from "mobx-react-lite";
+import { Loader } from "@/common/components/Loader.tsx";
 
 const _modale = createModal({
   id: "modale-action-decider-indemnisation",
@@ -179,6 +180,7 @@ export const DeciderIndemnisationModale = observer(
     const genererCourrierPropositionIndemnisation = useCallback(
       async (dossier: DossierDetail, montantIndemnisation: number) => {
         setGenerationEnCours(true);
+        setCourrier(null);
         const courrierPI =
           await documentManager.genererCourrierPropositionIndemnisation(
             dossier,
@@ -194,6 +196,7 @@ export const DeciderIndemnisationModale = observer(
     const genererDeclarationAcceptation = useCallback(
       async (dossier: DossierDetail, montantIndemnisation: number) => {
         setGenerationEnCours(true);
+        setCourrier(null);
         const document = await documentManager.genererDeclarationAcceptation(
           dossier,
           montantIndemnisation,
@@ -296,17 +299,21 @@ export const DeciderIndemnisationModale = observer(
 
         {etape === "EDITION_COURRIER_PI" && (
           <>
-            <EditeurDocument
-              className="fr-my-2w"
-              document={courrier as Document}
-              onImprime={(document: Document) => {
-                setDeclarationAcceptation(document);
-                dossier.addDocument(document);
-              }}
-              onImpression={(impressionEnCours) =>
-                setGenerationEnCours(impressionEnCours)
-              }
-            />
+            {courrier ? (
+              <EditeurDocument
+                className="fr-my-2w"
+                document={courrier as Document}
+                onImprime={(document: Document) => {
+                  setDeclarationAcceptation(document);
+                  dossier.addDocument(document);
+                }}
+                onImpression={(impressionEnCours) =>
+                  setGenerationEnCours(impressionEnCours)
+                }
+              />
+            ) : (
+              <Loader />
+            )}
             <ButtonsGroup
               inlineLayoutWhen="always"
               buttonsIconPosition="right"
@@ -351,14 +358,20 @@ export const DeciderIndemnisationModale = observer(
 
         {etape === "EDITION_DECLARATION_ACCEPTATION" && (
           <>
-            <EditeurDocument
-              className="fr-my-2w"
-              document={declarationAcceptation as Document}
-              onImprime={(document: Document) => dossier.addDocument(document)}
-              onImpression={(impressionEnCours) =>
-                setGenerationEnCours(impressionEnCours)
-              }
-            />
+            {declarationAcceptation ? (
+              <EditeurDocument
+                className="fr-my-2w"
+                document={declarationAcceptation as Document}
+                onImprime={(document: Document) =>
+                  dossier.addDocument(document)
+                }
+                onImpression={(impressionEnCours) =>
+                  setGenerationEnCours(impressionEnCours)
+                }
+              />
+            ) : (
+              <Loader />
+            )}
             <ButtonsGroup
               inlineLayoutWhen="always"
               buttonsIconPosition="right"

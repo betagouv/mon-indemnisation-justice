@@ -33,6 +33,7 @@ import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 import { observer } from "mobx-react-lite";
+import { Loader } from "@/common/components/Loader.tsx";
 
 const _modale = createModal({
   id: "modale-action-decider-rejet",
@@ -274,14 +275,21 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
 
       {etape === "EDITION_COURRIER_REJET" && (
         <>
-          <EditeurDocument
-            className="fr-my-2w"
-            document={courrier as Document}
-            onImprime={(document: Document) => dossier.addDocument(document)}
-            onImpression={(impressionEnCours) =>
-              setGenerationEnCours(impressionEnCours)
-            }
-          />
+          {courrier ? (
+            <EditeurDocument
+              className="fr-my-2w"
+              document={courrier as Document}
+              regenererDocument={() =>
+                genererCourrierRejet(dossier, motifRejet)
+              }
+              onImprime={(document: Document) => dossier.addDocument(document)}
+              onImpression={(impressionEnCours) =>
+                setGenerationEnCours(impressionEnCours)
+              }
+            />
+          ) : (
+            <Loader />
+          )}
           <ButtonsGroup
             inlineLayoutWhen="always"
             buttonsIconPosition="right"
