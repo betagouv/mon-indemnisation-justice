@@ -271,7 +271,7 @@ export const DeciderIndemnisationModale = observer(
                   onClick: () => annuler(),
                 },
                 {
-                  disabled: !montantIndemnisation,
+                  disabled: !montantIndemnisation || generationEnCours,
                   iconId: "fr-icon-edit-box-line",
                   onClick: async () => {
                     if (
@@ -296,21 +296,17 @@ export const DeciderIndemnisationModale = observer(
 
         {etape === "EDITION_COURRIER_PI" && (
           <>
-            {generationEnCours ? (
-              <>Génération en cours...</>
-            ) : (
-              <EditeurDocument
-                className="fr-my-2w"
-                document={courrier as Document}
-                onImprime={(document: Document) => {
-                  setDeclarationAcceptation(document);
-                  dossier.addDocument(document);
-                }}
-                onImpression={(impressionEnCours) =>
-                  setSauvegarderEnCours(impressionEnCours)
-                }
-              />
-            )}
+            <EditeurDocument
+              className="fr-my-2w"
+              document={courrier as Document}
+              onImprime={(document: Document) => {
+                setDeclarationAcceptation(document);
+                dossier.addDocument(document);
+              }}
+              onImpression={(impressionEnCours) =>
+                setGenerationEnCours(impressionEnCours)
+              }
+            />
             <ButtonsGroup
               inlineLayoutWhen="always"
               buttonsIconPosition="right"
@@ -331,7 +327,7 @@ export const DeciderIndemnisationModale = observer(
                   onClick: () => setEtape("CHOIX_MONTANT_INDEMNISATION"),
                 },
                 {
-                  disabled: !courrier,
+                  disabled: !courrier || generationEnCours,
                   iconId: "fr-icon-edit-box-line",
                   onClick: () => {
                     setEtape("EDITION_DECLARATION_ACCEPTATION");
@@ -355,20 +351,14 @@ export const DeciderIndemnisationModale = observer(
 
         {etape === "EDITION_DECLARATION_ACCEPTATION" && (
           <>
-            {generationEnCours ? (
-              <>Génération de la déclaration en cours...</>
-            ) : (
-              <EditeurDocument
-                className="fr-my-2w"
-                document={declarationAcceptation as Document}
-                onImprime={(document: Document) =>
-                  dossier.addDocument(document)
-                }
-                onImpression={(impressionEnCours) =>
-                  setSauvegarderEnCours(impressionEnCours)
-                }
-              />
-            )}
+            <EditeurDocument
+              className="fr-my-2w"
+              document={declarationAcceptation as Document}
+              onImprime={(document: Document) => dossier.addDocument(document)}
+              onImpression={(impressionEnCours) =>
+                setGenerationEnCours(impressionEnCours)
+              }
+            />
             <ButtonsGroup
               inlineLayoutWhen="always"
               buttonsIconPosition="right"
@@ -389,7 +379,7 @@ export const DeciderIndemnisationModale = observer(
                   onClick: () => setEtape("EDITION_COURRIER_PI"),
                 },
                 {
-                  disabled: !courrier,
+                  disabled: !courrier || generationEnCours,
                   iconId: "fr-icon-edit-box-line",
                   onClick: () => setEtape("VERIFICATION_PI"),
                   children: "Vérifier les informations",
@@ -403,7 +393,7 @@ export const DeciderIndemnisationModale = observer(
           <>
             <p>
               Vous vous apprêtez à proposer une indemnisation d'un montant de{" "}
-              <b>{montantIndemnisation}</b> à{" "}
+              <b>{montantIndemnisation} €</b> à{" "}
               <b>{dossier.requerant.nomSimple()}</b>.
             </p>
 

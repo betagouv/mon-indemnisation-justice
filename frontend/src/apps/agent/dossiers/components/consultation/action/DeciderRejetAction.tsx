@@ -274,18 +274,14 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
 
       {etape === "EDITION_COURRIER_REJET" && (
         <>
-          {generationEnCours ? (
-            <>Génération en cours...</>
-          ) : (
-            <EditeurDocument
-              className="fr-my-2w"
-              document={courrier as Document}
-              onImprime={(document: Document) => dossier.addDocument(document)}
-              onImpression={(impressionEnCours) =>
-                setSauvegarderEnCours(impressionEnCours)
-              }
-            />
-          )}
+          <EditeurDocument
+            className="fr-my-2w"
+            document={courrier as Document}
+            onImprime={(document: Document) => dossier.addDocument(document)}
+            onImpression={(impressionEnCours) =>
+              setGenerationEnCours(impressionEnCours)
+            }
+          />
           <ButtonsGroup
             inlineLayoutWhen="always"
             buttonsIconPosition="right"
@@ -306,7 +302,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
                 onClick: () => setEtape("CHOIX_MOTIF_REJET"),
               },
               {
-                disabled: !courrier,
+                disabled: !courrier || generationEnCours,
                 iconId: "fr-icon-send-plane-line",
                 onClick: () => {
                   setEtape("VERIFICATION_REJET");
@@ -361,7 +357,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
                 onClick: () => setEtape("EDITION_COURRIER_REJET"),
               },
               {
-                disabled: !courrier,
+                disabled: !courrier || sauvegardeEnCours,
                 iconId: "fr-icon-send-plane-fill",
                 onClick: () => deciderDossier({ motifRejet }),
                 children: "Valider et envoyer pour signature",
