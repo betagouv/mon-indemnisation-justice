@@ -48,7 +48,7 @@ export const ConsultationDossierApp = observer(
 
     const courrier = useMemo<Document | null>(
       () => dossier.getCourrierAJour(),
-      [],
+      [dossier.getCourrierAJour()?.fileHash],
     );
 
     // Indique si la sauvegarde des notes de suivi est en cours

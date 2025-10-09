@@ -12,6 +12,13 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 export type EditeurMode = "edition" | "visualisation";
 
+type EditeurPosition = {
+  // En millisecondes
+  timestamp?: number;
+  positionCurseur?: number;
+  longueurSelection?: number;
+};
+
 export const EditeurDocument = function EditeurDocumentComponent({
   document,
   // Callback générant un document
@@ -40,6 +47,7 @@ export const EditeurDocument = function EditeurDocumentComponent({
   const [impressionEnCours, setImpressionEnCours] = useState<boolean>(false);
   const [modificationsEnAttente, setModificationsEnAttente] =
     useState<boolean>(false);
+  const [positionEditeur, setPositionEditeur] = useState<EditeurPosition>({});
   const [corps, setCorps] = useState<string | null>(document.corps ?? null);
 
   const modifier = (corps: string) => {
@@ -62,18 +70,25 @@ export const EditeurDocument = function EditeurDocumentComponent({
   }, [document.id, corps]);
 
   // Lancer l'impression lorsque l'on bascule en mode visualisation et que le document a été édité ou que le corps du
-  // document est édité depuis 3s
+  // document est édité depuis 5s
   useEffect(() => {
     if (modificationsEnAttente && !impressionEnCours) {
       if (modeEdition) {
-        const impressionProgrammee = setTimeout(() => imprimer(), 3000);
+        const impressionProgrammee = setTimeout(() => {
+          if (
+            !positionEditeur.timestamp ||
+            new Date().getTime() - positionEditeur.timestamp >= 5000
+          ) {
+            imprimer();
+          }
+        }, 5000);
 
         return () => clearTimeout(impressionProgrammee);
       } else {
         imprimer();
       }
     }
-  }, [modeEdition, modificationsEnAttente, impressionEnCours]);
+  }, [modeEdition, modificationsEnAttente, impressionEnCours, positionEditeur]);
 
   useEffect(() => {
     setCorps(document.corps ?? null);
@@ -155,6 +170,18 @@ export const EditeurDocument = function EditeurDocumentComponent({
               <QuillEditor
                 value={corps}
                 onChange={(value) => modifier(value)}
+                onMove={(cursorIndex, selectionLength) => {
+                  if (
+                    positionEditeur.positionCurseur != cursorIndex ||
+                    positionEditeur.longueurSelection != selectionLength
+                  ) {
+                    setPositionEditeur({
+                      timestamp: new Date().getTime() / 1000,
+                      positionCurseur: cursorIndex,
+                      longueurSelection: selectionLength,
+                    });
+                  }
+                }}
                 readOnly={impressionEnCours || lectureSeule}
               />
             ) : (

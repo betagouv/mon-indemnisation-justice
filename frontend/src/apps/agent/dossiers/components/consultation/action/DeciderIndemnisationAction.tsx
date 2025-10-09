@@ -304,7 +304,7 @@ export const DeciderIndemnisationModale = observer(
                 className="fr-my-2w"
                 document={courrier as Document}
                 onImprime={(document: Document) => {
-                  setDeclarationAcceptation(document);
+                  setCourrier(document);
                   dossier.addDocument(document);
                 }}
                 onImpression={(impressionEnCours) =>
@@ -362,9 +362,10 @@ export const DeciderIndemnisationModale = observer(
               <EditeurDocument
                 className="fr-my-2w"
                 document={declarationAcceptation as Document}
-                onImprime={(document: Document) =>
-                  dossier.addDocument(document)
-                }
+                onImprime={(document: Document) => {
+                  setDeclarationAcceptation(document);
+                  dossier.addDocument(document);
+                }}
                 onImpression={(impressionEnCours) =>
                   setGenerationEnCours(impressionEnCours)
                 }
@@ -392,7 +393,7 @@ export const DeciderIndemnisationModale = observer(
                   onClick: () => setEtape("EDITION_COURRIER_PI"),
                 },
                 {
-                  disabled: !courrier || generationEnCours,
+                  disabled: !declarationAcceptation || generationEnCours,
                   iconId: "fr-icon-edit-box-line",
                   onClick: () => setEtape("VERIFICATION_PI"),
                   children: "Vérifier les informations",
@@ -422,14 +423,26 @@ export const DeciderIndemnisationModale = observer(
                   label: "Proposition d'indemnisation",
                   iconId: "fr-icon-checkbox-circle-line",
                   isDefault: true,
-                  content: <PieceJointe pieceJointe={courrier as Document} />,
+                  content: (
+                    <PieceJointe
+                      pieceJointe={
+                        dossier.getDocumentType(
+                          DocumentType.TYPE_COURRIER_MINISTERE,
+                        ) as Document
+                      }
+                    />
+                  ),
                 },
                 {
                   label: "Déclaration d'acceptation",
                   iconId: "fr-icon-chat-check-line",
                   content: (
                     <PieceJointe
-                      pieceJointe={declarationAcceptation as Document}
+                      pieceJointe={
+                        dossier.getDocumentType(
+                          DocumentType.TYPE_COURRIER_REQUERANT,
+                        ) as Document
+                      }
                     />
                   ),
                 },
