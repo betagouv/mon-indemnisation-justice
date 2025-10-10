@@ -2,8 +2,12 @@ import { DossierActions } from "@/apps/agent/dossiers/components/consultation/ac
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe/PieceJointe";
 import { Agent, Document, DocumentType, DossierDetail } from "@/common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import type {
+  FrIconClassName,
+  RiIconClassName,
+} from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import { observer } from "mobx-react-lite";
-import React, { useMemo, useState } from "react";
+import React, { type ReactNode, useMemo, useState } from "react";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
 import {
@@ -47,8 +51,8 @@ export const ConsultationDossierApp = observer(
       useState<string>(dossier.notes ?? "");
 
     const courrier = useMemo<Document | null>(
-      () => dossier.getCourrierAJour(),
-      [dossier.getCourrierAJour()?.fileHash],
+      () => dossier.getCourrierDecision(),
+      [dossier.getCourrierDecision()?.fileHash],
     );
 
     // Indique si la sauvegarde des notes de suivi est en cours
@@ -87,6 +91,8 @@ export const ConsultationDossierApp = observer(
       changerOnglet("courrier");
     };
 
+    // @ts-ignore
+    // @ts-ignore
     return (
       <>
         <div className="fr-container fr-container--fluid fr-mt-2w">
@@ -175,17 +181,39 @@ export const ConsultationDossierApp = observer(
                 <Tabs
                   selectedTabId={selectedTab}
                   tabs={[
-                    { tabId: "infos", label: "Informations du dossier" },
-                    {
-                      tabId: "suivi",
-                      label: "Notes de suivi",
-                      iconId: "fr-icon-ball-pen-line",
-                    },
-                    { tabId: "pieces-jointes", label: "Pièces jointes" },
-                    {
-                      tabId: "courrier",
-                      label: "Courrier",
-                    },
+                    ...[
+                      {
+                        tabId: "infos",
+                        label: "Informations du dossier",
+                        isDefault: true,
+                      },
+                      {
+                        tabId: "suivi",
+                        label: "Notes de suivi",
+                        iconId: "fr-icon-ball-pen-line",
+                      },
+                      { tabId: "pieces-jointes", label: "Pièces jointes" },
+                      {
+                        tabId: "courrier",
+                        label: "Courrier",
+                        disabled: !dossier.estDecide(),
+                      },
+                    ],
+                    // @ts-ignore
+                    ...(dossier.estAccepte()
+                      ? [
+                          {
+                            tabId: "declaration",
+                            label: "Déclaration d'acceptation",
+                            disabled: !dossier.getDeclarationAcceptation(),
+                          },
+                          {
+                            tabId: "arrete",
+                            label: "Arrêté de paiement",
+                            disabled: !dossier.getArretePaiement(),
+                          },
+                        ]
+                      : []),
                   ]}
                   onTabChange={changerOnglet}
                 >
@@ -485,51 +513,62 @@ export const ConsultationDossierApp = observer(
 
                           {/* Menu latéral des pièces jointes */}
                           <ul>
-                            {Document.types.map((type: DocumentType) => (
-                              <React.Fragment key={type.type}>
-                                <li
-                                  {...(dossier.getDocumentsType(type).length ==
-                                  0
-                                    ? { "data-section-vide": "" }
-                                    : {})}
-                                  {...(pieceJointe?.type === type
-                                    ? { "data-section-active": true }
-                                    : {})}
-                                >
-                                  {type.libelle}{" "}
-                                  {dossier.getDocumentsType(type).length > 0
-                                    ? `(${dossier.getDocumentsType(type).length})`
-                                    : ""}
-                                </li>
+                            {Document.types
+                              .filter(
+                                (t) =>
+                                  ![
+                                    // On retire les documents non pièce jointe
+                                    DocumentType.TYPE_COURRIER_MINISTERE,
+                                    DocumentType.TYPE_COURRIER_REQUERANT,
+                                    DocumentType.TYPE_ARRETE_PAIEMENT,
+                                  ].includes(t),
+                              )
+                              .map((type: DocumentType) => (
+                                <React.Fragment key={type.type}>
+                                  <li
+                                    {...(dossier.getDocumentsType(type)
+                                      .length == 0
+                                      ? { "data-section-vide": "" }
+                                      : {})}
+                                    {...(pieceJointe?.type === type
+                                      ? { "data-section-active": true }
+                                      : {})}
+                                  >
+                                    {type.libelle}{" "}
+                                    {dossier.getDocumentsType(type).length > 0
+                                      ? `(${dossier.getDocumentsType(type).length})`
+                                      : ""}
+                                  </li>
 
-                                {dossier.getDocumentsType(type).length > 0 && (
-                                  <ul>
-                                    {dossier
-                                      .getDocumentsType(type)
-                                      .map((doc: Document) => (
-                                        <li
-                                          key={doc.id}
-                                          {...(pieceJointe == doc
-                                            ? {
-                                                "data-document-selectionne":
-                                                  true,
-                                              }
-                                            : {})}
-                                        >
-                                          <a
-                                            href={void 0}
-                                            onClick={() =>
-                                              selectionnerPieceJointe(doc)
-                                            }
+                                  {dossier.getDocumentsType(type).length >
+                                    0 && (
+                                    <ul>
+                                      {dossier
+                                        .getDocumentsType(type)
+                                        .map((doc: Document) => (
+                                          <li
+                                            key={doc.id}
+                                            {...(pieceJointe == doc
+                                              ? {
+                                                  "data-document-selectionne":
+                                                    true,
+                                                }
+                                              : {})}
                                           >
-                                            {doc.originalFilename}
-                                          </a>
-                                        </li>
-                                      ))}
-                                  </ul>
-                                )}
-                              </React.Fragment>
-                            ))}
+                                            <a
+                                              href={void 0}
+                                              onClick={() =>
+                                                selectionnerPieceJointe(doc)
+                                              }
+                                            >
+                                              {doc.originalFilename}
+                                            </a>
+                                          </li>
+                                        ))}
+                                    </ul>
+                                  )}
+                                </React.Fragment>
+                              ))}
                           </ul>
                         </div>
                         {/* Affichage de la pièce jointe sélectionnée */}
@@ -614,6 +653,30 @@ export const ConsultationDossierApp = observer(
                       ) : (
                         <p>Pas encore de courrier</p>
                       )}
+                    </section>
+                  )}
+
+                  {selectedTab == "declaration" && (
+                    <section>
+                      <h3>Déclaration d'acceptation</h3>
+
+                      <PieceJointe
+                        className="fr-col-12"
+                        pieceJointe={
+                          dossier.getDeclarationAcceptation() as Document
+                        }
+                      />
+                    </section>
+                  )}
+
+                  {selectedTab == "arrete" && (
+                    <section>
+                      <h3>Arrêté de paiement</h3>
+
+                      <PieceJointe
+                        className="fr-col-12"
+                        pieceJointe={dossier.getArretePaiement() as Document}
+                      />
                     </section>
                   )}
                 </Tabs>

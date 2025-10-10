@@ -1,15 +1,23 @@
+import { EditeurDocument } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
+import { Loader } from "@/common/components/Loader";
 import {
-  EditeurDocument,
-  EditeurMode,
-} from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
+  DocumentManagerImpl,
+  DocumentManagerInterface,
+} from "@/common/services/agent";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import Download from "@codegouvfr/react-dsfr/Download";
-import React, { FormEvent, ReactNode, useCallback, useState } from "react";
+import { useInjection } from "inversify-react";
+import React, {
+  FormEvent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   Agent,
-  BaseDossier,
   Document,
   DocumentType,
   DossierDetail,
@@ -17,14 +25,12 @@ import {
 } from "@/common/models";
 import { observer } from "mobx-react-lite";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { makeAutoObservable } from "mobx";
 import { plainToInstance } from "class-transformer";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { TelechargerPieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
 import { proxy, useSnapshot } from "valtio";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 
@@ -133,14 +139,51 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
   // État de l"opération de signature en cours :
   const etatSignature = useSnapshot<{ etape: IdEtape }>(registreSignature);
 
+  // Marqueur "_flag_" qui permet d'éviter de vérifier la date d'impression du
+  // document qu'une seule fois :
+  const verificationDateCourrier = useRef<number>(0);
+
+  const [generationCourrierEnCours, setGenerationCourrierEnCours] =
+    useState<boolean>(false);
+
+  const documentManager: DocumentManagerInterface =
+    useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+
+  // Relancer une impression si le document n'est pas du jour
+  useEffect(() => {
+    const courrier = dossier.getCourrierDecision();
+
+    if (courrier) {
+      if (
+        // À l'étape d'édition du courrier...
+        etatSignature.etape === "EDITION_COURRIER" &&
+        // ... si la vérification de la date n'a pas encore été faite...
+        verificationDateCourrier.current != dossier.id
+      ) {
+        // ... et que le courrier n'a pas été généré aujourd'hui même ...
+        if (!courrier.estAJour()) {
+          setGenerationCourrierEnCours(true);
+          documentManager
+            .imprimer(courrier, courrier.corps as string)
+            .then((document: Document) => {
+              dossier.addDocument(document);
+
+              setGenerationCourrierEnCours(false);
+            });
+        }
+        verificationDateCourrier.current = dossier.id;
+      }
+    }
+  }, [dossier.id, etatSignature.etape]);
+
   // Mémorise le montant de l'indemnisation
   const [montantIndemnisation, setMontantIndemnisation]: [
     number,
     (montant: number) => void,
   ] = useState<number>(
     dossier.montantIndemnisation ||
-      (dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)
-        ?.metaDonnees?.montantIndemnisation as number),
+      (dossier.getCourrierDecision()?.metaDonnees
+        ?.montantIndemnisation as number),
   );
 
   // Mémorise le montant de l'indemnisation lu dans le courrier
@@ -149,13 +192,12 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
     (montant: number | null) => void,
   ] = useState<number | null>(null);
 
-  // Corps du courrier
+  // Corps du courrier (permet de chercher le montant de l'indemnisation en
+  // chiffre et le comparer à la valeur saisie
   const [corpsCourrier, setCorpsCourrier]: [
     string,
     (corpsCourrier: string) => void,
-  ] = useState<string>(
-    dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)?.corps || "",
-  );
+  ] = useState<string>(dossier.getCourrierDecision()?.corps || "");
 
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
@@ -400,24 +442,36 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
             </div>
           )}
 
-          <EditeurDocument
-            className="fr-input-group fr-col-12"
-            document={
-              dossier.getDocumentType(
-                DocumentType.TYPE_COURRIER_MINISTERE,
-              ) as Document
-            }
-            onEdite={(corps) => {
-              if (dossier.estAccepte()) {
-                setCorpsCourrier(corps);
-                detecterMontantIndemnisation(corps);
+          {generationCourrierEnCours ? (
+            <>
+              <Alert
+                severity="info"
+                title="Patience"
+                description={
+                  <>
+                    Le courrier de décision est en train d'être re-généré pour
+                    mettre à jour la date.
+                  </>
+                }
+              />
+              <Loader />
+            </>
+          ) : (
+            <EditeurDocument
+              className="fr-input-group fr-col-12"
+              document={dossier.getCourrierDecision() as Document}
+              onEdite={(corps) => {
+                if (dossier.estAccepte()) {
+                  setCorpsCourrier(corps);
+                  detecterMontantIndemnisation(corps);
+                }
+              }}
+              onImprime={(courrier) => dossier.addDocument(courrier)}
+              onImpression={(impressionEnCours) =>
+                setSauvegardeEnCours(impressionEnCours)
               }
-            }}
-            onImprime={(courrier) => dossier.addDocument(courrier)}
-            onImpression={(impressionEnCours) =>
-              setSauvegardeEnCours(impressionEnCours)
-            }
-          />
+            />
+          )}
 
           <ButtonsGroup
             className="fr-mt-3w"
@@ -461,11 +515,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
         <>
           <EditeurDocument
             className="fr-input-group fr-col-12"
-            document={
-              dossier.getDocumentType(
-                DocumentType.TYPE_COURRIER_REQUERANT,
-              ) as Document
-            }
+            document={dossier.getDeclarationAcceptation() as Document}
             onEdite={(corps) => {}}
             onImprime={(courrier) => dossier.addDocument(courrier)}
             onImpression={(impressionEnCours) =>
@@ -505,11 +555,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
       {etatSignature.etape === "SIGNATURE" && (
         <>
           <TelechargerPieceJointe
-            pieceJointe={
-              dossier.getDocumentType(
-                DocumentType.TYPE_COURRIER_MINISTERE,
-              ) as Document
-            }
+            pieceJointe={dossier.getCourrierDecision() as Document}
           />
 
           <Upload
@@ -625,11 +671,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
 
           <PieceJointe
             className="fr-my-3w"
-            pieceJointe={
-              dossier.getDocumentType(
-                DocumentType.TYPE_COURRIER_MINISTERE,
-              ) as Document
-            }
+            pieceJointe={dossier.getCourrierDecision() as Document}
           />
 
           <ButtonsGroup

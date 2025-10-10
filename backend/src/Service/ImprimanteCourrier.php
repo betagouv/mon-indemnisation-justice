@@ -69,6 +69,7 @@ class ImprimanteCourrier
             $this->storage->write($destination, file_get_contents($fichierPdf));
 
             $document->setFilename($destination)
+                ->setModifie()
                 ->setSize(filesize($fichierPdf))
                 ->setMime('application/pdf')
                 ->setOriginalFilename($document->getType()->nommerFichier($document->getDossier()))

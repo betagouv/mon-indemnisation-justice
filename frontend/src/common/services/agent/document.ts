@@ -4,7 +4,7 @@ import { data } from "autoprefixer";
 import { reject } from "lodash";
 
 interface DocumentManagerInterface {
-  imprimer(document: Document, corps: string): Promise<Document>;
+  imprimer(document: Document, corps?: string): Promise<Document>;
 
   genererCourrierPropositionIndemnisation(
     dossier: BaseDossier,
@@ -25,7 +25,7 @@ interface DocumentManagerInterface {
 }
 
 class APIDocumentManager implements DocumentManagerInterface {
-  async imprimer(document: Document, corps: string): Promise<Document> {
+  async imprimer(document: Document, corps?: string): Promise<Document> {
     return new Promise(async (resolve, reject) => {
       const response = await fetch(
         `/api/agent/fip6/document/${document.id}/imprimer`,
@@ -34,7 +34,7 @@ class APIDocumentManager implements DocumentManagerInterface {
             "Content-type": "application/json",
           },
           method: "PUT",
-          body: JSON.stringify({ corps }),
+          body: JSON.stringify({ corps: corps || document.corps }),
         },
       );
 
