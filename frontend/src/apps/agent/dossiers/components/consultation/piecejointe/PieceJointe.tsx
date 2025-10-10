@@ -27,7 +27,7 @@ export const PieceJointe = function PieceJointe({
 
   return (
     <div className={`${fr.cx("fr-grid-row")} ${className ?? ""}`}>
-      {pieceJointe.isPDF() ? (
+      {pieceJointe.estPDF() ? (
         <object
           data={url}
           type="application/pdf"

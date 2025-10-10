@@ -62,6 +62,10 @@ class Document
     /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
 
+    #[Groups(['agent:detail'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    protected \DateTimeInterface $dateDerniereModification;
+
     #[ORM\Column(nullable: true)]
     #[Groups(['dossier:lecture', 'requerant:detail'])]
     private ?string $filename = null;
@@ -259,6 +263,18 @@ class Document
     public function setMetaDonnees(array $metaDonnees, bool $merge = false): static
     {
         $this->metaDonnees = $merge ? array_merge($this->metaDonnees ?? [], $metaDonnees) : $metaDonnees;
+
+        return $this;
+    }
+
+    public function getDateDerniereModification(): \DateTimeInterface
+    {
+        return $this->dateDerniereModification;
+    }
+
+    public function setModifie(): static
+    {
+        $this->dateDerniereModification = new \DateTimeImmutable();
 
         return $this;
     }

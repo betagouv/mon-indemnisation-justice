@@ -74,7 +74,7 @@ class BrisPorte
 
     #[ORM\JoinTable(name: 'document_dossiers')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'dossiers', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'dossiers', cascade: ['persist', 'remove'], orphanRemoval: true)]
     /** @var Collection<Document> */
     protected Collection $documents;
     protected ?array $documentsParType = null;
@@ -383,8 +383,13 @@ class BrisPorte
 
     public function ajouterDocument(Document $document): void
     {
-        $this->documents->add($document);
+        // S"il s'agit d'un document de type unique, on supprimer les autres éléments d'abord:
+        if ($document->getType()->estUnique()) {
+            $this->documents = $this->documents->filter(fn (Document $d) => $document->getType() !== $document->getType());
+            $this->documentsParType[$document->getType()->value] = [];
+        }
 
+        $this->documents->add($document);
         $this->documentsParType[$document->getType()->value][] = $document;
     }
 
