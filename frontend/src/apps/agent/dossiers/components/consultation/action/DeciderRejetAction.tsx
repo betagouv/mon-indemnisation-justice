@@ -2,20 +2,13 @@ import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { plainToInstance } from "class-transformer";
 import React, {
   Dispatch,
-  FormEvent,
   SetStateAction,
   useCallback,
   useEffect,
   useState,
 } from "react";
 
-import {
-  Agent,
-  Document,
-  DocumentType,
-  DossierDetail,
-  EtatDossier,
-} from "@/common/models";
+import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import {
   EditeurDocument,
@@ -23,7 +16,6 @@ import {
 } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { proxy, useSnapshot } from "valtio";
 import {
   DocumentManagerImpl,
   DocumentManagerInterface,

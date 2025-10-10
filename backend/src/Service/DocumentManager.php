@@ -45,7 +45,7 @@ class DocumentManager
         $this->ajouterDocument(
             $dossier,
             $dossier->getOrCreateDocument($type)
-                ->setOriginalFilename(pathinfo($cheminFichier, PATHINFO_FILENAME))
+                ->setOriginalFilename($type->nommerFichier($dossier) ?? pathinfo($cheminFichier, PATHINFO_FILENAME))
                 ->setType($type)
                 ->setMime($mime)
                 ->setAjoutRequerant($estAjoutRequerant),
