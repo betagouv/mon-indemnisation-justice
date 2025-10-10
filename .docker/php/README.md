@@ -12,7 +12,11 @@ dépendances applicatives, PHP comme JS.
 
 ### Comment la _builder_ ?
 
-Via `buildx`:
+Via `buildx`, il faut d'abord créer le _builder_:
+
+```bash
+docker buildx create --use --name multi --append
+```
 
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 . -f .docker/php/Dockerfile -t pierrelemee/mij-frankenphp
