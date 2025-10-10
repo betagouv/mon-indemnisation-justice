@@ -41,11 +41,11 @@ class EtatDossier
 
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: [])]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id')]
-    protected ?Requerant $requerant;
+    protected ?Requerant $requerant = null;
 
     #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'json', nullable: true)]
-    protected ?array $contexte;
+    protected ?array $contexte = null;
 
     #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     public function getId(): ?int
@@ -65,14 +65,17 @@ class EtatDossier
         return $this;
     }
 
+    /**
+     * Ce que l'état doit changer sur le dossier dès lors qu'il est actif.
+     */
     public function postActivation(): void
     {
         // Répercuter le montant de l'indemnisation sur le dossier :
         if (
             in_array($this->etat, [EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_OK_A_APPROUVER])
-            && isset($this->contexte['montant'])
+                && isset($this->contexte['montantIndemnisation'])
         ) {
-            $this->dossier->setPropositionIndemnisation($this->contexte['montant']);
+            $this->dossier->setPropositionIndemnisation($this->contexte['montantIndemnisation']);
         }
     }
 
@@ -198,7 +201,7 @@ class EtatDossier
         return $this;
     }
 
-    public function getContexte(): array
+    public function getContexte(): ?array
     {
         return $this->contexte;
     }

@@ -40,6 +40,10 @@ RUN npm install --force -g yarn
 RUN apt install -y firefox-esr
 ENV FIREFOX_PATH=/usr/bin/firefox
 
+# PDFtk
+
+RUN apt install -y pdftk
+
 # Extra
 RUN apt install -y postgresql-client
 RUN echo 'alias database="psql \${DATABASE_URL/\?*/}"' >> /root/.bashrc

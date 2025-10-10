@@ -86,130 +86,130 @@ a:not([href]) {
         }
     }
 
-    &--a-finaliser {
+    &.fr-dossier-etat--a-finaliser {
         border-left-color: var(--var-couleur-pp-a-finaliser);
     }
 
-    &--a-attribuer {
+    &.fr-dossier-etat--a-attribuer {
         border-left-color: var(--var-couleur-pp-a-attribuer);
     }
 
-    &--a-instruire {
+    &.fr-dossier-etat--a-instruire {
         border-left-color: var(--var-couleur-pp-a-instruire);
     }
 
-    &--en-instruction {
+    &.fr-dossier-etat--en-instruction {
         border-left-color: var(--var-couleur-pp-en-instruction)
     }
 
-    &--cloture {
+    &.fr-dossier-etat--cloture {
         border-left-color: var(--var-couleur-pp-cloture);
     }
 
-    &--ok-a-signer {
+    &.fr-dossier-etat--ok-a-signer {
         border-left-color: var(--var-couleur-pp-ok-a-signer);
     }
 
-    &--ok-a-approuver {
+    &.fr-dossier-etat--ok-a-approuver {
         border-left-color: var(--var-couleur-pp-ok-a-approuver);
     }
 
-    &--ok-a-verifier {
+    &.fr-dossier-etat--ok-a-verifier {
         border-left-color: var(--var-couleur-pp-ok-a-verifier);
     }
 
-    &--ok-verifie {
+    &.fr-dossier-etat--ok-verifie {
         border-left-color: var(--var-couleur-pp-ok-verifie);
     }
 
-    &--ok-a-indemniser {
+    &.fr-dossier-etat--ok-a-indemniser {
         border-left-color: var(--var-couleur-pp-ok-a-indemniser);
     }
 
-    &--ok-en-attente-paiement {
+    &.fr-dossier-etat--ok-en-attente-paiement {
         border-left-color: var(--var-couleur-pp-ok-en-attente-paiement);
     }
 
-    &--ok-indemnise {
+    &.fr-dossier-etat--ok-indemnise {
         border-left-color: var(--var-couleur-pp-ok-indemnise);
     }
 
-    &--ko-a-signer {
+    &.fr-dossier-etat--ko-a-signer {
         border-left-color: var(--var-couleur-pp-ko-a-signer);
     }
 
-    &--ko-rejete {
+    &.fr-dossier-etat--ko-rejete {
         border-left-color: var(--var-couleur-pp-ko-rejete);
     }
 }
 
 .fr-badge--dossier-etat {
-    &--a-finaliser {
+    &.fr-badge--dossier-etat--a-finaliser {
         color: var(--var-couleur-pp-a-finaliser);
         background-color: var(--var-couleur-ap-a-finaliser);
     }
 
-    &--a-attribuer {
+    &.fr-badge--dossier-etat--a-attribuer {
         color: var(--var-couleur-pp-a-attribuer);
         background-color: var(--var-couleur-ap-a-attribuer);
     }
 
-    &--a-instruire {
+    &.fr-badge--dossier-etat--a-instruire {
         color: var(--var-couleur-pp-a-instruire);
         background-color: var(--var-couleur-ap-a-instruire);
     }
 
-    &--en-instruction {
+    &.fr-badge--dossier-etat--en-instruction {
         color: var(--var-couleur-pp-en-instruction);
         background-color: var(--var-couleur-ap-en-instruction);
     }
 
-    &--cloture {
+    &.fr-badge--dossier-etat--cloture {
         color: var(--var-couleur-pp-cloture);
         background-color: var(--var-couleur-ap-cloture);
     }
 
-    &--ok-a-signer {
+    &.fr-badge--dossier-etat--ok-a-signer {
         color: var(--var-couleur-pp-ok-a-signer);
         background-color: var(--var-couleur-ap-ok-a-signer);
     }
 
-    &--ok-a-approuver {
+    &.fr-badge--dossier-etat--ok-a-approuver {
         color: var(--var-couleur-pp-ok-a-approuver);
         background-color: var(--var-couleur-ap-ok-a-approuver);
     }
 
-    &--ok-a-verifier {
+    &.fr-badge--dossier-etat--ok-a-verifier {
         color: var(--var-couleur-pp-ok-a-verifier);
         background-color: var(--var-couleur-ap-ok-a-verifier);
     }
 
-    &--ok-verifie {
+    &.fr-badge--dossier-etat--ok-verifie {
         color: var(--var-couleur-pp-ok-verifie);
         background-color: var(--var-couleur-ap-ok-verifie);
     }
 
-    &--ok-a-indemniser {
+    &.fr-badge--dossier-etat--ok-a-indemniser {
         color: var(--var-couleur-pp-ok-a-indemniser);
         background-color: var(--var-couleur-ap-ok-a-indemniser);
     }
 
-    &--ok-en-attente-paiement {
+    &.fr-badge--dossier-etat--ok-en-attente-paiement {
         color: var(--var-couleur-pp-ok-en-attente-paiement);
         background-color: var(--var-couleur-ap-ok-en-attente-paiement);
     }
 
-    &--ok-indemnise {
+    &.fr-badge--dossier-etat--ok-indemnise {
         color: var(--var-couleur-pp-ok-indemnise);
         background-color: var(--var-couleur-ap-ok-indemnise);
     }
 
-    &--ko-a-signer {
+    &.fr-badge--dossier-etat--ko-a-signer {
         color: var(--var-couleur-pp-ko-a-signer);
         background-color: var(--var-couleur-ap-ko-a-signer);
     }
 
-    &--ko-rejete {
+    &.fr-badge--dossier-etat--ko-rejete {
         color: var(--var-couleur-pp-ko-rejete);
         background-color: var(--var-couleur-ap-ko-rejete);
     }

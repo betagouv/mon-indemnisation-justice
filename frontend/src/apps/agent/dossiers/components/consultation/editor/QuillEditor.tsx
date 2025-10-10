@@ -6,6 +6,7 @@ import "react-quill-new/dist/quill.snow.css";
 import List, { ListContainer } from "quill/formats/list";
 import React from "react";
 import UnprivilegedEditor = ReactQuill.UnprivilegedEditor;
+import Range = ReactQuill.Range;
 
 class UListContainer extends ListContainer {}
 UListContainer.blotName = "ulist-container";
@@ -31,10 +32,14 @@ Quill.register({
 const QuillEditor = ({
   value,
   onChange,
+  onMove,
+  onBlur,
   readOnly = false,
 }: {
   value: string;
   onChange?(value: string): void;
+  onMove?(cursorIndex: number, selectionLength: number): void;
+  onBlur?(): void;
   readOnly?: boolean;
 }) => {
   return (
@@ -51,6 +56,12 @@ const QuillEditor = ({
           onChange?.(value);
         }
       }}
+      onChangeSelection={(selection: Range) => {
+        if (selection) {
+          onMove?.(selection.index, selection.length);
+        }
+      }}
+      onBlur={() => onBlur?.()}
       readOnly={readOnly}
     />
   );

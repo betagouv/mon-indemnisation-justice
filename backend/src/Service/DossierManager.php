@@ -18,6 +18,12 @@ class DossierManager
         protected readonly AgentRepository $agentRepository,
     ) {}
 
+    public function revenir(BrisPorte $dossier, ?Agent $agent = null, ?array $contexte = null): void
+    {
+        $dossier->revenirEtatPrecedent();
+        $this->dossierRepository->save($dossier);
+    }
+
     public function avancer(BrisPorte $dossier, ?Agent $agent = null, ?array $contexte = null): void
     {
         /** @var EtatDossierType $etat */

@@ -47,6 +47,7 @@ enum DocumentType: string
     {
         return match ($this) {
             self::TYPE_COURRIER_MINISTERE => 'courrier/decision.html.twig',
+            self::TYPE_COURRIER_REQUERANT => 'courrier/declarationAcceptation.html.twig',
             self::TYPE_ARRETE_PAIEMENT => 'courrier/arretePaiement.html.twig',
 
             default => null,
@@ -54,12 +55,13 @@ enum DocumentType: string
     }
 
     /**
-     * Retourne le chemin vers le gabarit (i.e. "template") twig à utiliser pour la génération du document.
+     * Retourne le nom à donner au fichier pour la génération du document.
      */
     public function nommerFichier(BrisPorte $dossier): ?string
     {
         return match ($this) {
             self::TYPE_COURRIER_MINISTERE => "Lettre décision dossier {$dossier->getReference()}.pdf",
+            self::TYPE_COURRIER_REQUERANT => "Acceptation requérant dossier {$dossier->getReference()}.pdf",
             self::TYPE_ARRETE_PAIEMENT => "Arrêté de paiement dossier {$dossier->getReference()}.pdf",
 
             default => null,

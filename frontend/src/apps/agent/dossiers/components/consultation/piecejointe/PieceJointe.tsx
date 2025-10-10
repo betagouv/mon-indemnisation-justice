@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import { Document } from "@/common/models";
 import { fr } from "@codegouvfr/react-dsfr";
@@ -6,17 +6,30 @@ import { fr } from "@codegouvfr/react-dsfr";
 export const PieceJointe = function PieceJointe({
   pieceJointe,
   className,
+  lienTelechargement,
 }: {
   pieceJointe: Document;
   className?: string;
+  lienTelechargement?: string | ((Document) => string);
 }) {
-  //const { cx } = useStyles();
+  const url = useMemo<string>(() => {
+    if (lienTelechargement) {
+      if (typeof lienTelechargement === "function") {
+        return lienTelechargement(pieceJointe);
+      }
+
+      return lienTelechargement;
+    }
+
+    // @deprecated préférer la méthode `lienTelechargement`
+    return pieceJointe.url;
+  }, [pieceJointe.id, lienTelechargement]);
 
   return (
     <div className={`${fr.cx("fr-grid-row")} ${className ?? ""}`}>
       {pieceJointe.isPDF() ? (
         <object
-          data={pieceJointe.url}
+          data={url}
           type="application/pdf"
           style={{
             width: "100%",
@@ -25,7 +38,7 @@ export const PieceJointe = function PieceJointe({
         ></object>
       ) : (
         <img
-          src={pieceJointe.url}
+          src={url}
           alt={pieceJointe.originalFilename}
           style={{
             width: "100%",

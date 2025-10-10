@@ -21,15 +21,14 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: DossierAttribueEvent::class, method: 'dossierAttribue')]
 #[AsEventListener(event: DossierInstruitPropositionEvent::class, method: 'dossierInstruitProposition')]
 #[AsEventListener(event: DossierPropositionEnvoyeeEvent::class, method: 'dossierPropositionEnvoyee')]
+#[AsEventListener(event: DossierRejeteEvent::class, method: 'dossierRejetEnvoye')]
 #[AsEventListener(event: DossierPropositionAccepteeEvent::class, method: 'dossierPropositionAcceptee')]
 #[AsEventListener(event: DossierArreteEditeEvent::class, method: 'dossierArreteEdite')]
 #[AsEventListener(event: DossierArreteSigneEvent::class, method: 'dossierArreteSigne')]
 #[AsEventListener(event: DossierInstruitRejetEvent::class, method: 'dossierInstruitRejet')]
 class DossierTransitionListener
 {
-    public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository)
-    {
-    }
+    public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository) {}
 
     public function dossierCloture(DossierClotureEvent $evenement): void
     {
@@ -41,7 +40,8 @@ class DossierTransitionListener
             ->htmlTemplate('email/requerant/dossier_cloture.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
-            ->send();
+            ->send()
+        ;
     }
 
     public function dossierDepose(DossierDeposeEvent $evenement): void
@@ -53,7 +53,8 @@ class DossierTransitionListener
             ->htmlTemplate('email/requerant/dossier_depose.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
-            ->send();
+            ->send()
+        ;
         // Prévenir les attributeurs qu'un nouveau dossier attend d'être attribué :
         foreach ($this->agentRepository->getAttributeurs() as $attributeur) {
             $this->mailer
@@ -63,7 +64,8 @@ class DossierTransitionListener
                     'agent' => $attributeur,
                     'dossier' => $evenement->dossier,
                 ])
-                ->send();
+                ->send()
+            ;
         }
     }
 
@@ -77,7 +79,8 @@ class DossierTransitionListener
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
             ])
-            ->send();
+            ->send()
+        ;
     }
 
     public function dossierInstruitProposition(DossierInstruitPropositionEvent $evenement): void
@@ -91,7 +94,8 @@ class DossierTransitionListener
                     'agent' => $validateur,
                     'dossier' => $evenement->dossier,
                 ])
-                ->send();
+                ->send()
+            ;
         }
     }
 
@@ -104,7 +108,21 @@ class DossierTransitionListener
             ->htmlTemplate('email/requerant/dossier_decide.twig', [
                 'dossier' => $evenement->dossier,
             ])
-            ->send();
+            ->send()
+        ;
+    }
+
+    public function dossierRejetEnvoye(DossierRejeteEvent $evenement): void
+    {
+        // Prévenir le requérant qu'une décision l'attend sur son espace :
+        $this->mailer
+            ->toRequerant($evenement->dossier->getRequerant())
+            ->subject("Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse")
+            ->htmlTemplate('email/requerant/dossier_decide.twig', [
+                'dossier' => $evenement->dossier,
+            ])
+            ->send()
+        ;
     }
 
     public function dossierPropositionAcceptee(DossierPropositionAccepteeEvent $evenement): void
@@ -116,7 +134,8 @@ class DossierTransitionListener
             ->htmlTemplate('email/agent/fip6/dossier_proposition_acceptee.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
-            ]);
+            ])
+        ;
     }
 
     public function dossierArreteEdite(DossierArreteEditeEvent $evenement): void
@@ -130,7 +149,8 @@ class DossierTransitionListener
                     'agent' => $validateur,
                     'dossier' => $evenement->dossier,
                 ])
-                ->send();
+                ->send()
+            ;
         }
     }
 
@@ -145,7 +165,8 @@ class DossierTransitionListener
                     'agent' => $agentLiaisonBudget,
                     'dossier' => $evenement->dossier,
                 ])
-                ->send();
+                ->send()
+            ;
         }
     }
 

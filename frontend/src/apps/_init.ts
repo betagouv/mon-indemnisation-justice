@@ -26,7 +26,7 @@ if (import.meta.env?.VITE_SENTRY_DSN) {
             Sentry.browserTracingIntegration(),
             Sentry.replayIntegration(),
         ],
-        tracesSampleRate: 1.0,
+        tracesSampleRate: .5,
         //tracePropagationTargets: ["localhost"],
 
         debug: (import.meta.env.APP_ENV || "prod") != "prod",

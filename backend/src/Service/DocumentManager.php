@@ -45,7 +45,7 @@ class DocumentManager
         $this->ajouterDocument(
             $dossier,
             $dossier->getOrCreateDocument($type)
-                ->setOriginalFilename(pathinfo($cheminFichier, PATHINFO_FILENAME))
+                ->setOriginalFilename($type->nommerFichier($dossier) ?? pathinfo($cheminFichier, PATHINFO_FILENAME))
                 ->setType($type)
                 ->setMime($mime)
                 ->setAjoutRequerant($estAjoutRequerant),
@@ -111,6 +111,16 @@ class DocumentManager
         }
 
         return $this->storage->readStream($document->getFilename());
+    }
+
+    /** @return string */
+    public function getContenuTexte(Document $document)
+    {
+        if (!$this->storage->has($document->getFilename())) {
+            throw new FileException("Le fichier associé à ce document n'existe pas.");
+        }
+
+        return $this->storage->read($document->getFilename());
     }
 
     public function genererArretePaiement(BrisPorte $dossier): void

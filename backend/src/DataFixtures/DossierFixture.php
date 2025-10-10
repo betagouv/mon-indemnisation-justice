@@ -81,6 +81,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setTestEligibilite(
                 $this->getReference('test-eligibilite-melun', TestEligibilite::class)
             )
+            ->setQualiteRequerant(QualiteRequerant::BAI)
         ;
 
         $dossierAAttribuer->setHistoriqueEtats([
@@ -97,7 +98,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierAAttribuer->ajouterDocument(
             (new Document())
                 ->setFilename('dd84b8ed97fd350cf29bbb229a1f330cb9d89f69e47832e51b18abbcffe425e6.pdf')
-                ->setOriginalFilename("Attestation POLICE")
+                ->setOriginalFilename('Attestation POLICE')
                 ->setSize(428116)
                 ->setType(DocumentType::TYPE_ATTESTATION_INFORMATION)
                 ->setAjoutRequerant(true)
@@ -130,6 +131,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setTestEligibilite(
                 $this->getReference('test-eligibilite-ray-keran', TestEligibilite::class)
             )
+            ->setQualiteRequerant(QualiteRequerant::LOC)
         ;
 
         $dossierEnInstruction->setHistoriqueEtats([
@@ -293,6 +295,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ),
                 )
             )
+            ->setQualiteRequerant($dossier->getTestEligibilite()->rapportAuLogement)
         ;
 
         foreach (self::historiqueTheorique($etatActuel) as $etat) {

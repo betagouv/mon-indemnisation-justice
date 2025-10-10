@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -54,7 +55,7 @@ class AttribuerDossierEndpoint
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize(
-                $this->objectMapper->map($dossier->getEtatDossier(), AttribuerDossierOutput::class)
+                $this->objectMapper->map($dossier->getEtatDossier(), EtatDossierOutput::class)
             ),
         ]);
     }
