@@ -151,16 +151,16 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
 
   // Relancer une impression si le document n'est pas du jour
   useEffect(() => {
-    const courrier = dossier.getCourrierAJour();
+    const courrier = dossier.getCourrierDecision();
 
     if (courrier) {
-      console.log(courrier.estAJour());
       if (
-        // À l'étape d'édition du courrier ...
+        // À l'étape d'édition du courrier...
         etatSignature.etape === "EDITION_COURRIER" &&
-        // ... si la vérification de la date n'a pas encore été faite ...
+        // ... si la vérification de la date n'a pas encore été faite...
         verificationDateCourrier.current != dossier.id
       ) {
+        // ... et que le courrier n'a pas été généré aujourd'hui même ...
         if (!courrier.estAJour()) {
           setGenerationCourrierEnCours(true);
           documentManager
@@ -182,8 +182,8 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
     (montant: number) => void,
   ] = useState<number>(
     dossier.montantIndemnisation ||
-      (dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)
-        ?.metaDonnees?.montantIndemnisation as number),
+      (dossier.getCourrierDecision()?.metaDonnees
+        ?.montantIndemnisation as number),
   );
 
   // Mémorise le montant de l'indemnisation lu dans le courrier
@@ -197,9 +197,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
   const [corpsCourrier, setCorpsCourrier]: [
     string,
     (corpsCourrier: string) => void,
-  ] = useState<string>(
-    dossier.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE)?.corps || "",
-  );
+  ] = useState<string>(dossier.getCourrierDecision()?.corps || "");
 
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
@@ -461,11 +459,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
           ) : (
             <EditeurDocument
               className="fr-input-group fr-col-12"
-              document={
-                dossier.getDocumentType(
-                  DocumentType.TYPE_COURRIER_MINISTERE,
-                ) as Document
-              }
+              document={dossier.getCourrierDecision() as Document}
               onEdite={(corps) => {
                 if (dossier.estAccepte()) {
                   setCorpsCourrier(corps);
@@ -521,11 +515,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
         <>
           <EditeurDocument
             className="fr-input-group fr-col-12"
-            document={
-              dossier.getDocumentType(
-                DocumentType.TYPE_COURRIER_REQUERANT,
-              ) as Document
-            }
+            document={dossier.getDeclarationAcceptation() as Document}
             onEdite={(corps) => {}}
             onImprime={(courrier) => dossier.addDocument(courrier)}
             onImpression={(impressionEnCours) =>
@@ -565,11 +555,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
       {etatSignature.etape === "SIGNATURE" && (
         <>
           <TelechargerPieceJointe
-            pieceJointe={
-              dossier.getDocumentType(
-                DocumentType.TYPE_COURRIER_MINISTERE,
-              ) as Document
-            }
+            pieceJointe={dossier.getCourrierDecision() as Document}
           />
 
           <Upload
@@ -685,11 +671,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
 
           <PieceJointe
             className="fr-my-3w"
-            pieceJointe={
-              dossier.getDocumentType(
-                DocumentType.TYPE_COURRIER_MINISTERE,
-              ) as Document
-            }
+            pieceJointe={dossier.getCourrierDecision() as Document}
           />
 
           <ButtonsGroup

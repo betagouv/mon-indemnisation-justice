@@ -56,9 +56,7 @@ export const GenererArretePaiementModale =
     // Actions
     const annuler = () => {
       setEtatValidation({
-        corpsCourrier: dossier.getDocumentType(
-          DocumentType.TYPE_COURRIER_MINISTERE,
-        )?.corps,
+        corpsCourrier: dossier.getCourrierDecision()?.corps,
         sauvegardeEnCours: false,
         action: "verification",
       } as ValidationAcceptationEtat);
@@ -66,7 +64,7 @@ export const GenererArretePaiementModale =
     };
 
     const [arretePaiement, setArretePaiement] = useState<Document | null>(
-      dossier.getDocumentType(DocumentType.TYPE_ARRETE_PAIEMENT),
+      dossier.getArretePaiement(),
     );
 
     const documentManager: DocumentManagerInterface =
@@ -143,11 +141,7 @@ export const GenererArretePaiementModale =
             </p>
             <PieceJointe
               className="fr-my-2w"
-              pieceJointe={
-                dossier.getDocumentType(
-                  DocumentType.TYPE_COURRIER_REQUERANT,
-                ) as Document
-              }
+              pieceJointe={dossier.getDeclarationAcceptation() as Document}
             />
             <ButtonsGroup
               inlineLayoutWhen="always"

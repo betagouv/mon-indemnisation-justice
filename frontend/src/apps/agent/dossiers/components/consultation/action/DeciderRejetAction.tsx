@@ -118,13 +118,13 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
   onDecide?: () => void;
 }) {
   const [courrier, setCourrier] = useState<Document | null>(
-    dossier.getCourrierAJour(),
+    dossier.getCourrierDecision(),
   );
 
   // Actualiser le courrier de décision dès lors qu'il aurait été changé en dehors (ex : décision de rejet)
   useEffect(() => {
-    setCourrier(dossier.getCourrierAJour());
-  }, [dossier.id, dossier.getCourrierAJour()?.fileHash]);
+    setCourrier(dossier.getCourrierDecision());
+  }, [dossier.id, dossier.getCourrierDecision()?.fileHash]);
 
   // L'étape en cours :
   const [etape, setEtape] = useState<IdEtape>("CHOIX_MOTIF_REJET");

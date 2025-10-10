@@ -134,19 +134,17 @@ export const DeciderIndemnisationModale = observer(
   }) {
     // Le courrier de décision
     const [courrier, setCourrier] = useState<Document | null>(
-      dossier.getCourrierAJour(),
+      dossier.getCourrierDecision(),
     );
 
     // Actualiser le courrier de décision dès lors qu'il aurait été changé en dehors (ex : décision de rejet)
     useEffect(() => {
-      setCourrier(dossier.getCourrierAJour());
-    }, [dossier.id, dossier.getCourrierAJour()?.fileHash]);
+      setCourrier(dossier.getCourrierDecision());
+    }, [dossier.id, dossier.getCourrierDecision()?.fileHash]);
 
     // La déclaration d'acceptation
     const [declarationAcceptation, setDeclarationAcceptation] =
-      useState<Document | null>(
-        dossier.getDocumentType(DocumentType.TYPE_COURRIER_REQUERANT),
-      );
+      useState<Document | null>(dossier.getDeclarationAcceptation());
 
     // L'étape en cours :
     const [etape, setEtape] = useState<IdEtape>("CHOIX_MONTANT_INDEMNISATION");
@@ -425,11 +423,7 @@ export const DeciderIndemnisationModale = observer(
                   isDefault: true,
                   content: (
                     <PieceJointe
-                      pieceJointe={
-                        dossier.getDocumentType(
-                          DocumentType.TYPE_COURRIER_MINISTERE,
-                        ) as Document
-                      }
+                      pieceJointe={dossier.getCourrierDecision() as Document}
                     />
                   ),
                 },
@@ -439,9 +433,7 @@ export const DeciderIndemnisationModale = observer(
                   content: (
                     <PieceJointe
                       pieceJointe={
-                        dossier.getDocumentType(
-                          DocumentType.TYPE_COURRIER_REQUERANT,
-                        ) as Document
+                        dossier.getDeclarationAcceptation() as Document
                       }
                     />
                   ),

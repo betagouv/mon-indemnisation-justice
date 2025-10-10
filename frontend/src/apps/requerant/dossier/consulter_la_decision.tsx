@@ -62,16 +62,8 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
 
   // URL du document en cours de consultation
   const lienTelechargementDeclarationAcceptation = useMemo<string>(
-    () =>
-      urlDocumentRequerant(
-        dossier.getDocumentType(
-          DocumentType.TYPE_COURRIER_REQUERANT,
-        ) as Document,
-      ),
-    [
-      dossier.id,
-      dossier.getDocumentType(DocumentType.TYPE_COURRIER_REQUERANT)?.fileHash,
-    ],
+    () => urlDocumentRequerant(dossier.getDeclarationAcceptation() as Document),
+    [dossier.id, dossier.getDeclarationAcceptation()?.fileHash],
   );
 
   // Fichier signé à téléverser
@@ -435,11 +427,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                 isDefault: true,
                 content: (
                   <PieceJointe
-                    pieceJointe={
-                      dossier.getDocumentType(
-                        DocumentType.TYPE_COURRIER_MINISTERE,
-                      ) as Document
-                    }
+                    pieceJointe={dossier.getCourrierDecision() as Document}
                     lienTelechargement={(document) =>
                       urlDocumentRequerant(document)
                     }
@@ -452,9 +440,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                 content: (
                   <PieceJointe
                     pieceJointe={
-                      dossier.getDocumentType(
-                        DocumentType.TYPE_COURRIER_REQUERANT,
-                      ) as Document
+                      dossier.getDeclarationAcceptation() as Document
                     }
                     lienTelechargement={(document) =>
                       urlDocumentRequerant(document)
