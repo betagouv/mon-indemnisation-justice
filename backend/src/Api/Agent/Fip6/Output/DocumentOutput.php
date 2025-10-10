@@ -21,4 +21,5 @@ final class DocumentOutput
     #[Map(transform: [DocumentType::class, 'toString'])]
     public string $type;
     public mixed $metaDonnees;
+    public ?\DateTimeInterface $dateDerniereModification;
 }

@@ -1,15 +1,23 @@
+import { EditeurDocument } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
+import { Loader } from "@/common/components/Loader";
 import {
-  EditeurDocument,
-  EditeurMode,
-} from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
+  DocumentManagerImpl,
+  DocumentManagerInterface,
+} from "@/common/services/agent";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import Download from "@codegouvfr/react-dsfr/Download";
-import React, { FormEvent, ReactNode, useCallback, useState } from "react";
+import { useInjection } from "inversify-react";
+import React, {
+  FormEvent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   Agent,
-  BaseDossier,
   Document,
   DocumentType,
   DossierDetail,
@@ -17,14 +25,12 @@ import {
 } from "@/common/models";
 import { observer } from "mobx-react-lite";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { makeAutoObservable } from "mobx";
 import { plainToInstance } from "class-transformer";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { TelechargerPieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
 import { proxy, useSnapshot } from "valtio";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 
@@ -133,6 +139,43 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
   // État de l"opération de signature en cours :
   const etatSignature = useSnapshot<{ etape: IdEtape }>(registreSignature);
 
+  // Marqueur "_flag_" qui permet d'éviter de vérifier la date d'impression du
+  // document qu'une seule fois :
+  const verificationDateCourrier = useRef<number>(0);
+
+  const [generationCourrierEnCours, setGenerationCourrierEnCours] =
+    useState<boolean>(false);
+
+  const documentManager: DocumentManagerInterface =
+    useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+
+  // Relancer une impression si le document n'est pas du jour
+  useEffect(() => {
+    const courrier = dossier.getCourrierAJour();
+
+    if (courrier) {
+      console.log(courrier.estAJour());
+      if (
+        // À l'étape d'édition du courrier ...
+        etatSignature.etape === "EDITION_COURRIER" &&
+        // ... si la vérification de la date n'a pas encore été faite ...
+        verificationDateCourrier.current != dossier.id
+      ) {
+        if (!courrier.estAJour()) {
+          setGenerationCourrierEnCours(true);
+          documentManager
+            .imprimer(courrier, courrier.corps as string)
+            .then((document: Document) => {
+              dossier.addDocument(document);
+
+              setGenerationCourrierEnCours(false);
+            });
+        }
+        verificationDateCourrier.current = dossier.id;
+      }
+    }
+  }, [dossier.id, etatSignature.etape]);
+
   // Mémorise le montant de l'indemnisation
   const [montantIndemnisation, setMontantIndemnisation]: [
     number,
@@ -149,7 +192,8 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
     (montant: number | null) => void,
   ] = useState<number | null>(null);
 
-  // Corps du courrier
+  // Corps du courrier (permet de chercher le montant de l'indemnisation en
+  // chiffre et le comparer à la valeur saisie
   const [corpsCourrier, setCorpsCourrier]: [
     string,
     (corpsCourrier: string) => void,
@@ -400,24 +444,40 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
             </div>
           )}
 
-          <EditeurDocument
-            className="fr-input-group fr-col-12"
-            document={
-              dossier.getDocumentType(
-                DocumentType.TYPE_COURRIER_MINISTERE,
-              ) as Document
-            }
-            onEdite={(corps) => {
-              if (dossier.estAccepte()) {
-                setCorpsCourrier(corps);
-                detecterMontantIndemnisation(corps);
+          {generationCourrierEnCours ? (
+            <>
+              <Alert
+                severity="info"
+                title="Patience"
+                description={
+                  <>
+                    Le courrier de décision est en train d'être re-généré pour
+                    mettre à jour la date.
+                  </>
+                }
+              />
+              <Loader />
+            </>
+          ) : (
+            <EditeurDocument
+              className="fr-input-group fr-col-12"
+              document={
+                dossier.getDocumentType(
+                  DocumentType.TYPE_COURRIER_MINISTERE,
+                ) as Document
               }
-            }}
-            onImprime={(courrier) => dossier.addDocument(courrier)}
-            onImpression={(impressionEnCours) =>
-              setSauvegardeEnCours(impressionEnCours)
-            }
-          />
+              onEdite={(corps) => {
+                if (dossier.estAccepte()) {
+                  setCorpsCourrier(corps);
+                  detecterMontantIndemnisation(corps);
+                }
+              }}
+              onImprime={(courrier) => dossier.addDocument(courrier)}
+              onImpression={(impressionEnCours) =>
+                setSauvegardeEnCours(impressionEnCours)
+              }
+            />
+          )}
 
           <ButtonsGroup
             className="fr-mt-3w"
