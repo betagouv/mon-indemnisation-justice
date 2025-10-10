@@ -6,6 +6,7 @@ namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -17,6 +18,7 @@ class DossierEtatRevenirCommand extends Command
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
+        protected readonly DossierManager $dossierManager,
     ) {
         parent::__construct();
     }
@@ -32,14 +34,10 @@ class DossierEtatRevenirCommand extends Command
         $dossier = $this->em->find(BrisPorte::class, $id);
 
         if (null == $dossier) {
-            throw new \LogicException("Aucun dossier trouve pour l'id $id");
+            throw new \LogicException("Aucun dossier trouve pour l'id {$id}");
         }
 
-        $etat = $dossier->getEtatDossier();
-
-        $dossier->revenirEtatPrecedent();
-        $this->em->remove($etat);
-        $this->em->flush();
+        $this->dossierManager->revenir($dossier);
 
         return Command::SUCCESS;
     }

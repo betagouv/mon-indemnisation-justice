@@ -256,7 +256,8 @@ class BrisPorte
     public function revenirEtatPrecedent(): static
     {
         if ($this->historiqueEtats->count() > 1) {
-            $this->etatDossier = $this->historiqueEtats->get($this->historiqueEtats->count() - 2);
+            $this->historiqueEtats->removeElement($this->historiqueEtats->last());
+            $this->etatDossier = $this->historiqueEtats->last();
         }
 
         return $this;
