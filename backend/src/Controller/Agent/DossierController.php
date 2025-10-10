@@ -3,7 +3,6 @@
 namespace MonIndemnisationJustice\Controller\Agent;
 
 use Doctrine\ORM\EntityManagerInterface;
-use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
@@ -13,7 +12,6 @@ use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -34,8 +32,6 @@ class DossierController extends AgentController
     public function __construct(
         protected readonly BrisPorteRepository $dossierRepository,
         protected readonly AgentRepository $agentRepository,
-        #[Target('default.storage')]
-        protected readonly FilesystemOperator $storage,
         protected readonly DossierManager $dossierManager,
         protected readonly DocumentManager $documentManager,
         protected readonly EntityManagerInterface $em,
@@ -343,7 +339,7 @@ class DossierController extends AgentController
         }
 
         foreach ($dossier->getDocumentsATransmettre()->toArray() as $document) {
-            $zip->addFromString($document->getOriginalFilename(), $this->storage->read($document->getFilename()));
+            $zip->addFromString($document->getOriginalFilename(), $this->documentManager->getContenuTexte($document));
         }
 
         return (new BinaryFileResponse($zipName, headers: [
