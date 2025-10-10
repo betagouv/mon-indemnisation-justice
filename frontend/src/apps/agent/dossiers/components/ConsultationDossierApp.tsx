@@ -51,8 +51,8 @@ export const ConsultationDossierApp = observer(
       useState<string>(dossier.notes ?? "");
 
     const courrier = useMemo<Document | null>(
-      () => dossier.getCourrierAJour(),
-      [dossier.getCourrierAJour()?.fileHash],
+      () => dossier.getCourrierDecision(),
+      [dossier.getCourrierDecision()?.fileHash],
     );
 
     // Indique si la sauvegarde des notes de suivi est en cours
@@ -205,16 +205,12 @@ export const ConsultationDossierApp = observer(
                           {
                             tabId: "declaration",
                             label: "Déclaration d'acceptation",
-                            disabled: !dossier.getDocumentType(
-                              DocumentType.TYPE_COURRIER_REQUERANT,
-                            ),
+                            disabled: !dossier.getDeclarationAcceptation(),
                           },
                           {
                             tabId: "arrete",
                             label: "Arrêté de paiement",
-                            disabled: !dossier.getDocumentType(
-                              DocumentType.TYPE_ARRETE_PAIEMENT,
-                            ),
+                            disabled: !dossier.getArretePaiement(),
                           },
                         ]
                       : []),
@@ -667,9 +663,7 @@ export const ConsultationDossierApp = observer(
                       <PieceJointe
                         className="fr-col-12"
                         pieceJointe={
-                          dossier.getDocumentType(
-                            DocumentType.TYPE_COURRIER_REQUERANT,
-                          ) as Document
+                          dossier.getDeclarationAcceptation() as Document
                         }
                       />
                     </section>
@@ -681,11 +675,7 @@ export const ConsultationDossierApp = observer(
 
                       <PieceJointe
                         className="fr-col-12"
-                        pieceJointe={
-                          dossier.getDocumentType(
-                            DocumentType.TYPE_ARRETE_PAIEMENT,
-                          ) as Document
-                        }
+                        pieceJointe={dossier.getArretePaiement() as Document}
                       />
                     </section>
                   )}

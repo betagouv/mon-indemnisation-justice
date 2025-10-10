@@ -1,7 +1,14 @@
+import { Loader } from "@/common/components/Loader";
+import {
+  DocumentManagerImpl,
+  DocumentManagerInterface,
+} from "@/common/services/agent";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
+import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Agent,
   Document,
@@ -59,13 +66,46 @@ export const SignerArretePaiementModale = observer(
     const estTypeFichierOk = (fichier?: File) =>
       fichier && ["application/pdf"].includes(fichier.type);
 
+    // Marqueur "_flag_" qui permet d'éviter de vérifier la date d'impression du
+    // document qu'une seule fois :
+    const verificationDateCourrier = useRef<number>(0);
+
+    const [generationCourrierEnCours, setGenerationCourrierEnCours] =
+      useState<boolean>(false);
+
+    const documentManager: DocumentManagerInterface =
+      useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+
+    // Relancer une impression si le document n'est pas du jour
+    useEffect(() => {
+      const arrete = dossier.getArretePaiement();
+
+      if (arrete) {
+        if (
+          // À l'étape d'édition de l'arrêté...
+          estEdition &&
+          // ... si la vérification de la date n'a pas encore été faite...
+          verificationDateCourrier.current != dossier.id
+        ) {
+          // ... et que l'arrêté n'a pas été généré aujourd'hui même ...
+          if (!arrete.estAJour()) {
+            // ... alors on le ré-imprime
+            setGenerationCourrierEnCours(true);
+            documentManager.imprimer(arrete).then((document: Document) => {
+              dossier.addDocument(document);
+
+              setGenerationCourrierEnCours(false);
+            });
+          }
+          verificationDateCourrier.current = dossier.id;
+        }
+      }
+    }, [dossier.id, estEdition]);
+
     const [sauvegardeEnCours, setSauvegardeEnCours]: [
       boolean,
       (mode: boolean) => void,
     ] = useState(false);
-
-    // Le mode en cours sur l'éditeur de document
-    const [editeurMode, setEditeurMode] = useState<EditeurMode>("edition");
 
     const envoyer = useCallback(async () => {
       if (fichierSigne) {
@@ -108,15 +148,29 @@ export const SignerArretePaiementModale = observer(
       >
         {estEdition ? (
           <>
-            <EditeurDocument
-              className="fr-my-2w"
-              document={
-                dossier.getDocumentType(
-                  DocumentType.TYPE_ARRETE_PAIEMENT,
-                ) as Document
-              }
-              onImprime={(document: Document) => dossier.addDocument(document)}
-            />
+            {generationCourrierEnCours ? (
+              <>
+                <Alert
+                  severity="info"
+                  title="Patience"
+                  description={
+                    <>
+                      L'arrêté de paiement est en train d'être re-généré pour
+                      mettre à jour la date.
+                    </>
+                  }
+                />
+                <Loader />
+              </>
+            ) : (
+              <EditeurDocument
+                className="fr-my-2w"
+                document={dossier.getArretePaiement() as Document}
+                onImprime={(document: Document) =>
+                  dossier.addDocument(document)
+                }
+              />
+            )}
 
             <ButtonsGroup
               inlineLayoutWhen="always"
@@ -142,11 +196,7 @@ export const SignerArretePaiementModale = observer(
         ) : (
           <>
             <TelechargerPieceJointe
-              pieceJointe={
-                dossier.getDocumentType(
-                  DocumentType.TYPE_ARRETE_PAIEMENT,
-                ) as Document
-              }
+              pieceJointe={dossier.getArretePaiement() as Document}
             />
 
             <Upload
