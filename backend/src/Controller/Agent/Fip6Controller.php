@@ -14,7 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted(Agent::ROLE_AGENT)]
 class Fip6Controller extends AbstractController
 {
-    #[Route('/{extra?}', name: 'agent_fip3_react', requirements: ['extra' => '.*'])]
+    #[Route('/{extra?}', name: 'agent_fip6_react', requirements: ['extra' => '.*'])]
     public function react(): Response
     {
         /** @var Agent $agent */

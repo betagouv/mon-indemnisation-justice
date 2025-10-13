@@ -27,6 +27,15 @@
         "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
     },
     {
+        "_title": "Gestion agents",
+        "sub": "4c656917-66f8-4f14-a413-49ef964d2bf3",
+        "email": "gestion-agents@justice.gouv.fr",
+        "given_name": "Jess",
+        "usual_name": "Thion-Hajan",
+        "uid": "6540",
+        "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368"
+    },
+    {
         "_title": "Validateur",
         "sub": "dda38b83-bca4-4a25-8e2a-d2eb4947f02d",
         "email": "validateur@justice.gouv.fr",
@@ -48,8 +57,8 @@
         "_title": "Policier",
         "sub": "e316bde4-3d37-4ed8-9001-c40d9b07fe06",
         "email": "policier@interieur.gouv.fr",
-        "given_name": "Jerome",
-        "usual_name": "Policier",
+        "given_name": "Paul",
+        "usual_name": "Issié",
         "uid": "567",
         "idp_id": "e2f13a1f-9f43-4def-a5ed-06dce37d00e6"
     }

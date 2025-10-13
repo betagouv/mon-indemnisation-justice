@@ -48,7 +48,7 @@
             </div>
         </div>
 
-        {#  Version mobile #}
+
         <div class="fr-header__menu fr-modal" id="modal-menu-header" aria-labelledby="button-modal-menu-header">
             <div class="fr-container">
                 <button class="fr-btn--close fr-btn" aria-controls="modal-menu-header" title="Fermer">
@@ -86,7 +86,7 @@
                                     <ul class="fr-menu__list">
                                         {% if app.user.aRole('ROLE_AGENT_BETAGOUV') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-categoriser'}) }}"
+                                                <a href="{{ url('agent_fip6_react', { extra: 'dossiers/a-categoriser'}) }}"
                                                    class="fr-nav__link">
                                                     À catégoriser
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_categoriser() }}</p>
@@ -96,7 +96,7 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_ATTRIBUTEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-attribuer'}) }}"
+                                                <a href="{{ url('agent_fip6_react', { extra: 'dossiers/a-attribuer'}) }}"
                                                    class="fr-nav__link">
                                                     À attribuer
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_attribuer() }}</p>
@@ -106,7 +106,7 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_REDACTEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-instruire'}) }}"
+                                                <a href="{{ url('agent_fip6_react', { extra: 'dossiers/a-instruire'}) }}"
                                                    class="fr-nav__link">
                                                     À instruire
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ app.user.nbDossiersAInstruire() }}</p>
@@ -116,14 +116,14 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_VALIDATEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/rejet-a-signer'}) }}"
+                                                <a href="{{ url('agent_fip6_react', { extra: 'dossiers/rejet-a-signer'}) }}"
                                                    class="fr-nav__link">
                                                     Rejet à signer
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_rejet_a_signer() }}</p>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/proposition-a-signer'}) }}"
+                                                <a href="{{ url('agent_fip6_react', { extra: 'dossiers/proposition-a-signer'}) }}"
                                                    class="fr-nav__link">
                                                     Proposition d'indemnisation à signer
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_proposition_a_signer() }}</p>
@@ -133,7 +133,7 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_REDACTEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-verifier'}) }}"
+                                                <a href="{{ url('agent_fip6_react', { extra: 'dossiers/a-verifier'}) }}"
                                                    class="fr-nav__link">
                                                     À vérifier
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ app.user.nbDossiersAVerifier() }}</p>
@@ -143,7 +143,7 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_VALIDATEUR') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/arrete-a-signer'}) }}"
+                                                <a href="{{ url('agent_fip6_react', { extra: 'dossiers/arrete-a-signer'}) }}"
                                                    class="fr-nav__link">
                                                     Arrêté à signer
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_arrete_a_signer() }}</p>
@@ -153,7 +153,7 @@
 
                                         {% if app.user.aRole('ROLE_AGENT_LIAISON_BUDGET') %}
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/a-transmettre'}) }}"
+                                                <a href="{{ url('agent_fip6_react', { extra: 'dossiers/a-transmettre'}) }}"
                                                    class="fr-nav__link">
                                                     À transmettre au Bureau du Budget
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_a_transmettre() }}</p>
@@ -161,7 +161,7 @@
                                             </li>
 
                                             <li>
-                                                <a href="{{ url('agent_fip3_react', { extra: 'dossiers/en-attente-indemnisation'}) }}"
+                                                <a href="{{ url('agent_fip6_react', { extra: 'dossiers/en-attente-indemnisation'}) }}"
                                                    class="fr-nav__link">
                                                     En attente de paiement
                                                     <p class="fr-badge fr-badge--sm fr-badge--blue-ecume">{{ nb_dossiers_en_attente_indemnisation() }}</p>
@@ -185,31 +185,12 @@
                         {% endif %}
 
                         {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}
-                            <li class="fr-nav__item">
-                                <button
-                                        aria-expanded="false"
-                                        aria-controls="header-menu-gestion-agents"
-                                        type="button"
-                                        class="fr-nav__btn">Gestion des agents
-                                </button>
-                                <div class="fr-collapse fr-menu" id="header-menu-gestion-agents">
-                                    <ul class="fr-menu__list">
+                            <li class="fr-nav__item fr-nav__item--align-right   ">
 
-                                        <li>
-                                            <a href="{{ url('gestion_agents_en_attente') }}" class="fr-nav__link">
-                                                Agents en attente de validation
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="{{ url('gestion_agents_actifs') }}" class="fr-nav__link">
-                                                Agents actifs
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-
-
+                                <a href="{{ url('agent_fip6_react', { extra: 'agents/gestion'}) }}"
+                                   class="fr-nav__link">
+                                    Gestion des agents
+                                </a>
                             </li>
                         {% endif %}
                     </ul>

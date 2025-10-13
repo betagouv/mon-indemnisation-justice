@@ -1,15 +1,13 @@
 /// <reference types="./types" />
 
-import { defineConfig, loadEnv, UserConfig, UserConfigExport } from "vite";
+import { defineConfig, loadEnv, UserConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import symfonyPlugin from "vite-plugin-symfony";
 import { default as react } from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import legacy from "@vitejs/plugin-legacy";
-import postcssNesting from "postcss-nesting";
-import autoprefixer from "autoprefixer";
 
-export default defineConfig(({ mode }: UserConfig): UserConfigExport => {
+export default defineConfig(({ mode }: UserConfig): UserConfig => {
   process.env = mode ? { ...process.env, ...loadEnv(mode, process.cwd()) } : {};
 
   return {
@@ -68,8 +66,6 @@ export default defineConfig(({ mode }: UserConfig): UserConfigExport => {
               "./src/apps/requerant/dossier/consulter_la_decision.tsx",
             // Espace agent
             "agent/fip6": "./src/apps/agent/fip6.tsx",
-            "agent/gestion_agents":
-              "./src/apps/agent/gestion_agents/gestion_agents_app.tsx",
             "agent/dossiers/recherche":
               "./src/apps/agent/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
