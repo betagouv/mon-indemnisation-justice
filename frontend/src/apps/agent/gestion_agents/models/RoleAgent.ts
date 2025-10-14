@@ -14,7 +14,7 @@ const RolesAgent: RoleAgentSet = {
   },
   ROLE_AGENT_DOSSIER: {
     libelle: "Consultation",
-    description: "Permet de chercher et consulter les dossiers",
+    description: "Peut rechercher et consulter les dossiers",
   },
   ROLE_AGENT_GESTION_PERSONNEL: {
     libelle: "Gestionnaire d'agent",

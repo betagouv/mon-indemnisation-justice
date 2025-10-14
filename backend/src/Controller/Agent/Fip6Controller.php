@@ -22,6 +22,7 @@ class Fip6Controller extends AbstractController
 
         return $this->render(
             'agent/fip6.html.twig',
+            /*
             [
                 'react' => [
                     'agent' => [
@@ -51,6 +52,7 @@ class Fip6Controller extends AbstractController
                     ],
                 ],
             ]
+            */
         );
     }
 }

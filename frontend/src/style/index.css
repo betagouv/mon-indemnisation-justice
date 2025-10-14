@@ -1,0 +1,8 @@
+.mij-liste {
+    align-items: center;
+    border-top: 1px solid #ccc;
+
+    &:last-child {
+        border-top: 1px solid #ccc;
+    }
+}
