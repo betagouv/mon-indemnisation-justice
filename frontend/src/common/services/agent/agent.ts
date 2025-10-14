@@ -3,6 +3,8 @@ import { ServiceIdentifier } from "inversify";
 import { plainToInstance } from "class-transformer";
 
 export interface AgentManagerInterface {
+  moi(): Promise<Agent>;
+
   agentsActifs(): Promise<Agent[]>;
   agentsInactifs(): Promise<Agent[]>;
 }
@@ -14,6 +16,13 @@ export namespace AgentManagerInterface {
 }
 
 export class APIAgentManager implements AgentManagerInterface {
+  async moi(): Promise<Agent> {
+    return plainToInstance(
+      Agent,
+      await (await fetch("/api/agent/fip6/moi")).json(),
+    );
+  }
+
   async agentsActifs(): Promise<Agent[]> {
     const reponse = await fetch("/api/agent/fip6/agents/actifs");
 

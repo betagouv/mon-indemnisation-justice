@@ -59,6 +59,9 @@ export const dateChiffre = function (date?: Date): string {
   return date?.toISOString().split("T")[0] ?? "";
 };
 
+/**
+ * Affiche une date simple en français, ex : "12 juillet 1998" ou "14 mars".
+ *  */
 export const dateSimple = function (
   date: Date,
   masquerAnneeSiCourante: boolean = false,
