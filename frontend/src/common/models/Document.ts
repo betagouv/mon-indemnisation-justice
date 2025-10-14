@@ -77,6 +77,7 @@ export class DocumentType {
 export interface MetaDonneesAttestation {
   typeAttestation?: TypeAttestation;
   typeInstitutionSecuritePublique?: TypeInstitutionSecuritePublique;
+  dateOperation?: Date;
 }
 
 export class Document {
