@@ -38,6 +38,10 @@ class RenseignerMetaDonneesAttestationEndpoint
         $document->setMetaDonneesAttestation($metaDonnees);
         $this->em->persist($document);
         $document->getDossier()->recalculerMetaDonnees();
+        if (null !== $input->dateOperation && null === $document->getDossier()->getDateOperationPJ()) {
+            $document->getDossier()->setDateOperationPJ($input->dateOperation);
+        }
+
         $this->em->persist($document->getDossier());
 
         $this->em->flush();
