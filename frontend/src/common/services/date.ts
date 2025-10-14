@@ -48,6 +48,17 @@ export const periode = (de: Date, a: Date = new Date()): string => {
   return `${Math.floor(diff)} an${Math.floor(diff) > 1 ? "s" : ""}`;
 };
 
+/**
+ * Retourne la date au format `yyyy-mm-dd`. Ex:
+ * . 14 février 2013 => '2013-02-14'
+ *
+ *
+ * @param date
+ */
+export const dateChiffre = function (date?: Date): string {
+  return date?.toISOString().split("T")[0] ?? "";
+};
+
 export const dateSimple = function (
   date: Date,
   masquerAnneeSiCourante: boolean = false,
