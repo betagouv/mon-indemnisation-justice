@@ -1,3 +1,4 @@
+import { AgentContext } from "@/routes/contexts/AgentContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { StrictMode } from "react";
 import "@/apps/_init";
@@ -18,8 +19,6 @@ declare global {
 // Création du query client Tanstack
 const queryClient = new QueryClient();
 
-const moi = await container.get(AgentManagerInterface.$).moi();
-
 // Création du router Tanstack
 const router = createRouter({
   routeTree,
@@ -27,7 +26,10 @@ const router = createRouter({
   defaultStaleTime: 5000,
   scrollRestoration: true,
   context: {
-    agent: moi,
+    agent: queryClient.fetchQuery({
+      queryKey: ["moi-agent-fip6"],
+      queryFn: () => container.get(AgentManagerInterface.$).moi(),
+    }),
   },
 });
 
