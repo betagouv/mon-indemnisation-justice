@@ -153,7 +153,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
   useEffect(() => {
     const courrier = dossier.getCourrierDecision();
 
-    if (courrier) {
+    if (courrier && !dossier.estEnvoye()) {
       if (
         // À l'étape d'édition du courrier...
         etatSignature.etape === "EDITION_COURRIER" &&

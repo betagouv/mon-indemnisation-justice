@@ -39,12 +39,19 @@ export const ConsultationDossierApp = observer(
     };
 
     // Pièce jointe en cours de visualisation
-    const [pieceJointe, selectionnerPieceJointe] = useState(
-      dossier.documents
-        .values()
-        ?.find((documents) => documents.length > 0)
-        ?.at(0) ?? null,
+    const [pieceJointe, selectionnerPieceJointe] = useState<Document | null>(
+      dossier.piecesJointes?.at(0) ?? null,
     );
+
+    const pieceJointeSuivante = () =>
+      selectionnerPieceJointe(
+        pieceJointe
+          ? (dossier.piecesJointes.at(
+              (dossier.piecesJointes.indexOf(pieceJointe) + 1) %
+                dossier.piecesJointes.length,
+            ) as Document)
+          : null,
+      );
 
     // Modélise la prise de notes de suivi en cours
     const [notes, setNotes]: [string, (notes: string) => void] =
@@ -196,7 +203,7 @@ export const ConsultationDossierApp = observer(
                       {
                         tabId: "courrier",
                         label: "Courrier",
-                        disabled: !dossier.estDecide(),
+                        disabled: !dossier.estEnvoye(),
                       },
                     ],
                     // @ts-ignore
@@ -514,15 +521,7 @@ export const ConsultationDossierApp = observer(
                           {/* Menu latéral des pièces jointes */}
                           <ul>
                             {Document.types
-                              .filter(
-                                (t) =>
-                                  ![
-                                    // On retire les documents non pièce jointe
-                                    DocumentType.TYPE_COURRIER_MINISTERE,
-                                    DocumentType.TYPE_COURRIER_REQUERANT,
-                                    DocumentType.TYPE_ARRETE_PAIEMENT,
-                                  ].includes(t),
-                              )
+                              .filter((t) => t.estPieceJointe())
                               .map((type: DocumentType) => (
                                 <React.Fragment key={type.type}>
                                   <li

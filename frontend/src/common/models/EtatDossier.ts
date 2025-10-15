@@ -162,6 +162,18 @@ export class EtatDossierType implements EtatInterface {
     return this.estASigner();
   }
 
+  public estEnvoye(): boolean {
+    return [
+      EtatDossierType.OK_A_APPROUVER,
+      EtatDossierType.OK_A_VERIFIER,
+      EtatDossierType.OK_VERIFIE,
+      EtatDossierType.OK_A_INDEMNISER,
+      EtatDossierType.OK_EN_ATTENTE_PAIEMENT,
+      EtatDossierType.OK_INDEMNISE,
+      EtatDossierType.KO_REJETE,
+    ].includes(this);
+  }
+
   public estAccepte(): boolean {
     return this.id.startsWith("OK");
   }
