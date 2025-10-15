@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Controller\Agent;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
@@ -332,21 +333,26 @@ class DossierController extends AgentController
     public function download(#[MapEntity] BrisPorte $dossier, Request $request): Response
     {
         $zip = new \ZipArchive();
-        $zipName = tempnam(sys_get_temp_dir(), "dossier_{$dossier->getReference()}.zip");
+        $zipName = tempnam(sys_get_temp_dir(), "zip_dossier_{$dossier->getId()}");
 
         if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
             throw new \RuntimeException('Cannot open '.$zipName);
         }
 
+        /** @var Document $document */
         foreach ($dossier->getDocumentsATransmettre()->toArray() as $document) {
             $zip->addFromString($document->getOriginalFilename(), $this->documentManager->getContenuTexte($document));
         }
 
-        return (new BinaryFileResponse($zipName, headers: [
+        $response = (new BinaryFileResponse($zipName, headers: [
             'Content-Type' => 'application/zip',
         ]))
             ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"))
         ;
+
+        $response->deleteFileAfterSend(true);
+
+        return $response;
     }
 
     #[IsGranted(
