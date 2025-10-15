@@ -2,7 +2,7 @@
     align-items: center;
     border-top: 1px solid #ccc;
 
-    &:last-child {
-        border-top: 1px solid #ccc;
+    &:last-of-type   {
+        border-bottom: 1px solid #ccc;
     }
 }

@@ -26,9 +26,9 @@ const ValidationAgentLigne = ({
   return (
     <div
       key={`ligne-agent-${agent.id}`}
-      className="fr-grid-row mij-liste fr-py-2v"
+      className="fr-grid-row fr-grid-row--gutters mij-liste fr-py-2v"
     >
-      <div className="fr-col-4">
+      <div className="fr-col-3">
         <p className="fr-m-0">
           {agent.nomComplet()}
           <br />
@@ -59,9 +59,15 @@ const ValidationAgentLigne = ({
           <>pas encore rattaché à une administration</>
         )}
       </div>
-      <div className="fr-col-3">
+      <div className="fr-col-4">
         {agent.roles.length ? (
-          <ul style={{ listStyle: "none", listStylePosition: "outside" }}>
+          <ul
+            style={{
+              padding: 0,
+              listStyle: "none",
+              listStylePosition: "outside",
+            }}
+          >
             {agent.roles.map((role) => (
               <li>{role.libelle}</li>
             ))}
@@ -146,10 +152,10 @@ export const ValidationAgentApp = () => {
             </button>
           </div>
 
-          <div className="fr-grid-row fr-text--bold">
-            <div className="fr-col-4">Nom & adresse courriel</div>
+          <div className="fr-grid-row fr-grid-row--gutters mij-liste fr-py-3v fr-text--bold">
+            <div className="fr-col-3">Nom & adresse courriel</div>
             <div className="fr-col-3">Administration</div>
-            <div className="fr-col-3">Niveau d'accès</div>
+            <div className="fr-col-4">Niveau d'accès</div>
             <div className="fr-col-2"></div>
           </div>
 
