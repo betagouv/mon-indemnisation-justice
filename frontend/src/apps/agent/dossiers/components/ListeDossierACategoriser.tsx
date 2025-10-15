@@ -84,7 +84,7 @@ export function FormulaireCategorisationAttestation({
           nativeInputProps={{
             type: "date",
             value: dateChiffre(metaDonnees.dateOperation),
-            disabled: !!dateOperation,
+            disabled: !!metaDonnees.dateOperation,
             onChange: (e) => {
               if (e.target.value) {
                 setMetaDonnees((metaDonnees) => ({
@@ -303,8 +303,9 @@ export function ListeDossierACategoriser() {
 
                   {dossier && dossier.attestations.length > indiceDocument && (
                     <FormulaireCategorisationAttestation
-                      pieceJointe={dossier?.attestations[indiceDocument]}
-                      dateOperation={dossier?.dateOperation}
+                      key={dossier.id}
+                      pieceJointe={dossier.attestations[indiceDocument]}
+                      dateOperation={dossier.dateOperation}
                       suivant={() => {
                         if (indiceDocument == dossier.attestations.length - 1) {
                           const dossiers = [...selection];
