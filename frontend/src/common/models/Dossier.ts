@@ -213,11 +213,14 @@ export class DossierDetail extends BaseDossier {
   }
 
   public addDocument(document: Document): void {
-    if (!this.documents.has(document.type.type) || document.type.estUnique) {
-      this.documents.set(document.type.type, []);
-    }
+    console.log(document.type);
+    if (document.type) {
+      if (!this.documents.has(document.type.type) || document.type.estUnique) {
+        this.documents.set(document.type.type, []);
+      }
 
-    this.documents.get(document.type.type)?.push(document);
+      this.documents.get(document.type.type)?.push(document);
+    }
   }
 
   public removeDocument(document: Document): void {

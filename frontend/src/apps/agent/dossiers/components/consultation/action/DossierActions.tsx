@@ -88,6 +88,7 @@ export const DossierActions = function DossierActionBar({
       <AttribuerActionModale dossier={dossier} agent={agent} />
       <DeciderRejetModale dossier={dossier} agent={agent} onDecide={onDecide} />
       <DeciderIndemnisationModale
+        key={dossier.id}
         dossier={dossier}
         agent={agent}
         onDecide={onDecide}

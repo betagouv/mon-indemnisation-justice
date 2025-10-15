@@ -194,7 +194,7 @@ export const DeciderIndemnisationModale = observer(
     const genererDeclarationAcceptation = useCallback(
       async (dossier: DossierDetail, montantIndemnisation: number) => {
         setGenerationEnCours(true);
-        setCourrier(null);
+        setDeclarationAcceptation(null);
         const document = await documentManager.genererDeclarationAcceptation(
           dossier,
           montantIndemnisation,

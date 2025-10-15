@@ -383,12 +383,6 @@ class BrisPorte
 
     public function ajouterDocument(Document $document): void
     {
-        // S"il s'agit d'un document de type unique, on supprimer les autres éléments d'abord:
-        if ($document->getType()->estUnique()) {
-            $this->documents = $this->documents->filter(fn (Document $d) => $document->getType() !== $document->getType());
-            $this->documentsParType[$document->getType()->value] = [];
-        }
-
         $this->documents->add($document);
         $this->documentsParType[$document->getType()->value][] = $document;
     }
