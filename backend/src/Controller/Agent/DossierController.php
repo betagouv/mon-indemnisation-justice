@@ -236,6 +236,10 @@ class DossierController extends AgentController
             return new JsonResponse(['error' => "Cet dossier n'est pas à signer"], Response::HTTP_BAD_REQUEST);
         }
 
+        /** @var UploadedFile $file */
+        $file = $request->files->get('fichierSigne');
+        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_ARRETE_PAIEMENT);
+
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_INDEMNISER, agent: $this->getAgent(), contexte: array_merge(
             $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : [],
             $request->getPayload()->has('motifRejet') ? ['motifRejet' => $request->getPayload()->getString('motifRejet')] : [],
@@ -245,6 +249,7 @@ class DossierController extends AgentController
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+            'document' => $this->normalizer->normalize($document, 'json', ['agent:detail']),
         ], Response::HTTP_OK);
     }
 
