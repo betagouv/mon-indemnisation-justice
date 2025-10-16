@@ -61,8 +61,11 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
   const [etape, setEtape] = useState(0);
 
   // URL du document en cours de consultation
-  const lienTelechargementDeclarationAcceptation = useMemo<string>(
-    () => urlDocumentRequerant(dossier.getDeclarationAcceptation() as Document),
+  const lienTelechargementDeclarationAcceptation = useMemo<string | undefined>(
+    () =>
+      dossier.getDeclarationAcceptation()
+        ? urlDocumentRequerant(dossier.getDeclarationAcceptation() as Document)
+        : undefined,
     [dossier.id, dossier.getDeclarationAcceptation()?.fileHash],
   );
 
@@ -434,21 +437,27 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                   />
                 ),
               },
-              {
-                label: "Déclaration d'acceptation",
-                iconId: "fr-icon-chat-check-line",
-                content: (
-                  <PieceJointe
-                    pieceJointe={
-                      dossier.getDeclarationAcceptation() as Document
-                    }
-                    lienTelechargement={(document) =>
-                      urlDocumentRequerant(document)
-                    }
-                  />
-                ),
-              },
-            ]}
+            ].concat(
+              dossier.estAccepte()
+                ? [
+                    {
+                      label: "Déclaration d'acceptation",
+                      isDefault: false,
+                      iconId: "fr-icon-chat-check-line",
+                      content: (
+                        <PieceJointe
+                          pieceJointe={
+                            dossier.getDeclarationAcceptation() as Document
+                          }
+                          lienTelechargement={(document) =>
+                            urlDocumentRequerant(document)
+                          }
+                        />
+                      ),
+                    },
+                  ]
+                : [],
+            )}
           />
         </div>
       </div>
