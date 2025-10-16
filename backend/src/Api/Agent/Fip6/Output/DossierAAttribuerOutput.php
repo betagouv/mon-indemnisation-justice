@@ -12,7 +12,7 @@ class DossierAAttribuerOutput
         public readonly int $id,
         public readonly string $reference,
         public readonly string $requerant,
-        public readonly string $adresse,
+        public readonly ?string $adresse,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         public readonly ?\DateTimeInterface $dateOperation,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
@@ -25,7 +25,7 @@ class DossierAAttribuerOutput
             id: $dossier->getId(),
             reference: $dossier->getReference(),
             requerant: $dossier->getRequerant()->getNomCourant(),
-            adresse: $dossier->getAdresse()->getLibelle(),
+            adresse: !empty($dossier->getAdresse()->getLigne1()) ? $dossier->getAdresse()->getLibelle() : null,
             dateOperation: $dossier->getDateOperationPJ(),
             datePublication: $dossier->getDateDeclaration()
         );

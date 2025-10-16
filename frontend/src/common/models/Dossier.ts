@@ -107,6 +107,10 @@ export abstract class BaseDossier {
     return this.etat.etat.estDecide();
   }
 
+  public estEnvoye(): boolean {
+    return this.etat.etat.estEnvoye();
+  }
+
   public estAccepte(): boolean {
     return this.etat.etat.estAccepte();
   }
@@ -213,7 +217,6 @@ export class DossierDetail extends BaseDossier {
   }
 
   public addDocument(document: Document): void {
-    console.log(document.type);
     if (document.type) {
       if (!this.documents.has(document.type.type) || document.type.estUnique) {
         this.documents.set(document.type.type, []);
@@ -234,6 +237,22 @@ export class DossierDetail extends BaseDossier {
 
   public viderDocumentParType(type: DocumentType): void {
     this.documents.set(type.type, []);
+  }
+
+  get piecesJointes(): Document[] {
+    return this.documents
+      .entries()
+      .filter((e) =>
+        Document.types
+          .filter((t) => t.estPieceJointe())
+          .map((t) => t.type)
+          .includes(e[0]),
+      )
+      .reduce(
+        (previousValue, currentValue, currentIndex) =>
+          previousValue.concat(...currentValue[1]),
+        [] as Document[],
+      );
   }
 
   public getCourrierDecision(): Document | null {
