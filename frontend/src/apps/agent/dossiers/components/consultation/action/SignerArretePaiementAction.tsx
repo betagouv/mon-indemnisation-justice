@@ -80,7 +80,7 @@ export const SignerArretePaiementModale = observer(
     useEffect(() => {
       const arrete = dossier.getArretePaiement();
 
-      if (arrete) {
+      if (arrete && estEnAttenteSignatureArretePaiement({ dossier, agent })) {
         if (
           // À l'étape d'édition de l'arrêté...
           estEdition &&

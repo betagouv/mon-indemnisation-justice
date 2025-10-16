@@ -77,7 +77,7 @@ export function ListeDossierArreteASigner() {
 
   return (
     <>
-      <h1>Dossiers en attente de signature d l'arrêté de paiement</h1>
+      <h1>Dossiers en attente de signature de l'arrêté de paiement</h1>
 
       <p>
         Vous pouvez signer la proposition d'indemnisation des dossiers
