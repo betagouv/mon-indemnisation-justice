@@ -3,11 +3,13 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Agent;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\AgentOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Voter\AgentVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
@@ -15,7 +17,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  * instruction.
  */
 #[Route('/api/agent/fip6/agents/actifs', name: 'api_agent_agents_liste_actifs', methods: ['GET'])]
-// #[IsGranted(AgentVoter::ACTION_LISTER_ACTIFS)]
+#[IsGranted(AgentVoter::ACTION_LISTER)]
 class ListerAgentsActifsEndpoint
 {
     public function __construct(
