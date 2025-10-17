@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ValidationAgentApp } from "@/apps/agent/gestion_agents/components";
-import { AgentContext } from "@/routes/contexts/AgentContext.ts";
+import { AgentContext } from "@/routers/contexts/AgentContext.ts";
+import { RoleAgent } from "@/common/models/Agent.ts";
 
 export const Route = createFileRoute("/agent/fip6/agents/gestion")({
   beforeLoad: async ({ context }: { context: AgentContext }) => {
-    // TODO redirection sinon
-    console.log(await context.agent);
+    const agent = await context.agent;
+    if (!agent.aRole(RoleAgent.GESTION_PERSONNEL)) {
+      alert("Pas autorisé");
+    }
   },
   component: ValidationAgentApp,
 });

@@ -1,15 +1,13 @@
-import { AgentContext } from "@/routes/contexts/AgentContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { StrictMode } from "react";
 import "@/apps/_init";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 
-import { routeTree } from "@/routes/agent-fip6.gen.ts";
+import { routeTree } from "@/routers/agent-fip6.gen.ts";
 import { container } from "@/common/services/agent";
 import ReactDOM from "react-dom/client";
 import { Provider } from "inversify-react";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
-import { Agent } from "@/common/models";
 
 declare global {
   interface Window {

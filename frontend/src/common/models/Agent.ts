@@ -73,7 +73,6 @@ export class RoleAgent {
   }
 
   static pourType(type?: TypeRoleAgent): RoleAgent | undefined {
-    console.log(type, this.liste().find((r) => r.type === type) as RoleAgent);
     return type
       ? (this.liste().find((r) => r.type === type) as RoleAgent)
       : undefined;
@@ -124,12 +123,6 @@ export class Agent {
 
   @Expose({ name: "roles" })
   @Transform(({ value }: { value: string[] }) => {
-    console.log(
-      value.map((r) => r as TypeRoleAgent),
-      value.map((r) => RoleAgent.pourType(r as TypeRoleAgent)),
-      //.filter((r) => !!r),
-    );
-
     return value
       .map((r) => RoleAgent.pourType(r as TypeRoleAgent))
       .filter((r) => !!r);
@@ -141,7 +134,7 @@ export class Agent {
   public administration: Administration;
   // TODO généraliser https://stackoverflow.com/a/61732579/4558679
   @Transform(({ value }) => new Date(value))
-  public readonly datePremiereConnexion: Date;
+  public readonly dateCreation: Date;
 
   get roles(): RoleAgent[] {
     return this._roles;
@@ -151,8 +144,26 @@ export class Agent {
     return this._roles.includes(role);
   }
 
+  aAuMoinsUnRole(...roles: RoleAgent[]): boolean {
+    return this._roles.some((r) => roles.includes(r));
+  }
+
+  definirRole(role: RoleAgent, aRole: boolean): void {
+    if (aRole) {
+      if (!this.aRole(role)) {
+        this.ajouterRole(role);
+      }
+    } else {
+      this.retirerRole(role);
+    }
+  }
+
   ajouterRole(role: RoleAgent): void {
     this._roles.push(role);
+  }
+
+  retirerRole(role: RoleAgent): void {
+    this._roles = this._roles.filter((r) => r.type == role.type);
   }
 
   public estAttributeur(): boolean {

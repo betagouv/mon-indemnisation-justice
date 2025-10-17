@@ -22,8 +22,8 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         target: "react",
         autoCodeSplitting: false,
         routeFileIgnorePrefix: "/agent/fip6",
-        routesDirectory: "./src/routes/source",
-        generatedRouteTree: "./src/routes/agent-fip6.gen.ts",
+        routesDirectory: "./src/routes",
+        generatedRouteTree: "./src/routers/agent-fip6.gen.ts",
       }),
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
