@@ -8,17 +8,18 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './source/__root'
-import { Route as AgentIndexRouteImport } from './source/agent/index'
-import { Route as AgentFip6DossiersRejetASignerRouteImport } from './source/agent/fip6/dossiers/rejet-a-signer'
-import { Route as AgentFip6DossiersPropositionASignerRouteImport } from './source/agent/fip6/dossiers/proposition-a-signer'
-import { Route as AgentFip6DossiersEnAttenteIndemnisationRouteImport } from './source/agent/fip6/dossiers/en-attente-indemnisation'
-import { Route as AgentFip6DossiersArreteASignerRouteImport } from './source/agent/fip6/dossiers/arrete-a-signer'
-import { Route as AgentFip6DossiersAVerifierRouteImport } from './source/agent/fip6/dossiers/a-verifier'
-import { Route as AgentFip6DossiersATransmettreRouteImport } from './source/agent/fip6/dossiers/a-transmettre'
-import { Route as AgentFip6DossiersAInstruireRouteImport } from './source/agent/fip6/dossiers/a-instruire'
-import { Route as AgentFip6DossiersACategoriserRouteImport } from './source/agent/fip6/dossiers/a-categoriser'
-import { Route as AgentFip6DossiersAAttribuerRouteImport } from './source/agent/fip6/dossiers/a-attribuer'
+import { Route as rootRouteImport } from './../routes/__root'
+import { Route as AgentIndexRouteImport } from './../routes/agent/index'
+import { Route as AgentFip6DossiersRejetASignerRouteImport } from './../routes/agent/fip6/dossiers/rejet-a-signer'
+import { Route as AgentFip6DossiersPropositionASignerRouteImport } from './../routes/agent/fip6/dossiers/proposition-a-signer'
+import { Route as AgentFip6DossiersEnAttenteIndemnisationRouteImport } from './../routes/agent/fip6/dossiers/en-attente-indemnisation'
+import { Route as AgentFip6DossiersArreteASignerRouteImport } from './../routes/agent/fip6/dossiers/arrete-a-signer'
+import { Route as AgentFip6DossiersAVerifierRouteImport } from './../routes/agent/fip6/dossiers/a-verifier'
+import { Route as AgentFip6DossiersATransmettreRouteImport } from './../routes/agent/fip6/dossiers/a-transmettre'
+import { Route as AgentFip6DossiersAInstruireRouteImport } from './../routes/agent/fip6/dossiers/a-instruire'
+import { Route as AgentFip6DossiersACategoriserRouteImport } from './../routes/agent/fip6/dossiers/a-categoriser'
+import { Route as AgentFip6DossiersAAttribuerRouteImport } from './../routes/agent/fip6/dossiers/a-attribuer'
+import { Route as AgentFip6AgentsGestionRouteImport } from './../routes/agent/fip6/agents/gestion'
 
 const AgentIndexRoute = AgentIndexRouteImport.update({
   id: '/agent/',
@@ -79,9 +80,15 @@ const AgentFip6DossiersAAttribuerRoute =
     path: '/agent/fip6/dossiers/a-attribuer',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AgentFip6AgentsGestionRoute = AgentFip6AgentsGestionRouteImport.update({
+  id: '/agent/fip6/agents/gestion',
+  path: '/agent/fip6/agents/gestion',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/agent': typeof AgentIndexRoute
+  '/agent/fip6/agents/gestion': typeof AgentFip6AgentsGestionRoute
   '/agent/fip6/dossiers/a-attribuer': typeof AgentFip6DossiersAAttribuerRoute
   '/agent/fip6/dossiers/a-categoriser': typeof AgentFip6DossiersACategoriserRoute
   '/agent/fip6/dossiers/a-instruire': typeof AgentFip6DossiersAInstruireRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/agent': typeof AgentIndexRoute
+  '/agent/fip6/agents/gestion': typeof AgentFip6AgentsGestionRoute
   '/agent/fip6/dossiers/a-attribuer': typeof AgentFip6DossiersAAttribuerRoute
   '/agent/fip6/dossiers/a-categoriser': typeof AgentFip6DossiersACategoriserRoute
   '/agent/fip6/dossiers/a-instruire': typeof AgentFip6DossiersAInstruireRoute
@@ -107,6 +115,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/agent/': typeof AgentIndexRoute
+  '/agent/fip6/agents/gestion': typeof AgentFip6AgentsGestionRoute
   '/agent/fip6/dossiers/a-attribuer': typeof AgentFip6DossiersAAttribuerRoute
   '/agent/fip6/dossiers/a-categoriser': typeof AgentFip6DossiersACategoriserRoute
   '/agent/fip6/dossiers/a-instruire': typeof AgentFip6DossiersAInstruireRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/agent'
+    | '/agent/fip6/agents/gestion'
     | '/agent/fip6/dossiers/a-attribuer'
     | '/agent/fip6/dossiers/a-categoriser'
     | '/agent/fip6/dossiers/a-instruire'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/agent'
+    | '/agent/fip6/agents/gestion'
     | '/agent/fip6/dossiers/a-attribuer'
     | '/agent/fip6/dossiers/a-categoriser'
     | '/agent/fip6/dossiers/a-instruire'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/agent/'
+    | '/agent/fip6/agents/gestion'
     | '/agent/fip6/dossiers/a-attribuer'
     | '/agent/fip6/dossiers/a-categoriser'
     | '/agent/fip6/dossiers/a-instruire'
@@ -158,6 +170,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AgentIndexRoute: typeof AgentIndexRoute
+  AgentFip6AgentsGestionRoute: typeof AgentFip6AgentsGestionRoute
   AgentFip6DossiersAAttribuerRoute: typeof AgentFip6DossiersAAttribuerRoute
   AgentFip6DossiersACategoriserRoute: typeof AgentFip6DossiersACategoriserRoute
   AgentFip6DossiersAInstruireRoute: typeof AgentFip6DossiersAInstruireRoute
@@ -241,11 +254,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentFip6DossiersAAttribuerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agent/fip6/agents/gestion': {
+      id: '/agent/fip6/agents/gestion'
+      path: '/agent/fip6/agents/gestion'
+      fullPath: '/agent/fip6/agents/gestion'
+      preLoaderRoute: typeof AgentFip6AgentsGestionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AgentIndexRoute: AgentIndexRoute,
+  AgentFip6AgentsGestionRoute: AgentFip6AgentsGestionRoute,
   AgentFip6DossiersAAttribuerRoute: AgentFip6DossiersAAttribuerRoute,
   AgentFip6DossiersACategoriserRoute: AgentFip6DossiersACategoriserRoute,
   AgentFip6DossiersAInstruireRoute: AgentFip6DossiersAInstruireRoute,

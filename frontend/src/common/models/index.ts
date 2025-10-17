@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Adresse } from "./Adresse";
-import { Agent } from "./Agent";
+import { Agent, Administration } from "./Agent";
 import { Document, DocumentType } from "./Document";
 import { BaseDossier, DossierDetail, DossierApercu } from "./Dossier";
 import { EtatDossier, EtatDossierType } from "./EtatDossier";
@@ -14,6 +14,7 @@ import {
 } from "./InstitutionSecuritePublique";
 
 export {
+  Administration,
   Adresse,
   Agent,
   BaseDossier,

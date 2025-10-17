@@ -52,11 +52,7 @@ class DossierController extends AgentController
             'react' => [
                 'agent' => [
                     'id' => $this->getAgent()->getId(),
-                    'permissions' => array_merge(
-                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR) ? ['ATTRIBUTEUR'] : [],
-                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? ['REDACTEUR'] : [],
-                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_VALIDATEUR) ? ['VALIDATEUR'] : [],
-                    ),
+                    'roles' => $this->getAgent()->getRoles(),
                 ],
                 'redacteurs' => $normalizer->normalize($this->agentRepository->getRedacteurs(), 'json', ['groups' => 'agent:resume']),
             ],
@@ -71,13 +67,7 @@ class DossierController extends AgentController
             'react' => [
                 'agent' => [
                     'id' => $this->getAgent()->getId(),
-                    'permissions' => array_merge(
-                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR) ? ['ATTRIBUTEUR'] : [],
-                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? ['REDACTEUR'] : [],
-                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_VALIDATEUR) ? ['VALIDATEUR'] : [],
-                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_LIAISON_BUDGET) ? ['LIAISON_BUDGET'] : [],
-                        $this->getAgent()->hasRole(Agent::ROLE_AGENT_BETAGOUV) ? ['BETAGOUV'] : [],
-                    ),
+                    'roles' => $this->getAgent()->getRoles(),
                 ],
                 'dossier' => $normalizer->normalize($dossier, 'json', ['groups' => 'agent:detail']),
                 'redacteurs' => $normalizer->normalize($this->agentRepository->getRedacteurs(), 'json', ['groups' => 'agent:resume']),

@@ -53,7 +53,7 @@ class Agent implements UserInterface
     #[ORM\Column(nullable: false)]
     protected string $identifiant;
 
-    #[ORM\Column(nullable: false)]
+    #[ORM\Column(nullable: true)]
     protected string $uid;
 
     #[ORM\Column(length: 180)]
@@ -272,7 +272,7 @@ class Agent implements UserInterface
      */
     public function getDossiersAInstruire(): array
     {
-        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (BrisPorte $dossier) => in_array($dossier->getEtatDossier()->getEtat(), [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_EN_INSTRUCTION]))->toArray() : [];
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn(BrisPorte $dossier) => in_array($dossier->getEtatDossier()->getEtat(), [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_EN_INSTRUCTION]))->toArray() : [];
     }
 
     public function nbDossiersAVerifier(): int
@@ -285,7 +285,7 @@ class Agent implements UserInterface
      */
     public function getDossiersAVerifier(): array
     {
-        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (BrisPorte $dossier) => EtatDossierType::DOSSIER_OK_A_VERIFIER === $dossier->getEtatDossier()->getEtat())->toArray() : [];
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn(BrisPorte $dossier) => EtatDossierType::DOSSIER_OK_A_VERIFIER === $dossier->getEtatDossier()->getEtat())->toArray() : [];
     }
 
     /**
@@ -384,7 +384,9 @@ class Agent implements UserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+    }
 
     public function getUsername(): ?string
     {
@@ -413,5 +415,21 @@ class Agent implements UserInterface
         $this->dateCreation = new \DateTime();
 
         return $this;
+    }
+
+    public static function roles(): array
+    {
+        return [
+            self::ROLE_AGENT,
+            self::ROLE_AGENT_BETAGOUV,
+            self::ROLE_AGENT_DOSSIER,
+            self::ROLE_AGENT_REDACTEUR,
+            self::ROLE_AGENT_GESTION_PERSONNEL,
+            self::ROLE_AGENT_VALIDATEUR,
+            self::ROLE_AGENT_ATTRIBUTEUR,
+            self::ROLE_AGENT_LIAISON_BUDGET,
+            self::ROLE_AGENT_BUREAU_BUDGET,
+            self::ROLE_AGENT_FORCES_DE_L_ORDRE,
+        ];
     }
 }
