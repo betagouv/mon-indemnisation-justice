@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { AgentContext } from "@/routes/contexts/AgentContext.ts";
+import { AgentContext } from "@/routers/contexts/AgentContext.ts";
 
 export const Route = createRootRouteWithContext<AgentContext>()({
   component: () => <Outlet />,

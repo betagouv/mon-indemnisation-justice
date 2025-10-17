@@ -152,10 +152,6 @@ export class Document {
   }
 
   public estAJour(): boolean {
-    console.log(
-      this.dateDerniereModification,
-      typeof this.dateDerniereModification,
-    );
     return (
       !!this.dateDerniereModification &&
       estAujourdhui(this.dateDerniereModification)
