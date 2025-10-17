@@ -17,5 +17,5 @@ final class AgentOutput
     public string $administration;
     public array $roles;
     #[Map(source: 'dateCreation')]
-    public \DateTimeInterface $datePremiereConnexion;
+    public \DateTimeInterface $dateCreation;
 }

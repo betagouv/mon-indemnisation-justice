@@ -8,18 +8,18 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './source/__root'
-import { Route as AgentIndexRouteImport } from './source/agent/index'
-import { Route as AgentFip6DossiersRejetASignerRouteImport } from './source/agent/fip6/dossiers/rejet-a-signer'
-import { Route as AgentFip6DossiersPropositionASignerRouteImport } from './source/agent/fip6/dossiers/proposition-a-signer'
-import { Route as AgentFip6DossiersEnAttenteIndemnisationRouteImport } from './source/agent/fip6/dossiers/en-attente-indemnisation'
-import { Route as AgentFip6DossiersArreteASignerRouteImport } from './source/agent/fip6/dossiers/arrete-a-signer'
-import { Route as AgentFip6DossiersAVerifierRouteImport } from './source/agent/fip6/dossiers/a-verifier'
-import { Route as AgentFip6DossiersATransmettreRouteImport } from './source/agent/fip6/dossiers/a-transmettre'
-import { Route as AgentFip6DossiersAInstruireRouteImport } from './source/agent/fip6/dossiers/a-instruire'
-import { Route as AgentFip6DossiersACategoriserRouteImport } from './source/agent/fip6/dossiers/a-categoriser'
-import { Route as AgentFip6DossiersAAttribuerRouteImport } from './source/agent/fip6/dossiers/a-attribuer'
-import { Route as AgentFip6AgentsGestionRouteImport } from './source/agent/fip6/agents/gestion'
+import { Route as rootRouteImport } from './../routes/__root'
+import { Route as AgentIndexRouteImport } from './../routes/agent/index'
+import { Route as AgentFip6DossiersRejetASignerRouteImport } from './../routes/agent/fip6/dossiers/rejet-a-signer'
+import { Route as AgentFip6DossiersPropositionASignerRouteImport } from './../routes/agent/fip6/dossiers/proposition-a-signer'
+import { Route as AgentFip6DossiersEnAttenteIndemnisationRouteImport } from './../routes/agent/fip6/dossiers/en-attente-indemnisation'
+import { Route as AgentFip6DossiersArreteASignerRouteImport } from './../routes/agent/fip6/dossiers/arrete-a-signer'
+import { Route as AgentFip6DossiersAVerifierRouteImport } from './../routes/agent/fip6/dossiers/a-verifier'
+import { Route as AgentFip6DossiersATransmettreRouteImport } from './../routes/agent/fip6/dossiers/a-transmettre'
+import { Route as AgentFip6DossiersAInstruireRouteImport } from './../routes/agent/fip6/dossiers/a-instruire'
+import { Route as AgentFip6DossiersACategoriserRouteImport } from './../routes/agent/fip6/dossiers/a-categoriser'
+import { Route as AgentFip6DossiersAAttribuerRouteImport } from './../routes/agent/fip6/dossiers/a-attribuer'
+import { Route as AgentFip6AgentsGestionRouteImport } from './../routes/agent/fip6/agents/gestion'
 
 const AgentIndexRoute = AgentIndexRouteImport.update({
   id: '/agent/',
