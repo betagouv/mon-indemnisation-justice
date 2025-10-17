@@ -69,6 +69,7 @@ export class RoleAgent {
       this.VALIDATEUR,
       this.LIAISON_BUDGET,
       this.BETAGOUV,
+      this.FORCES_DE_L_ORDRE,
     ];
   }
 
@@ -101,11 +102,40 @@ export class Administration {
     public type: TypeAdministration,
     public libelle: string,
     public readonly estLibelleFeminin: boolean = false,
-    public readonly roles: string[] = [],
   ) {}
+
+  public roles(): RoleAgent[] {
+    if (this.type === "MJ") {
+      return [
+        RoleAgent.DOSSIER,
+        RoleAgent.REDACTEUR,
+        RoleAgent.GESTION_PERSONNEL,
+        RoleAgent.ATTRIBUTEUR,
+        RoleAgent.VALIDATEUR,
+        RoleAgent.LIAISON_BUDGET,
+        RoleAgent.BETAGOUV,
+      ];
+    }
+
+    return [RoleAgent.FORCES_DE_L_ORDRE];
+  }
 
   public static liste(): Administration[] {
     return [this.MJ, this.GN, this.PN];
+  }
+
+  public static pourCourriel(courriel: string): Administration[] {
+    const domaine = courriel.split("@").at(1);
+
+    if (domaine === "interieur.gouv.fr") {
+      return [this.PN, this.GN];
+    }
+
+    if (domaine === "justice.gouv.fr") {
+      return [this.MJ];
+    }
+
+    return [];
   }
 
   public static pourType(type: TypeAdministration): Administration {

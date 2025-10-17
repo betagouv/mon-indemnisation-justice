@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Route API qui permet à un agent FIP3 d'éditer le corps d'un document et de générer le PDF via
+ * Route API qui permet à un agent FIP6 d'éditer le corps d'un document et de générer le PDF via
  * l'impression de la page web _templatée_.
  */
 #[Route('/api/agent/fip6/document/{id}/imprimer', name: 'api_agent_document_imprimer', methods: ['PUT'])]
