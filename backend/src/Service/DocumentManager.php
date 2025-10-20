@@ -113,8 +113,7 @@ class DocumentManager
         return $this->storage->readStream($document->getFilename());
     }
 
-    /** @return string */
-    public function getContenuTexte(Document $document)
+    public function getContenuTexte(Document $document): string
     {
         if (!$this->storage->has($document->getFilename())) {
             throw new FileException("Le fichier associé à ce document n'existe pas.");

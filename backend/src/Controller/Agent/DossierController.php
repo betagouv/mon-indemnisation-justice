@@ -346,7 +346,7 @@ class DossierController extends AgentController
 
         /** @var Document $document */
         foreach ($dossier->getDocumentsATransmettre()->toArray() as $document) {
-            $zip->addFromString($document->getOriginalFilename(), $this->documentManager->getContenuTexte($document));
+            $zip->addFromString($document->getOriginalFilename().'txt', $document->getFilename().' ('.strlen($this->documentManager->getContenuTexte($document)).')');
         }
 
         $response = (new BinaryFileResponse($zipName, headers: [
