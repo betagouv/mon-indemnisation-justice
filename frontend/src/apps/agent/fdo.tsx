@@ -3,9 +3,9 @@ import React, { StrictMode } from "react";
 import "@/apps/_init";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 
-import { routeTree } from "@/routers/generated/router-agent-fip6.gen.ts";
+import { routeTree } from "@/routers/generated/router-agent-fdo.gen.ts";
 import { container } from "@/common/services/agent";
-import ReactDOM from "react-dom/client";
+import ReactDOM, { createRoot } from "react-dom/client";
 import { Provider } from "inversify-react";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 
@@ -25,7 +25,7 @@ const router = createRouter({
   scrollRestoration: true,
   context: {
     agent: queryClient.fetchQuery({
-      queryKey: ["moi-agent-fip6"],
+      queryKey: ["moi-agent-fdo"],
       queryFn: () => container.get(AgentManagerInterface.$).moi(),
     }),
   },
@@ -34,22 +34,16 @@ const router = createRouter({
 // Register things for typesafety
 declare module "@tanstack/react-router" {
   interface Register {
-    // @ts-ignore
     router: typeof router;
   }
 }
 
-const rootElement = document.getElementById("react-app")!;
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <Provider container={container}>
-          <RouterProvider router={router} />
-        </Provider>
-      </QueryClientProvider>
-    </StrictMode>,
-  );
-}
+createRoot(document.body).render(
+  <StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <Provider container={container}>
+        <RouterProvider router={router} />
+      </Provider>
+    </QueryClientProvider>
+  </StrictMode>,
+);
