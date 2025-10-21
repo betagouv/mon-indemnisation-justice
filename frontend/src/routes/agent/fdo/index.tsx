@@ -6,5 +6,9 @@ export const Route = createFileRoute("/agent/fdo/")({
 });
 
 function RouteComponent() {
-  return <div>Bonjour agent</div>;
+  return (
+    <div>
+      <h1>Accueil</h1>
+    </div>
+  );
 }

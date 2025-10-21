@@ -58,6 +58,22 @@ class AgentFixture extends Fixture
                 ->setNom("K'Theur")
                 ->setUid('2345')
                 ->setValide(),
+            'policier' => (new Agent())
+                ->setIdentifiant('e316bde4-3d37-4ed8-9001-c40d9b07fe06')
+                ->setEmail('policier@interieur.gouv.fr')
+                ->setPrenom('Paul')
+                ->setRoles([Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
+                ->setNom('Issié')
+                ->setUid('567')
+                ->setValide(),
+            'gendarme' => (new Agent())
+                ->setIdentifiant('c7f94b68-89c9-4df4-ac44-1d127937dd63')
+                ->setEmail('gendarme@gendarmerie.interieur.gouv.fr')
+                ->setPrenom('Jean')
+                ->setRoles([Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
+                ->setNom("d'Harme")
+                ->setUid('890')
+                ->setValide(),
         ] as $reference => $agent) {
             $manager->persist($agent);
             $this->addReference("agent-{$reference}", $agent);
