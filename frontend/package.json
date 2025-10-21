@@ -3,6 +3,8 @@
   "private": true,
   "module": "esnext",
   "scripts": {
+    "predev": "react-dsfr update-icons",
+    "prebuild": "react-dsfr update-icons",
     "dev": "vite --base=/preview",
     "build": "vite build",
     "test": "vitest run"

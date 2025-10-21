@@ -58,6 +58,16 @@ enum Administration: string
         return !empty($this->getRolesAutomatiques());
     }
 
+    public function estFDO(): bool
+    {
+        return self::POLICE_NATIONALE === $this || self::GENDARMERIE_NATIONALE === $this;
+    }
+
+    public function estMinistereJustice(): bool
+    {
+        return self::MINISTERE_JUSTICE === $this->value;
+    }
+
     /**
      * Liste des roles automatiquement octroyés à la première connexion.
      */

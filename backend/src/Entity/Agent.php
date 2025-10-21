@@ -272,7 +272,7 @@ class Agent implements UserInterface
      */
     public function getDossiersAInstruire(): array
     {
-        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn(BrisPorte $dossier) => in_array($dossier->getEtatDossier()->getEtat(), [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_EN_INSTRUCTION]))->toArray() : [];
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (BrisPorte $dossier) => in_array($dossier->getEtatDossier()->getEtat(), [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_EN_INSTRUCTION]))->toArray() : [];
     }
 
     public function nbDossiersAVerifier(): int
@@ -285,7 +285,7 @@ class Agent implements UserInterface
      */
     public function getDossiersAVerifier(): array
     {
-        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn(BrisPorte $dossier) => EtatDossierType::DOSSIER_OK_A_VERIFIER === $dossier->getEtatDossier()->getEtat())->toArray() : [];
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (BrisPorte $dossier) => EtatDossierType::DOSSIER_OK_A_VERIFIER === $dossier->getEtatDossier()->getEtat())->toArray() : [];
     }
 
     /**
@@ -301,6 +301,16 @@ class Agent implements UserInterface
     public function getAdministration(): ?Administration
     {
         return $this->administration;
+    }
+
+    public function estFDO(): bool
+    {
+        return $this->administration->estFDO();
+    }
+
+    public function estMinistereJustice(): bool
+    {
+        return $this->administration->estMinistereJustice();
     }
 
     public function setAdministration(?Administration $administration): Agent
@@ -384,9 +394,7 @@ class Agent implements UserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials(): void
-    {
-    }
+    public function eraseCredentials(): void {}
 
     public function getUsername(): ?string
     {

@@ -9,7 +9,8 @@
 {% endblock stylesheets %}
 
 {% block main %}
-    <div id="react-app" class="fr-container fr-my-3w" style="display:flex; flex-direction:column;gap: 2vh;padding-bottom:2vh;"></div>
+    <div id="react-app" class="fr-container fr-my-3w"
+         style="display:flex; flex-direction:column;gap: 2vh;padding-bottom:2vh;"></div>
 
 {% endblock main %}
 
@@ -17,12 +18,6 @@
     {% if est_vite_server_actif() %}
         {% include '_vite_hmr_extra.html.twig' %}
     {% endif %}
-
-    {#
-    <script type="application/json" id="react-args">
-        {{ react|default({})|json_encode()|raw }}
-    </script>
-    #}
 
     {{ vite_entry_script_tags('agent/fip6') }}
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/agent/fdo/accueil")({
+export const Route = createFileRoute("/agent/fdo/requisition-serrurier")({
   component: () => (
     <div>
       <h1>Bienvenue</h1>

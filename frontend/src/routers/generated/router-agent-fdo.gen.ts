@@ -11,7 +11,13 @@
 import { Route as rootRouteImport } from './../../routes/root-fdo'
 import { Route as AgentFdoIndexRouteImport } from './../../routes/agent/fdo/index'
 import { Route as AgentFdoRootRouteImport } from './../../routes/agent/fdo/root'
-import { Route as AgentFdoAccueilRouteImport } from './../../routes/agent/fdo/accueil'
+import { Route as AgentFdoRequisitionSerrurierRouteImport } from './../../routes/agent/fdo/requisition-serrurier'
+import { Route as AgentFdoFoireAuxQuestionsRouteImport } from './../../routes/agent/fdo/foire-aux-questions'
+import { Route as AgentFdoDeclarationsRouteImport } from './../../routes/agent/fdo/declarations'
+import { Route as AgentFdoDeclarerErreurOperationnelleIndexRouteImport } from './../../routes/agent/fdo/declarer-erreur-operationnelle/index'
+import { Route as AgentFdoDeclarerErreurOperationnelle3RequerantRouteImport } from './../../routes/agent/fdo/declarer-erreur-operationnelle/3-requerant'
+import { Route as AgentFdoDeclarerErreurOperationnelle2ComplementRouteImport } from './../../routes/agent/fdo/declarer-erreur-operationnelle/2-complement'
+import { Route as AgentFdoDeclarerErreurOperationnelle1OperationRouteImport } from './../../routes/agent/fdo/declarer-erreur-operationnelle/1-operation'
 
 const AgentFdoIndexRoute = AgentFdoIndexRouteImport.update({
   id: '/agent/fdo/',
@@ -23,40 +29,128 @@ const AgentFdoRootRoute = AgentFdoRootRouteImport.update({
   path: '/agent/fdo/root',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AgentFdoAccueilRoute = AgentFdoAccueilRouteImport.update({
-  id: '/agent/fdo/accueil',
-  path: '/agent/fdo/accueil',
+const AgentFdoRequisitionSerrurierRoute =
+  AgentFdoRequisitionSerrurierRouteImport.update({
+    id: '/agent/fdo/requisition-serrurier',
+    path: '/agent/fdo/requisition-serrurier',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AgentFdoFoireAuxQuestionsRoute =
+  AgentFdoFoireAuxQuestionsRouteImport.update({
+    id: '/agent/fdo/foire-aux-questions',
+    path: '/agent/fdo/foire-aux-questions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AgentFdoDeclarationsRoute = AgentFdoDeclarationsRouteImport.update({
+  id: '/agent/fdo/declarations',
+  path: '/agent/fdo/declarations',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentFdoDeclarerErreurOperationnelleIndexRoute =
+  AgentFdoDeclarerErreurOperationnelleIndexRouteImport.update({
+    id: '/agent/fdo/declarer-erreur-operationnelle/',
+    path: '/agent/fdo/declarer-erreur-operationnelle/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AgentFdoDeclarerErreurOperationnelle3RequerantRoute =
+  AgentFdoDeclarerErreurOperationnelle3RequerantRouteImport.update({
+    id: '/agent/fdo/declarer-erreur-operationnelle/3-requerant',
+    path: '/agent/fdo/declarer-erreur-operationnelle/3-requerant',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AgentFdoDeclarerErreurOperationnelle2ComplementRoute =
+  AgentFdoDeclarerErreurOperationnelle2ComplementRouteImport.update({
+    id: '/agent/fdo/declarer-erreur-operationnelle/2-complement',
+    path: '/agent/fdo/declarer-erreur-operationnelle/2-complement',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AgentFdoDeclarerErreurOperationnelle1OperationRoute =
+  AgentFdoDeclarerErreurOperationnelle1OperationRouteImport.update({
+    id: '/agent/fdo/declarer-erreur-operationnelle/1-operation',
+    path: '/agent/fdo/declarer-erreur-operationnelle/1-operation',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/agent/fdo/accueil': typeof AgentFdoAccueilRoute
+  '/agent/fdo/declarations': typeof AgentFdoDeclarationsRoute
+  '/agent/fdo/foire-aux-questions': typeof AgentFdoFoireAuxQuestionsRoute
+  '/agent/fdo/requisition-serrurier': typeof AgentFdoRequisitionSerrurierRoute
   '/agent/fdo/root': typeof AgentFdoRootRoute
   '/agent/fdo': typeof AgentFdoIndexRoute
+  '/agent/fdo/declarer-erreur-operationnelle/1-operation': typeof AgentFdoDeclarerErreurOperationnelle1OperationRoute
+  '/agent/fdo/declarer-erreur-operationnelle/2-complement': typeof AgentFdoDeclarerErreurOperationnelle2ComplementRoute
+  '/agent/fdo/declarer-erreur-operationnelle/3-requerant': typeof AgentFdoDeclarerErreurOperationnelle3RequerantRoute
+  '/agent/fdo/declarer-erreur-operationnelle': typeof AgentFdoDeclarerErreurOperationnelleIndexRoute
 }
 export interface FileRoutesByTo {
-  '/agent/fdo/accueil': typeof AgentFdoAccueilRoute
+  '/agent/fdo/declarations': typeof AgentFdoDeclarationsRoute
+  '/agent/fdo/foire-aux-questions': typeof AgentFdoFoireAuxQuestionsRoute
+  '/agent/fdo/requisition-serrurier': typeof AgentFdoRequisitionSerrurierRoute
   '/agent/fdo/root': typeof AgentFdoRootRoute
   '/agent/fdo': typeof AgentFdoIndexRoute
+  '/agent/fdo/declarer-erreur-operationnelle/1-operation': typeof AgentFdoDeclarerErreurOperationnelle1OperationRoute
+  '/agent/fdo/declarer-erreur-operationnelle/2-complement': typeof AgentFdoDeclarerErreurOperationnelle2ComplementRoute
+  '/agent/fdo/declarer-erreur-operationnelle/3-requerant': typeof AgentFdoDeclarerErreurOperationnelle3RequerantRoute
+  '/agent/fdo/declarer-erreur-operationnelle': typeof AgentFdoDeclarerErreurOperationnelleIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/agent/fdo/accueil': typeof AgentFdoAccueilRoute
+  '/agent/fdo/declarations': typeof AgentFdoDeclarationsRoute
+  '/agent/fdo/foire-aux-questions': typeof AgentFdoFoireAuxQuestionsRoute
+  '/agent/fdo/requisition-serrurier': typeof AgentFdoRequisitionSerrurierRoute
   '/agent/fdo/root': typeof AgentFdoRootRoute
   '/agent/fdo/': typeof AgentFdoIndexRoute
+  '/agent/fdo/declarer-erreur-operationnelle/1-operation': typeof AgentFdoDeclarerErreurOperationnelle1OperationRoute
+  '/agent/fdo/declarer-erreur-operationnelle/2-complement': typeof AgentFdoDeclarerErreurOperationnelle2ComplementRoute
+  '/agent/fdo/declarer-erreur-operationnelle/3-requerant': typeof AgentFdoDeclarerErreurOperationnelle3RequerantRoute
+  '/agent/fdo/declarer-erreur-operationnelle/': typeof AgentFdoDeclarerErreurOperationnelleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/agent/fdo/accueil' | '/agent/fdo/root' | '/agent/fdo'
+  fullPaths:
+    | '/agent/fdo/declarations'
+    | '/agent/fdo/foire-aux-questions'
+    | '/agent/fdo/requisition-serrurier'
+    | '/agent/fdo/root'
+    | '/agent/fdo'
+    | '/agent/fdo/declarer-erreur-operationnelle/1-operation'
+    | '/agent/fdo/declarer-erreur-operationnelle/2-complement'
+    | '/agent/fdo/declarer-erreur-operationnelle/3-requerant'
+    | '/agent/fdo/declarer-erreur-operationnelle'
   fileRoutesByTo: FileRoutesByTo
-  to: '/agent/fdo/accueil' | '/agent/fdo/root' | '/agent/fdo'
-  id: '__root__' | '/agent/fdo/accueil' | '/agent/fdo/root' | '/agent/fdo/'
+  to:
+    | '/agent/fdo/declarations'
+    | '/agent/fdo/foire-aux-questions'
+    | '/agent/fdo/requisition-serrurier'
+    | '/agent/fdo/root'
+    | '/agent/fdo'
+    | '/agent/fdo/declarer-erreur-operationnelle/1-operation'
+    | '/agent/fdo/declarer-erreur-operationnelle/2-complement'
+    | '/agent/fdo/declarer-erreur-operationnelle/3-requerant'
+    | '/agent/fdo/declarer-erreur-operationnelle'
+  id:
+    | '__root__'
+    | '/agent/fdo/declarations'
+    | '/agent/fdo/foire-aux-questions'
+    | '/agent/fdo/requisition-serrurier'
+    | '/agent/fdo/root'
+    | '/agent/fdo/'
+    | '/agent/fdo/declarer-erreur-operationnelle/1-operation'
+    | '/agent/fdo/declarer-erreur-operationnelle/2-complement'
+    | '/agent/fdo/declarer-erreur-operationnelle/3-requerant'
+    | '/agent/fdo/declarer-erreur-operationnelle/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AgentFdoAccueilRoute: typeof AgentFdoAccueilRoute
+  AgentFdoDeclarationsRoute: typeof AgentFdoDeclarationsRoute
+  AgentFdoFoireAuxQuestionsRoute: typeof AgentFdoFoireAuxQuestionsRoute
+  AgentFdoRequisitionSerrurierRoute: typeof AgentFdoRequisitionSerrurierRoute
   AgentFdoRootRoute: typeof AgentFdoRootRoute
   AgentFdoIndexRoute: typeof AgentFdoIndexRoute
+  AgentFdoDeclarerErreurOperationnelle1OperationRoute: typeof AgentFdoDeclarerErreurOperationnelle1OperationRoute
+  AgentFdoDeclarerErreurOperationnelle2ComplementRoute: typeof AgentFdoDeclarerErreurOperationnelle2ComplementRoute
+  AgentFdoDeclarerErreurOperationnelle3RequerantRoute: typeof AgentFdoDeclarerErreurOperationnelle3RequerantRoute
+  AgentFdoDeclarerErreurOperationnelleIndexRoute: typeof AgentFdoDeclarerErreurOperationnelleIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,20 +169,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentFdoRootRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fdo/accueil': {
-      id: '/agent/fdo/accueil'
-      path: '/agent/fdo/accueil'
-      fullPath: '/agent/fdo/accueil'
-      preLoaderRoute: typeof AgentFdoAccueilRouteImport
+    '/agent/fdo/requisition-serrurier': {
+      id: '/agent/fdo/requisition-serrurier'
+      path: '/agent/fdo/requisition-serrurier'
+      fullPath: '/agent/fdo/requisition-serrurier'
+      preLoaderRoute: typeof AgentFdoRequisitionSerrurierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent/fdo/foire-aux-questions': {
+      id: '/agent/fdo/foire-aux-questions'
+      path: '/agent/fdo/foire-aux-questions'
+      fullPath: '/agent/fdo/foire-aux-questions'
+      preLoaderRoute: typeof AgentFdoFoireAuxQuestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent/fdo/declarations': {
+      id: '/agent/fdo/declarations'
+      path: '/agent/fdo/declarations'
+      fullPath: '/agent/fdo/declarations'
+      preLoaderRoute: typeof AgentFdoDeclarationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent/fdo/declarer-erreur-operationnelle/': {
+      id: '/agent/fdo/declarer-erreur-operationnelle/'
+      path: '/agent/fdo/declarer-erreur-operationnelle'
+      fullPath: '/agent/fdo/declarer-erreur-operationnelle'
+      preLoaderRoute: typeof AgentFdoDeclarerErreurOperationnelleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent/fdo/declarer-erreur-operationnelle/3-requerant': {
+      id: '/agent/fdo/declarer-erreur-operationnelle/3-requerant'
+      path: '/agent/fdo/declarer-erreur-operationnelle/3-requerant'
+      fullPath: '/agent/fdo/declarer-erreur-operationnelle/3-requerant'
+      preLoaderRoute: typeof AgentFdoDeclarerErreurOperationnelle3RequerantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent/fdo/declarer-erreur-operationnelle/2-complement': {
+      id: '/agent/fdo/declarer-erreur-operationnelle/2-complement'
+      path: '/agent/fdo/declarer-erreur-operationnelle/2-complement'
+      fullPath: '/agent/fdo/declarer-erreur-operationnelle/2-complement'
+      preLoaderRoute: typeof AgentFdoDeclarerErreurOperationnelle2ComplementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent/fdo/declarer-erreur-operationnelle/1-operation': {
+      id: '/agent/fdo/declarer-erreur-operationnelle/1-operation'
+      path: '/agent/fdo/declarer-erreur-operationnelle/1-operation'
+      fullPath: '/agent/fdo/declarer-erreur-operationnelle/1-operation'
+      preLoaderRoute: typeof AgentFdoDeclarerErreurOperationnelle1OperationRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  AgentFdoAccueilRoute: AgentFdoAccueilRoute,
+  AgentFdoDeclarationsRoute: AgentFdoDeclarationsRoute,
+  AgentFdoFoireAuxQuestionsRoute: AgentFdoFoireAuxQuestionsRoute,
+  AgentFdoRequisitionSerrurierRoute: AgentFdoRequisitionSerrurierRoute,
   AgentFdoRootRoute: AgentFdoRootRoute,
   AgentFdoIndexRoute: AgentFdoIndexRoute,
+  AgentFdoDeclarerErreurOperationnelle1OperationRoute:
+    AgentFdoDeclarerErreurOperationnelle1OperationRoute,
+  AgentFdoDeclarerErreurOperationnelle2ComplementRoute:
+    AgentFdoDeclarerErreurOperationnelle2ComplementRoute,
+  AgentFdoDeclarerErreurOperationnelle3RequerantRoute:
+    AgentFdoDeclarerErreurOperationnelle3RequerantRoute,
+  AgentFdoDeclarerErreurOperationnelleIndexRoute:
+    AgentFdoDeclarerErreurOperationnelleIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
