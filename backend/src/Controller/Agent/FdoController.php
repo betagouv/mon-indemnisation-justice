@@ -17,6 +17,13 @@ class FdoController extends AbstractController
     #[Route('/{extra?}', name: 'agent_fdo_react', requirements: ['extra' => '.*'])]
     public function react(): Response
     {
+        /** @var Agent $agent */
+        $agent = $this->getUser();
+
+        if ($agent->estMinistereJustice()) {
+            return $this->redirectToRoute('agent_fip6_react');
+        }
+
         return $this->render(
             'agent/fdo.html.twig',
         );

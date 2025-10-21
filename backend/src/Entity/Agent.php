@@ -303,6 +303,16 @@ class Agent implements UserInterface
         return $this->administration;
     }
 
+    public function estFDO(): bool
+    {
+        return $this->administration->estFDO();
+    }
+
+    public function estMinistereJustice(): bool
+    {
+        return $this->administration->estMinistereJustice();
+    }
+
     public function setAdministration(?Administration $administration): Agent
     {
         if (null !== $administration) {

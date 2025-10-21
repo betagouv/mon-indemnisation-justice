@@ -9,6 +9,14 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "inversify-react";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 
+import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
+import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
+
+startReactDsfr({
+  defaultColorScheme:
+    (localStorage.getItem("scheme") as ColorScheme) ?? "system",
+});
+
 declare global {
   interface Window {
     dsfr: any;

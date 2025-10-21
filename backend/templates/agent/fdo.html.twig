@@ -4,20 +4,15 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    <link rel="apple-touch-icon" href="/dsfr/favicon/apple-touch-icon.png"/>
-    <link rel="icon" href="/dsfr/favicon/favicon.svg" type="image/svg+xml"/>
-    <link rel="shortcut icon" href="/dsfr/favicon/favicon.ico" type="image/x-icon"/>
-    <link rel="manifest" href="/dsfr/favicon/manifest.webmanifest"
-          crossorigin="use-credentials"/>
 
-    <link rel="preload" href="/dsfr/dsfr/fonts/Marianne-Regular.woff2" as="font"
-          crossorigin="anonymous"/>
+    <link rel="apple-touch-icon" href="{{ asset('dsfr/favicon/apple-touch-icon.png') }}"/>
+    <link rel="icon" href="{{ asset('dsfr/favicon/favicon.svg') }}" type="image/svg+xml"/>
+    <link rel="shortcut icon" href="{{ asset('/dsfr/favicon/favicon.ico') }}" type="image/x-icon"/>
 
-    <link rel="preload" href="/dsfr/dsfr/fonts/Marianne-Medium.woff2" as="font"
-          crossorigin="anonymous"/>
-    <link rel="preload" href="/dsfr/dsfr/fonts/Marianne-Bold.woff2" as="font"
-          crossorigin="anonymous"/>
-    <link rel="stylesheet" href="/dsfr/main.css"/>
+    <link rel="manifest" href="{{ asset('dsfr/favicon/manifest.webmanifest') }}" crossorigin="use-credentials"/>
+    <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('remixicon/fonts/remixicon.css') }}"/>
 
     {% block title %}Mon Indemnisation Justice : espace Forces de l'Ordre{% endblock title %}
     {% block stylesheets %}
@@ -32,12 +27,6 @@
     {% if est_vite_server_actif() %}
         {% include '_vite_hmr_extra.html.twig' %}
     {% endif %}
-
-    {#
-    <script type="application/json" id="react-args">
-        {{ react|default({})|json_encode()|raw }}
-    </script>
-    #}
 
     {{ vite_entry_script_tags('agent/fdo') }}
 {% endblock javascripts %}
