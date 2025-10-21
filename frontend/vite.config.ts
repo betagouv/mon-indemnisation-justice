@@ -20,10 +20,15 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
     plugins: [
       tanstackRouter({
         target: "react",
-        autoCodeSplitting: false,
-        routeFileIgnorePrefix: "/agent/fip6",
-        routesDirectory: "./src/routes",
-        generatedRouteTree: "./src/routers/agent-fip6.gen.ts",
+        virtualRouteConfig: "./src/routers/router-agent-fip6.ts",
+        generatedRouteTree: "./src/routers/generated/router-agent-fip6.gen.ts",
+        routesDirectory: "./src/routes/",
+      }),
+      tanstackRouter({
+        target: "react",
+        virtualRouteConfig: "./src/routers/router-agent-fdo.ts",
+        generatedRouteTree: "./src/routers/generated/router-agent-fdo.gen.ts",
+        routesDirectory: "./src/routes/",
       }),
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
@@ -37,7 +42,6 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         originOverride: "https://mon-indemnisation.justice.gouv.dev",
         stimulus: false,
       }),
-
       react(),
     ],
     resolve: {
@@ -70,6 +74,8 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
               "./src/apps/agent/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
               "./src/apps/agent/dossiers/consultation_app.tsx",
+            // Espace FDO
+            "agent/fdo": "./src/apps/agent/fdo.tsx",
           },
         },
         output: {
