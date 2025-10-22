@@ -1922,6 +1922,19 @@
     "@sentry/core" "9.9.0"
     hoist-non-react-statics "^3.3.2"
 
+"@tanstack/devtools-event-client@^0.3.2":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/devtools-event-client/-/devtools-event-client-0.3.3.tgz#429ca3d84752d7a0db602513cf9a02cd56c0ee11"
+  integrity sha512-RfV+OPV/M3CGryYqTue684u10jUt55PEqeBOnOtCe6tAmHI9Iqyc8nHeDhWPEV9715gShuauFVaMc9RiUVNdwg==
+
+"@tanstack/form-core@1.24.3":
+  version "1.24.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/form-core/-/form-core-1.24.3.tgz#2bd0cf4600312037d4af2f0acab93fe2d93eb948"
+  integrity sha512-e+HzSD49NWr4aIqJWtPPzmi+/phBJAP3nSPN8dvxwmJWqAxuB/cH138EcmCFf3+oA7j3BXvwvTY0I+8UweGPjQ==
+  dependencies:
+    "@tanstack/devtools-event-client" "^0.3.2"
+    "@tanstack/store" "^0.7.7"
+
 "@tanstack/history@1.131.2":
   version "1.131.2"
   resolved "https://registry.yarnpkg.com/@tanstack/history/-/history-1.131.2.tgz#54ff9e28a4235de51a5ee0f2f13edf25f6f54c45"
@@ -1931,6 +1944,16 @@
   version "5.85.5"
   resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.85.5.tgz#c4adc126bb3a927e4d60280bf3cf62210700147c"
   integrity sha512-KO0WTob4JEApv69iYp1eGvfMSUkgw//IpMnq+//cORBzXf0smyRwPLrUvEe5qtAEGjwZTXrjxg+oJNP/C00t6w==
+
+"@tanstack/react-form@^1.23.7":
+  version "1.23.7"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-form/-/react-form-1.23.7.tgz#d2ae6bc9356a5f41925a540f4d7ff66890c6e5e8"
+  integrity sha512-p/j9Gi2+s135sOjj48RjM+6xZQr1FVpliQlETLYBEGmmmxWHgYYs2b62mTDSnuv7AqtuZhpQ+t0CRFVfbQLsFA==
+  dependencies:
+    "@tanstack/form-core" "1.24.3"
+    "@tanstack/react-store" "^0.7.7"
+    decode-formdata "^0.9.0"
+    devalue "^5.3.2"
 
 "@tanstack/react-query@^5.85.5":
   version "5.85.5"
@@ -1965,6 +1988,14 @@
   integrity sha512-A+WZtEnHZpvbKXm8qR+xndNKywBLez2KKKKEQc7w0Qs45GvY1LpRI3BTZNmELwEVim8+Apf99iEDH2J+MUIzlQ==
   dependencies:
     "@tanstack/store" "0.7.5"
+    use-sync-external-store "^1.5.0"
+
+"@tanstack/react-store@^0.7.7":
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-store/-/react-store-0.7.7.tgz#6c51761956a1b3713ae0a8dbc008ea181f82df1f"
+  integrity sha512-qqT0ufegFRDGSof9D/VqaZgjNgp4tRPHZIJq2+QIHkMUtHjaJ0lYrrXjeIUJvjnTbgPfSD1XgOMEt0lmANn6Zg==
+  dependencies:
+    "@tanstack/store" "0.7.7"
     use-sync-external-store "^1.5.0"
 
 "@tanstack/router-core@1.131.36":
@@ -2052,6 +2083,11 @@
   version "0.7.5"
   resolved "https://registry.yarnpkg.com/@tanstack/store/-/store-0.7.5.tgz#91c3ffa94a06add47aab917819e8032420fef628"
   integrity sha512-qd/OjkjaFRKqKU4Yjipaen/EOB9MyEg6Wr9fW103RBPACf1ZcKhbhcu2S5mj5IgdPib6xFIgCUti/mKVkl+fRw==
+
+"@tanstack/store@0.7.7", "@tanstack/store@^0.7.7":
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/@tanstack/store/-/store-0.7.7.tgz#2c8b1d8c094f3614ae4e0483253239abd0e14488"
+  integrity sha512-xa6pTan1bcaqYDS9BDpSiS63qa6EoDkPN9RsRaxHuDdVDNntzq3xNwR5YKTU/V3SkSyC9T4YVOPh2zRQN0nhIQ==
 
 "@tanstack/virtual-file-routes@1.131.2":
   version "1.131.2"
@@ -3028,6 +3064,11 @@ debug@^4.4.1:
   dependencies:
     ms "^2.1.3"
 
+decode-formdata@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/decode-formdata/-/decode-formdata-0.9.0.tgz#fa9c0c0ea0a279d6d1ea825c156534d2d5fa6721"
+  integrity sha512-q5uwOjR3Um5YD+ZWPOF/1sGHVW9A5rCrRwITQChRXlmPkxDFBqCm4jNTIVdGHNH9OnR+V9MoZVgRhsFb+ARbUw==
+
 deep-eql@^5.0.1:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/deep-eql/-/deep-eql-5.0.2.tgz#4b756d8d770a9257300825d52a2c2cff99c3a341"
@@ -3064,6 +3105,11 @@ degenerator@^5.0.0:
     ast-types "^0.13.4"
     escodegen "^2.1.0"
     esprima "^4.0.1"
+
+devalue@^5.3.2:
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/devalue/-/devalue-5.4.2.tgz#d002d836f9e92fc0c3bd9b76ea69129cbf99dca7"
+  integrity sha512-MwPZTKEPK2k8Qgfmqrd48ZKVvzSQjgW0lXLxiIBA8dQjtf/6mw6pggHNLcyDKyf+fI6eXxlQwPsfaCMTU5U+Bw==
 
 devtools-protocol@0.0.1413902:
   version "0.0.1413902"
@@ -6186,3 +6232,8 @@ zod@^3.24.2:
   version "3.25.76"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.25.76.tgz#26841c3f6fd22a6a2760e7ccb719179768471e34"
   integrity sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==
+
+zod@^4.1.12:
+  version "4.1.12"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-4.1.12.tgz#64f1ea53d00eab91853195653b5af9eee68970f0"
+  integrity sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==

@@ -52,16 +52,22 @@ const EspaceFDO = () => {
           },
           {
             text: "Déclaration d'erreur opérationnelle",
-            linkProps: {
-              to: "/agent/fdo/declarer-erreur-operationnelle",
-            },
-          },
-          {
-            text: "Foire aux questions",
-            linkProps: {
-              to: "/agent/fdo/foire-aux-questions",
-              activeOptions: { exact: true },
-            },
+            menuLinks: [
+              {
+                text: "Nouvelle déclaration",
+                linkProps: {
+                  to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration",
+                  activeOptions: { exact: false },
+                },
+              },
+              {
+                text: "Mes déclarations",
+                linkProps: {
+                  to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+                  activeOptions: { exact: true },
+                },
+              },
+            ],
           },
           {
             text: "Réquisition d'un serrurier",
@@ -71,9 +77,9 @@ const EspaceFDO = () => {
             },
           },
           {
-            text: "Mes déclarations",
+            text: "Foire aux questions",
             linkProps: {
-              to: "/agent/fdo/declarations",
+              to: "/agent/fdo/foire-aux-questions",
               activeOptions: { exact: true },
             },
           },
@@ -87,7 +93,11 @@ const EspaceFDO = () => {
           {
             iconId: "fr-icon-logout-box-r-line",
             text: "Déconnexion",
-            linkProps: {},
+            linkProps: {
+              to: "/agent/deconnexion" as string,
+              href: "/agent/deconnexion",
+              reloadDocument: true,
+            } as LinkProps,
           },
         ]}
       />
