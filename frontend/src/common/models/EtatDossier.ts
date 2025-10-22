@@ -159,7 +159,7 @@ export class EtatDossierType implements EtatInterface {
   }
 
   public estDecide(): boolean {
-    return this.estASigner();
+    return this.id.startsWith("OK") || this.id.startsWith("KO");
   }
 
   public estEnvoye(): boolean {

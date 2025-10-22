@@ -203,7 +203,7 @@ export const ConsultationDossierApp = observer(
                       {
                         tabId: "courrier",
                         label: "Courrier",
-                        disabled: !dossier.estEnvoye(),
+                        disabled: !dossier.estDecide(),
                       },
                     ],
                     // @ts-ignore

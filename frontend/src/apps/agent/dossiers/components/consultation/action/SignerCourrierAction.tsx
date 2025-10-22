@@ -6,6 +6,7 @@ import {
 } from "@/common/services/agent";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { useInjection } from "inversify-react";
 import React, {
   FormEvent,
@@ -491,7 +492,9 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 ),
               },
               {
-                priority: "primary",
+                children: "Valider la proposition d'indemnisation",
+                priority: "secondary",
+                iconId: "fr-icon-arrow-right-line",
                 onClick: () =>
                   versEtape(
                     dossier.estAccepte()
@@ -499,12 +502,6 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                       : "SIGNATURE",
                   ),
                 disabled: sauvegardeEnCours,
-                iconId: dossier.estAccepte()
-                  ? "fr-icon-edit-box-line"
-                  : "fr-icon-upload-line",
-                children: dossier.estAccepte()
-                  ? "Éditer la déclaration d'acceptation"
-                  : "Téléverser le document signé",
               },
             ]}
           />
@@ -541,11 +538,11 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 ),
               },
               {
-                priority: "primary",
+                children: "Valider la déclaration d'acceptation",
+                priority: "secondary",
+                iconId: "fr-icon-arrow-right-line",
                 onClick: () => versEtape("SIGNATURE"),
                 disabled: sauvegardeEnCours,
-                iconId: "fr-icon-upload-line",
-                children: "Téléverser le document signé",
               },
             ]}
           />
@@ -618,9 +615,14 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 onClick: () => versEtape("EDITION_COURRIER"),
                 disabled: sauvegardeEnCours,
                 iconId: "fr-icon-edit-box-line",
-                children: "Éditer le courrier",
+                children: dossier.estAccepte()
+                  ? "Éditer la proposition d'indemnisation"
+                  : "Éditer le courrier de rejet",
               },
               {
+                children: "Enregistrer le document signé",
+                priority: "secondary",
+                iconId: "fr-icon-arrow-right-line",
                 disabled:
                   (!fichierSigne && !utiliserCourrierExistant) ||
                   (fichierSigne &&
@@ -633,8 +635,6 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                   }
                   versEtape("ENVOI");
                 },
-                iconId: "fr-icon-send-plane-line",
-                children: "Vérifier avant d'envoyer au requérant",
               },
             ]}
           />
@@ -661,7 +661,12 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 <p>
                   Aussi,{" "}
                   <span className="fr-text--bold">
-                    veillez à bien relire le document
+                    veillez à bien relire{" "}
+                    {dossier.estAccepte() ? (
+                      <>les documents</>
+                    ) : (
+                      <>le document</>
+                    )}
                   </span>{" "}
                   afin de vous assurer que tout est conforme.
                 </p>
@@ -669,10 +674,39 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
             }
           />
 
-          <PieceJointe
-            className="fr-my-3w"
-            pieceJointe={dossier.getCourrierDecision() as Document}
-          />
+          {dossier.estAccepte() ? (
+            <Tabs
+              className="fr-my-3w"
+              tabs={[
+                {
+                  label: "Proposition d'indemnisation",
+                  iconId: "fr-icon-checkbox-circle-line",
+                  isDefault: true,
+                  content: (
+                    <PieceJointe
+                      pieceJointe={dossier.getCourrierDecision() as Document}
+                    />
+                  ),
+                },
+                {
+                  label: "Déclaration d'acceptation",
+                  iconId: "fr-icon-chat-check-line",
+                  content: (
+                    <PieceJointe
+                      pieceJointe={
+                        dossier.getDeclarationAcceptation() as Document
+                      }
+                    />
+                  ),
+                },
+              ]}
+            />
+          ) : (
+            <PieceJointe
+              className="fr-my-3w"
+              pieceJointe={dossier.getCourrierDecision() as Document}
+            />
+          )}
 
           <ButtonsGroup
             className="fr-mt-3w"
@@ -692,10 +726,11 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 disabled: sauvegardeEnCours,
               },
               {
+                children: "Envoyer au requérant",
+                priority: "primary",
+                iconId: "fr-icon-send-plane-line",
                 disabled: sauvegardeEnCours,
                 onClick: () => envoyerAuRequerant(),
-                priority: "primary",
-                children: "Envoyer au requérant",
               },
             ]}
           />
