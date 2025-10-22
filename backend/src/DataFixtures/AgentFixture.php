@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Agent;
 
 class AgentFixture extends Fixture
@@ -61,6 +62,7 @@ class AgentFixture extends Fixture
             'policier' => (new Agent())
                 ->setIdentifiant('e316bde4-3d37-4ed8-9001-c40d9b07fe06')
                 ->setEmail('policier@interieur.gouv.fr')
+                ->setAdministration(Administration::POLICE_NATIONALE)
                 ->setPrenom('Paul')
                 ->setRoles([Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
                 ->setNom('Issié')
@@ -69,6 +71,7 @@ class AgentFixture extends Fixture
             'gendarme' => (new Agent())
                 ->setIdentifiant('c7f94b68-89c9-4df4-ac44-1d127937dd63')
                 ->setEmail('gendarme@gendarmerie.interieur.gouv.fr')
+                ->setAdministration(Administration::GENDARMERIE_NATIONALE)
                 ->setPrenom('Jean')
                 ->setRoles([Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
                 ->setNom("d'Harme")
