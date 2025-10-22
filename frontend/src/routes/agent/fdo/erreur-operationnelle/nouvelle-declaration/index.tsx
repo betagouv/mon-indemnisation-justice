@@ -1,10 +1,10 @@
 import { redirect, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
-  "/agent/fdo/declarer-erreur-operationnelle/",
+  "/agent/fdo/erreur-operationnelle/nouvelle-declaration/",
 )({
   loader: () =>
     redirect({
-      to: "/agent/fdo/declarer-erreur-operationnelle/1-operation",
+      to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration/1-operation",
     }),
 });

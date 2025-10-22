@@ -1,7 +1,7 @@
 import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/agent/fdo/declarations")({
+export const Route = createFileRoute("/agent/fdo/erreur-operationnelle/mes-declarations")({
   component: () => (
     <div>
       <h1>Mes déclarations</h1>

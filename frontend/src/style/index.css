@@ -14,3 +14,8 @@ main {
         border-bottom: 1px solid #ccc;
     }
 }
+
+
+.fr-input-group--error::before {
+    background-image: none !important;
+}

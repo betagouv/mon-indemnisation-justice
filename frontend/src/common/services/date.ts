@@ -1,4 +1,12 @@
-export const estAujourdhui = (a: Date): boolean => memeJour(a, new Date());
+export const aujourdhui = (): Date => new Date();
+
+export const estAujourdhui = (a: Date): boolean => memeJour(a, aujourdhui());
+
+export const dateDansNJours = (n: number, debut: Date = aujourdhui()) => {
+  debut.setDate(debut.getDate() + n);
+
+  return new Date(+debut.setHours(0, 0, 0, 0) + n * 24 * 60 * 60 * 1000);
+};
 
 export const memeJour = (a: Date, b: Date): boolean => {
   return (
