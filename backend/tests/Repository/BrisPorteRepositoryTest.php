@@ -21,6 +21,7 @@ class BrisPorteRepositoryTest extends WebTestCase
 
         $container = static::getContainer();
 
+        /** @var BrisPorteRepository $dossierRepository */
         $dossierRepository = $container->get(BrisPorteRepository::class);
         $dossiersAAttribuer = $dossierRepository->listerDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
 

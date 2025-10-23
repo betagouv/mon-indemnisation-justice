@@ -69,7 +69,9 @@ class BrisPorteController extends RequerantController
         $requerant = $this->getRequerant();
 
         if (EtatDossierType::DOSSIER_A_FINALISER === $brisPorte->getEtatDossier()->getEtat()) {
-            $brisPorte->changerStatut(EtatDossierType::DOSSIER_A_ATTRIBUER, requerant: true);
+            $brisPorte
+                ->changerStatut(EtatDossierType::DOSSIER_A_ATTRIBUER, requerant: true)
+            ;
             $this->brisPorteRepository->save($brisPorte);
 
             $this->addFlash('dossier', [

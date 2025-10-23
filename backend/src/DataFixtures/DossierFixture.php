@@ -67,8 +67,25 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $manager->persist($dossierAFinaliser);
 
+        $dossierAFinaliser2 = $this->creerDossier(
+            $this->getReference('requerant-saint-malo', Requerant::class),
+            [
+                'rapportAuLogement' => QualiteRequerant::LOC,
+                'estVise' => false,
+                'estHebergeant' => false,
+                'aContacteAssurance' => false,
+            ],
+            new \DateTimeImmutable('-15 days'),
+            EtatDossierType::DOSSIER_A_FINALISER,
+        );
+
+        $this->addReference('dossier-a-finaliser-saint-malo', $dossierAFinaliser2);
+
+        $manager->persist($dossierAFinaliser2);
+
         $dossierAAttribuer = (new BrisPorte())
             ->setReference('BRI/20250410/001')
+            ->setDateDepot(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-04-10'))
             ->setDateOperationPJ($this->faker->dateTimeBetween('-100 days', 'now'))
             ->setRequerant($this->getReference('requerant-melun', Requerant::class))
             ->setAdresse(
@@ -87,11 +104,11 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierAAttribuer->setHistoriqueEtats([
             (new EtatDossier())
                 ->setEtat(EtatDossierType::DOSSIER_A_FINALISER)
-                ->setDateEntree(new \DateTimeImmutable('-7 days'))
+                ->setDateEntree(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-04-10'))
                 ->setRequerant($this->getReference('requerant-melun', Requerant::class)),
             (new EtatDossier())
                 ->setEtat(EtatDossierType::DOSSIER_A_ATTRIBUER)
-                ->setDateEntree(new \DateTimeImmutable('-6 days'))
+                ->setDateEntree(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-04-10'))
                 ->setRequerant($this->getReference('requerant-melun', Requerant::class)),
         ]);
 
@@ -126,6 +143,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $dossierEnInstruction = (new BrisPorte())
             ->setReference('BRI/20250103/001')
+            ->setDateDepot(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-01-03'))
             ->setRequerant($this->getReference('requerant-ray', Requerant::class))
             ->setRedacteur($this->getReference('agent-redacteur', Agent::class))
             ->setTestEligibilite(
@@ -321,6 +339,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     str_pad(count(self::$REGISTRE_DOSSIERS[$date] ?? []) + 1, 3, '0', STR_PAD_LEFT)
                 )
             );
+            $dossier->setDateDepot($dossier->getEtat(EtatDossierType::DOSSIER_A_ATTRIBUER)->getDate());
 
             self::$REGISTRE_DOSSIERS[$date][] = $dossier;
         }
