@@ -35,16 +35,10 @@ class BrisPorteRepository extends ServiceEntityRepository
 
     public function calculerReference(BrisPorte $dossier): string
     {
-        $dateJour = $dossier->getDateDeclaration()->format('Y-m-d');
         $nbDossiersDeposesMemeJour = $this->createQueryBuilder('d')
             ->select('count(d.id)')
-            ->join('d.etatDossier', 'ed')
-            ->where('ed.etat = :etat')
-            ->andWhere('ed.dateEntree between :debut and :fin')
-            ->setParameter('etat', EtatDossierType::DOSSIER_A_ATTRIBUER)
-            ->setParameter('debut', new \DateTime("{$dateJour}  00:00:00"))
-            ->setParameter('fin', new \DateTime("{$dateJour}  23:59:59"))
-            ->getQuery()
+            ->where('d.reference like :reference')
+            ->setParameter('reference', '%/'.$dossier->getDateDeclaration()->format('Ymd').'/%')->getQuery()
             ->getSingleScalarResult()
         ;
 

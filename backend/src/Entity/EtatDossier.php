@@ -70,10 +70,14 @@ class EtatDossier
      */
     public function postActivation(): void
     {
+        if (EtatDossierType::DOSSIER_A_ATTRIBUER === $this->etat) {
+            $this->dossier->setDateDepot(new \DateTimeImmutable());
+        }
+
         // Répercuter le montant de l'indemnisation sur le dossier :
         if (
             in_array($this->etat, [EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_OK_A_APPROUVER])
-                && isset($this->contexte['montantIndemnisation'])
+            && isset($this->contexte['montantIndemnisation'])
         ) {
             $this->dossier->setPropositionIndemnisation($this->contexte['montantIndemnisation']);
         }

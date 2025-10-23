@@ -72,6 +72,9 @@ class BrisPorte
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateCreation;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    protected ?\DateTimeInterface $dateDepot = null;
+
     #[ORM\JoinTable(name: 'document_dossiers')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'dossiers', cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -345,6 +348,18 @@ class BrisPorte
         return $this;
     }
 
+    public function getDateDepot(): ?\DateTimeInterface
+    {
+        return $this->dateDepot;
+    }
+
+    public function setDateDepot(\DateTimeInterface $dateDepot): BrisPorte
+    {
+        $this->dateDepot = $dateDepot;
+
+        return $this;
+    }
+
     #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
     #[SerializedName('dateDepot')]
     public function getDateDepotMillis(): ?int
@@ -355,8 +370,7 @@ class BrisPorte
     #[Groups('dossier:lecture')]
     public function getDateDeclaration(): ?\DateTimeInterface
     {
-        // La date de déclaration est la date d'entrée à l'état `A_ATTRIBUER` ou à défaut à l'état `A_INSTRUIRE`
-        return $this->getDateEtat(EtatDossierType::DOSSIER_A_ATTRIBUER) ?? $this->getDateEtat(EtatDossierType::DOSSIER_A_INSTRUIRE);
+        return $this->getDateDepot();
     }
 
     public function getDateSignatureAgent(): ?\DateTimeInterface
