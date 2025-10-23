@@ -2,6 +2,8 @@
 
 namespace MonIndemnisationJustice\Controller\Agent;
 
+use League\Flysystem\FilesystemException;
+use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Service\DocumentManager;
@@ -9,7 +11,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,9 @@ class DocumentController extends AbstractController
     public function __construct(
         protected readonly DocumentManager $documentManager,
         protected readonly LoggerInterface $logger,
-    ) {}
+    )
+    {
+    }
 
     #[Route('/{id}/{hash}', name: 'agent_document_download', methods: ['GET'])]
     public function download(#[MapEntity] Document $document, string $hash, Request $request): Response
@@ -52,7 +55,7 @@ class DocumentController extends AbstractController
                     'Content-Disposition' => sprintf('%sfilename="%s"', $request->query->has('download') ? 'attachment;' : '', mb_convert_encoding($document->getOriginalFilename(), 'ISO-8859-1', 'UTF-8')),
                 ]
             );
-        } catch (FileException $e) {
+        } catch (FilesystemException|UnableToReadFile $e) {
             $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
 
             return new Response('', Response::HTTP_NOT_FOUND);

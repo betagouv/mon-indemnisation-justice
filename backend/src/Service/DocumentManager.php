@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToWriteFile;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
@@ -103,22 +104,23 @@ class DocumentManager
         $this->em->flush();
     }
 
-    /** @return resource */
+    /**
+     * @return resource
+     *
+     * @throws UnableToReadFile
+     * @throws FilesystemException
+     */
     public function getContenuRessource(Document $document)
     {
-        if (!$this->storage->has($document->getFilename())) {
-            throw new FileException("Le fichier associé à ce document n'existe pas.");
-        }
-
         return $this->storage->readStream($document->getFilename());
     }
 
+    /**
+     * @throws UnableToReadFile
+     * @throws FilesystemException
+     */
     public function getContenuTexte(Document $document): string
     {
-        if (!$this->storage->has($document->getFilename())) {
-            throw new FileException("Le fichier associé à ce document n'existe pas.");
-        }
-
         return $this->storage->read($document->getFilename());
     }
 
