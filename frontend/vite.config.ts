@@ -1,5 +1,6 @@
 /// <reference types="./types" />
 
+import * as path from "path";
 import { defineConfig, loadEnv, UserConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import symfonyPlugin from "vite-plugin-symfony";
@@ -75,7 +76,7 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
             "agent/dossiers/consulter":
               "./src/apps/agent/dossiers/consultation_app.tsx",
             // Espace FDO
-            "agent/fdo": "./src/apps/agent/fdo.tsx",
+            "agent/fdo": path.join(__dirname, "./src/apps/agent/fdo/fdo.tsx"),
           },
         },
         output: {
