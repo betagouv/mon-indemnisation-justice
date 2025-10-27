@@ -645,10 +645,17 @@ export const ConsultationDossierApp = observer(
                       <h3>Courrier</h3>
 
                       {courrier ? (
-                        <PieceJointe
-                          className="fr-col-12"
-                          pieceJointe={courrier}
-                        />
+                        <>
+                          <TelechargerPieceJointe
+                            className="fr-grid-row fr-col-12"
+                            pieceJointe={courrier}
+                          />
+
+                          <PieceJointe
+                            className="fr-col-12"
+                            pieceJointe={courrier}
+                          />
+                        </>
                       ) : (
                         <p>Pas encore de courrier</p>
                       )}
@@ -658,6 +665,12 @@ export const ConsultationDossierApp = observer(
                   {selectedTab == "declaration" && (
                     <section>
                       <h3>Déclaration d'acceptation</h3>
+                      <TelechargerPieceJointe
+                        className="fr-grid-row fr-col-12"
+                        pieceJointe={
+                          dossier.getDeclarationAcceptation() as Document
+                        }
+                      />
 
                       <PieceJointe
                         className="fr-col-12"
@@ -671,6 +684,10 @@ export const ConsultationDossierApp = observer(
                   {selectedTab == "arrete" && (
                     <section>
                       <h3>Arrêté de paiement</h3>
+                      <TelechargerPieceJointe
+                        className="fr-grid-row fr-col-12"
+                        pieceJointe={dossier.getArretePaiement() as Document}
+                      />
 
                       <PieceJointe
                         className="fr-col-12"
