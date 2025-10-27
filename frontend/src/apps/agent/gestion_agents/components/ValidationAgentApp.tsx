@@ -1,12 +1,10 @@
 import { Administration, Agent } from "@/common/models";
 import { estCourrielValide } from "@/common/services/courriel";
-import { plainToInstance } from "class-transformer";
-import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
+import React, { ChangeEvent, useCallback, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useInjection } from "inversify-react";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import "@/style/index.css";
-import { dateSimple } from "@/common/services/date.ts";
 import { Loader } from "@/common/components/Loader.tsx";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";

@@ -1,6 +1,5 @@
 import { BaseDossier, Document } from "@/common/models";
 import { plainToInstance } from "class-transformer";
-import { ServiceIdentifier } from "inversify";
 
 export interface DocumentManagerInterface {
   imprimer(document: Document, corps?: string): Promise<Document>;
