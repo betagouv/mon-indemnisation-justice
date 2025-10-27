@@ -42,7 +42,6 @@ const router = createRouter({
 // Register things for typesafety
 declare module "@tanstack/react-router" {
   interface Register {
-    // @ts-ignore
     router: typeof router;
   }
 }

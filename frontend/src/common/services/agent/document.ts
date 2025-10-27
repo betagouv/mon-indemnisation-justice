@@ -1,7 +1,5 @@
 import { BaseDossier, Document } from "@/common/models";
 import { plainToInstance } from "class-transformer";
-import { data } from "autoprefixer";
-import { reject } from "lodash";
 
 interface DocumentManagerInterface {
   imprimer(document: Document, corps?: string): Promise<Document>;

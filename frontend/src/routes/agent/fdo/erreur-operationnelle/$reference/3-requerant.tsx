@@ -1,14 +1,50 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import React from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { z } from "zod";
+import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import {
+  container,
+  DeclarationManagerInterface,
+} from "@/apps/agent/fdo/services";
+import { router } from "@/apps/agent/fdo/router.ts";
+import { useInjection } from "inversify-react";
+import { instanceToPlain, plainToClassFromExist } from "class-transformer";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/nouvelle-declaration/3-requerant",
+  "/agent/fdo/erreur-operationnelle/$reference/3-requerant",
 )({
+  beforeLoad: ({ params }) => {
+    if (
+      !container
+        .get(DeclarationManagerInterface.$)
+        .aDeclaration(params.reference)
+    ) {
+      throw redirect({
+        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        replace: true,
+        params,
+      });
+    }
+  },
+  loader: async ({
+    params,
+  }: {
+    params: any;
+  }): Promise<{
+    declaration: DeclarationErreurOperationnelle;
+    reference: string;
+  }> => {
+    return {
+      reference: params.reference,
+      declaration: (await container
+        .get(DeclarationManagerInterface.$)
+        .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
+    };
+  },
   component: Page,
 });
 
@@ -28,26 +64,48 @@ const schemaRequerant = z.object({
 });
 
 function Page() {
-  const naviguer = useNavigate({
-    from: "/agent/fdo/erreur-operationnelle/nouvelle-declaration/3-requerant",
+  const {
+    declaration,
+    reference,
+  }: { declaration: DeclarationErreurOperationnelle; reference: string } =
+    Route.useLoaderData();
+
+  const naviguer = useNavigate<typeof router>({
+    from: Route.fullPath,
   });
+
+  const declarationManager = useInjection<DeclarationManagerInterface>(
+    DeclarationManagerInterface.$,
+  );
 
   const form = useForm({
     defaultValues: {
-      requerant: {
-        nom: "",
-        prenom: "",
-        telephone: "",
-        courriel: "",
-        message: "",
+      requerant: declaration.requerant
+        ? { ...declaration.requerant }
+        : {
+            nom: "",
+            prenom: "",
+            telephone: "",
+            courriel: "",
+            message: "",
+          },
+    },
+    listeners: {
+      onSubmit: ({ formApi }) => {
+        console.log(formApi.getAllErrors());
       },
+      onChange: async ({ fieldApi, formApi }) => {
+        declarationManager.enregistrer(
+          plainToClassFromExist(declaration, formApi.state.values),
+        );
+      },
+      onChangeDebounceMs: 750,
     },
     validators: {
       onSubmit: schemaRequerant,
     },
-    onSubmit: async ({ value }) => {
-      console.log(value);
-      alert(JSON.stringify(value, null, 2));
+    onSubmit: async () => {
+      alert(JSON.stringify(instanceToPlain(declaration), null, 2));
     },
   });
 
@@ -164,7 +222,7 @@ function Page() {
                   className="fr-col-lg-4"
                   label="Courriel *"
                   nativeInputProps={{
-                    type: "email",
+                    type: "text",
                     placeholder: "martin.dupont@courriel.fr",
                     value: field.state.value,
                     onChange: (e) => field.handleChange(e.target.value),
@@ -227,16 +285,20 @@ function Page() {
             className="fr-col-lg-12 fr-p-0"
             inlineLayoutWhen="always"
             alignment="right"
-            buttonsIconPosition="right"
+            buttonsIconPosition={undefined}
             buttonsSize="small"
             buttons={[
               {
                 children: "Revenir à l'étape précédente",
                 priority: "secondary",
                 iconId: "fr-icon-arrow-left-line",
+                iconPosition: "left",
                 onClick: () =>
                   naviguer({
-                    to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration/2-complement",
+                    to: "/agent/fdo/erreur-operationnelle/$reference/2-complement",
+                    params: {
+                      reference,
+                    } as any,
                   }),
               },
               {

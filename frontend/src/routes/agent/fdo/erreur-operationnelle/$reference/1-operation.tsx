@@ -1,16 +1,52 @@
-import { dateChiffre, dateDansNJours } from "@/common/services/date";
+import { dateChiffre } from "@/common/services/date";
 import { useForm } from "@tanstack/react-form";
 import React from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { z } from "zod";
 import "@/style/index.css";
+import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import {
+  container,
+  DeclarationManagerInterface,
+} from "@/apps/agent/fdo/services";
+import { useInjection } from "inversify-react";
+import { plainToClassFromExist } from "class-transformer";
+import { router } from "@/apps/agent/fdo/router.ts";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/nouvelle-declaration/1-operation",
+  "/agent/fdo/erreur-operationnelle/$reference/1-operation",
 )({
+  beforeLoad: async ({ params }) => {
+    if (
+      !(await container
+        .get(DeclarationManagerInterface.$)
+        .aDeclaration(params.reference))
+    ) {
+      throw redirect({
+        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        replace: true,
+        params,
+      });
+    }
+  },
+  loader: async ({
+    params,
+  }: {
+    params: any;
+  }): Promise<{
+    declaration: DeclarationErreurOperationnelle;
+    reference: string;
+  }> => {
+    return {
+      reference: params.reference,
+      declaration: (await container
+        .get(DeclarationManagerInterface.$)
+        .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
+    };
+  },
   component: () => <Page />,
 });
 
@@ -34,14 +70,39 @@ const schemaErreurOperationnelle = z.object({
 });
 
 const Page = () => {
-  const naviguer = useNavigate({
-    from: "/agent/fdo/erreur-operationnelle/nouvelle-declaration/1-operation",
+  const {
+    declaration,
+    reference,
+  }: { declaration: DeclarationErreurOperationnelle; reference: string } =
+    Route.useLoaderData();
+
+  const naviguer = useNavigate<typeof router>({
+    from: Route.fullPath,
   });
+
+  const declarationManager = useInjection<DeclarationManagerInterface>(
+    DeclarationManagerInterface.$,
+  );
 
   const form = useForm({
     defaultValues: {
-      dateOperation: new Date(),
-      adresse: { ligne1: "", ligne2: "", codePostal: "", localite: "" },
+      dateOperation: declaration.dateOperation ?? new Date(),
+      adresse: declaration.adresse
+        ? { ...declaration.adresse }
+        : {
+            ligne1: "",
+            ligne2: "",
+            codePostal: "",
+            localite: "",
+          },
+    },
+    listeners: {
+      onChange: async ({ fieldApi, formApi }) => {
+        declarationManager.enregistrer(
+          plainToClassFromExist(declaration, formApi.state.values),
+        );
+      },
+      onChangeDebounceMs: 750,
     },
     validators: {
       onSubmit: schemaErreurOperationnelle,
@@ -49,7 +110,8 @@ const Page = () => {
     onSubmit: async ({ value }) => {
       console.log(value);
       await naviguer({
-        to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration/2-complement",
+        to: "/agent/fdo/erreur-operationnelle/$reference/2-complement",
+        params: { reference } as any,
       });
     },
   });
