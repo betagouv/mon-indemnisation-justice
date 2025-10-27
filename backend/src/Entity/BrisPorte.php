@@ -427,10 +427,8 @@ class BrisPorte
     public function getDocumentsATransmettre(): Collection
     {
         return $this->documents->filter(fn (Document $document) => in_array($document->getType(), [
-            DocumentType::TYPE_COURRIER_MINISTERE,
             DocumentType::TYPE_COURRIER_REQUERANT,
             DocumentType::TYPE_ARRETE_PAIEMENT,
-            DocumentType::TYPE_FACTURE,
             DocumentType::TYPE_CARTE_IDENTITE,
             DocumentType::TYPE_RIB,
         ]));
