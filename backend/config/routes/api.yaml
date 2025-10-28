@@ -4,3 +4,10 @@ agent_fip6:
     path: ../../src/Api/Agent/Fip6/Endpoint
     namespace: MonIndemnisationJustice\Api\Agent\Fip6\Endpoint
   type: attribute
+
+
+agent_fdo:
+  resource:
+    path: ../../src/Api/Agent/FDO/Endpoint
+    namespace: MonIndemnisationJustice\Api\Agent\FDO\Endpoint
+  type: attribute

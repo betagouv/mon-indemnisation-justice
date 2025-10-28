@@ -6,6 +6,11 @@ import { plainToInstance } from "class-transformer";
 export interface AgentManagerInterface {
   moi(): Promise<Agent>;
 
+  editerMesInfos(
+    infos: Partial<{ prenom: string; nom: string; telephone: string }>,
+  ): Promise<Agent>;
+
+  // TODO: changer ça pour pouvoir patcher (utiliser Partial<{}>)
   editerAgent({
     id,
     prenom,
@@ -32,12 +37,37 @@ export namespace AgentManagerInterface {
 }
 
 export class APIAgentManager implements AgentManagerInterface {
+  protected _agentConnecte: Agent;
   async moi(): Promise<Agent> {
-    return plainToInstance(
-      Agent,
-      await (await fetch("/api/agent/fip6/moi")).json(),
-    );
+    if (!this._agentConnecte) {
+      this._agentConnecte = plainToInstance(
+        Agent,
+        await (await fetch("/api/agent/fip6/moi")).json(),
+      );
+    }
+
+    return this._agentConnecte;
   }
+
+  async editerMesInfos(
+    infos: Partial<{ prenom: string; nom: string; telephone: string }>,
+  ): Promise<Agent> {
+    this._agentConnecte = plainToInstance(
+      Agent,
+      await (
+        await fetch("/api/agent/fip6/moi", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(infos),
+        })
+      ).json(),
+    );
+
+    return this._agentConnecte;
+  }
+
   async editerAgent({
     id,
     prenom,

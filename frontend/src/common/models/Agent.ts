@@ -150,6 +150,7 @@ export class Agent {
   public prenom: string;
   public nom: string;
   public courriel: string;
+  public telephone?: string;
 
   @Expose({ name: "roles" })
   @Transform(({ value }: { value: string[] }) => {

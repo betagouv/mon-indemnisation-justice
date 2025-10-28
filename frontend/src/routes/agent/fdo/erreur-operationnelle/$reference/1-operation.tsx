@@ -86,15 +86,8 @@ const Page = () => {
 
   const form = useForm({
     defaultValues: {
-      dateOperation: declaration.dateOperation ?? new Date(),
-      adresse: declaration.adresse
-        ? { ...declaration.adresse }
-        : {
-            ligne1: "",
-            ligne2: "",
-            codePostal: "",
-            localite: "",
-          },
+      dateOperation: declaration.dateOperation,
+      adresse: declaration.adresse,
     },
     listeners: {
       onChange: async ({ fieldApi, formApi }) => {
@@ -148,6 +141,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-4 fr-my-0"
                   label="Date de l'opération *"
+                  disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     value: dateChiffre(field.state.value),
                     onChange: (e) =>
@@ -175,6 +169,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-8 fr-my-0"
                   label="Adresse du logement perquisitionné par erreur *"
+                  disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "Numéro de voie, rue",
@@ -201,6 +196,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-6 fr-m-0"
                   label="Complément"
+                  disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "Étage, escalier",
@@ -219,6 +215,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-3 fr-m-0"
                   label="Code postal *"
+                  disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,
@@ -244,6 +241,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-3 fr-m-0"
                   label="Ville *"
+                  disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,

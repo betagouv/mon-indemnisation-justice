@@ -59,6 +59,9 @@ class Agent implements UserInterface
     #[ORM\Column(length: 180)]
     protected string $email;
 
+    #[ORM\Column(length: 16, nullable: true)]
+    protected ?string $telephone = null;
+
     #[ORM\Column(length: 50)]
     protected string $nom;
 

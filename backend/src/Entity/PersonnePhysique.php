@@ -17,6 +17,25 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 #[ApiResource]
 class PersonnePhysique
 {
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    // #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
+    #[SerializedName('communeNaissance')]
+    #[ORM\ManyToOne(targetEntity: GeoCodePostal::class)]
+    #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
+    public ?GeoCodePostal $codePostalNaissance = null;
+
+    #[ORM\OneToOne(mappedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
+    protected ?Requerant $compte = null;
+
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
+    protected ?Civilite $civilite = null;
+
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
+    #[ORM\ManyToOne(targetEntity: GeoPays::class)]
+    #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code')]
+    protected ?GeoPays $paysNaissance = null;
     #[ApiProperty(identifier: true)]
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
@@ -27,13 +46,6 @@ class PersonnePhysique
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 13, nullable: true)]
     private ?string $numeroSecuriteSociale = null;
-
-    #[ORM\OneToOne(mappedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
-    protected ?Requerant $compte = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
-    protected ?Civilite $civilite = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -56,19 +68,6 @@ class PersonnePhysique
     private ?string $telephone = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
-    // #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
-    #[SerializedName('communeNaissance')]
-    #[ORM\ManyToOne(targetEntity: GeoCodePostal::class)]
-    #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
-    public ?GeoCodePostal $codePostalNaissance = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
-    #[ORM\ManyToOne(targetEntity: GeoPays::class)]
-    #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code')]
-    protected ?GeoPays $paysNaissance = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateNaissance = null;
@@ -81,6 +80,15 @@ class PersonnePhysique
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
+    public function __toString()
+    {
+        return implode(' ', [
+            $this->getCivilite()?->value,
+            ucfirst(strtolower($this->getPrenom1())),
+            strtoupper($this->getNomNaissance()),
+        ]);
+    }
+
     #[ORM\PrePersist]
     public function onPrePersist(): void
     {
@@ -91,15 +99,6 @@ class PersonnePhysique
     public function onPreUpdate(): void
     {
         $this->recalculerNumeroSecuriteSociale();
-    }
-
-    public function __toString()
-    {
-        return implode(' ', [
-            $this->getCivilite()?->value,
-            ucfirst(strtolower($this->getPrenom1())),
-            strtoupper($this->getNomNaissance()),
-        ]);
     }
 
     public function getId(): ?int
@@ -275,7 +274,10 @@ class PersonnePhysique
 
     public function getNomComplet(): string
     {
-        similar_text($this->nom, $this->nomNaissance, $similarite);
+        $similarite = 0;
+        if (null !== $this->nom && null !== $this->prenom1) {
+            similar_text($this->nom, $this->nomNaissance, $similarite);
+        }
 
         return sprintf(
             '%s %s %s %s',

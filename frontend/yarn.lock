@@ -1963,11 +1963,11 @@
     "@tanstack/query-core" "5.85.5"
 
 "@tanstack/react-router-devtools@^1.133.20":
-  version "1.133.20"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-router-devtools/-/react-router-devtools-1.133.20.tgz#74fe034580c5f62a303ed69abe7113a3d7828580"
-  integrity sha512-dhAlgBJX5uJb/D3U84gh4iumGfBMMnMNk9OSgOykUBaFRns/fi/7Qx5rPNJvvlIbqOEFjLCQQigDeFmyq2WSpw==
+  version "1.133.36"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-router-devtools/-/react-router-devtools-1.133.36.tgz#338aab04b139b7fbb1ccb58303f015ff3656423a"
+  integrity sha512-il+DNzc8Ia54N+HOmIlY10NBk7rp0N7Nyysk8eeC1ZSIXImC3MPchdAspwioE6DI7WfK+MfpTav2m9zoOL8wSQ==
   dependencies:
-    "@tanstack/router-devtools-core" "1.133.20"
+    "@tanstack/router-devtools-core" "1.133.36"
     vite "^7.1.7"
 
 "@tanstack/react-router@^1.131.36":
@@ -2024,10 +2024,10 @@
     tiny-invariant "^1.3.3"
     tiny-warning "^1.0.3"
 
-"@tanstack/router-devtools-core@1.133.20":
-  version "1.133.20"
-  resolved "https://registry.yarnpkg.com/@tanstack/router-devtools-core/-/router-devtools-core-1.133.20.tgz#3f83212fcb332c02dcfc272c9873f36f5f985358"
-  integrity sha512-d5y9AWB3tK/HD+h7qGLJX5Q2zgjws9KXS26mqIyHTIbhi5O6CNVhOsbMkU04c0u8E2thax3P0IYDhLI5vvrB4w==
+"@tanstack/router-devtools-core@1.133.36":
+  version "1.133.36"
+  resolved "https://registry.yarnpkg.com/@tanstack/router-devtools-core/-/router-devtools-core-1.133.36.tgz#5aad8667e1cc5f9c8da2c8569ffa750c35489dbb"
+  integrity sha512-jgXSCfWPLukcjXDf4thpk/0QgLXv61mrvmfh9xc8+xeC5TMeLyz2xBaTghniD2PtdF6eII3vMaTWOpMHj4+cVQ==
   dependencies:
     clsx "^2.1.1"
     goober "^2.1.16"
@@ -3915,9 +3915,9 @@ globjoin@^0.1.4:
   integrity sha512-xYfnw62CKG8nLkZBfWbhWwDw02CHty86jfPcc2cr3ZfeuK9ysoVPPEUxf21bAD/rWAgk52SuBrLJlefNy8mvFg==
 
 goober@^2.1.16:
-  version "2.1.16"
-  resolved "https://registry.yarnpkg.com/goober/-/goober-2.1.16.tgz#7d548eb9b83ff0988d102be71f271ca8f9c82a95"
-  integrity sha512-erjk19y1U33+XAMe1VTvIONHYoSqE4iS7BYUZfHaqeohLmnC0FdxEh7rQU+6MZ4OajItzjZFSRtVANrQwNq6/g==
+  version "2.1.18"
+  resolved "https://registry.yarnpkg.com/goober/-/goober-2.1.18.tgz#b72d669bd24d552d441638eee26dfd5716ea6442"
+  integrity sha512-2vFqsaDVIT9Gz7N6kAL++pLpp41l3PfDuusHcjnGLfR6+huZkl6ziX+zgVC3ZxpqWhzH6pyDdGrCeDhMIvwaxw==
 
 gopd@^1.0.1, gopd@^1.2.0:
   version "1.2.0"
@@ -6004,7 +6004,7 @@ vite-plugin-symfony@^8.2.0:
     picocolors "^1.1.1"
     sirv "^3.0.1"
 
-vite@7.1.11, vite@^7.1.7:
+vite@7.1.11:
   version "7.1.11"
   resolved "https://registry.yarnpkg.com/vite/-/vite-7.1.11.tgz#4d006746112fee056df64985191e846ebfb6007e"
   integrity sha512-uzcxnSDVjAopEUjljkWh8EIrg6tlzrjFUfMcR1EVsRDGwf/ccef0qQPRyOrROwhrTDaApueq+ja+KLPlzR/zdg==
@@ -6026,6 +6026,20 @@ vite@7.1.11, vite@^7.1.7:
     esbuild "^0.25.0"
     postcss "^8.5.3"
     rollup "^4.30.1"
+  optionalDependencies:
+    fsevents "~2.3.3"
+
+vite@^7.1.7:
+  version "7.1.12"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-7.1.12.tgz#8b29a3f61eba23bcb93fc9ec9af4a3a1e83eecdb"
+  integrity sha512-ZWyE8YXEXqJrrSLvYgrRP7p62OziLW7xI5HYGWFzOvupfAlrLvURSzv/FyGyy0eidogEM3ujU+kUG1zuHgb6Ug==
+  dependencies:
+    esbuild "^0.25.0"
+    fdir "^6.5.0"
+    picomatch "^4.0.3"
+    postcss "^8.5.6"
+    rollup "^4.43.0"
+    tinyglobby "^0.2.15"
   optionalDependencies:
     fsevents "~2.3.3"
 

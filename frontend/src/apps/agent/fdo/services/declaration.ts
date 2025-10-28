@@ -1,6 +1,10 @@
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
 import { ServiceIdentifier } from "inversify";
-import { instanceToPlain, plainToInstance } from "class-transformer";
+import {
+  instanceToPlain,
+  plainToClassFromExist,
+  plainToInstance,
+} from "class-transformer";
 
 export interface DeclarationManagerInterface {
   getListe(): Promise<DeclarationErreurOperationnelle[]>;
@@ -11,7 +15,7 @@ export interface DeclarationManagerInterface {
     reference: string,
   ): Promise<DeclarationErreurOperationnelle | undefined>;
 
-  nouvelleDeclaration(): DeclarationErreurOperationnelle;
+  nouvelleDeclaration(): Promise<DeclarationErreurOperationnelle>;
 
   enregistrer(
     declaration: DeclarationErreurOperationnelle,
@@ -80,7 +84,8 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     );
   }
 
-  nouvelleDeclaration(): DeclarationErreurOperationnelle {
+  async nouvelleDeclaration(): Promise<DeclarationErreurOperationnelle> {
+    await this.chargerListeDeclarations();
     this._declarations.push(new DeclarationErreurOperationnelle());
 
     localStorage.setItem(
@@ -93,18 +98,36 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   enregistrer(declaration: DeclarationErreurOperationnelle): Promise<void> {
     this._declarations.forEach((d) =>
-      declaration.reference === d.reference ? declaration : d,
+      declaration.dateCreation.getTime() === d.dateCreation.getTime()
+        ? declaration
+        : d,
     );
 
     localStorage.setItem(
       APIDeclarationManager.CLEF_STOCKAGE,
-      JSON.stringify(instanceToPlain(this._declarations)),
+      JSON.stringify(
+        instanceToPlain(this._declarations.filter((d) => d.estBrouillon())),
+      ),
     );
 
     return Promise.resolve(undefined);
   }
 
-  soumettre(declaration: DeclarationErreurOperationnelle): Promise<void> {
-    return Promise.resolve(undefined);
+  async soumettre(declaration: DeclarationErreurOperationnelle): Promise<void> {
+    const response = await fetch(
+      "/api/agent/dfo/erreur-operationnelle/declarer",
+      {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(instanceToPlain(declaration)),
+      },
+    );
+
+    await this.enregistrer(
+      plainToClassFromExist(declaration, await response.json()),
+    );
   }
 }

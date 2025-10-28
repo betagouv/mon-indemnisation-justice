@@ -22,7 +22,7 @@ export const Route = createFileRoute(
       params.reference,
     );
 
-    if (!declaration?.adresse?.localite) {
+    if (!declaration?.adresse?.localite || !declaration.estBrouillon()) {
       throw redirect({
         to: "/agent/fdo/erreur-operationnelle/$reference/1-operation",
         replace: true,
