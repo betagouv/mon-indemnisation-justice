@@ -63,9 +63,10 @@ class BrisPorte
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
+    // TODO : supprimer CourrierDossier et cette relation
     #[ORM\OneToMany(targetEntity: CourrierDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'LAZY')]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    /** @var Collection<CourrierDossier> */
+    /** @var Collection<EtatDossier> */
     protected Collection $historiqueCourriers;
 
     #[Groups('dossier:lecture')]
@@ -90,6 +91,10 @@ class BrisPorte
     #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?TestEligibilite $testEligibilite = null;
+
+    #[ORM\OneToOne(targetEntity: ProcedureJudiciaire::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'declaration_id', nullable: true, onDelete: 'SET NULL')]
+    protected ?DeclarationErreurOperationnelle $declarationFDO = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
@@ -147,7 +152,7 @@ class BrisPorte
     public function onPrePersist(PrePersistEventArgs $args): void
     {
         if ($this->historiqueEtats->isEmpty()) {
-            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
+            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: null === $this->procedureJudiciaire, agent: $this->procedureJudiciaire?->getAgent());
         }
     }
 
@@ -434,11 +439,6 @@ class BrisPorte
         return $this->documentsParType;
     }
 
-    public function getRawDocuments(): Collection
-    {
-        return $this->documents;
-    }
-
     public function getDocumentsATransmettre(): Collection
     {
         return $this->documents->filter(fn (Document $document) => in_array($document->getType(), [
@@ -586,6 +586,18 @@ class BrisPorte
     public function setTestEligibilite(?TestEligibilite $testEligibilite): BrisPorte
     {
         $this->testEligibilite = $testEligibilite;
+
+        return $this;
+    }
+
+    public function getProcedureJudiciaire(): ?ProcedureJudiciaire
+    {
+        return $this->procedureJudiciaire;
+    }
+
+    public function setProcedureJudiciaire(?ProcedureJudiciaire $procedureJudiciaire): BrisPorte
+    {
+        $this->procedureJudiciaire = $procedureJudiciaire;
 
         return $this;
     }

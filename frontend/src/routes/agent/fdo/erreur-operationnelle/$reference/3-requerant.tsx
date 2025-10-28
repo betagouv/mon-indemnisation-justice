@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import React from "react";
+import React, { useState } from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { z } from "zod";
@@ -12,7 +12,7 @@ import {
 } from "@/apps/agent/fdo/services";
 import { router } from "@/apps/agent/fdo/router.ts";
 import { useInjection } from "inversify-react";
-import { instanceToPlain, plainToClassFromExist } from "class-transformer";
+import { plainToClassFromExist } from "class-transformer";
 
 export const Route = createFileRoute(
   "/agent/fdo/erreur-operationnelle/$reference/3-requerant",
@@ -49,7 +49,7 @@ export const Route = createFileRoute(
 });
 
 const schemaRequerant = z.object({
-  requerant: z.object({
+  infosRequerant: z.object({
     nom: z.string().trim().min(1, { error: "Le nom du requérant est requis" }),
     prenom: z
       .string()
@@ -78,23 +78,14 @@ function Page() {
     DeclarationManagerInterface.$,
   );
 
+  const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
+
   const form = useForm({
     defaultValues: {
-      requerant: declaration.requerant
-        ? { ...declaration.requerant }
-        : {
-            nom: "",
-            prenom: "",
-            telephone: "",
-            courriel: "",
-            message: "",
-          },
+      infosRequerant: declaration.infosRequerant,
     },
     listeners: {
-      onSubmit: ({ formApi }) => {
-        console.log(formApi.getAllErrors());
-      },
-      onChange: async ({ fieldApi, formApi }) => {
+      onChange: async ({ formApi }) => {
         declarationManager.enregistrer(
           plainToClassFromExist(declaration, formApi.state.values),
         );
@@ -105,7 +96,11 @@ function Page() {
       onSubmit: schemaRequerant,
     },
     onSubmit: async () => {
-      alert(JSON.stringify(instanceToPlain(declaration), null, 2));
+      setSauvegardeEnCours(true);
+      await declarationManager.soumettre(declaration);
+      throw naviguer({
+        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+      });
     },
   });
 
@@ -136,12 +131,13 @@ function Page() {
           style={{ alignItems: "baseline" }}
         >
           <form.Field
-            name="requerant.nom"
+            name="infosRequerant.nom"
             children={(field) => {
               return (
                 <Input
                   className="fr-col-lg-4"
                   label="Nom *"
+                  disabled={sauvegardeEnCours}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "DUPONT",
@@ -163,12 +159,13 @@ function Page() {
           />
 
           <form.Field
-            name="requerant.prenom"
+            name="infosRequerant.prenom"
             children={(field) => {
               return (
                 <Input
                   className="fr-col-lg-4"
                   label="Prénom *"
+                  disabled={sauvegardeEnCours}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "Martin",
@@ -189,12 +186,13 @@ function Page() {
           />
 
           <form.Field
-            name="requerant.telephone"
+            name="infosRequerant.telephone"
             children={(field) => {
               return (
                 <Input
                   className="fr-col-lg-4"
                   label="Téléphone *"
+                  disabled={sauvegardeEnCours}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "06 00 00 00 00",
@@ -215,12 +213,13 @@ function Page() {
           />
 
           <form.Field
-            name="requerant.courriel"
+            name="infosRequerant.courriel"
             children={(field) => {
               return (
                 <Input
                   className="fr-col-lg-4"
                   label="Courriel *"
+                  disabled={sauvegardeEnCours}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "martin.dupont@courriel.fr",
@@ -253,12 +252,13 @@ function Page() {
           */}
 
           <form.Field
-            name="requerant.message"
+            name="infosRequerant.message"
             children={(field) => {
               return (
                 <Input
                   className="fr-col-lg-12"
                   label="Commentaire à destination du dossier requérant"
+                  disabled={sauvegardeEnCours}
                   textArea
                   nativeTextAreaProps={{
                     placeholder: "Bref descriptif de l’intervention...",
@@ -290,7 +290,8 @@ function Page() {
             buttons={[
               {
                 children: "Revenir à l'étape précédente",
-                priority: "secondary",
+                disabled: sauvegardeEnCours,
+                priority: sauvegardeEnCours ? "tertiary" : "secondary",
                 iconId: "fr-icon-arrow-left-line",
                 iconPosition: "left",
                 onClick: () =>
@@ -302,8 +303,11 @@ function Page() {
                   }),
               },
               {
-                children: "Envoyer",
-                priority: "primary",
+                children: sauvegardeEnCours
+                  ? "Sauvegarde en cours..."
+                  : "Envoyer",
+                disabled: sauvegardeEnCours || declaration.estSauvegarde(),
+                priority: sauvegardeEnCours ? "tertiary" : "primary",
                 nativeButtonProps: {
                   type: "submit",
                   role: "submit",

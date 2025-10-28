@@ -7,9 +7,9 @@ import {
 export const Route = createFileRoute(
   "/agent/fdo/erreur-operationnelle/nouvelle-declaration",
 )({
-  beforeLoad: ({ cause }) => {
+  beforeLoad: async ({ cause }) => {
     if (cause === "enter") {
-      const brouillon = container
+      const brouillon = await container
         .get(DeclarationManagerInterface.$)
         .nouvelleDeclaration();
 

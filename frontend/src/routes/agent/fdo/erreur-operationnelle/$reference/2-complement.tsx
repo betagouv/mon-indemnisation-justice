@@ -17,6 +17,8 @@ import {
   DeclarationManagerInterface,
 } from "@/apps/agent/fdo/services";
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import { Agent } from "@/common/models";
+import { AgentContext } from "@/routers/contexts/AgentContext.ts";
 
 export const Route = createFileRoute(
   "/agent/fdo/erreur-operationnelle/$reference/2-complement",
@@ -36,37 +38,41 @@ export const Route = createFileRoute(
   },
   loader: async ({
     params,
+    context,
   }: {
     params: any;
+    context: AgentContext;
   }): Promise<{
     declaration: DeclarationErreurOperationnelle;
     reference: string;
+    agent: Agent;
   }> => {
     return {
       reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
         .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
+      agent: await context.agent,
     };
   },
   component: Page,
 });
 
 const schemaInfosJuridiques = z.object({
+  courrielAgent: z.email({ error: "L'adresse courriel est requise" }),
+  telephoneAgent: z
+    .string()
+    .min(7, { error: "Le numéro de téléphone est requis" }),
   procedure: z.object({
     serviceEnqueteur: z.string(),
-    courrielAgent: z.email({ error: "L'adresse courriel est requise" }),
-    telephoneAgent: z
-      .string()
-      .min(7, { error: "Le numéro de téléphone est requis" }),
     numeroProcedure: z
       .string()
       .trim()
       .min(1, { error: "Le numéro de procédure est requis" }),
     juridictionOuParquet: z.string(),
     nomMagistrat: z.string(),
-    commentaire: z.string(),
   }),
+  commentaire: z.string(),
 });
 
 const ModaleAjoutFichier = createModal({
@@ -78,8 +84,12 @@ function Page() {
   const {
     declaration,
     reference,
-  }: { declaration: DeclarationErreurOperationnelle; reference: string } =
-    Route.useLoaderData();
+    agent,
+  }: {
+    declaration: DeclarationErreurOperationnelle;
+    reference: string;
+    agent: Agent;
+  } = Route.useLoaderData();
 
   const naviguer = useNavigate({
     from: Route.fullPath,
@@ -91,23 +101,27 @@ function Page() {
 
   const form = useForm({
     defaultValues: {
-      procedure: declaration.procedure
-        ? { ...declaration.procedure }
-        : {
-            serviceEnqueteur: "",
-            courrielAgent: "",
-            telephoneAgent: "",
-            numeroProcedure: "",
-            juridictionOuParquet: "",
-            nomMagistrat: "",
-            commentaire: "",
-          },
+      commentaire: declaration.commentaire,
+      courrielAgent: agent.courriel,
+      telephoneAgent: agent.telephone,
+      procedure: { ...declaration.procedure },
     },
     listeners: {
       onChange: async ({ fieldApi, formApi }) => {
-        declarationManager.enregistrer(
-          plainToClassFromExist(declaration, formApi.state.values),
-        );
+        // Les champs `telephoneAgent` et `telephoneAgent` ne font pas partie des données de la déclaration, mais sont en
+        // réalité des informations propres à l'agent connecté.
+        if (!["courrielAgent", "telephoneAgent"].includes(fieldApi.name)) {
+          declarationManager.enregistrer(
+            plainToClassFromExist(
+              declaration,
+              Object.fromEntries(
+                Object.entries(formApi.state.values).filter(
+                  ([k, v]) => !["courrielAgent", "telephoneAgent"].includes(k),
+                ),
+              ),
+            ),
+          );
+        }
       },
       onChangeDebounceMs: 750,
     },
@@ -118,6 +132,7 @@ function Page() {
       console.log(value);
       await naviguer({
         to: "/agent/fdo/erreur-operationnelle/$reference/3-requerant",
+        params: { reference } as any,
       });
     },
   });
@@ -191,6 +206,7 @@ function Page() {
                   <Input
                     className="fr-col-lg-6 fr-m-0"
                     label="Nom du service enquêteur"
+                    disabled={declaration.estSauvegarde()}
                     nativeInputProps={{
                       type: "text",
                       autoFocus: true,
@@ -211,12 +227,13 @@ function Page() {
             />
 
             <form.Field
-              name="procedure.courrielAgent"
+              name="courrielAgent"
               children={(field) => {
                 return (
                   <Input
                     className="fr-col-lg-3 fr-m-0"
                     label="Courriel *"
+                    disabled={!!agent.courriel || declaration.estSauvegarde()}
                     nativeInputProps={{
                       type: "text",
                       value: field.state.value,
@@ -236,12 +253,13 @@ function Page() {
             />
 
             <form.Field
-              name="procedure.telephoneAgent"
+              name="telephoneAgent"
               children={(field) => {
                 return (
                   <Input
                     className="fr-col-lg-3 fr-m-0"
                     label="Téléphone *"
+                    disabled={declaration.estSauvegarde()}
                     nativeInputProps={{
                       type: "text",
                       value: field.state.value,
@@ -267,6 +285,7 @@ function Page() {
                   <Input
                     className="fr-col-lg-4 fr-m-0"
                     label="Numéro de procédure *"
+                    disabled={declaration.estSauvegarde()}
                     nativeInputProps={{
                       type: "text",
                       value: field.state.value,
@@ -292,6 +311,7 @@ function Page() {
                   <Input
                     className="fr-col-lg-4 fr-m-0"
                     label="Juridiction / parquet (le cas échéant)"
+                    disabled={declaration.estSauvegarde()}
                     nativeInputProps={{
                       type: "text",
                       value: field.state.value,
@@ -309,6 +329,7 @@ function Page() {
                   <Input
                     className="fr-col-lg-4 fr-m-0"
                     label="Nom du magistrat (le cas échéant)"
+                    disabled={declaration.estSauvegarde()}
                     nativeInputProps={{
                       type: "text",
                       value: field.state.value,
@@ -320,12 +341,13 @@ function Page() {
             />
 
             <form.Field
-              name="procedure.commentaire"
+              name="commentaire"
               children={(field) => {
                 return (
                   <Input
                     className="fr-col-lg-12 fr-m-0"
                     label="Commentaire à destination du dossier"
+                    disabled={declaration.estSauvegarde()}
                     textArea={true}
                     nativeTextAreaProps={{
                       rows: 5,
@@ -391,6 +413,9 @@ function Page() {
                   onClick: () =>
                     naviguer({
                       to: "/agent/fdo/erreur-operationnelle/$reference/1-operation",
+                      params: {
+                        reference,
+                      } as any,
                     }),
                 },
                 {
