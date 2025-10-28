@@ -232,9 +232,9 @@ class DossierController extends AgentController
         $taille = 20;
         $page = $request->query->getInt('p', 1);
         $paginator = $this->dossierRepository->rechercheDossiers(
-            $page,
-            $taille,
-            $request->query->has('e')
+            page: $page,
+            taille: $taille,
+            etats: $request->query->has('e')
                 ? array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e'))
                 : [
                     // EtatDossierType::DOSSIER_CLOTURE,
@@ -250,12 +250,10 @@ class DossierController extends AgentController
                     EtatDossierType::DOSSIER_KO_A_SIGNER,
                     EtatDossierType::DOSSIER_KO_REJETE,
                 ],
-            $this->agentRepository->findBy([
-                'id' => array_filter(
-                    self::extraireCritereRecherche($request, 'a'),
-                    fn ($a) => is_numeric($a)
-                ),
-            ]),
+            attributaires: count($ids = array_filter(
+                self::extraireCritereRecherche($request, 'a'),
+                fn ($a) => is_numeric($a)
+            )) > 0 ? $this->agentRepository->findBy(['id' => $ids]) : [],
             filtres: self::extraireCritereRecherche($request, 'r'),
             nonAttribue: in_array('_', self::extraireCritereRecherche($request, 'a'))
         );

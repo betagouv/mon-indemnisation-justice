@@ -1,31 +1,29 @@
-import { Transform } from "class-transformer";
+import { Exclude, Transform } from "class-transformer";
 
 class Adresse {
-  public ligne1: "";
-  public ligne2: "";
-  public codePostal: "";
-  public localite: "";
+  public ligne1: string = "";
+  public ligne2: string = "";
+  public codePostal: string = "";
+  public localite: string = "";
 }
 
-class Requerant {
-  nom: string;
-  prenom: string;
-  telephone: string;
-  courriel: string;
-  message: string;
+class InformationsRequerant {
+  nom: string = "";
+  prenom: string = "";
+  telephone: string = "";
+  courriel: string = "";
+  message: string = "";
 }
 
 class Procedure {
-  numeroProcedure: string;
-  serviceEnqueteur: string;
-  courrielAgent: string;
-  telephoneAgent: string;
-  juridictionOuParquet: string;
-  nomMagistrat: string;
-  commentaire: string;
+  numeroProcedure: string = "";
+  serviceEnqueteur: string = "";
+  juridictionOuParquet: string = "";
+  nomMagistrat: string = "";
 }
 
 export class DeclarationErreurOperationnelle {
+  @Exclude({ toPlainOnly: true })
   public readonly id?: string;
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
   @Transform(({ value }: { value: Date }) => value.getTime(), {
@@ -37,19 +35,33 @@ export class DeclarationErreurOperationnelle {
     toPlainOnly: true,
   })
   public dateOperation: Date;
-  adresse?: Adresse;
-  requerant?: Requerant;
-  procedure?: Procedure;
+  @Transform(({ value }) => (value ? new Date(value) : undefined), {
+    toClassOnly: true,
+  })
+  @Transform(({ value }: { value: Date }) => value?.getTime(), {
+    toPlainOnly: true,
+  })
+  @Exclude({ toPlainOnly: true })
+  public dateSoumission?: Date;
+  adresse: Adresse = new Adresse();
+  infosRequerant: InformationsRequerant = new InformationsRequerant();
+  procedure: Procedure = new Procedure();
+  commentaire: string = "";
 
   public constructor() {
     this.dateOperation = new Date();
+    this.dateCreation = new Date();
   }
 
   public get reference(): string {
     return this.id ?? this.dateCreation.getTime().toString();
   }
 
+  public estSauvegarde(): boolean {
+    return !!this.id;
+  }
+
   public estBrouillon(): boolean {
-    return !this.id;
+    return !this.estSauvegarde();
   }
 }
