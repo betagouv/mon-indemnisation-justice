@@ -61,7 +61,7 @@ export const Route = createFileRoute(
 const schemaInfosJuridiques = z.object({
   courrielAgent: z.email({ error: "L'adresse courriel est requise" }),
   telephoneAgent: z
-    .string()
+    .string({ error: "Le numéro de téléphone est requis" })
     .min(7, { error: "Le numéro de téléphone est requis" }),
   procedure: z.object({
     serviceEnqueteur: z.string(),
@@ -227,13 +227,13 @@ function Page() {
             />
 
             <form.Field
-              name="courrielAgent"
+              name="telephoneAgent"
               children={(field) => {
                 return (
                   <Input
                     className="fr-col-lg-3 fr-m-0"
-                    label="Courriel *"
-                    disabled={!!agent.courriel || declaration.estSauvegarde()}
+                    label="Téléphone du service ou de l'agent *"
+                    disabled={declaration.estSauvegarde()}
                     nativeInputProps={{
                       type: "text",
                       value: field.state.value,
@@ -253,13 +253,13 @@ function Page() {
             />
 
             <form.Field
-              name="telephoneAgent"
+              name="courrielAgent"
               children={(field) => {
                 return (
                   <Input
                     className="fr-col-lg-3 fr-m-0"
-                    label="Téléphone *"
-                    disabled={declaration.estSauvegarde()}
+                    label="Courriel de l'agent *"
+                    disabled={!!agent.courriel || declaration.estSauvegarde()}
                     nativeInputProps={{
                       type: "text",
                       value: field.state.value,

@@ -114,6 +114,12 @@ function Page() {
         title="Informations du requérant"
       />
 
+      <div className="fr-grid-row">
+        <h6 className="fr-m-0 fr-text-label--blue-france">
+          Civilité et contact
+        </h6>
+      </div>
+
       <form
         style={{
           display: "flex",

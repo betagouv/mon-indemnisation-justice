@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationErreurOperationnelleI
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationErreurOperationelleVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
+use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class DeclarerErreurOperationnelleEndpoint
         protected readonly EntityManagerInterface $em,
         protected readonly ObjectMapperInterface $objectMapper,
         protected readonly NormalizerInterface $normalizer,
+        protected readonly Mailer $mailer,
     ) {}
 
     public function __invoke(#[MapRequestPayload] DeclarationErreurOperationnelleInput $input, Security $security): Response
@@ -42,7 +44,15 @@ class DeclarerErreurOperationnelleEndpoint
         $this->em->persist($declaration);
         $this->em->flush();
 
-        // TODO: envoyer un email
+        // Envoi du mail de confirmation.
+        $this->mailer
+            ->to($declaration->getInfosRequerant()->courriel, $declaration->getInfosRequerant()->prenom.' '.$declaration->getInfosRequerant()->nom)
+            ->subject("Mon Indemnisation Justice: vous pouvez faire une demande d'indemnisation")
+            ->htmlTemplate('email/invitation_a_deposer.html.twig', [
+                'declaration' => $declaration,
+            ])
+            ->send()
+        ;
 
         return new JsonResponse([
             // TODO aligner les schémas avec le frontend

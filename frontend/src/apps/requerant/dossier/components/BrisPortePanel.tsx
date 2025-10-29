@@ -110,37 +110,40 @@ const BrisPortePanel = function () {
       {step === 2 && (
         <>
           <div className="fr-grid-row fr-mb-4w">
-            <div className="fr-col-12">
-              <section className="pr-fo rm-section">
-                <Document
-                  documents={dossier.documents.attestation_information}
-                  libelle="Attestation complétée par les forces de l'ordre"
-                  type={"attestation_information"}
-                  onRemoved={(document) => {
-                    patchDossier({
-                      documents: {
-                        attestation_information:
-                          dossier.documents.attestation_information.filter(
-                            (d) => d.id !== document.id,
-                          ),
-                      },
-                      patch: false,
-                    });
-                  }}
-                  onUploaded={(document) =>
-                    patchDossier({
-                      documents: {
-                        attestation_information:
-                          dossier.documents.attestation_information.concat([
-                            document,
-                          ]),
-                      },
-                      patch: false,
-                    })
-                  }
-                />
-              </section>
-            </div>
+            {/* Ne pas demander l'attestation si le dossier est issu d'une déclaration des FDO */}
+            {!dossier.issuDeclarationFDO && (
+              <div className="fr-col-12">
+                <section className="pr-fo rm-section">
+                  <Document
+                    documents={dossier.documents.attestation_information}
+                    libelle="Attestation complétée par les forces de l'ordre"
+                    type={"attestation_information"}
+                    onRemoved={(document) => {
+                      patchDossier({
+                        documents: {
+                          attestation_information:
+                            dossier.documents.attestation_information.filter(
+                              (d) => d.id !== document.id,
+                            ),
+                        },
+                        patch: false,
+                      });
+                    }}
+                    onUploaded={(document) =>
+                      patchDossier({
+                        documents: {
+                          attestation_information:
+                            dossier.documents.attestation_information.concat([
+                              document,
+                            ]),
+                        },
+                        patch: false,
+                      })
+                    }
+                  />
+                </section>
+              </div>
+            )}
             <div className="fr-col-12">
               <section className="pr-form-section">
                 <Document

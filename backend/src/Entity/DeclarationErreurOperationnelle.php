@@ -43,6 +43,8 @@ class DeclarationErreurOperationnelle
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'procedure_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     protected ProcedureJudiciaire $procedure;
+    #[ORM\OneToOne(targetEntity: BrisPorte::class, cascade: ['persist', 'remove'])]
+    protected ?BrisPorte $dossier = null;
 
     #[ORM\Column(nullable: true)]
     protected string $commentaire = '';
@@ -130,6 +132,23 @@ class DeclarationErreurOperationnelle
         $this->procedure = $procedure;
 
         return $this;
+    }
+
+    public function getDossier(): BrisPorte
+    {
+        return $this->dossier;
+    }
+
+    public function setDossier(BrisPorte $dossier): static
+    {
+        $this->dossier = $dossier;
+
+        return $this;
+    }
+
+    public function estAttribue(): bool
+    {
+        return null !== $this->dossier;
     }
 
     public function getCommentaire(): string

@@ -38,7 +38,7 @@ final class Version20251029135607 extends AbstractMigration
         $this->addSql('ALTER TABLE agents ADD telephone VARCHAR(16) DEFAULT NULL');
         $this->addSql('ALTER TABLE bris_porte ADD declaration_id UUID DEFAULT NULL');
         $this->addSql('COMMENT ON COLUMN bris_porte.declaration_id IS \'(DC2Type:uuid)\'');
-        $this->addSql('ALTER TABLE bris_porte ADD CONSTRAINT FK_BC580EEDC06258A3 FOREIGN KEY (declaration_id) REFERENCES procedures_judiciaires (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE bris_porte ADD CONSTRAINT FK_BC580EEDC06258A3 FOREIGN KEY (declaration_id) REFERENCES declarations_erreur_operationnelle (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_BC580EEDC06258A3 ON bris_porte (declaration_id)');
     }
 
