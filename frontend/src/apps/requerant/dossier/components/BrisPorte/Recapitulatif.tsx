@@ -120,12 +120,14 @@ const Recapitulatif = ({
         <section className="pr-form-section fr-py-4w">
           <h3>Documents à joindre obligatoirement à votre demande</h3>
 
-          <Document
-            documents={dossier.documents.attestation_information}
-            lectureSeule={true}
-            libelle="Attestation complétée par les forces de l'ordre"
-            type={"attestation_information"}
-          />
+          {!dossier.issuDeclarationFDO && (
+            <Document
+              documents={dossier.documents.attestation_information}
+              lectureSeule={true}
+              libelle="Attestation complétée par les forces de l'ordre"
+              type={"attestation_information"}
+            />
+          )}
 
           <Document
             documents={dossier.documents.photo_prejudice}
