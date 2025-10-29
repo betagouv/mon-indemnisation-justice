@@ -92,7 +92,7 @@ class BrisPorte
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?TestEligibilite $testEligibilite = null;
 
-    #[ORM\OneToOne(targetEntity: ProcedureJudiciaire::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: DeclarationErreurOperationnelle::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'declaration_id', nullable: true, onDelete: 'SET NULL')]
     protected ?DeclarationErreurOperationnelle $declarationFDO = null;
 
@@ -152,7 +152,7 @@ class BrisPorte
     public function onPrePersist(PrePersistEventArgs $args): void
     {
         if ($this->historiqueEtats->isEmpty()) {
-            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: null === $this->procedureJudiciaire, agent: $this->procedureJudiciaire?->getAgent());
+            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: null === $this->declarationFDO, agent: $this->declarationFDO?->getAgent());
         }
     }
 
@@ -583,21 +583,27 @@ class BrisPorte
         return $this->testEligibilite?->estEligible();
     }
 
-    public function setTestEligibilite(?TestEligibilite $testEligibilite): BrisPorte
+    public function setTestEligibilite(?TestEligibilite $testEligibilite): static
     {
         $this->testEligibilite = $testEligibilite;
 
         return $this;
     }
 
-    public function getProcedureJudiciaire(): ?ProcedureJudiciaire
+    #[Groups(['dossier:lecture'])]
+    public function isIssuDeclarationFDO(): ?bool
     {
-        return $this->procedureJudiciaire;
+        return null !== $this->declarationFDO;
     }
 
-    public function setProcedureJudiciaire(?ProcedureJudiciaire $procedureJudiciaire): BrisPorte
+    public function getDeclarationFDO(): ?DeclarationErreurOperationnelle
     {
-        $this->procedureJudiciaire = $procedureJudiciaire;
+        return $this->declarationFDO;
+    }
+
+    public function setDeclarationFDO(DeclarationErreurOperationnelle $declarationFDO): static
+    {
+        $this->declarationFDO = $declarationFDO;
 
         return $this;
     }
@@ -648,7 +654,7 @@ class BrisPorte
         return $this->qualiteRequerant;
     }
 
-    public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): BrisPorte
+    public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): static
     {
         $this->qualiteRequerant = $qualiteRequerant;
 

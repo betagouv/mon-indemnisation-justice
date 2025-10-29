@@ -42,7 +42,7 @@ class BrisPorteControllerTest extends WebTestCase
         if ($getTestEligibilite) {
             /** @var TestEligibilite $testEligibilite */
             $testEligibilite = $getTestEligibilite($this->em);
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
+            $this->initializeSession([BrisPorteController::CLEF_SESSION_TEST_ELIGIBILITE => $testEligibilite->id]);
         }
 
         $this->client->request('GET', '/bris-de-porte/tester-mon-eligibilite');
@@ -108,7 +108,7 @@ class BrisPorteControllerTest extends WebTestCase
         if ($getTestEligibilite) {
             /** @var TestEligibilite $testEligibilite */
             $testEligibilite = $getTestEligibilite($this->em);
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
+            $this->initializeSession([BrisPorteController::CLEF_SESSION_TEST_ELIGIBILITE => $testEligibilite->id]);
         }
 
         $this->client->request('GET', '/bris-de-porte/creation-de-compte');
@@ -163,7 +163,7 @@ class BrisPorteControllerTest extends WebTestCase
         if ($getTestEligibilite) {
             /** @var TestEligibilite $testEligibilite */
             $testEligibilite = $getTestEligibilite($this->em);
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
+            $this->initializeSession([BrisPorteController::CLEF_SESSION_TEST_ELIGIBILITE => $testEligibilite->id]);
         }
 
         $this->client->request('GET', '/bris-de-porte/finaliser-la-creation');
