@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3904c4fd65c4f74bf149de2280b4c151",
+    "content-hash": "88be585cae9eb38364f2c07c4b96b504",
     "packages": [
         {
             "name": "acsiomatic/device-detector-bundle",
@@ -14133,6 +14133,7 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.3",
+        "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
