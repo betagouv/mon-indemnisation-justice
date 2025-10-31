@@ -9,7 +9,7 @@ class TimestampToDateImmutableTransformer implements TransformCallableInterface
     public function __invoke(mixed $value, object $source, ?object $target): ?\DateTimeImmutable
     {
         if (is_int($value)) {
-            return \DateTimeImmutable::createFromFormat('U', intdiv($value, 100));
+            return \DateTimeImmutable::createFromFormat('U', intdiv($value, 1000));
         }
 
         return null;
