@@ -59,7 +59,6 @@ export const Route = createFileRoute(
 });
 
 const schemaInfosJuridiques = z.object({
-  courrielAgent: z.email({ error: "L'adresse courriel est requise" }),
   telephoneAgent: z
     .string({ error: "Le numéro de téléphone est requis" })
     .min(7, { error: "Le numéro de téléphone est requis" }),
@@ -102,26 +101,17 @@ function Page() {
   const form = useForm({
     defaultValues: {
       commentaire: declaration.commentaire,
-      courrielAgent: agent.courriel,
-      telephoneAgent: agent.telephone,
+      telephoneAgent: declaration.telephoneAgent ?? agent.telephone ?? "",
       procedure: { ...declaration.procedure },
     },
     listeners: {
       onChange: async ({ fieldApi, formApi }) => {
-        // Les champs `telephoneAgent` et `telephoneAgent` ne font pas partie des données de la déclaration, mais sont en
-        // réalité des informations propres à l'agent connecté.
-        if (!["courrielAgent", "telephoneAgent"].includes(fieldApi.name)) {
-          declarationManager.enregistrer(
-            plainToClassFromExist(
-              declaration,
-              Object.fromEntries(
-                Object.entries(formApi.state.values).filter(
-                  ([k, v]) => !["courrielAgent", "telephoneAgent"].includes(k),
-                ),
-              ),
-            ),
-          );
+        if (fieldApi.name == "numeroAgent") {
+          agent.telephone = fieldApi.state.value;
         }
+        await declarationManager.enregistrer(
+          plainToClassFromExist(declaration, formApi.state.values),
+        );
       },
       onChangeDebounceMs: 750,
     },
@@ -252,29 +242,13 @@ function Page() {
               }}
             />
 
-            <form.Field
-              name="courrielAgent"
-              children={(field) => {
-                return (
-                  <Input
-                    className="fr-col-lg-3 fr-m-0"
-                    label="Courriel de l'agent *"
-                    disabled={!!agent.courriel || declaration.estSauvegarde()}
-                    nativeInputProps={{
-                      type: "text",
-                      value: field.state.value,
-                      onChange: (e) => field.handleChange(e.target.value),
-                    }}
-                    state={!field.state.meta.isValid ? "error" : "default"}
-                    stateRelatedMessage={
-                      !field.state.meta.isValid ? (
-                        <>{field.state.meta.errors.at(0)?.message}</>
-                      ) : (
-                        <></>
-                      )
-                    }
-                  />
-                );
+            <Input
+              className="fr-col-lg-3 fr-m-0"
+              label="Courriel de l'agent *"
+              disabled={true}
+              nativeInputProps={{
+                type: "text",
+                value: agent.courriel,
               }}
             />
 

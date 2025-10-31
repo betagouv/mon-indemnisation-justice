@@ -96,6 +96,7 @@ class DossierControllerTest extends WebTestCase
                 'aContacteAssurance' => $dossier->getTestEligibilite()->aContacteAssurance,
                 'aContacteBailleur' => $dossier->getTestEligibilite()->aContacteBailleur,
             ],
+            'issuDeclarationFDO' => false,
             'dateOperation' => null,
             'estPorteBlindee' => false,
             'documents' => [],

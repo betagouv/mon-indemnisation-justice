@@ -35,24 +35,53 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   protected _declarations: DeclarationErreurOperationnelle[];
 
-  protected chargerListeDeclarations(): Promise<void> {
-    if (!this._declarations) {
-      if (
-        typeof localStorage.getItem(APIDeclarationManager.CLEF_STOCKAGE) ===
-        "string"
-      ) {
-        this._declarations = plainToInstance(
+  protected async chargerListeDeclarations(force: boolean): Promise<void> {
+    if (!this._declarations || force) {
+      this._declarations = (
+        await Promise.all([
+          this.chargerBrouillons(),
+          this.chargerDeclarations(),
+        ])
+      ).reduce((cum, val) => cum.concat(...val), []);
+    }
+  }
+
+  protected async chargerBrouillons(): Promise<
+    DeclarationErreurOperationnelle[]
+  > {
+    if (
+      typeof localStorage.getItem(APIDeclarationManager.CLEF_STOCKAGE) ===
+      "string"
+    ) {
+      return Promise.resolve(
+        plainToInstance(
           DeclarationErreurOperationnelle,
           JSON.parse(
             localStorage.getItem(APIDeclarationManager.CLEF_STOCKAGE) as string,
           ) as any[],
-        );
-      } else {
-        this._declarations = [];
-      }
+        ),
+      );
     }
 
-    return Promise.resolve();
+    return Promise.resolve([]);
+  }
+  protected async chargerDeclarations(): Promise<
+    DeclarationErreurOperationnelle[]
+  > {
+    const response = await fetch(
+      "/api/agent/fdo/erreur-operationnelle/mes-declarations",
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      },
+    );
+
+    return plainToInstance(
+      DeclarationErreurOperationnelle,
+      (await response.json()) as any[],
+    );
   }
 
   async getListe(): Promise<DeclarationErreurOperationnelle[]> {
@@ -103,19 +132,13 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         : d,
     );
 
-    localStorage.setItem(
-      APIDeclarationManager.CLEF_STOCKAGE,
-      JSON.stringify(
-        instanceToPlain(this._declarations.filter((d) => d.estBrouillon())),
-      ),
-    );
-
     return Promise.resolve(undefined);
   }
 
   async soumettre(declaration: DeclarationErreurOperationnelle): Promise<void> {
+    // Appel API à `api_agent_fdo_erreur_operationnelle_declarer` :
     const response = await fetch(
-      "/api/agent/dfo/erreur-operationnelle/declarer",
+      "/api/agent/fdo/erreur-operationnelle/declarer",
       {
         method: "PUT",
         headers: {
@@ -126,8 +149,17 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
       },
     );
 
-    await this.enregistrer(
-      plainToClassFromExist(declaration, await response.json()),
+    localStorage.setItem(
+      APIDeclarationManager.CLEF_STOCKAGE,
+      JSON.stringify(
+        instanceToPlain(
+          this._declarations.filter(
+            (d) => d.estBrouillon() && d.reference !== declaration.reference,
+          ),
+        ),
+      ),
     );
+
+    await this.chargerListeDeclarations(true);
   }
 }

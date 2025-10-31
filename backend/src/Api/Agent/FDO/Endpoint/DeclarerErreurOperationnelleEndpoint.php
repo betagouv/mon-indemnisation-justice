@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationErreurOperationnelleInput;
+use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationErreurOperationnelleOutputMapper;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationErreurOperationelleVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
@@ -20,10 +21,10 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 /**
  * Route API qui permet à un agent des FDO de déclarer une erreur opérationnelle.
  */
-#[Route('/api/agent/dfo/erreur-operationnelle/declarer', name: 'api_agent_fdo_erreur_operationnelle_declarer', methods: ['PUT'])]
+#[Route('/api/agent/fdo/erreur-operationnelle/declarer', name: 'api_agent_fdo_erreur_operationnelle_declarer', methods: ['PUT'])]
 #[IsGranted(
     DeclarationErreurOperationelleVoter::ACTION_DECLARER,
-    message: "L'ajout d'un nouvel agent requiert l'habilitation à la gestion des agents",
+    message: "La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
 class DeclarerErreurOperationnelleEndpoint
@@ -39,12 +40,17 @@ class DeclarerErreurOperationnelleEndpoint
     {
         /** @var Agent $agent */
         $agent = $security->getUser();
+        // On en profite pour mettre à jour le numéro de téléphone de l'agent avec la valeur fournie
+        if ($agent->getTelephone() !== $input->telephoneAgent) {
+            $agent->setTelephone($input->telephoneAgent);
+            $this->em->persist($agent);
+        }
         $declaration = $this->objectMapper->map($input, DeclarationErreurOperationnelle::class)->setAgent($agent);
 
         $this->em->persist($declaration);
         $this->em->flush();
 
-        // Envoi du mail de confirmation.
+        // Envoi du mail d'invitation à déclarer
         $this->mailer
             ->to($declaration->getInfosRequerant()->courriel, $declaration->getInfosRequerant()->prenom.' '.$declaration->getInfosRequerant()->nom)
             ->subject("Mon Indemnisation Justice: vous pouvez faire une demande d'indemnisation")
@@ -55,8 +61,10 @@ class DeclarerErreurOperationnelleEndpoint
         ;
 
         return new JsonResponse([
-            // TODO aligner les schémas avec le frontend
-            'id' => $declaration->getId(),
+            $this->normalizer->normalize(
+                DeclarationErreurOperationnelleOutputMapper::mapper($declaration, $this->objectMapper),
+                'json'
+            ),
         ], Response::HTTP_CREATED);
     }
 }
