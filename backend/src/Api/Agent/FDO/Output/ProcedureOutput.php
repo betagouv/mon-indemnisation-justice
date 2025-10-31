@@ -1,12 +1,12 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
+namespace MonIndemnisationJustice\Api\Agent\FDO\Output;
 
 use MonIndemnisationJustice\Entity\ProcedureJudiciaire;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 
-#[Map(target: ProcedureJudiciaire::class)]
-class ProcedureInput
+#[Map(source: ProcedureJudiciaire::class)]
+class ProcedureOutput
 {
     public string $numeroProcedure;
     public string $serviceEnqueteur;

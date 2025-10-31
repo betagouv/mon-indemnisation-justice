@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3904c4fd65c4f74bf149de2280b4c151",
+    "content-hash": "88be585cae9eb38364f2c07c4b96b504",
     "packages": [
         {
             "name": "acsiomatic/device-detector-bundle",
@@ -6995,16 +6995,16 @@
         },
         {
             "name": "symfony/object-mapper",
-            "version": "v7.3.1",
+            "version": "v7.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/object-mapper.git",
-                "reference": "04c970c280b08c77a882a699f91cf5dd2e758387"
+                "reference": "62752b89178d7654bb7ec97d3fa3dbd67e417dbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/object-mapper/zipball/04c970c280b08c77a882a699f91cf5dd2e758387",
-                "reference": "04c970c280b08c77a882a699f91cf5dd2e758387",
+                "url": "https://api.github.com/repos/symfony/object-mapper/zipball/62752b89178d7654bb7ec97d3fa3dbd67e417dbe",
+                "reference": "62752b89178d7654bb7ec97d3fa3dbd67e417dbe",
                 "shasum": ""
             },
             "require": {
@@ -7015,7 +7015,8 @@
                 "symfony/property-access": "<7.2"
             },
             "require-dev": {
-                "symfony/property-access": "^7.2"
+                "symfony/property-access": "^7.2",
+                "symfony/var-exporter": "^7.2"
             },
             "type": "library",
             "autoload": {
@@ -7043,7 +7044,7 @@
             "description": "Provides a way to map an object to another object",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/object-mapper/tree/v7.3.1"
+                "source": "https://github.com/symfony/object-mapper/tree/v7.3.4"
             },
             "funding": [
                 {
@@ -7055,11 +7056,15 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-06-19T13:11:22+00:00"
+            "time": "2025-09-20T14:49:40+00:00"
         },
         {
             "name": "symfony/options-resolver",
@@ -13920,6 +13925,7 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.3",
+        "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-fileinfo": "*",
         "ext-iconv": "*",

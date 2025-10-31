@@ -6,7 +6,7 @@ use MonIndemnisationJustice\Entity\Agent;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 
 #[Map(source: Agent::class)]
-final class AgentOutput
+class AgentOutput
 {
     public int $id;
     public string $nom;

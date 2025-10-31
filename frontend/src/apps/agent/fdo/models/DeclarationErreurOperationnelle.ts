@@ -1,5 +1,6 @@
-import { Exclude, Expose, Transform, Type } from "class-transformer";
+import { Exclude, Expose, Type } from "class-transformer";
 import { Agent } from "@/common/models";
+import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 
 class Adresse {
   public ligne1: string = "";
@@ -30,29 +31,17 @@ class Procedure {
 export class DeclarationErreurOperationnelle {
   @Exclude({ toPlainOnly: true })
   public readonly id?: string;
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  @Transform(({ value }: { value: Date }) => value.getTime(), {
-    toPlainOnly: true,
-  })
+  @DateTransform()
   public readonly dateCreation: Date;
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  @Transform(({ value }: { value: Date }) => value.getTime(), {
-    toPlainOnly: true,
-  })
-  public dateOperation: Date;
-  @Transform(({ value }) => (value ? new Date(value) : undefined), {
-    toClassOnly: true,
-  })
-  @Transform(({ value }: { value: Date }) => value?.getTime(), {
-    toPlainOnly: true,
-  })
+  @DateTransform() public dateOperation: Date;
+  @DateTransform()
   @Exclude({ toPlainOnly: true })
   public dateSoumission?: Date;
-  @Expose()
   @Type(() => Adresse)
   adresse: Adresse = new Adresse();
   @Expose({ toClassOnly: true })
   public readonly agent?: Agent;
+  telephoneAgent: string;
   infosRequerant: InformationsRequerant = new InformationsRequerant();
   procedure: Procedure = new Procedure();
   commentaire: string = "";

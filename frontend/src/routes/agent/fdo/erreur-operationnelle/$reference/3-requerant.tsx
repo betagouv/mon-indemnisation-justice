@@ -126,10 +126,10 @@ function Page() {
           flexDirection: "column",
           gap: "1.5vh",
         }}
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          void form.handleSubmit();
+          await void form.handleSubmit();
         }}
       >
         <div
