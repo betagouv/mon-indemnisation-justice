@@ -12,8 +12,7 @@ class DeclarationErreurOperationnelleInput
     public \DateTimeImmutable $dateCreation;
     public AdresseInput $adresse;
     public ProcedureInput $procedure;
-    #[Map(target: DeclarationErreurOperationnelle::class, if: false)]
-    public string $telephoneAgent;
+    public string $telephone;
     public InfosRequerantInput $infosRequerant;
     public string $commentaire;
 }

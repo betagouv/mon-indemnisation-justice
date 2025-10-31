@@ -59,7 +59,7 @@ export const Route = createFileRoute(
 });
 
 const schemaInfosJuridiques = z.object({
-  telephoneAgent: z
+  telephone: z
     .string({ error: "Le numéro de téléphone est requis" })
     .min(7, { error: "Le numéro de téléphone est requis" }),
   procedure: z.object({
@@ -101,7 +101,7 @@ function Page() {
   const form = useForm({
     defaultValues: {
       commentaire: declaration.commentaire,
-      telephoneAgent: declaration.telephoneAgent ?? agent.telephone ?? "",
+      telephone: declaration.telephone ?? agent.telephone ?? "",
       procedure: { ...declaration.procedure },
     },
     listeners: {
@@ -217,7 +217,7 @@ function Page() {
             />
 
             <form.Field
-              name="telephoneAgent"
+              name="telephone"
               children={(field) => {
                 return (
                   <Input

@@ -60,6 +60,7 @@ class DossierControllerTest extends WebTestCase
                 'adresse' => $dossier->getAdresse()->getLibelle(),
                 'estEligible' => true,
                 'typeAttestation' => null,
+                'issuDeclarationFDO' => false,
             ], $donneesDossier);
         }
     }
@@ -96,7 +97,6 @@ class DossierControllerTest extends WebTestCase
                 'aContacteAssurance' => $dossier->getTestEligibilite()->aContacteAssurance,
                 'aContacteBailleur' => $dossier->getTestEligibilite()->aContacteBailleur,
             ],
-            'issuDeclarationFDO' => false,
             'dateOperation' => null,
             'estPorteBlindee' => false,
             'documents' => [],

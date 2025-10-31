@@ -19,7 +19,11 @@ class DeclarationErreurOperationnelleOutput
     public \DateTimeInterface $dateCreation;
     #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTimeInterface::W3C])]
     public \DateTimeInterface $dateSoumission;
+    public string $telephone;
     public string $commentaire;
+
+    #[Map(target: AgentOutput::class)]
+    public AgentOutput $agent;
 
     #[Map(target: AdresseOutput::class)]
     public AdresseOutput $adresse;

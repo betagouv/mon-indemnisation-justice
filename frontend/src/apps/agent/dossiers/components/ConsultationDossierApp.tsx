@@ -480,6 +480,14 @@ export const ConsultationDossierApp = observer(
                               <li>
                                 <b>Agent rapporteur</b>{" "}
                                 {dossier.declarationFDO.agent?.nomComplet()}
+                                <ul>
+                                  <li>
+                                    {dossier.declarationFDO.agent?.courriel}
+                                  </li>
+                                  <li>
+                                    {dossier.declarationFDO.agent?.telephone}
+                                  </li>
+                                </ul>
                               </li>
                               <li>
                                 <b>Service enquêteur</b>{" "}
