@@ -275,7 +275,7 @@ class PersonnePhysique
     public function getNomComplet(): string
     {
         $similarite = 0;
-        if (null !== $this->nom && null !== $this->prenom1) {
+        if (null !== $this->nom && null !== $this->nomNaissance) {
             similar_text($this->nom, $this->nomNaissance, $similarite);
         }
 

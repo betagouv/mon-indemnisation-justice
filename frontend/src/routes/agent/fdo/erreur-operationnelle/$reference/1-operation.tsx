@@ -101,7 +101,6 @@ const Page = () => {
       onSubmit: schemaErreurOperationnelle,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
       await naviguer({
         to: "/agent/fdo/erreur-operationnelle/$reference/2-complement",
         params: { reference } as any,

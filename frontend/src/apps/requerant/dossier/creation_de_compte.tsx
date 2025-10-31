@@ -14,7 +14,9 @@ import React, { useState } from "react";
 //import { useFormStatus } from "react-dom";
 import ReactDOM from "react-dom/client";
 
-const args = JSON.parse(document.getElementById("react-arguments").textContent);
+const args = JSON.parse(
+  document.getElementById("react-arguments")?.textContent ?? "{}",
+);
 
 interface Routes {
   connexion: string;
@@ -482,7 +484,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
   );
 });
 
-ReactDOM.createRoot(document.getElementById("react-app")).render(
+ReactDOM.createRoot(document.getElementById("react-app") as HTMLElement).render(
   <React.StrictMode>
     <>
       <CreationDeCompteApp
