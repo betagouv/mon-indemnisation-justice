@@ -425,7 +425,9 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
           <Tabs
             tabs={[
               {
-                label: "Proposition d'indemnisation",
+                label: dossier.estAccepte()
+                  ? "Proposition d'indemnisation"
+                  : "Lettre de décision",
                 iconId: "fr-icon-checkbox-circle-line",
                 isDefault: true,
                 content: (
