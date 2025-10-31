@@ -7,6 +7,7 @@ use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Metadonnees\InfosRequerant;
 use Sqids\Sqids;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
@@ -26,12 +27,15 @@ class DeclarationErreurOperationnelle
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(['agent:detail'])]
     protected ?Uuid $id = null;
 
     #[ORM\Column(length: 6)]
+    #[Groups(['agent:detail'])]
     protected string $reference;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: false)]
+    #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateOperation;
 
     /**
@@ -39,20 +43,25 @@ class DeclarationErreurOperationnelle
      */
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['agent:detail'])]
     protected Adresse $adresse;
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'procedure_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['agent:detail'])]
     protected ProcedureJudiciaire $procedure;
     #[ORM\OneToOne(targetEntity: BrisPorte::class, cascade: ['persist', 'remove'])]
     protected ?BrisPorte $dossier = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['agent:detail'])]
     protected string $commentaire = '';
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
+    #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateCreation;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
+    #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateSoumission;
 
     /**

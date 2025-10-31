@@ -133,11 +133,13 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
   ] = useState<MotifRejet>(
     (courrier?.metaDonnees?.motifRejet ?? dossier.qualiteRequerant == "PRO")
       ? "est_bailleur"
-      : dossier.testEligibilite.estVise
-        ? "est_vise"
-        : dossier.testEligibilite.estHebergeant
-          ? "est_hebergeant"
-          : "autre",
+      : dossier.testEligibilite
+        ? dossier.testEligibilite.estVise
+          ? "est_vise"
+          : dossier.testEligibilite.estHebergeant
+            ? "est_hebergeant"
+            : "autre"
+        : "autre",
   );
 
   // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
