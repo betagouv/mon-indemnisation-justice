@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Controller\Requerant;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
+use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
 use MonIndemnisationJustice\Entity\Requerant;
@@ -52,7 +53,14 @@ class HomeController extends RequerantController
                     ->setRequerant($requerant)
                     ->setDeclarationFDO($declaration)
                     ->setDateOperationPJ($declaration->getDateOperation())
-                    ->setAdresse($declaration->getAdresse())
+                    // On recrée une nouvelle adresse pour conserver les données des FDO et pouvoir plus tard comparer et arbitrer
+                    ->setAdresse(
+                        (new Adresse())
+                            ->setLigne1($declaration->getAdresse()->getLigne1())
+                            ->setLigne2($declaration->getAdresse()->getLigne2())
+                            ->setCodePostal($declaration->getAdresse()->getCodePostal())
+                            ->setLocalite($declaration->getAdresse()->getLocalite())
+                    )
                 ;
                 $em->persist($dossier);
                 $em->flush();

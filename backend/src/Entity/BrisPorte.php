@@ -92,6 +92,7 @@ class BrisPorte
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?TestEligibilite $testEligibilite = null;
 
+    #[Groups(['agent:detail'])]
     #[ORM\OneToOne(targetEntity: DeclarationErreurOperationnelle::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'declaration_id', nullable: true, onDelete: 'SET NULL')]
     protected ?DeclarationErreurOperationnelle $declarationFDO = null;
@@ -575,7 +576,7 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups(['dossier:lecture'])]
+    #[Groups(['dossier:lecture', 'agent:liste'])]
     public function isIssuDeclarationFDO(): ?bool
     {
         return null !== $this->declarationFDO;

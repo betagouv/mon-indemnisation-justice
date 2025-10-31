@@ -19,6 +19,8 @@ import {
   SuppressionPieceJointe,
 } from "@/apps/agent/dossiers/components/consultation/piecejointe/SuppressionPieceJointe.tsx";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { dateSimple } from "@/common/services/date.ts";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -111,7 +113,10 @@ export const ConsultationDossierApp = observer(
               >
                 <h3 className="">Dossier {dossier.reference}</h3>
 
-                <div>
+                <div
+                  className="fr-grid-row fr-grid-row--gutters fr-my-1w"
+                  style={{ gap: ".5vw" }}
+                >
                   <p
                     className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.etat.slug} fr-py-1w fr-px-2w`}
                     {...(dossier.etat.estCloture()
@@ -122,6 +127,11 @@ export const ConsultationDossierApp = observer(
                   >
                     {dossier.etat.etat.libelle}
                   </p>
+                  {dossier.declarationFDO && (
+                    <Badge severity="new" small={false}>
+                      Déclaration FDO
+                    </Badge>
+                  )}
                 </div>
                 {dossier.etat.estCloture() && (
                   <span
@@ -359,109 +369,169 @@ export const ConsultationDossierApp = observer(
                       {
                         // Sous-section "Bris de porte"
                       }
-                      <div className="fr-grid-column">
-                        <h5>Bris de porte</h5>
+                      <div className="fr-grid-row">
+                        <div className="fr-col-6">
+                          <h5>Bris de porte</h5>
 
-                        <ul>
-                          <li>
-                            <b>Survenu à l'adresse: </b>{" "}
-                            {dossier.adresse.estRenseignee() ? (
-                              <>{dossier.adresse.libelle()}</>
-                            ) : (
-                              <i>non renseigné</i>
-                            )}
-                            {}
-                          </li>
-                          <li>
-                            <b>Le :</b>{" "}
-                            {dossier.dateOperation ? (
+                          <ul>
+                            <li>
+                              <b>Survenu à l'adresse: </b>{" "}
+                              {dossier.adresse.estRenseignee() ? (
+                                <>{dossier.adresse.libelle()}</>
+                              ) : (
+                                <i>non renseigné</i>
+                              )}
+                            </li>
+                            <li>
+                              <b>Le :</b>{" "}
+                              {dossier.dateOperation ? (
+                                <>
+                                  {dateSimple(dossier.dateOperation)}, à{" "}
+                                  {dossier.dateOperation?.toLocaleString(
+                                    "fr-FR",
+                                    {
+                                      hour: "numeric",
+                                      minute: "numeric",
+                                    },
+                                  )}
+                                </>
+                              ) : (
+                                <i>non renseigné</i>
+                              )}
+                            </li>
+                            <li>
+                              <b>Porte blindée: </b>{" "}
+                              {dossier.estPorteBlindee !== null ? (
+                                <>{dossier.estPorteBlindee ? "oui" : "non"}</>
+                              ) : (
+                                <i>non renseigné</i>
+                              )}
+                            </li>
+                            {!!dossier.testEligibilite && (
                               <>
-                                {dossier.dateOperation?.toLocaleString(
-                                  "fr-FR",
-                                  {
-                                    weekday: "long",
-                                    day: "numeric",
-                                    month: "long",
-                                    year: "numeric",
-                                  },
-                                )}
-                                , à{" "}
-                                {dossier.dateOperation?.toLocaleString(
-                                  "fr-FR",
-                                  {
-                                    hour: "numeric",
-                                    minute: "numeric",
-                                  },
+                                <li>
+                                  <b>
+                                    Était visé
+                                    {dossier.requerant.estFeminin()
+                                      ? "e"
+                                      : ""}{" "}
+                                    par l'opération des Forces de l'ordre ?{" "}
+                                  </b>{" "}
+                                  <>
+                                    {dossier.testEligibilite.estVise
+                                      ? "Oui"
+                                      : "Non"}
+                                  </>
+                                </li>
+                                <li>
+                                  <b>Hébergeait la personne recherchée ?</b>{" "}
+                                  <>
+                                    {dossier.testEligibilite.estHebergeant
+                                      ? "Oui"
+                                      : "Non"}
+                                  </>
+                                </li>
+                                <li>
+                                  <b>Situation par rapport au logement ? </b>
+                                  {dossier.testEligibilite.rapportAuLogement}
+                                </li>
+                                <li>
+                                  <b>A contacté l'assurance ?</b>{" "}
+                                  <>
+                                    {dossier.testEligibilite.aContacteAssurance
+                                      ? "Oui"
+                                      : "Non"}
+                                  </>
+                                </li>
+                                {null !==
+                                  dossier.testEligibilite.aContacteBailleur && (
+                                  <li>
+                                    <b>A contacté le bailleur ?</b>{" "}
+                                    <>
+                                      {dossier.testEligibilite.aContacteBailleur
+                                        ? "Oui"
+                                        : "Non"}
+                                    </>
+                                  </li>
                                 )}
                               </>
-                            ) : (
-                              <i>non renseigné</i>
                             )}
-                          </li>
-                          <li>
-                            <b>Porte blindée: </b>{" "}
-                            {dossier.estPorteBlindee !== null ? (
-                              <>{dossier.estPorteBlindee ? "oui" : "non"}</>
-                            ) : (
-                              <i>non renseigné</i>
+                            {dossier.descriptionRequerant && (
+                              <li>
+                                <b>Commentaires du requérant:</b>
+                                <blockquote
+                                  dangerouslySetInnerHTML={{
+                                    __html:
+                                      dossier.descriptionRequerant.replaceAll(
+                                        /\n/g,
+                                        "</br>",
+                                      ),
+                                  }}
+                                ></blockquote>
+                              </li>
                             )}
-                          </li>
-                          <li>
-                            <b>
-                              Était visé
-                              {dossier.requerant.estFeminin() ? "e" : ""} par
-                              l'opération des Forces de l'ordre ?{" "}
-                            </b>{" "}
-                            <>
-                              {dossier.testEligibilite.estVise ? "Oui" : "Non"}
-                            </>
-                          </li>
-                          <li>
-                            <b>Hébergeait la personne recherchée ?</b>{" "}
-                            <>
-                              {dossier.testEligibilite.estHebergeant
-                                ? "Oui"
-                                : "Non"}
-                            </>
-                          </li>
-                          <li>
-                            <b>Situation par rapport au logement ? </b>
-                            {dossier.testEligibilite.rapportAuLogement}
-                          </li>
-                          <li>
-                            <b>A contacté l'assurance ?</b>{" "}
-                            <>
-                              {dossier.testEligibilite.aContacteAssurance
-                                ? "Oui"
-                                : "Non"}
-                            </>
-                          </li>
-                          {null !==
-                            dossier.testEligibilite.aContacteBailleur && (
-                            <li>
-                              <b>A contacté le bailleur ?</b>{" "}
-                              <>
-                                {dossier.testEligibilite.aContacteBailleur
-                                  ? "Oui"
-                                  : "Non"}
-                              </>
-                            </li>
-                          )}
-                          {dossier.descriptionRequerant && (
-                            <li>
-                              <b>Commentaires du requérant:</b>
-                              <blockquote
-                                dangerouslySetInnerHTML={{
-                                  __html:
-                                    dossier.descriptionRequerant.replaceAll(
-                                      /\n/g,
-                                      "</br>",
-                                    ),
-                                }}
-                              ></blockquote>
-                            </li>
-                          )}
-                        </ul>
+                          </ul>
+                        </div>
+
+                        {dossier.declarationFDO && (
+                          <div className="fr-col-6">
+                            <h5>Déclaration des FDO</h5>
+
+                            <ul>
+                              <li>
+                                <b>Survenu à l'adresse: </b>{" "}
+                                {dossier.declarationFDO.adresse.libelle()}
+                              </li>
+                              <li>
+                                <b>Le :</b>{" "}
+                                {dateSimple(
+                                  dossier.declarationFDO.dateOperation,
+                                )}
+                              </li>
+                              <li>
+                                <b>Agent rapporteur</b>{" "}
+                                {dossier.declarationFDO.agent?.nomComplet()}
+                              </li>
+                              <li>
+                                <b>Service enquêteur</b>{" "}
+                                {
+                                  dossier.declarationFDO.procedure
+                                    .serviceEnqueteur
+                                }
+                              </li>
+                              <li>
+                                <b>Numéro de procédure</b>{" "}
+                                {
+                                  dossier.declarationFDO.procedure
+                                    .numeroProcedure
+                                }
+                              </li>
+                              <li>
+                                <b>Juridiction ou parquet</b>{" "}
+                                {
+                                  dossier.declarationFDO.procedure
+                                    .juridictionOuParquet
+                                }
+                              </li>
+                              <li>
+                                <b>Nom du magistrat</b>{" "}
+                                {dossier.declarationFDO.procedure.nomMagistrat}
+                              </li>
+                              <li>
+                                <b>Commentaires du requérant:</b>
+                                <blockquote
+                                  dangerouslySetInnerHTML={{
+                                    __html:
+                                      dossier.declarationFDO.commentaire.replaceAll(
+                                        /\n/g,
+                                        "</br>",
+                                      ),
+                                  }}
+                                />
+                              </li>
+                            </ul>
+                          </div>
+                        )}
                       </div>
                     </section>
                   )}
