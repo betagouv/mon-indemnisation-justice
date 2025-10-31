@@ -12,6 +12,7 @@ import {
 } from ".";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";
+import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
 
 export type TypeAttestation =
   | "NOUVELLE_ATTESTATION"
@@ -132,6 +133,7 @@ export class DossierApercu extends BaseDossier {
   public readonly requerant: string; // Prénom NOM
   public readonly adresse: string;
   public readonly estEligible: boolean;
+  public readonly issuDeclarationFDO: boolean;
 }
 
 export class DossierDetail extends BaseDossier {
@@ -141,7 +143,11 @@ export class DossierDetail extends BaseDossier {
 
   @Expose()
   @Type(() => TestEligibilite)
-  public readonly testEligibilite: TestEligibilite;
+  public readonly testEligibilite?: TestEligibilite;
+
+  @Expose()
+  @Type(() => DeclarationErreurOperationnelle)
+  public readonly declarationFDO?: DeclarationErreurOperationnelle;
 
   public descriptionRequerant?: string;
 

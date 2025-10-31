@@ -17,6 +17,7 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import { periode } from "@/common/services/date.ts";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 
 type RechercheReponse = {
   resultats: DossierApercu[];
@@ -237,6 +238,11 @@ export const RechercheDossierApp = observer(({ agent }: { agent: Agent }) => {
                                       >
                                         {dossier.etat.libelle}
                                       </p>
+                                      {dossier.issuDeclarationFDO && (
+                                        <Badge severity="new" small={false}>
+                                          Déclaration FDO
+                                        </Badge>
+                                      )}
                                       {dossier.etat.estCloture() && (
                                         <span
                                           className="fr-tooltip fr-placement"

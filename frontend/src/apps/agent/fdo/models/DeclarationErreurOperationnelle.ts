@@ -1,10 +1,15 @@
-import { Exclude, Transform } from "class-transformer";
+import { Exclude, Expose, Transform, Type } from "class-transformer";
+import { Agent } from "@/common/models";
 
 class Adresse {
   public ligne1: string = "";
   public ligne2: string = "";
   public codePostal: string = "";
   public localite: string = "";
+
+  public libelle(): string {
+    return `${this.ligne1} ${this.codePostal} ${this.localite}`;
+  }
 }
 
 class InformationsRequerant {
@@ -43,7 +48,11 @@ export class DeclarationErreurOperationnelle {
   })
   @Exclude({ toPlainOnly: true })
   public dateSoumission?: Date;
+  @Expose()
+  @Type(() => Adresse)
   adresse: Adresse = new Adresse();
+  @Expose({ toClassOnly: true })
+  public readonly agent?: Agent;
   infosRequerant: InformationsRequerant = new InformationsRequerant();
   procedure: Procedure = new Procedure();
   commentaire: string = "";
