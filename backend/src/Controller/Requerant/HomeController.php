@@ -40,11 +40,14 @@ class HomeController extends RequerantController
                     ->setQualiteRequerant($testEligibilite->rapportAuLogement)
                     ->setTestEligibilite($testEligibilite)
                 ;
+
+                $em->persist($dossier);
+                $em->flush();
             }
         } else {
             $declaration = $navigation->idDeclaration ? $em->find(DeclarationErreurOperationnelle::class, $navigation->idDeclaration) : null;
 
-            if (!$requerant->getDossiers()->exists(fn (int $indice, BrisPorte $dossier) => $dossier->getDeclarationFDO()->getId() === $declaration->getId())) {
+            if ($declaration && !$requerant->getDossiers()->exists(fn (int $indice, BrisPorte $dossier) => $dossier->getDeclarationFDO()?->getId() === $declaration->getId())) {
                 $dossier = (new BrisPorte())
                     ->setRequerant($requerant)
                     ->setDeclarationFDO($declaration)
@@ -52,6 +55,10 @@ class HomeController extends RequerantController
                     ->setAdresse($declaration->getAdresse())
                 ;
                 $em->persist($dossier);
+                $em->flush();
+            } else {
+                // Rediriger vers un dossier à finaliser en priorité, s'il y en a un
+                $dossier = $requerant->getDossiers()->findFirst(fn (int $indice, BrisPorte $dossier) => !$dossier->estDepose());
             }
         }
 
@@ -60,9 +67,6 @@ class HomeController extends RequerantController
         $request->getSession()->remove(PublicBrisPorteController::CLEF_SESSION_TEST_ELIGIBILITE);
 
         if (null !== $dossier) {
-            $em->persist($dossier);
-            $em->flush();
-
             return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
         }
 

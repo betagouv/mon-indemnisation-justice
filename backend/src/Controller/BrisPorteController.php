@@ -161,6 +161,7 @@ class BrisPorteController extends AbstractController
             return $this->redirectToRoute('requerant_home_index');
         }
 
+        $inscription = new Inscription();
         $preinscription = $this->getPreinscription($request);
 
         if (null !== $preinscription->requerant) {
@@ -171,6 +172,13 @@ class BrisPorteController extends AbstractController
             if (null === $preinscription->testEligibilite) {
                 return $this->redirectToRoute('bris_porte_tester_eligibilite');
             }
+        } else {
+            $infosRequerant = $preinscription->declarationErreurOperationnelle->getInfosRequerant();
+            $inscription->nom = $infosRequerant->nom;
+            $inscription->nomNaissance = $infosRequerant->nom;
+            $inscription->prenom = $infosRequerant->prenom;
+            $inscription->courriel = $infosRequerant->courriel;
+            $inscription->telephone = $infosRequerant->telephone;
         }
 
         return $this->render('brisPorte/creation_de_compte.html.twig', [
@@ -181,7 +189,7 @@ class BrisPorteController extends AbstractController
                     'cgu' => $router->generate('public_cgu'),
                 ],
                 'token' => $csrfTokenManager->getToken('creation-de-compte')->getValue(),
-                'inscription' => $normalizer->normalize(new Inscription(), 'json'),
+                'inscription' => $normalizer->normalize($inscription, 'json'),
             ],
         ]);
     }
@@ -271,13 +279,13 @@ class BrisPorteController extends AbstractController
     {
         $preinscription = $this->getPreinscription($request);
 
-        if (null === $preinscription->requerant) {
-            return $this->redirectToRoute('bris_porte_creation_de_compte');
-        }
-
         if (null === $preinscription->declarationErreurOperationnelle) {
             if (null === $preinscription->testEligibilite) {
                 return $this->redirectToRoute('bris_porte_tester_eligibilite');
+            }
+
+            if (null === $preinscription->requerant) {
+                return $this->redirectToRoute('bris_porte_creation_de_compte');
             }
         }
 
