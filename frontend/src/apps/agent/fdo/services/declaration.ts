@@ -22,6 +22,8 @@ export interface DeclarationManagerInterface {
   ): void | Promise<void>;
 
   soumettre(declaration: DeclarationErreurOperationnelle): Promise<void>;
+
+  supprimer(declaration: DeclarationErreurOperationnelle): void;
 }
 
 export namespace DeclarationManagerInterface {
@@ -35,8 +37,8 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   protected _declarations: DeclarationErreurOperationnelle[];
 
-  protected async chargerListeDeclarations(force: boolean): Promise<void> {
-    if (!this._declarations || force) {
+  protected async chargerListeDeclarations(): Promise<void> {
+    if (!this._declarations) {
       this._declarations = (
         await Promise.all([
           this.chargerBrouillons(),
@@ -135,6 +137,25 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     return Promise.resolve(undefined);
   }
 
+  ajouter(declaration: DeclarationErreurOperationnelle): void {
+    this._declarations = this._declarations
+      .filter((d) => d.reference !== declaration.reference)
+      .concat(declaration);
+  }
+
+  supprimer(declaration: DeclarationErreurOperationnelle): void {
+    this._declarations = this._declarations.filter(
+      (d) => d.reference !== declaration.reference,
+    );
+
+    localStorage.setItem(
+      APIDeclarationManager.CLEF_STOCKAGE,
+      JSON.stringify(
+        instanceToPlain(this._declarations.filter((d) => d.estBrouillon())),
+      ),
+    );
+  }
+
   async soumettre(declaration: DeclarationErreurOperationnelle): Promise<void> {
     // Appel API à `api_agent_fdo_erreur_operationnelle_declarer` :
     const response = await fetch(
@@ -149,17 +170,9 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
       },
     );
 
-    localStorage.setItem(
-      APIDeclarationManager.CLEF_STOCKAGE,
-      JSON.stringify(
-        instanceToPlain(
-          this._declarations.filter(
-            (d) => d.estBrouillon() && d.reference !== declaration.reference,
-          ),
-        ),
-      ),
+    this.supprimer(declaration);
+    this.ajouter(
+      plainToInstance(DeclarationErreurOperationnelle, await response.json()),
     );
-
-    await this.chargerListeDeclarations(true);
   }
 }

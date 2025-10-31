@@ -33,6 +33,10 @@ const Page = () => {
     from: Route.fullPath,
   });
 
+  const declarationManager = useInjection<DeclarationManagerInterface>(
+    DeclarationManagerInterface.$,
+  );
+
   return (
     <div>
       <h1>Mes déclarations</h1>
@@ -62,7 +66,7 @@ const Page = () => {
                 buttonsSize="small"
                 buttons={[
                   {
-                    className: "fr-m-0",
+                    className: "fr-my-0",
                     children: declaration.estBrouillon() ? "Reprendre" : "Voir",
                     iconId: declaration.estBrouillon()
                       ? "fr-icon-pencil-line"
@@ -78,6 +82,20 @@ const Page = () => {
                         }),
                     },
                   },
+                  ...(declaration.estBrouillon()
+                    ? [
+                        {
+                          className: "fr-my-0",
+                          children: "Supprimer",
+                          iconId: "fr-icon-delete-line",
+                          priority: "secondary",
+                          nativeButtonProps: {
+                            onClick: () =>
+                              declarationManager.supprimer(declaration),
+                          },
+                        },
+                      ]
+                    : []),
                 ]}
               />,
             ])}
