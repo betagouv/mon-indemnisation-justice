@@ -1,5 +1,11 @@
-import { Exclude, Expose, Type } from "class-transformer";
-import { Agent } from "@/common/models";
+import {
+  Exclude,
+  Expose,
+  plainToInstance,
+  Transform,
+  Type,
+} from "class-transformer";
+import { Agent, Redacteur } from "@/common/models";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 
 class Adresse {
@@ -40,8 +46,9 @@ export class DeclarationErreurOperationnelle {
   @Type(() => Adresse)
   adresse: Adresse = new Adresse();
   @Expose({ toClassOnly: true })
+  @Type(() => Agent)
   public readonly agent?: Agent;
-  telephoneAgent: string;
+  telephone: string;
   infosRequerant: InformationsRequerant = new InformationsRequerant();
   procedure: Procedure = new Procedure();
   commentaire: string = "";

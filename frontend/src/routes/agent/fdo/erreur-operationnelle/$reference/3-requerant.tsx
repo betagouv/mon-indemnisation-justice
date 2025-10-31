@@ -129,7 +129,11 @@ function Page() {
         onSubmit={async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          await void form.handleSubmit();
+          try {
+            await void form.handleSubmit();
+          } catch (e) {
+            console.error(e);
+          }
         }}
       >
         <div

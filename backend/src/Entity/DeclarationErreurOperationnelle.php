@@ -69,7 +69,12 @@ class DeclarationErreurOperationnelle
      */
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
+    #[Groups(['agent:detail'])]
     protected Agent $agent;
+
+    #[ORM\Column(length: 20)]
+    #[Groups(['agent:detail'])]
+    protected string $telephone;
 
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $infosRequerant;
@@ -180,6 +185,18 @@ class DeclarationErreurOperationnelle
     public function setAgent(Agent $agent): static
     {
         $this->agent = $agent;
+
+        return $this;
+    }
+
+    public function getTelephone(): string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(string $telephoneAgent): static
+    {
+        $this->telephone = $telephoneAgent;
 
         return $this;
     }

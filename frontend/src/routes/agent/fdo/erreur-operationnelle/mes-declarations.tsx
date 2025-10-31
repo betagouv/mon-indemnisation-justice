@@ -1,5 +1,9 @@
 import React from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { useInjection } from "inversify-react";
 import {
@@ -26,12 +30,18 @@ export const Route = createFileRoute(
 });
 
 const Page = () => {
-  const { declarations }: { declarations: DeclarationErreurOperationnelle[] } =
+  let { declarations }: { declarations: DeclarationErreurOperationnelle[] } =
     Route.useLoaderData();
 
   const naviguer = useNavigate<typeof router>({
     from: Route.fullPath,
   });
+
+  const router = useRouter();
+
+  const declarationManager = useInjection<DeclarationManagerInterface>(
+    DeclarationManagerInterface.$,
+  );
 
   return (
     <div>
@@ -62,7 +72,7 @@ const Page = () => {
                 buttonsSize="small"
                 buttons={[
                   {
-                    className: "fr-m-0",
+                    className: "fr-my-0",
                     children: declaration.estBrouillon() ? "Reprendre" : "Voir",
                     iconId: declaration.estBrouillon()
                       ? "fr-icon-pencil-line"
@@ -78,6 +88,23 @@ const Page = () => {
                         }),
                     },
                   },
+                  ...(declaration.estBrouillon()
+                    ? [
+                        {
+                          className: "fr-my-0",
+                          children: "Supprimer",
+                          iconId: "fr-icon-delete-line",
+                          priority: "secondary",
+                          nativeButtonProps: {
+                            onClick: async () => {
+                              declarationManager.supprimer(declaration);
+                              // Petit hack : forcer le routeur à se recharger et ainsi le loader à s'exécuter pour rafraichir la liste des déclarations
+                              router.invalidate();
+                            },
+                          },
+                        },
+                      ]
+                    : []),
                 ]}
               />,
             ])}

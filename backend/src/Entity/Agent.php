@@ -57,19 +57,24 @@ class Agent implements UserInterface
     protected string $uid;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['agent:detail'])]
+    #[SerializedName('courriel')]
     protected string $email;
 
     #[ORM\Column(length: 16, nullable: true)]
+    #[Groups(['agent:detail'])]
     protected ?string $telephone = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['agent:detail'])]
     protected string $nom;
 
     #[ORM\Column(length: 30)]
+    #[Groups(['agent:detail'])]
     protected string $prenom;
 
     #[ORM\Column(type: 'string', nullable: true, enumType: Administration::class)]
-    #[Ignore]
+    #[Groups(['agent:detail'])]
     protected ?Administration $administration = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -82,6 +87,7 @@ class Agent implements UserInterface
      * @var string[] la liste des rôles assignée à l'agent
      */
     #[ORM\Column(type: 'simple_array')]
+    #[Groups(['agent:detail'])]
     protected array $roles = [];
 
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'redacteur', cascade: ['detach'])]

@@ -41,8 +41,8 @@ class DeclarerErreurOperationnelleEndpoint
         /** @var Agent $agent */
         $agent = $security->getUser();
         // On en profite pour mettre à jour le numéro de téléphone de l'agent avec la valeur fournie
-        if ($agent->getTelephone() !== $input->telephoneAgent) {
-            $agent->setTelephone($input->telephoneAgent);
+        if ($agent->getTelephone() !== $input->telephone) {
+            $agent->setTelephone($input->telephone);
             $this->em->persist($agent);
         }
         $declaration = $this->objectMapper->map($input, DeclarationErreurOperationnelle::class)->setAgent($agent);
