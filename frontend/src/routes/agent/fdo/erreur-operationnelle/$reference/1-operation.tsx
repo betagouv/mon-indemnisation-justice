@@ -126,11 +126,13 @@ const Page = () => {
           void form.handleSubmit();
         }}
       >
+        {/* Retiré pour éviter la confusion
         <div className="fr-grid-row">
           <h6 className="fr-m-0 fr-text-label--blue-france">
             Informations concernant le logement perquisitionné par erreur{" "}
           </h6>
         </div>
+        */}
 
         <div className="fr-grid-row fr-grid-row--gutters fr-px-0 fr-my-2w">
           <form.Field
@@ -167,7 +169,7 @@ const Page = () => {
               return (
                 <Input
                   className="fr-col-lg-8 fr-my-0"
-                  label="Adresse du logement perquisitionné par erreur *"
+                  label="Adresse du logement ayant subi le bris de porte *"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -194,7 +196,7 @@ const Page = () => {
               return (
                 <Input
                   className="fr-col-lg-6 fr-m-0"
-                  label="Complément"
+                  label="Complément d'adresse"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",

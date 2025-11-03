@@ -19,6 +19,7 @@ import {
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
 import { Agent } from "@/common/models";
 import { AgentContext } from "@/routers/contexts/AgentContext.ts";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 export const Route = createFileRoute(
   "/agent/fdo/erreur-operationnelle/$reference/2-complement",
@@ -174,6 +175,13 @@ function Page() {
           nextTitle="Informations du requérant"
         />
 
+        {/*
+        <Alert
+          severity="warning"
+          title="Cet écran est confidentiel et les informations transmises sont uniquement à destination du Ministère de la Justice "
+        />
+        */}
+
         <div className="fr-grid-row">
           <h6 className="fr-m-0 fr-text-label--blue-france">
             Informations concernant l’opération de police judiciaire
@@ -320,12 +328,13 @@ function Page() {
                 return (
                   <Input
                     className="fr-col-lg-12 fr-m-0"
-                    label="Commentaire à destination du dossier"
+                    label="Précisions concernant l'intervention"
                     disabled={declaration.estSauvegarde()}
                     textArea={true}
                     nativeTextAreaProps={{
                       rows: 5,
                       value: field.state.value,
+                      placeholder: "",
                       onChange: (e) => field.handleChange(e.target.value),
                     }}
                   />
@@ -336,7 +345,7 @@ function Page() {
 
           <div className="fr-grid-row">
             <h6 className="fr-m-0 fr-text-label--blue-france">
-              Document justificatifs
+              Documents justificatifs
             </h6>
           </div>
 
@@ -367,6 +376,9 @@ function Page() {
                 size="small"
                 priority="secondary"
                 onClick={() => ModaleAjoutFichier.open()}
+                nativeButtonProps={{
+                  role: "button",
+                }}
               />
             </div>
           </div>

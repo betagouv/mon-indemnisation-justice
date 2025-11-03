@@ -267,11 +267,12 @@ function Page() {
               return (
                 <Input
                   className="fr-col-lg-12"
-                  label="Commentaire à destination du dossier requérant"
+                  label="Précisions concernant le requérant"
                   disabled={sauvegardeEnCours}
                   textArea
                   nativeTextAreaProps={{
-                    placeholder: "Bref descriptif de l’intervention...",
+                    placeholder:
+                      "Conjoint du locataire, propriétaire bailleur...",
                     rows: 6,
                     value: field.state.value,
                     onChange: (e) => field.handleChange(e.target.value),
