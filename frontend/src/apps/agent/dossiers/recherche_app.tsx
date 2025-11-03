@@ -24,14 +24,16 @@ if (import.meta.env.PROD) {
 
 const queryClient = new QueryClient();
 
-const args = JSON.parse(document.getElementById("react-arguments").textContent);
+const args = JSON.parse(
+  document.getElementById("react-arguments")?.textContent ?? "",
+);
 
 Redacteur.charger(args.redacteurs ?? []);
 
 const agent = plainToInstance(Agent, args.agent);
 
 ReactDOM.createRoot(
-  document.getElementById("react-app-agent-recherche-dossiers"),
+  document.getElementById("react-app-agent-recherche-dossiers") as HTMLElement,
   sentryOptions,
 ).render(
   <QueryClientProvider client={queryClient}>

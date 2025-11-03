@@ -83,3 +83,10 @@ export const dateSimple = function (
         : "numeric",
   });
 };
+
+export const dateEtHeureSimple = function (
+  date: Date,
+  masquerAnneeSiCourante: boolean = false,
+): string {
+  return `${dateSimple(date, masquerAnneeSiCourante)} à ${date.getHours()}h${String(date.getMinutes()).padStart(2, "0")}`;
+};

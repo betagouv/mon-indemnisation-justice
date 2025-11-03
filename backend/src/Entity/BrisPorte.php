@@ -577,7 +577,7 @@ class BrisPorte
         return $this->testEligibilite;
     }
 
-    #[Groups(['agent:liste'])]
+    #[Groups(['agent:liste', 'agent:detail'])]
     #[SerializedName('estEligible')]
     public function getEstEligible(): ?bool
     {
@@ -591,7 +591,7 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups(['dossier:lecture', 'agent:liste'])]
+    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail'])]
     public function isIssuDeclarationFDO(): ?bool
     {
         return null !== $this->declarationFDO;
