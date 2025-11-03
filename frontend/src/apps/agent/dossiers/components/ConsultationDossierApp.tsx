@@ -14,10 +14,10 @@ import {
   ouvrirModaleSuppressionPieceJointe,
   SuppressionPieceJointe,
 } from "@/apps/agent/dossiers/components/consultation/piecejointe/SuppressionPieceJointe.tsx";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import { dateEtHeureSimple, dateSimple } from "@/common/services/date.ts";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { InfosDossier } from "@/apps/agent/dossiers/components/consultation/InfosDossier.tsx";
-import { dateSimple } from "@/common/services/date.ts";
+import { BadgesDossier } from "@/apps/agent/dossiers/components/BadgesDossier.tsx";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -140,23 +140,20 @@ export const ConsultationDossierApp = observer(
                   </span>
                 )}
 
-                <p className="fr-m-1w">
-                  Déposé le{" "}
-                  {dossier.dateDepot?.toLocaleString("fr-FR", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                  , à{" "}
-                  {dossier.dateDepot?.toLocaleString("fr-FR", {
-                    hour: "numeric",
-                    minute: "numeric",
-                  })}{" "}
+                <p className="fr-my-1v">
+                  {dossier.estDepose() ? (
+                    <>{dateEtHeureSimple(dossier.dateDepot as Date)}</>
+                  ) : (
+                    <>En cours de constitution</>
+                  )}{" "}
                   par <u>{dossier.requerant.nomSimple()}</u>
                 </p>
 
-                <p className="fr-m-1w">
+                <p className="fr-my-1v">
+                  <BadgesDossier dossier={dossier} inline={true} />
+                </p>
+
+                <p className="fr-my-1v">
                   Ce dossier
                   {dossier.redacteur ? (
                     agent.equals(dossier.redacteur) ? (

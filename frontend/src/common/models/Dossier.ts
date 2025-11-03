@@ -33,6 +33,8 @@ export abstract class BaseDossier {
   public redacteur: Redacteur | null = null;
   public typeAttestation?: TypeAttestation;
   public qualiteRequerant?: string;
+  public readonly estEligible: boolean;
+  public readonly issuDeclarationFDO: boolean;
 
   @Expose()
   get dateDepot(): null | Date {
@@ -48,6 +50,10 @@ export abstract class BaseDossier {
       this.etat.etat.egal(EtatDossierType.A_ATTRIBUER) &&
       null === this.redacteur
     );
+  }
+
+  estDepose(): boolean {
+    return !!this.dateDepot;
   }
 
   attribuer(redacteur: Redacteur): void {
@@ -132,8 +138,6 @@ export abstract class BaseDossier {
 export class DossierApercu extends BaseDossier {
   public readonly requerant: string; // Prénom NOM
   public readonly adresse: string;
-  public readonly estEligible: boolean;
-  public readonly issuDeclarationFDO: boolean;
 }
 
 export class DossierDetail extends BaseDossier {
