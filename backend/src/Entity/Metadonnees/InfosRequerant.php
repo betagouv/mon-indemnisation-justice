@@ -2,6 +2,9 @@
 
 namespace MonIndemnisationJustice\Entity\Metadonnees;
 
+use Symfony\Component\Serializer\Attribute\Groups;
+
+#[Groups(['agent:detail'])]
 readonly class InfosRequerant
 {
     public function __construct(

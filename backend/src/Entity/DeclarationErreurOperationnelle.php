@@ -225,6 +225,7 @@ class DeclarationErreurOperationnelle
         return $this;
     }
 
+    #[Groups(['agent:detail'])]
     public function getInfosRequerant(): ?InfosRequerant
     {
         return new InfosRequerant(...$this->infosRequerant);
