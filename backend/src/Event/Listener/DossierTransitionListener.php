@@ -8,7 +8,6 @@ use MonIndemnisationJustice\Event\Event\DossierAttribueEvent;
 use MonIndemnisationJustice\Event\Event\DossierClotureEvent;
 use MonIndemnisationJustice\Event\Event\DossierDeposeEvent;
 use MonIndemnisationJustice\Event\Event\DossierInstruitPropositionEvent;
-use MonIndemnisationJustice\Event\Event\DossierInstruitRejetEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionAccepteeEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionEnvoyeeEvent;
 use MonIndemnisationJustice\Event\Event\DossierRejeteEvent;
@@ -25,7 +24,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: DossierPropositionAccepteeEvent::class, method: 'dossierPropositionAcceptee')]
 #[AsEventListener(event: DossierArreteEditeEvent::class, method: 'dossierArreteEdite')]
 #[AsEventListener(event: DossierArreteSigneEvent::class, method: 'dossierArreteSigne')]
-#[AsEventListener(event: DossierInstruitRejetEvent::class, method: 'dossierInstruitRejet')]
+#[AsEventListener(event: DossierRejeteEvent::class, method: 'dossierRejete')]
 class DossierTransitionListener
 {
     public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository) {}
@@ -170,7 +169,7 @@ class DossierTransitionListener
         }
     }
 
-    public function dossierInstruitRejet(DossierInstruitRejetEvent $evenement): void
+    public function dossierRejete(DossierRejeteEvent $evenement): void
     {
         // Prévenir le requérant qu'une décision l'attend sur son espace :
         $this->mailer
