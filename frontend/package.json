@@ -41,6 +41,7 @@
     "react-quill-new": "^3.3.3",
     "reflect-metadata": "^0.2.2",
     "terser": "^5.36.0",
+    "ts-deepmerge": "^7.0.3",
     "valtio": "^2.1.8",
     "vite": "7.1.11",
     "vite-plugin-symfony": "^8.2.0",

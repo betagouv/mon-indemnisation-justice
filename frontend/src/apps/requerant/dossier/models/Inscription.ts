@@ -50,10 +50,18 @@ export class Inscription {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  @Expose()
-  @Transform(({ value }: { value: Civilite }) =>
-    Object.keys(Civilite).find((key) => Civilite[key] === value),
+  @Transform(
+    ({ value }: { value: Civilite }) =>
+      Object.keys(Civilite).find((key) => Civilite[key] === value),
+    { toPlainOnly: true },
   )
+  @Transform(
+    ({ value }: { value?: string }) => (value ? Civilite[value] : undefined),
+    {
+      toClassOnly: true,
+    },
+  )
+  @Expose({ name: "civilite" })
   get civilite(): Civilite | undefined {
     return this._civilite;
   }

@@ -110,9 +110,7 @@ function Page() {
         if (fieldApi.name == "numeroAgent") {
           agent.telephone = fieldApi.state.value;
         }
-        await declarationManager.enregistrer(
-          plainToClassFromExist(declaration, formApi.state.values),
-        );
+        declarationManager.enregistrer(declaration, formApi.state.values);
       },
       onChangeDebounceMs: 750,
     },

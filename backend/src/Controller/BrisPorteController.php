@@ -174,6 +174,8 @@ class BrisPorteController extends AbstractController
             }
         } else {
             $infosRequerant = $preinscription->declarationErreurOperationnelle->getInfosRequerant();
+
+            $inscription->civilite = $infosRequerant->civilite;
             $inscription->nom = $infosRequerant->nom;
             $inscription->nomNaissance = $infosRequerant->nom;
             $inscription->prenom = $infosRequerant->prenom;

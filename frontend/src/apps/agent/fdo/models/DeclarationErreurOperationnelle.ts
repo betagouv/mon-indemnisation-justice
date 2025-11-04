@@ -1,11 +1,5 @@
-import {
-  Exclude,
-  Expose,
-  plainToInstance,
-  Transform,
-  Type,
-} from "class-transformer";
-import { Agent, Redacteur } from "@/common/models";
+import { Exclude, Expose, Transform, Type } from "class-transformer";
+import { Agent } from "@/common/models";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 
 class Adresse {
@@ -13,13 +7,40 @@ class Adresse {
   public ligne2: string = "";
   public codePostal: string = "";
   public localite: string = "";
+}
 
-  public libelle(): string {
-    return `${this.ligne1} ${this.codePostal} ${this.localite}`;
+export class Civilite {
+  static readonly M = new Civilite("M", "Monsieur");
+  static readonly MME = new Civilite("MME", "Madame");
+
+  protected constructor(
+    public readonly id: string,
+    public readonly libelle: string,
+  ) {}
+
+  static liste(): Civilite[] {
+    return [this.M, this.MME];
+  }
+
+  static from(id: string): Civilite | undefined {
+    return Civilite.liste().find((c: Civilite) => c.id === id);
   }
 }
 
 class InformationsRequerant {
+  @Transform(
+    ({ value }: { value?: Civilite }) => {
+      return value?.id;
+    },
+    { toPlainOnly: true },
+  )
+  @Transform(
+    ({ value }: { value: string | Civilite }) => {
+      return value instanceof Civilite ? value : Civilite.from(value);
+    },
+    { toClassOnly: true },
+  )
+  civilite?: Civilite;
   nom: string = "";
   prenom: string = "";
   telephone: string = "";
@@ -49,6 +70,7 @@ export class DeclarationErreurOperationnelle {
   @Type(() => Agent)
   public readonly agent?: Agent;
   telephone: string;
+  @Type(() => InformationsRequerant)
   infosRequerant: InformationsRequerant = new InformationsRequerant();
   procedure: Procedure = new Procedure();
   commentaire: string = "";

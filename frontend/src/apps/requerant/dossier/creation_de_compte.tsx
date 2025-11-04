@@ -43,7 +43,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
   inscription,
   token,
   routes,
-  erreurs = null,
+  erreurs = undefined,
 }: {
   inscription: Inscription;
   token: string;
@@ -186,7 +186,15 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                                 className="fr-select"
                                 id="inscription-champs-civilite"
                                 aria-describedby="select-:r4:-desc"
-                                defaultValue={""}
+                                defaultValue={
+                                  inscription.civilite
+                                    ? Object.keys(Civilite).find(
+                                        (key) =>
+                                          Civilite[key] ===
+                                          inscription.civilite,
+                                      )
+                                    : ""
+                                }
                                 onChange={(e) =>
                                   (inscription.civilite = Civilite[
                                     e.target.value

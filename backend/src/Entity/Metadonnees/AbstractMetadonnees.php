@@ -12,7 +12,7 @@ abstract readonly class AbstractMetadonnees
 {
     public function versArray(): array
     {
-        return $this->normaliser();
+        return array_merge(get_object_vars($this), $this->normaliser());
     }
 
     public static function depuisArray(array $valeurs, mixed $converter = null): static
@@ -22,6 +22,6 @@ abstract readonly class AbstractMetadonnees
 
     protected function normaliser(): array
     {
-        return get_object_vars($this);
+        return [];
     }
 }
