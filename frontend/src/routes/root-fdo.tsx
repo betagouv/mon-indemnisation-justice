@@ -76,8 +76,11 @@ const EspaceFDO = () => {
           {
             text: "Réquisition d'un serrurier",
             linkProps: {
-              to: "/agent/fdo/requisition-serrurier",
+              to: "https://www.serruriers-de-france.com/gouv/",
+              href: "https://www.serruriers-de-france.com/gouv/",
+              reloadDocument: true,
               activeOptions: { exact: true },
+              target: "_blank",
             },
           },
           {
