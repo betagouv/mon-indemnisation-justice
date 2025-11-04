@@ -5,14 +5,19 @@ import React, { useState } from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { z } from "zod";
-import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import {
+  Civilite,
+  DeclarationErreurOperationnelle,
+} from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
 import {
   container,
   DeclarationManagerInterface,
 } from "@/apps/agent/fdo/services";
 import { router } from "@/apps/agent/fdo/router.ts";
 import { useInjection } from "inversify-react";
-import { plainToClassFromExist } from "class-transformer";
+import { instanceToPlain, plainToInstance } from "class-transformer";
+import { Select } from "@codegouvfr/react-dsfr/Select";
+import { merge } from "ts-deepmerge";
 
 export const Route = createFileRoute(
   "/agent/fdo/erreur-operationnelle/$reference/3-requerant",
@@ -38,11 +43,21 @@ export const Route = createFileRoute(
     declaration: DeclarationErreurOperationnelle;
     reference: string;
   }> => {
+    const declaration = (await container
+      .get(DeclarationManagerInterface.$)
+      .getDeclaration(params.reference)) as DeclarationErreurOperationnelle;
+
+    if (!declaration) {
+      throw redirect({
+        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        replace: true,
+        params,
+      });
+    }
+
     return {
       reference: params.reference,
-      declaration: (await container
-        .get(DeclarationManagerInterface.$)
-        .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
+      declaration,
     };
   },
   component: Page,
@@ -50,6 +65,9 @@ export const Route = createFileRoute(
 
 const schemaRequerant = z.object({
   infosRequerant: z.object({
+    civilite: z.custom<Civilite>((c) => c instanceof Civilite, {
+      error: "La civilité du requérant est requise",
+    }),
     nom: z.string().trim().min(1, { error: "Le nom du requérant est requis" }),
     prenom: z
       .string()
@@ -86,9 +104,7 @@ function Page() {
     },
     listeners: {
       onChange: async ({ formApi }) => {
-        declarationManager.enregistrer(
-          plainToClassFromExist(declaration, formApi.state.values),
-        );
+        await declarationManager.enregistrer(declaration, formApi.state.values);
       },
       onChangeDebounceMs: 750,
     },
@@ -141,17 +157,51 @@ function Page() {
           style={{ alignItems: "baseline" }}
         >
           <form.Field
+            name="infosRequerant.civilite"
+            children={(field) => {
+              return (
+                <Select
+                  className="fr-col-lg-2"
+                  label="Civilité *"
+                  disabled={sauvegardeEnCours || declaration.estSauvegarde()}
+                  nativeSelectProps={{
+                    autoFocus: true,
+                    value: field.state.value?.id ?? "",
+                    onChange: (e) => {
+                      field.handleChange(Civilite.from(e.target.value));
+                    },
+                  }}
+                  state={!field.state.meta.isValid ? "error" : "default"}
+                  stateRelatedMessage={
+                    !field.state.meta.isValid ? (
+                      <>{field.state.meta.errors.at(0)?.message}</>
+                    ) : (
+                      <></>
+                    )
+                  }
+                >
+                  <option value="" disabled hidden></option>
+                  {Civilite.liste().map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.libelle}
+                    </option>
+                  ))}
+                </Select>
+              );
+            }}
+          />
+
+          <form.Field
             name="infosRequerant.nom"
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-4"
+                  className="fr-col-lg-3"
                   label="Nom *"
-                  disabled={sauvegardeEnCours}
+                  disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "DUPONT",
-                    autoFocus: true,
                     value: field.state.value,
                     onChange: (e) => field.handleChange(e.target.value),
                   }}
@@ -173,9 +223,9 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-4"
+                  className="fr-col-lg-3"
                   label="Prénom *"
-                  disabled={sauvegardeEnCours}
+                  disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "Martin",
@@ -202,7 +252,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4"
                   label="Téléphone *"
-                  disabled={sauvegardeEnCours}
+                  disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "06 00 00 00 00",
@@ -229,7 +279,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4"
                   label="Courriel *"
-                  disabled={sauvegardeEnCours}
+                  disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "martin.dupont@courriel.fr",
@@ -268,7 +318,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-12"
                   label="Précisions concernant le requérant"
-                  disabled={sauvegardeEnCours}
+                  disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   textArea
                   nativeTextAreaProps={{
                     placeholder:
@@ -313,18 +363,40 @@ function Page() {
                     } as any,
                   }),
               },
-              {
-                children: sauvegardeEnCours
-                  ? "Sauvegarde en cours..."
-                  : "Envoyer",
-                disabled: sauvegardeEnCours || declaration.estSauvegarde(),
-                priority: sauvegardeEnCours ? "tertiary" : "primary",
-                nativeButtonProps: {
-                  type: "submit",
-                  role: "submit",
-                },
-                className: "fr-mr-0",
-              },
+              ...(declaration.estBrouillon()
+                ? [
+                    {
+                      children: sauvegardeEnCours
+                        ? "Sauvegarde en cours..."
+                        : "Envoyer",
+                      disabled:
+                        sauvegardeEnCours || declaration.estSauvegarde(),
+                      priority: sauvegardeEnCours ? "tertiary" : "primary",
+                      nativeButtonProps: {
+                        type: "submit",
+                        role: "submit",
+                      },
+                      className: "fr-mr-0",
+                    },
+                  ]
+                : [
+                    {
+                      children: "Mes déclarations",
+                      priority: "secondary",
+                      nativeButtonProps: {
+                        type: "button",
+                        role: "link",
+                      },
+                      className: "fr-mr-0",
+                      onClick: () =>
+                        naviguer({
+                          to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+                          params: {
+                            reference,
+                          } as any,
+                        }),
+                    },
+                  ]),
             ]}
           />
         </div>

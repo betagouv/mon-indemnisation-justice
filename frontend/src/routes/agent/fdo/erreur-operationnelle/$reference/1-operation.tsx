@@ -91,9 +91,7 @@ const Page = () => {
     },
     listeners: {
       onChange: async ({ fieldApi, formApi }) => {
-        declarationManager.enregistrer(
-          plainToClassFromExist(declaration, formApi.state.values),
-        );
+        declarationManager.enregistrer(declaration, formApi.state.values);
       },
       onChangeDebounceMs: 750,
     },

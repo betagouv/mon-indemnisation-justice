@@ -50,6 +50,7 @@ class DeclarationErreurOperationnelle
     #[Groups(['agent:detail'])]
     protected ProcedureJudiciaire $procedure;
     #[ORM\OneToOne(targetEntity: BrisPorte::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?BrisPorte $dossier = null;
 
     #[ORM\Column(nullable: true)]
@@ -228,19 +229,15 @@ class DeclarationErreurOperationnelle
     #[Groups(['agent:detail'])]
     public function getInfosRequerant(): ?InfosRequerant
     {
-        return new InfosRequerant(...$this->infosRequerant);
+        return new InfosRequerant(
+            ...array_merge($this->infosRequerant, ['civilite' => Civilite::from($this->infosRequerant['civilite'])])
+        );
     }
 
     public function setInfosRequerant(array|InfosRequerant $infosRequerant): DeclarationErreurOperationnelle
     {
         if ($infosRequerant instanceof InfosRequerant) {
-            $this->infosRequerant = [
-                'nom' => $infosRequerant->nom,
-                'prenom' => $infosRequerant->prenom,
-                'telephone' => $infosRequerant->telephone,
-                'courriel' => $infosRequerant->courriel,
-                'message' => $infosRequerant->message,
-            ];
+            $this->infosRequerant = $infosRequerant->versArray();
         } else {
             $this->infosRequerant = $infosRequerant;
         }

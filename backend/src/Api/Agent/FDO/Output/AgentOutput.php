@@ -11,6 +11,7 @@ class AgentOutput
     public int $id;
     public string $prenom;
     public string $nom;
+    #[Map(source: 'email')]
     public string $courriel;
     public string $telephone;
     public array $roles = [];

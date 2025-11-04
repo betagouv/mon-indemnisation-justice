@@ -1,10 +1,9 @@
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
 import { ServiceIdentifier } from "inversify";
-import {
-  instanceToPlain,
-  plainToClassFromExist,
-  plainToInstance,
-} from "class-transformer";
+import { instanceToPlain, plainToInstance } from "class-transformer";
+import * as Sentry from "@sentry/browser";
+import { merge } from "ts-deepmerge";
+import { read } from "fs";
 
 export interface DeclarationManagerInterface {
   getListe(): Promise<DeclarationErreurOperationnelle[]>;
@@ -19,6 +18,7 @@ export interface DeclarationManagerInterface {
 
   enregistrer(
     declaration: DeclarationErreurOperationnelle,
+    miseAJour?: any,
   ): void | Promise<void>;
 
   soumettre(declaration: DeclarationErreurOperationnelle): Promise<void>;
@@ -44,7 +44,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
           this.chargerBrouillons(),
           this.chargerDeclarations(),
         ])
-      ).reduce((cum, val) => cum.concat(...val), []);
+      ).reduce((cum, val) => cum.concat(...(val ?? [])), []);
     }
   }
 
@@ -127,11 +127,32 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     return this._declarations.at(-1) as DeclarationErreurOperationnelle;
   }
 
-  enregistrer(declaration: DeclarationErreurOperationnelle): Promise<void> {
-    this._declarations.forEach((d) =>
-      declaration.dateCreation.getTime() === d.dateCreation.getTime()
-        ? declaration
-        : d,
+  enregistrer(
+    declaration: DeclarationErreurOperationnelle,
+    miseAJour?: any,
+  ): Promise<void> {
+    this._declarations = this._declarations.map((d) => {
+      if (declaration.dateCreation.getTime() === d.dateCreation.getTime()) {
+        return miseAJour
+          ? plainToInstance(
+              DeclarationErreurOperationnelle,
+              merge.withOptions(
+                { mergeArrays: false },
+                instanceToPlain(declaration),
+                miseAJour,
+              ),
+            )
+          : declaration;
+      }
+
+      return d;
+    });
+
+    localStorage.setItem(
+      APIDeclarationManager.CLEF_STOCKAGE,
+      JSON.stringify(
+        instanceToPlain(this._declarations.filter((d) => d.estBrouillon())),
+      ),
     );
 
     return Promise.resolve(undefined);
@@ -169,10 +190,16 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         body: JSON.stringify(instanceToPlain(declaration)),
       },
     );
+    if (response.ok) {
+      const declarationSauvegardee = plainToInstance(
+        DeclarationErreurOperationnelle,
+        await response.json(),
+      );
 
-    this.supprimer(declaration);
-    this.ajouter(
-      plainToInstance(DeclarationErreurOperationnelle, await response.json()),
-    );
+      if (declarationSauvegardee.id) {
+        this.ajouter(declarationSauvegardee);
+        this.supprimer(declaration);
+      }
+    }
   }
 }

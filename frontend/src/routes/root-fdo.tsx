@@ -35,7 +35,11 @@ const EspaceFDO = () => {
             {document.location.hostname !==
               "mon-indemnisation.justice.gouv.fr" && (
               <>
-                <Badge as="span" noIcon severity="warning" className="fr-mx-2v">
+                <br />
+                <Badge as="span" noIcon severity="info" className="fr-mx-1v">
+                  Espace FDO
+                </Badge>
+                <Badge as="span" noIcon severity="warning" className="fr-mx-1v">
                   Plateforme test
                 </Badge>
               </>
