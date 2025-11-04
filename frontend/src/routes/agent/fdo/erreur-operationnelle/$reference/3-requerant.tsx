@@ -106,17 +106,21 @@ function Page() {
       onChange: async ({ formApi }) => {
         await declarationManager.enregistrer(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 750,
+      onChangeDebounceMs: 500,
     },
     validators: {
       onSubmit: schemaRequerant,
     },
     onSubmit: async () => {
       setSauvegardeEnCours(true);
-      await declarationManager.soumettre(declaration);
-      throw naviguer({
-        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
-      });
+      try {
+        await declarationManager.soumettre(declaration);
+        naviguer({
+          to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        });
+      } catch (e) {
+        alert(e);
+      }
     },
   });
 

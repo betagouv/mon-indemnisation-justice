@@ -15,7 +15,7 @@ abstract readonly class AbstractMetadonnees
         return array_merge(get_object_vars($this), $this->normaliser());
     }
 
-    public static function depuisArray(array $valeurs, mixed $converter = null): static
+    public static function depuisArray(array $valeurs): static
     {
         return new static(...$valeurs);
     }

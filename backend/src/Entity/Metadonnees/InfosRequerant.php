@@ -9,18 +9,18 @@ use Symfony\Component\Serializer\Attribute\Groups;
 readonly class InfosRequerant extends AbstractMetadonnees
 {
     public function __construct(
-        public Civilite $civilite,
+        public ?Civilite $civilite,
         public string $nom,
         public string $prenom,
         public string $telephone,
         public string $courriel,
-        public string $message
+        public string $message,
     ) {}
 
-    protected function normaliser(): array
+    public static function depuisArray(array $valeurs): static
     {
-        return [
-            'civilite' => $this->civilite->name,
-        ];
+        $civilite = ($c = $valeurs['civilite'] ?? null) instanceof Civilite ? $c : Civilite::tryFrom($c ?? '');
+
+        return new InfosRequerant(...array_merge($valeurs, ['civilite' => $civilite]));
     }
 }

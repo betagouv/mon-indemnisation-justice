@@ -187,7 +187,13 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
           "Content-type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify(instanceToPlain(declaration)),
+        body: JSON.stringify(
+          instanceToPlain(
+            this._declarations.find(
+              (d) => d.reference === declaration.reference,
+            ),
+          ),
+        ),
       },
     );
     if (response.ok) {
@@ -196,7 +202,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         await response.json(),
       );
 
-      if (declarationSauvegardee.id) {
+      if (declarationSauvegardee) {
         this.ajouter(declarationSauvegardee);
         this.supprimer(declaration);
       }
