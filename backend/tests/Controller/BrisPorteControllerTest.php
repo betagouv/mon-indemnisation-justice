@@ -72,8 +72,7 @@ class BrisPorteControllerTest extends WebTestCase
             ->orderBy('t.dateSoumission', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
         $this->assertNotNull($testEligibilite);
         $this->assertNotNull($testEligibilite->dateSoumission);
         $this->assertFalse($testEligibilite->estVise);
@@ -210,7 +209,7 @@ class BrisPorteControllerTest extends WebTestCase
 
         $session->save();
 
-        $domains = array_unique(array_map(fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
+        $domains = array_unique(array_map(fn(Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
         foreach ($domains as $domain) {
             $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
             $this->client->getCookieJar()->set($cookie);

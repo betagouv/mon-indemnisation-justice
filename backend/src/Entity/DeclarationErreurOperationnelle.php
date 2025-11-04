@@ -229,9 +229,7 @@ class DeclarationErreurOperationnelle
     #[Groups(['agent:detail'])]
     public function getInfosRequerant(): ?InfosRequerant
     {
-        return new InfosRequerant(
-            ...array_merge($this->infosRequerant, ['civilite' => Civilite::from($this->infosRequerant['civilite'])])
-        );
+        return InfosRequerant::depuisArray($this->infosRequerant);
     }
 
     public function setInfosRequerant(array|InfosRequerant $infosRequerant): DeclarationErreurOperationnelle
