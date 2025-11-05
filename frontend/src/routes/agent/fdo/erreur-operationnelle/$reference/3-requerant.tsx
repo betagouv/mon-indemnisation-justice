@@ -324,6 +324,7 @@ function Page() {
                   label="Précisions concernant le requérant"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   textArea
+                  //hintText="Un exemple"
                   nativeTextAreaProps={{
                     placeholder:
                       "Conjoint du locataire, propriétaire bailleur...",
