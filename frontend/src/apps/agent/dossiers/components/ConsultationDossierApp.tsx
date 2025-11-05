@@ -149,9 +149,9 @@ export const ConsultationDossierApp = observer(
                   par <u>{dossier.requerant.nomSimple()}</u>
                 </p>
 
-                <p className="fr-my-1v">
+                <div className="fr-my-1v">
                   <BadgesDossier dossier={dossier} inline={true} />
-                </p>
+                </div>
 
                 <p className="fr-my-1v">
                   Ce dossier

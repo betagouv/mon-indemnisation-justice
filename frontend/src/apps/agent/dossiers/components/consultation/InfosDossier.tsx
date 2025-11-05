@@ -243,9 +243,9 @@ export const InfosDossier = ({
 
                 <li>
                   <b>Survenu à l'adresse: </b>{" "}
-                  {dossier.declarationFDO.adresse.ligne1()}{" "}
-                  {dossier.declarationFDO.adresse.codePostal()}{" "}
-                  {dossier.declarationFDO.adresse.localite()}
+                  {dossier.declarationFDO.adresse?.ligne1}{" "}
+                  {dossier.declarationFDO.adresse?.codePostal}{" "}
+                  {dossier.declarationFDO.adresse?.localite}
                 </li>
                 <li>
                   <b>Le :</b> {dateSimple(dossier.declarationFDO.dateOperation)}

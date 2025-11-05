@@ -58,17 +58,17 @@ const EspaceFDO = () => {
             text: "Déclaration d'erreur opérationnelle",
             menuLinks: [
               {
-                text: "Nouvelle déclaration",
-                linkProps: {
-                  to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration",
-                  activeOptions: { exact: false },
-                },
-              },
-              {
                 text: "Mes déclarations",
                 linkProps: {
                   to: "/agent/fdo/erreur-operationnelle/mes-declarations",
                   activeOptions: { exact: true },
+                },
+              },
+              {
+                text: "Nouvelle déclaration",
+                linkProps: {
+                  to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration",
+                  activeOptions: { exact: false },
                 },
               },
             ],

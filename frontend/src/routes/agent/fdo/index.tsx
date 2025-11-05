@@ -16,7 +16,7 @@ function RouteComponent() {
   return (
     <div>
       <div
-        className="fr-col-12 fr-my-6w"
+        className="fr-col-12 fr-my-3w"
         style={{ border: "1px solid var(--border-default-grey)" }}
       >
         <div
@@ -59,7 +59,7 @@ function RouteComponent() {
 
           <p className="fr-text--sm">
             Une erreur opérationnelle sur un bris de porte correspond à une
-            <b>intervention de police judiciaire</b> effectuée par erreur à un
+            <b> intervention de police judiciaire</b> effectuée par erreur à un
             domicile <b>non concerné par l’enquête</b>, entraînant la
             <b> détérioration de la porte d’entrée</b> (ou de ses éléments).
           </p>
