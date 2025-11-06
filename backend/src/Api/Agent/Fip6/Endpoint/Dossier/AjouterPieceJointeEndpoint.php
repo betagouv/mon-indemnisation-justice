@@ -18,13 +18,12 @@ use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Route API qui permet à un agent FIP6 d'ajouter une pièce jointe à un dossier.
  */
-#[Route('/api/agent/fip6/dossier/{id}/ajouter-piece-jointe/{type}', name: 'api_agent_fip6_dossier_ajouter_piece_jointe', methods: ['PUT'])]
-#[IsGranted(DossierVoter::ACTION_AJOUTER_PIECE_JOINTE, 'document', "L'ajout de pièce jointe est réservé à l'agent habilité", Response::HTTP_FORBIDDEN)]
+#[Route('/api/agent/fip6/dossier/{id}/ajouter-piece-jointe/{type}', name: 'api_agent_fip6_dossier_ajouter_piece_jointe', methods: ['POST'])]
+#[IsGranted(DossierVoter::ACTION_AJOUTER_PIECE_JOINTE, 'dossier', "L'ajout de pièce jointe est réservé à l'agent habilité", Response::HTTP_FORBIDDEN)]
 class AjouterPieceJointeEndpoint
 {
     public function __construct(
@@ -35,13 +34,11 @@ class AjouterPieceJointeEndpoint
     ) {}
 
     public function __invoke(
-        #[MapEntity]
+        #[MapEntity(id: 'id')]
         BrisPorte $dossier,
         string $type,
-        #[MapUploadedFile(
-            new Assert\File(maxSize: '10mi', mimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'application/pdf'], uploadFormSizeErrorMessage: 'Pb taille', uploadExtensionErrorMessage: 'Pb mime'),
-        )]
-        UploadedFile $pieceJointe,
+        #[MapUploadedFile(name: 'pieceJointe')]
+        UploadedFile $pieceJointe
     ) {
         if (null === ($documentType = DocumentType::tryFrom($type)) || !$documentType->estPieceJointe()) {
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
