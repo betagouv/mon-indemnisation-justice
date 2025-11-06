@@ -4,20 +4,26 @@ import {
   AgentManagerInterface,
   APIAgentManager,
 } from "@/common/services/agent/agent.ts";
+import {
+  APIDossierManager,
+  DossierManagerInterface,
+} from "@/common/services/agent/dossier.ts";
 
 const container: Container = new Container();
-const DocumentManagerImpl = Symbol.for("DocumentManagerInterface");
 
 container
-  .bind<DocumentManagerInterface>(DocumentManagerImpl)
-  .to(APIDocumentManager)
+  .bind<DossierManagerInterface>(DossierManagerInterface.$)
+  .to(APIDossierManager)
   .inSingletonScope();
 
-const AgentManagerImpl = Symbol.for("AgentManagerInterface");
+container
+  .bind<DocumentManagerInterface>(DocumentManagerInterface.$)
+  .to(APIDocumentManager)
+  .inSingletonScope();
 
 container
   .bind<AgentManagerInterface>(AgentManagerInterface.$)
   .to(APIAgentManager)
   .inSingletonScope();
 
-export { container, type DocumentManagerInterface, DocumentManagerImpl };
+export { container };

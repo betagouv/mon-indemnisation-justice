@@ -1,9 +1,8 @@
 import { BaseDossier, Document } from "@/common/models";
 import { plainToInstance } from "class-transformer";
-import { data } from "autoprefixer";
-import { reject } from "lodash";
+import { ServiceIdentifier } from "inversify";
 
-interface DocumentManagerInterface {
+export interface DocumentManagerInterface {
   imprimer(document: Document, corps?: string): Promise<Document>;
 
   genererCourrierPropositionIndemnisation(
@@ -24,7 +23,13 @@ interface DocumentManagerInterface {
   genererArretePaiement(dossier: BaseDossier): Promise<Document>;
 }
 
-class APIDocumentManager implements DocumentManagerInterface {
+export namespace DocumentManagerInterface {
+  export const $: ServiceIdentifier<DocumentManagerInterface> = Symbol(
+    "DocumentManagerInterface",
+  );
+}
+
+export class APIDocumentManager implements DocumentManagerInterface {
   async imprimer(document: Document, corps?: string): Promise<Document> {
     return new Promise(async (resolve, reject) => {
       const response = await fetch(
@@ -163,5 +168,3 @@ class APIDocumentManager implements DocumentManagerInterface {
     );
   }
 }
-
-export { type DocumentManagerInterface, APIDocumentManager };

@@ -12,6 +12,8 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import { useInjection } from "inversify-react";
+import { DossierManagerInterface } from "@/common/services/agent/dossier.ts";
 
 const _modale = createModal({
   id: "modale-ajouter-piece-jointe",
@@ -23,28 +25,31 @@ type EtatAjout = "choix_type" | "televersement";
 const component = function AjoutPieceJointe({
   dossier,
   agent,
-  onAjoute = null,
+  onAjoute,
 }: {
   dossier: DossierDetail;
   agent: Agent;
   onAjoute?: (nouvellePieceJointe: Document) => void;
 }) {
+  // DossierManager
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
   // Ref sur le champ de sélection du fichier, pour pouvoir le réinitialiser
   const refChampFichier = useRef<HTMLInputElement>(null);
 
   // Type de document associé à la pièce jointe téléversée
-  const [typePJ, setTypePj]: [DocumentType, (typePJ?: DocumentType) => void] =
-    useState<DocumentType>(null);
-
-  const [montantIndemnisation, setMontantIndemnisation] = useState<number>(
-    dossier.montantIndemnisation,
-  );
+  const [typePJ, setTypePj]: [
+    DocumentType | null,
+    (typePJ: DocumentType | null) => void,
+  ] = useState<DocumentType | null>(null);
 
   // Pièce jointe à téléverser
   const [nouvellePieceJointe, setNouvellePieceJointe]: [
     File | null,
-    (nouvellePieceJointe: File) => void,
-  ] = useState(null);
+    (nouvellePieceJointe: File | null) => void,
+  ] = useState<File | null>(null);
 
   // Indique si la sauvegarde des notes de suivi est en cours
   const [sauvegardeEnCours, setSauvegarderEnCours]: [
@@ -61,50 +66,24 @@ const component = function AjoutPieceJointe({
     async ({
       typePJ,
       nouvellePieceJointe,
-      montantIndemnisation,
     }: {
       typePJ: DocumentType;
       nouvellePieceJointe: File;
-      montantIndemnisation?: number;
     }) => {
       setSauvegarderEnCours(true);
 
-      const payload = new FormData();
-      payload.append("file", nouvellePieceJointe);
-      payload.append("type", typePJ.type);
-
-      if (montantIndemnisation) {
-        payload.append(
-          "metaDonnees",
-          JSON.stringify({
-            montantIndemnisation,
-          }),
-        );
-      }
-
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/piece-jointe/ajouter.json`,
-        {
-          method: "POST",
-          body: payload,
-        },
+      const document = await dossierManager.ajouterPieceJointe(
+        dossier,
+        typePJ,
+        nouvellePieceJointe,
       );
+      dossier.addDocument(document);
 
-      if (response.ok) {
-        const data = await response.json();
-        const document = plainToInstance(Document, data);
-        dossier.addDocument(document);
-        if (montantIndemnisation) {
-          dossier.setMontantIndemnisation(montantIndemnisation);
-        }
-
-        _modale.close();
-        onAjoute?.(document);
-        refChampFichier.current.value = null;
-        setTypePj(null);
-        setNouvellePieceJointe(null);
-      }
-
+      _modale.close();
+      onAjoute?.(document);
+      if (refChampFichier.current) refChampFichier.current.value = "";
+      setTypePj(null);
+      setNouvellePieceJointe(null);
       setSauvegarderEnCours(false);
     },
     [dossier.id],
@@ -140,7 +119,7 @@ const component = function AjoutPieceJointe({
               setTypePj(
                 Document.types.find(
                   (type: DocumentType) => type.type == e.target.value,
-                ),
+                ) as DocumentType,
               ),
             value: typePJ?.type ?? "",
           }}
@@ -179,8 +158,9 @@ const component = function AjoutPieceJointe({
           stateRelatedMessage=""
           nativeInputProps={{
             accept: "application/pdf,image/*",
-            defaultValue: null,
-            onChange: (e) => setNouvellePieceJointe(e.target.files[0]),
+            defaultValue: "",
+            onChange: (e) =>
+              setNouvellePieceJointe(e.target.files?.item(0) ?? null),
           }}
         />
 
@@ -199,16 +179,14 @@ const component = function AjoutPieceJointe({
             {
               priority: "primary",
               disabled: sauvegardeEnCours || !typePJ || !nouvellePieceJointe,
-              onClick: () =>
-                ajouterPieceJointe({
-                  typePJ,
-                  nouvellePieceJointe,
-                  montantIndemnisation:
-                    dossier.estAApprouver &&
-                    typePJ == DocumentType.TYPE_COURRIER_MINISTERE
-                      ? montantIndemnisation
-                      : undefined,
-                }),
+              onClick: () => {
+                if (nouvellePieceJointe) {
+                  ajouterPieceJointe({
+                    typePJ: typePJ as DocumentType,
+                    nouvellePieceJointe,
+                  });
+                }
+              },
               iconId: "fr-icon-file-add-line",
               children: "Ajouter",
             },

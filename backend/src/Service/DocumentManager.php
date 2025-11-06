@@ -86,7 +86,6 @@ class DocumentManager
                 ->setSize($this->storage->fileSize($nom))
             ;
 
-            $dossier->ajouterDocument($document);
             $this->em->persist($dossier);
             $this->em->flush();
 
