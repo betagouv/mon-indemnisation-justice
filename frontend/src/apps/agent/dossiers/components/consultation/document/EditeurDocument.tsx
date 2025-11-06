@@ -3,7 +3,6 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Document } from "@/common/models";
 import { QuillEditor } from "@/apps/agent/dossiers/components/consultation/editor";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
-import { DocumentManagerImpl } from "@/common/services/agent";
 import { useInjection } from "inversify-react";
 import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -41,7 +40,7 @@ export const EditeurDocument = function EditeurDocumentComponent({
   onImpression?: (impressionEnCours: boolean) => void;
 }) {
   const documentManager: DocumentManagerInterface =
-    useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+    useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
   const [modeEdition, setModeEdition] = useState<boolean>(!!document.corps);
   const [impressionEnCours, setImpressionEnCours] = useState<boolean>(false);

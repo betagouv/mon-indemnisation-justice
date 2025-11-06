@@ -673,7 +673,13 @@ class BrisPorte
 
     public function getOrCreateDocument(DocumentType $type): Document
     {
-        return $this->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($this);
+        /** @var null|Document $document */
+        $document = null;
+        if ($type->estUnique()) {
+            $document = $this->getDocumentParType($type);
+        }
+
+        return $document ?? (new Document())->setType($type)->ajouterAuDossier($this);
     }
 
     protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
