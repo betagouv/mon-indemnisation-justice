@@ -16,10 +16,10 @@ final class DocumentOutput
     public int $size;
 
     public ?bool $estAjoutRequerant;
-    public string $corps;
+    public ?string $corps;
     public string $fileHash;
     #[Map(transform: [DocumentType::class, 'toString'])]
     public string $type;
     public mixed $metaDonnees;
-    public ?\DateTimeInterface $dateDerniereModification;
+    public ?\DateTimeInterface $dateDerniereModification = null;
 }

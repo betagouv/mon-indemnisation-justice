@@ -23,11 +23,10 @@ export class APIDossierManager implements DossierManagerInterface {
     fichier: File,
   ): Promise<Document> {
     const payload = new FormData();
-    payload.append("file", fichier);
-    payload.append("type", type.type);
+    payload.append("pieceJointe", fichier);
 
     const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/piece-jointe/ajouter.json`,
+      `/api/agent/fip6/dossier/${dossier.id}/ajouter-piece-jointe/${type.type}`,
       {
         method: "POST",
         body: payload,
