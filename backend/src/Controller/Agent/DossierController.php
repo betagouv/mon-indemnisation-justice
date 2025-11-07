@@ -98,39 +98,6 @@ class DossierController extends AgentController
         ], Response::HTTP_OK);
     }
 
-    // TODO créer un voter https://symfony.com/doc/current/security/voters.html
-    #[IsGranted(
-        attribute: new Expression('is_granted("ROLE_AGENT_ATTRIBUTEUR") or is_granted("ROLE_AGENT_VALIDATEUR") or user.instruit(subject["dossier"])'),
-        subject: [
-            'dossier' => new Expression('args["dossier"]'),
-        ]
-    )]
-    #[Route('/dossier/{id}/piece-jointe/ajouter.json', name: 'agent_redacteur_ajouter_piece_jointe_dossier', methods: ['POST'])]
-    public function ajouterPieceJointe(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, EventDispatcherInterface $eventDispatcher): Response
-    {
-        $type = DocumentType::tryFrom($request->request->get('type'));
-        if (null === $type) {
-            return new JsonResponse([
-                'error' => 'Type non reconnu ',
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-        /** @var UploadedFile $file */
-        $file = $request->files->get('file');
-
-        if (null === $file?->getPathname()) {
-            throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
-        }
-
-        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, $type);
-
-        $this->em->persist($document);
-        $this->em->persist($dossier);
-        $this->em->flush();
-
-        return new JsonResponse($this->normalizer->normalize($document, 'json', ['agent:detail']), Response::HTTP_OK);
-    }
-
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
     #[Route('/dossier/{id}/decider.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
     public function decider(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, NormalizerInterface $normalizer): Response

@@ -29,9 +29,7 @@ class DocumentController extends AbstractController
     public function __construct(
         protected readonly DocumentManager $documentManager,
         protected readonly LoggerInterface $logger,
-    )
-    {
-    }
+    ) {}
 
     #[Route('/{id}/{type}', name: 'document_upload', methods: ['POST'])]
     public function upload(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, DocumentType $type): JsonResponse

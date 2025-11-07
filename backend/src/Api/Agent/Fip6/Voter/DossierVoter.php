@@ -68,7 +68,7 @@ class DossierVoter extends Voter
 
     protected function agentPeutAjouterPieceJointe(Agent $agent, BrisPorte $dossier): bool
     {
-        return $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR) || ($agent->estRedacteur() && $agent->instruit($dossier));
+        return $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR, Agent::ROLE_AGENT_ATTRIBUTEUR) || ($agent->estRedacteur() && $agent->instruit($dossier));
     }
 
     protected function agentPeutAttribuer(Agent $agent): bool
