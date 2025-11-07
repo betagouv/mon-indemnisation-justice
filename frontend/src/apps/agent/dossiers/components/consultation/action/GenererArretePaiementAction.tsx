@@ -11,12 +11,9 @@ import {
   EtatDossier,
 } from "@/common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import {
-  DocumentManagerImpl,
-  DocumentManagerInterface,
-} from "@/common/services/agent";
 import { useInjection } from "inversify-react";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 
 const _modale = createModal({
   id: "modale-action-verifier-acceptation",
@@ -68,7 +65,7 @@ export const GenererArretePaiementModale =
     );
 
     const documentManager: DocumentManagerInterface =
-      useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+      useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
     const genererArretePaiement = useCallback(async () => {
       const arretePaiement =

@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Metadonnees\MetadonneesAttestation;
 use MonIndemnisationJustice\Repository\DocumentRepository;
@@ -64,7 +65,7 @@ class Document
 
     #[Groups(['agent:detail'])]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    protected \DateTimeInterface $dateDerniereModification;
+    protected ?\DateTimeInterface $dateDerniereModification = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['dossier:lecture', 'requerant:detail'])]
@@ -91,6 +92,12 @@ class Document
     public function onPersist(PrePersistEventArgs $args): void
     {
         $this->dateAjout = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onUpdate(PreUpdateEventArgs $args): void
+    {
+        $this->setModifie();
     }
 
     public function getId(): ?int
@@ -267,7 +274,7 @@ class Document
         return $this;
     }
 
-    public function getDateDerniereModification(): \DateTimeInterface
+    public function getDateDerniereModification(): ?\DateTimeInterface
     {
         return $this->dateDerniereModification;
     }

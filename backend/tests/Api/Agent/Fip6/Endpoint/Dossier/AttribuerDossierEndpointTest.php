@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @internal
  *
- * @coversNothing
+ * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\AttribuerDossierEndpoint
  */
 class AttribuerDossierEndpointTest extends AbstractEndpointTestCase
 {

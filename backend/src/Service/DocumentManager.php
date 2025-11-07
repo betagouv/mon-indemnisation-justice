@@ -37,11 +37,8 @@ class DocumentManager
             $cheminFichier = $cheminOuURL;
         }
 
-        $mime = mime_content_type($cheminFichier);
-        $extension = pathinfo($cheminFichier, PATHINFO_EXTENSION) ?? match ($mime) {
-            'application/pdf' => 'pdf',
-            'image/jpeg', 'image/png', 'image/gif', 'image/webp' => preg_replace('image/', '', $mime),
-        };
+        $mime = $this->calculerTypeMime($cheminFichier);
+        $extension = $this->calculerExtension($cheminFichier);
 
         $this->ajouterDocument(
             $dossier,
@@ -72,9 +69,18 @@ class DocumentManager
 
     public function ajouterDocument(BrisPorte $dossier, Document $document, string $contenu, string $extension): Document
     {
-        $nom = sprintf('%s.%s', hash('sha256', $contenu), $extension);
+        $document = $this->enregistrerDocument($document, $contenu);
 
+        $this->em->persist($dossier);
+        $this->em->flush();
+
+        return $document;
+    }
+
+    public function enregistrerDocument(Document $document, string $contenu): Document
+    {
         try {
+            $nom = sprintf('%s.%s', hash('sha256', $contenu), $this->calculerExtension($document->getOriginalFilename()));
             $this->storage->write($nom, $contenu);
 
             if (!$this->storage->fileExists($nom)) {
@@ -85,10 +91,6 @@ class DocumentManager
                 ->setFilename($nom)
                 ->setSize($this->storage->fileSize($nom))
             ;
-
-            $dossier->ajouterDocument($document);
-            $this->em->persist($dossier);
-            $this->em->flush();
 
             return $document;
         } catch (FilesystemException|UnableToWriteFile $e) {
@@ -138,5 +140,19 @@ class DocumentManager
 
         $this->em->persist($arretePaiement);
         $this->em->flush();
+    }
+
+    public function calculerTypeMime(string $cheminFichier): string
+    {
+        return mime_content_type($cheminFichier);
+    }
+
+    public function calculerExtension(string $cheminFichier): string
+    {
+        return pathinfo($cheminFichier, PATHINFO_EXTENSION) ?? match ($mime = $this->calculerTypeMime($cheminFichier)) {
+            'application/pdf' => 'pdf',
+            'image/jpeg', 'image/png', 'image/gif', 'image/webp' => preg_replace('image/', '', $mime),
+            default => 'txt'
+        };
     }
 }

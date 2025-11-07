@@ -19,19 +19,32 @@ use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Service\DocumentManager;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DossierFixture extends Fixture implements DependentFixtureInterface
 {
     protected Generator $faker;
+    protected string $dossierRessources;
+    protected string $dossierTeleversement;
+    protected Filesystem $filesystem;
 
     /** @var BrisPorte[] */
     private static $REGISTRE_DOSSIERS = [];
 
     public function __construct(
         protected readonly UserPasswordHasherInterface $passwordHasher,
+        #[Autowire(param: 'kernel.project_dir')]
+        protected readonly string $kernelDirectory,
+        protected readonly DocumentManager $documentManager,
     ) {
         $this->faker = Factory::create('fr_FR');
+        $this->dossierTeleversement = $this->kernelDirectory.'/fichiers/test/';
+        $this->dossierRessources = $this->kernelDirectory.'/tests/ressources/';
+        $this->filesystem = new Filesystem();
     }
 
     public function getDependencies(): array
@@ -46,6 +59,15 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
+        $finder = new Finder();
+        $finder->files()->in($this->dossierTeleversement);
+
+        if ($finder->hasResults()) {
+            foreach ($finder as $fichier) {
+                $this->filesystem->remove($fichier);
+            }
+        }
+
         // Dossiers
         $dossierAFinaliser = (new BrisPorte())
             ->setRequerant($this->getReference('requerant-raquel', Requerant::class))
@@ -135,7 +157,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             new \DateTimeImmutable('-18 days'),
             EtatDossierType::DOSSIER_A_INSTRUIRE,
             redacteur: $this->getReference('agent-redacteur', Agent::class)
-        );
+        )->ajouterDocument($this->creerDocumentDepuisRessource('pieces_jointes/Facture 1.png', DocumentType::TYPE_FACTURE, true));
 
         $this->addReference('dossier-en-instruction-melun', $dossierAInstruire);
 
@@ -360,5 +382,19 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
     protected function getCacheKey(): string
     {
         return 'fixture-dossier';
+    }
+
+    private function creerDocumentDepuisRessource(string $chemin, DocumentType $type, ?bool $estAjoutRequerant = true): Document
+    {
+        $cheminFichier = $this->dossierRessources.$chemin;
+
+        return $this->documentManager->enregistrerDocument(
+            (new Document())
+                ->setOriginalFilename(basename($cheminFichier))
+                ->setAjoutRequerant($estAjoutRequerant)
+                ->setType($type)
+                ->setMime($this->documentManager->calculerTypeMime($cheminFichier)),
+            $this->filesystem->readFile($cheminFichier),
+        );
     }
 }

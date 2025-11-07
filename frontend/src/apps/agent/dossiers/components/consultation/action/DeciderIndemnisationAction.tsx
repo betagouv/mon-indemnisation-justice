@@ -9,29 +9,17 @@ import React, {
   useState,
 } from "react";
 
-import {
-  Agent,
-  Document,
-  DocumentType,
-  DossierDetail,
-  EtatDossier,
-} from "@/common/models";
+import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { EditeurDocument } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import {
-  DocumentManagerImpl,
-  DocumentManagerInterface,
-} from "@/common/services/agent";
 import { useInjection } from "inversify-react";
-import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
-import CallOut from "@codegouvfr/react-dsfr/CallOut";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import Highlight from "@codegouvfr/react-dsfr/Highlight";
 import { observer } from "mobx-react-lite";
 import { Loader } from "@/common/components/Loader.tsx";
+import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 
 const _modale = createModal({
   id: "modale-action-decider-indemnisation",
@@ -173,7 +161,7 @@ export const DeciderIndemnisationModale = observer(
     };
 
     const documentManager: DocumentManagerInterface =
-      useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+      useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
     const genererCourrierPropositionIndemnisation = useCallback(
       async (dossier: DossierDetail, montantIndemnisation: number) => {

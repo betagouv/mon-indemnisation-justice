@@ -1,29 +1,18 @@
 import { EditeurDocument } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument";
 import { Loader } from "@/common/components/Loader";
-import {
-  DocumentManagerImpl,
-  DocumentManagerInterface,
-} from "@/common/services/agent";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { useInjection } from "inversify-react";
 import React, {
   FormEvent,
-  ReactNode,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
 
-import {
-  Agent,
-  Document,
-  DocumentType,
-  DossierDetail,
-  EtatDossier,
-} from "@/common/models";
+import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
 import { observer } from "mobx-react-lite";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { plainToInstance } from "class-transformer";
@@ -34,6 +23,7 @@ import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
+import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 
 const _modale = createModal({
   id: "modale-action-confirmation",
@@ -148,7 +138,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
     useState<boolean>(false);
 
   const documentManager: DocumentManagerInterface =
-    useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+    useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
   // Relancer une impression si le document n'est pas du jour
   useEffect(() => {

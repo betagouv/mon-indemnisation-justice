@@ -1,8 +1,4 @@
 import { Loader } from "@/common/components/Loader";
-import {
-  DocumentManagerImpl,
-  DocumentManagerInterface,
-} from "@/common/services/agent";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
@@ -25,6 +21,7 @@ import {
 } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { TelechargerPieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 
 const _modale = createModal({
   id: "modale-action-generer-arrete-paiement",
@@ -74,7 +71,7 @@ export const SignerArretePaiementModale = observer(
       useState<boolean>(false);
 
     const documentManager: DocumentManagerInterface =
-      useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+      useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
     // Relancer une impression si le document n'est pas du jour
     useEffect(() => {

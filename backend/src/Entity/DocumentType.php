@@ -19,14 +19,14 @@ enum DocumentType: string
     case TYPE_COURRIER_REQUERANT = 'courrier_requerant';
     case TYPE_ARRETE_PAIEMENT = 'arrete_paiement';
 
+    public function estPieceJointe(): bool
+    {
+        return !$this->estUnique();
+    }
+
     public function estEditableAgent(): bool
     {
-        return match ($this) {
-            self::TYPE_COURRIER_MINISTERE,
-            self::TYPE_ARRETE_PAIEMENT => true,
-
-            default => false,
-        };
+        return $this->estUnique();
     }
 
     public function estUnique(): bool
@@ -38,6 +38,11 @@ enum DocumentType: string
 
             default => false,
         };
+    }
+
+    public static function piecesJointes(): array
+    {
+        return array_filter(self::cases(), fn (DocumentType $type) => $type->estPieceJointe());
     }
 
     /**

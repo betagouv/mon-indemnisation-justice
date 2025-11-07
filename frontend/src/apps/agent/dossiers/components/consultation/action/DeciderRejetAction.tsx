@@ -16,16 +16,13 @@ import {
 } from "@/apps/agent/dossiers/components/consultation/document/EditeurDocument.tsx";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import {
-  DocumentManagerImpl,
-  DocumentManagerInterface,
-} from "@/common/services/agent";
 import { useInjection } from "inversify-react";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
 import { observer } from "mobx-react-lite";
 import { Loader } from "@/common/components/Loader.tsx";
+import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 
 const _modale = createModal({
   id: "modale-action-decider-rejet",
@@ -164,7 +161,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
   });
 
   const documentManager: DocumentManagerInterface =
-    useInjection<DocumentManagerInterface>(DocumentManagerImpl);
+    useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
   const genererCourrierRejet = useCallback(
     async (dossier: DossierDetail, motifRejet: MotifRejet) => {

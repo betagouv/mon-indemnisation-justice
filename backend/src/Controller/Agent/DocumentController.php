@@ -26,9 +26,7 @@ class DocumentController extends AbstractController
     public function __construct(
         protected readonly DocumentManager $documentManager,
         protected readonly LoggerInterface $logger,
-    )
-    {
-    }
+    ) {}
 
     #[Route('/{id}/{hash}', name: 'agent_document_download', methods: ['GET'])]
     public function download(#[MapEntity] Document $document, string $hash, Request $request): Response

@@ -395,10 +395,12 @@ class BrisPorte
         return $this;
     }
 
-    public function ajouterDocument(Document $document): void
+    public function ajouterDocument(Document $document): static
     {
         $this->documents->add($document);
         $this->documentsParType[$document->getType()->value][] = $document;
+
+        return $this;
     }
 
     public function supprimerDocumentsParType(DocumentType $type): void
@@ -673,7 +675,13 @@ class BrisPorte
 
     public function getOrCreateDocument(DocumentType $type): Document
     {
-        return $this->getDocumentParType($type) ?? (new Document())->setType($type)->ajouterAuDossier($this);
+        /** @var null|Document $document */
+        $document = null;
+        if ($type->estUnique()) {
+            $document = $this->getDocumentParType($type);
+        }
+
+        return $document ?? (new Document())->setType($type)->ajouterAuDossier($this);
     }
 
     protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
