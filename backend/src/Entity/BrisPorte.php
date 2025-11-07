@@ -395,10 +395,12 @@ class BrisPorte
         return $this;
     }
 
-    public function ajouterDocument(Document $document): void
+    public function ajouterDocument(Document $document): static
     {
         $this->documents->add($document);
         $this->documentsParType[$document->getType()->value][] = $document;
+
+        return $this;
     }
 
     public function supprimerDocumentsParType(DocumentType $type): void

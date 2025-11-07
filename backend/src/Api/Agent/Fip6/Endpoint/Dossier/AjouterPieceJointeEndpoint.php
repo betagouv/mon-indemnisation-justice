@@ -39,7 +39,7 @@ class AjouterPieceJointeEndpoint
         string $type,
         #[MapUploadedFile(name: 'pieceJointe')]
         UploadedFile $pieceJointe
-    ) {
+    ): Response {
         if (null === ($documentType = DocumentType::tryFrom($type)) || !$documentType->estPieceJointe()) {
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
         }
