@@ -68,7 +68,7 @@ class EtatDossier
     /**
      * Ce que l'état doit changer sur le dossier dès lors qu'il est actif.
      */
-    public function postActivation(): void
+    public function postActivation(?bool $progression = true): void
     {
         if (EtatDossierType::DOSSIER_A_ATTRIBUER === $this->etat) {
             $this->dossier->setDateDepot(new \DateTimeImmutable());
@@ -78,6 +78,7 @@ class EtatDossier
         if (
             in_array($this->etat, [EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_OK_A_APPROUVER])
             && isset($this->contexte['montantIndemnisation'])
+            && $progression
         ) {
             $this->dossier->setPropositionIndemnisation($this->contexte['montantIndemnisation']);
         }
