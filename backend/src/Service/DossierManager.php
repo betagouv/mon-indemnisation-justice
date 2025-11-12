@@ -42,4 +42,13 @@ class DossierManager
 
         $this->dossierRepository->save($dossier);
     }
+
+    /**
+     * On annule l'état courant en le supprimant de l'historique, l'état actuel repointant sur l'état précédant.
+     */
+    public function annuler(BrisPorte $dossier): void
+    {
+        $dossier->annulerEtat();
+        $this->dossierRepository->save($dossier);
+    }
 }
