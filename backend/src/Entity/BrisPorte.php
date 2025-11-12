@@ -58,7 +58,7 @@ class BrisPorte
     #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?EtatDossier $etatDossier = null;
 
-    #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER')]
+    #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
     #[ORM\OrderBy(['dateEntree' => 'ASC'])]
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
@@ -231,15 +231,38 @@ class BrisPorte
     public function changerStatut(EtatDossierType $type, bool $requerant = false, ?Agent $agent = null, ?array $contexte = null): self
     {
         if ($requerant) {
-            $this->historiqueEtats->add(EtatDossier::creerRequerant($this, $type, $contexte));
-        } elseif (null !== $agent) {
-            $this->historiqueEtats->add(EtatDossier::creerAgent($this, $type, $agent, $contexte));
-        } else {
-            $this->historiqueEtats->add(EtatDossier::creer($this, $type, $contexte));
+            return $this->setEtat(EtatDossier::creerRequerant($this, $type, $contexte));
+        }
+        if (null !== $agent) {
+            return $this->setEtat(EtatDossier::creerAgent($this, $type, $agent, $contexte));
         }
 
-        $this->etatDossier = $this->historiqueEtats->last();
-        $this->etatDossier->postActivation();
+        return $this->setEtat(EtatDossier::creer($this, $type, $contexte));
+    }
+
+    public function annulerEtat(): self
+    {
+        $this->etatDossier = $this->historiqueEtats->get($this->historiqueEtats->count() - 2);
+        $this->historiqueEtats->remove($this->historiqueEtats->count() - 1);
+
+        return $this;
+    }
+
+    public function revenir(int $nbEtapes): self
+    {
+        if ($nbEtapes >= $this->historiqueEtats->count()) {
+            throw new \LogicException(sprintf('Impossible de revenir plus de %d état(s) en arrière', $this->historiqueEtats->count() - 1));
+        }
+
+        /** @var EtatDossier $etatPrecedent */
+        $etatPrecedent = $this->historiqueEtats->get($this->historiqueEtats->count() - ($nbEtapes + 1));
+
+        $this->setEtat(
+            EtatDossier::creer($this, $etatPrecedent->getEtat(), $etatPrecedent->getContexte())
+                ->setAgent($etatPrecedent->getAgent())
+                ->setRequerant($etatPrecedent->getRequerant()),
+            false
+        );
 
         return $this;
     }
@@ -254,16 +277,6 @@ class BrisPorte
     public function getEtatDossier(): ?EtatDossier
     {
         return $this->etatDossier;
-    }
-
-    public function revenirEtatPrecedent(): static
-    {
-        if ($this->historiqueEtats->count() > 1) {
-            $this->historiqueEtats->removeElement($this->historiqueEtats->last());
-            $this->etatDossier = $this->historiqueEtats->last();
-        }
-
-        return $this;
     }
 
     public function getHistoriqueEtats(): Collection
@@ -682,6 +695,21 @@ class BrisPorte
         }
 
         return $document ?? (new Document())->setType($type)->ajouterAuDossier($this);
+    }
+
+    /**
+     * @param null|bool $progression est-ce qu'il s'agit d'une avancée d'un état vers le suivant ou d'un retour arrière ?
+     *
+     * @return $this
+     */
+    protected function setEtat(EtatDossier $etat, ?bool $progression = true): static
+    {
+        $this->historiqueEtats->add($etat);
+        $this->etatDossier = $this->historiqueEtats->last();
+
+        $this->etatDossier->postActivation($progression);
+
+        return $this;
     }
 
     protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface

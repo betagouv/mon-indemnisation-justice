@@ -26,18 +26,20 @@ class DossierEtatRevenirCommand extends Command
     protected function configure()
     {
         $this->addArgument('id', InputArgument::REQUIRED);
+        $this->addArgument('nb-etapes', InputArgument::OPTIONAL, "Nombre d'étapes où revenir en arrière", 1);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('id');
+        $nbEtapes = intval($input->getArgument('nb-etapes'));
         $dossier = $this->em->find(BrisPorte::class, $id);
 
         if (null == $dossier) {
             throw new \LogicException("Aucun dossier trouve pour l'id {$id}");
         }
 
-        $this->dossierManager->revenir($dossier);
+        $this->dossierManager->revenir($dossier, $nbEtapes);
 
         return Command::SUCCESS;
     }

@@ -18,9 +18,13 @@ class DossierManager
         protected readonly AgentRepository $agentRepository,
     ) {}
 
-    public function revenir(BrisPorte $dossier, ?Agent $agent = null, ?array $contexte = null): void
+    /**
+     * On parle de revenir à un n-ème état précédent, mais en réalité on va juste re-créer un nouvel état équivalent en
+     * dessus de la pile d'historique d'état, lequel devient alors l'état courant.
+     */
+    public function revenir(BrisPorte $dossier, int $nbEtapes): void
     {
-        $dossier->revenirEtatPrecedent();
+        $dossier->revenir($nbEtapes);
         $this->dossierRepository->save($dossier);
     }
 
@@ -36,6 +40,15 @@ class DossierManager
             contexte: $contexte
         );
 
+        $this->dossierRepository->save($dossier);
+    }
+
+    /**
+     * On annule l'état courant en le supprimant de l'historique, l'état actuel repointant sur l'état précédant.
+     */
+    public function annuler(BrisPorte $dossier): void
+    {
+        $dossier->annulerEtat();
         $this->dossierRepository->save($dossier);
     }
 }
