@@ -12,3 +12,5 @@ COPY .docker/nginx/ssl/rootCA.pem /usr/local/share/ca-certificates
 
 RUN openssl x509 -inform PEM -in /usr/local/share/ca-certificates/rootCA.pem -out /usr/local/share/ca-certificates/rootCA.crt && \
     update-ca-certificates
+
+WORKDIR /app

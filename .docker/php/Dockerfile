@@ -27,8 +27,8 @@ RUN install-php-extensions \
 # PHP config
 RUN echo 'date.timezone = "Europe/Paris"' >> $PHP_INI_DIR/php.ini
 RUN echo 'memory_limit = -1' >> $PHP_INI_DIR/php.ini
-RUN echo 'upload_max_filesize = 10M' >> $PHP_INI_DIR/php.ini
-RUN echo 'post_max_size = 100M' >> $PHP_INI_DIR/php.ini
+RUN echo 'upload_max_filesize = 20M' >> $PHP_INI_DIR/php.ini
+RUN echo 'post_max_size = 30M' >> $PHP_INI_DIR/php.ini
 
 # Node
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -

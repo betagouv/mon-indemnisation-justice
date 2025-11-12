@@ -43,7 +43,7 @@ class DossierEtatAvancerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('id');
-        $dossier = $this->dossierRepository->find($id);
+        $dossier = $this->dossierRepository->getByIdOuReference($id);
 
         if (null == $dossier) {
             throw new \LogicException("Aucun dossier trouve pour l'id {$id}");

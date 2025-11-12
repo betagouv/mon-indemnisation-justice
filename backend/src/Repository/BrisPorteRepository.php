@@ -33,6 +33,16 @@ class BrisPorteRepository extends ServiceEntityRepository
         }
     }
 
+    public function getByIdOuReference(int|string $id): ?BrisPorte
+    {
+        return $this->createQueryBuilder('d')->where('d.id = :id')->orWhere('d.reference = :reference')
+            ->setParameter('id', intval($id))
+            ->setParameter('reference', $id)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     public function calculerReference(BrisPorte $dossier): string
     {
         $nbDossiersDeposesMemeJour = $this->createQueryBuilder('d')
