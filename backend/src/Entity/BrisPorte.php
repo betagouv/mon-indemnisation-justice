@@ -58,7 +58,7 @@ class BrisPorte
     #[ORM\JoinColumn(name: 'etat_actuel_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?EtatDossier $etatDossier = null;
 
-    #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER')]
+    #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
     #[ORM\OrderBy(['dateEntree' => 'ASC'])]
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
@@ -240,10 +240,18 @@ class BrisPorte
         return $this->setEtat(EtatDossier::creer($this, $type, $contexte));
     }
 
+    public function annulerEtat(): self
+    {
+        $this->etatDossier = $this->historiqueEtats->get($this->historiqueEtats->count() - 2);
+        $this->historiqueEtats->remove($this->historiqueEtats->count() - 1);
+
+        return $this;
+    }
+
     public function revenir(int $nbEtapes): self
     {
-        if ($nbEtapes > $this->historiqueEtats->count()) {
-            throw new \LogicException("Impossible de revenir plus de {$this->historiqueEtats->count()} états en arrière");
+        if ($nbEtapes >= $this->historiqueEtats->count()) {
+            throw new \LogicException(sprintf('Impossible de revenir plus de %d état(s) en arrière', $this->historiqueEtats->count() - 1));
         }
 
         /** @var EtatDossier $etatPrecedent */
