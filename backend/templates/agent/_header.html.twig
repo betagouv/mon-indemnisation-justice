@@ -177,11 +177,6 @@
                                     </ul>
                                 </div>
                             </li>
-                        {% else %}
-                            <li class="fr-nav__item">
-                                <a href="{{ url('app_agent_redacteur_accueil') }}" class="fr-nav__link">Les
-                                    dossiers</a>
-                            </li>
                         {% endif %}
 
                         {% if is_granted('ROLE_AGENT_GESTION_PERSONNEL') %}

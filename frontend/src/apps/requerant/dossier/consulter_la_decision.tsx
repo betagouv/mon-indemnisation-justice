@@ -69,6 +69,8 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
     [dossier.id, dossier.getDeclarationAcceptation()?.fileHash],
   );
 
+  const [erreurEnvoi, setErreurEnvoi] = useState<string | undefined>(undefined);
+
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
     File | undefined,
@@ -107,16 +109,18 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
           },
         );
 
+        const data = await response.json();
         if (response.ok) {
-          const data = await response.json();
           dossier.addDocument(plainToInstance(Document, data.document));
           dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+          signatureModal.close();
+        } else {
+          console.log(data.erreur);
+          setErreurEnvoi(data.erreur);
         }
+        setSauvegarderEnCours(false);
       } catch (e) {
         console.error(e);
-      } finally {
-        signatureModal.close();
-        setSauvegarderEnCours(false);
       }
     }
   };
@@ -371,12 +375,26 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                     }
                     nativeInputProps={{
                       accept: "application/pdf",
-                      onChange: (e) =>
-                        e.target.files?.length &&
-                        setFichierSigne(e.target.files?.item(0) as File),
+                      onChange: (e) => {
+                        if (e.target.files?.length) {
+                          setFichierSigne(e.target.files?.item(0) as File);
+                          setErreurEnvoi(undefined);
+                        }
+                      },
                     }}
                     multiple={false}
                   />
+
+                  {erreurEnvoi && (
+                    <Alert
+                      className="fr-my-2w"
+                      severity="error"
+                      title="Erreur lors du téléversement"
+                      description={erreurEnvoi}
+                      closable={true}
+                    />
+                  )}
+
                   <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
                     <li>
                       <button

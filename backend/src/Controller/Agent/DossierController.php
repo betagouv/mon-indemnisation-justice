@@ -31,15 +31,13 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class DossierController extends AgentController
 {
     public function __construct(
-        protected readonly BrisPorteRepository    $dossierRepository,
-        protected readonly AgentRepository        $agentRepository,
-        protected readonly DossierManager         $dossierManager,
-        protected readonly DocumentManager        $documentManager,
+        protected readonly BrisPorteRepository $dossierRepository,
+        protected readonly AgentRepository $agentRepository,
+        protected readonly DossierManager $dossierManager,
+        protected readonly DocumentManager $documentManager,
         protected readonly EntityManagerInterface $em,
-        protected readonly NormalizerInterface    $normalizer,
-    )
-    {
-    }
+        protected readonly NormalizerInterface $normalizer,
+    ) {}
 
     #[Route('/', name: 'app_agent_redacteur_accueil')]
     public function index(): Response
@@ -65,7 +63,7 @@ class DossierController extends AgentController
     public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {
         return $this->render('agent/dossier/consulter_bris_porte.html.twig', [
-            'titre' => 'Traitement du bris de porte ' . $dossier->getReference(),
+            'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
             'react' => [
                 'agent' => [
                     'id' => $this->getAgent()->getId(),
@@ -146,8 +144,7 @@ class DossierController extends AgentController
     public function validerArretePaiementDossier(
         #[MapEntity(id: 'id')]
         BrisPorte $dossier,
-    ): Response
-    {
+    ): Response {
         if (null === $dossier->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT)) {
             return new JsonResponse([], Response::HTTP_NOT_FOUND);
         }
@@ -198,7 +195,7 @@ class DossierController extends AgentController
 
         /** @var UploadedFile $file */
         $file = $request->files->get('fichierSigne');
-        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_ARRETE_PAIEMENT);
+        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_ARRETE_PAIEMENT, false);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_INDEMNISER, agent: $this->getAgent(), contexte: array_merge(
             $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : [],
@@ -238,25 +235,25 @@ class DossierController extends AgentController
             $page,
             $taille,
             $request->query->has('e')
-                ? array_map(fn($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e'))
+                ? array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e'))
                 : [
-                // EtatDossierType::DOSSIER_CLOTURE,
-                // EtatDossierType::DOSSIER_A_FINALISER,
-                EtatDossierType::DOSSIER_A_ATTRIBUER,
-                EtatDossierType::DOSSIER_A_INSTRUIRE,
-                EtatDossierType::DOSSIER_EN_INSTRUCTION,
-                EtatDossierType::DOSSIER_OK_A_SIGNER,
-                EtatDossierType::DOSSIER_OK_A_APPROUVER,
-                EtatDossierType::DOSSIER_OK_A_VERIFIER,
-                EtatDossierType::DOSSIER_OK_A_INDEMNISER,
-                EtatDossierType::DOSSIER_OK_INDEMNISE,
-                EtatDossierType::DOSSIER_KO_A_SIGNER,
-                EtatDossierType::DOSSIER_KO_REJETE,
-            ],
+                    // EtatDossierType::DOSSIER_CLOTURE,
+                    // EtatDossierType::DOSSIER_A_FINALISER,
+                    EtatDossierType::DOSSIER_A_ATTRIBUER,
+                    EtatDossierType::DOSSIER_A_INSTRUIRE,
+                    EtatDossierType::DOSSIER_EN_INSTRUCTION,
+                    EtatDossierType::DOSSIER_OK_A_SIGNER,
+                    EtatDossierType::DOSSIER_OK_A_APPROUVER,
+                    EtatDossierType::DOSSIER_OK_A_VERIFIER,
+                    EtatDossierType::DOSSIER_OK_A_INDEMNISER,
+                    EtatDossierType::DOSSIER_OK_INDEMNISE,
+                    EtatDossierType::DOSSIER_KO_A_SIGNER,
+                    EtatDossierType::DOSSIER_KO_REJETE,
+                ],
             $this->agentRepository->findBy([
                 'id' => array_filter(
                     self::extraireCritereRecherche($request, 'a'),
-                    fn($a) => is_numeric($a)
+                    fn ($a) => is_numeric($a)
                 ),
             ]),
             filtres: self::extraireCritereRecherche($request, 'r'),
@@ -301,7 +298,7 @@ class DossierController extends AgentController
         $zipName = tempnam(sys_get_temp_dir(), "zip_dossier_{$dossier->getId()}");
 
         if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
-            throw new \RuntimeException('Cannot open ' . $zipName);
+            throw new \RuntimeException('Cannot open '.$zipName);
         }
 
         /** @var Document $document */
@@ -315,7 +312,8 @@ class DossierController extends AgentController
             'Content-Type' => 'application/zip',
             'Content-Length' => filesize($zipName),
         ]))
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
+            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"))
+        ;
     }
 
     #[IsGranted(
@@ -360,7 +358,7 @@ class DossierController extends AgentController
 
         return array_filter(
             explode('|', $request->query->getString($nom, '')),
-            fn($v) => !empty($v)
+            fn ($v) => !empty($v)
         );
     }
 }
