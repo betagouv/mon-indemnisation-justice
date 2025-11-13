@@ -53,7 +53,6 @@ export const GenererArretePaiementModale =
     // Actions
     const annuler = () => {
       setEtatValidation({
-        corpsCourrier: dossier.getCourrierDecision()?.corps,
         sauvegardeEnCours: false,
         action: "verification",
       } as ValidationAcceptationEtat);
@@ -68,19 +67,21 @@ export const GenererArretePaiementModale =
       useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
     const genererArretePaiement = useCallback(async () => {
-      const arretePaiement =
-        await documentManager.genererArretePaiement(dossier);
-      dossier.addDocument(arretePaiement);
+      dossier.addDocument(await documentManager.genererArretePaiement(dossier));
       setArretePaiement(arretePaiement);
     }, [dossier.id]);
 
     // Si à l'étape de l'édition de l'arrêté de paiement, le document (corps et PDF) n'existe pas, on doit alors le
     // générer.
     useEffect(() => {
-      if (etatValidation.action === "generation" && !arretePaiement) {
+      if (
+        etatValidation.action === "generation" &&
+        !dossier.getArretePaiement()
+      ) {
+        console.log("Re-génération de l'arrêté en cours...");
         genererArretePaiement();
       }
-    }, [dossier.id, etatValidation.action]);
+    }, [dossier.id]);
 
     const setSauvegardeEnCours = (sauvegardeEnCours: boolean = true) =>
       setEtatValidation({ ...etatValidation, sauvegardeEnCours });
@@ -185,14 +186,14 @@ export const GenererArretePaiementModale =
             {arretePaiement ? (
               <EditeurDocument
                 className="fr-input-group fr-my-2w"
+                onImprime={(arretePaiement) => {
+                  setArretePaiement(arretePaiement);
+                  dossier.addDocument(arretePaiement);
+                }}
                 document={arretePaiement}
                 onImpression={(impressionEnCours) =>
                   setSauvegardeEnCours(impressionEnCours)
                 }
-                onImprime={(arretePaiement) =>
-                  dossier.addDocument(arretePaiement)
-                }
-                lectureSeule={etatValidation.sauvegardeEnCours}
               />
             ) : (
               <>Génération de l'arrêté de paiement en cours...</>
