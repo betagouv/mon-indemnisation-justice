@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Tests\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController;
+use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
 use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
@@ -35,14 +36,14 @@ class BrisPorteControllerTest extends WebTestCase
      * * Si j'ai déjà rempli mon questionnaire ET créé mon compte, alors je dois être automatiquement renvoyé sur la page
      * "Finaliser la création de votre compte"
      *
-     * @dataProvider donnesTesterMonEligibilite
+     * @dataProvider donneesTesterMonEligibilite
      */
     public function testTesterMonEligibilite(?callable $getTestEligibilite = null, ?string $redirection = null, bool $aRequerant = false): void
     {
         if ($getTestEligibilite) {
             /** @var TestEligibilite $testEligibilite */
             $testEligibilite = $getTestEligibilite($this->em);
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
+            $this->initializeSession([BrisPorteController::CLEF_SESSION_TEST_ELIGIBILITE => $testEligibilite->id]);
         }
 
         $this->client->request('GET', '/bris-de-porte/tester-mon-eligibilite');
@@ -71,8 +72,7 @@ class BrisPorteControllerTest extends WebTestCase
             ->orderBy('t.dateSoumission', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
         $this->assertNotNull($testEligibilite);
         $this->assertNotNull($testEligibilite->dateSoumission);
         $this->assertFalse($testEligibilite->estVise);
@@ -88,7 +88,7 @@ class BrisPorteControllerTest extends WebTestCase
         $this->assertTrue($testEligibilite->estEligibleExperimentation);
     }
 
-    public function donnesTesterMonEligibilite()
+    public function donneesTesterMonEligibilite()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/creation-de-compte'],
@@ -97,21 +97,27 @@ class BrisPorteControllerTest extends WebTestCase
         ];
     }
 
+    public function testDemarrerDepuisInvitation(): void
+    {
+        $this->markTestIncomplete('À implémenter');
+    }
+
     /**
      * ETQ visiteur, après avoir rempli le formulaire de test d'éligibilité, si j'ai choisi un département en
      * expérimentation, je dois être invité à créer mon compte.
      *
-     * @dataProvider donnesCreationDeCompte
+     * @dataProvider donneesCreationDeCompte
      */
     public function testCreationDeCompte(?callable $getTestEligibilite = null, ?string $redirection = null): void
     {
         if ($getTestEligibilite) {
             /** @var TestEligibilite $testEligibilite */
             $testEligibilite = $getTestEligibilite($this->em);
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
+            $this->initializePreinscription($testEligibilite);
         }
 
         $this->client->request('GET', '/bris-de-porte/creation-de-compte');
+
         if ($redirection) {
             $this->assertTrue($this->client->getResponse()->isRedirect($redirection));
         } else {
@@ -142,12 +148,13 @@ class BrisPorteControllerTest extends WebTestCase
         }
     }
 
-    public function donnesCreationDeCompte()
+    public function donneesCreationDeCompte()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
             'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet()],
             'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
+            // TODO rajouter une erreur opérationnelle
         ];
     }
 
@@ -156,14 +163,14 @@ class BrisPorteControllerTest extends WebTestCase
      * pour continuer, je dois valider mon adresse en cliquant sur le lien figurant dans le courriel que je viens de
      * recevoir.
      *
-     * @dataProvider donnesFinaliserLaCreation
+     * @dataProvider donneesFinaliserLaCreation
      */
     public function testFinaliserLaCreation(?callable $getTestEligibilite = null, ?string $redirection = null): void
     {
         if ($getTestEligibilite) {
             /** @var TestEligibilite $testEligibilite */
             $testEligibilite = $getTestEligibilite($this->em);
-            $this->initializeSession([BrisPorteController::SESSION_CONTEXT_KEY => $testEligibilite->id]);
+            $this->initializePreinscription($testEligibilite);
         }
 
         $this->client->request('GET', '/bris-de-porte/finaliser-la-creation');
@@ -175,13 +182,22 @@ class BrisPorteControllerTest extends WebTestCase
         }
     }
 
-    public function donnesFinaliserLaCreation()
+    public function donneesFinaliserLaCreation()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
             'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
             'test_complet' => [$this->getTestEligibiliteEnXpComplet()],
         ];
+    }
+
+    protected function initializePreinscription(?TestEligibilite $testEligibilite = null, ?DeclarationErreurOperationnelle $declarationErreurOperationnelle = null): void
+    {
+        $this->initializeSession([BrisPorteController::CLEF_SESSION_PREINSCRIPTION => [
+            'testEligibilite' => $testEligibilite?->id,
+            'declarationErreurOperationnelle' => $declarationErreurOperationnelle?->getId(),
+            'requerant' => $testEligibilite->requerant?->getId(),
+        ]]);
     }
 
     protected function initializeSession(array $values = []): void
@@ -193,7 +209,7 @@ class BrisPorteControllerTest extends WebTestCase
 
         $session->save();
 
-        $domains = array_unique(array_map(fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
+        $domains = array_unique(array_map(fn(Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
         foreach ($domains as $domain) {
             $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
             $this->client->getCookieJar()->set($cookie);

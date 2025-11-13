@@ -3,11 +3,19 @@ import React, { StrictMode } from "react";
 import "@/apps/_init";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 
-import { routeTree } from "@/routers/agent-fip6.gen.ts";
+import { routeTree } from "@/routers/generated/router-agent-fip6.gen.ts";
 import { container } from "@/common/services/agent";
 import ReactDOM from "react-dom/client";
 import { Provider } from "inversify-react";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
+
+import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
+import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
+
+startReactDsfr({
+  defaultColorScheme:
+    (localStorage.getItem("scheme") as ColorScheme) ?? "system",
+});
 
 declare global {
   interface Window {

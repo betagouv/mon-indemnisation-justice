@@ -12,6 +12,7 @@ import {
 } from ".";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";
+import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
 
 export type TypeAttestation =
   | "NOUVELLE_ATTESTATION"
@@ -32,6 +33,8 @@ export abstract class BaseDossier {
   public redacteur: Redacteur | null = null;
   public typeAttestation?: TypeAttestation;
   public qualiteRequerant?: string;
+  public readonly estEligible: boolean;
+  public readonly issuDeclarationFDO: boolean;
 
   @Expose()
   get dateDepot(): null | Date {
@@ -47,6 +50,10 @@ export abstract class BaseDossier {
       this.etat.etat.egal(EtatDossierType.A_ATTRIBUER) &&
       null === this.redacteur
     );
+  }
+
+  estDepose(): boolean {
+    return !!this.dateDepot;
   }
 
   attribuer(redacteur: Redacteur): void {
@@ -131,7 +138,6 @@ export abstract class BaseDossier {
 export class DossierApercu extends BaseDossier {
   public readonly requerant: string; // Prénom NOM
   public readonly adresse: string;
-  public readonly estEligible: boolean;
 }
 
 export class DossierDetail extends BaseDossier {
@@ -141,7 +147,11 @@ export class DossierDetail extends BaseDossier {
 
   @Expose()
   @Type(() => TestEligibilite)
-  public readonly testEligibilite: TestEligibilite;
+  public readonly testEligibilite?: TestEligibilite;
+
+  @Expose()
+  @Type(() => DeclarationErreurOperationnelle)
+  public readonly declarationFDO?: DeclarationErreurOperationnelle;
 
   public descriptionRequerant?: string;
 

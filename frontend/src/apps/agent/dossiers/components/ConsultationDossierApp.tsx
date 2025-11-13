@@ -2,10 +2,6 @@ import { DossierActions } from "@/apps/agent/dossiers/components/consultation/ac
 import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe/PieceJointe";
 import { Agent, Document, DocumentType, DossierDetail } from "@/common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import type {
-  FrIconClassName,
-  RiIconClassName,
-} from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import { observer } from "mobx-react-lite";
 import React, { type ReactNode, useMemo, useState } from "react";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
@@ -18,8 +14,10 @@ import {
   ouvrirModaleSuppressionPieceJointe,
   SuppressionPieceJointe,
 } from "@/apps/agent/dossiers/components/consultation/piecejointe/SuppressionPieceJointe.tsx";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { dateSimple } from "@/common/services/date.ts";
+import { dateEtHeureSimple, dateSimple } from "@/common/services/date.ts";
+import Badge from "@codegouvfr/react-dsfr/Badge";
+import { InfosDossier } from "@/apps/agent/dossiers/components/consultation/InfosDossier.tsx";
+import { BadgesDossier } from "@/apps/agent/dossiers/components/BadgesDossier.tsx";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -112,7 +110,10 @@ export const ConsultationDossierApp = observer(
               >
                 <h3 className="">Dossier {dossier.reference}</h3>
 
-                <div>
+                <div
+                  className="fr-grid-row fr-grid-row--gutters fr-my-1w"
+                  style={{ gap: ".5vw" }}
+                >
                   <p
                     className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.etat.slug} fr-py-1w fr-px-2w`}
                     {...(dossier.etat.estCloture()
@@ -123,6 +124,11 @@ export const ConsultationDossierApp = observer(
                   >
                     {dossier.etat.etat.libelle}
                   </p>
+                  {dossier.declarationFDO && (
+                    <Badge severity="new" small={false}>
+                      Déclaration FDO
+                    </Badge>
+                  )}
                 </div>
                 {dossier.etat.estCloture() && (
                   <span
@@ -134,23 +140,20 @@ export const ConsultationDossierApp = observer(
                   </span>
                 )}
 
-                <p className="fr-m-1w">
-                  Déposé le{" "}
-                  {dossier.dateDepot?.toLocaleString("fr-FR", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                  , à{" "}
-                  {dossier.dateDepot?.toLocaleString("fr-FR", {
-                    hour: "numeric",
-                    minute: "numeric",
-                  })}{" "}
+                <p className="fr-my-1v">
+                  {dossier.estDepose() ? (
+                    <>{dateEtHeureSimple(dossier.dateDepot as Date)}</>
+                  ) : (
+                    <>En cours de constitution</>
+                  )}{" "}
                   par <u>{dossier.requerant.nomSimple()}</u>
                 </p>
 
-                <p className="fr-m-1w">
+                <div className="fr-my-1v">
+                  <BadgesDossier dossier={dossier} inline={true} />
+                </div>
+
+                <p className="fr-my-1v">
                   Ce dossier
                   {dossier.redacteur ? (
                     agent.equals(dossier.redacteur) ? (
@@ -227,224 +230,7 @@ export const ConsultationDossierApp = observer(
                 >
                   {selectedTab == "infos" && (
                     <section>
-                      <div className="fr-grid-column">
-                        <h3>Informations sur le dossier </h3>
-                        <h5>Requérant</h5>
-
-                        <ul className="fr-list">
-                          <li>
-                            <b>Nom: </b> {dossier.requerant.nomComplet()}
-                          </li>
-                          <li>
-                            <b>Prénom(s): </b>{" "}
-                            {dossier.requerant.prenoms
-                              .filter((p) => !!p)
-                              .join(", ")}
-                          </li>
-                          <li>
-                            <b>Né{dossier.requerant.estFeminin() ? "e" : ""}</b>{" "}
-                            le{" "}
-                            {dossier.requerant.dateNaissance ? (
-                              <>
-                                {dossier.requerant.dateNaissance.toLocaleString(
-                                  "fr-FR",
-                                  {
-                                    //weekday: 'long',
-                                    day: "numeric",
-                                    month: "long",
-                                    year: "numeric",
-                                  },
-                                )}
-                              </>
-                            ) : (
-                              <i>non renseigné</i>
-                            )}
-                            , à{" "}
-                            {dossier.requerant.communeNaissance ? (
-                              <>
-                                {dossier.requerant.communeNaissance}{" "}
-                                {dossier.requerant.paysNaissance
-                                  ? `(${dossier.requerant.paysNaissance})`
-                                  : ""}
-                              </>
-                            ) : (
-                              <i>non renseigné</i>
-                            )}
-                          </li>
-                          {dossier.requerant.estPersonneMorale() && (
-                            <li>
-                              Représentant
-                              {dossier.requerant.estFeminin() ? "e" : ""} légal
-                              {dossier.requerant.estFeminin() ? "e" : ""} de la
-                              société <b>{dossier.requerant.raisonSociale}</b>{" "}
-                              (SIREN: <b>{dossier.requerant.siren}</b>)
-                            </li>
-                          )}
-                          <li>
-                            <b>Adresse courriel: </b>{" "}
-                            {dossier.enAttenteInstruction() &&
-                            agent.estRedacteur() &&
-                            !agent.estValidateur() &&
-                            !agent.estBetagouv() ? (
-                              <>
-                                <span aria-describedby="tooltip-requerant-courriel">{`${dossier.requerant.courriel.substring(0, 2)}${"*".repeat(dossier.requerant.courriel.length - 2)}`}</span>
-                                <span
-                                  className="fr-tooltip fr-placement"
-                                  id="tooltip-requerant-courriel"
-                                  role="tooltip"
-                                  aria-hidden="true"
-                                >
-                                  Démarrer l'instruction pour révéler
-                                </span>
-                              </>
-                            ) : (
-                              <>
-                                <span>{dossier.requerant.courriel}</span>
-                                <Button
-                                  iconId="fr-icon-clipboard-line"
-                                  onClick={() =>
-                                    navigator.clipboard.writeText(
-                                      dossier.requerant.courriel,
-                                    )
-                                  }
-                                  priority="tertiary no outline"
-                                  title="Copier dans le presse papier"
-                                  size="small"
-                                />
-                              </>
-                            )}
-                          </li>
-                          <li>
-                            <b>N° téléphone: </b>
-                            {dossier.requerant.telephone ? (
-                              <>
-                                {dossier.enAttenteInstruction() &&
-                                agent.estRedacteur() &&
-                                !agent.estValidateur() &&
-                                !agent.estBetagouv() ? (
-                                  <>
-                                    <span aria-describedby="tooltip-requerant-telephone">{`${dossier.requerant.telephone.substring(0, 2)}${"*".repeat(dossier.requerant.telephone.length - 2)}`}</span>
-                                    <span
-                                      className="fr-tooltip fr-placement"
-                                      id="tooltip-requerant-telephone"
-                                      role="tooltip"
-                                      aria-hidden="true"
-                                    >
-                                      Démarrer l'instruction pour révéler
-                                    </span>
-                                  </>
-                                ) : (
-                                  <>
-                                    {dossier.requerant.telephone}
-                                    <Button
-                                      style={{ display: "inline-block" }}
-                                      iconId="fr-icon-clipboard-line"
-                                      onClick={() =>
-                                        navigator.clipboard.writeText(
-                                          dossier.requerant.telephone ?? "",
-                                        )
-                                      }
-                                      priority="tertiary no outline"
-                                      title="Copier dans le presse papier"
-                                      size="small"
-                                    />
-                                  </>
-                                )}
-                              </>
-                            ) : (
-                              <i>non renseigné</i>
-                            )}
-                          </li>
-                        </ul>
-                      </div>
-                      {
-                        // Sous-section "Bris de porte"
-                      }
-                      <div className="fr-grid-column">
-                        <h5>Bris de porte</h5>
-
-                        <ul>
-                          <li>
-                            <b>Survenu au: </b>{" "}
-                            {dossier.adresse.estRenseignee() ? (
-                              <>{dossier.adresse.libelle()}</>
-                            ) : (
-                              <i>non renseigné</i>
-                            )}
-                          </li>
-                          <li>
-                            <b>Le :</b>{" "}
-                            {dossier.dateOperation ? (
-                              <>{dateSimple(dossier.dateOperation)}</>
-                            ) : (
-                              <i>non renseigné</i>
-                            )}
-                          </li>
-                          <li>
-                            <b>Porte blindée: </b>{" "}
-                            {dossier.estPorteBlindee !== null ? (
-                              <>{dossier.estPorteBlindee ? "Oui" : "Non"}</>
-                            ) : (
-                              <i>non renseigné</i>
-                            )}
-                          </li>
-                          <li>
-                            <b>
-                              Était visé
-                              {dossier.requerant.estFeminin() ? "e" : ""} par
-                              l'opération des Forces de l'ordre ?{" "}
-                            </b>{" "}
-                            <>
-                              {dossier.testEligibilite.estVise ? "Oui" : "Non"}
-                            </>
-                          </li>
-                          <li>
-                            <b>Hébergeait la personne recherchée ?</b>{" "}
-                            <>
-                              {dossier.testEligibilite.estHebergeant
-                                ? "Oui"
-                                : "Non"}
-                            </>
-                          </li>
-                          <li>
-                            <b>Situation par rapport au logement ? </b>
-                            {dossier.testEligibilite.rapportAuLogement}
-                          </li>
-                          <li>
-                            <b>A contacté l'assurance ?</b>{" "}
-                            <>
-                              {dossier.testEligibilite.aContacteAssurance
-                                ? "Oui"
-                                : "Non"}
-                            </>
-                          </li>
-                          {null !==
-                            dossier.testEligibilite.aContacteBailleur && (
-                            <li>
-                              <b>A contacté le bailleur ?</b>{" "}
-                              <>
-                                {dossier.testEligibilite.aContacteBailleur
-                                  ? "Oui"
-                                  : "Non"}
-                              </>
-                            </li>
-                          )}
-                          {dossier.descriptionRequerant && (
-                            <li>
-                              <b>Commentaires du requérant:</b>
-                              <blockquote
-                                dangerouslySetInnerHTML={{
-                                  __html:
-                                    dossier.descriptionRequerant.replaceAll(
-                                      /\n/g,
-                                      "</br>",
-                                    ),
-                                }}
-                              ></blockquote>
-                            </li>
-                          )}
-                        </ul>
-                      </div>
+                      <InfosDossier dossier={dossier} agent={agent} />
                     </section>
                   )}
 
@@ -503,7 +289,14 @@ export const ConsultationDossierApp = observer(
                           {/* Menu latéral des pièces jointes */}
                           <ul>
                             {Document.types
-                              .filter((t) => t.estPieceJointe())
+                              .filter(
+                                (t) =>
+                                  t.estPieceJointe() &&
+                                  (!dossier.declarationFDO ||
+                                    t.type !==
+                                      DocumentType.TYPE_ATTESTATION_INFORMATION
+                                        .type),
+                              )
                               .map((type: DocumentType) => (
                                 <React.Fragment key={type.type}>
                                   <li

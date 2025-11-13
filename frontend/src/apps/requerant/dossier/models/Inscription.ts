@@ -17,29 +17,32 @@ export enum Civilite {
 
 export class Inscription {
   @IsDefined({ message: "" })
-  _civilite?: Civilite = null;
+  _civilite?: Civilite;
   @IsDefined()
   @IsNotEmpty()
-  _prenom?: string = null;
+  @Expose({ name: "prenom" })
+  _prenom?: string;
   @IsNotEmpty()
-  _nom?: string = null;
-  _nomNaissance?: string = null;
+  @Expose({ name: "nom" })
+  _nom?: string;
+  _nomNaissance?: string;
   @IsEmail(undefined, { message: "L'adresse courriel n'est pas valide" })
   @ValidateIf((i) => !!i.courriel)
   @IsEmailAlreadyUsed({ message: "Cette adresse est déjà utilisée" })
-  _courriel?: string = null;
+  @Expose({ name: "courriel" })
+  _courriel?: string;
   @IsNotEmpty()
-  _telephone?: string = null;
+  _telephone?: string;
   @MinLength(8, {
     message:
       "Le mot de passe doit contenir au moins 8 caractères, dont 1 chiffre",
   })
-  _motDePasse?: string = null;
+  _motDePasse?: string;
   @ValidateIf((i) => !!i.motDePasse)
   @IsEqualTo("_motDePasse", {
     message: "Les deux mots de passe doivent être identiques",
   })
-  _confirmation?: string = null;
+  _confirmation?: string = undefined;
   @Equals(true)
   _cguOk: boolean = false;
 
@@ -47,11 +50,19 @@ export class Inscription {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  @Expose()
-  @Transform(({ value }: { value: Civilite }) =>
-    Object.keys(Civilite).find((key) => Civilite[key] === value),
+  @Transform(
+    ({ value }: { value: Civilite }) =>
+      Object.keys(Civilite).find((key) => Civilite[key] === value),
+    { toPlainOnly: true },
   )
-  get civilite(): Civilite {
+  @Transform(
+    ({ value }: { value?: string }) => (value ? Civilite[value] : undefined),
+    {
+      toClassOnly: true,
+    },
+  )
+  @Expose({ name: "civilite" })
+  get civilite(): Civilite | undefined {
     return this._civilite;
   }
 
@@ -60,7 +71,7 @@ export class Inscription {
   }
 
   @Expose()
-  get prenom(): string {
+  get prenom(): string | undefined {
     return this._prenom;
   }
 
@@ -69,7 +80,7 @@ export class Inscription {
   }
 
   @Expose()
-  get nom(): string {
+  get nom(): string | undefined {
     return this._nom;
   }
 
@@ -78,7 +89,7 @@ export class Inscription {
   }
 
   @Expose()
-  get nomNaissance(): string {
+  get nomNaissance(): string | undefined {
     return this._nomNaissance;
   }
 
@@ -87,7 +98,7 @@ export class Inscription {
   }
 
   @Expose()
-  get courriel(): string {
+  get courriel(): string | undefined {
     return this._courriel;
   }
 
@@ -96,7 +107,7 @@ export class Inscription {
   }
 
   @Expose()
-  get telephone(): string {
+  get telephone(): string | undefined {
     return this._telephone;
   }
 
@@ -105,7 +116,7 @@ export class Inscription {
   }
 
   @Expose()
-  get motDePasse(): string {
+  get motDePasse(): string | undefined {
     return this._motDePasse;
   }
 
@@ -114,7 +125,7 @@ export class Inscription {
   }
 
   @Expose()
-  get confirmation(): string {
+  get confirmation(): string | undefined {
     return this._confirmation;
   }
 

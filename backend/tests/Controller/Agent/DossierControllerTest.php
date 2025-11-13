@@ -33,7 +33,6 @@ class DossierControllerTest extends WebTestCase
         $this->client->loginUser($agent, 'agent');
 
         $this->client->request('GET', '/agent/redacteur/dossiers.json', ['e' => 'a-finaliser']);
-
         $this->assertTrue($this->client->getResponse()->isOk());
         ['page' => $page, 'taille' => $taille, 'total' => $total, 'resultats' => $dossiers] = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -61,6 +60,7 @@ class DossierControllerTest extends WebTestCase
                 'adresse' => $dossier->getAdresse()->getLibelle(),
                 'estEligible' => true,
                 'typeAttestation' => null,
+                'issuDeclarationFDO' => false,
             ], $donneesDossier);
         }
     }

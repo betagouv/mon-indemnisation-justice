@@ -14,7 +14,9 @@ import React, { useState } from "react";
 //import { useFormStatus } from "react-dom";
 import ReactDOM from "react-dom/client";
 
-const args = JSON.parse(document.getElementById("react-arguments").textContent);
+const args = JSON.parse(
+  document.getElementById("react-arguments")?.textContent ?? "{}",
+);
 
 interface Routes {
   connexion: string;
@@ -41,7 +43,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
   inscription,
   token,
   routes,
-  erreurs = null,
+  erreurs = undefined,
 }: {
   inscription: Inscription;
   token: string;
@@ -184,7 +186,15 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                                 className="fr-select"
                                 id="inscription-champs-civilite"
                                 aria-describedby="select-:r4:-desc"
-                                defaultValue={""}
+                                defaultValue={
+                                  inscription.civilite
+                                    ? Object.keys(Civilite).find(
+                                        (key) =>
+                                          Civilite[key] ===
+                                          inscription.civilite,
+                                      )
+                                    : ""
+                                }
                                 onChange={(e) =>
                                   (inscription.civilite = Civilite[
                                     e.target.value
@@ -482,7 +492,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
   );
 });
 
-ReactDOM.createRoot(document.getElementById("react-app")).render(
+ReactDOM.createRoot(document.getElementById("react-app") as HTMLElement).render(
   <React.StrictMode>
     <>
       <CreationDeCompteApp

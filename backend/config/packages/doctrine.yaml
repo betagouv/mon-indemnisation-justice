@@ -2,7 +2,7 @@ doctrine:
   dbal:
     url: '%env(resolve:DATABASE_URL)%'
     types:
-      uuid: Ramsey\Uuid\Doctrine\UuidType
+      uuid: Symfony\Bridge\Doctrine\Types\UuidType
 
     profiling_collect_backtrace: '%kernel.debug%'
     use_savepoints: true

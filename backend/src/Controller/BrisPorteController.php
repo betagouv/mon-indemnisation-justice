@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Exception\ORMException;
 use MonIndemnisationJustice\Dto\Inscription;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
+use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Forms\TestEligibiliteType;
@@ -26,10 +27,20 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+class PreInscription
+{
+    public function __construct(
+        public ?TestEligibilite $testEligibilite = null,
+        public ?DeclarationErreurOperationnelle $declarationErreurOperationnelle = null,
+        public ?Requerant $requerant = null,
+    ) {}
+}
+
 #[Route('/bris-de-porte')]
 class BrisPorteController extends AbstractController
 {
-    public const SESSION_CONTEXT_KEY = 'testEligibilite';
+    public const CLEF_SESSION_TEST_ELIGIBILITE = 'testEligibilite';
+    public const CLEF_SESSION_PREINSCRIPTION = 'preinscription';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -52,7 +63,8 @@ class BrisPorteController extends AbstractController
             // Sinon, on poursuit le test d'éligibilité en vue de créer un nouveau dossier.
         }
 
-        $testEligibilite = $this->getTestEligibilite($request) ?? new TestEligibilite();
+        $preinscription = $this->getPreinscription($request);
+        $testEligibilite = $preinscription->testEligibilite ?? new TestEligibilite();
 
         if ($request->getSession()->has(AtterrissageController::SESSION_KEY)) {
             $testEligibilite->estIssuAttestation = true;
@@ -90,7 +102,8 @@ class BrisPorteController extends AbstractController
                     return $this->redirectToRoute('bris_porte_finaliser_la_creation');
                 }
 
-                $this->setTestEligibilite($testEligibilite, $request);
+                $preinscription->testEligibilite = $testEligibilite;
+                $this->setPreinscription($request, $preinscription);
 
                 return $this->redirectToRoute('bris_porte_creation_de_compte');
             }
@@ -104,6 +117,39 @@ class BrisPorteController extends AbstractController
         );
     }
 
+    #[Route('/invitation/{reference}', name: 'bris_porte_demarrer_depuis_invitation', methods: ['GET'])]
+    /**
+     * Route depuis laquelle atterrissent les requérants qui sont invités à déposer suite à la déclaration d'erreur
+     * opérationnelle de la part d'un agent des FDO.
+     *
+     * Ici, on fait le choix délibéré de ne pas utiliser de `MapEntity` pour l'instance de la déclaration associée à la
+     * référénce donnée pour pouvoir, à terme, contrôler le nombre de tentatives effectuées et ainsi appliquer un _rate
+     * limit_.
+     *
+     * Idem avec la `$reference` pour laquelle aucun `requirement` n'est défini sur la route puisqu'on souhaite intégrer
+     * toutes les tentatives au quota de l'utilisateur courant.
+     */
+    public function demarrerDepuisInvitation(Request $request, string $reference): Response
+    {
+        if (!preg_match('/[A-Z0-9]{6}/', $reference)) {
+            // TODO compter la tentative pour le rate limiter
+            return $this->redirectToRoute('app_homepage');
+        }
+
+        $preinscription = $this->getPreinscription($request);
+        $declaration = $this->entityManager->getRepository(DeclarationErreurOperationnelle::class)->findOneBy(['reference' => $reference]);
+
+        if ($declaration->estAttribue()) {
+            // TODO compter la tentative pour le rate limiter
+            return $this->redirectToRoute('app_homepage');
+        }
+
+        $preinscription->declarationErreurOperationnelle = $declaration;
+        $this->setPreinscription($request, $preinscription);
+
+        return $this->redirectToRoute('bris_porte_creation_de_compte');
+    }
+
     #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET'])]
     public function creationDeCompte(
         Request $request,
@@ -115,14 +161,26 @@ class BrisPorteController extends AbstractController
             return $this->redirectToRoute('requerant_home_index');
         }
 
-        $testEligibilite = $this->getTestEligibilite($request);
+        $inscription = new Inscription();
+        $preinscription = $this->getPreinscription($request);
 
-        if (null === $testEligibilite) {
-            return $this->redirectToRoute('bris_porte_tester_eligibilite');
+        if (null !== $preinscription->requerant) {
+            return $this->redirectToRoute('bris_porte_finaliser_la_creation');
         }
 
-        if (null !== $testEligibilite->requerant) {
-            return $this->redirectToRoute('bris_porte_finaliser_la_creation');
+        if (null === $preinscription->declarationErreurOperationnelle) {
+            if (null === $preinscription->testEligibilite) {
+                return $this->redirectToRoute('bris_porte_tester_eligibilite');
+            }
+        } else {
+            $infosRequerant = $preinscription->declarationErreurOperationnelle->getInfosRequerant();
+
+            $inscription->civilite = $infosRequerant->civilite;
+            $inscription->nom = $infosRequerant->nom;
+            $inscription->nomNaissance = $infosRequerant->nom;
+            $inscription->prenom = $infosRequerant->prenom;
+            $inscription->courriel = $infosRequerant->courriel;
+            $inscription->telephone = $infosRequerant->telephone;
         }
 
         return $this->render('brisPorte/creation_de_compte.html.twig', [
@@ -133,7 +191,7 @@ class BrisPorteController extends AbstractController
                     'cgu' => $router->generate('public_cgu'),
                 ],
                 'token' => $csrfTokenManager->getToken('creation-de-compte')->getValue(),
-                'inscription' => $normalizer->normalize(new Inscription(), 'json'),
+                'inscription' => $normalizer->normalize($inscription, 'json'),
             ],
         ]);
     }
@@ -149,7 +207,11 @@ class BrisPorteController extends AbstractController
             return new JsonResponse('Le jeton CSRF est invalide.', Response::HTTP_NOT_ACCEPTABLE);
         }
 
-        $testEligibilite = $this->getTestEligibilite($request);
+        $preinscription = $this->getPreinscription($request);
+        $testEligibilite = $preinscription->testEligibilite;
+
+        /** @var DeclarationErreurOperationnelle $declaration */
+        $declaration = $preinscription->declarationErreurOperationnelle;
 
         // Création du compte requérant
         $requerant = (new Requerant())
@@ -170,14 +232,22 @@ class BrisPorteController extends AbstractController
             )
         );
         $requerant->genererJetonVerification();
+        $requerant->setNavigation(new NavigationRequerant(
+            idTestEligibilite: $testEligibilite?->id,
+            idDeclaration: $declaration?->getId(),
+        ));
 
         $this->entityManager->persist($requerant);
 
-        $testEligibilite->requerant = $requerant;
-        $this->entityManager->persist($testEligibilite);
+        if (null !== $testEligibilite) {
+            $testEligibilite->requerant = $requerant;
+            $this->entityManager->persist($testEligibilite);
+        }
 
         $this->entityManager->flush();
-        $this->setTestEligibilite($testEligibilite, $request);
+
+        $preinscription->requerant = $requerant;
+        $this->setPreinscription($request, $preinscription);
 
         // Envoi du mail de confirmation.
         $this->mailer
@@ -209,40 +279,48 @@ class BrisPorteController extends AbstractController
     #[Route(path: '/finaliser-la-creation', name: 'bris_porte_finaliser_la_creation')]
     public function finaliserLaCreation(Request $request): Response
     {
-        $testEligibilite = $this->getTestEligibilite($request);
+        $preinscription = $this->getPreinscription($request);
 
-        if (null === $testEligibilite) {
-            return $this->redirectToRoute('bris_porte_tester_eligibilite');
-        }
-        if (null === $testEligibilite->requerant) {
-            return $this->redirectToRoute('bris_porte_creation_de_compte');
+        if (null === $preinscription->declarationErreurOperationnelle) {
+            if (null === $preinscription->testEligibilite) {
+                return $this->redirectToRoute('bris_porte_tester_eligibilite');
+            }
+
+            if (null === $preinscription->requerant) {
+                return $this->redirectToRoute('bris_porte_creation_de_compte');
+            }
         }
 
         return $this->render(
             'brisPorte/finaliser_la_creation.html.twig',
             [
-                'email' => $testEligibilite->requerant->getEmail(),
+                'email' => $preinscription->requerant->getEmail(),
             ]
         );
     }
 
-    protected function getTestEligibilite(Request $request): ?TestEligibilite
+    protected function getPreinscription(Request $request): PreInscription
     {
-        $id = $request->getSession()->get(self::SESSION_CONTEXT_KEY, null);
+        $session = $request->getSession()->get(self::CLEF_SESSION_PREINSCRIPTION, []);
 
-        if ($id) {
-            try {
-                return $this->entityManager->find(TestEligibilite::class, $id);
-            } catch (ORMException $exception) {
-                $request->getSession()->remove(self::SESSION_CONTEXT_KEY);
-            }
-        }
-
-        return null;
+        return new PreInscription(
+            testEligibilite: $this->chargerEntite(TestEligibilite::class, @$session['testEligibilite'] ?? $request->getSession()->get(self::CLEF_SESSION_TEST_ELIGIBILITE)),
+            declarationErreurOperationnelle: $this->chargerEntite(DeclarationErreurOperationnelle::class, @$session['declarationErreurOperationnelle']),
+            requerant: $this->chargerEntite(Requerant::class, @$session['requerant']),
+        );
     }
 
-    protected function setTestEligibilite(TestEligibilite $testEligibilite, Request $request): void
+    protected function setPreinscription(Request $request, PreInscription $preinscription): void
     {
-        $request->getSession()->set(self::SESSION_CONTEXT_KEY, $testEligibilite?->id);
+        $request->getSession()->set(self::CLEF_SESSION_PREINSCRIPTION, [
+            'testEligibilite' => $preinscription->testEligibilite?->id,
+            'declarationErreurOperationnelle' => $preinscription->declarationErreurOperationnelle?->getId(),
+            'requerant' => $preinscription->requerant?->getId(),
+        ]);
+    }
+
+    protected function chargerEntite(string $class, mixed $id = null): ?object
+    {
+        return $id ? $this->entityManager->getRepository($class)->find($id) : null;
     }
 }

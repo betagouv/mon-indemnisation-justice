@@ -42,7 +42,7 @@ class BrisPorte
     public ?int $id = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
-    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: [], inversedBy: 'dossiers')]
+    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected Requerant $requerant;
 
@@ -63,9 +63,10 @@ class BrisPorte
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
+    // TODO : supprimer CourrierDossier et cette relation
     #[ORM\OneToMany(targetEntity: CourrierDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'LAZY')]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    /** @var Collection<CourrierDossier> */
+    /** @var Collection<EtatDossier> */
     protected Collection $historiqueCourriers;
 
     #[Groups('dossier:lecture')]
@@ -90,6 +91,11 @@ class BrisPorte
     #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?TestEligibilite $testEligibilite = null;
+
+    #[Groups(['agent:detail'])]
+    #[ORM\OneToOne(targetEntity: DeclarationErreurOperationnelle::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'declaration_id', nullable: true, onDelete: 'SET NULL')]
+    protected ?DeclarationErreurOperationnelle $declarationFDO = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
@@ -147,7 +153,7 @@ class BrisPorte
     public function onPrePersist(PrePersistEventArgs $args): void
     {
         if ($this->historiqueEtats->isEmpty()) {
-            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: true);
+            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: null === $this->declarationFDO, agent: $this->declarationFDO?->getAgent());
         }
     }
 
@@ -434,11 +440,6 @@ class BrisPorte
         return $this->documentsParType;
     }
 
-    public function getRawDocuments(): Collection
-    {
-        return $this->documents;
-    }
-
     public function getDocumentsATransmettre(): Collection
     {
         return $this->documents->filter(fn (Document $document) => in_array($document->getType(), [
@@ -576,16 +577,34 @@ class BrisPorte
         return $this->testEligibilite;
     }
 
-    #[Groups(['agent:liste'])]
+    #[Groups(['agent:liste', 'agent:detail'])]
     #[SerializedName('estEligible')]
     public function getEstEligible(): ?bool
     {
         return $this->testEligibilite?->estEligible();
     }
 
-    public function setTestEligibilite(?TestEligibilite $testEligibilite): BrisPorte
+    public function setTestEligibilite(?TestEligibilite $testEligibilite): static
     {
         $this->testEligibilite = $testEligibilite;
+
+        return $this;
+    }
+
+    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail'])]
+    public function isIssuDeclarationFDO(): ?bool
+    {
+        return null !== $this->declarationFDO;
+    }
+
+    public function getDeclarationFDO(): ?DeclarationErreurOperationnelle
+    {
+        return $this->declarationFDO;
+    }
+
+    public function setDeclarationFDO(DeclarationErreurOperationnelle $declarationFDO): static
+    {
+        $this->declarationFDO = $declarationFDO;
 
         return $this;
     }
@@ -636,7 +655,7 @@ class BrisPorte
         return $this->qualiteRequerant;
     }
 
-    public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): BrisPorte
+    public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): static
     {
         $this->qualiteRequerant = $qualiteRequerant;
 

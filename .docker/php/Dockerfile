@@ -17,7 +17,8 @@ RUN install-php-extensions \
     zip \
     intl \
     calendar \
-    pdo pdo_pgsql pgsql
+    pdo pdo_pgsql pgsql \
+    bcmath
 
 # Symfony CLI
 

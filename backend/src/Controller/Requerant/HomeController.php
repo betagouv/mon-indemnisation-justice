@@ -3,11 +3,9 @@
 namespace MonIndemnisationJustice\Controller\Requerant;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Exception\ORMException;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Requerant;
-use MonIndemnisationJustice\Entity\TestEligibilite;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -20,38 +18,13 @@ class HomeController extends RequerantController
     #[Route('', name: 'requerant_home_index')]
     public function index(Request $request, EntityManagerInterface $em): Response
     {
+        // Suppression du contexte de session lié à l'inscription, s'il y en a un
+        $request->getSession()->remove(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION);
+
         $requerant = $this->getRequerant();
-        $dossier = $requerant->getDernierDossier();
 
-        if ($request->getSession()->has(PublicBrisPorteController::SESSION_CONTEXT_KEY)) {
-            // Créer le dossier ici avant de virer les infos du test d'éligibilité
-            $id = $request->getSession()->get(PublicBrisPorteController::SESSION_CONTEXT_KEY, null);
-            if ($id) {
-                try {
-                    $testEligibilite = $em->find(TestEligibilite::class, $id);
-
-                    if (null !== $dossier && !$dossier?->estConstitue()) {
-                        // Suppression du test d'éligibilité, doublon de celui déjà associé au dossier en cours.
-                        $em->remove($testEligibilite);
-                    } else {
-                        $dossier = (new BrisPorte())
-                            ->setRequerant($requerant)
-                            ->setQualiteRequerant($testEligibilite->rapportAuLogement)
-                            ->setTestEligibilite($testEligibilite)
-                        ;
-                        $em->persist($dossier);
-                    }
-
-                    $em->flush();
-                } catch (ORMException $exception) {
-                    // TODO log peut-être
-                }
-            }
-
-            $request->getSession()->remove(PublicBrisPorteController::SESSION_CONTEXT_KEY);
-        }
-
-        if (null !== $dossier && !$dossier?->estConstitue()) {
+        // Rediriger vers un dossier à finaliser en priorité, s'il y en a un
+        if (null !== ($dossier = $requerant->getDossiers()->findFirst(fn (int $indice, BrisPorte $dossier) => !$dossier->estDepose()))) {
             return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
         }
 

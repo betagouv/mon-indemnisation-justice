@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+
+    <link rel="apple-touch-icon" href="{{ asset('dsfr/favicon/apple-touch-icon.png') }}"/>
+    <link rel="icon" href="{{ asset('dsfr/favicon/favicon.svg') }}" type="image/svg+xml"/>
+    <link rel="shortcut icon" href="{{ asset('/dsfr/favicon/favicon.ico') }}" type="image/x-icon"/>
+
+    <link rel="manifest" href="{{ asset('dsfr/favicon/manifest.webmanifest') }}" crossorigin="use-credentials"/>
+    <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('remixicon/fonts/remixicon.css') }}"/>
+
+    {% block title %}Mon Indemnisation Justice : espace Forces de l'Ordre{% endblock title %}
+    {% block stylesheets %}
+        {{ vite_entry_link_tags('agent/fdo') }}
+    {% endblock stylesheets %}
+</head>
+<body>
+</body>
+</html>
+
+{% block javascripts %}
+    {% if est_vite_server_actif() %}
+        {% include '_vite_hmr_extra.html.twig' %}
+    {% endif %}
+
+    {{ vite_entry_script_tags('agent/fdo') }}
+{% endblock javascripts %}

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -24,14 +25,22 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[\AllowDynamicProperties]
 class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    // Le rôle ROLE_REQUERANT est celui donné au porteur d'une requête d'indemnisation
     public const ROLE_REQUERANT = 'ROLE_REQUERANT';
 
     #[Groups(['user:read', 'dossier:lecture'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
-    private ?int $id = null;
+    protected ?int $id = null;
+
+    #[ORM\Column(nullable: true)]
+    protected ?string $password = null;
+
+    #[ORM\Column(nullable: true)]
+    protected ?string $sub = null;
+
+    #[ORM\Column(type: 'boolean')]
+    protected $estVerifieCourriel = false;
 
     #[Groups(['user:read', 'dossier:lecture'])]
     #[ORM\Column(length: 180)]
@@ -43,49 +52,35 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'simple_array')]
     protected array $roles = [self::ROLE_REQUERANT];
 
-    #[ORM\Column(nullable: true)]
-    private ?string $password = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?string $sub = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateInscription;
 
-    /**
-     * Temporaire: maintien de ce champs pour se conformer avec les données sérialisées en session.
-     *
-     * TODO: supprimer ce champs dès que les sessions ont toutes expiré (~14 jours, requête sur `sessions` avec
-     *      `like '%dateChangementMDP%'`)
-     */
-    public \DateTimeInterface $dateChangementMDP;
-
     #[ORM\Column(type: 'string', length: 12, nullable: true)]
     protected ?string $jetonVerification;
-
-    #[ORM\Column(type: 'boolean')]
-    private $estVerifieCourriel = false;
 
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(options: ['default' => false])]
     protected bool $isPersonneMorale = false;
 
-    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Adresse $adresse;
-
-    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
-    private ?PersonnePhysique $personnePhysique;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
-    private ?PersonneMorale $personneMorale;
-
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
     /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
+
+    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    protected ?Adresse $adresse;
+
+    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
+    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
+    protected ?PersonnePhysique $personnePhysique;
+
+    #[Groups(['dossier:lecture', 'dossier:patch'])]
+    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
+    protected ?PersonneMorale $personneMorale;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    protected ?array $navigation = null;
 
     public function __construct()
     {
@@ -93,6 +88,11 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         $this->personnePhysique = new PersonnePhysique();
         $this->adresse = new Adresse();
         $this->dossiers = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getPersonnePhysique()->__toString();
     }
 
     #[ORM\PrePersist]
@@ -407,8 +407,8 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getNomComplet(): string
     {
-        return ($this->isPersonneMorale ?
-                "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '').$this->personnePhysique->getNomComplet();
+        return ($this->isPersonneMorale
+                ? "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '').$this->personnePhysique->getNomComplet();
     }
 
     public function getDernierDossier(): ?BrisPorte
@@ -417,9 +417,9 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection|BrisPorte[]
+     * @return BrisPorte[]|Collection
      */
-    public function getDossiers(): Collection|array
+    public function getDossiers(): array|Collection
     {
         return $this->dossiers;
     }
@@ -429,8 +429,15 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->dossiers->filter(fn (BrisPorte $dossier) => !$dossier->estDepose())->count();
     }
 
-    public function __toString(): string
+    public function getNavigation(): ?NavigationRequerant
     {
-        return $this->getPersonnePhysique()->__toString();
+        return NavigationRequerant::depuisArray($this->navigation ?? []);
+    }
+
+    public function setNavigation(null|array|NavigationRequerant $navigation): Requerant
+    {
+        $this->navigation = $navigation instanceof NavigationRequerant ? $navigation->versArray() : $navigation;
+
+        return $this;
     }
 }
