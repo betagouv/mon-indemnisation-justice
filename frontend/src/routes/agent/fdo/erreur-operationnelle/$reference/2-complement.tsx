@@ -118,7 +118,6 @@ function Page() {
       onSubmit: schemaInfosJuridiques,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
       await naviguer({
         to: "/agent/fdo/erreur-operationnelle/$reference/3-requerant",
         params: { reference } as any,
