@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use MonIndemnisationJustice\Dto\ModificationMotDePasse;
 use MonIndemnisationJustice\Dto\MotDePasseOublieDto;
 use MonIndemnisationJustice\Entity\Agent;
@@ -36,8 +37,7 @@ class SecurityController extends AbstractController
         protected readonly OidcClient $oidcClientRequerant,
         #[Autowire(service: 'oidc_client_pro_connect')]
         protected readonly OidcClient $oidcClientAgent,
-    ) {
-    }
+    ) {}
 
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(Request $request): Response
@@ -72,17 +72,13 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/connexion-agent', name: 'securite_connexion_agent', methods: ['POST'])]
-    public function connexionAgent(Request $request): Response
+    public function connexionAgent(ClientRegistry $clientRegistry): Response
     {
-        if ($this->getUser() instanceof Agent) {
-            return $this->redirectToRoute('agent_index');
-        }
-
-        if ($this->isCsrfTokenValid('connexionAgent', $request->getPayload()->get('_csrf_token_agent'))) {
-            return $this->redirect($this->oidcClientAgent->buildAuthorizeUrl($request));
-        }
-
-        return $this->redirectToRoute('app_login');
+        return $clientRegistry
+            ->getClient('pro_connect')
+            ->redirect([
+                'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom'])
+        ;
     }
 
     #[Route(path: '/deconnexion', name: 'app_logout')]

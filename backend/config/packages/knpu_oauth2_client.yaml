@@ -1,0 +1,18 @@
+knpu_oauth2_client:
+  clients:
+    # configure your clients as described here: https://github.com/knpuniversity/oauth2-client-bundle#configuration
+    pro_connect:
+      type: generic
+      provider_class: MonIndemnisationJustice\Security\Oidc\ProConnectProvider
+      provider_options:
+        $wellKnownUrl: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
+
+
+      # optional: a class that extends OAuth2Client
+      # client_class: Some\Custom\Client
+      # now, all the normal options!
+      client_id: '%env(PRO_CONNECT_CLIENT_ID)%'
+      client_secret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
+      redirect_route: agent_securite_connexion
+      #openid_configuration_endpoint: 'https://proconnect.gouv.test/.well-known/openid-configuration'
+      #redirect_params: { }

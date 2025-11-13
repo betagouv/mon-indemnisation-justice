@@ -21,23 +21,6 @@ security:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
-    agent:
-      pattern: ^/(api/agent|agent)
-      user_checker: MonIndemnisationJustice\Security\AgentChecker
-      lazy: true
-      provider: agent_provider
-      custom_authenticators:
-        - MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator
-      entry_point: MonIndemnisationJustice\Security\EntryPoint\AgentAuthenticationEntryPoint
-      #oidc:
-      #    client: pro_connect
-      #    check_path: /agent/connexion
-      #    login_path: /agent/se-connecter
-      #    default_target_path: app_agent_redacteur_accueil
-      #    enable_remember_me: false
-      logout:
-        path: agent_securite_deconnexion
-        target: app_login
     requerant:
       #pattern: ^/requerant
       user_checker: MonIndemnisationJustice\Security\RequerantChecker
@@ -59,6 +42,23 @@ security:
         # where to redirect after logout
         target: requerant_home_index
       switch_user: true
+    agent:
+      pattern: ^/(api/agent|agent)
+      user_checker: MonIndemnisationJustice\Security\AgentChecker
+      lazy: true
+      provider: agent_provider
+      entry_point: MonIndemnisationJustice\Security\EntryPoint\AgentAuthenticationEntryPoint
+      form_login:
+        login_path: app_login
+        check_path: agent_securite_connexion
+        default_target_path: agent_index
+      access_token:
+        token_handler:
+          oidc_user_info:
+            base_uri: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
+      logout:
+        path: agent_securite_deconnexion
+        target: app_login
 
 
   # Easy way to control access for large sections of your site
