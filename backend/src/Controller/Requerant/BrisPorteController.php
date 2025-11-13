@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Controller\Requerant;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
@@ -103,25 +104,19 @@ class BrisPorteController extends RequerantController
     {
         if (EtatDossierType::DOSSIER_OK_A_APPROUVER == !$dossier->getEtatDossier()->getEtat()->value) {
             return new JsonResponse([
-                'error' => "Ce dossier n'est pas en attente d'approbation",
+                'erreur' => "Ce dossier n'est pas en attente d'approbation",
             ], Response::HTTP_BAD_REQUEST);
         }
 
         /** @var UploadedFile $file */
         $file = $request->files->get('fichierSigne');
+        if (null === $file) {
+            return new JsonResponse([
+                'erreur' => "Une erreur est survenue lors du téléversement du ficher. Veuillez ré-essayer et rapprochez-vous de l'équipe Mon Indemnisation Justice si le problème persiste",
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
-        $content = $file->getContent();
-        $filename = hash('sha256', $content).'.'.($file->guessExtension() ?? $file->getExtension());
-        $this->storage->write($filename, $content);
-
-        $acceptation = $dossier->getOrCreateDeclarationAcceptation()
-            ->setFilename($filename)
-            ->setOriginalFilename($file->getClientOriginalName())
-            ->setSize($file->getSize())
-            ->setMime($file->getClientMimeType())
-        ;
-
-        $this->em->persist($acceptation);
+        $acceptation = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_COURRIER_REQUERANT);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
 

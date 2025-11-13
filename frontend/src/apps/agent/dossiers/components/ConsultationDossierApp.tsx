@@ -19,6 +19,7 @@ import {
   SuppressionPieceJointe,
 } from "@/apps/agent/dossiers/components/consultation/piecejointe/SuppressionPieceJointe.tsx";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { dateSimple } from "@/common/services/date.ts";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -364,36 +365,17 @@ export const ConsultationDossierApp = observer(
 
                         <ul>
                           <li>
-                            <b>Survenu à l'adresse: </b>{" "}
+                            <b>Survenu au: </b>{" "}
                             {dossier.adresse.estRenseignee() ? (
                               <>{dossier.adresse.libelle()}</>
                             ) : (
                               <i>non renseigné</i>
                             )}
-                            {}
                           </li>
                           <li>
                             <b>Le :</b>{" "}
                             {dossier.dateOperation ? (
-                              <>
-                                {dossier.dateOperation?.toLocaleString(
-                                  "fr-FR",
-                                  {
-                                    weekday: "long",
-                                    day: "numeric",
-                                    month: "long",
-                                    year: "numeric",
-                                  },
-                                )}
-                                , à{" "}
-                                {dossier.dateOperation?.toLocaleString(
-                                  "fr-FR",
-                                  {
-                                    hour: "numeric",
-                                    minute: "numeric",
-                                  },
-                                )}
-                              </>
+                              <>{dateSimple(dossier.dateOperation)}</>
                             ) : (
                               <i>non renseigné</i>
                             )}
@@ -401,7 +383,7 @@ export const ConsultationDossierApp = observer(
                           <li>
                             <b>Porte blindée: </b>{" "}
                             {dossier.estPorteBlindee !== null ? (
-                              <>{dossier.estPorteBlindee ? "oui" : "non"}</>
+                              <>{dossier.estPorteBlindee ? "Oui" : "Non"}</>
                             ) : (
                               <i>non renseigné</i>
                             )}
