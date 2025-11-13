@@ -20,9 +20,12 @@ class Fip6Controller extends AbstractController
         /** @var Agent $agent */
         $agent = $this->getUser();
 
+        // TODO activer l'espace FDO dès qu'il est disponible à l'usage
+        /*
         if ($agent->estFDO()) {
             return $this->redirectToRoute('agent_fdo_react');
         }
+        */
 
         return $this->render(
             'agent/fip6.html.twig',
