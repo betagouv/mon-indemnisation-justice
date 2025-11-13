@@ -186,6 +186,7 @@ export const GenererArretePaiementModale =
             {arretePaiement ? (
               <EditeurDocument
                 className="fr-input-group fr-my-2w"
+                onEdite={(corps: string) => (arretePaiement.corps = corps)}
                 onImprime={(arretePaiement) => {
                   setArretePaiement(arretePaiement);
                   dossier.addDocument(arretePaiement);
