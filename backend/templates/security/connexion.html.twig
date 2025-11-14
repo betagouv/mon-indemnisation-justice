@@ -307,7 +307,7 @@
                             {% endif %}
 
                             <form method="POST" {% if last_username|default(null) is null %} class="fr-hidden"{% endif %}
-                                  id="formulaire-connexion-email">
+                                  id="formulaire-connexion-email" action="{{ url('securite_connexion_requerant') }}">
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                                 <div class="fr-grid-row">
                                     <div class="fr-col-12 fr-mb-2w">
@@ -450,7 +450,10 @@
 
         {# Ouvrir les modales #}
         document.addEventListener("DOMContentLoaded", () => {
-                document.querySelectorAll('dialog.fr-modal[data-fr-js-opened]').forEach((modale) => window.dsfr(modale).modal.disclose())
+                document.querySelectorAll('dialog.fr-modal[data-fr-js-opened]').forEach((modale) => {
+                    console.log(modale);
+                    window.dsfr(modale).modal.open();
+                })
             }
         );
     </script>

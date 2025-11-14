@@ -35,8 +35,6 @@ class SecurityController extends AbstractController
         protected readonly RequerantRepository $requerantRepository,
         #[Autowire(service: 'oidc_client_france_connect')]
         protected readonly OidcClient $oidcClientRequerant,
-        #[Autowire(service: 'oidc_client_pro_connect')]
-        protected readonly OidcClient $oidcClientAgent,
     ) {}
 
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
@@ -71,6 +69,13 @@ class SecurityController extends AbstractController
         ]);
     }
 
+    #[Route(path: '/connexion-requerant', name: 'securite_connexion_requerant', methods: ['POST'])]
+    public function connexionRequerant(): Response
+    {
+        // On ne devrait jamais arriver ici, l'authentificateur form_login étant configuré pour écouter cette route
+        return $this->redirectToRoute('app_login');
+    }
+
     #[Route(path: '/connexion-agent', name: 'securite_connexion_agent', methods: ['POST'])]
     public function connexionAgent(ClientRegistry $clientRegistry): Response
     {
@@ -84,7 +89,7 @@ class SecurityController extends AbstractController
     #[Route(path: '/deconnexion', name: 'app_logout')]
     public function logout(): Response
     {
-        return $this->redirectToRoute('requerant_home_index');
+        return $this->redirectToRoute('app_login');
     }
 
     #[Route(path: '/mon-mot-de-passe/oublie', name: 'app_send_reset_password', methods: ['POST'])]

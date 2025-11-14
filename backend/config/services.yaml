@@ -5,92 +5,85 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 
 services:
-    # default configuration for services in *this* file
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-        bind:
-          $publicDir: "%kernel.project_dir%/public"
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    bind:
+      $publicDir: "%kernel.project_dir%/public"
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    MonIndemnisationJustice\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+  # makes classes in src/ available to be used as services
+  # this creates a service per class whose id is the fully-qualified class name
+  MonIndemnisationJustice\:
+    resource: '../src/'
+    exclude:
+      - '../src/DependencyInjection/'
+      - '../src/Entity/'
+      - '../src/Kernel.php'
 
-    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
-      arguments:
-        - '%env(DATABASE_URL)%'
+  Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+    arguments:
+      - '%env(DATABASE_URL)%'
 
-    oidc_client_pro_connect:
-      class: 'MonIndemnisationJustice\Security\Oidc\OidcClient'
-      arguments:
-        $wellKnownUrl: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
-        $clientId: '%env(PRO_CONNECT_CLIENT_ID)%'
-        $clientSecret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
-        $loginCheckRoutes: ['agent_securite_connexion']
-        $context:
-          scope: ['openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom']
+  #oidc_client_pro_connect:
+  #  class: 'MonIndemnisationJustice\Security\Oidc\OidcClient'
+  #  arguments:
+  #    $wellKnownUrl: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
+  #    $clientId: '%env(PRO_CONNECT_CLIENT_ID)%'
+  #    $clientSecret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
+  #    $loginCheckRoutes: [ 'agent_securite_connexion' ]
+  #    $context:
+  #      scope: [ 'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom' ]
 
-    MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator:
-      arguments:
-        $loginPageRoute: 'app_login'
-        $loginCheckRoute: 'agent_securite_connexion'
-        $loginSuccessRoute: 'agent_index'
-        $autoPromotionHashes: '%env(default::json:MIJ_AUTO_PROMOTION_HASHES)%'
+  oidc_client_france_connect:
+    class: 'MonIndemnisationJustice\Security\Oidc\OidcClient'
+    arguments:
+      $wellKnownUrl: '%env(FRANCE_CONNECT_WELL_KNOWN_URL)%'
+      $clientId: '%env(FRANCE_CONNECT_CLIENT_ID)%'
+      $clientSecret: '%env(FRANCE_CONNECT_CLIENT_SECRET)%'
+      $loginCheckRoutes: [ 'requerant_securite_connexion', 'requerant_securite_inscription' ]
+      $logoutRoute: 'requerant_securite_deconnexion'
+      $context:
+        scope: [ 'openid', 'email', 'phone_number', 'given_name', 'family_name', 'birthdate', 'gender', 'birthplace', 'birthcountry' ]
+        acr_values: 'eidas1'
 
-    oidc_client_france_connect:
-      class: 'MonIndemnisationJustice\Security\Oidc\OidcClient'
-      arguments:
-        $wellKnownUrl: '%env(FRANCE_CONNECT_WELL_KNOWN_URL)%'
-        $clientId: '%env(FRANCE_CONNECT_CLIENT_ID)%'
-        $clientSecret: '%env(FRANCE_CONNECT_CLIENT_SECRET)%'
-        $loginCheckRoutes: ['requerant_securite_connexion', 'requerant_securite_inscription']
-        $logoutRoute: 'requerant_securite_deconnexion'
-        $context:
-          scope: ['openid', 'email', 'phone_number', 'given_name', 'family_name', 'birthdate', 'gender', 'birthplace', 'birthcountry']
-          acr_values: 'eidas1'
+  MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator:
+    arguments:
+      $loginPageRoute: 'app_login'
+      $signupCheckRoute: 'requerant_securite_inscription'
+      $loginCheckRoute: 'requerant_securite_connexion'
+      $loginSuccessRoute: 'requerant_home_index'
 
-    MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator:
-        arguments:
-          $loginPageRoute: 'app_login'
-          $signupCheckRoute: 'requerant_securite_inscription'
-          $loginCheckRoute: 'requerant_securite_connexion'
-          $loginSuccessRoute: 'requerant_home_index'
+  MonIndemnisationJustice\Service\Mailer:
+    $emailFrom: '%env(EMAIL_FROM)%'
+    $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
 
-    MonIndemnisationJustice\Service\Mailer:
-        $emailFrom: '%env(EMAIL_FROM)%'
-        $emailFromLabel: '%env(EMAIL_FROM_LABEL)%'
+  # add more service definitions when explicit configuration is needed
+  # please note that last definitions always *replace* previous
+  Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous
-    Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
-
-    Pentatrion\ViteBundle\Service\EntrypointsLookup: '@pentatrion_vite.entrypoints_lookup[_default]'
+  Pentatrion\ViteBundle\Service\EntrypointsLookup: '@pentatrion_vite.entrypoints_lookup[_default]'
 
 when@prod:
-    services:
-        Aws\S3\S3Client:
-            arguments:
-                - version: 'latest'
-                  region: '%env(resolve:SCW_REGION)%'
-                  endpoint: '%env(resolve:SCW_HOST)%'
-                  use_path_style_endpoint: true
-                  credentials:
-                      key: '%env(resolve:SCW_ACCESS_KEY)%'
-                      secret: '%env(resolve:SCW_SECRET_KEY)%'
+  services:
+    Aws\S3\S3Client:
+      arguments:
+        - version: 'latest'
+          region: '%env(resolve:SCW_REGION)%'
+          endpoint: '%env(resolve:SCW_HOST)%'
+          use_path_style_endpoint: true
+          credentials:
+            key: '%env(resolve:SCW_ACCESS_KEY)%'
+            secret: '%env(resolve:SCW_SECRET_KEY)%'
 
 when@develop:
-    services:
-        Aws\S3\S3Client:
-            arguments:
-                - version: 'latest'
-                  region: '%env(resolve:SCW_REGION)%'
-                  endpoint: '%env(resolve:SCW_HOST)%'
-                  use_path_style_endpoint: true
-                  credentials:
-                      key: '%env(resolve:SCW_ACCESS_KEY)%'
-                      secret: '%env(resolve:SCW_SECRET_KEY)%'
+  services:
+    Aws\S3\S3Client:
+      arguments:
+        - version: 'latest'
+          region: '%env(resolve:SCW_REGION)%'
+          endpoint: '%env(resolve:SCW_HOST)%'
+          use_path_style_endpoint: true
+          credentials:
+            key: '%env(resolve:SCW_ACCESS_KEY)%'
+            secret: '%env(resolve:SCW_SECRET_KEY)%'

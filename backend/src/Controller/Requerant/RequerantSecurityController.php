@@ -16,14 +16,14 @@ class RequerantSecurityController extends AbstractController
     public function connexionFranceConnect(): Response
     {
         // On ne devrait jamais arriver ici, l'authentificateur France Connect étant configuré pour écouter cette route
-        return $this->render('security/connexion.html.twig');
+        return $this->redirectToRoute('app_login');
     }
 
     #[Route('/requerant/inscription', name: 'requerant_securite_inscription', methods: ['GET'])]
     public function inscriptionFranceConnect(): Response
     {
         // On ne devrait jamais arriver ici, l'authentificateur France Connect étant configuré pour écouter cette route
-        return $this->render('security/connexion.html.twig');
+        return $this->redirectToRoute('app_login');
     }
 
     #[Route('/requerant/deconnexion', name: 'requerant_securite_deconnexion', methods: ['GET'])]

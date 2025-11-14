@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Agent\Fip6\Endpoint\Dossier;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\AjouterPieceJointeEndpoint;

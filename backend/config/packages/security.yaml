@@ -21,41 +21,34 @@ security:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
-    requerant:
-      #pattern: ^/requerant
+    requerant_courriel:
+      pattern: ^/(requerant|connexion-requerant)
       user_checker: MonIndemnisationJustice\Security\RequerantChecker
       lazy: true
       provider: app_requerant_provider
       form_login:
         login_path: app_login
-        check_path: app_login
+        check_path: securite_connexion_requerant
         enable_csrf: true
         default_target_path: requerant_home_index
+        form_only: true
       login_throttling:
         max_attempts: 5
         interval: '20 minutes'
         limiter: security.limitateur_connexion
-      custom_authenticators:
-        - MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator
+      custom_authenticator: MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator
+      entry_point: form_login
       logout:
         path: app_logout
         # where to redirect after logout
-        target: requerant_home_index
+        target: app_login
       switch_user: true
     agent:
       pattern: ^/(api/agent|agent)
-      user_checker: MonIndemnisationJustice\Security\AgentChecker
       lazy: true
       provider: agent_provider
-      entry_point: MonIndemnisationJustice\Security\EntryPoint\AgentAuthenticationEntryPoint
-      form_login:
-        login_path: app_login
-        check_path: agent_securite_connexion
-        default_target_path: agent_index
-      access_token:
-        token_handler:
-          oidc_user_info:
-            base_uri: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
+      custom_authenticators:
+        - MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator
       logout:
         path: agent_securite_deconnexion
         target: app_login
@@ -65,6 +58,7 @@ security:
   # Note: Only the *first* access control that matches will be used
   access_control:
     - { path: ^/requerant/, roles: ROLE_REQUERANT }
+    #- { path: ^/agent/connexion, role: PUBLIC_ACCESS }
     - { path: ^/(agent|api/agent), roles: ROLE_AGENT }
 
 when@test:
