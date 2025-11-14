@@ -33,6 +33,7 @@ if (root) {
           <TestEligibiliteForm
             token={args._token}
             estIssuAttestation={args.estIssuAttestation}
+            estConnecte={args.connecte}
           />
         </div>
       </div>

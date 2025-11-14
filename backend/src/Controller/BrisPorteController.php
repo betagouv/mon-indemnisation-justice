@@ -95,6 +95,8 @@ class BrisPorteController extends AbstractController
                     $this->entityManager->persist($dossier);
                     $this->entityManager->flush();
 
+                    $request->getSession()->remove(self::CLEF_SESSION_PREINSCRIPTION);
+
                     return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
                 }
 

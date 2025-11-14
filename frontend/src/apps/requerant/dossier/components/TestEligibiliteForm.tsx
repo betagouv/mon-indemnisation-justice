@@ -39,9 +39,11 @@ type TestEligibilite = {
 export const TestEligibiliteForm = ({
   token,
   estIssuAttestation,
+  estConnecte = false,
 }: {
   token: string;
   estIssuAttestation: boolean;
+  estConnecte: boolean;
 }) => {
   const [test, setTest] = useState<TestEligibilite>({
     avancement: "rapport_au_logement",
@@ -535,7 +537,9 @@ export const TestEligibiliteForm = ({
             priority:
               test.estVise || test.estHebergeant ? "secondary" : "primary", // Secondary si pas eligible
             type: "submit",
-            children: "Créer votre compte",
+            children: estConnecte
+              ? "Constituer votre dossier"
+              : "Créer votre compte",
           },
           ...(estDecide
             ? [

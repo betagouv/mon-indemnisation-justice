@@ -14,7 +14,7 @@
 
 {% block javascripts %}
     <script id="react-arguments" type="application/json">
-        {{ { "_token" : form._token.vars.value, "estIssuAttestation": form.estIssuAttestation.vars.value }|json_encode()|raw }}
+{{ { "_token" : form._token.vars.value, "estIssuAttestation": form.estIssuAttestation.vars.value, "connecte": app.user is not null }|json_encode()|raw }}
 
     </script>
 
