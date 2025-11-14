@@ -40,8 +40,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
         protected readonly LoggerInterface $logger,
         protected readonly EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
-    ) {
-    }
+    ) {}
 
     public function supports(Request $request): ?bool
     {
@@ -85,13 +84,15 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                                 ->setPrenom3($prenoms[2] ?? null)
                                 ->setDateNaissance(new \DateTime($userInfo['birthdate'] ?? ''))
                                 ->setEmail($userInfo['email'] ?? null)
-                        );
+                        )
+                    ;
 
                     // Récupération du pays de naissance
                     if (null !== ($codePaysNaissance = $userInfo['birthcountry'])) {
                         /** @var GeoPays $paysNaissance */
-                        $paysNaissance = $this->em->getRepository(GeoPays::class)->findOneBy([
-                            'codeInsee' => $codePaysNaissance]
+                        $paysNaissance = $this->em->getRepository(GeoPays::class)->findOneBy(
+                            [
+                                'codeInsee' => $codePaysNaissance]
                         );
 
                         if (null !== $paysNaissance) {
@@ -107,7 +108,8 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                         if (null !== $codePostalNaissance) {
                             $requerant->getPersonnePhysique()
                                 ->setCommuneNaissance($codePostalNaissance)
-                                ->setPaysNaissance($this->em->getRepository(GeoPays::class)->getFrance());
+                                ->setPaysNaissance($this->em->getRepository(GeoPays::class)->getFrance())
+                            ;
                         }
                     }
 
@@ -124,6 +126,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
             return new SelfValidatingPassport(new UserBadge($requerant->getUserIdentifier()));
         } catch (AuthenticationException $e) {
             $this->logger->error($e->getMessage(), $e->getMessageData());
+
             throw $e;
         }
     }
@@ -147,6 +150,6 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new RedirectResponse($this->urlGenerator->generate($this->loginPageRoute, ['erreur' => $exception->getMessage()]));
+        return new RedirectResponse($this->urlGenerator->generate($this->loginPageRoute));
     }
 }

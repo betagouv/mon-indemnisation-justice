@@ -16,17 +16,13 @@ class SecurityAgentController extends AbstractController
 {
     public function __construct(
         protected readonly AuthenticationUtils $authenticationUtils,
-    ) {
-    }
+    ) {}
 
     #[Route('/connexion', name: 'agent_securite_connexion', methods: ['GET'])]
     #[IsGranted('PUBLIC_ACCESS')]
     public function connexion(Request $request): Response
     {
-        return $this->render('security/connexion.html.twig', [
-            'last_username' => $this->authenticationUtils->getLastUsername(),
-            'error' => $this->authenticationUtils->getLastAuthenticationError(),
-        ]);
+        return $this->redirectToRoute('app_login');
     }
 
     #[Route(path: '/deconnexion', name: 'agent_securite_deconnexion')]
