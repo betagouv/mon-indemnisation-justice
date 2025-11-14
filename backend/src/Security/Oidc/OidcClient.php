@@ -28,6 +28,7 @@ class OidcClient
 {
     protected HttpClient $client;
     protected ?array $configuration = null;
+
     /**
      * @var array<string, Key> the set of JSON Web Keys
      */
@@ -40,62 +41,13 @@ class OidcClient
         protected readonly string $clientSecret,
         protected readonly array $loginCheckRoutes,
         protected readonly UrlGeneratorInterface $urlGenerator,
-        #[Target('oidc')] protected readonly CacheInterface $cache,
+        #[Target('oidc')]
+        protected readonly CacheInterface $cache,
         protected readonly array $context = [],
         protected readonly ?string $logoutRoute = null,
     ) {
         $this->client = new HttpClient([]);
         $this->sessionKey = sprintf('_oidc_authentication_%s', sha1($this->wellKnownUrl));
-    }
-
-    protected function configure(): void
-    {
-        if (null === $this->configuration) {
-            $this->configuration = $this->cache->get(sprintf('_oidc_well_known_configuration_%s', sha1($this->wellKnownUrl)), function () {
-                try {
-                    $response = $this->client->get($this->wellKnownUrl);
-
-                    return json_decode($response->getBody()->getContents(), true);
-                } catch (GuzzleException $e) {
-                    throw new AuthenticationException('Fetch of OIDC server well known configuration failed.', previous: $e);
-                }
-            });
-        }
-
-        if (null === $this->jwks) {
-            $this->jwks = JWK::parseKeySet($this->cache->get(sprintf('_oidc_jwks_%s', sha1($this->wellKnownUrl)), function () {
-                try {
-                    $response = $this->client->get($this->configuration['jwks_uri']);
-
-                    return json_decode(
-                        $response->getBody()->getContents(),
-                        true
-                    );
-                } catch (GuzzleException $e) {
-                    throw new AuthenticationException('Fetch of OIDC JWKs failed.');
-                }
-            }));
-        }
-    }
-
-    protected function getSessionContext(Request $request): ?array
-    {
-        return $request->getSession()->get($this->sessionKey);
-    }
-
-    protected function setSessionContext(Request $request, array $values = []): void
-    {
-        $request->getSession()->set($this->sessionKey, $values);
-    }
-
-    protected function clearSessionContext(Request $request): void
-    {
-        $request->getSession()->remove($this->sessionKey);
-    }
-
-    protected function getRedirectUri(?string $redirectRoute = null): string
-    {
-        return $this->urlGenerator->generate(null !== $redirectRoute && in_array($redirectRoute, $this->loginCheckRoutes) ? $redirectRoute : $this->loginCheckRoutes[0], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     public function buildAuthorizeUrl(Request $request, ?string $redirectRoute = null): string
@@ -167,7 +119,7 @@ class OidcClient
         $this->configure();
 
         if (null !== $error = $request->query->get('error')) {
-            throw new AuthenticationException("$error - ".$request->query->get('error_description'));
+            throw new AuthenticationException("{$error} - ".$request->query->get('error_description'));
         }
 
         $context = $this->getSessionContext($request);
@@ -193,16 +145,18 @@ class OidcClient
             ]);
         } catch (RequestException $e) {
             $context = json_decode($e->getResponse()->getBody()->getContents());
-            throw new AuthenticationException("$context->error - $context->error_description", previous: $e);
+
+            throw new AuthenticationException("{$context->error} - {$context->error_description}", previous: $e);
         } catch (GuzzleException $e) {
             throw new AuthenticationException('Authorization failed.', previous: $e);
         }
 
         $credentials = json_decode($response->getBody()->getContents());
         $accessToken = $credentials->access_token ?? null;
+
         try {
             $idToken = JWT::decode($credentials->id_token, $this->jwks);
-        } catch (SignatureInvalidException|BeforeValidException) {
+        } catch (BeforeValidException|SignatureInvalidException) {
             throw new AuthenticationException('Authorization failed (invalid id token).');
         }
 
@@ -219,7 +173,7 @@ class OidcClient
 
         $response = $this->client->get($this->configuration['userinfo_endpoint'], [
             'headers' => [
-                'Authorization' => "Bearer $token",
+                'Authorization' => "Bearer {$token}",
             ],
         ]);
 
@@ -248,5 +202,55 @@ class OidcClient
         }
 
         return false;
+    }
+
+    protected function configure(): void
+    {
+        if (null === $this->configuration) {
+            $this->configuration = $this->cache->get(sprintf('_oidc_well_known_configuration_%s', sha1($this->wellKnownUrl)), function () {
+                try {
+                    $response = $this->client->get($this->wellKnownUrl);
+
+                    return json_decode($response->getBody()->getContents(), true);
+                } catch (GuzzleException $e) {
+                    throw new AuthenticationException('Fetch of OIDC server well known configuration failed.', previous: $e);
+                }
+            });
+        }
+
+        if (null === $this->jwks) {
+            $this->jwks = JWK::parseKeySet($this->cache->get(sprintf('_oidc_jwks_%s', sha1($this->wellKnownUrl)), function () {
+                try {
+                    $response = $this->client->get($this->configuration['jwks_uri']);
+
+                    return json_decode(
+                        $response->getBody()->getContents(),
+                        true
+                    );
+                } catch (GuzzleException $e) {
+                    throw new AuthenticationException('Fetch of OIDC JWKs failed.');
+                }
+            }));
+        }
+    }
+
+    protected function getSessionContext(Request $request): ?array
+    {
+        return $request->getSession()->get($this->sessionKey);
+    }
+
+    protected function setSessionContext(Request $request, array $values = []): void
+    {
+        $request->getSession()->set($this->sessionKey, $values);
+    }
+
+    protected function clearSessionContext(Request $request): void
+    {
+        $request->getSession()->remove($this->sessionKey);
+    }
+
+    protected function getRedirectUri(?string $redirectRoute = null): string
+    {
+        return $this->urlGenerator->generate(null !== $redirectRoute && in_array($redirectRoute, $this->loginCheckRoutes) ? $redirectRoute : $this->loginCheckRoutes[0], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
     }
 }

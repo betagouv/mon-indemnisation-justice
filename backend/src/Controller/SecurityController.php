@@ -3,7 +3,6 @@
 namespace MonIndemnisationJustice\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use MonIndemnisationJustice\Dto\ModificationMotDePasse;
 use MonIndemnisationJustice\Dto\MotDePasseOublieDto;
 use MonIndemnisationJustice\Entity\Agent;
@@ -12,6 +11,7 @@ use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
 use MonIndemnisationJustice\Forms\MotDePasseOublieType;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
+use MonIndemnisationJustice\Security\Oidc\ProConnectClient;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -77,13 +77,13 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/connexion-agent', name: 'securite_connexion_agent', methods: ['POST'])]
-    public function connexionAgent(ClientRegistry $clientRegistry): Response
+    public function connexionAgent(ProConnectClient $client): Response
     {
-        return $clientRegistry
-            ->getClient('pro_connect')
-            ->redirect([
-                'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom'])
-        ;
+        return $client->redirect(
+            [
+                'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom'],
+            ['redirect_uri' => $this->urlGenerator->generate('agent_securite_connexion', referenceType: UrlGeneratorInterface::ABSOLUTE_URL)]
+        );
     }
 
     #[Route(path: '/deconnexion', name: 'app_logout')]

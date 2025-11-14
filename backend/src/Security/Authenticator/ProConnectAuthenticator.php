@@ -2,12 +2,11 @@
 
 namespace MonIndemnisationJustice\Security\Authenticator;
 
-use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\FournisseurIdentiteAgentRepository;
+use MonIndemnisationJustice\Security\Oidc\ProConnectClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -16,17 +15,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
-use Symfony\Component\Security\Http\HttpUtils;
 
-class ProConnectAuthenticator extends OAuth2Authenticator implements AuthenticationEntryPointInterface
+class ProConnectAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     public function __construct(
-        protected readonly HttpUtils $httpUtils,
-        protected readonly ClientRegistry $clientRegistry,
+        protected readonly ProConnectClient $client,
         protected readonly AgentRepository $agentRepository,
         protected readonly FournisseurIdentiteAgentRepository $fournisseurIdentiteAgentRepository,
         protected readonly UrlGeneratorInterface $urlGenerator,
@@ -45,12 +43,11 @@ class ProConnectAuthenticator extends OAuth2Authenticator implements Authenticat
 
     public function authenticate(Request $request): Passport
     {
-        $client = $this->clientRegistry->getClient('pro_connect');
-        $accessToken = $this->fetchAccessToken($client);
+        $accessToken = $this->client->getAccessToken();
 
         return new SelfValidatingPassport(
-            new UserBadge($accessToken->getToken(), function () use ($accessToken, $client) {
-                $user = $client->fetchUserFromToken($accessToken);
+            new UserBadge($accessToken->getToken(), function () use ($accessToken) {
+                $user = $this->client->fetchUserFromToken($accessToken);
                 $userInfo = $user->toArray();
 
                 $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);

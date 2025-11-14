@@ -2,65 +2,51 @@
 
 namespace MonIndemnisationJustice\Security\Oidc;
 
-use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Exception\GuzzleException;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class ProConnectProvider extends AbstractProvider
 {
-    protected string $authorizationUrl;
-    protected string $accessTokenUrl;
-    protected string $userInfoUrl;
-    protected array $jwks;
+    protected ?string $authorizationUrl = null;
+    protected ?string $accessTokenUrl = null;
+    protected ?string $userInfoUrl = null;
+    protected ?array $jwks = null;
 
     public function __construct(
-        array $options = [],
-        array $collaborators = []
+        #[Autowire('%env(PRO_CONNECT_WELL_KNOWN_URL)%')]
+        protected readonly string $wellKnownUrl,
+        #[Target('oidc')]
+        protected readonly CacheInterface $cache,
     ) {
-        parent::__construct($options, $collaborators);
-
-        try {
-            $response = $this->httpClient->request('GET', $options['wellKnownUrl']);
-
-            $configuration = json_decode($response->getBody()->getContents(), true);
-            $this->authorizationUrl = $configuration['authorization_endpoint'];
-            $this->accessTokenUrl = $configuration['token_endpoint'];
-            $this->userInfoUrl = $configuration['userinfo_endpoint'];
-
-            try {
-                $response = $this->httpClient->get($configuration['jwks_uri']);
-
-                $this->jwks = JWK::parseKeySet(
-                    json_decode(
-                        $response->getBody()->getContents(),
-                        true
-                    )
-                );
-            } catch (GuzzleException $e) {
-                throw new AuthenticationException('Fetch of OIDC JWKs failed.');
-            }
-        } catch (GuzzleException $e) {
-            throw new AuthenticationException('Fetch of OIDC server well known configuration failed.', previous: $e);
-        }
+        parent::__construct();
     }
 
     public function getBaseAuthorizationUrl()
     {
+        $this->configure();
+
         return $this->authorizationUrl;
     }
 
     public function getBaseAccessTokenUrl(array $params)
     {
+        $this->configure();
+
         return $this->accessTokenUrl;
     }
 
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
+        $this->configure();
+
         return $this->userInfoUrl;
     }
 
@@ -124,6 +110,32 @@ class ProConnectProvider extends AbstractProvider
             }
 
             return $content;
+        }
+    }
+
+    protected function get(string $url, string $errorMessage): array
+    {
+        try {
+            $response = $this->httpClient->get($url);
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (GuzzleException $e) {
+            throw new AuthenticationException($errorMessage, previous: $e);
+        }
+    }
+
+    protected function configure(): void
+    {
+        if (null === $this->authorizationUrl) {
+            list($this->authorizationUrl, $this->accessTokenUrl, $this->userInfoUrl, $this->jwks) = $this->cache->get(
+                sprintf('_oidc_well_known_configuration_%s', sha1($this->wellKnownUrl)),
+                function () {
+                    $configuration = $this->get($this->wellKnownUrl, "La configuration ProConnect n'a pu être initialisée (erreur lors de la découverte de la configuration)");
+                    $jwks = $this->get($configuration['jwks_uri'], "La configuration ProConnect n'a pu être initialisée (erreur lors de la lecture des clefs de chiffrement)");
+
+                    return [$configuration['authorization_endpoint'], $configuration['token_endpoint'], $configuration['userinfo_endpoint'], $jwks];
+                }
+            );
         }
     }
 }

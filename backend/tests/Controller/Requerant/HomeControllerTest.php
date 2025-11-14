@@ -31,7 +31,7 @@ class HomeControllerTest extends WebTestCase
     {
         $requerant = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $courriel]);
 
-        $this->client->loginUser($requerant, 'requerant');
+        $this->client->loginUser($requerant, 'requerant_courriel');
 
         $this->client->request('GET', '/requerant');
 
