@@ -35,6 +35,7 @@ services:
   #    $context:
   #      scope: [ 'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom' ]
 
+
   oidc_client_france_connect:
     class: 'MonIndemnisationJustice\Security\Oidc\OidcClient'
     arguments:
