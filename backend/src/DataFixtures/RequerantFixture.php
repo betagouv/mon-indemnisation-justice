@@ -64,6 +64,7 @@ class RequerantFixture extends Fixture
                         ->setTelephone('+336 07437022')
                 )
                 ->setEmail('ray.keran@courriel.fr')
+                ->setSub('3297f962-d6a2-4e30-a134-4b85615fd62c')
                 ->setVerifieCourriel()
                 ->setRoles([Requerant::ROLE_REQUERANT]),
             'melun' => (new Requerant())->setAdresse(
@@ -162,7 +163,11 @@ class RequerantFixture extends Fixture
                 ->setVerifieCourriel()
                 ->setRoles([Requerant::ROLE_REQUERANT]),
         ] as $reference => $requerant) {
-            $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
+            /** @var Requerant $requerant */
+            if (null === $requerant->getSub()) {
+                $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
+            }
+
             $manager->persist($requerant);
             $this->addReference("requerant-{$reference}", $requerant);
         }

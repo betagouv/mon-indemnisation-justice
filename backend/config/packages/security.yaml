@@ -21,7 +21,7 @@ security:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
-    requerant_courriel:
+    requerant:
       pattern: ^/(requerant|connexion-requerant)
       user_checker: MonIndemnisationJustice\Security\RequerantChecker
       lazy: true
@@ -73,3 +73,6 @@ when@test:
         cost: 4 # Lowest possible value for bcrypt
         time_cost: 3 # Lowest possible value for argon
         memory_cost: 10 # Lowest possible value for argon
+    firewalls:
+      requerant:
+        login_throttling: false

@@ -36,5 +36,24 @@
         "street_address" : "20 avenue de Ségur",
         "birthplace": "50484",
         "birthcountry": "99100"
+    },
+    {
+        "_title": "Ray KERAN",
+        "sub": "3297f962-d6a2-4e30-a134-4b85615fd62c",
+        "email": "ray.keran@courriel.fr",
+        "gender": "male",
+        "given_name": "Ray",
+        "given_name_array": [
+            "Ray"
+        ],
+        "family_name": "Keran",
+        "phone_number": "0607437022",
+        "birthdate": "1983-11-23",
+        "country" : "France",
+        "locality" : "Rennes",
+        "postal_code" : "35000",
+        "street_address" : "37 rue du Nivernais",
+        "birthplace": "35500",
+        "birthcountry": "99100"
     }
 ]
