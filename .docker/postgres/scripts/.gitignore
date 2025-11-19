@@ -1,4 +1,6 @@
 *
 
 !000-create-database-precontest.sh
+# 001 est réservé pour un éventuel dump
+!002-dev-chargement-agents.sql
 !.gitignore

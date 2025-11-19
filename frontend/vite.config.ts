@@ -21,15 +21,14 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
     plugins: [
       tanstackRouter({
         target: "react",
-        virtualRouteConfig: "./src/routers/router-agent-fip6.ts",
-        generatedRouteTree: "./src/routers/generated/router-agent-fip6.gen.ts",
-        routesDirectory: "./src/routes/",
+        virtualRouteConfig: "./src/apps/agent/fip6/routeur/routeur-fip6.ts",
+        generatedRouteTree: "./src/apps/agent/fip6/routeur/routeur-fip6.gen.ts",
+        routesDirectory: "./src/apps/agent/fip6/routes/",
       }),
       tanstackRouter({
         target: "react",
-        virtualRouteConfig: "./src/routers/router-agent-fdo.ts",
-        generatedRouteTree: "./src/routers/generated/router-agent-fdo.gen.ts",
-        routesDirectory: "./src/routes/",
+        generatedRouteTree: "./src/apps/agent/fdo/routeur/routeur-fdo.gen.ts",
+        routesDirectory: "./src/apps/agent/fdo/routes/",
       }),
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
@@ -70,11 +69,11 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
             "requerant/dossier/consulter_la_decision":
               "./src/apps/requerant/dossier/consulter_la_decision.tsx",
             // Espace agent
-            "agent/fip6": "./src/apps/agent/fip6.tsx",
+            "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
             "agent/dossiers/recherche":
-              "./src/apps/agent/dossiers/recherche_app.tsx",
+              "./src/apps/agent/fip6/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
-              "./src/apps/agent/dossiers/consultation_app.tsx",
+              "./src/apps/agent/fip6/dossiers/consultation_app.tsx",
             // Espace FDO
             "agent/fdo": path.join(__dirname, "./src/apps/agent/fdo/fdo.tsx"),
           },
