@@ -11,6 +11,7 @@ use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
 use MonIndemnisationJustice\Forms\MotDePasseOublieType;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
+use MonIndemnisationJustice\Security\Oidc\ProConnectClient;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -34,10 +35,7 @@ class SecurityController extends AbstractController
         protected readonly RequerantRepository $requerantRepository,
         #[Autowire(service: 'oidc_client_france_connect')]
         protected readonly OidcClient $oidcClientRequerant,
-        #[Autowire(service: 'oidc_client_pro_connect')]
-        protected readonly OidcClient $oidcClientAgent,
-    ) {
-    }
+    ) {}
 
     #[Route(path: '/connexion', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(Request $request): Response
@@ -71,24 +69,27 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/connexion-agent', name: 'securite_connexion_agent', methods: ['POST'])]
-    public function connexionAgent(Request $request): Response
+    #[Route(path: '/connexion-requerant', name: 'securite_connexion_requerant', methods: ['POST'])]
+    public function connexionRequerant(): Response
     {
-        if ($this->getUser() instanceof Agent) {
-            return $this->redirectToRoute('agent_index');
-        }
-
-        if ($this->isCsrfTokenValid('connexionAgent', $request->getPayload()->get('_csrf_token_agent'))) {
-            return $this->redirect($this->oidcClientAgent->buildAuthorizeUrl($request));
-        }
-
+        // On ne devrait jamais arriver ici, l'authentificateur form_login étant configuré pour écouter cette route
         return $this->redirectToRoute('app_login');
+    }
+
+    #[Route(path: '/connexion-agent', name: 'securite_connexion_agent', methods: ['POST'])]
+    public function connexionAgent(ProConnectClient $client): Response
+    {
+        return $client->redirect(
+            [
+                'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom'],
+            ['redirect_uri' => $this->urlGenerator->generate('agent_securite_connexion', referenceType: UrlGeneratorInterface::ABSOLUTE_URL)]
+        );
     }
 
     #[Route(path: '/deconnexion', name: 'app_logout')]
     public function logout(): Response
     {
-        return $this->redirectToRoute('requerant_home_index');
+        return $this->redirectToRoute('app_login');
     }
 
     #[Route(path: '/mon-mot-de-passe/oublie', name: 'app_send_reset_password', methods: ['POST'])]

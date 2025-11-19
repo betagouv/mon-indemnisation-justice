@@ -1,5 +1,5 @@
 import {test, expect} from "@playwright/test";
-import {connexionAgent, getTitre} from "./helpers";
+import {connexionAgent, getTitre} from "../helpers";
 
 test("lister dossiers à transmettre au bureau du budget", async ({page, browser}) => {
     // Démarrer une session incognito pour éviter les effets de bord des sessions en cookie

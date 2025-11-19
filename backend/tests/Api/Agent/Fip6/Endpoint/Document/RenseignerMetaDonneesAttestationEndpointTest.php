@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Agent\Fip6\Endpoint\Document;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Document;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Document\RenseignerMetaDonneesAttestationEndpoint;
 use MonIndemnisationJustice\Entity\Document;

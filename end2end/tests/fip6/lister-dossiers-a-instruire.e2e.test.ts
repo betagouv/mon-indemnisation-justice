@@ -1,5 +1,5 @@
 import {test, expect} from "@playwright/test";
-import {connexionAgent, getTitre} from "./helpers";
+import {connexionAgent, getTitre} from "../helpers";
 
 test("lister dossier à instruire", async ({page, browser}) => {
     // Démarrer une session incognito pour éviter les effets de bord des sessions en cookie
