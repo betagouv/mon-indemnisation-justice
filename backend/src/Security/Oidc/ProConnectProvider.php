@@ -8,6 +8,7 @@ use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ResponseInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -23,10 +24,17 @@ class ProConnectProvider extends AbstractProvider
     public function __construct(
         #[Autowire('%env(PRO_CONNECT_WELL_KNOWN_URL)%')]
         protected readonly string $wellKnownUrl,
+        #[Autowire('%env(PRO_CONNECT_CLIENT_ID)%')]
+        string $clientId,
+        #[Autowire('%env(PRO_CONNECT_CLIENT_SECRET)%')]
+        string $clientSecret,
         #[Target('oidc')]
         protected readonly CacheInterface $cache,
     ) {
-        parent::__construct();
+        parent::__construct([
+            'clientId' => $clientId,
+            'clientSecret' => $clientSecret,
+        ]);
     }
 
     public function getBaseAuthorizationUrl()
@@ -48,6 +56,16 @@ class ProConnectProvider extends AbstractProvider
         $this->configure();
 
         return $this->userInfoUrl;
+    }
+
+    protected function getAuthorizationParameters(array $options)
+    {
+        return array_merge(
+            parent::getAuthorizationParameters($options),
+            [
+                'nonce' => Uuid::uuid4()->toString(),
+            ]
+        );
     }
 
     protected function getDefaultScopes()
