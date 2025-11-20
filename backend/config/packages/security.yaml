@@ -47,8 +47,7 @@ security:
       pattern: ^/(api/agent|agent)
       lazy: true
       provider: agent_provider
-      custom_authenticators:
-        - MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator
+      custom_authenticator: MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator
       logout:
         path: agent_securite_deconnexion
         target: app_login
