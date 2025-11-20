@@ -23,10 +23,17 @@ class ProConnectProvider extends AbstractProvider
     public function __construct(
         #[Autowire('%env(PRO_CONNECT_WELL_KNOWN_URL)%')]
         protected readonly string $wellKnownUrl,
+        #[Autowire('%env(PRO_CONNECT_CLIENT_ID)%')]
+        string $clientId,
+        #[Autowire('%env(PRO_CONNECT_CLIENT_SECRET)%')]
+        string $clientSecret,
         #[Target('oidc')]
         protected readonly CacheInterface $cache,
     ) {
-        parent::__construct();
+        parent::__construct([
+            'clientId' => $clientId,
+            'clientSecret' => $clientSecret,
+        ]);
     }
 
     public function getBaseAuthorizationUrl()
