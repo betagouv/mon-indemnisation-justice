@@ -109,7 +109,13 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        return new RedirectResponse($request->getSession()->remove('agent_connexion_redirection') ?? $this->urlGenerator->generate('agent_index'));
+        // Si une URL était ciblée avant connexion, alors on y redirige l'agent connecté
+        if (!empty($redirection = $request->getSession()->remove('agent_connexion_redirection'))) {
+            return new RedirectResponse($redirection);
+        }
+
+        // Sinon on renvoie vers la route d'accueil
+        return new RedirectResponse($this->urlGenerator->generate('agent_index'));
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response

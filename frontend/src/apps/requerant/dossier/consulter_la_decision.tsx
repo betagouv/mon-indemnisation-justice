@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { PieceJointe } from "@/apps/agent/dossiers/components/consultation/piecejointe";
+import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import {
   Document,
   DocumentType,

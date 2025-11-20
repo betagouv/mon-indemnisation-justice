@@ -17,12 +17,10 @@ class IndexController extends AgentController
     public function index(): Response
     {
         $agent = $this->getAgent();
-        // TODO activer l'espace FDO dès qu'il est disponible à l'usage
-        /*
+
         if ($agent->hasRole(Agent::ROLE_AGENT_FORCES_DE_L_ORDRE)) {
             return $this->redirectToRoute('agent_fdo_react');
         }
-        */
 
         if ($agent->hasRole(Agent::ROLE_AGENT_DOSSIER)) {
             return $this->redirectToRoute('app_agent_redacteur_accueil');

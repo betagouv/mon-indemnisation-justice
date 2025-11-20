@@ -82,7 +82,9 @@ class SecurityController extends AbstractController
         return $client->redirect(
             [
                 'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom'],
-            ['redirect_uri' => $this->urlGenerator->generate('agent_securite_connexion', referenceType: UrlGeneratorInterface::ABSOLUTE_URL)]
+            [
+                'redirect_uri' => $this->urlGenerator->generate('agent_securite_connexion', referenceType: UrlGeneratorInterface::ABSOLUTE_URL),
+            ]
         );
     }
 
