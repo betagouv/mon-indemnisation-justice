@@ -58,6 +58,11 @@ class ProConnectProvider extends AbstractProvider
         return $this->userInfoUrl;
     }
 
+    protected function getScopeSeparator()
+    {
+        return ' ';
+    }
+
     protected function getAuthorizationParameters(array $options)
     {
         return array_merge(
