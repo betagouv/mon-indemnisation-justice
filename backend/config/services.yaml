@@ -25,15 +25,15 @@ services:
     arguments:
       - '%env(DATABASE_URL)%'
 
-  #oidc_client_pro_connect:
-  #  class: 'MonIndemnisationJustice\Security\Oidc\OidcClient'
-  #  arguments:
-  #    $wellKnownUrl: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
-  #    $clientId: '%env(PRO_CONNECT_CLIENT_ID)%'
-  #    $clientSecret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
-  #    $loginCheckRoutes: [ 'agent_securite_connexion' ]
-  #    $context:
-  #      scope: [ 'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom' ]
+  oidc_client_pro_connect:
+    class: 'MonIndemnisationJustice\Security\Oidc\OidcClient'
+    arguments:
+      $wellKnownUrl: '%env(PRO_CONNECT_WELL_KNOWN_URL)%'
+      $clientId: '%env(PRO_CONNECT_CLIENT_ID)%'
+      $clientSecret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
+      $loginCheckRoutes: [ 'agent_securite_connexion' ]
+      $context:
+        scope: [ 'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom' ]
 
 
   oidc_client_france_connect:

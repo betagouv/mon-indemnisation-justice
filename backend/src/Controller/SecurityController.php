@@ -11,7 +11,6 @@ use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
 use MonIndemnisationJustice\Forms\MotDePasseOublieType;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
-use MonIndemnisationJustice\Security\Oidc\ProConnectClient;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -77,14 +76,10 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/connexion-agent', name: 'securite_connexion_agent', methods: ['POST'])]
-    public function connexionAgent(ProConnectClient $client): Response
+    public function connexionAgent(#[Autowire(service: 'oidc_client_pro_connect')] OidcClient $proConnectOidcClient, Request $request): Response
     {
-        return $client->redirect(
-            [
-                'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom'],
-            [
-                'redirect_uri' => $this->urlGenerator->generate('agent_securite_connexion', referenceType: UrlGeneratorInterface::ABSOLUTE_URL),
-            ]
+        return $this->redirect(
+            $proConnectOidcClient->buildAuthorizeUrl($request, 'agent_securite_connexion')
         );
     }
 

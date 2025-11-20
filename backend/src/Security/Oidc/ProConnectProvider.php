@@ -8,6 +8,7 @@ use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\GenericResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ResponseInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -55,6 +56,21 @@ class ProConnectProvider extends AbstractProvider
         $this->configure();
 
         return $this->userInfoUrl;
+    }
+
+    protected function getScopeSeparator()
+    {
+        return ' ';
+    }
+
+    protected function getAuthorizationParameters(array $options)
+    {
+        return array_merge(
+            parent::getAuthorizationParameters($options),
+            [
+                'nonce' => Uuid::uuid4()->toString(),
+            ]
+        );
     }
 
     protected function getDefaultScopes()
