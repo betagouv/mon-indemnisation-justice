@@ -57,6 +57,14 @@ class DeclarationErreurOperationnelle
     #[Groups(['agent:detail'])]
     protected string $commentaire = '';
 
+    #[ORM\Column()]
+    #[Groups(['agent:detail'])]
+    protected bool $doute = false;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['agent:detail'])]
+    protected ?string $motifDoute = null;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateCreation;
@@ -174,6 +182,30 @@ class DeclarationErreurOperationnelle
     public function setCommentaire(string $commentaire): static
     {
         $this->commentaire = $commentaire;
+
+        return $this;
+    }
+
+    public function isDoute(): bool
+    {
+        return $this->doute;
+    }
+
+    public function setDoute(bool $doute): DeclarationErreurOperationnelle
+    {
+        $this->doute = $doute;
+
+        return $this;
+    }
+
+    public function getMotifDoute(): ?string
+    {
+        return $this->motifDoute;
+    }
+
+    public function setMotifDoute(?string $motifDoute): DeclarationErreurOperationnelle
+    {
+        $this->motifDoute = $motifDoute;
 
         return $this;
     }

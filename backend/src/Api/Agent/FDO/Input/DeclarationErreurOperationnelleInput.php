@@ -14,5 +14,7 @@ class DeclarationErreurOperationnelleInput
     public ProcedureInput $procedure;
     public string $telephone;
     public InfosRequerantInput $infosRequerant;
+    public bool $doute;
+    public ?string $motifDoute = null;
     public string $commentaire;
 }
