@@ -60,6 +60,8 @@ export class DeclarationErreurOperationnelle {
   public readonly id?: string;
   @DateTransform()
   public readonly dateCreation: Date;
+  public doute: boolean = false;
+  public motifDoute?: string;
   @DateTransform() public dateOperation: Date;
   @DateTransform()
   @Exclude({ toPlainOnly: true })
