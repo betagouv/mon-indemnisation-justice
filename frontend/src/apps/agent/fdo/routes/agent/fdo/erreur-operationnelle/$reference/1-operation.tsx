@@ -9,9 +9,9 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { z } from "zod";
 import "@/style/index.css";
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
-import { container } from "@/apps/agent/fdo/_container.ts";
+import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { useInjection } from "inversify-react";
-import { router } from "@/apps/agent/fdo/_router.ts";
+import { router } from "@/apps/agent/fdo/_init/_router.ts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(

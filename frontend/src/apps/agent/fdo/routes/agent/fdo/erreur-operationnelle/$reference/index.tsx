@@ -1,5 +1,5 @@
 import { redirect, createFileRoute } from "@tanstack/react-router";
-import { container } from "@/apps/agent/fdo/_container";
+import { container } from "@/apps/agent/fdo/_init/_container";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(

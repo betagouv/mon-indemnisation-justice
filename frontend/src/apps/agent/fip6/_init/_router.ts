@@ -1,4 +1,4 @@
-import { routeTree } from "./routeur/routeur-fdo.gen.ts";
+import { routeTree } from "@/apps/agent/fip6/routeur/routeur-fip6.gen.ts";
 import { container } from "./_container.ts";
 import { queryClient } from "./_queryClient.ts";
 import { createRouter } from "@tanstack/react-router";
@@ -17,10 +17,3 @@ export const router = createRouter({
     }),
   },
 });
-
-// Register things for typesafety
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
