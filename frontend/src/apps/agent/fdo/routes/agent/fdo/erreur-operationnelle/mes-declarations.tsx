@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { useInjection } from "inversify-react";
-import { container } from "@/apps/agent/fdo/_container.ts";
+import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { dateDansNJours, dateSimple } from "@/common/services/date.ts";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";

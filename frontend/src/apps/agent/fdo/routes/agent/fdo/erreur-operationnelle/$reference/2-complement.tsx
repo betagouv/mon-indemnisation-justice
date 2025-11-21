@@ -12,7 +12,7 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 import { z } from "zod";
 import { useInjection } from "inversify-react";
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
-import { container } from "@/apps/agent/fdo/_container.ts";
+import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { Agent } from "@/common/models";
 import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";

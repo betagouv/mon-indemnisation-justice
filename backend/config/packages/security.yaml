@@ -42,7 +42,6 @@ security:
         path: app_logout
         # where to redirect after logout
         target: app_login
-      switch_user: true
     agent:
       pattern: ^/(api/agent|agent)
       lazy: true
@@ -51,6 +50,7 @@ security:
       logout:
         path: agent_securite_deconnexion
         target: app_login
+      switch_user: true
 
 
   # Easy way to control access for large sections of your site

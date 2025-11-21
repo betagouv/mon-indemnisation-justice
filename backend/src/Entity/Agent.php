@@ -399,7 +399,12 @@ class Agent implements UserInterface
      */
     public function getRoles(): array
     {
-        return array_unique($this->roles);
+        return array_unique(
+            array_merge(
+                $this->roles,
+                in_array(self::ROLE_AGENT_BETAGOUV, $this->roles) ? ['ROLE_ALLOWED_TO_SWITCH'] : []
+            )
+        );
     }
 
     /**

@@ -10,5 +10,10 @@ export const Route = createFileRoute("/agent/fip6/agents/gestion")({
       alert("Pas autorisé");
     }
   },
+  loader: async ({ context }) => {
+    return {
+      agentConnecte: await context.agent,
+    };
+  },
   component: ValidationAgentApp,
 });

@@ -42,7 +42,7 @@ export class APIAgentManager implements AgentManagerInterface {
     if (!this._agentConnecte) {
       this._agentConnecte = plainToInstance(
         Agent,
-        await (await fetch("/api/agent/fip6/moi")).json(),
+        (await (await fetch("/api/agent/fip6/moi")).json()).agent,
       );
     }
 

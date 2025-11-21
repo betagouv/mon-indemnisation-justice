@@ -1,4 +1,4 @@
-import { router } from "@/apps/agent/fdo/_router.ts";
+import { router } from "@/apps/agent/fdo/_init/_router.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Card from "@codegouvfr/react-dsfr/Card";
 import React from "react";
