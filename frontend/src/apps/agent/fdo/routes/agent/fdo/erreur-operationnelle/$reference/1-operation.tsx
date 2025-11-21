@@ -50,7 +50,7 @@ export const Route = createFileRoute(
 
 const schemaErreurOperationnelle = z.object({
   doute: z.boolean(),
-  motifDoute: z.string(),
+  motifDoute: z.any(),
   dateOperation: z
     .date()
     .max(new Date(+new Date().setHours(23, 59, 59, 9999)), {
