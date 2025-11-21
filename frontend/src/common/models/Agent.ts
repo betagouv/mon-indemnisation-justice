@@ -151,6 +151,7 @@ export class Agent {
   public nom: string;
   public courriel: string;
   public telephone?: string;
+  public identifiant: string;
 
   @Expose({ name: "roles" })
   @Transform(({ value }: { value: string[] }) => {
@@ -215,6 +216,10 @@ export class Agent {
 
   public estBetagouv(): boolean {
     return this.aRole(RoleAgent.BETAGOUV);
+  }
+
+  public estFDO(): boolean {
+    return [Administration.GN, Administration.PN].includes(this.administration);
   }
 
   public instruit(dossier: BaseDossier): boolean {

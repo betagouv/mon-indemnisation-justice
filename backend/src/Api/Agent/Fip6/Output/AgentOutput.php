@@ -13,6 +13,7 @@ class AgentOutput
     public string $prenom;
     #[Map(source: 'email')]
     public string $courriel;
+    public string $identifiant;
     #[Map(source: 'administration.value')]
     public string $administration;
     public array $roles;

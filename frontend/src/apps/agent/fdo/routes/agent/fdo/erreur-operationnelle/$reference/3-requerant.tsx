@@ -9,8 +9,8 @@ import {
   Civilite,
   DeclarationErreurOperationnelle,
 } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
-import { container } from "@/apps/agent/fdo/_container.ts";
-import { router } from "@/apps/agent/fdo/_router.ts";
+import { container } from "@/apps/agent/fdo/_init/_container.ts";
+import { router } from "@/apps/agent/fdo/_init/_router.ts";
 import { useInjection } from "inversify-react";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
