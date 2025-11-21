@@ -220,28 +220,6 @@ export const InfosDossier = ({
 
               <ul>
                 <li>
-                  <b>Requérant : </b>{" "}
-                  {dossier.declarationFDO.infosRequerant.prenom}{" "}
-                  {dossier.declarationFDO.infosRequerant.nom.toUpperCase()}
-                  <ul>
-                    <li>{dossier.declarationFDO.infosRequerant.courriel}</li>
-                    <li>{dossier.declarationFDO.infosRequerant.telephone}</li>
-                  </ul>
-                  <li>
-                    <b>Précisions:</b>{" "}
-                    <blockquote
-                      dangerouslySetInnerHTML={{
-                        __html:
-                          dossier.declarationFDO.infosRequerant.message.replaceAll(
-                            /\n/g,
-                            "</br>",
-                          ),
-                      }}
-                    />
-                  </li>
-                </li>
-
-                <li>
                   <b>Survenu à l'adresse: </b>{" "}
                   {dossier.declarationFDO.adresse?.ligne1}{" "}
                   {dossier.declarationFDO.adresse?.codePostal}{" "}
@@ -258,6 +236,22 @@ export const InfosDossier = ({
                     <li>{dossier.declarationFDO.agent?.telephone}</li>
                   </ul>
                 </li>
+                <li>
+                  <b>S’agissait-il d’une erreur opérationnelle ? </b>
+                  {dossier.declarationFDO.doute ? "J'ai un doute" : "Oui"}
+                </li>
+                {dossier.declarationFDO.doute && (
+                  <li>
+                    <b>Explications: </b>
+                    <blockquote
+                      dangerouslySetInnerHTML={{
+                        __html: (
+                          dossier.declarationFDO.motifDoute ?? ""
+                        ).replaceAll(/\n/g, "</br>"),
+                      }}
+                    />
+                  </li>
+                )}
                 <li>
                   <b>Service enquêteur</b>{" "}
                   {dossier.declarationFDO.procedure.serviceEnqueteur}
@@ -284,6 +278,28 @@ export const InfosDossier = ({
                       ),
                     }}
                   />
+                </li>
+
+                <li>
+                  <b>Requérant : </b>{" "}
+                  {dossier.declarationFDO.infosRequerant.prenom}{" "}
+                  {dossier.declarationFDO.infosRequerant.nom.toUpperCase()}
+                  <ul>
+                    <li>{dossier.declarationFDO.infosRequerant.courriel}</li>
+                    <li>{dossier.declarationFDO.infosRequerant.telephone}</li>
+                  </ul>
+                  <li>
+                    <b>Précisions:</b>{" "}
+                    <blockquote
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          dossier.declarationFDO.infosRequerant.message.replaceAll(
+                            /\n/g,
+                            "</br>",
+                          ),
+                      }}
+                    />
+                  </li>
                 </li>
               </ul>
             </div>

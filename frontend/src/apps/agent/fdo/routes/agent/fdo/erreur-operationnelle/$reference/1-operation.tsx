@@ -1,6 +1,7 @@
 import { dateChiffre } from "@/common/services/date.ts";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { useForm } from "@tanstack/react-form";
-import React from "react";
+import React, { ChangeEvent, useState } from "react";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -48,6 +49,8 @@ export const Route = createFileRoute(
 });
 
 const schemaErreurOperationnelle = z.object({
+  doute: z.boolean(),
+  motifDoute: z.string(),
   dateOperation: z
     .date()
     .max(new Date(+new Date().setHours(23, 59, 59, 9999)), {
@@ -73,6 +76,10 @@ const Page = () => {
   }: { declaration: DeclarationErreurOperationnelle; reference: string } =
     Route.useLoaderData();
 
+  const [douteAMotiver, setDouteAMotiver] = useState<boolean>(
+    declaration.doute,
+  );
+
   const naviguer = useNavigate<typeof router>({
     from: Route.fullPath,
   });
@@ -83,6 +90,8 @@ const Page = () => {
 
   const form = useForm({
     defaultValues: {
+      doute: declaration.doute,
+      motifDoute: declaration.motifDoute,
       dateOperation: declaration.dateOperation,
       adresse: declaration.adresse,
     },
@@ -128,6 +137,72 @@ const Page = () => {
           </h6>
         </div>
         */}
+
+        <div className="fr-grid-row fr-grid-row--gutters fr-px-0">
+          <form.Field
+            name="doute"
+            children={(field) => {
+              return (
+                <RadioButtons
+                  legend="S’agissait-il d’une erreur opérationnelle ? *"
+                  orientation="horizontal"
+                  disabled={declaration.estSauvegarde()}
+                  options={[
+                    {
+                      label: "Oui",
+                      hintText:
+                        "Le logement perquisitionné n’était pas visé par l’opération.",
+                      nativeInputProps: {
+                        className: "fr-col-6",
+                        defaultChecked: !declaration.doute,
+                        onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                          setDouteAMotiver(false);
+                          field.handleChange(!event.target.checked);
+                        },
+                      },
+                    },
+                    {
+                      label: "J’ai un doute",
+                      hintText:
+                        "Vous avez un doute sur la situation. Vous ne savez pas si il s’agit d’une erreur ? Les services du précontentieux se chargeront d’évaluer la demande a postériori.",
+                      nativeInputProps: {
+                        className: "fr-col-6",
+                        defaultChecked: declaration.doute,
+                        onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                          setDouteAMotiver(true);
+                          field.handleChange(event.target.checked);
+                        },
+                      },
+                    },
+                  ]}
+                />
+              );
+            }}
+          />
+        </div>
+
+        {douteAMotiver && (
+          <div className="fr-grid-row fr-grid-row--gutters fr-px-0">
+            <form.Field
+              name="motifDoute"
+              children={(field) => {
+                return (
+                  <Input
+                    label="Décrivez les circonstances de l’opération"
+                    textArea
+                    className="fr-col-12"
+                    disabled={declaration.estSauvegarde()}
+                    nativeTextAreaProps={{
+                      defaultValue: declaration.motifDoute ?? "",
+                      onChange: (e) => field.handleChange(e.target.value),
+                      rows: 5,
+                    }}
+                  />
+                );
+              }}
+            />
+          </div>
+        )}
 
         <div className="fr-grid-row fr-grid-row--gutters fr-px-0 fr-my-2w">
           <form.Field

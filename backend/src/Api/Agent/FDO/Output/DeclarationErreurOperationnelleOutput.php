@@ -20,6 +20,9 @@ class DeclarationErreurOperationnelleOutput
     #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTimeInterface::W3C])]
     public \DateTimeInterface $dateSoumission;
     public string $telephone;
+
+    public bool $doute;
+    public ?string $motifDoute = null;
     public string $commentaire;
 
     #[Map(target: AgentOutput::class)]
