@@ -21,6 +21,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Button, ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { AgentContext } from "@/apps/agent/_commun/contexts";
 
 const ValidationAgentLigne = ({
   agent,
@@ -420,7 +421,7 @@ const modaleEditionAgent = createModal({
 });
 
 export const ValidationAgentApp = () => {
-  const { agentConnecte }: { agentConnecte: Agent } = Route.useLoaderData();
+  const { context }: { context: AgentContext } = Route.useLoaderData();
   const naviguer = useNavigate<typeof router>({
     from: Route.fullPath,
   });
@@ -507,7 +508,7 @@ export const ValidationAgentApp = () => {
             <ValidationAgentLigne
               key={agent.id}
               agent={agent}
-              agentEditeur={agentConnecte}
+              agentEditeur={context.agent}
               incarner={(agent: Agent) =>
                 naviguer({
                   href: `${window.location.origin}/agent/?_switch_user=${agent.identifiant}`,

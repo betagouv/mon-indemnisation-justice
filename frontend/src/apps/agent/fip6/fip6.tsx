@@ -15,6 +15,7 @@ import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
+import { AgentContext } from "@/apps/agent/_commun/contexts";
 
 startReactDsfr({
   defaultColorScheme:
@@ -29,37 +30,38 @@ declare global {
 // Création du query client Tanstack
 const queryClient = new QueryClient();
 
-// Création du router Tanstack
-export const router = createRouter({
-  routeTree,
-  defaultPreload: "intent",
-  defaultStaleTime: 5000,
-  scrollRestoration: true,
-  context: {
-    agent: queryClient.fetchQuery({
-      queryKey: ["moi-agent-fip6"],
-      queryFn: () => container.get(AgentManagerInterface.$).moi(),
-    }),
-  },
-});
-
 declare module "@codegouvfr/react-dsfr/spa" {
   interface RegisterLink {
     Link: (props: LinkProps) => JSX.Element;
   }
 }
 
-const rootElement = document.getElementById("react-app")!;
+// Création du router Tanstack
 
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <Provider container={container}>
-          <RouterProvider router={router} />
-        </Provider>
-      </QueryClientProvider>
-    </StrictMode>,
-  );
-}
+container
+  .get(AgentManagerInterface.$)
+  .moi()
+  .then((context: AgentContext) => {
+    const router = createRouter({
+      routeTree,
+      defaultPreload: "intent",
+      defaultStaleTime: 5000,
+      scrollRestoration: true,
+      context,
+    });
+
+    const rootElement = document.getElementById("react-app")!;
+
+    if (!rootElement.innerHTML) {
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(
+        <StrictMode>
+          <QueryClientProvider client={queryClient}>
+            <Provider container={container}>
+              <RouterProvider router={router} />
+            </Provider>
+          </QueryClientProvider>
+        </StrictMode>,
+      );
+    }
+  });

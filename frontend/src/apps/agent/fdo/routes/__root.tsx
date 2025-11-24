@@ -3,6 +3,7 @@ import {
   createRootRouteWithContext,
   type LinkProps,
   Outlet,
+  redirect,
   useLoaderData,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
@@ -12,9 +13,10 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import "@/style/index.css";
 import { Agent } from "@/common/models";
+import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 
 const EspaceFDO = () => {
-  const { agent }: { agent: Agent } = useLoaderData({} as any);
+  const { contexte }: { contexte: AgentContext } = useLoaderData({} as any);
 
   return (
     <>
@@ -91,14 +93,30 @@ const EspaceFDO = () => {
         quickAccessItems={[
           {
             iconId: "fr-icon-account-circle-line",
-            text: agent.nomComplet(),
+            text: contexte.incarnePar ? (
+              <Tooltip
+                title={`Incarné par ${contexte.incarnePar}`}
+                kind="hover"
+              >
+                {contexte.agent.nomComplet()}
+              </Tooltip>
+            ) : (
+              contexte.agent.nomComplet()
+            ),
             linkProps: {},
           },
           {
             iconId: "fr-icon-logout-box-r-line",
-            text: "Déconnexion",
+            text: contexte.incarnePar ? (
+              <>Redevenir {contexte.incarnePar}</>
+            ) : (
+              "Déconnexion"
+            ),
             linkProps: {
-              href: `${window.location.origin}/agent/deconnexion`,
+              href: contexte.incarnePar
+                ? `${window.location.origin}/agent/?_switch_user=_exit`
+                : `${window.location.origin}/agent/deconnexion`,
+              replace: true,
               //reloadDocument: true,
             } as LinkProps,
           },
@@ -127,7 +145,16 @@ const EspaceFDO = () => {
 };
 
 export const Route = createRootRouteWithContext<AgentContext>()({
-  loader: async ({ context }) => ({ agent: await context.agent }),
+  beforeLoad: async ({ context }) => {
+    {
+      if (!context.agent.estFDO()) {
+        throw redirect({
+          href: `${window.location.origin}/agent/`,
+        });
+      }
+    }
+  },
+  loader: async ({ context }) => ({ contexte: context }),
   component: () => <EspaceFDO />,
   notFoundComponent: () => {
     return (

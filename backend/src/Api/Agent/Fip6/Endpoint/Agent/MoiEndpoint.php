@@ -25,16 +25,17 @@ class MoiEndpoint
 
     public function __invoke()
     {
-        $incarnePar = null;
+        /** @var Agent $agentBetaIncarnant */
+        $agentBetaIncarnant = null;
         if ($this->security->getToken() instanceof SwitchUserToken) {
-            $incarnePar = $this->security->getToken()->getOriginalToken()->getUser();
+            $agentBetaIncarnant = $this->security->getToken()->getOriginalToken()->getUser();
         }
 
         return new JsonResponse(
             $this->normalizer->normalize(
                 [
                     'agent' => $this->mapper->map($this->security->getUser(), AgentOutput::class),
-                    'incarnePar' => $incarnePar,
+                    'incarnePar' => $agentBetaIncarnant?->getNomComplet(true),
                 ],
                 'json'
             )

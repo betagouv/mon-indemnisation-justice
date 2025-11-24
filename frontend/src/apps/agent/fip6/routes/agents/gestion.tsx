@@ -5,14 +5,13 @@ import { RoleAgent } from "@/common/models/Agent.ts";
 
 export const Route = createFileRoute("/agent/fip6/agents/gestion")({
   beforeLoad: async ({ context }: { context: AgentContext }) => {
-    const agent = await context.agent;
-    if (!agent.aRole(RoleAgent.GESTION_PERSONNEL)) {
+    if (!context.agent.aRole(RoleAgent.GESTION_PERSONNEL)) {
       alert("Pas autorisé");
     }
   },
-  loader: async ({ context }) => {
+  loader: ({ context }) => {
     return {
-      agentConnecte: await context.agent,
+      context,
     };
   },
   component: ValidationAgentApp,

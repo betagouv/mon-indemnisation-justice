@@ -42,14 +42,14 @@ export const Route = createFileRoute(
   }): Promise<{
     declaration: DeclarationErreurOperationnelle;
     reference: string;
-    agent: Agent;
+    context: AgentContext;
   }> => {
     return {
       reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
         .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
-      agent: await context.agent,
+      context,
     };
   },
   component: Page,
@@ -80,11 +80,11 @@ function Page() {
   const {
     declaration,
     reference,
-    agent,
+    context,
   }: {
     declaration: DeclarationErreurOperationnelle;
     reference: string;
-    agent: Agent;
+    context: AgentContext;
   } = Route.useLoaderData();
 
   const naviguer = useNavigate({
@@ -98,13 +98,13 @@ function Page() {
   const form = useForm({
     defaultValues: {
       commentaire: declaration.commentaire,
-      telephone: declaration.telephone ?? agent.telephone ?? "",
+      telephone: declaration.telephone ?? context.agent.telephone ?? "",
       procedure: { ...declaration.procedure },
     },
     listeners: {
       onChange: async ({ fieldApi, formApi }) => {
         if (fieldApi.name == "numeroAgent") {
-          agent.telephone = fieldApi.state.value;
+          context.agent.telephone = fieldApi.state.value;
         }
         declarationManager.enregistrer(declaration, formApi.state.values);
       },
@@ -249,7 +249,7 @@ function Page() {
               disabled={true}
               nativeInputProps={{
                 type: "text",
-                value: agent.courriel,
+                value: context.agent.courriel,
               }}
             />
 

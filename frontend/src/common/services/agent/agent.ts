@@ -2,13 +2,10 @@ import { Administration, Agent } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent";
 import { ServiceIdentifier } from "inversify";
 import { plainToInstance } from "class-transformer";
+import { AgentContext } from "@/apps/agent/_commun/contexts";
 
 export interface AgentManagerInterface {
-  moi(): Promise<Agent>;
-
-  editerMesInfos(
-    infos: Partial<{ prenom: string; nom: string; telephone: string }>,
-  ): Promise<Agent>;
+  moi(): Promise<AgentContext>;
 
   // TODO: changer ça pour pouvoir patcher (utiliser Partial<{}>)
   editerAgent({
@@ -37,35 +34,20 @@ export namespace AgentManagerInterface {
 }
 
 export class APIAgentManager implements AgentManagerInterface {
-  protected _agentConnecte: Agent;
-  async moi(): Promise<Agent> {
-    if (!this._agentConnecte) {
-      this._agentConnecte = plainToInstance(
-        Agent,
-        (await (await fetch("/api/agent/fip6/moi")).json()).agent,
-      );
+  protected _contexteNavigation?: AgentContext;
+  async moi(): Promise<AgentContext> {
+    if (!this._contexteNavigation) {
+      const reponse = await fetch("/api/agent/fip6/moi");
+
+      const data: { agent: any; incarnePar: string } = await reponse.json();
+
+      this._contexteNavigation = {
+        agent: plainToInstance(Agent, data.agent),
+        incarnePar: data.incarnePar,
+      };
     }
 
-    return this._agentConnecte;
-  }
-
-  async editerMesInfos(
-    infos: Partial<{ prenom: string; nom: string; telephone: string }>,
-  ): Promise<Agent> {
-    this._agentConnecte = plainToInstance(
-      Agent,
-      await (
-        await fetch("/api/agent/fip6/moi", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(infos),
-        })
-      ).json(),
-    );
-
-    return this._agentConnecte;
+    return this._contexteNavigation;
   }
 
   async editerAgent({
