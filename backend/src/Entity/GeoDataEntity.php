@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 
 abstract class GeoDataEntity
@@ -15,8 +16,13 @@ abstract class GeoDataEntity
     protected bool $estActif = true;
 
     #[ORM\PrePersist]
-    #[ORM\PreUpdate]
     public function onPersist(PrePersistEventArgs $args): void
+    {
+        $this->dateDerniereMaj = new \DateTime();
+    }
+
+    #[ORM\PreUpdate]
+    public function onUpdate(PreUpdateEventArgs $args): void
     {
         $this->dateDerniereMaj = new \DateTime();
     }
