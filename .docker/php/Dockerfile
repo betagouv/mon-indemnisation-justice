@@ -9,7 +9,10 @@ RUN echo "export LANG='fr_FR.UTF8'" >> /root/.bashrc
 # Generic utils
 RUN apt-get update -y && \
     apt-get upgrade -y --fix-missing && \
-    apt-get install -y vim wget
+    apt-get install -y vim wget locales
+
+# Configurer la langue Française 🇫🇷
+RUN locale-gen fr_FR.UTF-8
 
 # PHP extensions
 RUN install-php-extensions \
