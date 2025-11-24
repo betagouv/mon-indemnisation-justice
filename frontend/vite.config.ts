@@ -51,7 +51,7 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
     }, // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
     esbuild: false,
     build: {
-      target: "es2015",
+      target: "esnext",
       modulePreload: false,
       sourcemap: true,
       minify: mode === "production",
