@@ -114,7 +114,7 @@ const EspaceFDO = () => {
             ),
             linkProps: {
               href: contexte.incarnePar
-                ? `${window.location.origin}/agent/?_switch_user=_exit`
+                ? `${window.location.origin}/agent/fip6/agents/gestion?_switch_user=_exit`
                 : `${window.location.origin}/agent/deconnexion`,
               replace: true,
               //reloadDocument: true,

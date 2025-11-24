@@ -86,7 +86,7 @@ const ValidationAgentLigne = ({
               iconId: "fr-icon-settings-5-line",
               onClick: () => editer(),
             },
-            ...(agentEditeur.estBetagouv() && agent.estFDO()
+            ...(agentEditeur.estBetagouv()
               ? [
                   {
                     children: "Se connecter en tant que",
