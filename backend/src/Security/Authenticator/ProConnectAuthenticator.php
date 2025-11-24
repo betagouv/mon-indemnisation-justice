@@ -63,7 +63,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator
             $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);
 
             if (null === $agent) {
-                if (null === $fournisseurIdentite->getAdministration() && !$autoPromotion) {
+                if (null === $fournisseurIdentite?->getAdministration() && !$autoPromotion) {
                     throw new AuthenticationException("Cet espace est réservé aux agents des Forces de l'ordre ou du Ministère de la Justice");
                 }
 
