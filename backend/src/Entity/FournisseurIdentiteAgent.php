@@ -29,7 +29,7 @@ class FournisseurIdentiteAgent
     #[ORM\Column]
     protected array $domaines;
 
-    #[ORM\Column(type: 'string', nullable: true, enumType: Administration::class)]
+    #[ORM\Column(type: 'string', length: 5, nullable: true, enumType: Administration::class)]
     protected ?Administration $administration = null;
 
     public function getUid(): string

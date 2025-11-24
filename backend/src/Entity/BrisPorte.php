@@ -63,12 +63,6 @@ class BrisPorte
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
-    // TODO : supprimer CourrierDossier et cette relation
-    #[ORM\OneToMany(targetEntity: CourrierDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'LAZY')]
-    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    /** @var Collection<EtatDossier> */
-    protected Collection $historiqueCourriers;
-
     #[Groups('dossier:lecture')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateCreation;
@@ -146,7 +140,6 @@ class BrisPorte
         $this->adresse = new Adresse();
         $this->documents = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
-        $this->historiqueCourriers = new ArrayCollection([]);
     }
 
     #[ORM\PrePersist]
