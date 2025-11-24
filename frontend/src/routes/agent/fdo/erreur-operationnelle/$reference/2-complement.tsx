@@ -10,16 +10,13 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { z } from "zod";
-import { plainToClassFromExist } from "class-transformer";
+
 import { useInjection } from "inversify-react";
-import {
-  container,
-  DeclarationManagerInterface,
-} from "@/apps/agent/fdo/services";
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
 import { Agent } from "@/common/models";
-import { AgentContext } from "@/routers/contexts/AgentContext.ts";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { AgentContext } from "@/apps/agent/_commun/contexts";
+import { container } from "@/apps/agent/fdo/_init";
+import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(
   "/agent/fdo/erreur-operationnelle/$reference/2-complement",
@@ -46,14 +43,14 @@ export const Route = createFileRoute(
   }): Promise<{
     declaration: DeclarationErreurOperationnelle;
     reference: string;
-    agent: Agent;
+    context: AgentContext;
   }> => {
     return {
       reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
         .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
-      agent: await context.agent,
+      context,
     };
   },
   component: Page,
