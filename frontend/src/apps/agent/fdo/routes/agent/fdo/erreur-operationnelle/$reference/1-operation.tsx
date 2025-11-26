@@ -113,39 +113,38 @@ const Page = () => {
   });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}>
-      <h1>Nouvelle déclaration d'erreur opérationnelle</h1>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        void form.handleSubmit();
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}>
+        <h1>Nouvelle déclaration d'erreur opérationnelle</h1>
 
-      <Stepper
-        currentStep={1}
-        stepCount={3}
-        title="Eléments relatifs à l’erreur opérationnelle"
-        nextTitle="Complément d’information pour le Ministère de la Justice "
-      />
+        <Stepper
+          currentStep={1}
+          stepCount={3}
+          title="Eléments relatifs à l’erreur opérationnelle"
+          nextTitle="Complément d’information pour le Ministère de la Justice "
+        />
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void form.handleSubmit();
-        }}
-      >
-        {/* Retiré pour éviter la confusion
         <div className="fr-grid-row">
           <h6 className="fr-m-0 fr-text-label--blue-france">
             Informations concernant le logement perquisitionné par erreur{" "}
           </h6>
         </div>
-        */}
 
-        <div className="fr-grid-row fr-grid-row--gutters fr-px-0">
+        <div className="fr-grid-row fr-px-0 fr-my-2w">
           <form.Field
             name="doute"
             children={(field) => {
               return (
                 <RadioButtons
                   legend="S’agissait-il d’une erreur opérationnelle ? *"
-                  orientation="horizontal"
+                  small={false}
+                  orientation="vertical"
                   disabled={declaration.estSauvegarde()}
                   options={[
                     {
@@ -350,7 +349,7 @@ const Page = () => {
             ]}
           />
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 };

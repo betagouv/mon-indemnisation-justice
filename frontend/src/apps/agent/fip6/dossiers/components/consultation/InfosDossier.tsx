@@ -268,6 +268,7 @@ export const InfosDossier = ({
                   <b>Nom du magistrat</b>{" "}
                   {dossier.declarationFDO.procedure.nomMagistrat}
                 </li>
+                {/*
                 <li>
                   <b>Précisions concernant l'intervention:</b>
                   <blockquote
@@ -279,6 +280,7 @@ export const InfosDossier = ({
                     }}
                   />
                 </li>
+                */}
 
                 <li>
                   <b>Requérant : </b>{" "}

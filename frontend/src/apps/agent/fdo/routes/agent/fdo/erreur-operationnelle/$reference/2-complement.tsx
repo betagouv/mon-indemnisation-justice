@@ -13,7 +13,6 @@ import { z } from "zod";
 import { useInjection } from "inversify-react";
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
-import { Agent } from "@/common/models";
 import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
@@ -42,14 +41,14 @@ export const Route = createFileRoute(
   }): Promise<{
     declaration: DeclarationErreurOperationnelle;
     reference: string;
-    context: AgentContext;
+    contexte: AgentContext;
   }> => {
     return {
       reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
         .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
-      context,
+      contexte: context,
     };
   },
   component: Page,
@@ -68,7 +67,6 @@ const schemaInfosJuridiques = z.object({
     juridictionOuParquet: z.string(),
     nomMagistrat: z.string(),
   }),
-  commentaire: z.string(),
 });
 
 const ModaleAjoutFichier = createModal({
@@ -80,11 +78,11 @@ function Page() {
   const {
     declaration,
     reference,
-    context,
+    contexte,
   }: {
     declaration: DeclarationErreurOperationnelle;
     reference: string;
-    context: AgentContext;
+    contexte: AgentContext;
   } = Route.useLoaderData();
 
   const naviguer = useNavigate({
@@ -97,18 +95,18 @@ function Page() {
 
   const form = useForm({
     defaultValues: {
-      commentaire: declaration.commentaire,
-      telephone: declaration.telephone ?? context.agent.telephone ?? "",
+      telephone: declaration.telephone ?? contexte.agent.telephone ?? "",
       procedure: { ...declaration.procedure },
     },
     listeners: {
       onChange: async ({ fieldApi, formApi }) => {
         if (fieldApi.name == "numeroAgent") {
-          context.agent.telephone = fieldApi.state.value;
+          // TODO persister le changement de numéro
+          contexte.agent.telephone = fieldApi.state.value;
         }
         declarationManager.enregistrer(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 750,
+      onChangeDebounceMs: 500,
     },
     validators: {
       onSubmit: schemaInfosJuridiques,
@@ -156,8 +154,14 @@ function Page() {
           </Select>
         </div>
       </ModaleAjoutFichier.Component>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}>
+      <form
+        style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
         <h1 className="fr-m-0">Nouvelle déclaration d'erreur opérationnelle</h1>
 
         <Stepper
@@ -168,247 +172,219 @@ function Page() {
           nextTitle="Informations du requérant"
         />
 
-        {/*
-        <Alert
-          severity="warning"
-          title="Cet écran est confidentiel et les informations transmises sont uniquement à destination du Ministère de la Justice "
-        />
-        */}
-
         <div className="fr-grid-row">
           <h6 className="fr-m-0 fr-text-label--blue-france">
-            Informations concernant l’opération de police judiciaire
+            Documents justificatifs
           </h6>
         </div>
 
-        <form
-          style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            void form.handleSubmit();
-          }}
+        <p className="fr-text--sm fr-m-0">
+          Merci de mettre à disposition les pièces justificatives pertinentes
+          dans le cadre de la déclaration : PV d’intervention, photos de la
+          porte, ...{" "}
+        </p>
+
+        <div
+          className="fr-grid-row fr-grid-row--gutters"
+          style={{ alignItems: "center" }}
         >
-          <div className="fr-grid-row fr-grid-row--gutters">
-            <form.Field
-              name="procedure.serviceEnqueteur"
-              children={(field) => {
-                return (
-                  <Input
-                    className="fr-col-lg-6 fr-m-0"
-                    label="Nom du service enquêteur"
-                    disabled={declaration.estSauvegarde()}
-                    nativeInputProps={{
-                      type: "text",
-                      autoFocus: true,
-                      value: field.state.value,
-                      onChange: (e) => field.handleChange(e.target.value),
-                    }}
-                    state={!field.state.meta.isValid ? "error" : "default"}
-                    stateRelatedMessage={
-                      !field.state.meta.isValid ? (
-                        <>{field.state.meta.errors.at(0)?.message}</>
-                      ) : (
-                        <>" "</>
-                      )
-                    }
-                  />
-                );
-              }}
-            />
-
-            <form.Field
-              name="telephone"
-              children={(field) => {
-                return (
-                  <Input
-                    className="fr-col-lg-3 fr-m-0"
-                    label="Téléphone du service ou de l'agent *"
-                    disabled={declaration.estSauvegarde()}
-                    nativeInputProps={{
-                      type: "text",
-                      value: field.state.value,
-                      onChange: (e) => field.handleChange(e.target.value),
-                    }}
-                    state={!field.state.meta.isValid ? "error" : "default"}
-                    stateRelatedMessage={
-                      !field.state.meta.isValid ? (
-                        <>{field.state.meta.errors.at(0)?.message}</>
-                      ) : (
-                        <></>
-                      )
-                    }
-                  />
-                );
-              }}
-            />
-
-            <Input
-              className="fr-col-lg-3 fr-m-0"
-              label="Courriel de l'agent *"
-              disabled={true}
-              nativeInputProps={{
-                type: "text",
-                value: context.agent.courriel,
-              }}
-            />
-
-            <form.Field
-              name="procedure.numeroProcedure"
-              children={(field) => {
-                return (
-                  <Input
-                    className="fr-col-lg-4 fr-m-0"
-                    label="Numéro de procédure *"
-                    disabled={declaration.estSauvegarde()}
-                    nativeInputProps={{
-                      type: "text",
-                      value: field.state.value,
-                      onChange: (e) => field.handleChange(e.target.value),
-                    }}
-                    state={!field.state.meta.isValid ? "error" : "default"}
-                    stateRelatedMessage={
-                      !field.state.meta.isValid ? (
-                        <>{field.state.meta.errors.at(0)?.message}</>
-                      ) : (
-                        <></>
-                      )
-                    }
-                  />
-                );
-              }}
-            />
-
-            <form.Field
-              name="procedure.juridictionOuParquet"
-              children={(field) => {
-                return (
-                  <Input
-                    className="fr-col-lg-4 fr-m-0"
-                    label="Juridiction / parquet (le cas échéant)"
-                    disabled={declaration.estSauvegarde()}
-                    nativeInputProps={{
-                      type: "text",
-                      value: field.state.value,
-                      onChange: (e) => field.handleChange(e.target.value),
-                    }}
-                  />
-                );
-              }}
-            />
-
-            <form.Field
-              name="procedure.nomMagistrat"
-              children={(field) => {
-                return (
-                  <Input
-                    className="fr-col-lg-4 fr-m-0"
-                    label="Nom du magistrat (le cas échéant)"
-                    disabled={declaration.estSauvegarde()}
-                    nativeInputProps={{
-                      type: "text",
-                      value: field.state.value,
-                      onChange: (e) => field.handleChange(e.target.value),
-                    }}
-                  />
-                );
-              }}
-            />
-
-            <form.Field
-              name="commentaire"
-              children={(field) => {
-                return (
-                  <Input
-                    className="fr-col-lg-12 fr-m-0"
-                    label="Précisions concernant l'intervention"
-                    disabled={declaration.estSauvegarde()}
-                    textArea={true}
-                    nativeTextAreaProps={{
-                      rows: 5,
-                      value: field.state.value,
-                      placeholder: "",
-                      onChange: (e) => field.handleChange(e.target.value),
-                    }}
-                  />
-                );
-              }}
+          <div className="fr-col-lg-4">
+            <Download
+              details="PDF - 88 Ko"
+              label="PV d'intervention"
+              linkProps={{}}
             />
           </div>
 
-          <div className="fr-grid-row">
-            <h6 className="fr-m-0 fr-text-label--blue-france">
-              Documents justificatifs
-            </h6>
+          <div className="fr-col-lg-4">
+            <Download
+              label="Photo de la porte d'entrée"
+              details="JPEG - 792 Ko"
+              linkProps={{}}
+            />
           </div>
 
-          <div
-            className="fr-grid-row fr-grid-row--gutters"
-            style={{ alignItems: "center" }}
-          >
-            <div className="fr-col-lg-4">
-              <Download
-                details="PDF - 88 Ko"
-                label="PV d'intervention"
-                linkProps={{}}
-              />
-            </div>
-
-            <div className="fr-col-lg-4">
-              <Download
-                label="Photo de la porte d'entrée"
-                details="JPEG - 792 Ko"
-                linkProps={{}}
-              />
-            </div>
-
-            <div className="fr-col-lg-4">
-              <Button
-                children="Ajouter un document"
-                iconId="fr-icon-add-line"
-                size="small"
-                priority="secondary"
-                onClick={() => ModaleAjoutFichier.open()}
-                nativeButtonProps={{
-                  role: "button",
-                }}
-              />
-            </div>
+          <div className="fr-col-lg-4">
+            <Button
+              children="Ajouter un document"
+              iconId="fr-icon-add-line"
+              size="small"
+              priority="secondary"
+              iconPosition="right"
+              onClick={() => ModaleAjoutFichier.open()}
+              nativeButtonProps={{
+                type: "button",
+                role: "button",
+              }}
+            />
           </div>
+        </div>
 
-          <div className="fr-grid-row fr-grid-row--gutters">
-            <ButtonsGroup
-              className="fr-col-lg-12 fr-p-0"
-              inlineLayoutWhen="always"
-              alignment="right"
-              buttonsIconPosition={undefined}
-              buttonsSize="small"
-              buttons={[
-                {
-                  children: "Revenir à l'étape précédente",
-                  priority: "secondary",
-                  iconId: "fr-icon-arrow-left-line",
-                  iconPosition: "left",
-                  onClick: () =>
-                    naviguer({
-                      to: "/agent/fdo/erreur-operationnelle/$reference/1-operation",
-                      params: {
-                        reference,
-                      } as any,
-                    }),
+        <div className="fr-grid-row">
+          <h6 className="fr-m-0 fr-text-label--blue-france">
+            Informations concernant la procédure
+          </h6>
+        </div>
+
+        <div className="fr-grid-row fr-grid-row--gutters fr-py-2w">
+          <form.Field
+            name="procedure.serviceEnqueteur"
+            children={(field) => {
+              return (
+                <Input
+                  className="fr-col-lg-6 fr-m-0"
+                  label="Nom du service enquêteur"
+                  disabled={declaration.estSauvegarde()}
+                  nativeInputProps={{
+                    type: "text",
+                    autoFocus: true,
+                    value: field.state.value,
+                    onChange: (e) => field.handleChange(e.target.value),
+                  }}
+                  state={!field.state.meta.isValid ? "error" : "default"}
+                  stateRelatedMessage={
+                    !field.state.meta.isValid ? (
+                      <>{field.state.meta.errors.at(0)?.message}</>
+                    ) : (
+                      <>" "</>
+                    )
+                  }
+                />
+              );
+            }}
+          />
+
+          <form.Field
+            name="telephone"
+            children={(field) => {
+              return (
+                <Input
+                  className="fr-col-lg-3 fr-m-0"
+                  label="Téléphone du service ou de l'agent *"
+                  disabled={declaration.estSauvegarde()}
+                  nativeInputProps={{
+                    type: "text",
+                    value: field.state.value,
+                    onChange: (e) => field.handleChange(e.target.value),
+                  }}
+                  state={!field.state.meta.isValid ? "error" : "default"}
+                  stateRelatedMessage={
+                    !field.state.meta.isValid ? (
+                      <>{field.state.meta.errors.at(0)?.message}</>
+                    ) : (
+                      <></>
+                    )
+                  }
+                />
+              );
+            }}
+          />
+
+          <Input
+            className="fr-col-lg-3 fr-m-0"
+            label="Courriel de l'agent *"
+            disabled={true}
+            nativeInputProps={{
+              type: "text",
+              value: contexte.agent.courriel,
+            }}
+          />
+
+          <form.Field
+            name="procedure.numeroProcedure"
+            children={(field) => {
+              return (
+                <Input
+                  className="fr-col-lg-4 fr-m-0"
+                  label="Numéro de procédure *"
+                  disabled={declaration.estSauvegarde()}
+                  nativeInputProps={{
+                    type: "text",
+                    value: field.state.value,
+                    onChange: (e) => field.handleChange(e.target.value),
+                  }}
+                  state={!field.state.meta.isValid ? "error" : "default"}
+                  stateRelatedMessage={
+                    !field.state.meta.isValid ? (
+                      <>{field.state.meta.errors.at(0)?.message}</>
+                    ) : (
+                      <></>
+                    )
+                  }
+                />
+              );
+            }}
+          />
+
+          <form.Field
+            name="procedure.juridictionOuParquet"
+            children={(field) => {
+              return (
+                <Input
+                  className="fr-col-lg-4 fr-m-0"
+                  label="Juridiction / parquet (le cas échéant)"
+                  disabled={declaration.estSauvegarde()}
+                  nativeInputProps={{
+                    type: "text",
+                    value: field.state.value,
+                    onChange: (e) => field.handleChange(e.target.value),
+                  }}
+                />
+              );
+            }}
+          />
+
+          <form.Field
+            name="procedure.nomMagistrat"
+            children={(field) => {
+              return (
+                <Input
+                  className="fr-col-lg-4 fr-m-0"
+                  label="Nom du magistrat (le cas échéant)"
+                  disabled={declaration.estSauvegarde()}
+                  nativeInputProps={{
+                    type: "text",
+                    value: field.state.value,
+                    onChange: (e) => field.handleChange(e.target.value),
+                  }}
+                />
+              );
+            }}
+          />
+        </div>
+
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <ButtonsGroup
+            className="fr-col-lg-12 fr-p-0"
+            inlineLayoutWhen="always"
+            alignment="right"
+            buttonsIconPosition={undefined}
+            buttonsSize="small"
+            buttons={[
+              {
+                children: "Revenir à l'étape précédente",
+                priority: "secondary",
+                iconId: "fr-icon-arrow-left-line",
+                iconPosition: "left",
+                onClick: () =>
+                  naviguer({
+                    to: "/agent/fdo/erreur-operationnelle/$reference/1-operation",
+                    params: {
+                      reference,
+                    } as any,
+                  }),
+              },
+              {
+                children: "Continuer",
+                priority: "primary",
+                nativeButtonProps: {
+                  type: "submit",
                 },
-                {
-                  children: "Continuer",
-                  priority: "primary",
-                  nativeButtonProps: {
-                    type: "submit",
-                  },
-                },
-              ]}
-            />
-          </div>
-        </form>
-      </div>
+              },
+            ]}
+          />
+        </div>
+      </form>
     </>
   );
 }
