@@ -72,10 +72,18 @@ export class DeclarationErreurOperationnelle {
   @Type(() => Agent)
   public readonly agent?: Agent;
   telephone: string;
+  @Transform(
+    ({ obj }) => {
+      console.log(obj.infosRequerant, !!obj.infosRequerant);
+
+      return !!obj.infosRequerant;
+    },
+    { toClassOnly: true },
+  )
+  enPresenceRequerant?: boolean;
   @Type(() => InformationsRequerant)
-  infosRequerant: InformationsRequerant = new InformationsRequerant();
+  infosRequerant?: InformationsRequerant;
   procedure: Procedure = new Procedure();
-  commentaire: string = "";
 
   public constructor() {
     this.dateOperation = new Date();
