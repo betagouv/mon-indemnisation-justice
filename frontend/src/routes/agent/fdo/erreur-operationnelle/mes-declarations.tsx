@@ -1,3 +1,5 @@
+import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import React from "react";
 import {
   createFileRoute,
@@ -6,14 +8,10 @@ import {
 } from "@tanstack/react-router";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { useInjection } from "inversify-react";
-import {
-  container,
-  DeclarationManagerInterface,
-} from "@/apps/agent/fdo/services";
 import { dateDansNJours, dateSimple } from "@/common/services/date.ts";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { router } from "@/apps/agent/fdo/router.ts";
+import { container, router } from "@/apps/agent/fdo/_init";
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
 
 export const Route = createFileRoute(
@@ -102,7 +100,7 @@ const Page = () => {
                               router.invalidate();
                             },
                           },
-                        },
+                        } as ButtonProps,
                       ]
                     : []),
                 ]}

@@ -101,7 +101,7 @@ services:
         - APP_ENV=test
         - APP_DEBUG=false
         - APP_SECRET=bafc23a0315b735289c499a886798934
-        - DATABASE_URL=pgsql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&charset=utf8
+        - DATABASE_URL=postgresql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&charset=utf8
         - BASE_URL=https://mon-indemnisation.justice.gouv.test
         - COMPOSER_OPTS=
     networks:

@@ -57,10 +57,16 @@ class ProConnectAuthenticator extends AbstractAuthenticator
 
             // User info
             $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
+            $fournisseurIdentite = $this->fournisseurIdentiteAgentRepository->find($userInfo['idp_id']);
+            $autoPromotion = in_array(sha1($userInfo['email']), $this->autoPromotionHashes ?? []);
 
             $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);
 
             if (null === $agent) {
+                if (null === $fournisseurIdentite?->getAdministration() && !$autoPromotion) {
+                    throw new AuthenticationException("Cet espace est réservé aux agents des Forces de l'ordre ou du Ministère de la Justice");
+                }
+
                 $agent = ($this->agentRepository->findOneBy(['email' => $userInfo['email']]) ?? new Agent())
                     ->setIdentifiant($userInfo['sub'])
                     ->setEmail($userInfo['email'])
@@ -69,11 +75,11 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                     ->addRole(Agent::ROLE_AGENT)
                     ->setUid($userInfo['uid'])
                     ->setCree()
-                    ->setFournisseurIdentite($this->fournisseurIdentiteAgentRepository->find($userInfo['idp_id']))
+                    ->setFournisseurIdentite($fournisseurIdentite)
                     ->setDonnesAuthentification($userInfo)
                 ;
 
-                if (in_array(sha1($agent->getEmail()), $this->autoPromotionHashes ?? [])) {
+                if ($autoPromotion) {
                     $agent
                         ->addRole(Agent::ROLE_AGENT_GESTION_PERSONNEL)
                         ->addRole(Agent::ROLE_AGENT_REDACTEUR)
@@ -88,7 +94,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator
                     ->setNom($userInfo['usual_name'])
                 ;
 
-                if (in_array(sha1($agent->getEmail()), $this->autoPromotionHashes ?? [])) {
+                if ($autoPromotion) {
                     $agent->addRole(Agent::ROLE_AGENT_BETAGOUV);
                 }
 

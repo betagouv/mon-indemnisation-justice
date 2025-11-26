@@ -1,5 +1,6 @@
 import { Agent } from "@/common/models";
 
 export interface AgentContext {
-  agent: Promise<Agent>;
+  agent: Agent;
+  incarnePar?: string;
 }

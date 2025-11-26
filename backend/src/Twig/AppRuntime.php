@@ -11,8 +11,10 @@ use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator;
 use Pentatrion\ViteBundle\Exception\EntrypointNotFoundException;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\FirewallMapInterface;
 use Twig\Extension\RuntimeExtensionInterface;
@@ -29,6 +31,7 @@ class AppRuntime implements RuntimeExtensionInterface
         protected readonly UrlGeneratorInterface $router,
         protected readonly FranceConnectAuthenticator $franceConnectAuthenticator,
         protected readonly FirewallMapInterface $firewallMap,
+        protected readonly Security $security
     ) {
         $this->publicDirectory = "{$projectDirectory}/public";
     }
@@ -128,6 +131,17 @@ class AppRuntime implements RuntimeExtensionInterface
         }
 
         return '';
+    }
+
+    public function getAgentIncarnant(): ?Agent
+    {
+        $token = $this->security->getToken();
+
+        if ($token instanceof SwitchUserToken) {
+            return $impersonatorUser = $token->getOriginalToken()->getUser();
+        }
+
+        return null;
     }
 
     public function nbDossiersACategoriser(): int

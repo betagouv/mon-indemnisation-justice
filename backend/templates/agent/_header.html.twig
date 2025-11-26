@@ -30,11 +30,30 @@
                     <div class="fr-header__tools-links">
                         <ul class="fr-btns-group">
                             <li>
-                                <span class="fr-btn fr-icon-account-circle-line">{{ app.user }}</span>
+                                {% if is_granted('IS_IMPERSONATOR') %}
+                                    <a class="fr-btn fr-icon-account-circle-line"
+                                       aria-describedby="tooltip-incarne-par" href="javascript:void(0);">
+                                        {{ app.user.nomComplet }}
+                                    </a>
+                                    <span class="fr-tooltip fr-placement" id="tooltip-incarne-par" role="tooltip">
+                                        Incarné par {{ agent_incarnant().nomComplet(true) }}
+                                    </span>
+                                {% else %}
+                                    <a class="fr-btn fr-icon-account-circle-line" href="javascript:void(0);">
+                                        {{ app.user.nomComplet }}
+                                    </a>
+                                {% endif %}
                             </li>
                             <li>
-                                <a class="fr-btn fr-icon-logout-box-r-line"
-                                   href="{{ path('agent_securite_deconnexion') }}">Déconnexion</a>
+                                {% if is_granted('IS_IMPERSONATOR') %}
+                                    <a class="fr-btn fr-icon-logout-box-r-line"
+                                       href="{{ impersonation_exit_path(path('agent_fip6_react', {'extra' : '/agents/gestion'})) }}"
+                                    >Redevenir {{ agent_incarnant().nomComplet(true) }}</a>
+                                {% else %}
+                                    <a class="fr-btn fr-icon-logout-box-r-line"
+                                       href="{{ path('agent_securite_deconnexion') }}"
+                                    >Déconnexion</a>
+                                {% endif %}
                             </li>
                         </ul>
                     </div>
@@ -57,11 +76,20 @@
                 <div class="fr-header__menu-links">
                     <ul class="fr-btns-group">
                         <li>
-                            <span class="fr-btn fr-icon-account-circle-line">{{ app.user }}</span>
+                            <a class="fr-btn fr-icon-account-circle-line" href="javascript:void(0);">
+                                {{ app.user.nomComplet }}
+                            </a>
                         </li>
                         <li>
-                            <a class="fr-btn fr-icon-logout-box-r-line"
-                               href="{{ path('agent_securite_deconnexion') }}">Déconnexion</a>
+                            {% if is_granted('IS_IMPERSONATOR') %}
+                                <a class="fr-btn fr-icon-logout-box-r-line"
+                                   href="{{ impersonation_exit_path(path('agent_fip6_react', {'extra' : '/agents/gestion'})) }}"
+                                >Redevenir {{ agent_incarnant().nomComplet(true) }}</a>
+                            {% else %}
+                                <a class="fr-btn fr-icon-logout-box-r-line"
+                                   href="{{ path('agent_securite_deconnexion') }}"
+                                >Déconnexion</a>
+                            {% endif %}
                         </li>
                     </ul>
                 </div>

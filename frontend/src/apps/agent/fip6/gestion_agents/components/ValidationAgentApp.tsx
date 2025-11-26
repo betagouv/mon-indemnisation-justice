@@ -1,5 +1,8 @@
+import { router } from "@/apps/agent/fip6/_init";
+import { Route } from "@/apps/agent/fip6/routes/agents/gestion";
 import { Administration, Agent } from "@/common/models";
 import { estCourrielValide } from "@/common/services/courriel.ts";
+import { useNavigate } from "@tanstack/react-router";
 import React, { ChangeEvent, useCallback, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useInjection } from "inversify-react";
@@ -18,13 +21,18 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Button, ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { AgentContext } from "@/apps/agent/_commun/contexts";
 
 const ValidationAgentLigne = ({
   agent,
   editer,
+  agentEditeur,
+  incarner,
 }: {
   agent: Agent;
   editer: () => void;
+  agentEditeur: Agent;
+  incarner: (agent: Agent) => void;
 }) => {
   return (
     <div
@@ -78,6 +86,16 @@ const ValidationAgentLigne = ({
               iconId: "fr-icon-settings-5-line",
               onClick: () => editer(),
             },
+            ...(agentEditeur.estBetagouv()
+              ? [
+                  {
+                    children: "Se connecter en tant que",
+                    priority: "secondary",
+                    iconId: "fr-icon-account-pin-circle-line",
+                    onClick: () => incarner(agent),
+                  } as ButtonProps,
+                ]
+              : []),
           ]}
         />
       </div>
@@ -403,6 +421,11 @@ const modaleEditionAgent = createModal({
 });
 
 export const ValidationAgentApp = () => {
+  const { context }: { context: AgentContext } = Route.useLoaderData();
+  const naviguer = useNavigate<typeof router>({
+    from: Route.fullPath,
+  });
+
   const agentManager = useInjection<AgentManagerInterface>(
     AgentManagerInterface.$,
   );
@@ -485,6 +508,12 @@ export const ValidationAgentApp = () => {
             <ValidationAgentLigne
               key={agent.id}
               agent={agent}
+              agentEditeur={context.agent}
+              incarner={(agent: Agent) =>
+                naviguer({
+                  href: `${window.location.origin}/agent/?_switch_user=${agent.identifiant}`,
+                })
+              }
               editer={() => {
                 selectionnerAgent(agent);
                 modaleEditionAgent.open();
