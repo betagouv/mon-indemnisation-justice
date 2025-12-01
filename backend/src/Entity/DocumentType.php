@@ -8,7 +8,7 @@ enum DocumentType: string
     case TYPE_PHOTO_PREJUDICE = 'photo_prejudice';
     case TYPE_CARTE_IDENTITE = 'carte_identite';
     case TYPE_FACTURE = 'facture';
-    // case TYPE_PREUVE_PAIEMENT_FACTURE = 'preuve_paiement_facture';
+    case TYPE_PREUVE_PAIEMENT_FACTURE = 'preuve_paiement_facture';
     case TYPE_RIB = 'rib';
     case TYPE_TITRE_PROPRIETE = 'titre_propriete';
     case TYPE_CONTRAT_LOCATION = 'contrat_location';
