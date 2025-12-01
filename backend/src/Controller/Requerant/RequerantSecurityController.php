@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class RequerantSecurityController extends AbstractController
 {
@@ -27,9 +28,10 @@ class RequerantSecurityController extends AbstractController
     }
 
     #[Route('/requerant/deconnexion', name: 'requerant_securite_deconnexion', methods: ['GET'])]
-    public function deconnexionFranceConnect(Request $request, FranceConnectAuthenticator $authenticator): Response
+    public function deconnexionFranceConnect(Request $request, TokenStorageInterface $tokenStorage, FranceConnectAuthenticator $authenticator): Response
     {
         $authenticator->logout($request);
+        $tokenStorage->setToken(null);
 
         return $this->redirectToRoute('app_logout');
     }

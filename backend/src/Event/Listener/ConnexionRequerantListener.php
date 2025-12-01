@@ -3,7 +3,6 @@
 namespace MonIndemnisationJustice\Event\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Controller\BrisPorteController;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\BrisPorte;
@@ -11,6 +10,7 @@ use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
 class ConnexionRequerantListener implements EventSubscriberInterface
@@ -28,16 +28,12 @@ class ConnexionRequerantListener implements EventSubscriberInterface
         }
 
         $request = $event->getRequest();
-        $request->getSession()->get(BrisPorteController::CLEF_SESSION_PREINSCRIPTION);
 
-        $navigation = $requerant->getNavigation();
-        // Temporaire : le temps que les sessions expirent, faire passer l'`id` du test d'éligibilité en session en
-        // priorité à celui de la navigation requérant
-        $idTestEligibilite = $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_TEST_ELIGIBILITE, $navigation->idTestEligibilite);
-        $testEligibilite = $idTestEligibilite ? $this->em->find(TestEligibilite::class, $idTestEligibilite) : null;
-
-        if ($testEligibilite) {
+        // S'il existe un test d'éligibilité dans la session du requérant...
+        if (null !== ($testEligibilite = $this->getTestEligibiliteEnCours($request, $requerant))) {
+            // ... associée à aucun de ses dossiers existants...
             if (!$requerant->getDossiers()->exists(fn (int $indice, BrisPorte $dossier) => $dossier->getTestEligibilite()->id === $testEligibilite)) {
+                // ... alors, on crée un nouveau dossier lié à ce test d'éligibilité
                 $dossier = (new BrisPorte())
                     ->setRequerant($requerant)
                     ->setQualiteRequerant($testEligibilite->rapportAuLogement)
@@ -50,20 +46,22 @@ class ConnexionRequerantListener implements EventSubscriberInterface
                 $this->em->flush();
             }
         } else {
-            $declaration = $navigation->idDeclaration ? $this->em->find(DeclarationErreurOperationnelle::class, $navigation->idDeclaration) : null;
-
-            if ($declaration && !$requerant->getDossiers()->exists(fn (int $indice, BrisPorte $dossier) => $dossier->getDeclarationFDO()?->getId() === $declaration->getId())) {
+            // Sinon si une déclaration des FDO existe en session...
+            $declarationFDO = $this->getDeclarationFDOEnCours($request, $requerant);
+            // ... associée à aucun de ses dossiers existants...
+            if (null !== $declarationFDO && !$requerant->getDossiers()->exists(fn (int $indice, BrisPorte $dossier) => $dossier->getDeclarationFDO()?->getId() === $declarationFDO->getId())) {
+                // ... alors, on crée un nouveau dossier lié à cette déclaration
                 $dossier = (new BrisPorte())
                     ->setRequerant($requerant)
-                    ->setDeclarationFDO($declaration)
-                    ->setDateOperationPJ($declaration->getDateOperation())
+                    ->setDeclarationFDO($declarationFDO)
+                    ->setDateOperationPJ($declarationFDO->getDateOperation())
                     // On recrée une nouvelle adresse pour conserver les données des FDO et pouvoir plus tard comparer et arbitrer
                     ->setAdresse(
                         (new Adresse())
-                            ->setLigne1($declaration->getAdresse()->getLigne1())
-                            ->setLigne2($declaration->getAdresse()->getLigne2())
-                            ->setCodePostal($declaration->getAdresse()->getCodePostal())
-                            ->setLocalite($declaration->getAdresse()->getLocalite())
+                            ->setLigne1($declarationFDO->getAdresse()->getLigne1())
+                            ->setLigne2($declarationFDO->getAdresse()->getLigne2())
+                            ->setCodePostal($declarationFDO->getAdresse()->getCodePostal())
+                            ->setLocalite($declarationFDO->getAdresse()->getLocalite())
                     )
                 ;
 
@@ -75,9 +73,6 @@ class ConnexionRequerantListener implements EventSubscriberInterface
             }
         }
 
-        // Suppression des données liées au test d'éligibilité
-        // TODO supprimer une fois que la pré-inscription en session et la navigation requérant ont pris le pas
-        $request->getSession()->remove(PublicBrisPorteController::CLEF_SESSION_TEST_ELIGIBILITE);
         // Suppression du contexte de session lié à l'inscription, s'il y en a un
         $request->getSession()->remove(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION);
     }
@@ -87,5 +82,19 @@ class ConnexionRequerantListener implements EventSubscriberInterface
         return [
             LoginSuccessEvent::class => 'onSecurityInteractiveLogin',
         ];
+    }
+
+    protected function getTestEligibiliteEnCours(Request $request, Requerant $requerant): ?TestEligibilite
+    {
+        $idTestEligibilite = $requerant->getNavigation()?->idTestEligibilite ?? $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, [])['testEligibilite'] ?? null;
+
+        return $idTestEligibilite ? $this->em->find(TestEligibilite::class, $idTestEligibilite) : null;
+    }
+
+    protected function getDeclarationFDOEnCours(Request $request, Requerant $requerant): ?DeclarationErreurOperationnelle
+    {
+        $idDeclarationFDO = $requerant->getNavigation()?->idDeclaration ?? $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, [])['declarationErreurOperationnelle'] ?? null;
+
+        return $idDeclarationFDO ? $this->em->find(DeclarationErreurOperationnelle::class, $idDeclarationFDO) : null;
     }
 }

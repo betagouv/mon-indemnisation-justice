@@ -47,7 +47,7 @@ class AppRuntime implements RuntimeExtensionInterface
             return $logoutUrl;
         }
 
-        return $this->router->generate('app_logout');
+        return $this->router->generate('requerant_securite_deconnexion');
     }
 
     public function etatDossierRequerant(BrisPorte $dossier): string

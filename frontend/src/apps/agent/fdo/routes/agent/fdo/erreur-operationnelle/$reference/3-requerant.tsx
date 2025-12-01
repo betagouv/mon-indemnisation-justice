@@ -64,26 +64,33 @@ export const Route = createFileRoute(
   component: Page,
 });
 
-const schemaRequerant = z.object({
-  enPresenceRequerant: z.boolean({
-    error: "Précisez si vous disposez des coordonnées du requérant",
+const schemaRequerant = z.discriminatedUnion("enPresenceRequerant", [
+  z.object({
+    enPresenceRequerant: z.literal(false),
+    infosRequerant: z.undefined(),
   }),
-  infosRequerant: z.object({
-    civilite: z.custom<Civilite>((c) => c instanceof Civilite, {
-      error: "La civilité du requérant est requise",
+  z.object({
+    enPresenceRequerant: z.literal(true),
+    infosRequerant: z.object({
+      civilite: z.custom<Civilite>((c) => c instanceof Civilite, {
+        error: "La civilité du requérant est requise",
+      }),
+      nom: z
+        .string()
+        .trim()
+        .min(1, { error: "Le nom du requérant est requis" }),
+      prenom: z
+        .string()
+        .trim()
+        .min(1, { error: "Le prénom du requérant est requis" }),
+      telephone: z
+        .string()
+        .min(7, { error: "Le numéro de téléphone est requis" }),
+      courriel: z.email({ error: "L'adresse courriel est requise" }),
+      message: z.string(),
     }),
-    nom: z.string().trim().min(1, { error: "Le nom du requérant est requis" }),
-    prenom: z
-      .string()
-      .trim()
-      .min(1, { error: "Le prénom du requérant est requis" }),
-    telephone: z
-      .string()
-      .min(7, { error: "Le numéro de téléphone est requis" }),
-    courriel: z.email({ error: "L'adresse courriel est requise" }),
-    message: z.string(),
   }),
-});
+]);
 
 function Page() {
   const {
@@ -107,11 +114,13 @@ function Page() {
 
   const form = useForm({
     defaultValues: {
-      enPresenceRequerant: declaration.enPresenceRequerant,
+      enPresenceRequerant: declaration.enPresenceRequerant || false,
       infosRequerant: declaration.infosRequerant,
     },
     listeners: {
       onChange: async ({ formApi }) => {
+        console.log(formApi.getAllErrors());
+
         await declarationManager.enregistrer(declaration, formApi.state.values);
       },
       onChangeDebounceMs: 500,
@@ -120,7 +129,7 @@ function Page() {
       onSubmit: schemaRequerant,
     },
     onSubmit: async () => {
-      console.log("La");
+      console.log(form.getAllErrors());
       setSauvegardeEnCours(true);
       try {
         await declarationManager.soumettre(declaration);

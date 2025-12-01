@@ -72,10 +72,9 @@ export class DeclarationErreurOperationnelle {
   @Type(() => Agent)
   public readonly agent?: Agent;
   telephone: string;
+  @Expose({ name: "enPresenceRequerant" })
   @Transform(
     ({ obj }) => {
-      console.log(obj.infosRequerant, !!obj.infosRequerant);
-
       return !!obj.infosRequerant;
     },
     { toClassOnly: true },

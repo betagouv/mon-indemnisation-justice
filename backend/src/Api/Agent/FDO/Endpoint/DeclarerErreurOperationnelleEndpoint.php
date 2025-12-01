@@ -51,14 +51,16 @@ class DeclarerErreurOperationnelleEndpoint
         $this->em->flush();
 
         // Envoi du mail d'invitation à déclarer
-        $this->mailer
-            ->to($declaration->getInfosRequerant()->courriel, $declaration->getInfosRequerant()->prenom.' '.$declaration->getInfosRequerant()->nom)
-            ->subject("Mon Indemnisation Justice: vous pouvez faire une demande d'indemnisation")
-            ->htmlTemplate('email/invitation_a_deposer.html.twig', [
-                'declaration' => $declaration,
-            ])
-            ->send()
-        ;
+        if (null !== ($infosRequerants = $declaration->getInfosRequerant())) {
+            $this->mailer
+                ->to($infosRequerants->courriel, $infosRequerants->prenom.' '.$infosRequerants->nom)
+                ->subject("Mon Indemnisation Justice: vous pouvez faire une demande d'indemnisation")
+                ->htmlTemplate('email/invitation_a_deposer.html.twig', [
+                    'declaration' => $declaration,
+                ])
+                ->send()
+            ;
+        }
 
         return new JsonResponse([
             $this->normalizer->normalize(
