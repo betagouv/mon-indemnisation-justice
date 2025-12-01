@@ -10,6 +10,15 @@
     détérioration de la porte d’entrée du logement situé à {{ dossier.adresse.localite|upper }}
     ({{ dossier.adresse.codeDepartemental }}) ;
 </p>
+<p>Vu la proposition du ministère de la justice en date
+    du {{ dossier.dateSignatureAgent|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+    d'allouer à {{ dossier.requerant.nomComplet }} une indemnité définitive
+    de {{ dossier.montantIndemnisation|montant_litteral }}
+    ({{ dossier.montantIndemnisation|number_format(2, ',', ' ') }} EUR) ;
+    Vu la déclaration d’acceptation de {{ dossier.requerant.nomComplet }} en date
+    du {{ dossier.dateSignatureRequerant|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+    ;
+</p>
 <p>
     Considérant que le préjudice matériel subi par {{ dossier.requerant.nomComplet }} résulte d’une opération de
     police judiciaire menée
@@ -19,15 +28,6 @@
 
 <p>Considérant que la responsabilité de l’État est engagée à l’égard de {{ dossier.requerant.nomComplet }} sur le
     fondement de la rupture d’égalité devant les charges publiques ;
-</p>
-<p>Vu la proposition du ministère de la justice en date
-    du {{ dossier.dateSignatureAgent|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
-    d'allouer à {{ dossier.requerant.nomComplet }} une indemnité définitive
-    de {{ dossier.montantIndemnisation|montant_litteral }}
-    ({{ dossier.montantIndemnisation|number_format(2, ',', ' ') }} EUR) ;
-    Vu la déclaration d’acceptation de {{ dossier.requerant.nomComplet }} en date
-    du {{ dossier.dateSignatureRequerant|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
-    ;
 </p>
 
 <p>Considérant qu’il convient de procéder au paiement de ladite somme ;</p>

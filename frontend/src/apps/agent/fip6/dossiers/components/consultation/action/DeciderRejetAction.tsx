@@ -72,7 +72,7 @@ const DefinirMotifRefus = ({
   motifRejet,
   setMotifRejet,
 }: {
-  motifRejet?: MotifRejet;
+  motifRejet: MotifRejet | null;
   setMotifRejet: Dispatch<SetStateAction<MotifRejet>>;
 }) => {
   return (
@@ -87,7 +87,7 @@ const DefinirMotifRefus = ({
 
         <select
           className="fr-select"
-          defaultValue={motifRejet}
+          defaultValue={motifRejet ?? ""}
           onChange={(e) => setMotifRejet(e.target.value as MotifRejet)}
         >
           <option value="est_bailleur">
@@ -97,9 +97,8 @@ const DefinirMotifRefus = ({
             Le requérant était visé par l'opération
           </option>
           <option value="est_hebergeant">
-            Le requérant hébergeait la personne visé par l'opération
+            Le requérant hébergeait la personne visée par l'opération
           </option>
-          <option value="autre">Autre raison</option>
         </select>
       </div>
     </>
@@ -130,7 +129,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
   const [motifRejet, setMotifRejet]: [
     MotifRejet | null,
     (motif: MotifRejet) => void,
-  ] = useState<MotifRejet>(
+  ] = useState<MotifRejet | null>(
     (courrier?.metaDonnees?.motifRejet ?? dossier.qualiteRequerant == "PRO")
       ? "est_bailleur"
       : dossier.testEligibilite
@@ -138,8 +137,8 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
           ? "est_vise"
           : dossier.testEligibilite.estHebergeant
             ? "est_hebergeant"
-            : "autre"
-        : "autre",
+            : null
+        : null,
   );
 
   // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
@@ -249,8 +248,9 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
                 iconId: "fr-icon-edit-box-line",
                 onClick: async () => {
                   if (
-                    motifRejet != courrier?.metaDonnees?.motifRejet ||
-                    courrier?.metaDonnees?.montantIndemnisation
+                    null !== motifRejet &&
+                    (motifRejet != courrier?.metaDonnees?.motifRejet ||
+                      courrier?.metaDonnees?.montantIndemnisation)
                   ) {
                     genererCourrierRejet(dossier, motifRejet);
                   }
@@ -271,7 +271,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
               className="fr-my-2w"
               document={courrier as Document}
               regenererDocument={() =>
-                genererCourrierRejet(dossier, motifRejet)
+                genererCourrierRejet(dossier, motifRejet as MotifRejet)
               }
               onImprime={(document: Document) => dossier.addDocument(document)}
               onImpression={(impressionEnCours) =>
@@ -358,7 +358,8 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
               {
                 disabled: !courrier || sauvegardeEnCours,
                 iconId: "fr-icon-send-plane-fill",
-                onClick: () => deciderDossier({ motifRejet }),
+                onClick: () =>
+                  deciderDossier({ motifRejet: motifRejet as MotifRejet }),
                 children: "Valider et envoyer pour signature",
               },
             ]}

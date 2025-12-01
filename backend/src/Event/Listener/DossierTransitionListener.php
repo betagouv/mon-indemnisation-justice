@@ -20,11 +20,10 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: DossierAttribueEvent::class, method: 'dossierAttribue')]
 #[AsEventListener(event: DossierInstruitPropositionEvent::class, method: 'dossierInstruitProposition')]
 #[AsEventListener(event: DossierPropositionEnvoyeeEvent::class, method: 'dossierPropositionEnvoyee')]
-#[AsEventListener(event: DossierRejeteEvent::class, method: 'dossierRejetEnvoye')]
+#[AsEventListener(event: DossierRejeteEvent::class, method: 'dossierRejete')]
 #[AsEventListener(event: DossierPropositionAccepteeEvent::class, method: 'dossierPropositionAcceptee')]
 #[AsEventListener(event: DossierArreteEditeEvent::class, method: 'dossierArreteEdite')]
 #[AsEventListener(event: DossierArreteSigneEvent::class, method: 'dossierArreteSigne')]
-#[AsEventListener(event: DossierRejeteEvent::class, method: 'dossierRejete')]
 class DossierTransitionListener
 {
     public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository) {}
@@ -99,19 +98,6 @@ class DossierTransitionListener
     }
 
     public function dossierPropositionEnvoyee(DossierPropositionEnvoyeeEvent $evenement): void
-    {
-        // Prévenir le requérant qu'une décision l'attend sur son espace :
-        $this->mailer
-            ->toRequerant($evenement->dossier->getRequerant())
-            ->subject("Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse")
-            ->htmlTemplate('email/requerant/dossier_decide.twig', [
-                'dossier' => $evenement->dossier,
-            ])
-            ->send()
-        ;
-    }
-
-    public function dossierRejetEnvoye(DossierRejeteEvent $evenement): void
     {
         // Prévenir le requérant qu'une décision l'attend sur son espace :
         $this->mailer
