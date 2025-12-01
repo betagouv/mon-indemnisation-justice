@@ -482,7 +482,9 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 ),
               },
               {
-                children: "Valider la proposition d'indemnisation",
+                children: dossier.estAccepte()
+                  ? "Valider la proposition d'indemnisation"
+                  : "Valider le courrier de rejet",
                 priority: "secondary",
                 iconId: "fr-icon-arrow-right-line",
                 onClick: () =>
