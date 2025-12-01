@@ -283,25 +283,37 @@ export const InfosDossier = ({
                 */}
 
                 <li>
-                  <b>Requérant : </b>{" "}
-                  {dossier.declarationFDO.infosRequerant.prenom}{" "}
-                  {dossier.declarationFDO.infosRequerant.nom.toUpperCase()}
-                  <ul>
-                    <li>{dossier.declarationFDO.infosRequerant.courriel}</li>
-                    <li>{dossier.declarationFDO.infosRequerant.telephone}</li>
-                  </ul>
-                  <li>
-                    <b>Précisions:</b>{" "}
-                    <blockquote
-                      dangerouslySetInnerHTML={{
-                        __html:
-                          dossier.declarationFDO.infosRequerant.message.replaceAll(
-                            /\n/g,
-                            "</br>",
-                          ),
-                      }}
-                    />
-                  </li>
+                  <b>Requérant : </b>
+                  {dossier.declarationFDO.infosRequerant ? (
+                    <>
+                      {dossier.declarationFDO.infosRequerant.prenom}{" "}
+                      {dossier.declarationFDO.infosRequerant.nom.toUpperCase()}
+                      <ul>
+                        <li>
+                          {dossier.declarationFDO.infosRequerant.courriel}
+                        </li>
+                        <li>
+                          {dossier.declarationFDO.infosRequerant.telephone}
+                        </li>
+                      </ul>
+                      <li>
+                        <b>Précisions:</b>{" "}
+                        <blockquote
+                          dangerouslySetInnerHTML={{
+                            __html:
+                              dossier.declarationFDO.infosRequerant.message.replaceAll(
+                                /\n/g,
+                                "</br>",
+                              ),
+                          }}
+                        />
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <i>inconnu</i> (absent lors de la déclaration)
+                    </>
+                  )}
                 </li>
               </ul>
             </div>

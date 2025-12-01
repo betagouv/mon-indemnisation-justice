@@ -173,14 +173,14 @@ class BrisPorteController extends AbstractController
                 return $this->redirectToRoute('bris_porte_tester_eligibilite');
             }
         } else {
-            $infosRequerant = $preinscription->declarationErreurOperationnelle->getInfosRequerant();
-
-            $inscription->civilite = $infosRequerant->civilite;
-            $inscription->nom = $infosRequerant->nom;
-            $inscription->nomNaissance = $infosRequerant->nom;
-            $inscription->prenom = $infosRequerant->prenom;
-            $inscription->courriel = $infosRequerant->courriel;
-            $inscription->telephone = $infosRequerant->telephone;
+            if (null !== ($infosRequerant = $preinscription->declarationErreurOperationnelle->getInfosRequerant())) {
+                $inscription->civilite = $infosRequerant->civilite;
+                $inscription->nom = $infosRequerant->nom;
+                $inscription->nomNaissance = $infosRequerant->nom;
+                $inscription->prenom = $infosRequerant->prenom;
+                $inscription->courriel = $infosRequerant->courriel;
+                $inscription->telephone = $infosRequerant->telephone;
+            }
         }
 
         return $this->render('brisPorte/creation_de_compte.html.twig', [
