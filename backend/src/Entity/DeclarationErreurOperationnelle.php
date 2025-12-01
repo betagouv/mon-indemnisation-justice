@@ -53,10 +53,6 @@ class DeclarationErreurOperationnelle
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?BrisPorte $dossier = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Groups(['agent:detail'])]
-    protected string $commentaire = '';
-
     #[ORM\Column()]
     #[Groups(['agent:detail'])]
     protected bool $doute = false;
@@ -174,18 +170,6 @@ class DeclarationErreurOperationnelle
         return null !== $this->dossier;
     }
 
-    public function getCommentaire(): string
-    {
-        return $this->commentaire;
-    }
-
-    public function setCommentaire(string $commentaire): static
-    {
-        $this->commentaire = $commentaire;
-
-        return $this;
-    }
-
     public function isDoute(): bool
     {
         return $this->doute;
@@ -261,10 +245,10 @@ class DeclarationErreurOperationnelle
     #[Groups(['agent:detail'])]
     public function getInfosRequerant(): ?InfosRequerant
     {
-        return InfosRequerant::depuisArray($this->infosRequerant);
+        return is_array($this->infosRequerant) ? InfosRequerant::depuisArray($this->infosRequerant) : null;
     }
 
-    public function setInfosRequerant(array|InfosRequerant $infosRequerant): DeclarationErreurOperationnelle
+    public function setInfosRequerant(null|array|InfosRequerant $infosRequerant): DeclarationErreurOperationnelle
     {
         if ($infosRequerant instanceof InfosRequerant) {
             $this->infosRequerant = $infosRequerant->versArray();

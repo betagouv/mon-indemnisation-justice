@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { z } from "zod";
@@ -15,6 +15,8 @@ import { useInjection } from "inversify-react";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 
 export const Route = createFileRoute(
   "/agent/fdo/erreur-operationnelle/$reference/3-requerant",
@@ -44,6 +46,8 @@ export const Route = createFileRoute(
       .get(DeclarationManagerInterface.$)
       .getDeclaration(params.reference)) as DeclarationErreurOperationnelle;
 
+    console.dir(declaration);
+
     if (!declaration) {
       throw redirect({
         to: "/agent/fdo/erreur-operationnelle/mes-declarations",
@@ -61,6 +65,9 @@ export const Route = createFileRoute(
 });
 
 const schemaRequerant = z.object({
+  enPresenceRequerant: z.boolean({
+    error: "Précisez si vous disposez des coordonnées du requérant",
+  }),
   infosRequerant: z.object({
     civilite: z.custom<Civilite>((c) => c instanceof Civilite, {
       error: "La civilité du requérant est requise",
@@ -93,10 +100,14 @@ function Page() {
     DeclarationManagerInterface.$,
   );
 
+  const [declarationEnPresenceRequerant, setDeclarationEnPresenceRequerant] =
+    useState<boolean | undefined>(declaration.enPresenceRequerant);
+
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
 
   const form = useForm({
     defaultValues: {
+      enPresenceRequerant: declaration.enPresenceRequerant,
       infosRequerant: declaration.infosRequerant,
     },
     listeners: {
@@ -109,6 +120,7 @@ function Page() {
       onSubmit: schemaRequerant,
     },
     onSubmit: async () => {
+      console.log("La");
       setSauvegardeEnCours(true);
       try {
         await declarationManager.soumettre(declaration);
@@ -122,7 +134,22 @@ function Page() {
   });
 
   return (
-    <div>
+    <form
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "1vh",
+      }}
+      onSubmit={async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+          await void form.handleSubmit();
+        } catch (e) {
+          console.error(e);
+        }
+      }}
+    >
       <h1>Nouvelle déclaration d'erreur opérationnelle</h1>
 
       <Stepper
@@ -133,28 +160,63 @@ function Page() {
 
       <div className="fr-grid-row">
         <h6 className="fr-m-0 fr-text-label--blue-france">
-          Civilité et contact
+          Civilité et contact de l'usager
         </h6>
       </div>
 
-      <form
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1.5vh",
-        }}
-        onSubmit={async (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          try {
-            await void form.handleSubmit();
-          } catch (e) {
-            console.error(e);
-          }
-        }}
-      >
+      {declarationEnPresenceRequerant === undefined && (
+        <div className="fr-grid-row">
+          <Alert
+            severity="info"
+            title="La civilité de l’usager n’est pas obligatoire pour enregistrer un dossier."
+            description="Si l’usager se présente, merci de remplir ces informations a posteriori afin de permettre l’instruction de dossier. "
+          />
+        </div>
+      )}
+
+      <div className="fr-grid-row">
+        <form.Field
+          name="enPresenceRequerant"
+          children={(field) => {
+            return (
+              <RadioButtons
+                className="fr-col-12"
+                legend="J’ai les coordonnées de l’usager:"
+                orientation="horizontal"
+                disabled={declaration.estSauvegarde()}
+                options={[
+                  {
+                    label: "Oui",
+                    nativeInputProps: {
+                      defaultChecked: declarationEnPresenceRequerant === true,
+                      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                        setDeclarationEnPresenceRequerant(event.target.checked);
+                        field.handleChange(event.target.checked);
+                      },
+                    },
+                  },
+                  {
+                    label: "Non",
+                    nativeInputProps: {
+                      defaultChecked: declarationEnPresenceRequerant === false,
+                      onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                        setDeclarationEnPresenceRequerant(
+                          !event.target.checked,
+                        );
+                        field.handleChange(!event.target.checked);
+                      },
+                    },
+                  },
+                ]}
+              />
+            );
+          }}
+        />
+      </div>
+
+      {declarationEnPresenceRequerant === true && (
         <div
-          className="fr-grid-row fr-grid-row--gutters fr-mt-2w"
+          className="fr-grid-row fr-grid-row--gutters"
           style={{ alignItems: "baseline" }}
         >
           <form.Field
@@ -162,7 +224,7 @@ function Page() {
             children={(field) => {
               return (
                 <Select
-                  className="fr-col-lg-2"
+                  className="fr-col-lg-2 fr-m-0"
                   label="Civilité *"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeSelectProps={{
@@ -197,7 +259,7 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3"
+                  className="fr-col-lg-3 fr-m-0"
                   label="Nom *"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
@@ -224,7 +286,7 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3"
+                  className="fr-col-lg-3 fr-m-0"
                   label="Prénom *"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
@@ -251,7 +313,7 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-4"
+                  className="fr-col-lg-4 fr-m-0"
                   label="Téléphone *"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
@@ -278,7 +340,7 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-4"
+                  className="fr-col-lg-4 fr-m-0"
                   label="Courriel *"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
@@ -317,7 +379,7 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-12"
+                  className="fr-col-lg-12 fr-m-0"
                   label="Précisions concernant le requérant"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   textArea
@@ -342,67 +404,65 @@ function Page() {
             }}
           />
         </div>
+      )}
 
-        <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-          <ButtonsGroup
-            className="fr-col-lg-12 fr-p-0"
-            inlineLayoutWhen="always"
-            alignment="right"
-            buttonsIconPosition={undefined}
-            buttonsSize="small"
-            buttons={[
-              {
-                children: "Revenir à l'étape précédente",
-                disabled: sauvegardeEnCours,
-                priority: sauvegardeEnCours ? "tertiary" : "secondary",
-                iconId: "fr-icon-arrow-left-line",
-                iconPosition: "left",
-                onClick: () =>
-                  naviguer({
-                    to: "/agent/fdo/erreur-operationnelle/$reference/2-complement",
-                    params: {
-                      reference,
-                    } as any,
-                  }),
-              },
-              ...(declaration.estBrouillon()
-                ? [
-                    {
-                      children: sauvegardeEnCours
-                        ? "Sauvegarde en cours..."
-                        : "Envoyer",
-                      disabled:
-                        sauvegardeEnCours || declaration.estSauvegarde(),
-                      priority: sauvegardeEnCours ? "tertiary" : "primary",
-                      nativeButtonProps: {
-                        type: "submit",
-                        role: "submit",
-                      },
-                      className: "fr-mr-0",
-                    } as ButtonProps,
-                  ]
-                : [
-                    {
-                      children: "Mes déclarations",
-                      priority: "secondary",
-                      nativeButtonProps: {
-                        type: "button",
-                        role: "link",
-                      },
-                      className: "fr-mr-0",
-                      onClick: () =>
-                        naviguer({
-                          to: "/agent/fdo/erreur-operationnelle/mes-declarations",
-                          params: {
-                            reference,
-                          } as any,
-                        }),
-                    } as ButtonProps,
-                  ]),
-            ]}
-          />
-        </div>
-      </form>
-    </div>
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <ButtonsGroup
+          className="fr-col-lg-12 fr-p-0"
+          inlineLayoutWhen="always"
+          alignment="right"
+          buttonsSize="small"
+          buttons={[
+            {
+              children: "Revenir à l'étape précédente",
+              disabled: sauvegardeEnCours,
+              priority: sauvegardeEnCours ? "tertiary" : "secondary",
+              iconId: "fr-icon-arrow-left-line",
+              iconPosition: "left",
+              onClick: () =>
+                naviguer({
+                  to: "/agent/fdo/erreur-operationnelle/$reference/2-complement",
+                  params: {
+                    reference,
+                  } as any,
+                }),
+            },
+            ...(declaration.estBrouillon()
+              ? [
+                  {
+                    children: sauvegardeEnCours
+                      ? "Sauvegarde en cours..."
+                      : "Envoyer",
+                    disabled: sauvegardeEnCours || declaration.estSauvegarde(),
+                    priority: sauvegardeEnCours ? "tertiary" : "primary",
+                    nativeButtonProps: {
+                      type: "submit",
+                      role: "submit",
+                    },
+                    className: "fr-mr-0",
+                  } as ButtonProps,
+                ]
+              : [
+                  {
+                    children: "Mes déclarations",
+                    priority: "secondary",
+                    nativeButtonProps: {
+                      type: "button",
+                      role: "link",
+                    },
+                    className: "fr-mr-0",
+                    onClick: () =>
+                      naviguer({
+                        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+                        params: {
+                          reference,
+                        } as any,
+                      }),
+                  } as ButtonProps,
+                ]),
+          ]}
+        />
+      </div>
+    </form>
   );
 }

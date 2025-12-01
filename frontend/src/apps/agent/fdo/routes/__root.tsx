@@ -12,7 +12,6 @@ import { Header } from "@codegouvfr/react-dsfr/Header";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import "@/style/index.css";
-import { Agent } from "@/common/models";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 
 const EspaceFDO = () => {
@@ -116,8 +115,6 @@ const EspaceFDO = () => {
               href: contexte.incarnePar
                 ? `${window.location.origin}/agent/fip6/agents/gestion?_switch_user=_exit`
                 : `${window.location.origin}/agent/deconnexion`,
-              replace: true,
-              //reloadDocument: true,
             } as LinkProps,
           },
         ]}

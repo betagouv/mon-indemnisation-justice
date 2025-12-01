@@ -23,7 +23,6 @@ class DeclarationErreurOperationnelleOutput
 
     public bool $doute;
     public ?string $motifDoute = null;
-    public string $commentaire;
 
     #[Map(target: AgentOutput::class)]
     public AgentOutput $agent;
@@ -32,7 +31,7 @@ class DeclarationErreurOperationnelleOutput
     public AdresseOutput $adresse;
 
     #[Map(target: InfosRequerantOutput::class)]
-    public InfosRequerantOutput $infosRequerant;
+    public ?InfosRequerantOutput $infosRequerant;
 
     #[Map(target: ProcedureOutput::class)]
     public ProcedureOutput $procedure;
