@@ -106,7 +106,7 @@ function Page() {
         }
         declarationManager.enregistrer(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 500,
+      onChangeDebounceMs: 200,
     },
     validators: {
       onSubmit: schemaInfosJuridiques,

@@ -23,8 +23,23 @@ function DossierAAttribuerLigne({ dossier }: { dossier: DossierAAttribuer }) {
       <div className="fr-col-7 mij-dossier-details">
         <ul>
           <li>{dossier.requerant}</li>
-          <li>{dossier.adresse}</li>
-          <li>survenu le {dateSimple(dossier.dateOperation)}</li>
+          <li>
+            {dossier.adresse ?? (
+              <>
+                adresse <i>non renseignée</i>
+              </>
+            )}
+          </li>
+          <li>
+            survenu{" "}
+            {dossier.dateOperation ? (
+              <>le {dateSimple(dossier.dateOperation)}</>
+            ) : (
+              <>
+                à une date <i>non renseignée</i>
+              </>
+            )}
+          </li>
         </ul>
       </div>
 

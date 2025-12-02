@@ -268,19 +268,6 @@ export const InfosDossier = ({
                   <b>Nom du magistrat</b>{" "}
                   {dossier.declarationFDO.procedure.nomMagistrat}
                 </li>
-                {/*
-                <li>
-                  <b>Précisions concernant l'intervention:</b>
-                  <blockquote
-                    dangerouslySetInnerHTML={{
-                      __html: dossier.declarationFDO.commentaire.replaceAll(
-                        /\n/g,
-                        "</br>",
-                      ),
-                    }}
-                  />
-                </li>
-                */}
 
                 <li>
                   <b>Requérant : </b>
@@ -296,23 +283,25 @@ export const InfosDossier = ({
                           {dossier.declarationFDO.infosRequerant.telephone}
                         </li>
                       </ul>
-                      <li>
-                        <b>Précisions:</b>{" "}
-                        <blockquote
-                          dangerouslySetInnerHTML={{
-                            __html:
-                              dossier.declarationFDO.infosRequerant.message.replaceAll(
-                                /\n/g,
-                                "</br>",
-                              ),
-                          }}
-                        />
-                      </li>
                     </>
                   ) : (
-                    <>
-                      <i>inconnu</i> (absent lors de la déclaration)
-                    </>
+                    <i>non renseigné</i>
+                  )}
+                </li>
+                <li>
+                  <b>Précisions:</b>{" "}
+                  {dossier.declarationFDO.precisionsRequerant ? (
+                    <blockquote
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          dossier.declarationFDO.precisionsRequerant.replaceAll(
+                            /\n/g,
+                            "</br>",
+                          ),
+                      }}
+                    />
+                  ) : (
+                    <i>non renseignées</i>
                   )}
                 </li>
               </ul>

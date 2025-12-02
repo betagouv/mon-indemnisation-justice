@@ -46,8 +46,6 @@ export const Route = createFileRoute(
       .get(DeclarationManagerInterface.$)
       .getDeclaration(params.reference)) as DeclarationErreurOperationnelle;
 
-    console.dir(declaration);
-
     if (!declaration) {
       throw redirect({
         to: "/agent/fdo/erreur-operationnelle/mes-declarations",
@@ -66,11 +64,17 @@ export const Route = createFileRoute(
 
 const schemaRequerant = z.discriminatedUnion("enPresenceRequerant", [
   z.object({
-    enPresenceRequerant: z.literal(false),
+    enPresenceRequerant: z.literal(false, {
+      error: "Indiquez-nous si vous disposez des coordonnées du requérant",
+    }),
+    precisionsRequerant: z.string(),
     infosRequerant: z.undefined(),
   }),
   z.object({
-    enPresenceRequerant: z.literal(true),
+    enPresenceRequerant: z.literal(true, {
+      error: "Indiquez-nous si vous disposez des coordonnées du requérant",
+    }),
+    precisionsRequerant: z.string(),
     infosRequerant: z.object({
       civilite: z.custom<Civilite>((c) => c instanceof Civilite, {
         error: "La civilité du requérant est requise",
@@ -87,7 +91,6 @@ const schemaRequerant = z.discriminatedUnion("enPresenceRequerant", [
         .string()
         .min(7, { error: "Le numéro de téléphone est requis" }),
       courriel: z.email({ error: "L'adresse courriel est requise" }),
-      message: z.string(),
     }),
   }),
 ]);
@@ -108,13 +111,14 @@ function Page() {
   );
 
   const [declarationEnPresenceRequerant, setDeclarationEnPresenceRequerant] =
-    useState<boolean | undefined>(declaration.enPresenceRequerant);
+    useState<boolean | undefined>(declaration.enPresenceRequerant || undefined);
 
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
 
   const form = useForm({
     defaultValues: {
-      enPresenceRequerant: declaration.enPresenceRequerant || false,
+      enPresenceRequerant: declaration.enPresenceRequerant,
+      precisionsRequerant: declaration.precisionsRequerant,
       infosRequerant: declaration.infosRequerant,
     },
     listeners: {
@@ -123,7 +127,7 @@ function Page() {
 
         await declarationManager.enregistrer(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 500,
+      onChangeDebounceMs: 200,
     },
     validators: {
       onSubmit: schemaRequerant,
@@ -147,7 +151,7 @@ function Page() {
       style={{
         display: "flex",
         flexDirection: "column",
-        rowGap: "1vh",
+        gap: "2vh",
       }}
       onSubmit={async (e) => {
         e.preventDefault();
@@ -159,20 +163,22 @@ function Page() {
         }
       }}
     >
-      <h1>Nouvelle déclaration d'erreur opérationnelle</h1>
+      <h1 className="fr-m-0">Nouvelle déclaration d'erreur opérationnelle</h1>
 
       <Stepper
+        className="fr-m-0"
         currentStep={3}
         stepCount={3}
         title="Informations du requérant"
       />
 
-      <div className="fr-grid-row">
+      <div className="fr-grid-row fr-m-0">
         <h6 className="fr-m-0 fr-text-label--blue-france">
           Civilité et contact de l'usager
         </h6>
       </div>
 
+      {/*
       {declarationEnPresenceRequerant === undefined && (
         <div className="fr-grid-row">
           <Alert
@@ -182,6 +188,7 @@ function Page() {
           />
         </div>
       )}
+      */}
 
       <div className="fr-grid-row">
         <form.Field
@@ -189,10 +196,18 @@ function Page() {
           children={(field) => {
             return (
               <RadioButtons
-                className="fr-col-12"
+                className="fr-col-12 fr-m-0"
                 legend="J’ai les coordonnées de l’usager:"
                 orientation="horizontal"
                 disabled={declaration.estSauvegarde()}
+                state={!field.state.meta.isValid ? "error" : "default"}
+                stateRelatedMessage={
+                  !field.state.meta.isValid ? (
+                    <>{field.state.meta.errors.at(0)?.message}</>
+                  ) : (
+                    <></>
+                  )
+                }
                 options={[
                   {
                     label: "Oui",
@@ -224,10 +239,7 @@ function Page() {
       </div>
 
       {declarationEnPresenceRequerant === true && (
-        <div
-          className="fr-grid-row fr-grid-row--gutters"
-          style={{ alignItems: "baseline" }}
-        >
+        <div className="fr-grid-row fr-grid-row--gutters">
           <form.Field
             name="infosRequerant.civilite"
             children={(field) => {
@@ -382,32 +394,28 @@ function Page() {
             ]}
           />
           */}
+        </div>
+      )}
 
+      {declarationEnPresenceRequerant !== undefined && (
+        <div className="fr-grid-row">
           <form.Field
-            name="infosRequerant.message"
+            name="precisionsRequerant"
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-12 fr-m-0"
-                  label="Précisions concernant le requérant"
+                  label="Précisions concernant l'usager"
+                  className="fr-col-lg-12"
+                  textArea={true}
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
-                  textArea
-                  //hintText="Un exemple"
                   nativeTextAreaProps={{
-                    placeholder:
-                      "Conjoint du locataire, propriétaire bailleur...",
-                    rows: 6,
-                    value: field.state.value,
+                    defaultValue: declaration.precisionsRequerant ?? "",
                     onChange: (e) => field.handleChange(e.target.value),
+                    rows: 5,
+                    placeholder: declarationEnPresenceRequerant
+                      ? "Locataire et épouse du mis en cause"
+                      : "Le logement était inoccupé",
                   }}
-                  state={!field.state.meta.isValid ? "error" : "default"}
-                  stateRelatedMessage={
-                    !field.state.meta.isValid ? (
-                      <>{field.state.meta.errors.at(0)?.message}</>
-                    ) : (
-                      <></>
-                    )
-                  }
                 />
               );
             }}
@@ -415,7 +423,7 @@ function Page() {
         </div>
       )}
 
-      <div className="fr-grid-row fr-grid-row--gutters">
+      <div className="fr-grid-row fr-grid-row--gutters fr-mt-1v">
         <ButtonsGroup
           className="fr-col-lg-12 fr-p-0"
           inlineLayoutWhen="always"

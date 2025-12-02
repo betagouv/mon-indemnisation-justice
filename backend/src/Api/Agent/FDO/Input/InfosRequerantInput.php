@@ -14,5 +14,4 @@ class InfosRequerantInput
     public string $prenom;
     public string $telephone;
     public string $courriel;
-    public string $message;
 }

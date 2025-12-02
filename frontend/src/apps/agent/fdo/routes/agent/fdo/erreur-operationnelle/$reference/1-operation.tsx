@@ -99,7 +99,7 @@ const Page = () => {
       onChange: async ({ fieldApi, formApi }) => {
         declarationManager.enregistrer(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 750,
+      onChangeDebounceMs: 200,
     },
     validators: {
       onSubmit: schemaErreurOperationnelle,

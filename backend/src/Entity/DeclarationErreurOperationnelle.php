@@ -84,6 +84,10 @@ class DeclarationErreurOperationnelle
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $infosRequerant;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['agent:detail'])]
+    protected ?string $precisionsRequerant = null;
+
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
     {
@@ -255,6 +259,18 @@ class DeclarationErreurOperationnelle
         } else {
             $this->infosRequerant = $infosRequerant;
         }
+
+        return $this;
+    }
+
+    public function getPrecisionsRequerant(): ?string
+    {
+        return $this->precisionsRequerant;
+    }
+
+    public function setPrecisionsRequerant(?string $precisionsRequerant): DeclarationErreurOperationnelle
+    {
+        $this->precisionsRequerant = $precisionsRequerant;
 
         return $this;
     }
