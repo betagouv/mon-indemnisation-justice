@@ -47,7 +47,7 @@
                             <li>
                                 {% if is_granted('IS_IMPERSONATOR') %}
                                     <a class="fr-btn fr-icon-logout-box-r-line"
-                                       href="{{ impersonation_exit_path(path('agent_fip6_react', {'extra' : '/agents/gestion'})) }}"
+                                       href="{{ impersonation_exit_path(path('agent_fip6_react', {'extra' : 'agents/gestion'})) }}"
                                     >Redevenir {{ agent_incarnant().nomComplet(true) }}</a>
                                 {% else %}
                                     <a class="fr-btn fr-icon-logout-box-r-line"
@@ -83,7 +83,7 @@
                         <li>
                             {% if is_granted('IS_IMPERSONATOR') %}
                                 <a class="fr-btn fr-icon-logout-box-r-line"
-                                   href="{{ impersonation_exit_path(path('agent_fip6_react', {'extra' : '/agents/gestion'})) }}"
+                                   href="{{ impersonation_exit_path(path('agent_fip6_react', {'extra' : 'agents/gestion'})) }}"
                                 >Redevenir {{ agent_incarnant().nomComplet(true) }}</a>
                             {% else %}
                                 <a class="fr-btn fr-icon-logout-box-r-line"

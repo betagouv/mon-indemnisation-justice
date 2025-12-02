@@ -14,7 +14,6 @@ readonly class InfosRequerant extends AbstractMetadonnees
         public string $prenom,
         public string $telephone,
         public string $courriel,
-        public string $message,
     ) {}
 
     public static function depuisArray(array $valeurs): static

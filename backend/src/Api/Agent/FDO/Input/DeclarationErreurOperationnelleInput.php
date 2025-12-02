@@ -13,6 +13,7 @@ class DeclarationErreurOperationnelleInput
     public AdresseInput $adresse;
     public ProcedureInput $procedure;
     public string $telephone;
+    public ?string $precisionsRequerant = null;
     public ?InfosRequerantInput $infosRequerant = null;
     public bool $doute;
     public ?string $motifDoute = null;

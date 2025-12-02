@@ -45,7 +45,6 @@ class InformationsRequerant {
   prenom: string = "";
   telephone: string = "";
   courriel: string = "";
-  message: string = "";
 }
 
 class Procedure {
@@ -80,6 +79,8 @@ export class DeclarationErreurOperationnelle {
     { toClassOnly: true },
   )
   enPresenceRequerant?: boolean;
+  @Expose()
+  precisionsRequerant?: string;
   @Type(() => InformationsRequerant)
   infosRequerant?: InformationsRequerant;
   procedure: Procedure = new Procedure();
