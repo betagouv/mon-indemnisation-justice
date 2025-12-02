@@ -19,9 +19,10 @@ use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 
-class ProConnectAuthenticator extends AbstractAuthenticator
+class ProConnectAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     public function __construct(
         protected readonly HttpUtils $httpUtils,
@@ -142,7 +143,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator
 
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
-        $request->getSession()->set('agent_connexion_redirection', $request->getBaseUrl());
+        $request->getSession()->set('agent_connexion_redirection', $request->getPathInfo());
 
         return new RedirectResponse(
             $this->urlGenerator->generate('app_login'),

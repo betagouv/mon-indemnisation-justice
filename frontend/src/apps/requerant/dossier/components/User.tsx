@@ -10,8 +10,8 @@ import Civilite from "@/apps/requerant/dossier/components/Civilite";
 import { Input } from "@codegouvfr/react-dsfr/Input.js";
 
 const User = function () {
-  const dossier = useContext(DossierContext);
-  const patchDossier = useContext(PatchDossierContext);
+  const dossier = useContext<any>(DossierContext);
+  const patchDossier = useContext<(any) => void>(PatchDossierContext);
 
   return (
     <>

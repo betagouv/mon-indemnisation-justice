@@ -79,6 +79,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                             (new PersonnePhysique())
                                 ->setCivilite('male' === $userInfo['gender'] ? Civilite::M : Civilite::MME)
                                 ->setNom($userInfo['family_name'] ?? '')
+                                ->setNomNaissance($userInfo['family_name'] ?? '')
                                 ->setPrenom1($prenoms[0] ?? null)
                                 ->setPrenom2($prenoms[1] ?? null)
                                 ->setPrenom3($prenoms[2] ?? null)

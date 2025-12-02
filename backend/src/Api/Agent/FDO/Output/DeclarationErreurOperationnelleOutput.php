@@ -32,6 +32,7 @@ class DeclarationErreurOperationnelleOutput
 
     #[Map(target: InfosRequerantOutput::class)]
     public ?InfosRequerantOutput $infosRequerant;
+    public ?string $precisionsRequerant;
 
     #[Map(target: ProcedureOutput::class)]
     public ProcedureOutput $procedure;

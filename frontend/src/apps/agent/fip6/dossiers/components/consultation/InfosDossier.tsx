@@ -268,40 +268,41 @@ export const InfosDossier = ({
                   <b>Nom du magistrat</b>{" "}
                   {dossier.declarationFDO.procedure.nomMagistrat}
                 </li>
-                {/*
-                <li>
-                  <b>Précisions concernant l'intervention:</b>
-                  <blockquote
-                    dangerouslySetInnerHTML={{
-                      __html: dossier.declarationFDO.commentaire.replaceAll(
-                        /\n/g,
-                        "</br>",
-                      ),
-                    }}
-                  />
-                </li>
-                */}
 
                 <li>
-                  <b>Requérant : </b>{" "}
-                  {dossier.declarationFDO.infosRequerant.prenom}{" "}
-                  {dossier.declarationFDO.infosRequerant.nom.toUpperCase()}
-                  <ul>
-                    <li>{dossier.declarationFDO.infosRequerant.courriel}</li>
-                    <li>{dossier.declarationFDO.infosRequerant.telephone}</li>
-                  </ul>
-                  <li>
-                    <b>Précisions:</b>{" "}
+                  <b>Requérant : </b>
+                  {dossier.declarationFDO.infosRequerant ? (
+                    <>
+                      {dossier.declarationFDO.infosRequerant.prenom}{" "}
+                      {dossier.declarationFDO.infosRequerant.nom.toUpperCase()}
+                      <ul>
+                        <li>
+                          {dossier.declarationFDO.infosRequerant.courriel}
+                        </li>
+                        <li>
+                          {dossier.declarationFDO.infosRequerant.telephone}
+                        </li>
+                      </ul>
+                    </>
+                  ) : (
+                    <i>non renseigné</i>
+                  )}
+                </li>
+                <li>
+                  <b>Précisions:</b>{" "}
+                  {dossier.declarationFDO.precisionsRequerant ? (
                     <blockquote
                       dangerouslySetInnerHTML={{
                         __html:
-                          dossier.declarationFDO.infosRequerant.message.replaceAll(
+                          dossier.declarationFDO.precisionsRequerant.replaceAll(
                             /\n/g,
                             "</br>",
                           ),
                       }}
                     />
-                  </li>
+                  ) : (
+                    <i>non renseignées</i>
+                  )}
                 </li>
               </ul>
             </div>
