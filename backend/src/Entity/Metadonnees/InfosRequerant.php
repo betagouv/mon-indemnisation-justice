@@ -20,6 +20,6 @@ readonly class InfosRequerant extends AbstractMetadonnees
     {
         $civilite = ($c = $valeurs['civilite'] ?? null) instanceof Civilite ? $c : Civilite::tryFrom($c ?? '');
 
-        return new InfosRequerant(...array_merge($valeurs, ['civilite' => $civilite]));
+        return new self(...self::construireArguments(array_merge($valeurs, ['civilite' => $civilite])));
     }
 }

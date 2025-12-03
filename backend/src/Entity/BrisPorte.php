@@ -82,7 +82,7 @@ class BrisPorte
     protected ?string $numeroPV = null;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
-    #[ORM\OneToOne(targetEntity: TestEligibilite::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: TestEligibilite::class, inversedBy: 'dossier', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?TestEligibilite $testEligibilite = null;
 
