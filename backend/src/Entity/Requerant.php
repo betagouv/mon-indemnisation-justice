@@ -431,7 +431,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getNavigation(): ?NavigationRequerant
     {
-        return NavigationRequerant::depuisArray($this->navigation ?? []);
+        return null !== $this->navigation ? NavigationRequerant::depuisArray($this->navigation ?? []) : null;
     }
 
     public function setNavigation(null|array|NavigationRequerant $navigation): Requerant

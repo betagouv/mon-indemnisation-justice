@@ -32,7 +32,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
         // S'il existe un test d'éligibilité dans la session du requérant...
         if (null !== ($testEligibilite = $this->getTestEligibiliteEnCours($request, $requerant))) {
             // ... associée à aucun de ses dossiers existants...
-            if (!$requerant->getDossiers()->exists(fn (int $indice, BrisPorte $dossier) => $dossier->getTestEligibilite()->id === $testEligibilite)) {
+            if (!$requerant->getDossiers()->exists(fn (int $indice, BrisPorte $dossier) => $dossier->getTestEligibilite()?->id === $testEligibilite)) {
                 // ... alors, on crée un nouveau dossier lié à ce test d'éligibilité
                 $dossier = (new BrisPorte())
                     ->setRequerant($requerant)
@@ -86,14 +86,16 @@ class ConnexionRequerantListener implements EventSubscriberInterface
 
     protected function getTestEligibiliteEnCours(Request $request, Requerant $requerant): ?TestEligibilite
     {
-        $idTestEligibilite = $requerant->getNavigation()?->idTestEligibilite ?? $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, [])['testEligibilite'] ?? null;
+        $preInscription = $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, []);
+        $idTestEligibilite = $requerant->getNavigation()?->idTestEligibilite ?? @$preInscription['testEligibilite'] ?? null;
 
         return $idTestEligibilite ? $this->em->find(TestEligibilite::class, $idTestEligibilite) : null;
     }
 
     protected function getDeclarationFDOEnCours(Request $request, Requerant $requerant): ?DeclarationErreurOperationnelle
     {
-        $idDeclarationFDO = $requerant->getNavigation()?->idDeclaration ?? $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, [])['declarationErreurOperationnelle'] ?? null;
+        $preInscription = $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, []);
+        $idDeclarationFDO = $requerant->getNavigation()?->idDeclaration ?? $preInscription['declarationErreurOperationnelle'] ?? null;
 
         return $idDeclarationFDO ? $this->em->find(DeclarationErreurOperationnelle::class, $idDeclarationFDO) : null;
     }
