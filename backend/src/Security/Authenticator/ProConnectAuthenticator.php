@@ -82,6 +82,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
 
                 if ($autoPromotion) {
                     $agent
+                        ->addRole(Agent::ROLE_AGENT_DOSSIER)
                         ->addRole(Agent::ROLE_AGENT_GESTION_PERSONNEL)
                         ->addRole(Agent::ROLE_AGENT_REDACTEUR)
                         ->addRole(Agent::ROLE_AGENT_BETAGOUV)
