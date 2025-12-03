@@ -17,7 +17,7 @@ abstract readonly class AbstractMetadonnees
 
     public static function depuisArray(array $valeurs): static
     {
-        return new static(static::construireArguments($valeurs));
+        return new static(...static::construireArguments($valeurs));
     }
 
     protected static function construireArguments(array $valeurs): array

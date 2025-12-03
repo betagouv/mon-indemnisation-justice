@@ -44,6 +44,9 @@ class TestEligibilite
     #[ORM\JoinColumn(unique: false, nullable: true, onDelete: 'CASCADE')]
     public ?Requerant $requerant = null;
 
+    #[ORM\OneToOne(targetEntity: BrisPorte::class, mappedBy: 'testEligibilite')]
+    public ?BrisPorte $dossier;
+
     #[ORM\Column]
     public bool $estEligibleExperimentation = false;
 

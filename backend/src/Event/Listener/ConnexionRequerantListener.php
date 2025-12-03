@@ -32,7 +32,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
         // S'il existe un test d'éligibilité dans la session du requérant...
         if (null !== ($testEligibilite = $this->getTestEligibiliteEnCours($request, $requerant))) {
             // ... associée à aucun de ses dossiers existants...
-            if (!$requerant->getDossiers()->exists(fn (int $indice, BrisPorte $dossier) => $dossier->getTestEligibilite()?->id === $testEligibilite)) {
+            if (null !== $testEligibilite && null === $testEligibilite->dossier) {
                 // ... alors, on crée un nouveau dossier lié à ce test d'éligibilité
                 $dossier = (new BrisPorte())
                     ->setRequerant($requerant)
@@ -49,7 +49,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
             // Sinon si une déclaration des FDO existe en session...
             $declarationFDO = $this->getDeclarationFDOEnCours($request, $requerant);
             // ... associée à aucun de ses dossiers existants...
-            if (null !== $declarationFDO && !$requerant->getDossiers()->exists(fn (int $indice, BrisPorte $dossier) => $dossier->getDeclarationFDO()?->getId() === $declarationFDO->getId())) {
+            if (null !== $declarationFDO && null === $declarationFDO->getDossier()) {
                 // ... alors, on crée un nouveau dossier lié à cette déclaration
                 $dossier = (new BrisPorte())
                     ->setRequerant($requerant)
