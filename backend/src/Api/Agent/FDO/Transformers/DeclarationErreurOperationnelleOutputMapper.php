@@ -20,6 +20,7 @@ class DeclarationErreurOperationnelleOutputMapper
         $output->agent = $mapper->map($declaration->getAgent(), AgentOutput::class);
         $output->adresse = $mapper->map($declaration->getAdresse(), AdresseOutput::class);
         $output->procedure = $mapper->map($declaration->getProcedure(), ProcedureOutput::class);
+
         $output->infosRequerant = null !== $declaration->getInfosRequerant() ? $mapper->map($declaration->getInfosRequerant(), InfosRequerantOutput::class) : null;
 
         return $output;
