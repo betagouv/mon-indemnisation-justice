@@ -126,7 +126,8 @@ class GeoFixtures extends Fixture
                 ->setDepartement($this->getReference('departement-ille-et-vilaine', GeoDepartement::class)),
             'ancenis' => (new GeoCommune())
                 ->setCode('44003')
-                ->setNom('Ancenis-Saint-Géréon'),
+                ->setNom('Ancenis-Saint-Géréon')
+                ->setDepartement($this->getReference('departement-loire-atlantique', GeoDepartement::class)),
             'istres' => (new GeoCommune())
                 ->setCode('13047')
                 ->setNom('Istres')

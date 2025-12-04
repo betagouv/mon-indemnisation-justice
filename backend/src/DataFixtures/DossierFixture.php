@@ -71,6 +71,9 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         // Dossiers
         $dossierAFinaliser = (new BrisPorte())
             ->setRequerant($this->getReference('requerant-raquel', Requerant::class))
+            ->setAdresse((new Adresse())
+                ->setLigne1('12 rue des Oliviers')
+                ->setCodePostal('44100'))
             ->setDescriptionRequerant('Porte fracturée tôt ce matin')
             ->setTestEligibilite(
                 TestEligibilite::fromArray([

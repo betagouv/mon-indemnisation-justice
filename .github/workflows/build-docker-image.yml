@@ -32,3 +32,5 @@ jobs:
           push: true
           tags: pierrelemee/mij-frankenphp
           platforms: linux/amd64,linux/arm64
+          secret-envs:
+            VITE_SENTRY_DSN=${{ secrets.SENTRY_DSN }}
