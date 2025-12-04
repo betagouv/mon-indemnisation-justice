@@ -1,5 +1,9 @@
 import { createContext } from "react";
 
-const PaysContext = createContext(null);
+type Pays = {
+  nom: string;
+  code: string;
+};
+const PaysContext = createContext<Pays[]>([]);
 
-export { PaysContext };
+export { PaysContext, type Pays };

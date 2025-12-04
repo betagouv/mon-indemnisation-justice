@@ -61,7 +61,7 @@ const Recapitulatif = ({
               <h3>Votre identité</h3>
               <div className="fr-col-12 fr-col-lg-6">
                 <dl>
-                  <dt className={styles.dt}>Nom et prénom</dt>
+                  <dt className={styles.dt}>Nom et prénom :</dt>
                   <dd>
                     {dossier.requerant.personnePhysique.civilite}{" "}
                     {capitaliser(dossier.requerant.personnePhysique.prenom1)}{" "}
@@ -71,7 +71,8 @@ const Recapitulatif = ({
                     Né
                     {dossier.requerant.personnePhysique.civilite == "MME"
                       ? "e"
-                      : ""}
+                      : ""}{" "}
+                    :
                   </dt>
                   <dd>
                     {dossier.requerant.personnePhysique.dateNaissance ? (
@@ -88,7 +89,7 @@ const Recapitulatif = ({
               </div>
               <div className="fr-col-12 fr-col-lg-6">
                 <dl>
-                  <dt className={styles.dt}>Adresse</dt>
+                  <dt className={styles.dt}>Adresse :</dt>
                   <dd>
                     {dossier.requerant.adresse.ligne1}
                     <br />
@@ -135,7 +136,7 @@ const Recapitulatif = ({
             {dossier.adresse.codePostal} {dossier.adresse.localite}
           </dd>
 
-          <dt className={styles.dt}>Il d'une porte blindée :</dt>
+          <dt className={styles.dt}>Il s'agit d'une porte blindée :</dt>
           <dd>{dossier.isPorteBlindee ? "Oui" : "Non"}</dd>
 
           <dt className={styles.dt}>J'effectue ma demande en qualité de :</dt>

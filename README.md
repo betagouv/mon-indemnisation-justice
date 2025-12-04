@@ -6,7 +6,7 @@ L'application **Mon Indemnisation Justice** vise à améliorer la qualité du se
 
 Les préjudices éligibles à une indemnisation sont:
 * ✅ les bris de portes : les portes fracturées à tort par les forces de l'ordre lors d'une opération
-* 🕥 les mises sous scéllé
+* 🕥 les mises sous scellé
 * 🕥 les dysfonctionnements
 * 🕥 les sinistres
 
