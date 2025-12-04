@@ -421,6 +421,7 @@ const BrisPortePanel = function () {
           <RecapitulatifBrisPorte
             gotoFirstSection={gotoFirstSection}
             gotoSecondSection={gotoSecondSection}
+            gotoThirdSection={gotoThirdSection}
           />
           <ButtonsGroup
             inlineLayoutWhen="always"

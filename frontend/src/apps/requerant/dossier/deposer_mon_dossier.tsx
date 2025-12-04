@@ -1,33 +1,28 @@
+import "@/apps/_init.ts";
 import React, { useReducer } from "react";
 import ReactDOM from "react-dom/client";
-import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import BrisPortePanel from "@/apps/requerant/dossier/components/BrisPortePanel";
 import {
   DossierContext,
   PatchDossierContext,
 } from "@/apps/requerant/dossier/contexts/DossierContext.ts";
-import { PaysContext } from "@/apps/requerant/dossier/contexts/PaysContext.ts";
+import {
+  Pays,
+  PaysContext,
+} from "@/apps/requerant/dossier/contexts/PaysContext.ts";
 import _ from "lodash";
 import {
   recursiveMerge,
   recursivePatch,
 } from "@/apps/requerant/dossier/services/Object";
 
-// En développement, vider la console après chaque action de HMR (Hot Module Replacement)
-if (import.meta.hot) {
-  import.meta.hot.on("vite:beforeUpdate", () => console.clear());
-}
+import * as Sentry from "@sentry/browser";
 
-// En production, désactivation de React devtools
-if (import.meta.env.PROD) {
-  disableReactDevTools();
-}
-
-const { dossier, pays }: { dossier: any; pays: any[] } = JSON.parse(
-  document.getElementById("react-arguments").textContent,
+const { dossier, pays }: { dossier: any; pays: Pays[] } = JSON.parse(
+  document.getElementById("react-arguments")?.textContent ?? "{}",
 );
 
-pays.sort((pays1: any, pays2: any) => {
+pays.sort((pays1: Pays, pays2: Pays) => {
   if (pays1.code === "FRA") {
     return -1;
   }
@@ -60,7 +55,9 @@ for (const [type, liste] of Object.entries(documents)) {
   }
 }
 
-const root = ReactDOM.createRoot(document.getElementById("react-app"));
+const root = ReactDOM.createRoot(
+  document.getElementById("react-app") as HTMLElement,
+);
 
 let queuedChanges = {};
 
@@ -76,20 +73,25 @@ window.appPendingChanges = window.appPendingChanges || false;
 const apiPatch = () => {
   if (Object.keys(queuedChanges).length > 0) {
     window.appPendingChanges = true;
+    // TODO : passer cet appel an await et gérer l'erreur (Sentry + message utilisateur)
     // Run a PATCH call and store the result as state
     fetch(`/api-v1/requerant/dossier/${dossier.id}`, {
       method: "PATCH",
       redirect: "error",
       headers: { "Content-Type": "application/merge-patch+json" },
       body: JSON.stringify(queuedChanges),
-    }).then((response) => {
-      queuedChanges = {};
-      window.appPendingChanges = false;
-    }); //.catch((e) => alert(e))
+    })
+      .then((response) => {
+        queuedChanges = {};
+        window.appPendingChanges = false;
+      })
+      .catch((e) => {
+        Sentry.captureException(e);
+      });
   }
 };
 
-const debouncedApiPatch = _.debounce(apiPatch, 500);
+const debouncedApiPatch = _.debounce(apiPatch, 250);
 
 function DossierApp({ dossier }) {
   const [_dossier, _patchDossier]: [any, (any) => void] = useReducer(
