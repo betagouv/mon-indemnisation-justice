@@ -67,6 +67,7 @@ function RouteComponent() {
           <div className="fr-col-12 fr-grid-row fr-grid-row--right">
             <Link
               to="/agent/fdo/foire-aux-questions"
+              hash="question-quand-remettre-attestation"
               className="fr-link fr-icon-arrow-right-line fr-link--icon-right fr-text--sm"
             >
               <b>Vous avez un doute ?</b> Visitez la foire aux questions pour
