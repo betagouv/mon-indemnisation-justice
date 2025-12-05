@@ -55,7 +55,7 @@ export class RechercheDossier {
   }
 
   estEtatDossierSelectionne(etatDossier: EtatDossierType): boolean {
-    return this._etatsDossier.get(etatDossier);
+    return this._etatsDossier.has(etatDossier);
   }
 
   get page(): number {
@@ -182,14 +182,12 @@ export class RechercheDossier {
 
     return new RechercheDossier(
       query.has("a")
-        ? query
-            .get("a")
+        ? (query.get("a") || "")
             .split("|")
             .map((a) => (a == "_" ? null : Redacteur.resoudre(parseInt(a))))
         : [],
       query.has("e")
-        ? query
-            .get("e")
+        ? (query.get("e") || "")
             .split("|")
             .map((e) => EtatDossierType.resoudreParSlug(e))
             .filter((e) => !!e)
@@ -207,8 +205,8 @@ export class RechercheDossier {
             EtatDossierType.KO_A_SIGNER,
             EtatDossierType.KO_REJETE,
           ],
-      query.has("r") ? query.get("r") : "",
-      parseInt(query.get("p")) || 1,
+      query.get("r") || "",
+      parseInt(query.get("p") || "") || 1,
     );
   }
 }
