@@ -8,93 +8,138 @@ import { fr } from "@codegouvfr/react-dsfr";
 export const Route = createFileRoute("/agent/fdo/foire-aux-questions")({
   component: () => (
     <div>
-      <Alert
-        severity="info"
-        title="Téléchargez le guide de déclaration d'erreur de bris de porte"
-        description={
-          <Download
-            label="Guide utilisateur Déclaration de Bris de porte - erreur opérationnelle"
-            details="PDF - 61,88 ko"
-            linkProps={{
-              href: "#",
-            }}
-          />
-        }
-      />
       <h1 className="fr-my-2w">Foire aux questions</h1>
 
-      <div className={fr.cx("fr-accordions-group")}>
-        <Accordion label="Qu’est-ce qu’une erreur opérationnelle ? ">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. In pulvinar
-          diam vel viverra volutpat. Phasellus dapibus imperdiet ipsum, porta
-          ornare dolor condimentum ut. Etiam volutpat dolor metus, id viverra
-          lectus ullamcorper sed. Duis dictum turpis augue, id elementum augue
-          blandit eu. Donec sed placerat neque. Mauris fermentum libero ut est
-          sollicitudin, ut placerat sapien pulvinar. Donec placerat aliquet
-          sapien eget porttitor. Mauris tincidunt, libero eget semper tempus,
-          orci sapien tempor neque, et ultricies ligula metus sed erat. Aliquam
-          lectus erat, dignissim non interdum non, fermentum sit amet ligula.
-          Aliquam erat volutpat. Duis vitae rutrum magna. In eget sagittis arcu.
-          Nulla sollicitudin luctus libero, quis pretium urna feugiat a. Donec
-          ornare justo leo, non elementum odio egestas ac. Phasellus et velit
-          pretium, lobortis quam id, finibus elit.
-        </Accordion>
-        <Accordion label="Qu’est-ce qu’une erreur opérationnelle ? ">
-          Integer aliquam, tortor at congue tristique, eros mi feugiat libero,
-          in feugiat ligula quam et tortor. In sit amet ante ut risus consequat
-          auctor quis ac erat. Cras a pulvinar justo. Quisque convallis, felis
-          quis feugiat dignissim, augue velit blandit risus, sed interdum risus
-          mauris quis quam. Curabitur orci dolor, ornare ac ante quis, gravida
-          dictum dui. Vivamus varius suscipit eleifend. Duis felis enim,
-          convallis et tellus nec, placerat rutrum dolor. Sed lacus augue,
-          vestibulum sed ipsum id, dignissim rhoncus lacus. Class aptent taciti
-          sociosqu ad litora torquent per conubia nostra, per inceptos
-          himenaeos. Quisque feugiat sapien nec erat efficitur, sed hendrerit
-          orci accumsan. Cras placerat felis porta felis volutpat dignissim.
-          Quisque pulvinar lectus quis nisi egestas vulputate. Nulla eleifend
-          hendrerit feugiat. Nam commodo elit vehicula nisl elementum convallis.
-          Curabitur quis nisi et enim commodo laoreet.
-        </Accordion>
-        <Accordion label="Qu’est-ce qu’une erreur opérationnelle ? ">
-          Suspendisse lobortis sollicitudin ligula, non finibus ex molestie eu.
-          Proin et sapien vitae neque posuere rhoncus. Nullam massa nisl,
-          egestas at cursus sed, aliquet quis odio. Integer euismod mattis
-          euismod. Maecenas felis ante, imperdiet tincidunt cursus sed, finibus
-          mollis quam. Fusce pellentesque turpis egestas ipsum sodales aliquam.
-          In malesuada vel eros in feugiat. Nunc rutrum metus justo, vel porta
-          diam tincidunt nec. Pellentesque felis ligula, posuere vel euismod
-          eget, vehicula eget velit. Nunc gravida eros id sapien pharetra
-          viverra. Nunc in tortor ultricies orci vestibulum pretium. Vestibulum
-          dictum ac purus sed suscipit. Phasellus nulla lectus, venenatis a diam
-          a, pulvinar tristique nibh. Ut laoreet sed magna at aliquam. Praesent
-          volutpat finibus luctus. Vivamus fringilla dui nec malesuada mollis.
-        </Accordion>
-        <Accordion label="Qu’est-ce qu’une erreur opérationnelle ? ">
-          Etiam sodales imperdiet lorem, sit amet cursus lorem porttitor id.
-          Nunc ut est elementum, interdum erat ut, commodo nibh. Duis sodales
-          risus ac elit commodo, feugiat placerat arcu condimentum. Morbi
-          posuere pellentesque ornare. Sed eu diam urna. Mauris ipsum augue,
-          tristique a dictum sed, fermentum a urna. Nulla rutrum facilisis
-          venenatis. Mauris sodales purus quis dui interdum volutpat vestibulum
-          ut ipsum. Nulla quam mi, facilisis ut massa mollis, egestas commodo
-          purus. Ut id odio vitae arcu faucibus aliquam in in ipsum. Nulla
-          facilisi.
-        </Accordion>
-        <Accordion label="Qu’est-ce qu’une erreur opérationnelle ? ">
-          Etiam faucibus libero lorem. Aliquam at risus tempus, pellentesque
-          felis ac, viverra libero. Vivamus sed diam suscipit, luctus orci at,
-          laoreet metus. Nulla quis convallis mauris. Maecenas in tortor id mi
-          finibus tristique. Class aptent taciti sociosqu ad litora torquent per
-          conubia nostra, per inceptos himenaeos. Etiam quis varius tortor. Nunc
-          facilisis tortor id enim consectetur viverra. Etiam iaculis porttitor
-          est, sit amet sagittis nisi feugiat vel. Vestibulum ante ipsum primis
-          in faucibus orci luctus et ultrices posuere cubilia curae; Aliquam ac
-          eros ligula. Praesent congue at felis vel pharetra. Etiam id risus
-          finibus, porttitor odio ac, egestas felis. Cras ultricies metus est,
-          et blandit tellus vestibulum vitae. Ut dui leo, blandit at erat sit
-          amet, molestie viverra tellus. Phasellus efficitur pulvinar venenatis.
-        </Accordion>
-      </div>
+      <section id="question-quand-remettre-attestation">
+        <h4>Dans quels cas remettre l'attestation ?</h4>
+        <p>
+          Certaines situations particulières peuvent donner lieu à une
+          indemnisation, alors même qu’il n’y a pas d’erreur opérationnelle.
+        </p>
+
+        <ol>
+          <li>
+            <strong>Cas de violences conjugales</strong>
+            <p className="fr-mt-2w">
+              Lorsqu’une intervention est effectuée sur appel de la victime ou
+              de ses voisins, l’attestation peut être remise à la victime.
+            </p>
+          </li>
+          <li>
+            <strong>
+              Cas des interventions menées avec une brigade cynophile
+            </strong>
+            <p className="fr-mt-2w">
+              Lorsqu’un chien spécialisé dans la recherche de produits
+              stupéfiants effectue un marquage entraînant un bris de porte,
+              l’attestation peut être remise si le marquage du chien était
+              erroné (absence de produits stupéfiants, présence de rats morts
+              …).
+            </p>
+          </li>
+          <li>
+            <strong>Cas de squat</strong>
+            <p className="fr-mt-2w">
+              L’attestation doit être remise au propriétaire lorsque ce-dernier
+              avait engagé une procédure d’expulsion avant l’intervention, même
+              si les squatteurs étaient les mis en cause.
+            </p>
+          </li>
+          <li>
+            <strong>
+              Cas de dénonciation mensongère d’une urgence vitale avérée
+            </strong>
+            <p className="fr-mt-2w">
+              Lorsque l’auteur de la dénonciation mensongère n’est pas
+              identifié, l’attestation doit être remise à la personne dont le
+              logement a été endommagé. En cas d’appel d’un voisin sur la base
+              d’une erreur d’appréciation de la situation (mauvaise désignation
+              du logement ou mauvaise perception de l’origine des cris),
+              l’attestation doit être remise à la personne dont le logement a
+              été endommagé, lorsque ce voisin était de bonne foi (sans
+              intention de nuire). Ce cas est distinct de la dénonciation
+              mensongère.
+            </p>
+          </li>
+          <li>
+            <strong>Cas d’usurpation d’identité ou d’homonymie</strong>
+            <p className="fr-mt-2w">
+              En cas d’homonymie, l’attestation doit être remise à la personne
+              dont le logement a été endommagé. Lorsqu’un bris de porte résulte
+              d’une usurpation d’identité, l’attestation doit être remise si
+              l’auteur de l’usurpation est connu.
+            </p>
+          </li>
+          <li>
+            <strong>
+              Cas des interventions dans des associations d’aide ou d’insertion
+              sociale
+            </strong>
+            <p className="fr-mt-2w">
+              L’attestation doit être remise au responsable de l’association
+              (Croix-Rouge, Samu social, etc.), même si cette association
+              hébergeait le mis en cause.
+            </p>
+          </li>
+          <li>
+            <strong>Cas de déménagement</strong>
+            <p className="fr-mt-2w">
+              En cas de déménagement du mis en cause, l’attestation doit être
+              remise au nouvel occupant du logement (locataire ou propriétaire).
+            </p>
+          </li>
+          <li>
+            <strong>Cas de flagrance Lorsque l’auteur</strong>
+            <p className="fr-mt-2w">
+              d’une infraction, poursuivi par les forces de l’ordre, se réfugie
+              chez une personne tierce à l’opération de police judiciaire,
+              l’attestation doit être remise à cette dernière.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <section id="question-comment-requisitionner-serrurier">
+        <h4>Comment réquisitionner un serrurier lors d’une intervention ?</h4>
+        <p className="fr-my-1w">
+          Afin de faciliter les interventions et d’assurer la transparence du
+          dispositif,{" "}
+          <span className="fr-text--bold">Mon Indemnisation Justice</span>{" "}
+          intègre désormais une fonctionnalité dédiée aux{" "}
+          <span className="fr-text--bold">Forces de l’ordre</span> pour la
+          <span className="fr-text--bold">
+            réquisition d’un serrurier labellisé
+          </span>
+          .
+        </p>
+        <p className="fr-my-1w">
+          Cette évolution vise également à améliorer la qualité du service rendu
+          aux usagers en collaborant avec des serruriers sensibilisés aux bonnes
+          pratiques, membres du Label « Serruriers de France ».
+        </p>
+
+        <p className="fr-my-1w">
+          Vous pouvez trouver un serrurier labellisé depuis la plateforme Mon
+          Indemnisation Justice en vous connectant à votre espace.
+        </p>
+        <p className="fr-my-1w">Étapes :</p>
+        <ol className="r-list">
+          <li>
+            Connectez-vous à l’espace Forces de l’ordre sur Mon Indemnisation
+            Justice.
+          </li>
+          <li>Cliquez sur « Réquisitionner un serrurier ».</li>
+          <li>Saisissez l’adresse ou le code postal du lieu d’intervention.</li>
+          <li>
+            Une liste de serruriers labellisés apparaîtra avec leurs
+            coordonnées.
+          </li>
+        </ol>
+
+        <p className="fr-text--bold fr-my-1w">
+          N’hésitez pas à nous remonter toute difficulté rencontrée.
+        </p>
+      </section>
     </div>
   ),
 });
