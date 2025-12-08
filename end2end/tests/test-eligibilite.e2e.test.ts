@@ -72,11 +72,14 @@ test("test éligibilité", async ({page}) => {
 
     // Remplissage du formulaire
     // TODO générer des données avec https://www.npmjs.com/package/@faker-js/faker
+    const courriel = `rick.errant+${Date.now()}@courriel.fr`
+
+
     await page.getByLabel("Civilité").selectOption("Monsieur");
     await page.getByLabel("Prénom").fill("Rick");
     await page.getByLabel("Nom de naissance").fill("Errant");
     await page.getByLabel("Nom d'usage").fill("Errant");
-    await page.getByLabel("Adresse courriel").fill("rick.errant@courriel.fr");
+    await page.getByLabel("Adresse courriel").fill(courriel);
     await page.waitForResponse("/bris-de-porte/tester-adresse-courriel");
     await page.getByLabel("Numéro de téléphone").fill("0612345678");
     await page.getByLabel("Mot de passe").first().fill("P4ssword");

@@ -5,7 +5,13 @@ import {getItemDescription} from "./helpers";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-test("dépôt de dossier", async ({page}) => {
+test("dépôt de dossier", async ({browser}) => {
+    // Démarrer une session incognito pour éviter les effets de bord des sessions en cookie
+    const context = await browser.newContext();
+    await context.clearCookies();
+
+    const page = await browser.newPage();
+
     await page.goto("/connexion");
 
     await expect(
