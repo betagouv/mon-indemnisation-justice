@@ -145,7 +145,10 @@ const Recapitulatif = ({
           <dt className={styles.dt}>Description de l'intervention :</dt>
           <dd
             dangerouslySetInnerHTML={{
-              __html: dossier.descriptionRequerant.replaceAll(/\n/g, "</br>"),
+              __html: (dossier.descriptionRequerant || "").replaceAll(
+                /\n/g,
+                "</br>",
+              ),
             }}
           />
         </dl>

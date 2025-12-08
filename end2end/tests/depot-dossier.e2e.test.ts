@@ -121,7 +121,10 @@ test("dépôt de dossier", async ({page}) => {
 
     // Select one file
     await page
-        .getByLabel("Attestation complétée par les forces de l'ordre")
+        .getByText(/Attestation complétée par les forces de l'ordre.*/)
+        .locator('..')
+        .getByLabel("Document à téléverser")
+
         .setInputFiles(
             path.join(
                 __dirname,

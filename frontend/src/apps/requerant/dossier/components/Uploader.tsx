@@ -1,20 +1,21 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { randomId } from "@/apps/requerant/dossier/services/Random.ts";
+import * as Sentry from "@sentry/browser";
 
 export const Uploader = ({
   dossier,
-  libelle,
   onUploaded,
+  className,
   type,
 }: {
   dossier: any;
-  libelle: string;
-  onUploaded: (document: any) => void;
+  onUploaded?: (document: any) => void;
+  className?: string;
   type: string;
 }) => {
   const MAX_SIZE = 5 * 1024 * 1024;
   const [erreur, setErreur]: [string | null, (erreur: string | null) => void] =
-    useState(null);
+    useState<string | null>(null);
 
   const id = useMemo<string>(() => randomId(), []);
 
@@ -22,13 +23,9 @@ export const Uploader = ({
     setErreur("");
     const file: File = ev.target.files[0];
     if (
-      ![
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-        "application/pdf",
-      ].includes(file.type)
+      !["image/jpeg", "image/png", "image/webp", "application/pdf"].includes(
+        file.type,
+      )
     ) {
       setErreur("Type de fichier nom accepté");
     } else if (file.size > MAX_SIZE) {
@@ -42,29 +39,33 @@ export const Uploader = ({
         body: data,
       })
         .then((response) => response.json())
-        .then((document) => onUploaded(document))
-        .catch(() =>
+        .then((document) => onUploaded?.(document))
+        .catch((e) => {
+          Sentry.captureException(e);
           setErreur(
             "Un problème technique est survenu lors du téléversement. Nous vous invitons à ré-essayer.",
-          ),
-        );
+          );
+        });
     }
   };
 
   return (
-    <div className="fr-my-2w fr-upload-group">
+    <div className={`fr-my-2w fr-upload-group ${className}`}>
       <label className="fr-label" htmlFor={id}>
-        {/*<span className="fr-icon-upload-2-line fr-mr-1w" aria-hidden="true"></span>*/}
-        {libelle}
+        Document à téléverser
       </label>
       <input
         id={id}
         className="fr-upload"
         type="file"
+        multiple={false}
+        accept="image/jpeg, image/png, image/webp, application/pdf"
         onChange={handleFileInput}
       />
       <span className="fr-hint-text">
-        Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf, webp.
+        Vous pouvez déposer plusieurs fichiers à la suite.
+        <br />
+        Taille maximale : 5 Mo, formats supportés : jpg, png, pdf, webp.
       </span>
       {erreur && <p className="fr-error-text">{erreur}</p>}
     </div>
