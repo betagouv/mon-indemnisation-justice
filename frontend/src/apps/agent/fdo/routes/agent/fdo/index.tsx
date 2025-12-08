@@ -143,7 +143,7 @@ function RouteComponent() {
           title="Mes documents"
           titleAs={"h5"}
           linkProps={{
-            href: "#",
+            to: "/agent/fdo/les-documents",
           }}
           enlargeLink
           horizontal={false}

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './../routes/__root'
 import { Route as AgentFdoIndexRouteImport } from './../routes/agent/fdo/index'
 import { Route as AgentFdoRequisitionSerrurierRouteImport } from './../routes/agent/fdo/requisition-serrurier'
+import { Route as AgentFdoLesDocumentsRouteImport } from './../routes/agent/fdo/les-documents'
 import { Route as AgentFdoFoireAuxQuestionsRouteImport } from './../routes/agent/fdo/foire-aux-questions'
 import { Route as AgentFdoErreurOperationnelleIndexRouteImport } from './../routes/agent/fdo/erreur-operationnelle/index'
 import { Route as AgentFdoErreurOperationnelleNouvelleDeclarationRouteImport } from './../routes/agent/fdo/erreur-operationnelle/nouvelle-declaration'
@@ -31,6 +32,11 @@ const AgentFdoRequisitionSerrurierRoute =
     path: '/agent/fdo/requisition-serrurier',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AgentFdoLesDocumentsRoute = AgentFdoLesDocumentsRouteImport.update({
+  id: '/agent/fdo/les-documents',
+  path: '/agent/fdo/les-documents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgentFdoFoireAuxQuestionsRoute =
   AgentFdoFoireAuxQuestionsRouteImport.update({
     id: '/agent/fdo/foire-aux-questions',
@@ -82,6 +88,7 @@ const AgentFdoErreurOperationnelleReference1OperationRoute =
 
 export interface FileRoutesByFullPath {
   '/agent/fdo/foire-aux-questions': typeof AgentFdoFoireAuxQuestionsRoute
+  '/agent/fdo/les-documents': typeof AgentFdoLesDocumentsRoute
   '/agent/fdo/requisition-serrurier': typeof AgentFdoRequisitionSerrurierRoute
   '/agent/fdo': typeof AgentFdoIndexRoute
   '/agent/fdo/erreur-operationnelle/mes-declarations': typeof AgentFdoErreurOperationnelleMesDeclarationsRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/agent/fdo/foire-aux-questions': typeof AgentFdoFoireAuxQuestionsRoute
+  '/agent/fdo/les-documents': typeof AgentFdoLesDocumentsRoute
   '/agent/fdo/requisition-serrurier': typeof AgentFdoRequisitionSerrurierRoute
   '/agent/fdo': typeof AgentFdoIndexRoute
   '/agent/fdo/erreur-operationnelle/mes-declarations': typeof AgentFdoErreurOperationnelleMesDeclarationsRoute
@@ -107,6 +115,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/agent/fdo/foire-aux-questions': typeof AgentFdoFoireAuxQuestionsRoute
+  '/agent/fdo/les-documents': typeof AgentFdoLesDocumentsRoute
   '/agent/fdo/requisition-serrurier': typeof AgentFdoRequisitionSerrurierRoute
   '/agent/fdo/': typeof AgentFdoIndexRoute
   '/agent/fdo/erreur-operationnelle/mes-declarations': typeof AgentFdoErreurOperationnelleMesDeclarationsRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/agent/fdo/foire-aux-questions'
+    | '/agent/fdo/les-documents'
     | '/agent/fdo/requisition-serrurier'
     | '/agent/fdo'
     | '/agent/fdo/erreur-operationnelle/mes-declarations'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/agent/fdo/foire-aux-questions'
+    | '/agent/fdo/les-documents'
     | '/agent/fdo/requisition-serrurier'
     | '/agent/fdo'
     | '/agent/fdo/erreur-operationnelle/mes-declarations'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/agent/fdo/foire-aux-questions'
+    | '/agent/fdo/les-documents'
     | '/agent/fdo/requisition-serrurier'
     | '/agent/fdo/'
     | '/agent/fdo/erreur-operationnelle/mes-declarations'
@@ -158,6 +170,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AgentFdoFoireAuxQuestionsRoute: typeof AgentFdoFoireAuxQuestionsRoute
+  AgentFdoLesDocumentsRoute: typeof AgentFdoLesDocumentsRoute
   AgentFdoRequisitionSerrurierRoute: typeof AgentFdoRequisitionSerrurierRoute
   AgentFdoIndexRoute: typeof AgentFdoIndexRoute
   AgentFdoErreurOperationnelleMesDeclarationsRoute: typeof AgentFdoErreurOperationnelleMesDeclarationsRoute
@@ -183,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/agent/fdo/requisition-serrurier'
       fullPath: '/agent/fdo/requisition-serrurier'
       preLoaderRoute: typeof AgentFdoRequisitionSerrurierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent/fdo/les-documents': {
+      id: '/agent/fdo/les-documents'
+      path: '/agent/fdo/les-documents'
+      fullPath: '/agent/fdo/les-documents'
+      preLoaderRoute: typeof AgentFdoLesDocumentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agent/fdo/foire-aux-questions': {
@@ -246,6 +266,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   AgentFdoFoireAuxQuestionsRoute: AgentFdoFoireAuxQuestionsRoute,
+  AgentFdoLesDocumentsRoute: AgentFdoLesDocumentsRoute,
   AgentFdoRequisitionSerrurierRoute: AgentFdoRequisitionSerrurierRoute,
   AgentFdoIndexRoute: AgentFdoIndexRoute,
   AgentFdoErreurOperationnelleMesDeclarationsRoute:
