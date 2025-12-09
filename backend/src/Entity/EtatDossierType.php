@@ -120,6 +120,11 @@ enum EtatDossierType: string
         };
     }
 
+    public function estEditable(): bool
+    {
+        return in_array($this, [self::DOSSIER_A_FINALISER, self::DOSSIER_A_ATTRIBUER, self::DOSSIER_A_INSTRUIRE]);
+    }
+
     public function estAAttribuer(): bool
     {
         return self::DOSSIER_A_ATTRIBUER === $this;

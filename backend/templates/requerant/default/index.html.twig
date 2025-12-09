@@ -80,7 +80,12 @@
                                         <span class="fr-tooltip fr-placement"
                                               id="cloture-explication-{{ dossier.id }}-tooltip" role="tooltip"
                                               aria-hidden="true">{{ dossier.explicationCloture }}</span>
-                                    {% elseif dossier.estConstitue %}
+                                    {% elseif not dossier.estEditable %}
+                                        <p class="fr-badge fr-badge--blue-ecume">
+                                            Dossier en cours d'instruction&nbsp;
+                                            <span class="fr-icon-settings-5-line" aria-hidden="true"></span>
+                                        </p>
+                                    {% elseif dossier.estDepose %}
                                         <p class="fr-badge fr-badge--blue-cumulus">
                                             Dossier déposé&nbsp;
                                             <span class="fr-icon-send-plane-line" aria-hidden="true"></span>
@@ -100,19 +105,24 @@
                                 </td>
                                 <td>
                                     {% if not dossier.estCloture %}
-                                        <a
-                                                {% if dossier.estSigne %}
+                                        {% if dossier.estEditable %}
+                                            {% if dossier.estDepose %}
+                                                <a href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
+                                                   class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left">
+                                                    Modifier
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
+                                                   class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left">
+                                                    Compléter
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            <a
                                                     href="{{ url('requerant_dossier_consulter_decision', { 'id' : dossier.id }) }}"
                                                     class="fr-btn fr-btn--sm fr-icon-eye-line fr-btn--icon-left"
-                                                {% else %}
-                                                    href="{{ url('app_bris_porte_edit', { 'id' : dossier.id }) }}"
-                                                    class="fr-btn fr-btn--sm fr-icon-ball-pen-line fr-btn--icon-left"
-                                                {% endif %}
-
-
-                                        >
-                                            {% if dossier.estSigne %}Consulter{% elseif dossier.estConstitue %}Modifier{% else %}Compléter{% endif %}
-                                        </a>
+                                            >Consulter</a>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                             </tr>

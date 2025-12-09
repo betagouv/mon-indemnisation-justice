@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe.tsx";
 import { default as RecapitulatifBrisPorte } from "./BrisPorte/Recapitulatif.tsx";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
@@ -12,7 +11,11 @@ import {
 } from "@/apps/requerant/dossier/contexts/DossierContext.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 
-const BrisPortePanel = function () {
+const BrisPortePanel = function ({
+  lectureSeule = false,
+}: {
+  lectureSeule?: boolean;
+}) {
   const dossier = useContext(DossierContext);
   const patchDossier = useContext(PatchDossierContext);
 
@@ -28,7 +31,9 @@ const BrisPortePanel = function () {
   const gotoSection = (index) => {
     setStep(index);
   };
-  const [step, setStep] = useState(dossier.dateDeclaration ? 3 : 0);
+  const [step, setStep] = useState(
+    dossier.dateDeclaration || lectureSeule ? 3 : 0,
+  );
   const [title, setTitle] = useState("");
   const [nextTitle, setNextTitle] = useState("");
 
@@ -419,30 +424,48 @@ const BrisPortePanel = function () {
       {step === 3 && (
         <>
           <RecapitulatifBrisPorte
+            lectureSeule={lectureSeule}
             gotoFirstSection={gotoFirstSection}
             gotoSecondSection={gotoSecondSection}
             gotoThirdSection={gotoThirdSection}
           />
-          <ButtonsGroup
-            inlineLayoutWhen="always"
-            alignment="right"
-            buttonsIconPosition="right"
-            buttons={[
-              {
-                priority: "secondary",
-                children: "Revenir à l'étape précédente",
-                onClick: () => decrementStep(),
-              },
-              {
-                children: dossier.dateDeclaration
-                  ? "Mettre à jour mon dossier"
-                  : "Je déclare mon bris de porte",
-                linkProps: {
-                  href: `/requerant/bris-de-porte/passage-a-l-etat-constitue/${dossier.id}`,
+          {!lectureSeule ? (
+            <ButtonsGroup
+              inlineLayoutWhen="always"
+              alignment="right"
+              buttonsIconPosition="right"
+              buttons={[
+                {
+                  priority: "secondary",
+                  children: "Revenir à l'étape précédente",
+                  onClick: () => decrementStep(),
                 },
-              },
-            ]}
-          />
+                {
+                  children: dossier.dateDeclaration
+                    ? "Mettre à jour mon dossier"
+                    : "Je déclare mon bris de porte",
+                  linkProps: {
+                    href: `/requerant/bris-de-porte/passage-a-l-etat-constitue/${dossier.id}`,
+                  },
+                },
+              ]}
+            />
+          ) : (
+            <ButtonsGroup
+              inlineLayoutWhen="always"
+              alignment="right"
+              buttonsIconPosition="right"
+              buttons={[
+                {
+                  priority: "primary",
+                  children: "Mes déclarations",
+                  linkProps: {
+                    href: "/requerant/mes-demandes",
+                  },
+                },
+              ]}
+            />
+          )}
         </>
       )}
     </>
