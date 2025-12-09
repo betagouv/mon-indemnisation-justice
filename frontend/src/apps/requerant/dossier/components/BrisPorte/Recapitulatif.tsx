@@ -9,10 +9,12 @@ import { capitaliser } from "@/common/services/divers.ts";
 import QualiteRequerant from "@/apps/requerant/dossier/models/QualiteRequerant.ts";
 
 const Recapitulatif = ({
+  lectureSeule = false,
   gotoFirstSection,
   gotoSecondSection,
   gotoThirdSection,
 }: {
+  lectureSeule?: boolean;
   gotoFirstSection: () => void;
   gotoSecondSection: () => void;
   gotoThirdSection: () => void;
@@ -103,15 +105,17 @@ const Recapitulatif = ({
             </>
           )}
 
-          <Button
-            className="fr-my-1w"
-            size="small"
-            priority="secondary"
-            iconId="fr-icon-pencil-line"
-            children="Reprendre la saisie"
-            onClick={gotoFirstSection}
-            iconPosition="right"
-          />
+          {!lectureSeule && (
+            <Button
+              className="fr-my-1w"
+              size="small"
+              priority="secondary"
+              iconId="fr-icon-pencil-line"
+              children="Reprendre la saisie"
+              onClick={gotoFirstSection}
+              iconPosition="right"
+            />
+          )}
         </>
       </section>
 
@@ -153,15 +157,17 @@ const Recapitulatif = ({
           />
         </dl>
 
-        <Button
-          className="fr-my-1w"
-          size="small"
-          priority="secondary"
-          iconId="fr-icon-pencil-line"
-          children="Reprendre la saisie"
-          onClick={gotoSecondSection}
-          iconPosition="right"
-        />
+        {!lectureSeule && (
+          <Button
+            className="fr-my-1w"
+            size="small"
+            priority="secondary"
+            iconId="fr-icon-pencil-line"
+            children="Reprendre la saisie"
+            onClick={gotoSecondSection}
+            iconPosition="right"
+          />
+        )}
       </section>
 
       <section className="fr-col-12 fr-py-4w">
@@ -245,15 +251,17 @@ const Recapitulatif = ({
           type={"non_prise_en_charge_assurance"}
         />
 
-        <Button
-          className="fr-my-1w"
-          size="small"
-          priority="secondary"
-          iconId="fr-icon-pencil-line"
-          children="Reprendre la saisie"
-          onClick={gotoThirdSection}
-          iconPosition="right"
-        />
+        {!lectureSeule && (
+          <Button
+            className="fr-my-1w"
+            size="small"
+            priority="secondary"
+            iconId="fr-icon-pencil-line"
+            children="Reprendre la saisie"
+            onClick={gotoThirdSection}
+            iconPosition="right"
+          />
+        )}
       </section>
     </div>
   );

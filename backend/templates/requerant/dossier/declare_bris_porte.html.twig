@@ -16,6 +16,7 @@
     <script id="react-arguments" type="application/json">
         {
             "dossier": {{ dossier|serialize('json', {groups: 'dossier:lecture'})|raw }},
+            "lectureSeule": {{ dossier.estEditable ? 'false' : 'true' }},
             "pays": {{ pays|serialize('json')|raw }}
         }
     </script>

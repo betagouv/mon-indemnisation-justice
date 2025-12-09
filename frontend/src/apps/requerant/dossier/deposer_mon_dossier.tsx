@@ -18,7 +18,11 @@ import {
 
 import * as Sentry from "@sentry/browser";
 
-const { dossier, pays }: { dossier: any; pays: Pays[] } = JSON.parse(
+const {
+  dossier,
+  pays,
+  lectureSeule,
+}: { dossier: any; pays: Pays[]; lectureSeule: boolean } = JSON.parse(
   document.getElementById("react-arguments")?.textContent ?? "{}",
 );
 
@@ -116,7 +120,7 @@ function DossierApp({ dossier }) {
         <PatchDossierContext.Provider value={_patchDossier}>
           <div className="fr-container">
             <h1>Déclarer un bris de porte</h1>
-            <BrisPortePanel />
+            <BrisPortePanel lectureSeule={lectureSeule} />
           </div>
         </PatchDossierContext.Provider>
       </PaysContext.Provider>
