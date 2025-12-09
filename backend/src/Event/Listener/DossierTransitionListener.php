@@ -8,6 +8,7 @@ use MonIndemnisationJustice\Event\Event\DossierAttribueEvent;
 use MonIndemnisationJustice\Event\Event\DossierClotureEvent;
 use MonIndemnisationJustice\Event\Event\DossierDeposeEvent;
 use MonIndemnisationJustice\Event\Event\DossierEnCoursInstructionEvent;
+use MonIndemnisationJustice\Event\Event\DossierIndemniseEvent;
 use MonIndemnisationJustice\Event\Event\DossierInstruitPropositionEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionAccepteeEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionEnvoyeeEvent;
@@ -26,6 +27,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: DossierPropositionAccepteeEvent::class, method: 'dossierPropositionAcceptee')]
 #[AsEventListener(event: DossierArreteEditeEvent::class, method: 'dossierArreteEdite')]
 #[AsEventListener(event: DossierArreteSigneEvent::class, method: 'dossierArreteSigne')]
+#[AsEventListener(event: DossierIndemniseEvent::class, method: 'dossierIndemnise')]
 class DossierTransitionListener
 {
     public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository) {}
@@ -177,6 +179,19 @@ class DossierTransitionListener
             ->toRequerant($evenement->dossier->getRequerant())
             ->subject("Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse")
             ->htmlTemplate('email/requerant/dossier_decide.twig', [
+                'dossier' => $evenement->dossier,
+            ])
+            ->send()
+        ;
+    }
+
+    public function dossierIndemnise(DossierIndemniseEvent $evenement): void
+    {
+        // Prévenir le requérant que le versement de son indemnisation a bien été fait
+        $this->mailer
+            ->toRequerant($evenement->dossier->getRequerant())
+            ->subject('Mon Indemnisation Justice: le versement de votre indemnisation a été effectué')
+            ->htmlTemplate('email/requerant/dossier_indemnise.twig', [
                 'dossier' => $evenement->dossier,
             ])
             ->send();
