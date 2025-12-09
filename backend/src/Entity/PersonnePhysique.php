@@ -262,6 +262,10 @@ class PersonnePhysique
         return $this;
     }
 
+    /**
+     * Retourne le nom prénom de la personne, éventuellement précédé par la civilité de la personne si $civilite et le
+     * nom de famille en lettres capitales si $capitale.
+     */
     public function getNomCourant(bool $civilite = false, bool $capital = false): string
     {
         return sprintf(

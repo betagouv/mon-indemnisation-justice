@@ -5,7 +5,7 @@
 {% endblock entete %}
 
 {% block contenu %}
-    Bonjour {{ dossier.requerant.nomCourant }},
+    Bonjour {{ dossier.requerant.nomCourant(true, true) }},
     <br/>
     <br/>
     <p>

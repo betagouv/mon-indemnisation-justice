@@ -2,15 +2,15 @@
 
 {% import "email/_macros.twig" as email %}
 
-{% block subject %}Mon Indemnisation Justice : votre déclaration de bris de porte a bien été prise en compte{% endblock subject %}
+{% block subject %}Mon Indemnisation Justice : accusé de réception de votre demande d’indemnisation {% endblock subject %}
 
 {% block entete %}
-    <b>Votre déclaration de bris de porte a bien été prise en compte</b>
+    <b>Accusé de réception de votre demande d’indemnisation</b>
 {% endblock entete %}
 
 
 {% block contenu %}
-    Bonjour {{ dossier.requerant.nomCourant }},
+    Bonjour {{ dossier.requerant.nomCourant(true, true) }},
     <br/>
     <br/>
     <ul>
@@ -22,7 +22,6 @@
     <p>
         Vous avez déclaré un bris de porte ce jour.
     </p>
-
     <p>
         Votre demande est prise en compte.
     </p>

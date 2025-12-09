@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Event\Event\DossierArreteSigneEvent;
 use MonIndemnisationJustice\Event\Event\DossierAttribueEvent;
 use MonIndemnisationJustice\Event\Event\DossierClotureEvent;
 use MonIndemnisationJustice\Event\Event\DossierDeposeEvent;
+use MonIndemnisationJustice\Event\Event\DossierEnCoursInstructionEvent;
 use MonIndemnisationJustice\Event\Event\DossierInstruitPropositionEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionAccepteeEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionEnvoyeeEvent;
@@ -18,6 +19,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: DossierClotureEvent::class, method: 'dossierCloture')]
 #[AsEventListener(event: DossierDeposeEvent::class, method: 'dossierDepose')]
 #[AsEventListener(event: DossierAttribueEvent::class, method: 'dossierAttribue')]
+#[AsEventListener(event: DossierEnCoursInstructionEvent::class, method: 'dossierEnInstruction')]
 #[AsEventListener(event: DossierInstruitPropositionEvent::class, method: 'dossierInstruitProposition')]
 #[AsEventListener(event: DossierPropositionEnvoyeeEvent::class, method: 'dossierPropositionEnvoyee')]
 #[AsEventListener(event: DossierRejeteEvent::class, method: 'dossierRejete')]
@@ -75,6 +77,19 @@ class DossierTransitionListener
             ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à instruire')
             ->htmlTemplate('email/agent/fip6/dossier_a_instruire.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
+                'dossier' => $evenement->dossier,
+            ])
+            ->send()
+        ;
+    }
+
+    public function dossierEnInstruction(DossierEnCoursInstructionEvent $evenement): void
+    {
+        // Informer le requérant que son dossier est bien déposé :
+        $this->mailer
+            ->toRequerant($evenement->dossier->getRequerant())
+            ->subject("Votre dossier de demande d'indemnisation entre en instruction")
+            ->htmlTemplate('email/requerant/dossier_en_instruction.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
             ->send()
