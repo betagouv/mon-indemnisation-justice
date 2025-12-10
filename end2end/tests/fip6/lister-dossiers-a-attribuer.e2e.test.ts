@@ -1,36 +1,39 @@
-import {test} from "@playwright/test";
-import {expect} from "./expect";
-import {connexionAgent, getTitre} from "../helpers";
+import { test } from "@playwright/test";
+import { expect } from "./expect";
+import { connexionAgent, getTitre } from "../helpers";
 
-test("recherche dossier", async ({page, browser}) => {
-    // Démarrer une session incognito pour éviter les effets de bord des sessions en cookie
-    const context = await browser.newContext();
-    await context.clearCookies();
+test("recherche dossier", async ({ browser }) => {
+  // Démarrer une session incognito pour éviter les effets de bord des sessions en cookie
+  const context = await browser.newContext();
+  await context.clearCookies();
+  const page = await browser.newPage();
 
-    try {
-        await connexionAgent(page, "Attributeur");
-        await page.waitForURL("/agent/redacteur/dossiers");
+  try {
+    await connexionAgent(page, "Attributeur");
+    await page.waitForURL("/agent/redacteur/dossiers");
 
-        await expect(getTitre(page, "Les dossiers")).toBeVisible();
+    await expect(getTitre(page, "Les dossiers")).toBeVisible();
 
-        await page.goto('/agent/fip6/dossiers/a-attribuer')
+    await page.goto("/agent/fip6/dossiers/a-attribuer");
 
-        await expect(getTitre(page, "Dossiers à attribuer")).toBeVisible();
+    await expect(getTitre(page, "Dossiers à attribuer")).toBeVisible();
 
-        // Attendre que la requête xhr soit terminée
-        await page.waitForLoadState('networkidle');
+    // Attendre que la requête xhr soit terminée
+    await page.waitForLoadState("networkidle");
 
-        const locatorListeDossiers = page.locator('.mij-dossier-liste-element');
+    const locatorListeDossiers = page.locator(".mij-dossier-liste-element");
 
-        // TODO trouver une façon de faire marcher ça
-        // await expect(locatorListeDossiers).toHaveCountBetween({between: 1, and: 2});
+    // TODO trouver une façon de faire marcher ça
+    // await expect(locatorListeDossiers).toHaveCountBetween({between: 1, and: 2});
 
-        const nbDossiers = await locatorListeDossiers.count()
+    const nbDossiers = await locatorListeDossiers.count();
 
-        await expect(locatorListeDossiers).toHaveCount(nbDossiers);
+    await expect(locatorListeDossiers).toHaveCount(nbDossiers);
 
-        await expect(getTitre(page, `${nbDossiers} dossier${nbDossiers > 1 && 's'}`, 'h4')).toBeVisible();
-    } catch (e) {
-        await context.close();
-    }
+    await expect(
+      getTitre(page, `${nbDossiers} dossier${nbDossiers > 1 && "s"}`, "h4"),
+    ).toBeVisible();
+  } catch (e) {
+    await context.close();
+  }
 });
