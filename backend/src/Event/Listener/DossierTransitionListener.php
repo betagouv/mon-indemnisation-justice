@@ -7,6 +7,8 @@ use MonIndemnisationJustice\Event\Event\DossierArreteSigneEvent;
 use MonIndemnisationJustice\Event\Event\DossierAttribueEvent;
 use MonIndemnisationJustice\Event\Event\DossierClotureEvent;
 use MonIndemnisationJustice\Event\Event\DossierDeposeEvent;
+use MonIndemnisationJustice\Event\Event\DossierEnCoursInstructionEvent;
+use MonIndemnisationJustice\Event\Event\DossierIndemniseEvent;
 use MonIndemnisationJustice\Event\Event\DossierInstruitPropositionEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionAccepteeEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionEnvoyeeEvent;
@@ -18,12 +20,14 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: DossierClotureEvent::class, method: 'dossierCloture')]
 #[AsEventListener(event: DossierDeposeEvent::class, method: 'dossierDepose')]
 #[AsEventListener(event: DossierAttribueEvent::class, method: 'dossierAttribue')]
+#[AsEventListener(event: DossierEnCoursInstructionEvent::class, method: 'dossierEnInstruction')]
 #[AsEventListener(event: DossierInstruitPropositionEvent::class, method: 'dossierInstruitProposition')]
 #[AsEventListener(event: DossierPropositionEnvoyeeEvent::class, method: 'dossierPropositionEnvoyee')]
 #[AsEventListener(event: DossierRejeteEvent::class, method: 'dossierRejete')]
 #[AsEventListener(event: DossierPropositionAccepteeEvent::class, method: 'dossierPropositionAcceptee')]
 #[AsEventListener(event: DossierArreteEditeEvent::class, method: 'dossierArreteEdite')]
 #[AsEventListener(event: DossierArreteSigneEvent::class, method: 'dossierArreteSigne')]
+#[AsEventListener(event: DossierIndemniseEvent::class, method: 'dossierIndemnise')]
 class DossierTransitionListener
 {
     public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository) {}
@@ -75,6 +79,19 @@ class DossierTransitionListener
             ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à instruire')
             ->htmlTemplate('email/agent/fip6/dossier_a_instruire.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
+                'dossier' => $evenement->dossier,
+            ])
+            ->send()
+        ;
+    }
+
+    public function dossierEnInstruction(DossierEnCoursInstructionEvent $evenement): void
+    {
+        // Informer le requérant que son dossier est bien déposé :
+        $this->mailer
+            ->toRequerant($evenement->dossier->getRequerant())
+            ->subject("Votre dossier de demande d'indemnisation entre en instruction")
+            ->htmlTemplate('email/requerant/dossier_en_instruction.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
             ->send()
@@ -162,6 +179,19 @@ class DossierTransitionListener
             ->toRequerant($evenement->dossier->getRequerant())
             ->subject("Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse")
             ->htmlTemplate('email/requerant/dossier_decide.twig', [
+                'dossier' => $evenement->dossier,
+            ])
+            ->send()
+        ;
+    }
+
+    public function dossierIndemnise(DossierIndemniseEvent $evenement): void
+    {
+        // Prévenir le requérant que le versement de son indemnisation a bien été fait
+        $this->mailer
+            ->toRequerant($evenement->dossier->getRequerant())
+            ->subject('Mon Indemnisation Justice: le versement de votre indemnisation a été effectué')
+            ->htmlTemplate('email/requerant/dossier_indemnise.twig', [
                 'dossier' => $evenement->dossier,
             ])
             ->send();

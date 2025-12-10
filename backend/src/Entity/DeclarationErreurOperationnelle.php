@@ -157,7 +157,7 @@ class DeclarationErreurOperationnelle
         return $this;
     }
 
-    public function getDossier(): BrisPorte
+    public function getDossier(): ?BrisPorte
     {
         return $this->dossier;
     }

@@ -1,0 +1,39 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% set consultation_url = url('requerant_dossier_consulter_decision', {'id': dossier.id }) %}
+
+{% block subject %}Mon Indemnisation Justice: versement de votre indemnisation{% endblock subject %}
+
+{% block entete %}
+    <b>Versement de votre indemnisation</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+    Bonjour {{ dossier.requerant.nomCourant(true, true) }},
+    <br/>
+    <br/>
+    <p>
+        Le versement de votre indemnité a été effectué par nos services. Vous recevrez prochainement le virement sur
+        votre compte bancaire.
+    </p>
+    <p>
+        Votre dossier est désormais archivé. Afin d’améliorer la qualité de nos services, nous vous invitons à répondre
+        à <a title="Questionnaire de satisfaction"
+             href="https://docs.google.com/forms/d/e/1FAIpQLSfx1dyzPjfqP1H-X0YxUD66_Ai8JqoeYp7m5Fl34UhvjyyFVg/viewform?usp=sf_link">notre
+            court questionnaire de satisfaction</a>.
+    </p>
+    <p>
+        Nous vous remercions pour votre contribution.
+    </p>
+    <br/>
+    <p>
+        {{ email.bouton("Consulter la décision", consultation_url) }}
+        <br/>
+    </p>
+    <br/>
+    Cordialement,<br/>
+    L'équipe Mon Indemnisation Justice
+{% endblock contenu %}

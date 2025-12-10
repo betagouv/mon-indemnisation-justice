@@ -1,0 +1,30 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% block subject %}Mon Indemnisation Justice : votre dossier de demande d'indemnisation entre en instruction{% endblock subject %}
+
+{% block entete %}
+    <b>Votre dossier de demande d'indemnisation entre en instruction</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+    Bonjour {{ dossier.requerant.nomCourant(true, true) }},
+    <br/>
+    <br/>
+    <p>
+        Votre dossier {{ dossier.reference }} a bien été pris en charge ✅.
+    </p>
+    <p>
+        Un collaborateur en assure l’instruction. Vous serez prochainement
+        informé{{ dossier.requerant.estFeminin() ? 'e' : '' }}
+        de la décision prise par nos services.
+    </p>
+    <p>
+        Nous vous remercions par avance de votre compréhension.
+    </p>
+    <br/>
+    Cordialement,<br/>
+    L'équipe Mon Indemnisation Justice
+{% endblock contenu %}

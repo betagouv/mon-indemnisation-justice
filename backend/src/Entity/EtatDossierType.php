@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Event\Event\DossierArreteSigneEvent;
 use MonIndemnisationJustice\Event\Event\DossierAttribueEvent;
 use MonIndemnisationJustice\Event\Event\DossierClotureEvent;
 use MonIndemnisationJustice\Event\Event\DossierDeposeEvent;
+use MonIndemnisationJustice\Event\Event\DossierEnCoursInstructionEvent;
 use MonIndemnisationJustice\Event\Event\DossierIndemniseEvent;
 use MonIndemnisationJustice\Event\Event\DossierInstruitPropositionEvent;
 use MonIndemnisationJustice\Event\Event\DossierInstruitRejetEvent;
@@ -60,9 +61,13 @@ enum EtatDossierType: string
         return preg_replace('/_/', '-', strtolower($this->value));
     }
 
+    /**
+     * Créer un évènement lorsque le dossier passe à cet état.
+     */
     public function creerTransitionEvent(BrisPorte $dossier): ?DossierTransitionEvent
     {
         return match ($this) {
+            self::DOSSIER_EN_INSTRUCTION => new DossierEnCoursInstructionEvent($dossier),
             self::DOSSIER_CLOTURE => new DossierClotureEvent($dossier),
             self::DOSSIER_A_ATTRIBUER => new DossierDeposeEvent($dossier),
             self::DOSSIER_A_INSTRUIRE => new DossierAttribueEvent($dossier),
@@ -113,6 +118,11 @@ enum EtatDossierType: string
             self::DOSSIER_KO_A_SIGNER => self::DOSSIER_KO_REJETE,
             default => null,
         };
+    }
+
+    public function estEditable(): bool
+    {
+        return in_array($this, [self::DOSSIER_A_FINALISER, self::DOSSIER_A_ATTRIBUER, self::DOSSIER_A_INSTRUIRE]);
     }
 
     public function estAAttribuer(): bool

@@ -295,6 +295,11 @@ class BrisPorte
         $this->etatDossier = $this->historiqueEtats->last();
     }
 
+    public function estEditable(): bool
+    {
+        return $this->etatDossier->estEditable();
+    }
+
     public function estAAttribuer(): bool
     {
         return $this->etatDossier->estAAttribuer();
