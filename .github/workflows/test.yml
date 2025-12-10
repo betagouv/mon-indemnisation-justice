@@ -436,8 +436,7 @@ jobs:
         # Pour l'heure on se limite à Firefox car on ne sait pas encore créer des fixtures par Browser
         run: npx playwright test --reporter=junit --project firefox --retries 0
         env:
-          PLAYWRIGHT_JUNIT_OUTPUT_FILE: test-result-end2end.xml
-          PLAYWRIGHT_JUNIT_OUTPUT_DIR: end2end
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-result-end2end.xml
         working-directory: end2end
 
       - name: End-to-end test report
