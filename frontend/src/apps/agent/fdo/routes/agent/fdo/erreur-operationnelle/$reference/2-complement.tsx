@@ -162,13 +162,13 @@ function Page() {
           void form.handleSubmit();
         }}
       >
-        <h1 className="fr-m-0">Nouvelle déclaration d'erreur opérationnelle</h1>
+        <h1 className="fr-m-0">Nouvelle déclaration de bris de porte</h1>
 
         <Stepper
           className="fr-m-0"
           currentStep={2}
           stepCount={3}
-          title="Complément d’information pour le Ministère de la Justice"
+          title="Éléments relatifs au service enquêteur"
           nextTitle="Informations du requérant"
         />
 
@@ -233,7 +233,7 @@ function Page() {
               return (
                 <Input
                   className="fr-col-lg-6 fr-m-0"
-                  label="Nom du service enquêteur"
+                  label="Service enquêteur"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
