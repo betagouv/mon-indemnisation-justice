@@ -1,5 +1,6 @@
 import { dateChiffre } from "@/common/services/date.ts";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { useForm } from "@tanstack/react-form";
 import React, { ChangeEvent, useState } from "react";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
@@ -121,20 +122,22 @@ const Page = () => {
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}>
-        <h1>Nouvelle déclaration d'erreur opérationnelle</h1>
+        <h1>Nouvelle déclaration de bris de porte</h1>
 
         <Stepper
           currentStep={1}
           stepCount={3}
-          title="Eléments relatifs à l’erreur opérationnelle"
-          nextTitle="Complément d’information pour le Ministère de la Justice "
+          title="Eléments relatifs au bris de porte"
+          nextTitle="Éléments relatifs au service enquêteur "
         />
 
+        {/*
         <div className="fr-grid-row">
           <h6 className="fr-m-0 fr-text-label--blue-france">
-            Informations concernant le logement perquisitionné par erreur{" "}
+            Informations concernant le logement perquisitionné{" "}
           </h6>
         </div>
+        */}
 
         <div className="fr-grid-row fr-px-0 fr-my-2w">
           <form.Field
@@ -142,7 +145,18 @@ const Page = () => {
             children={(field) => {
               return (
                 <RadioButtons
-                  legend="S’agissait-il d’une erreur opérationnelle ? *"
+                  legend={
+                    <>
+                      S’agissait-il d’
+                      <Tooltip
+                        title="Ex: la porte du logement 301 est fracturée alors que l’objectif visé par l’enquête était le 307"
+                        kind="hover"
+                      >
+                        <a href="">une erreur opérationnelle</a>
+                      </Tooltip>{" "}
+                      ? *
+                    </>
+                  }
                   small={false}
                   orientation="vertical"
                   disabled={declaration.estSauvegarde()}
@@ -161,9 +175,29 @@ const Page = () => {
                       },
                     },
                     {
-                      label: "J’ai un doute",
+                      label: "Non",
                       hintText:
-                        "Vous avez un doute sur la situation. Vous ne savez pas si il s’agit d’une erreur ? Les services du précontentieux se chargeront d’évaluer la demande a postériori.",
+                        "Le logement perquisitionné était visé par l’opération.",
+                      nativeInputProps: {
+                        className: "fr-col-6",
+                        defaultChecked: !declaration.doute,
+                        onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                          setDouteAMotiver(false);
+                          field.handleChange(!event.target.checked);
+                        },
+                      },
+                    },
+                    {
+                      label: "J’ai un doute",
+                      hintText: (
+                        <>
+                          Vous avez un doute sur la situation? Vous ne savez pas
+                          s'il s’agit d’une erreur opérationnelle ? Vous pouvez
+                          consulter <a href="">la foire aux questions</a>. Le
+                          Bureau du précontentieux se chargera d'instruire la
+                          demande a posteriori.
+                        </>
+                      ),
                       nativeInputProps: {
                         className: "fr-col-6",
                         defaultChecked: declaration.doute,
@@ -180,28 +214,28 @@ const Page = () => {
           />
         </div>
 
-        {douteAMotiver && (
-          <div className="fr-grid-row fr-grid-row--gutters fr-px-0">
-            <form.Field
-              name="motifDoute"
-              children={(field) => {
-                return (
-                  <Input
-                    label="Décrivez les circonstances de l’opération"
-                    textArea
-                    className="fr-col-12"
-                    disabled={declaration.estSauvegarde()}
-                    nativeTextAreaProps={{
-                      defaultValue: declaration.motifDoute ?? "",
-                      onChange: (e) => field.handleChange(e.target.value),
-                      rows: 5,
-                    }}
-                  />
-                );
-              }}
-            />
-          </div>
-        )}
+        <div className="fr-grid-row fr-grid-row--gutters fr-px-0">
+          <form.Field
+            name="motifDoute"
+            children={(field) => {
+              return (
+                <Input
+                  label="Décrivez l’opération"
+                  textArea
+                  className="fr-col-12"
+                  disabled={declaration.estSauvegarde()}
+                  nativeTextAreaProps={{
+                    defaultValue: declaration.motifDoute ?? "",
+                    onChange: (e) => field.handleChange(e.target.value),
+                    rows: 5,
+                    placeholder:
+                      "1 porte et 1 portail cassés, aucun numéro sur la porte",
+                  }}
+                />
+              );
+            }}
+          />
+        </div>
 
         <div className="fr-grid-row fr-grid-row--gutters fr-px-0 fr-my-2w">
           <form.Field

@@ -163,20 +163,22 @@ function Page() {
         }
       }}
     >
-      <h1 className="fr-m-0">Nouvelle déclaration d'erreur opérationnelle</h1>
+      <h1 className="fr-m-0">Nouvelle déclaration de bris de porte</h1>
 
       <Stepper
         className="fr-m-0"
         currentStep={3}
         stepCount={3}
-        title="Informations du requérant"
+        title="Informations concernant l'usager"
       />
 
+      {/*
       <div className="fr-grid-row fr-m-0">
         <h6 className="fr-m-0 fr-text-label--blue-france">
           Civilité et contact de l'usager
         </h6>
       </div>
+      */}
 
       {/*
       {declarationEnPresenceRequerant === undefined && (
@@ -404,7 +406,11 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  label="Précisions concernant l'usager"
+                  label={
+                    declarationEnPresenceRequerant
+                      ? "Précisions concernant l'usager"
+                      : "Précisions"
+                  }
                   className="fr-col-lg-12"
                   textArea={true}
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
