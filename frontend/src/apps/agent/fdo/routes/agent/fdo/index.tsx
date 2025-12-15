@@ -43,7 +43,7 @@ function RouteComponent() {
                   className: "fr-m-0",
                   onClick: () =>
                     naviguer({
-                      to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration",
+                      to: "/agent/fdo/bris-de-porte/nouvelle-declaration",
                     }),
                 },
               ]}
@@ -111,7 +111,7 @@ function RouteComponent() {
           title="Mes déclarations"
           titleAs={"h5"}
           linkProps={{
-            to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+            to: "/agent/fdo/bris-de-porte/mes-declarations",
           }}
           enlargeLink
           horizontal={false}

@@ -17,7 +17,7 @@ import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/$reference/2-complement",
+  "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
 )({
   beforeLoad: ({ params }) => {
     if (
@@ -26,7 +26,7 @@ export const Route = createFileRoute(
         .aDeclaration(params.reference)
     ) {
       throw redirect({
-        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        to: "/agent/fdo/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -70,7 +70,7 @@ const schemaInfosJuridiques = z.object({
 });
 
 const ModaleAjoutFichier = createModal({
-  id: "modale-ajouter-fichier-declaration-erreur-operationnelle",
+  id: "modale-ajouter-fichier-declaration-bris-porte",
   isOpenedByDefault: false,
 });
 
@@ -113,7 +113,7 @@ function Page() {
     },
     onSubmit: async ({ value }) => {
       await naviguer({
-        to: "/agent/fdo/erreur-operationnelle/$reference/3-requerant",
+        to: "/agent/fdo/bris-de-porte/$reference/3-usager",
         params: { reference } as any,
       });
     },
@@ -169,7 +169,7 @@ function Page() {
           currentStep={2}
           stepCount={3}
           title="Éléments relatifs au service enquêteur"
-          nextTitle="Informations du requérant"
+          nextTitle="Informations concernant l'usager"
         />
 
         <div className="fr-grid-row">
@@ -232,7 +232,7 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-6 fr-m-0"
+                  className="fr-col-lg-6 fr-m-0 fr-champ-requis"
                   label="Service enquêteur"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
@@ -259,8 +259,8 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3 fr-m-0"
-                  label="Téléphone du service ou de l'agent *"
+                  className="fr-col-lg-3 fr-m-0  fr-champ-requis"
+                  label="Téléphone du service ou de l'agent"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -281,8 +281,8 @@ function Page() {
           />
 
           <Input
-            className="fr-col-lg-3 fr-m-0"
-            label="Courriel de l'agent *"
+            className="fr-col-lg-3 fr-m-0 fr-champ-requis"
+            label="Courriel de l'agent"
             disabled={true}
             nativeInputProps={{
               type: "text",
@@ -358,7 +358,6 @@ function Page() {
             className="fr-col-lg-12 fr-p-0"
             inlineLayoutWhen="always"
             alignment="right"
-            buttonsIconPosition={undefined}
             buttonsSize="small"
             buttons={[
               {
@@ -368,7 +367,7 @@ function Page() {
                 iconPosition: "left",
                 onClick: () =>
                   naviguer({
-                    to: "/agent/fdo/erreur-operationnelle/$reference/1-operation",
+                    to: "/agent/fdo/bris-de-porte/$reference/1-bris-de-porte",
                     params: {
                       reference,
                     } as any,

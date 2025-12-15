@@ -13,13 +13,13 @@ import { Route as AgentFdoIndexRouteImport } from './../routes/agent/fdo/index'
 import { Route as AgentFdoRequisitionSerrurierRouteImport } from './../routes/agent/fdo/requisition-serrurier'
 import { Route as AgentFdoLesDocumentsRouteImport } from './../routes/agent/fdo/les-documents'
 import { Route as AgentFdoFoireAuxQuestionsRouteImport } from './../routes/agent/fdo/foire-aux-questions'
-import { Route as AgentFdoErreurOperationnelleIndexRouteImport } from './../routes/agent/fdo/erreur-operationnelle/index'
-import { Route as AgentFdoErreurOperationnelleNouvelleDeclarationRouteImport } from './../routes/agent/fdo/erreur-operationnelle/nouvelle-declaration'
-import { Route as AgentFdoErreurOperationnelleMesDeclarationsRouteImport } from './../routes/agent/fdo/erreur-operationnelle/mes-declarations'
-import { Route as AgentFdoErreurOperationnelleReferenceIndexRouteImport } from './../routes/agent/fdo/erreur-operationnelle/$reference/index'
-import { Route as AgentFdoErreurOperationnelleReference3RequerantRouteImport } from './../routes/agent/fdo/erreur-operationnelle/$reference/3-requerant'
-import { Route as AgentFdoErreurOperationnelleReference2ComplementRouteImport } from './../routes/agent/fdo/erreur-operationnelle/$reference/2-complement'
-import { Route as AgentFdoErreurOperationnelleReference1OperationRouteImport } from './../routes/agent/fdo/erreur-operationnelle/$reference/1-operation'
+import { Route as AgentFdoBrisDePorteIndexRouteImport } from './../routes/agent/fdo/bris-de-porte/index'
+import { Route as AgentFdoBrisDePorteNouvelleDeclarationRouteImport } from './../routes/agent/fdo/bris-de-porte/nouvelle-declaration'
+import { Route as AgentFdoBrisDePorteMesDeclarationsRouteImport } from './../routes/agent/fdo/bris-de-porte/mes-declarations'
+import { Route as AgentFdoBrisDePorteReferenceIndexRouteImport } from './../routes/agent/fdo/bris-de-porte/$reference/index'
+import { Route as AgentFdoBrisDePorteReference3UsagerRouteImport } from './../routes/agent/fdo/bris-de-porte/$reference/3-usager'
+import { Route as AgentFdoBrisDePorteReference2ServiceEnqueteurRouteImport } from './../routes/agent/fdo/bris-de-porte/$reference/2-service-enqueteur'
+import { Route as AgentFdoBrisDePorteReference1BrisDePorteRouteImport } from './../routes/agent/fdo/bris-de-porte/$reference/1-bris-de-porte'
 
 const AgentFdoIndexRoute = AgentFdoIndexRouteImport.update({
   id: '/agent/fdo/',
@@ -43,46 +43,46 @@ const AgentFdoFoireAuxQuestionsRoute =
     path: '/agent/fdo/foire-aux-questions',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AgentFdoErreurOperationnelleIndexRoute =
-  AgentFdoErreurOperationnelleIndexRouteImport.update({
-    id: '/agent/fdo/erreur-operationnelle/',
-    path: '/agent/fdo/erreur-operationnelle/',
+const AgentFdoBrisDePorteIndexRoute =
+  AgentFdoBrisDePorteIndexRouteImport.update({
+    id: '/agent/fdo/bris-de-porte/',
+    path: '/agent/fdo/bris-de-porte/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AgentFdoErreurOperationnelleNouvelleDeclarationRoute =
-  AgentFdoErreurOperationnelleNouvelleDeclarationRouteImport.update({
-    id: '/agent/fdo/erreur-operationnelle/nouvelle-declaration',
-    path: '/agent/fdo/erreur-operationnelle/nouvelle-declaration',
+const AgentFdoBrisDePorteNouvelleDeclarationRoute =
+  AgentFdoBrisDePorteNouvelleDeclarationRouteImport.update({
+    id: '/agent/fdo/bris-de-porte/nouvelle-declaration',
+    path: '/agent/fdo/bris-de-porte/nouvelle-declaration',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AgentFdoErreurOperationnelleMesDeclarationsRoute =
-  AgentFdoErreurOperationnelleMesDeclarationsRouteImport.update({
-    id: '/agent/fdo/erreur-operationnelle/mes-declarations',
-    path: '/agent/fdo/erreur-operationnelle/mes-declarations',
+const AgentFdoBrisDePorteMesDeclarationsRoute =
+  AgentFdoBrisDePorteMesDeclarationsRouteImport.update({
+    id: '/agent/fdo/bris-de-porte/mes-declarations',
+    path: '/agent/fdo/bris-de-porte/mes-declarations',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AgentFdoErreurOperationnelleReferenceIndexRoute =
-  AgentFdoErreurOperationnelleReferenceIndexRouteImport.update({
-    id: '/agent/fdo/erreur-operationnelle/$reference/',
-    path: '/agent/fdo/erreur-operationnelle/$reference/',
+const AgentFdoBrisDePorteReferenceIndexRoute =
+  AgentFdoBrisDePorteReferenceIndexRouteImport.update({
+    id: '/agent/fdo/bris-de-porte/$reference/',
+    path: '/agent/fdo/bris-de-porte/$reference/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AgentFdoErreurOperationnelleReference3RequerantRoute =
-  AgentFdoErreurOperationnelleReference3RequerantRouteImport.update({
-    id: '/agent/fdo/erreur-operationnelle/$reference/3-requerant',
-    path: '/agent/fdo/erreur-operationnelle/$reference/3-requerant',
+const AgentFdoBrisDePorteReference3UsagerRoute =
+  AgentFdoBrisDePorteReference3UsagerRouteImport.update({
+    id: '/agent/fdo/bris-de-porte/$reference/3-usager',
+    path: '/agent/fdo/bris-de-porte/$reference/3-usager',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AgentFdoErreurOperationnelleReference2ComplementRoute =
-  AgentFdoErreurOperationnelleReference2ComplementRouteImport.update({
-    id: '/agent/fdo/erreur-operationnelle/$reference/2-complement',
-    path: '/agent/fdo/erreur-operationnelle/$reference/2-complement',
+const AgentFdoBrisDePorteReference2ServiceEnqueteurRoute =
+  AgentFdoBrisDePorteReference2ServiceEnqueteurRouteImport.update({
+    id: '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur',
+    path: '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AgentFdoErreurOperationnelleReference1OperationRoute =
-  AgentFdoErreurOperationnelleReference1OperationRouteImport.update({
-    id: '/agent/fdo/erreur-operationnelle/$reference/1-operation',
-    path: '/agent/fdo/erreur-operationnelle/$reference/1-operation',
+const AgentFdoBrisDePorteReference1BrisDePorteRoute =
+  AgentFdoBrisDePorteReference1BrisDePorteRouteImport.update({
+    id: '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte',
+    path: '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -91,26 +91,26 @@ export interface FileRoutesByFullPath {
   '/agent/fdo/les-documents': typeof AgentFdoLesDocumentsRoute
   '/agent/fdo/requisition-serrurier': typeof AgentFdoRequisitionSerrurierRoute
   '/agent/fdo': typeof AgentFdoIndexRoute
-  '/agent/fdo/erreur-operationnelle/mes-declarations': typeof AgentFdoErreurOperationnelleMesDeclarationsRoute
-  '/agent/fdo/erreur-operationnelle/nouvelle-declaration': typeof AgentFdoErreurOperationnelleNouvelleDeclarationRoute
-  '/agent/fdo/erreur-operationnelle': typeof AgentFdoErreurOperationnelleIndexRoute
-  '/agent/fdo/erreur-operationnelle/$reference/1-operation': typeof AgentFdoErreurOperationnelleReference1OperationRoute
-  '/agent/fdo/erreur-operationnelle/$reference/2-complement': typeof AgentFdoErreurOperationnelleReference2ComplementRoute
-  '/agent/fdo/erreur-operationnelle/$reference/3-requerant': typeof AgentFdoErreurOperationnelleReference3RequerantRoute
-  '/agent/fdo/erreur-operationnelle/$reference': typeof AgentFdoErreurOperationnelleReferenceIndexRoute
+  '/agent/fdo/bris-de-porte/mes-declarations': typeof AgentFdoBrisDePorteMesDeclarationsRoute
+  '/agent/fdo/bris-de-porte/nouvelle-declaration': typeof AgentFdoBrisDePorteNouvelleDeclarationRoute
+  '/agent/fdo/bris-de-porte': typeof AgentFdoBrisDePorteIndexRoute
+  '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte': typeof AgentFdoBrisDePorteReference1BrisDePorteRoute
+  '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur': typeof AgentFdoBrisDePorteReference2ServiceEnqueteurRoute
+  '/agent/fdo/bris-de-porte/$reference/3-usager': typeof AgentFdoBrisDePorteReference3UsagerRoute
+  '/agent/fdo/bris-de-porte/$reference': typeof AgentFdoBrisDePorteReferenceIndexRoute
 }
 export interface FileRoutesByTo {
   '/agent/fdo/foire-aux-questions': typeof AgentFdoFoireAuxQuestionsRoute
   '/agent/fdo/les-documents': typeof AgentFdoLesDocumentsRoute
   '/agent/fdo/requisition-serrurier': typeof AgentFdoRequisitionSerrurierRoute
   '/agent/fdo': typeof AgentFdoIndexRoute
-  '/agent/fdo/erreur-operationnelle/mes-declarations': typeof AgentFdoErreurOperationnelleMesDeclarationsRoute
-  '/agent/fdo/erreur-operationnelle/nouvelle-declaration': typeof AgentFdoErreurOperationnelleNouvelleDeclarationRoute
-  '/agent/fdo/erreur-operationnelle': typeof AgentFdoErreurOperationnelleIndexRoute
-  '/agent/fdo/erreur-operationnelle/$reference/1-operation': typeof AgentFdoErreurOperationnelleReference1OperationRoute
-  '/agent/fdo/erreur-operationnelle/$reference/2-complement': typeof AgentFdoErreurOperationnelleReference2ComplementRoute
-  '/agent/fdo/erreur-operationnelle/$reference/3-requerant': typeof AgentFdoErreurOperationnelleReference3RequerantRoute
-  '/agent/fdo/erreur-operationnelle/$reference': typeof AgentFdoErreurOperationnelleReferenceIndexRoute
+  '/agent/fdo/bris-de-porte/mes-declarations': typeof AgentFdoBrisDePorteMesDeclarationsRoute
+  '/agent/fdo/bris-de-porte/nouvelle-declaration': typeof AgentFdoBrisDePorteNouvelleDeclarationRoute
+  '/agent/fdo/bris-de-porte': typeof AgentFdoBrisDePorteIndexRoute
+  '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte': typeof AgentFdoBrisDePorteReference1BrisDePorteRoute
+  '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur': typeof AgentFdoBrisDePorteReference2ServiceEnqueteurRoute
+  '/agent/fdo/bris-de-porte/$reference/3-usager': typeof AgentFdoBrisDePorteReference3UsagerRoute
+  '/agent/fdo/bris-de-porte/$reference': typeof AgentFdoBrisDePorteReferenceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -118,13 +118,13 @@ export interface FileRoutesById {
   '/agent/fdo/les-documents': typeof AgentFdoLesDocumentsRoute
   '/agent/fdo/requisition-serrurier': typeof AgentFdoRequisitionSerrurierRoute
   '/agent/fdo/': typeof AgentFdoIndexRoute
-  '/agent/fdo/erreur-operationnelle/mes-declarations': typeof AgentFdoErreurOperationnelleMesDeclarationsRoute
-  '/agent/fdo/erreur-operationnelle/nouvelle-declaration': typeof AgentFdoErreurOperationnelleNouvelleDeclarationRoute
-  '/agent/fdo/erreur-operationnelle/': typeof AgentFdoErreurOperationnelleIndexRoute
-  '/agent/fdo/erreur-operationnelle/$reference/1-operation': typeof AgentFdoErreurOperationnelleReference1OperationRoute
-  '/agent/fdo/erreur-operationnelle/$reference/2-complement': typeof AgentFdoErreurOperationnelleReference2ComplementRoute
-  '/agent/fdo/erreur-operationnelle/$reference/3-requerant': typeof AgentFdoErreurOperationnelleReference3RequerantRoute
-  '/agent/fdo/erreur-operationnelle/$reference/': typeof AgentFdoErreurOperationnelleReferenceIndexRoute
+  '/agent/fdo/bris-de-porte/mes-declarations': typeof AgentFdoBrisDePorteMesDeclarationsRoute
+  '/agent/fdo/bris-de-porte/nouvelle-declaration': typeof AgentFdoBrisDePorteNouvelleDeclarationRoute
+  '/agent/fdo/bris-de-porte/': typeof AgentFdoBrisDePorteIndexRoute
+  '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte': typeof AgentFdoBrisDePorteReference1BrisDePorteRoute
+  '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur': typeof AgentFdoBrisDePorteReference2ServiceEnqueteurRoute
+  '/agent/fdo/bris-de-porte/$reference/3-usager': typeof AgentFdoBrisDePorteReference3UsagerRoute
+  '/agent/fdo/bris-de-porte/$reference/': typeof AgentFdoBrisDePorteReferenceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -133,39 +133,39 @@ export interface FileRouteTypes {
     | '/agent/fdo/les-documents'
     | '/agent/fdo/requisition-serrurier'
     | '/agent/fdo'
-    | '/agent/fdo/erreur-operationnelle/mes-declarations'
-    | '/agent/fdo/erreur-operationnelle/nouvelle-declaration'
-    | '/agent/fdo/erreur-operationnelle'
-    | '/agent/fdo/erreur-operationnelle/$reference/1-operation'
-    | '/agent/fdo/erreur-operationnelle/$reference/2-complement'
-    | '/agent/fdo/erreur-operationnelle/$reference/3-requerant'
-    | '/agent/fdo/erreur-operationnelle/$reference'
+    | '/agent/fdo/bris-de-porte/mes-declarations'
+    | '/agent/fdo/bris-de-porte/nouvelle-declaration'
+    | '/agent/fdo/bris-de-porte'
+    | '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte'
+    | '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur'
+    | '/agent/fdo/bris-de-porte/$reference/3-usager'
+    | '/agent/fdo/bris-de-porte/$reference'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/agent/fdo/foire-aux-questions'
     | '/agent/fdo/les-documents'
     | '/agent/fdo/requisition-serrurier'
     | '/agent/fdo'
-    | '/agent/fdo/erreur-operationnelle/mes-declarations'
-    | '/agent/fdo/erreur-operationnelle/nouvelle-declaration'
-    | '/agent/fdo/erreur-operationnelle'
-    | '/agent/fdo/erreur-operationnelle/$reference/1-operation'
-    | '/agent/fdo/erreur-operationnelle/$reference/2-complement'
-    | '/agent/fdo/erreur-operationnelle/$reference/3-requerant'
-    | '/agent/fdo/erreur-operationnelle/$reference'
+    | '/agent/fdo/bris-de-porte/mes-declarations'
+    | '/agent/fdo/bris-de-porte/nouvelle-declaration'
+    | '/agent/fdo/bris-de-porte'
+    | '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte'
+    | '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur'
+    | '/agent/fdo/bris-de-porte/$reference/3-usager'
+    | '/agent/fdo/bris-de-porte/$reference'
   id:
     | '__root__'
     | '/agent/fdo/foire-aux-questions'
     | '/agent/fdo/les-documents'
     | '/agent/fdo/requisition-serrurier'
     | '/agent/fdo/'
-    | '/agent/fdo/erreur-operationnelle/mes-declarations'
-    | '/agent/fdo/erreur-operationnelle/nouvelle-declaration'
-    | '/agent/fdo/erreur-operationnelle/'
-    | '/agent/fdo/erreur-operationnelle/$reference/1-operation'
-    | '/agent/fdo/erreur-operationnelle/$reference/2-complement'
-    | '/agent/fdo/erreur-operationnelle/$reference/3-requerant'
-    | '/agent/fdo/erreur-operationnelle/$reference/'
+    | '/agent/fdo/bris-de-porte/mes-declarations'
+    | '/agent/fdo/bris-de-porte/nouvelle-declaration'
+    | '/agent/fdo/bris-de-porte/'
+    | '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte'
+    | '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur'
+    | '/agent/fdo/bris-de-porte/$reference/3-usager'
+    | '/agent/fdo/bris-de-porte/$reference/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -173,13 +173,13 @@ export interface RootRouteChildren {
   AgentFdoLesDocumentsRoute: typeof AgentFdoLesDocumentsRoute
   AgentFdoRequisitionSerrurierRoute: typeof AgentFdoRequisitionSerrurierRoute
   AgentFdoIndexRoute: typeof AgentFdoIndexRoute
-  AgentFdoErreurOperationnelleMesDeclarationsRoute: typeof AgentFdoErreurOperationnelleMesDeclarationsRoute
-  AgentFdoErreurOperationnelleNouvelleDeclarationRoute: typeof AgentFdoErreurOperationnelleNouvelleDeclarationRoute
-  AgentFdoErreurOperationnelleIndexRoute: typeof AgentFdoErreurOperationnelleIndexRoute
-  AgentFdoErreurOperationnelleReference1OperationRoute: typeof AgentFdoErreurOperationnelleReference1OperationRoute
-  AgentFdoErreurOperationnelleReference2ComplementRoute: typeof AgentFdoErreurOperationnelleReference2ComplementRoute
-  AgentFdoErreurOperationnelleReference3RequerantRoute: typeof AgentFdoErreurOperationnelleReference3RequerantRoute
-  AgentFdoErreurOperationnelleReferenceIndexRoute: typeof AgentFdoErreurOperationnelleReferenceIndexRoute
+  AgentFdoBrisDePorteMesDeclarationsRoute: typeof AgentFdoBrisDePorteMesDeclarationsRoute
+  AgentFdoBrisDePorteNouvelleDeclarationRoute: typeof AgentFdoBrisDePorteNouvelleDeclarationRoute
+  AgentFdoBrisDePorteIndexRoute: typeof AgentFdoBrisDePorteIndexRoute
+  AgentFdoBrisDePorteReference1BrisDePorteRoute: typeof AgentFdoBrisDePorteReference1BrisDePorteRoute
+  AgentFdoBrisDePorteReference2ServiceEnqueteurRoute: typeof AgentFdoBrisDePorteReference2ServiceEnqueteurRoute
+  AgentFdoBrisDePorteReference3UsagerRoute: typeof AgentFdoBrisDePorteReference3UsagerRoute
+  AgentFdoBrisDePorteReferenceIndexRoute: typeof AgentFdoBrisDePorteReferenceIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,53 +212,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentFdoFoireAuxQuestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fdo/erreur-operationnelle/': {
-      id: '/agent/fdo/erreur-operationnelle/'
-      path: '/agent/fdo/erreur-operationnelle'
-      fullPath: '/agent/fdo/erreur-operationnelle'
-      preLoaderRoute: typeof AgentFdoErreurOperationnelleIndexRouteImport
+    '/agent/fdo/bris-de-porte/': {
+      id: '/agent/fdo/bris-de-porte/'
+      path: '/agent/fdo/bris-de-porte'
+      fullPath: '/agent/fdo/bris-de-porte'
+      preLoaderRoute: typeof AgentFdoBrisDePorteIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fdo/erreur-operationnelle/nouvelle-declaration': {
-      id: '/agent/fdo/erreur-operationnelle/nouvelle-declaration'
-      path: '/agent/fdo/erreur-operationnelle/nouvelle-declaration'
-      fullPath: '/agent/fdo/erreur-operationnelle/nouvelle-declaration'
-      preLoaderRoute: typeof AgentFdoErreurOperationnelleNouvelleDeclarationRouteImport
+    '/agent/fdo/bris-de-porte/nouvelle-declaration': {
+      id: '/agent/fdo/bris-de-porte/nouvelle-declaration'
+      path: '/agent/fdo/bris-de-porte/nouvelle-declaration'
+      fullPath: '/agent/fdo/bris-de-porte/nouvelle-declaration'
+      preLoaderRoute: typeof AgentFdoBrisDePorteNouvelleDeclarationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fdo/erreur-operationnelle/mes-declarations': {
-      id: '/agent/fdo/erreur-operationnelle/mes-declarations'
-      path: '/agent/fdo/erreur-operationnelle/mes-declarations'
-      fullPath: '/agent/fdo/erreur-operationnelle/mes-declarations'
-      preLoaderRoute: typeof AgentFdoErreurOperationnelleMesDeclarationsRouteImport
+    '/agent/fdo/bris-de-porte/mes-declarations': {
+      id: '/agent/fdo/bris-de-porte/mes-declarations'
+      path: '/agent/fdo/bris-de-porte/mes-declarations'
+      fullPath: '/agent/fdo/bris-de-porte/mes-declarations'
+      preLoaderRoute: typeof AgentFdoBrisDePorteMesDeclarationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fdo/erreur-operationnelle/$reference/': {
-      id: '/agent/fdo/erreur-operationnelle/$reference/'
-      path: '/agent/fdo/erreur-operationnelle/$reference'
-      fullPath: '/agent/fdo/erreur-operationnelle/$reference'
-      preLoaderRoute: typeof AgentFdoErreurOperationnelleReferenceIndexRouteImport
+    '/agent/fdo/bris-de-porte/$reference/': {
+      id: '/agent/fdo/bris-de-porte/$reference/'
+      path: '/agent/fdo/bris-de-porte/$reference'
+      fullPath: '/agent/fdo/bris-de-porte/$reference'
+      preLoaderRoute: typeof AgentFdoBrisDePorteReferenceIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fdo/erreur-operationnelle/$reference/3-requerant': {
-      id: '/agent/fdo/erreur-operationnelle/$reference/3-requerant'
-      path: '/agent/fdo/erreur-operationnelle/$reference/3-requerant'
-      fullPath: '/agent/fdo/erreur-operationnelle/$reference/3-requerant'
-      preLoaderRoute: typeof AgentFdoErreurOperationnelleReference3RequerantRouteImport
+    '/agent/fdo/bris-de-porte/$reference/3-usager': {
+      id: '/agent/fdo/bris-de-porte/$reference/3-usager'
+      path: '/agent/fdo/bris-de-porte/$reference/3-usager'
+      fullPath: '/agent/fdo/bris-de-porte/$reference/3-usager'
+      preLoaderRoute: typeof AgentFdoBrisDePorteReference3UsagerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fdo/erreur-operationnelle/$reference/2-complement': {
-      id: '/agent/fdo/erreur-operationnelle/$reference/2-complement'
-      path: '/agent/fdo/erreur-operationnelle/$reference/2-complement'
-      fullPath: '/agent/fdo/erreur-operationnelle/$reference/2-complement'
-      preLoaderRoute: typeof AgentFdoErreurOperationnelleReference2ComplementRouteImport
+    '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur': {
+      id: '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur'
+      path: '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur'
+      fullPath: '/agent/fdo/bris-de-porte/$reference/2-service-enqueteur'
+      preLoaderRoute: typeof AgentFdoBrisDePorteReference2ServiceEnqueteurRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fdo/erreur-operationnelle/$reference/1-operation': {
-      id: '/agent/fdo/erreur-operationnelle/$reference/1-operation'
-      path: '/agent/fdo/erreur-operationnelle/$reference/1-operation'
-      fullPath: '/agent/fdo/erreur-operationnelle/$reference/1-operation'
-      preLoaderRoute: typeof AgentFdoErreurOperationnelleReference1OperationRouteImport
+    '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte': {
+      id: '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte'
+      path: '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte'
+      fullPath: '/agent/fdo/bris-de-porte/$reference/1-bris-de-porte'
+      preLoaderRoute: typeof AgentFdoBrisDePorteReference1BrisDePorteRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -269,20 +269,19 @@ const rootRouteChildren: RootRouteChildren = {
   AgentFdoLesDocumentsRoute: AgentFdoLesDocumentsRoute,
   AgentFdoRequisitionSerrurierRoute: AgentFdoRequisitionSerrurierRoute,
   AgentFdoIndexRoute: AgentFdoIndexRoute,
-  AgentFdoErreurOperationnelleMesDeclarationsRoute:
-    AgentFdoErreurOperationnelleMesDeclarationsRoute,
-  AgentFdoErreurOperationnelleNouvelleDeclarationRoute:
-    AgentFdoErreurOperationnelleNouvelleDeclarationRoute,
-  AgentFdoErreurOperationnelleIndexRoute:
-    AgentFdoErreurOperationnelleIndexRoute,
-  AgentFdoErreurOperationnelleReference1OperationRoute:
-    AgentFdoErreurOperationnelleReference1OperationRoute,
-  AgentFdoErreurOperationnelleReference2ComplementRoute:
-    AgentFdoErreurOperationnelleReference2ComplementRoute,
-  AgentFdoErreurOperationnelleReference3RequerantRoute:
-    AgentFdoErreurOperationnelleReference3RequerantRoute,
-  AgentFdoErreurOperationnelleReferenceIndexRoute:
-    AgentFdoErreurOperationnelleReferenceIndexRoute,
+  AgentFdoBrisDePorteMesDeclarationsRoute:
+    AgentFdoBrisDePorteMesDeclarationsRoute,
+  AgentFdoBrisDePorteNouvelleDeclarationRoute:
+    AgentFdoBrisDePorteNouvelleDeclarationRoute,
+  AgentFdoBrisDePorteIndexRoute: AgentFdoBrisDePorteIndexRoute,
+  AgentFdoBrisDePorteReference1BrisDePorteRoute:
+    AgentFdoBrisDePorteReference1BrisDePorteRoute,
+  AgentFdoBrisDePorteReference2ServiceEnqueteurRoute:
+    AgentFdoBrisDePorteReference2ServiceEnqueteurRoute,
+  AgentFdoBrisDePorteReference3UsagerRoute:
+    AgentFdoBrisDePorteReference3UsagerRoute,
+  AgentFdoBrisDePorteReferenceIndexRoute:
+    AgentFdoBrisDePorteReferenceIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

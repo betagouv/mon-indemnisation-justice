@@ -15,11 +15,10 @@ import { useInjection } from "inversify-react";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/$reference/3-requerant",
+  "/agent/fdo/bris-de-porte/$reference/3-usager",
 )({
   beforeLoad: ({ params }) => {
     if (
@@ -28,7 +27,7 @@ export const Route = createFileRoute(
         .aDeclaration(params.reference)
     ) {
       throw redirect({
-        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        to: "/agent/fdo/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -48,7 +47,7 @@ export const Route = createFileRoute(
 
     if (!declaration) {
       throw redirect({
-        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        to: "/agent/fdo/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -74,7 +73,7 @@ const schemaRequerant = z.discriminatedUnion("enPresenceRequerant", [
     enPresenceRequerant: z.literal(true, {
       error: "Indiquez-nous si vous disposez des coordonnées du requérant",
     }),
-    precisionsRequerant: z.string(),
+    precisionsRequerant: z.any(),
     infosRequerant: z.object({
       civilite: z.custom<Civilite>((c) => c instanceof Civilite, {
         error: "La civilité du requérant est requise",
@@ -138,7 +137,7 @@ function Page() {
       try {
         await declarationManager.soumettre(declaration);
         naviguer({
-          to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+          to: "/agent/fdo/bris-de-porte/mes-declarations",
         });
       } catch (e) {
         alert(e);
@@ -198,8 +197,8 @@ function Page() {
           children={(field) => {
             return (
               <RadioButtons
-                className="fr-col-12 fr-m-0"
-                legend="J’ai les coordonnées de l’usager:"
+                className="fr-col-12 fr-m-0 fr-champ-requis"
+                legend="J’ai les coordonnées de l’usager"
                 orientation="horizontal"
                 disabled={declaration.estSauvegarde()}
                 state={!field.state.meta.isValid ? "error" : "default"}
@@ -247,8 +246,8 @@ function Page() {
             children={(field) => {
               return (
                 <Select
-                  className="fr-col-lg-2 fr-m-0"
-                  label="Civilité *"
+                  className="fr-col-lg-2 fr-m-0 fr-champ-requis"
+                  label="Civilité"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeSelectProps={{
                     autoFocus: true,
@@ -282,8 +281,8 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3 fr-m-0"
-                  label="Nom *"
+                  className="fr-col-lg-3 fr-m-0 fr-champ-requis"
+                  label="Nom"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -309,8 +308,8 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3 fr-m-0"
-                  label="Prénom *"
+                  className="fr-col-lg-3 fr-m-0 fr-champ-requis"
+                  label="Prénom"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -336,8 +335,8 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-4 fr-m-0"
-                  label="Téléphone *"
+                  className="fr-col-lg-4 fr-m-0 fr-champ-requis"
+                  label="Téléphone"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -363,8 +362,8 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-4 fr-m-0"
-                  label="Courriel *"
+                  className="fr-col-lg-4 fr-m-0 fr-champ-requis"
+                  label="Courriel"
                   disabled={sauvegardeEnCours || declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -444,7 +443,7 @@ function Page() {
               iconPosition: "left",
               onClick: () =>
                 naviguer({
-                  to: "/agent/fdo/erreur-operationnelle/$reference/2-complement",
+                  to: "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
                   params: {
                     reference,
                   } as any,
@@ -476,7 +475,7 @@ function Page() {
                     className: "fr-mr-0",
                     onClick: () =>
                       naviguer({
-                        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+                        to: "/agent/fdo/bris-de-porte/mes-declarations",
                         params: {
                           reference,
                         } as any,

@@ -15,7 +15,21 @@ main {
     }
 }
 
-
 .fr-input-group--error::before {
     background-image: none !important;
+}
+
+/** Faire en sorte que le clic sur le label d'une checkbox soit répercutée **/
+input[type=radio], input[type=checkbox] {
+    z-index: 2 !important;
+}
+
+body {
+    > main {
+        margin-top: 2rem;
+    }
+}
+
+.fr-input-group.fr-champ-requis label.fr-label::after, .fr-fieldset.fr-champ-requis legend::after {
+    content: " *"
 }

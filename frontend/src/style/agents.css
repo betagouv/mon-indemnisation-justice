@@ -3,6 +3,22 @@
  */
 
 
+/** Faire en sorte que le clic sur le label d'une checkbox soit répercutée **/
+input[type=radio], input[type=checkbox] {
+    z-index: 2 !important;
+}
+
+body {
+    > main {
+        margin-top: 2rem;
+    }
+}
+
+/** Les champs ayant `fr-requis` auront une petite astérisque pour indiquer qu'ils sont requis */
+.fr-input-group.fr-requis label.fr-label::after, .fr-fieldset.fr-requis legend::after {
+    content: " *"
+}
+
 a:not([href])[role="button"] {
     color: var(--text-action-high-blue-france);
     cursor: pointer;
