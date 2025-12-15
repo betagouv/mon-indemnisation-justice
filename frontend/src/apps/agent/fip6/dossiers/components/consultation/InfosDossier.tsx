@@ -2,6 +2,7 @@ import React from "react";
 import { Agent, DossierDetail } from "@/common/models";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { dateSimple } from "@/common/services/date.ts";
+import { capitaliser } from "@/common/services/divers.ts";
 
 export const InfosDossier = ({
   dossier,
@@ -238,15 +239,17 @@ export const InfosDossier = ({
                 </li>
                 <li>
                   <b>S’agissait-il d’une erreur opérationnelle ? </b>
-                  {dossier.declarationFDO.doute ? "J'ai un doute" : "Oui"}
+                  {dossier.declarationFDO.estErreur === "DOUTE"
+                    ? "J'ai un doute"
+                    : capitaliser(dossier.declarationFDO.estErreur as string)}
                 </li>
-                {dossier.declarationFDO.doute && (
+                {dossier.declarationFDO.descriptionErreur && (
                   <li>
                     <b>Explications: </b>
                     <blockquote
                       dangerouslySetInnerHTML={{
                         __html: (
-                          dossier.declarationFDO.motifDoute ?? ""
+                          dossier.declarationFDO.descriptionErreur ?? ""
                         ).replaceAll(/\n/g, "</br>"),
                       }}
                     />

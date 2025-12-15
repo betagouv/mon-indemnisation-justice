@@ -10,7 +10,7 @@ import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { dateDansNJours, dateSimple } from "@/common/services/date.ts";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
@@ -28,7 +28,7 @@ export const Route = createFileRoute(
 });
 
 const Page = () => {
-  let { declarations }: { declarations: DeclarationErreurOperationnelle[] } =
+  let { declarations }: { declarations: DeclarationFDOBrisPorte[] } =
     Route.useLoaderData();
 
   const naviguer = useNavigate<typeof router>({

@@ -7,8 +7,8 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { z } from "zod";
 import {
   Civilite,
-  DeclarationErreurOperationnelle,
-} from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+  DeclarationFDOBrisPorte,
+} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { router } from "@/apps/agent/fdo/_init/_router.ts";
 import { useInjection } from "inversify-react";
@@ -39,12 +39,12 @@ export const Route = createFileRoute(
   }: {
     params: any;
   }): Promise<{
-    declaration: DeclarationErreurOperationnelle;
+    declaration: DeclarationFDOBrisPorte;
     reference: string;
   }> => {
     const declaration = (await container
       .get(DeclarationManagerInterface.$)
-      .getDeclaration(params.reference)) as DeclarationErreurOperationnelle;
+      .getDeclaration(params.reference)) as DeclarationFDOBrisPorte;
 
     if (!declaration) {
       throw redirect({
@@ -99,7 +99,7 @@ function Page() {
   const {
     declaration,
     reference,
-  }: { declaration: DeclarationErreurOperationnelle; reference: string } =
+  }: { declaration: DeclarationFDOBrisPorte; reference: string } =
     Route.useLoaderData();
 
   const naviguer = useNavigate<typeof router>({

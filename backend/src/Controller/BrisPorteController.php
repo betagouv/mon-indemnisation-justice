@@ -7,7 +7,7 @@ namespace MonIndemnisationJustice\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Dto\Inscription;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
@@ -31,7 +31,7 @@ class PreInscription
 {
     public function __construct(
         public ?TestEligibilite $testEligibilite = null,
-        public ?DeclarationErreurOperationnelle $declarationErreurOperationnelle = null,
+        public ?DeclarationFDOBrisPorte $declarationErreurOperationnelle = null,
         public ?Requerant $requerant = null,
     ) {}
 }
@@ -137,7 +137,7 @@ class BrisPorteController extends AbstractController
         }
 
         $preinscription = $this->getPreinscription($request);
-        $declaration = $this->entityManager->getRepository(DeclarationErreurOperationnelle::class)->findOneBy(['reference' => $reference]);
+        $declaration = $this->entityManager->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['reference' => $reference]);
 
         if ($declaration->estAttribue()) {
             // TODO compter la tentative pour le rate limiter
@@ -210,7 +210,7 @@ class BrisPorteController extends AbstractController
         $preinscription = $this->getPreinscription($request);
         $testEligibilite = $preinscription->testEligibilite;
 
-        /** @var DeclarationErreurOperationnelle $declaration */
+        /** @var DeclarationFDOBrisPorte $declaration */
         $declaration = $preinscription->declarationErreurOperationnelle;
 
         // Création du compte requérant
@@ -305,7 +305,7 @@ class BrisPorteController extends AbstractController
 
         return new PreInscription(
             testEligibilite: $this->chargerEntite(TestEligibilite::class, @$session['testEligibilite'] ?? $request->getSession()->get(self::CLEF_SESSION_TEST_ELIGIBILITE)),
-            declarationErreurOperationnelle: $this->chargerEntite(DeclarationErreurOperationnelle::class, @$session['declarationErreurOperationnelle']),
+            declarationErreurOperationnelle: $this->chargerEntite(DeclarationFDOBrisPorte::class, @$session['declarationErreurOperationnelle']),
             requerant: $this->chargerEntite(Requerant::class, @$session['requerant']),
         );
     }

@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationErreurOperationnelleOutputMapper;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationErreurOperationelleVoter;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,12 +36,12 @@ class MesDeclarationsEndpoint
     {
         /** @var Agent $agent */
         $agent = $security->getUser();
-        $declarations = $this->em->getRepository(DeclarationErreurOperationnelle::class)->findBy(['agent' => $agent]);
+        $declarations = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findBy(['agent' => $agent]);
 
         return new JsonResponse(
             $this->normalizer->normalize(
                 array_map(
-                    fn (DeclarationErreurOperationnelle $declaration) => DeclarationErreurOperationnelleOutputMapper::mapper($declaration, $this->objectMapper),
+                    fn (DeclarationFDOBrisPorte $declaration) => DeclarationErreurOperationnelleOutputMapper::mapper($declaration, $this->objectMapper),
                     $declarations
                 ),
                 'json'

@@ -87,9 +87,9 @@ class BrisPorte
     protected ?TestEligibilite $testEligibilite = null;
 
     #[Groups(['agent:detail'])]
-    #[ORM\OneToOne(targetEntity: DeclarationErreurOperationnelle::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: DeclarationFDOBrisPorte::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'declaration_id', nullable: true, onDelete: 'SET NULL')]
-    protected ?DeclarationErreurOperationnelle $declarationFDO = null;
+    protected ?DeclarationFDOBrisPorte $declarationFDO = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
@@ -595,12 +595,12 @@ class BrisPorte
         return null !== $this->declarationFDO;
     }
 
-    public function getDeclarationFDO(): ?DeclarationErreurOperationnelle
+    public function getDeclarationFDO(): ?DeclarationFDOBrisPorte
     {
         return $this->declarationFDO;
     }
 
-    public function setDeclarationFDO(DeclarationErreurOperationnelle $declarationFDO): static
+    public function setDeclarationFDO(DeclarationFDOBrisPorte $declarationFDO): static
     {
         $this->declarationFDO = $declarationFDO;
 
