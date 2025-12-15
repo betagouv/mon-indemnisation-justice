@@ -415,7 +415,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn install
-          npx playwright install --with-deps
+          npx playwright install --with-deps firefox
         if: steps.cache-yarn-end2end.outputs.cache-hit != 'true'
         working-directory: end2end
 
@@ -434,9 +434,7 @@ jobs:
 
       - name: Run end-to-end tests
         # Pour l'heure on se limite à Firefox car on ne sait pas encore créer des fixtures par Browser
-        run: npx playwright test --reporter=junit --project firefox --retries 0
-        env:
-          PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-result-end2end.xml
+        run: npx playwright test --reporter=junit --project firefox --retries 0 > test-result-end2end.xml
         working-directory: end2end
 
       - name: End-to-end test report
