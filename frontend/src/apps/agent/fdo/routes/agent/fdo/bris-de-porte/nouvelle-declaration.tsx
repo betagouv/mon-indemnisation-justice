@@ -3,7 +3,7 @@ import { container } from "@/apps/agent/fdo/_init/_container";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/nouvelle-declaration",
+  "/agent/fdo/bris-de-porte/nouvelle-declaration",
 )({
   beforeLoad: async ({ cause }) => {
     if (cause === "enter") {
@@ -12,7 +12,7 @@ export const Route = createFileRoute(
         .nouvelleDeclaration();
 
       throw redirect({
-        to: "/agent/fdo/erreur-operationnelle/$reference",
+        to: "/agent/fdo/bris-de-porte/$reference",
         params: {
           reference: brouillon.reference,
         },

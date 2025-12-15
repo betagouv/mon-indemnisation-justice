@@ -20,7 +20,7 @@ import { router } from "@/apps/agent/fdo/_init/_router.ts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/$reference/1-operation",
+  "/agent/fdo/bris-de-porte/$reference/1-bris-de-porte",
 )({
   beforeLoad: async ({ params }) => {
     if (
@@ -29,7 +29,7 @@ export const Route = createFileRoute(
         .aDeclaration(params.reference))
     ) {
       throw redirect({
-        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        to: "/agent/fdo/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -55,7 +55,7 @@ export const Route = createFileRoute(
 
 const schemaErreurOperationnelle = z.object({
   estErreur: z.literal(DeclarationFDOBrisPorteErreurTypes),
-  descriptionErreur: z.string(),
+  descriptionErreur: z.any(),
   dateOperation: z
     .date()
     .max(new Date(+new Date().setHours(23, 59, 59, 9999)), {
@@ -107,7 +107,7 @@ const Page = () => {
     },
     onSubmit: async ({ value }) => {
       await naviguer({
-        to: "/agent/fdo/erreur-operationnelle/$reference/2-complement",
+        to: "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
         params: { reference } as any,
       });
     },
@@ -146,6 +146,7 @@ const Page = () => {
             children={(field) => {
               return (
                 <RadioButtons
+                  className="fr-champ-requis"
                   legend={
                     <>
                       S’agissait-il d’
@@ -155,7 +156,7 @@ const Page = () => {
                       >
                         <a href="">une erreur opérationnelle</a>
                       </Tooltip>{" "}
-                      ? *
+                      ?
                     </>
                   }
                   small={false}
@@ -247,8 +248,8 @@ const Page = () => {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-4 fr-my-0"
-                  label="Date de l'opération *"
+                  className="fr-col-lg-4 fr-my-0 fr-champ-requis"
+                  label="Date de l'opération"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     value: dateChiffre(field.state.value),
@@ -275,8 +276,8 @@ const Page = () => {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-8 fr-my-0"
-                  label="Adresse du logement ayant subi le bris de porte *"
+                  className="fr-col-lg-8 fr-my-0 fr-champ-requis"
+                  label="Adresse du logement ayant subi le bris de porte"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -321,8 +322,8 @@ const Page = () => {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3 fr-m-0"
-                  label="Code postal *"
+                  className="fr-col-lg-3 fr-m-0 fr-champ-requis"
+                  label="Code postal"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -347,8 +348,8 @@ const Page = () => {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3 fr-m-0"
-                  label="Ville *"
+                  className="fr-col-lg-3 fr-m-0 fr-champ-requis"
+                  label="Ville"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",

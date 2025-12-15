@@ -61,14 +61,14 @@ const EspaceFDO = () => {
               {
                 text: "Mes déclarations",
                 linkProps: {
-                  to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+                  to: "/agent/fdo/bris-de-porte/mes-declarations",
                   activeOptions: { exact: true },
                 },
               },
               {
                 text: "Nouvelle déclaration",
                 linkProps: {
-                  to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration",
+                  to: "/agent/fdo/bris-de-porte/nouvelle-declaration",
                   activeOptions: { exact: false },
                 },
               },

@@ -15,7 +15,7 @@ import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/mes-declarations",
+  "/agent/fdo/bris-de-porte/mes-declarations",
 )({
   loader: async ({ params }) => {
     return {
@@ -85,7 +85,7 @@ const Page = () => {
                     nativeButtonProps: {
                       onClick: () =>
                         naviguer({
-                          to: "/agent/fdo/erreur-operationnelle/$reference",
+                          to: "/agent/fdo/bris-de-porte/$reference",
                           params: {
                             reference: declaration.reference,
                           } as any,
