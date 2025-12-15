@@ -7,7 +7,7 @@ use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationErreurOperationnelleI
 use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationErreurOperationnelleOutputMapper;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationErreurOperationelleVoter;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -45,7 +45,7 @@ class DeclarerErreurOperationnelleEndpoint
             $agent->setTelephone($input->telephone);
             $this->em->persist($agent);
         }
-        $declaration = $this->objectMapper->map($input, DeclarationErreurOperationnelle::class)->setAgent($agent);
+        $declaration = $this->objectMapper->map($input, DeclarationFDOBrisPorte::class)->setAgent($agent);
 
         $this->em->persist($declaration);
         $this->em->flush();

@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -92,11 +92,11 @@ class ConnexionRequerantListener implements EventSubscriberInterface
         return $idTestEligibilite ? $this->em->find(TestEligibilite::class, $idTestEligibilite) : null;
     }
 
-    protected function getDeclarationFDOEnCours(Request $request, Requerant $requerant): ?DeclarationErreurOperationnelle
+    protected function getDeclarationFDOEnCours(Request $request, Requerant $requerant): ?DeclarationFDOBrisPorte
     {
         $preInscription = $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, []);
         $idDeclarationFDO = $requerant->getNavigation()?->idDeclaration ?? $preInscription['declarationErreurOperationnelle'] ?? null;
 
-        return $idDeclarationFDO ? $this->em->find(DeclarationErreurOperationnelle::class, $idDeclarationFDO) : null;
+        return $idDeclarationFDO ? $this->em->find(DeclarationFDOBrisPorte::class, $idDeclarationFDO) : null;
     }
 }

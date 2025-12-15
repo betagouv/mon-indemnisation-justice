@@ -2,13 +2,14 @@
 
 namespace MonIndemnisationJustice\Api\Agent\FDO\Output;
 
-use MonIndemnisationJustice\Entity\DeclarationErreurOperationnelle;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;
 
-#[Map(source: DeclarationErreurOperationnelle::class)]
+#[Map(source: DeclarationFDOBrisPorte::class)]
 class DeclarationErreurOperationnelleOutput
 {
     public ?Uuid $id = null;
@@ -21,8 +22,8 @@ class DeclarationErreurOperationnelleOutput
     public \DateTimeInterface $dateSoumission;
     public string $telephone;
 
-    public bool $doute;
-    public ?string $motifDoute = null;
+    public DeclarationFDOBrisPorteErreurType $estErreur;
+    public ?string $descriptionErreur = null;
 
     #[Map(target: AgentOutput::class)]
     public AgentOutput $agent;

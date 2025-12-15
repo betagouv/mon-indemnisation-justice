@@ -1,4 +1,4 @@
-import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { inject, ServiceIdentifier } from "inversify";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import * as Sentry from "@sentry/browser";
@@ -7,24 +7,24 @@ import { read } from "fs";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 
 export interface DeclarationManagerInterface {
-  getListe(): Promise<DeclarationErreurOperationnelle[]>;
+  getListe(): Promise<DeclarationFDOBrisPorte[]>;
 
   aDeclaration(reference: string): Promise<boolean>;
 
   getDeclaration(
     reference: string,
-  ): Promise<DeclarationErreurOperationnelle | undefined>;
+  ): Promise<DeclarationFDOBrisPorte | undefined>;
 
-  nouvelleDeclaration(): Promise<DeclarationErreurOperationnelle>;
+  nouvelleDeclaration(): Promise<DeclarationFDOBrisPorte>;
 
   enregistrer(
-    declaration: DeclarationErreurOperationnelle,
+    declaration: DeclarationFDOBrisPorte,
     miseAJour?: any,
   ): void | Promise<void>;
 
-  soumettre(declaration: DeclarationErreurOperationnelle): Promise<void>;
+  soumettre(declaration: DeclarationFDOBrisPorte): Promise<void>;
 
-  supprimer(declaration: DeclarationErreurOperationnelle): void;
+  supprimer(declaration: DeclarationFDOBrisPorte): void;
 }
 
 export namespace DeclarationManagerInterface {
@@ -36,7 +36,7 @@ export namespace DeclarationManagerInterface {
 export class APIDeclarationManager implements DeclarationManagerInterface {
   static CLEF_STOCKAGE = "_declarations";
 
-  protected _declarations: DeclarationErreurOperationnelle[];
+  protected _declarations: DeclarationFDOBrisPorte[];
 
   protected async chargerListeDeclarations(): Promise<void> {
     if (!this._declarations) {
@@ -49,16 +49,14 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     }
   }
 
-  protected async chargerBrouillons(): Promise<
-    DeclarationErreurOperationnelle[]
-  > {
+  protected async chargerBrouillons(): Promise<DeclarationFDOBrisPorte[]> {
     if (
       typeof localStorage.getItem(APIDeclarationManager.CLEF_STOCKAGE) ===
       "string"
     ) {
       return Promise.resolve(
         plainToInstance(
-          DeclarationErreurOperationnelle,
+          DeclarationFDOBrisPorte,
           JSON.parse(
             localStorage.getItem(APIDeclarationManager.CLEF_STOCKAGE) as string,
           ) as any[],
@@ -68,9 +66,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
     return Promise.resolve([]);
   }
-  protected async chargerDeclarations(): Promise<
-    DeclarationErreurOperationnelle[]
-  > {
+  protected async chargerDeclarations(): Promise<DeclarationFDOBrisPorte[]> {
     const response = await fetch(
       "/api/agent/fdo/erreur-operationnelle/mes-declarations",
       {
@@ -82,12 +78,12 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     );
 
     return plainToInstance(
-      DeclarationErreurOperationnelle,
+      DeclarationFDOBrisPorte,
       (await response.json()) as any[],
     );
   }
 
-  async getListe(): Promise<DeclarationErreurOperationnelle[]> {
+  async getListe(): Promise<DeclarationFDOBrisPorte[]> {
     await this.chargerListeDeclarations();
     return this._declarations.sort(
       (a, b) => a.dateCreation.getTime() - b.dateCreation.getTime(),
@@ -106,7 +102,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   async getDeclaration(
     reference: string,
-  ): Promise<DeclarationErreurOperationnelle | undefined> {
+  ): Promise<DeclarationFDOBrisPorte | undefined> {
     await this.chargerListeDeclarations();
 
     return Promise.resolve(
@@ -116,27 +112,27 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     );
   }
 
-  async nouvelleDeclaration(): Promise<DeclarationErreurOperationnelle> {
+  async nouvelleDeclaration(): Promise<DeclarationFDOBrisPorte> {
     await this.chargerListeDeclarations();
-    this._declarations.push(new DeclarationErreurOperationnelle());
+    this._declarations.push(new DeclarationFDOBrisPorte());
 
     localStorage.setItem(
       APIDeclarationManager.CLEF_STOCKAGE,
       JSON.stringify(instanceToPlain(this._declarations)),
     );
 
-    return this._declarations.at(-1) as DeclarationErreurOperationnelle;
+    return this._declarations.at(-1) as DeclarationFDOBrisPorte;
   }
 
   enregistrer(
-    declaration: DeclarationErreurOperationnelle,
+    declaration: DeclarationFDOBrisPorte,
     miseAJour?: any,
   ): Promise<void> {
     this._declarations = this._declarations.map((d) => {
       if (declaration.dateCreation.getTime() === d.dateCreation.getTime()) {
         return miseAJour
           ? plainToInstance(
-              DeclarationErreurOperationnelle,
+              DeclarationFDOBrisPorte,
               merge.withOptions(
                 { mergeArrays: false },
                 instanceToPlain(declaration),
@@ -159,13 +155,13 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     return Promise.resolve(undefined);
   }
 
-  ajouter(declaration: DeclarationErreurOperationnelle): void {
+  ajouter(declaration: DeclarationFDOBrisPorte): void {
     this._declarations = this._declarations
       .filter((d) => d.reference !== declaration.reference)
       .concat(declaration);
   }
 
-  supprimer(declaration: DeclarationErreurOperationnelle): void {
+  supprimer(declaration: DeclarationFDOBrisPorte): void {
     this._declarations = this._declarations.filter(
       (d) => d.reference !== declaration.reference,
     );
@@ -178,7 +174,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     );
   }
 
-  async soumettre(declaration: DeclarationErreurOperationnelle): Promise<void> {
+  async soumettre(declaration: DeclarationFDOBrisPorte): Promise<void> {
     // Appel API à `api_agent_fdo_erreur_operationnelle_declarer` :
     const response = await fetch(
       "/api/agent/fdo/erreur-operationnelle/declarer",
@@ -199,7 +195,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     );
     if (response.ok) {
       const declarationSauvegardee = plainToInstance(
-        DeclarationErreurOperationnelle,
+        DeclarationFDOBrisPorte,
         await response.json(),
       );
 

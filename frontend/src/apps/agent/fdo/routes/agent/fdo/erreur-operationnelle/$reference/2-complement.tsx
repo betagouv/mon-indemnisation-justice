@@ -11,7 +11,7 @@ import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { z } from "zod";
 import { useInjection } from "inversify-react";
-import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
@@ -39,7 +39,7 @@ export const Route = createFileRoute(
     params: any;
     context: AgentContext;
   }): Promise<{
-    declaration: DeclarationErreurOperationnelle;
+    declaration: DeclarationFDOBrisPorte;
     reference: string;
     contexte: AgentContext;
   }> => {
@@ -47,7 +47,7 @@ export const Route = createFileRoute(
       reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
-        .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
+        .getDeclaration(params.reference)) as DeclarationFDOBrisPorte,
       contexte: context,
     };
   },
@@ -80,7 +80,7 @@ function Page() {
     reference,
     contexte,
   }: {
-    declaration: DeclarationErreurOperationnelle;
+    declaration: DeclarationFDOBrisPorte;
     reference: string;
     contexte: AgentContext;
   } = Route.useLoaderData();

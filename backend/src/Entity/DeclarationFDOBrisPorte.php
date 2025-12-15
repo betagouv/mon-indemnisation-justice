@@ -11,17 +11,17 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'declarations_erreur_operationnelle')]
+#[ORM\Table(name: 'declarations_fdo_bris_porte')]
 #[ORM\Index(
-    name: 'declaration_erreur_operationnelle_agent_idx',
+    name: 'declarations_fdo_bris_porte_agent_idx',
     columns: ['agent_id']
 )]
 #[ORM\UniqueConstraint(
-    name: 'declaration_erreur_operationnelle_reference_idx',
+    name: 'declarations_fdo_bris_porte_reference_idx',
     columns: ['reference']
 )]
 #[ORM\HasLifecycleCallbacks]
-class DeclarationErreurOperationnelle
+class DeclarationFDOBrisPorte
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -30,9 +30,17 @@ class DeclarationErreurOperationnelle
     #[Groups(['agent:detail'])]
     protected ?Uuid $id = null;
 
-    #[ORM\Column(length: 6)]
     #[Groups(['agent:detail'])]
+    #[ORM\Column(length: 6)]
     protected string $reference;
+
+    #[Groups(['agent:detail'])]
+    #[ORM\Column(name: 'est_erreur', length: 6, enumType: DeclarationFDOBrisPorteErreurType::class)]
+    protected DeclarationFDOBrisPorteErreurType $estErreur;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['agent:detail'])]
+    protected ?string $descriptionErreur = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: false)]
     #[Groups(['agent:detail'])]
@@ -52,14 +60,6 @@ class DeclarationErreurOperationnelle
     #[ORM\OneToOne(targetEntity: BrisPorte::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?BrisPorte $dossier = null;
-
-    #[ORM\Column()]
-    #[Groups(['agent:detail'])]
-    protected bool $doute = false;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['agent:detail'])]
-    protected ?string $motifDoute = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     #[Groups(['agent:detail'])]
@@ -121,6 +121,30 @@ class DeclarationErreurOperationnelle
         return $this;
     }
 
+    public function getEstErreur(): DeclarationFDOBrisPorteErreurType
+    {
+        return $this->estErreur;
+    }
+
+    public function setEstErreur(DeclarationFDOBrisPorteErreurType $estErreur): DeclarationFDOBrisPorte
+    {
+        $this->estErreur = $estErreur;
+
+        return $this;
+    }
+
+    public function getDescriptionErreur(): ?string
+    {
+        return $this->descriptionErreur;
+    }
+
+    public function setDescriptionErreur(?string $descriptionErreur): DeclarationFDOBrisPorte
+    {
+        $this->descriptionErreur = $descriptionErreur;
+
+        return $this;
+    }
+
     public function getDateOperation(): \DateTimeInterface
     {
         return $this->dateOperation;
@@ -172,30 +196,6 @@ class DeclarationErreurOperationnelle
     public function estAttribue(): bool
     {
         return null !== $this->dossier;
-    }
-
-    public function isDoute(): bool
-    {
-        return $this->doute;
-    }
-
-    public function setDoute(bool $doute): DeclarationErreurOperationnelle
-    {
-        $this->doute = $doute;
-
-        return $this;
-    }
-
-    public function getMotifDoute(): ?string
-    {
-        return $this->motifDoute;
-    }
-
-    public function setMotifDoute(?string $motifDoute): DeclarationErreurOperationnelle
-    {
-        $this->motifDoute = $motifDoute;
-
-        return $this;
     }
 
     public function getAgent(): Agent
@@ -252,7 +252,7 @@ class DeclarationErreurOperationnelle
         return is_array($this->infosRequerant) ? InfosRequerant::depuisArray($this->infosRequerant) : null;
     }
 
-    public function setInfosRequerant(null|array|InfosRequerant $infosRequerant): DeclarationErreurOperationnelle
+    public function setInfosRequerant(null|array|InfosRequerant $infosRequerant): DeclarationFDOBrisPorte
     {
         if ($infosRequerant instanceof InfosRequerant) {
             $this->infosRequerant = $infosRequerant->versArray();
@@ -268,7 +268,7 @@ class DeclarationErreurOperationnelle
         return $this->precisionsRequerant;
     }
 
-    public function setPrecisionsRequerant(?string $precisionsRequerant): DeclarationErreurOperationnelle
+    public function setPrecisionsRequerant(?string $precisionsRequerant): DeclarationFDOBrisPorte
     {
         $this->precisionsRequerant = $precisionsRequerant;
 

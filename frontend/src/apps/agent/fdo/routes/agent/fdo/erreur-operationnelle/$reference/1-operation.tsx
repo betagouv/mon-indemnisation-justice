@@ -9,7 +9,11 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { z } from "zod";
 import "@/style/index.css";
-import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import {
+  DeclarationFDOBrisPorte,
+  DeclarationFDOBrisPorteErreurType,
+  DeclarationFDOBrisPorteErreurTypes,
+} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { useInjection } from "inversify-react";
 import { router } from "@/apps/agent/fdo/_init/_router.ts";
@@ -36,22 +40,22 @@ export const Route = createFileRoute(
   }: {
     params: any;
   }): Promise<{
-    declaration: DeclarationErreurOperationnelle;
+    declaration: DeclarationFDOBrisPorte;
     reference: string;
   }> => {
     return {
       reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
-        .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
+        .getDeclaration(params.reference)) as DeclarationFDOBrisPorte,
     };
   },
   component: () => <Page />,
 });
 
 const schemaErreurOperationnelle = z.object({
-  doute: z.boolean(),
-  motifDoute: z.any(),
+  estErreur: z.literal(DeclarationFDOBrisPorteErreurTypes),
+  descriptionErreur: z.string(),
   dateOperation: z
     .date()
     .max(new Date(+new Date().setHours(23, 59, 59, 9999)), {
@@ -74,12 +78,8 @@ const Page = () => {
   const {
     declaration,
     reference,
-  }: { declaration: DeclarationErreurOperationnelle; reference: string } =
+  }: { declaration: DeclarationFDOBrisPorte; reference: string } =
     Route.useLoaderData();
-
-  const [douteAMotiver, setDouteAMotiver] = useState<boolean>(
-    declaration.doute,
-  );
 
   const naviguer = useNavigate<typeof router>({
     from: Route.fullPath,
@@ -91,8 +91,8 @@ const Page = () => {
 
   const form = useForm({
     defaultValues: {
-      doute: declaration.doute,
-      motifDoute: declaration.motifDoute,
+      estErreur: declaration.estErreur,
+      descriptionErreur: declaration.descriptionErreur,
       dateOperation: declaration.dateOperation,
       adresse: declaration.adresse,
     },
@@ -122,9 +122,10 @@ const Page = () => {
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}>
-        <h1>Nouvelle déclaration de bris de porte</h1>
+        <h1 className="fr-my-1w">Nouvelle déclaration de bris de porte</h1>
 
         <Stepper
+          className="fr-my-1w"
           currentStep={1}
           stepCount={3}
           title="Eléments relatifs au bris de porte"
@@ -139,9 +140,9 @@ const Page = () => {
         </div>
         */}
 
-        <div className="fr-grid-row fr-px-0 fr-my-2w">
+        <div className="fr-grid-row fr-px-0">
           <form.Field
-            name="doute"
+            name="estErreur"
             children={(field) => {
               return (
                 <RadioButtons
@@ -167,10 +168,11 @@ const Page = () => {
                         "Le logement perquisitionné n’était pas visé par l’opération.",
                       nativeInputProps: {
                         className: "fr-col-6",
-                        defaultChecked: !declaration.doute,
+                        defaultChecked: declaration.estErreur === "OUI",
                         onChange: (event: ChangeEvent<HTMLInputElement>) => {
-                          setDouteAMotiver(false);
-                          field.handleChange(!event.target.checked);
+                          field.handleChange(
+                            event.target.checked ? "OUI" : undefined,
+                          );
                         },
                       },
                     },
@@ -180,10 +182,11 @@ const Page = () => {
                         "Le logement perquisitionné était visé par l’opération.",
                       nativeInputProps: {
                         className: "fr-col-6",
-                        defaultChecked: !declaration.doute,
+                        defaultChecked: declaration.estErreur === "DOUTE",
                         onChange: (event: ChangeEvent<HTMLInputElement>) => {
-                          setDouteAMotiver(false);
-                          field.handleChange(!event.target.checked);
+                          field.handleChange(
+                            event.target.checked ? "DOUTE" : undefined,
+                          );
                         },
                       },
                     },
@@ -200,10 +203,11 @@ const Page = () => {
                       ),
                       nativeInputProps: {
                         className: "fr-col-6",
-                        defaultChecked: declaration.doute,
+                        defaultChecked: declaration.estErreur === "DOUTE",
                         onChange: (event: ChangeEvent<HTMLInputElement>) => {
-                          setDouteAMotiver(true);
-                          field.handleChange(event.target.checked);
+                          field.handleChange(
+                            event.target.checked ? "DOUTE" : undefined,
+                          );
                         },
                       },
                     },
@@ -216,7 +220,7 @@ const Page = () => {
 
         <div className="fr-grid-row fr-grid-row--gutters fr-px-0">
           <form.Field
-            name="motifDoute"
+            name="descriptionErreur"
             children={(field) => {
               return (
                 <Input
@@ -225,7 +229,7 @@ const Page = () => {
                   className="fr-col-12"
                   disabled={declaration.estSauvegarde()}
                   nativeTextAreaProps={{
-                    defaultValue: declaration.motifDoute ?? "",
+                    defaultValue: declaration.descriptionErreur ?? "",
                     onChange: (e) => field.handleChange(e.target.value),
                     rows: 5,
                     placeholder:
