@@ -55,7 +55,13 @@ const Page = () => {
               declaration.estBrouillon() ? (
                 <Badge>Brouillon</Badge>
               ) : (
-                <>sauvegardé le {dateSimple(dateDansNJours(-3))}</>
+                <>
+                  sauvegardé le{" "}
+                  {dateSimple(
+                    declaration.dateSoumission ?? declaration.dateCreation,
+                    true,
+                  )}
+                </>
               ),
               declaration.dateOperation ? (
                 dateSimple(declaration.dateOperation, true)
