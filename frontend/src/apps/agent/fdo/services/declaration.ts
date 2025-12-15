@@ -1,9 +1,10 @@
 import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
-import { ServiceIdentifier } from "inversify";
+import { inject, ServiceIdentifier } from "inversify";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import * as Sentry from "@sentry/browser";
 import { merge } from "ts-deepmerge";
 import { read } from "fs";
+import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 
 export interface DeclarationManagerInterface {
   getListe(): Promise<DeclarationErreurOperationnelle[]>;
