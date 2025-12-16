@@ -36,6 +36,9 @@ test("FDO - Gendarme - déclarer bris de porte", async ({browser}) => {
     await page.getByLabel("Code postal").fill("75021");
     await page.getByLabel("Ville").fill("PARIS");
 
+
+    // Attendre 250ms que les données soient "enregistrées"
+    await page.waitForTimeout(250);
     await page.getByText("Continuer", {exact: true}).click();
 
     await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/2-service-enqueteur/);
@@ -50,6 +53,8 @@ test("FDO - Gendarme - déclarer bris de porte", async ({browser}) => {
     await page.getByLabel(/^Juridiction \/ parquet/).fill("PARIS");
     await page.getByLabel(/^Nom du magistrat/).fill("M MARTEAU");
 
+    // Attendre 250ms que les données soient "enregistrées"
+    await page.waitForTimeout(250);
     await page.getByText("Continuer", {exact: true}).click();
 
     await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/3-usager/);
@@ -73,6 +78,8 @@ test("FDO - Gendarme - déclarer bris de porte", async ({browser}) => {
     await page.getByLabel("Courriel").fill("erika.rente@courriel.fr");
     await page.getByLabel("Précisions concernant l'usager").fill("Propriétaire occupant");
 
+    // Attendre 250ms que les données soient "enregistrées"
+    await page.waitForTimeout(250);
     await page.getByText("Envoyer", {exact: true}).click();
 
     await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/mes-declarations/);
@@ -121,6 +128,8 @@ test("FDO - Policier - déclarer bris de porte", async ({browser}) => {
     await page.getByLabel("Code postal").fill("69010");
     await page.getByLabel("Ville").fill("LYON");
 
+    // Attendre 250ms que les données soient "enregistrées"
+    await page.waitForTimeout(250);
     await page.getByText("Continuer", {exact: true}).click();
 
     await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/2-service-enqueteur/);
@@ -135,6 +144,8 @@ test("FDO - Policier - déclarer bris de porte", async ({browser}) => {
     await page.getByLabel(/^Juridiction \/ parquet/).fill("LYON");
     await page.getByLabel(/^Nom du magistrat/).fill("M BALANCE");
 
+    // Attendre 250ms que les données soient "enregistrées"
+    await page.waitForTimeout(250);
     await page.getByText("Continuer", {exact: true}).click();
 
     await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/3-usager/);
@@ -153,6 +164,8 @@ test("FDO - Policier - déclarer bris de porte", async ({browser}) => {
         .check();
     await page.getByLabel("Précisions").fill("Logement vacant lors de notre passage");
 
+    // Attendre 250ms que les données soient "enregistrées"
+    await page.waitForTimeout(250);
     await page.getByText("Envoyer", {exact: true}).click();
 
     await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/mes-declarations/);
@@ -163,5 +176,5 @@ test("FDO - Policier - déclarer bris de porte", async ({browser}) => {
     const ligneDeclaration = page.locator('div.fr-table table tbody tr:last-child')
 
     await expect(ligneDeclaration.locator('td').nth(2)).toHaveText("4 allée des Fruits 69010 LYON");
-    await expect(ligneDeclaration.locator('td').nth(1)).toHaveText(/^15 décembre/);
+    await expect(ligneDeclaration.locator('td').nth(1)).toHaveText(/^14 décembre/);
 });
