@@ -6,7 +6,7 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Document\RenseignerMetaDonne
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\TypeAttestation;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
 
 /**
  * Teste le point d'entrée @RenseignerMetaDonneesAttestationEndpoint de l'API, permettant de renseigner les métadonnées
@@ -16,7 +16,7 @@ use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCa
  *
  * @coversNothing
  */
-class RenseignerMetaDonneesAttestationEndpointTest extends AbstractEndpointTestCase
+class RenseignerMetaDonneesAttestationEndpointTest extends APIEndpointTestCase
 {
     /**
      * ETQ agent betagouv, je dois pouvoir renseigner les méta-données de l'attestation d'un dossier qui existe.

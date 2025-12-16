@@ -5,7 +5,7 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Dossier;
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\DemarrerInstructionDossierEndpoint;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @coversNothing
  */
-class DemarrerInstructionDossierEndpointTest extends AbstractEndpointTestCase
+class DemarrerInstructionDossierEndpointTest extends APIEndpointTestCase
 {
     /**
      * ETQ rédacteur attribué, je dois pouvoir démarrer l'instruction d'un dossier à instruire.
