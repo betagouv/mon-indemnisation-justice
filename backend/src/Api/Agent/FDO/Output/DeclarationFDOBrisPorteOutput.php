@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;
 
 #[Map(source: DeclarationFDOBrisPorte::class)]
-class DeclarationErreurOperationnelleOutput
+class DeclarationFDOBrisPorteOutput
 {
     public ?Uuid $id = null;
     public string $reference;
