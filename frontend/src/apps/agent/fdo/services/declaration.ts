@@ -38,6 +38,11 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   protected _declarations: DeclarationFDOBrisPorte[];
 
+  public constructor(
+    @inject(AgentManagerInterface.$)
+    protected readonly agentManager: AgentManagerInterface,
+  ) {}
+
   protected async chargerListeDeclarations(): Promise<void> {
     if (!this._declarations) {
       this._declarations = (
@@ -50,15 +55,22 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
   }
 
   protected async chargerBrouillons(): Promise<DeclarationFDOBrisPorte[]> {
+    const { agent } = await this.agentManager.moi();
+    // Suppression des brouillons non individuels
+    localStorage.removeItem(APIDeclarationManager.CLEF_STOCKAGE);
+
     if (
-      typeof localStorage.getItem(APIDeclarationManager.CLEF_STOCKAGE) ===
-      "string"
+      typeof localStorage.getItem(
+        `${APIDeclarationManager.CLEF_STOCKAGE}_${agent.id}`,
+      ) === "string"
     ) {
       return Promise.resolve(
         plainToInstance(
           DeclarationFDOBrisPorte,
           JSON.parse(
-            localStorage.getItem(APIDeclarationManager.CLEF_STOCKAGE) as string,
+            localStorage.getItem(
+              `${APIDeclarationManager.CLEF_STOCKAGE}_${agent.id}`,
+            ) as string,
           ) as any[],
         ),
       );
@@ -114,17 +126,19 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   async nouvelleDeclaration(): Promise<DeclarationFDOBrisPorte> {
     await this.chargerListeDeclarations();
+    const { agent } = await this.agentManager.moi();
+
     this._declarations.push(new DeclarationFDOBrisPorte());
 
     localStorage.setItem(
-      APIDeclarationManager.CLEF_STOCKAGE,
+      `${APIDeclarationManager.CLEF_STOCKAGE}_${agent.id}`,
       JSON.stringify(instanceToPlain(this._declarations)),
     );
 
     return this._declarations.at(-1) as DeclarationFDOBrisPorte;
   }
 
-  enregistrer(
+  async enregistrer(
     declaration: DeclarationFDOBrisPorte,
     miseAJour?: any,
   ): Promise<void> {
@@ -145,8 +159,10 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
       return d;
     });
 
+    const { agent } = await this.agentManager.moi();
+
     localStorage.setItem(
-      APIDeclarationManager.CLEF_STOCKAGE,
+      `${APIDeclarationManager.CLEF_STOCKAGE}_${agent.id}`,
       JSON.stringify(
         instanceToPlain(this._declarations.filter((d) => d.estBrouillon())),
       ),

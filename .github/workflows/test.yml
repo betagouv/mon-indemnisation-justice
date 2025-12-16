@@ -210,7 +210,7 @@ jobs:
         with:
           name: Frontend test report
           path: frontend/test-result-frontend.xml
-          reporter: java-junit
+          reporter: jest-junit
           fail-on-error: false
 
   test-end2end:
@@ -337,6 +337,24 @@ jobs:
             "usual_name": "Gouve",
             "uid": "1337",
             "idp_id": "71144ab3-ee1a-4401-b7b3-79b44f7daeeb"
+        },
+        {
+            "_title": "Gendarme",
+            "sub": "c7f94b68-89c9-4df4-ac44-1d127937dd63",
+            "email": "gendarme@gendarmerie.interieur.gouv.fr",
+            "given_name": "Jean",
+            "usual_name": "d''Harme",
+            "uid": "890",
+            "idp_id": "e7782e47-8e0f-4b94-8e21-1197cb6e7143"
+        },
+        {
+            "_title": "Policier",
+            "sub": "e316bde4-3d37-4ed8-9001-c40d9b07fe06",
+            "email": "policier@interieur.gouv.fr",
+            "given_name": "Paul",
+            "usual_name": "Issié",
+            "uid": "567",
+            "idp_id": "ee89db94-64de-4e14-b31a-e93ed3ab1168"
         }
     ]'
     env:
@@ -434,7 +452,7 @@ jobs:
 
       - name: Run end-to-end tests
         # Pour l'heure on se limite à Firefox car on ne sait pas encore créer des fixtures par Browser
-        run: npx playwright test --reporter=junit --project firefox --retries 0 > test-result-end2end.xml
+        run: npx playwright test --project firefox --retries 0
         working-directory: end2end
 
       - name: End-to-end test report
@@ -443,5 +461,7 @@ jobs:
         with:
           name: End-to-end test report
           path: end2end/test-result-end2end.xml
-          reporter: java-junit
+          reporter: jest-junit
           fail-on-error: false
+          only-summary: false
+          use-actions-summary: true

@@ -66,7 +66,7 @@ const schemaRequerant = z.discriminatedUnion("enPresenceRequerant", [
     enPresenceRequerant: z.literal(false, {
       error: "Indiquez-nous si vous disposez des coordonnées du requérant",
     }),
-    precisionsRequerant: z.string(),
+    precisionsRequerant: z.any(),
     infosRequerant: z.undefined(),
   }),
   z.object({
