@@ -10,12 +10,12 @@ import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { dateDansNJours, dateSimple } from "@/common/services/date.ts";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/mes-declarations",
+  "/agent/fdo/bris-de-porte/mes-declarations",
 )({
   loader: async ({ params }) => {
     return {
@@ -28,7 +28,7 @@ export const Route = createFileRoute(
 });
 
 const Page = () => {
-  let { declarations }: { declarations: DeclarationErreurOperationnelle[] } =
+  let { declarations }: { declarations: DeclarationFDOBrisPorte[] } =
     Route.useLoaderData();
 
   const naviguer = useNavigate<typeof router>({
@@ -55,7 +55,13 @@ const Page = () => {
               declaration.estBrouillon() ? (
                 <Badge>Brouillon</Badge>
               ) : (
-                <>sauvegardé le {dateSimple(dateDansNJours(-3))}</>
+                <>
+                  sauvegardé le{" "}
+                  {dateSimple(
+                    declaration.dateSoumission ?? declaration.dateCreation,
+                    true,
+                  )}
+                </>
               ),
               declaration.dateOperation ? (
                 dateSimple(declaration.dateOperation, true)
@@ -79,7 +85,7 @@ const Page = () => {
                     nativeButtonProps: {
                       onClick: () =>
                         naviguer({
-                          to: "/agent/fdo/erreur-operationnelle/$reference",
+                          to: "/agent/fdo/bris-de-porte/$reference",
                           params: {
                             reference: declaration.reference,
                           } as any,

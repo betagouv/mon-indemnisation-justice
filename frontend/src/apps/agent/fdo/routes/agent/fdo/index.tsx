@@ -23,29 +23,34 @@ function RouteComponent() {
           className="fr-grid-row fr-py-2w fr-px-4w"
           style={{ alignItems: "center" }}
         >
+          {/*
           <div className="fr-col-6">
             <h4 className="fr-text-label--blue-france fr-m-0">
               Déclarer une erreur opérationelle
             </h4>
           </div>
+          */}
 
-          <div className="fr-col-6">
+          <div className="fr-col-12">
             <ButtonsGroup
-              alignment="right"
+              alignment="center"
+              buttonsSize="large"
+              buttonsEquisized={false}
+              inlineLayoutWhen="always"
               buttons={[
                 {
-                  children:
-                    "Déclarer une erreur opérationnelle de bris de porte",
+                  children: "Déclarer un bris de porte",
                   className: "fr-m-0",
                   onClick: () =>
                     naviguer({
-                      to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration",
+                      to: "/agent/fdo/bris-de-porte/nouvelle-declaration",
                     }),
                 },
               ]}
             />
           </div>
         </div>
+        {/*
         <div
           className="fr-grid-row fr-py-2w fr-px-4w"
           style={{
@@ -75,6 +80,7 @@ function RouteComponent() {
             </Link>
           </div>
         </div>
+        */}
       </div>
 
       <div
@@ -92,8 +98,7 @@ function RouteComponent() {
           title="Réquisitionner un serrurier"
           titleAs={"h5"}
           linkProps={{
-            href: "https://www.serruriers-de-france.com/gouv/",
-            target: "_blank",
+            to: "/agent/fdo/requisition-serrurier",
           }}
           enlargeLink
           horizontal={false}
@@ -106,7 +111,7 @@ function RouteComponent() {
           title="Mes déclarations"
           titleAs={"h5"}
           linkProps={{
-            to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+            to: "/agent/fdo/bris-de-porte/mes-declarations",
           }}
           enlargeLink
           horizontal={false}

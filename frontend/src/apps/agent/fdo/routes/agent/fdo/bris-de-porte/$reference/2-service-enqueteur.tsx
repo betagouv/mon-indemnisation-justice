@@ -11,13 +11,13 @@ import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { z } from "zod";
 import { useInjection } from "inversify-react";
-import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/$reference/2-complement",
+  "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
 )({
   beforeLoad: ({ params }) => {
     if (
@@ -26,7 +26,7 @@ export const Route = createFileRoute(
         .aDeclaration(params.reference)
     ) {
       throw redirect({
-        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        to: "/agent/fdo/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -39,7 +39,7 @@ export const Route = createFileRoute(
     params: any;
     context: AgentContext;
   }): Promise<{
-    declaration: DeclarationErreurOperationnelle;
+    declaration: DeclarationFDOBrisPorte;
     reference: string;
     contexte: AgentContext;
   }> => {
@@ -47,7 +47,7 @@ export const Route = createFileRoute(
       reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
-        .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
+        .getDeclaration(params.reference)) as DeclarationFDOBrisPorte,
       contexte: context,
     };
   },
@@ -70,7 +70,7 @@ const schemaInfosJuridiques = z.object({
 });
 
 const ModaleAjoutFichier = createModal({
-  id: "modale-ajouter-fichier-declaration-erreur-operationnelle",
+  id: "modale-ajouter-fichier-declaration-bris-porte",
   isOpenedByDefault: false,
 });
 
@@ -80,7 +80,7 @@ function Page() {
     reference,
     contexte,
   }: {
-    declaration: DeclarationErreurOperationnelle;
+    declaration: DeclarationFDOBrisPorte;
     reference: string;
     contexte: AgentContext;
   } = Route.useLoaderData();
@@ -113,7 +113,7 @@ function Page() {
     },
     onSubmit: async ({ value }) => {
       await naviguer({
-        to: "/agent/fdo/erreur-operationnelle/$reference/3-requerant",
+        to: "/agent/fdo/bris-de-porte/$reference/3-usager",
         params: { reference } as any,
       });
     },
@@ -162,14 +162,14 @@ function Page() {
           void form.handleSubmit();
         }}
       >
-        <h1 className="fr-m-0">Nouvelle déclaration d'erreur opérationnelle</h1>
+        <h1 className="fr-m-0">Nouvelle déclaration de bris de porte</h1>
 
         <Stepper
           className="fr-m-0"
           currentStep={2}
           stepCount={3}
-          title="Complément d’information pour le Ministère de la Justice"
-          nextTitle="Informations du requérant"
+          title="Éléments relatifs au service enquêteur"
+          nextTitle="Informations concernant l'usager"
         />
 
         <div className="fr-grid-row">
@@ -232,8 +232,8 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-6 fr-m-0"
-                  label="Nom du service enquêteur"
+                  className="fr-col-lg-6 fr-m-0 fr-champ-requis"
+                  label="Service enquêteur"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -259,8 +259,8 @@ function Page() {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3 fr-m-0"
-                  label="Téléphone du service ou de l'agent *"
+                  className="fr-col-lg-3 fr-m-0  fr-champ-requis"
+                  label="Téléphone du service ou de l'agent"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -281,8 +281,8 @@ function Page() {
           />
 
           <Input
-            className="fr-col-lg-3 fr-m-0"
-            label="Courriel de l'agent *"
+            className="fr-col-lg-3 fr-m-0 fr-champ-requis"
+            label="Courriel de l'agent"
             disabled={true}
             nativeInputProps={{
               type: "text",
@@ -358,7 +358,6 @@ function Page() {
             className="fr-col-lg-12 fr-p-0"
             inlineLayoutWhen="always"
             alignment="right"
-            buttonsIconPosition={undefined}
             buttonsSize="small"
             buttons={[
               {
@@ -368,7 +367,7 @@ function Page() {
                 iconPosition: "left",
                 onClick: () =>
                   naviguer({
-                    to: "/agent/fdo/erreur-operationnelle/$reference/1-operation",
+                    to: "/agent/fdo/bris-de-porte/$reference/1-bris-de-porte",
                     params: {
                       reference,
                     } as any,

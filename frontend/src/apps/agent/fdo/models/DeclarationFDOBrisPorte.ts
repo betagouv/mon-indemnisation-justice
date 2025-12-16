@@ -54,13 +54,21 @@ class Procedure {
   nomMagistrat: string = "";
 }
 
-export class DeclarationErreurOperationnelle {
+export const DeclarationFDOBrisPorteErreurTypes = <const>[
+  "OUI",
+  "NON",
+  "DOUTE",
+];
+export type DeclarationFDOBrisPorteErreurType =
+  (typeof DeclarationFDOBrisPorteErreurTypes)[number];
+
+export class DeclarationFDOBrisPorte {
   @Exclude({ toPlainOnly: true })
   public readonly id?: string;
   @DateTransform()
   public readonly dateCreation: Date;
-  public doute: boolean = false;
-  public motifDoute?: string;
+  public estErreur?: DeclarationFDOBrisPorteErreurType;
+  public descriptionErreur?: string;
   @DateTransform() public dateOperation: Date;
   @DateTransform()
   @Exclude({ toPlainOnly: true })

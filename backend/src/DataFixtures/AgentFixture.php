@@ -70,7 +70,7 @@ class AgentFixture extends Fixture
                 ->setEmail('policier@interieur.gouv.fr')
                 ->setAdministration(Administration::POLICE_NATIONALE)
                 ->setPrenom('Paul')
-                ->setRoles([Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
+                ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
                 ->setNom('Issié')
                 ->setUid('567')
                 ->setValide(),
@@ -79,7 +79,7 @@ class AgentFixture extends Fixture
                 ->setEmail('gendarme@gendarmerie.interieur.gouv.fr')
                 ->setAdministration(Administration::GENDARMERIE_NATIONALE)
                 ->setPrenom('Jean')
-                ->setRoles([Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
+                ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
                 ->setNom("d'Harme")
                 ->setUid('890')
                 ->setValide(),

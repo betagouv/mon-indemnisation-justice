@@ -56,19 +56,19 @@ const EspaceFDO = () => {
             },
           },
           {
-            text: "Déclaration d'erreur opérationnelle",
+            text: "Déclaration d'un bris de porte",
             menuLinks: [
               {
                 text: "Mes déclarations",
                 linkProps: {
-                  to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+                  to: "/agent/fdo/bris-de-porte/mes-declarations",
                   activeOptions: { exact: true },
                 },
               },
               {
                 text: "Nouvelle déclaration",
                 linkProps: {
-                  to: "/agent/fdo/erreur-operationnelle/nouvelle-declaration",
+                  to: "/agent/fdo/bris-de-porte/nouvelle-declaration",
                   activeOptions: { exact: false },
                 },
               },
@@ -77,8 +77,8 @@ const EspaceFDO = () => {
           {
             text: "Réquisition d'un serrurier",
             linkProps: {
-              href: "https://www.serruriers-de-france.com/gouv/",
-              target: "_blank",
+              to: "/agent/fdo/requisition-serrurier",
+              activeOptions: { exact: false },
             },
           },
           {

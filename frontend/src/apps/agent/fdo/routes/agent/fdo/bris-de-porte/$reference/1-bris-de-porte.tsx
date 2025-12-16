@@ -1,5 +1,6 @@
 import { dateChiffre } from "@/common/services/date.ts";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { useForm } from "@tanstack/react-form";
 import React, { ChangeEvent, useState } from "react";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
@@ -8,14 +9,18 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { z } from "zod";
 import "@/style/index.css";
-import { DeclarationErreurOperationnelle } from "@/apps/agent/fdo/models/DeclarationErreurOperationnelle.ts";
+import {
+  DeclarationFDOBrisPorte,
+  DeclarationFDOBrisPorteErreurType,
+  DeclarationFDOBrisPorteErreurTypes,
+} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { useInjection } from "inversify-react";
 import { router } from "@/apps/agent/fdo/_init/_router.ts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(
-  "/agent/fdo/erreur-operationnelle/$reference/1-operation",
+  "/agent/fdo/bris-de-porte/$reference/1-bris-de-porte",
 )({
   beforeLoad: async ({ params }) => {
     if (
@@ -24,7 +29,7 @@ export const Route = createFileRoute(
         .aDeclaration(params.reference))
     ) {
       throw redirect({
-        to: "/agent/fdo/erreur-operationnelle/mes-declarations",
+        to: "/agent/fdo/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -35,22 +40,22 @@ export const Route = createFileRoute(
   }: {
     params: any;
   }): Promise<{
-    declaration: DeclarationErreurOperationnelle;
+    declaration: DeclarationFDOBrisPorte;
     reference: string;
   }> => {
     return {
       reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
-        .getDeclaration(params.reference)) as DeclarationErreurOperationnelle,
+        .getDeclaration(params.reference)) as DeclarationFDOBrisPorte,
     };
   },
   component: () => <Page />,
 });
 
 const schemaErreurOperationnelle = z.object({
-  doute: z.boolean(),
-  motifDoute: z.any(),
+  estErreur: z.literal(DeclarationFDOBrisPorteErreurTypes),
+  descriptionErreur: z.any(),
   dateOperation: z
     .date()
     .max(new Date(+new Date().setHours(23, 59, 59, 9999)), {
@@ -73,12 +78,8 @@ const Page = () => {
   const {
     declaration,
     reference,
-  }: { declaration: DeclarationErreurOperationnelle; reference: string } =
+  }: { declaration: DeclarationFDOBrisPorte; reference: string } =
     Route.useLoaderData();
-
-  const [douteAMotiver, setDouteAMotiver] = useState<boolean>(
-    declaration.doute,
-  );
 
   const naviguer = useNavigate<typeof router>({
     from: Route.fullPath,
@@ -90,8 +91,8 @@ const Page = () => {
 
   const form = useForm({
     defaultValues: {
-      doute: declaration.doute,
-      motifDoute: declaration.motifDoute,
+      estErreur: declaration.estErreur,
+      descriptionErreur: declaration.descriptionErreur,
       dateOperation: declaration.dateOperation,
       adresse: declaration.adresse,
     },
@@ -106,7 +107,7 @@ const Page = () => {
     },
     onSubmit: async ({ value }) => {
       await naviguer({
-        to: "/agent/fdo/erreur-operationnelle/$reference/2-complement",
+        to: "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
         params: { reference } as any,
       });
     },
@@ -121,28 +122,43 @@ const Page = () => {
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}>
-        <h1>Nouvelle déclaration d'erreur opérationnelle</h1>
+        <h1 className="fr-my-1w">Nouvelle déclaration de bris de porte</h1>
 
         <Stepper
+          className="fr-my-1w"
           currentStep={1}
           stepCount={3}
-          title="Eléments relatifs à l’erreur opérationnelle"
-          nextTitle="Complément d’information pour le Ministère de la Justice "
+          title="Eléments relatifs au bris de porte"
+          nextTitle="Éléments relatifs au service enquêteur "
         />
 
+        {/*
         <div className="fr-grid-row">
           <h6 className="fr-m-0 fr-text-label--blue-france">
-            Informations concernant le logement perquisitionné par erreur{" "}
+            Informations concernant le logement perquisitionné{" "}
           </h6>
         </div>
+        */}
 
-        <div className="fr-grid-row fr-px-0 fr-my-2w">
+        <div className="fr-grid-row fr-px-0">
           <form.Field
-            name="doute"
+            name="estErreur"
             children={(field) => {
               return (
                 <RadioButtons
-                  legend="S’agissait-il d’une erreur opérationnelle ? *"
+                  className="fr-champ-requis"
+                  legend={
+                    <>
+                      S’agissait-il d’
+                      <Tooltip
+                        title="Ex: la porte du logement 301 est fracturée alors que l’objectif visé par l’enquête était le 307"
+                        kind="hover"
+                      >
+                        <a href="">une erreur opérationnelle</a>
+                      </Tooltip>{" "}
+                      ?
+                    </>
+                  }
                   small={false}
                   orientation="vertical"
                   disabled={declaration.estSauvegarde()}
@@ -153,23 +169,46 @@ const Page = () => {
                         "Le logement perquisitionné n’était pas visé par l’opération.",
                       nativeInputProps: {
                         className: "fr-col-6",
-                        defaultChecked: !declaration.doute,
+                        defaultChecked: declaration.estErreur === "OUI",
                         onChange: (event: ChangeEvent<HTMLInputElement>) => {
-                          setDouteAMotiver(false);
-                          field.handleChange(!event.target.checked);
+                          field.handleChange(
+                            event.target.checked ? "OUI" : undefined,
+                          );
+                        },
+                      },
+                    },
+                    {
+                      label: "Non",
+                      hintText:
+                        "Le logement perquisitionné était visé par l’opération.",
+                      nativeInputProps: {
+                        className: "fr-col-6",
+                        defaultChecked: declaration.estErreur === "DOUTE",
+                        onChange: (event: ChangeEvent<HTMLInputElement>) => {
+                          field.handleChange(
+                            event.target.checked ? "DOUTE" : undefined,
+                          );
                         },
                       },
                     },
                     {
                       label: "J’ai un doute",
-                      hintText:
-                        "Vous avez un doute sur la situation. Vous ne savez pas si il s’agit d’une erreur ? Les services du précontentieux se chargeront d’évaluer la demande a postériori.",
+                      hintText: (
+                        <>
+                          Vous avez un doute sur la situation? Vous ne savez pas
+                          s'il s’agit d’une erreur opérationnelle ? Vous pouvez
+                          consulter <a href="">la foire aux questions</a>. Le
+                          Bureau du précontentieux se chargera d'instruire la
+                          demande a posteriori.
+                        </>
+                      ),
                       nativeInputProps: {
                         className: "fr-col-6",
-                        defaultChecked: declaration.doute,
+                        defaultChecked: declaration.estErreur === "DOUTE",
                         onChange: (event: ChangeEvent<HTMLInputElement>) => {
-                          setDouteAMotiver(true);
-                          field.handleChange(event.target.checked);
+                          field.handleChange(
+                            event.target.checked ? "DOUTE" : undefined,
+                          );
                         },
                       },
                     },
@@ -180,28 +219,28 @@ const Page = () => {
           />
         </div>
 
-        {douteAMotiver && (
-          <div className="fr-grid-row fr-grid-row--gutters fr-px-0">
-            <form.Field
-              name="motifDoute"
-              children={(field) => {
-                return (
-                  <Input
-                    label="Décrivez les circonstances de l’opération"
-                    textArea
-                    className="fr-col-12"
-                    disabled={declaration.estSauvegarde()}
-                    nativeTextAreaProps={{
-                      defaultValue: declaration.motifDoute ?? "",
-                      onChange: (e) => field.handleChange(e.target.value),
-                      rows: 5,
-                    }}
-                  />
-                );
-              }}
-            />
-          </div>
-        )}
+        <div className="fr-grid-row fr-grid-row--gutters fr-px-0">
+          <form.Field
+            name="descriptionErreur"
+            children={(field) => {
+              return (
+                <Input
+                  label="Décrivez l’opération"
+                  textArea
+                  className="fr-col-12"
+                  disabled={declaration.estSauvegarde()}
+                  nativeTextAreaProps={{
+                    defaultValue: declaration.descriptionErreur ?? "",
+                    onChange: (e) => field.handleChange(e.target.value),
+                    rows: 5,
+                    placeholder:
+                      "1 porte et 1 portail cassés, aucun numéro sur la porte",
+                  }}
+                />
+              );
+            }}
+          />
+        </div>
 
         <div className="fr-grid-row fr-grid-row--gutters fr-px-0 fr-my-2w">
           <form.Field
@@ -209,8 +248,8 @@ const Page = () => {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-4 fr-my-0"
-                  label="Date de l'opération *"
+                  className="fr-col-lg-4 fr-my-0 fr-champ-requis"
+                  label="Date de l'opération"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     value: dateChiffre(field.state.value),
@@ -237,8 +276,8 @@ const Page = () => {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-8 fr-my-0"
-                  label="Adresse du logement ayant subi le bris de porte *"
+                  className="fr-col-lg-8 fr-my-0 fr-champ-requis"
+                  label="Adresse du logement ayant subi le bris de porte"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -283,8 +322,8 @@ const Page = () => {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3 fr-m-0"
-                  label="Code postal *"
+                  className="fr-col-lg-3 fr-m-0 fr-champ-requis"
+                  label="Code postal"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
@@ -309,8 +348,8 @@ const Page = () => {
             children={(field) => {
               return (
                 <Input
-                  className="fr-col-lg-3 fr-m-0"
-                  label="Ville *"
+                  className="fr-col-lg-3 fr-m-0 fr-champ-requis"
+                  label="Ville"
                   disabled={declaration.estSauvegarde()}
                   nativeInputProps={{
                     type: "text",
