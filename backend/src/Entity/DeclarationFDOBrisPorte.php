@@ -5,7 +5,6 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use MonIndemnisationJustice\Entity\Metadonnees\InfosRequerant;
 use Sqids\Sqids;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
@@ -53,21 +52,32 @@ class DeclarationFDOBrisPorte
     #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[Groups(['agent:detail'])]
     protected Adresse $adresse;
+
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'procedure_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[Groups(['agent:detail'])]
     protected ProcedureJudiciaire $procedure;
+
+    #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'coordonnees_requerant_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    #[Groups(['agent:detail'])]
+    protected ?CoordonneesRequerant $coordonneesRequerant = null;
+
     #[ORM\OneToOne(targetEntity: BrisPorte::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?BrisPorte $dossier = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateCreation;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateSoumission;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['agent:detail'])]
+    protected ?\DateTimeInterface $dateSuppression = null;
 
     /**
      * @var Agent l'agent des FDO déclarant
@@ -80,13 +90,6 @@ class DeclarationFDOBrisPorte
     #[ORM\Column(length: 20)]
     #[Groups(['agent:detail'])]
     protected string $telephone;
-
-    #[ORM\Column(type: 'json', nullable: true)]
-    protected ?array $infosRequerant;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['agent:detail'])]
-    protected ?string $precisionsRequerant = null;
 
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
@@ -246,31 +249,26 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    #[Groups(['agent:detail'])]
-    public function getInfosRequerant(): ?InfosRequerant
+    public function getCoordonneesRequerant(): CoordonneesRequerant
     {
-        return is_array($this->infosRequerant) ? InfosRequerant::depuisArray($this->infosRequerant) : null;
+        return $this->coordonneesRequerant;
     }
 
-    public function setInfosRequerant(null|array|InfosRequerant $infosRequerant): DeclarationFDOBrisPorte
+    public function setCoordonneesRequerant(?CoordonneesRequerant $coordonneesRequerant = null): DeclarationFDOBrisPorte
     {
-        if ($infosRequerant instanceof InfosRequerant) {
-            $this->infosRequerant = $infosRequerant->versArray();
-        } else {
-            $this->infosRequerant = $infosRequerant;
-        }
+        $this->coordonneesRequerant = $coordonneesRequerant;
 
         return $this;
     }
 
-    public function getPrecisionsRequerant(): ?string
+    public function getDateSuppression(): \DateTimeInterface
     {
-        return $this->precisionsRequerant;
+        return $this->dateSuppression;
     }
 
-    public function setPrecisionsRequerant(?string $precisionsRequerant): DeclarationFDOBrisPorte
+    public function setDateSuppression(\DateTimeInterface $dateSuppression): DeclarationFDOBrisPorte
     {
-        $this->precisionsRequerant = $precisionsRequerant;
+        $this->dateSuppression = $dateSuppression;
 
         return $this;
     }

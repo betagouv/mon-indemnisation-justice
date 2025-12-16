@@ -7,7 +7,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class DeclarationErreurOperationelleVoter extends Voter
+class DeclarationFDOBrisPorteVoter extends Voter
 {
     public const ACTION_LISTER = 'declaration:lister';
     public const ACTION_DECLARER = 'declaration:declarer';

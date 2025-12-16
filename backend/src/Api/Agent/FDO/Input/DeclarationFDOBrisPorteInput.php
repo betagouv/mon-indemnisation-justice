@@ -7,7 +7,7 @@ use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 
 #[Map(target: DeclarationFDOBrisPorte::class)]
-class DeclarationErreurOperationnelleInput
+class DeclarationFDOBrisPorteInput
 {
     public \DateTimeImmutable $dateOperation;
     public \DateTimeImmutable $dateCreation;

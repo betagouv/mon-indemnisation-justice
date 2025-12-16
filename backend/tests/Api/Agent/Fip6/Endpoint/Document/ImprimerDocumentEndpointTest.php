@@ -2,28 +2,23 @@
 
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Document;
 
-use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
 
 /**
  * @internal
  *
  * @coversNothing
  */
-class ImprimerDocumentEndpointTest extends WebTestCase
+class ImprimerDocumentEndpointTest extends AbstractEndpointTestCase
 {
-    protected KernelBrowser $client;
-    protected EntityManagerInterface $em;
     protected FilesystemOperator $storage;
 
     public function setUp(): void
     {
-        $this->client = self::createClient(['debug' => true]);
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
+        parent::setUp();
         $this->storage = self::getContainer()->get('default.storage');
     }
 
