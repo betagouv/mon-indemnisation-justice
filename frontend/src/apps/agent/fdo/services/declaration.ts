@@ -3,7 +3,6 @@ import { inject, ServiceIdentifier } from "inversify";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import * as Sentry from "@sentry/browser";
 import { merge } from "ts-deepmerge";
-import { read } from "fs";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 
 export interface DeclarationManagerInterface {
@@ -12,14 +11,14 @@ export interface DeclarationManagerInterface {
   aDeclaration(reference: string): Promise<boolean>;
 
   getDeclaration(
-    reference: string,
+    reference: string
   ): Promise<DeclarationFDOBrisPorte | undefined>;
 
   nouvelleDeclaration(): Promise<DeclarationFDOBrisPorte>;
 
   enregistrer(
     declaration: DeclarationFDOBrisPorte,
-    miseAJour?: any,
+    miseAJour?: Partial<DeclarationFDOBrisPorte>
   ): void | Promise<void>;
 
   soumettre(declaration: DeclarationFDOBrisPorte): Promise<void>;
@@ -29,7 +28,7 @@ export interface DeclarationManagerInterface {
 
 export namespace DeclarationManagerInterface {
   export const $: ServiceIdentifier<DeclarationManagerInterface> = Symbol(
-    "DeclarationManagerInterface",
+    "DeclarationManagerInterface"
   );
 }
 
@@ -48,7 +47,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
       this._declarations = (
         await Promise.all([
           this.chargerBrouillons(),
-          this.chargerDeclarations(),
+          this.chargerDeclarations()
         ])
       ).reduce((cum, val) => cum.concat(...(val ?? [])), []);
     }
@@ -78,27 +77,28 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
     return Promise.resolve([]);
   }
+
   protected async chargerDeclarations(): Promise<DeclarationFDOBrisPorte[]> {
     const response = await fetch(
       "/api/agent/fdo/erreur-operationnelle/mes-declarations",
       {
         method: "GET",
         headers: {
-          Accept: "application/json",
-        },
-      },
+          Accept: "application/json"
+        }
+      }
     );
 
     return plainToInstance(
       DeclarationFDOBrisPorte,
-      (await response.json()) as any[],
+      (await response.json()) as any[]
     );
   }
 
   async getListe(): Promise<DeclarationFDOBrisPorte[]> {
     await this.chargerListeDeclarations();
     return this._declarations.sort(
-      (a, b) => a.dateCreation.getTime() - b.dateCreation.getTime(),
+      (a, b) => a.dateCreation.getTime() - b.dateCreation.getTime()
     );
   }
 
@@ -107,20 +107,20 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
     return Promise.resolve(
       this._declarations.some(
-        (declaration) => declaration.reference == reference,
-      ),
+        (declaration) => declaration.reference == reference
+      )
     );
   }
 
   async getDeclaration(
-    reference: string,
+    reference: string
   ): Promise<DeclarationFDOBrisPorte | undefined> {
     await this.chargerListeDeclarations();
 
     return Promise.resolve(
       this._declarations.find(
-        (declaration) => declaration.reference == reference,
-      ),
+        (declaration) => declaration.reference == reference
+      )
     );
   }
 
@@ -140,19 +140,19 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   async enregistrer(
     declaration: DeclarationFDOBrisPorte,
-    miseAJour?: any,
+    miseAJour?: any
   ): Promise<void> {
     this._declarations = this._declarations.map((d) => {
       if (declaration.dateCreation.getTime() === d.dateCreation.getTime()) {
         return miseAJour
           ? plainToInstance(
-              DeclarationFDOBrisPorte,
-              merge.withOptions(
-                { mergeArrays: false },
-                instanceToPlain(declaration),
-                miseAJour,
-              ),
+            DeclarationFDOBrisPorte,
+            merge.withOptions(
+              { mergeArrays: false },
+              instanceToPlain(declaration),
+              miseAJour
             )
+          )
           : declaration;
       }
 
@@ -164,8 +164,8 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     localStorage.setItem(
       `${APIDeclarationManager.CLEF_STOCKAGE}_${agent.id}`,
       JSON.stringify(
-        instanceToPlain(this._declarations.filter((d) => d.estBrouillon())),
-      ),
+        instanceToPlain(this._declarations.filter((d) => d.estBrouillon()))
+      )
     );
 
     return Promise.resolve(undefined);
@@ -179,14 +179,14 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   supprimer(declaration: DeclarationFDOBrisPorte): void {
     this._declarations = this._declarations.filter(
-      (d) => d.reference !== declaration.reference,
+      (d) => d.reference !== declaration.reference
     );
 
     localStorage.setItem(
       APIDeclarationManager.CLEF_STOCKAGE,
       JSON.stringify(
-        instanceToPlain(this._declarations.filter((d) => d.estBrouillon())),
-      ),
+        instanceToPlain(this._declarations.filter((d) => d.estBrouillon()))
+      )
     );
   }
 
@@ -198,21 +198,21 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
-          Accept: "application/json",
+          Accept: "application/json"
         },
         body: JSON.stringify(
           instanceToPlain(
             this._declarations.find(
-              (d) => d.reference === declaration.reference,
-            ),
-          ),
-        ),
-      },
+              (d) => d.reference === declaration.reference
+            )
+          )
+        )
+      }
     );
     if (response.ok) {
       const declarationSauvegardee = plainToInstance(
         DeclarationFDOBrisPorte,
-        await response.json(),
+        await response.json()
       );
 
       if (declarationSauvegardee) {

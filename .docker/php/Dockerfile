@@ -15,6 +15,7 @@ RUN apt-get update -y && \
 
 # Configurer la langue Française 🇫🇷
 RUN locale-gen fr_FR.UTF-8
+RUN locale-gen fr_FR.UTF-8
 
 # PHP extensions
 RUN install-php-extensions \

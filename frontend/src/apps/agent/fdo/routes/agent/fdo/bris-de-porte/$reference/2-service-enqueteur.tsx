@@ -107,12 +107,13 @@ function Page() {
         }
         declarationManager.enregistrer(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 200,
+      onChangeDebounceMs: 250,
     },
     validators: {
       onSubmit: schemaInfosJuridiques,
     },
     onSubmit: async ({ value }) => {
+      // TODO
       await naviguer({
         to: "/agent/fdo/bris-de-porte/$reference/3-usager",
         params: { reference } as any,
