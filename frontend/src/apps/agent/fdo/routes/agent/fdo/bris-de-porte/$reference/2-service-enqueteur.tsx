@@ -5,8 +5,6 @@ import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import React from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import Download from "@codegouvfr/react-dsfr/Download";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Select } from "@codegouvfr/react-dsfr/Select";
@@ -100,14 +98,16 @@ function Page() {
       procedure: { ...declaration.procedure },
     },
     listeners: {
-      onChange: async ({ fieldApi, formApi }) => {
+      onBlur: async ({ fieldApi, formApi }) => {
         if (fieldApi.name == "numeroAgent") {
           // TODO persister le changement de numéro
           contexte.agent.telephone = fieldApi.state.value;
         }
-        declarationManager.enregistrer(declaration, formApi.state.values);
+        declarationManager.mettreAJour(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 250,
+      onSubmit: async ({ formApi }) => {
+        await declarationManager.enregistrer(declaration, formApi.state.values);
+      },
     },
     validators: {
       onSubmit: schemaInfosJuridiques,

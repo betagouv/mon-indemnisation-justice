@@ -121,12 +121,12 @@ function Page() {
       infosRequerant: declaration.infosRequerant,
     },
     listeners: {
-      onChange: async ({ formApi }) => {
-        console.log(formApi.getAllErrors());
-
+      onBlur: async ({ formApi }) => {
+        await declarationManager.mettreAJour(declaration, formApi.state.values);
+      },
+      onSubmit: async ({ formApi }) => {
         await declarationManager.enregistrer(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 200,
     },
     validators: {
       onSubmit: schemaRequerant,
