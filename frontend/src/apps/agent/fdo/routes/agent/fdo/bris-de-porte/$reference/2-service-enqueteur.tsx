@@ -1,3 +1,4 @@
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
@@ -178,6 +179,14 @@ function Page() {
           </h6>
         </div>
 
+        <Alert
+          severity="info"
+          title=""
+          description="Le téléversement de pièces justificatives (ex: PV d’intervention,
+          photos de la porte endommagée) sera prochainement disponible"
+        ></Alert>
+
+        {/*
         <p className="fr-text--sm fr-m-0">
           Merci de mettre à disposition les pièces justificatives pertinentes
           dans le cadre de la déclaration : PV d’intervention, photos de la
@@ -219,6 +228,7 @@ function Page() {
             />
           </div>
         </div>
+        */}
 
         <div className="fr-grid-row">
           <h6 className="fr-m-0 fr-text-label--blue-france">
