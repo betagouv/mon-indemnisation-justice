@@ -24,10 +24,13 @@ doctrine:
       enabled: false
       auto_mapping: false
 
+
 when@test:
   doctrine:
-    dbal: # "TEST_TOKEN" is typically set by ParaTest
+    dbal:
       dbname_suffix: ''
+      logging: true
+      profiling: true
 
 when@prod:
   doctrine:

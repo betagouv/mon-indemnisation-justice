@@ -1,9 +1,10 @@
 <?php
 
-namespace Api\Agent\FDO\Endpoint\BrisDePorte;
+namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\InitierDeclarationBrisPorteEndpoint;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * Teste le point d'entrée @InitierDeclarationBrisPorteEndpoint de l'API, permettant à l'agent des FDO de créer un
@@ -16,7 +17,7 @@ use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCa
 class InitierDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 {
     /**
-     * ETQ agent betagouv, je dois pouvoir renseigner les méta-données de l'attestation d'un dossier qui existe.
+     * ETQ agent des FDO, je dois pouvoir initier un brouillon de déclaration de bris de porte.
      */
     public function testInitierOk(): void
     {
@@ -24,7 +25,13 @@ class InitierDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         $this->client->request('PUT', '/api/agent/fdo/bris-de-porte/initier');
 
-        dump($this->client->getResponse()->getContent());
         $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $input = json_decode($this->client->getResponse()->getContent(), false);
+
+        $this->assertIsObject($input);
+        $this->assertObjectHasProperty('id', $input);
+
+        $this->assertTrue(Uuid::isValid($input->id));
     }
 }
