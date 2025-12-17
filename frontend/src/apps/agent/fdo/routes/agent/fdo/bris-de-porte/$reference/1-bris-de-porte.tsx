@@ -97,10 +97,12 @@ const Page = () => {
       adresse: declaration.adresse,
     },
     listeners: {
-      onChange: async ({ fieldApi, formApi }) => {
-        declarationManager.enregistrer(declaration, formApi.state.values);
+      onBlur: async ({ fieldApi, formApi }) => {
+        declarationManager.mettreAJour(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 200,
+      onSubmit: async ({ formApi }) => {
+        await declarationManager.enregistrer(declaration, formApi.state.values);
+      },
     },
     validators: {
       onSubmit: schemaErreurOperationnelle,
