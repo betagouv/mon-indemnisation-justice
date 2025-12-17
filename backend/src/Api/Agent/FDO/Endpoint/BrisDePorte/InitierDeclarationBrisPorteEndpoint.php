@@ -4,7 +4,6 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
-use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationFDOBrisPorteOutputMapper;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
@@ -42,18 +41,21 @@ class InitierDeclarationBrisPorteEndpoint
         /** @var Agent $agent */
         $agent = $security->getUser();
 
-        $brouillon = (new BrouillonDeclarationFDOBrisPorte())->setAgent($agent)->setDateCreation(new \DateTimeImmutable());
+        $brouillon = (new BrouillonDeclarationFDOBrisPorte())
+            ->setAgent($agent)
+        ;
 
         $this->em->persist($brouillon);
         $this->em->flush();
 
-        $declaration = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class);
+        $input = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class);
 
-        return new JsonResponse([
+        return new JsonResponse(
             $this->normalizer->normalize(
-                DeclarationFDOBrisPorteOutputMapper::mapper($declaration, $this->objectMapper),
+                $input,
                 'json'
             ),
-        ], Response::HTTP_CREATED);
+            Response::HTTP_CREATED
+        );
     }
 }
