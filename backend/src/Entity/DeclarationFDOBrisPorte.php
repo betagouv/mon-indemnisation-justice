@@ -58,10 +58,14 @@ class DeclarationFDOBrisPorte
     #[Groups(['agent:detail'])]
     protected ProcedureJudiciaire $procedure;
 
+    #[Groups(['agent:detail'])]
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'coordonnees_requerant_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
-    #[Groups(['agent:detail'])]
     protected ?CoordonneesRequerant $coordonneesRequerant = null;
+
+    #[Groups(['agent:detail'])]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    protected ?string $precisionsRequerant = null;
 
     #[ORM\OneToOne(targetEntity: BrisPorte::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -86,10 +90,6 @@ class DeclarationFDOBrisPorte
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     #[Groups(['agent:detail'])]
     protected Agent $agent;
-
-    #[ORM\Column(length: 20)]
-    #[Groups(['agent:detail'])]
-    protected string $telephone;
 
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
@@ -213,18 +213,6 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getTelephone(): string
-    {
-        return $this->telephone;
-    }
-
-    public function setTelephone(string $telephoneAgent): static
-    {
-        $this->telephone = $telephoneAgent;
-
-        return $this;
-    }
-
     public function getDateCreation(): \DateTimeInterface
     {
         return $this->dateCreation;
@@ -249,7 +237,7 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getCoordonneesRequerant(): CoordonneesRequerant
+    public function getCoordonneesRequerant(): ?CoordonneesRequerant
     {
         return $this->coordonneesRequerant;
     }
@@ -257,6 +245,18 @@ class DeclarationFDOBrisPorte
     public function setCoordonneesRequerant(?CoordonneesRequerant $coordonneesRequerant = null): DeclarationFDOBrisPorte
     {
         $this->coordonneesRequerant = $coordonneesRequerant;
+
+        return $this;
+    }
+
+    public function getPrecisionsRequerant(): ?string
+    {
+        return $this->precisionsRequerant;
+    }
+
+    public function setPrecisionsRequerant(?string $precisionsRequerant): DeclarationFDOBrisPorte
+    {
+        $this->precisionsRequerant = $precisionsRequerant;
 
         return $this;
     }

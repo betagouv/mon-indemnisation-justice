@@ -21,12 +21,16 @@ class ProcedureJudiciaire
     #[ORM\Column]
     #[Groups(['agent:detail'])]
     protected string $serviceEnqueteur;
+
+    #[ORM\Column(length: 20)]
+    #[\Symfony\Component\Serializer\Attribute\Groups(['agent:detail'])]
+    protected string $telephone;
     #[ORM\Column(nullable: true)]
     #[Groups(['agent:detail'])]
-    protected string $juridictionOuParquet;
+    protected ?string $juridictionOuParquet = null;
     #[ORM\Column(nullable: true)]
     #[Groups(['agent:detail'])]
-    protected string $nomMagistrat;
+    protected ?string $nomMagistrat = null;
 
     public function getId(): Uuid
     {
@@ -64,24 +68,36 @@ class ProcedureJudiciaire
         return $this;
     }
 
-    public function getJuridictionOuParquet(): string
+    public function getTelephone(): string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(string $telephone): ProcedureJudiciaire
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getJuridictionOuParquet(): ?string
     {
         return $this->juridictionOuParquet;
     }
 
-    public function setJuridictionOuParquet(string $juridictionOuParquet): ProcedureJudiciaire
+    public function setJuridictionOuParquet(?string $juridictionOuParquet): ProcedureJudiciaire
     {
         $this->juridictionOuParquet = $juridictionOuParquet;
 
         return $this;
     }
 
-    public function getNomMagistrat(): string
+    public function getNomMagistrat(): ?string
     {
         return $this->nomMagistrat;
     }
 
-    public function setNomMagistrat(string $nomMagistrat): ProcedureJudiciaire
+    public function setNomMagistrat(?string $nomMagistrat): ProcedureJudiciaire
     {
         $this->nomMagistrat = $nomMagistrat;
 

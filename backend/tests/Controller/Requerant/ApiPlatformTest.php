@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Controller\Requerant;
+namespace MonIndemnisationJustice\Tests\Controller\Requerant;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\BrisPorte;

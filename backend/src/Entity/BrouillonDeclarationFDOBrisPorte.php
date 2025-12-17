@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -10,6 +11,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: RequerantRepository::class)]
 #[ORM\Table(name: 'brouillons_declaration_fdo_bris_porte')]
+#[ORM\HasLifecycleCallbacks]
 class BrouillonDeclarationFDOBrisPorte
 {
     #[ORM\Id]
@@ -33,6 +35,21 @@ class BrouillonDeclarationFDOBrisPorte
 
     #[ORM\Column(type: Types::JSON, nullable: false)]
     protected array $donnees = [];
+
+    #[ORM\PrePersist]
+    public function prePersist(): void
+    {
+        $this->dateCreation = new \DateTimeImmutable();
+    }
+
+    #[ORM\PostPersist]
+    public function postPersist(PostPersistEventArgs $args): void
+    {
+        $this->ajouterDonnees([
+            'id' => $this->id,
+        ]);
+        $args->getObjectManager()->persist($this);
+    }
 
     public function getId(): ?Uuid
     {
@@ -77,8 +94,8 @@ class BrouillonDeclarationFDOBrisPorte
 
     public function ajouterDonnees(array $donnees): BrouillonDeclarationFDOBrisPorte
     {
-        $this->donnees = array_merge_recursive(
-            $this->donnees,
+        $this->donnees = array_replace_recursive(
+            $this->donnees ?? [],
             $donnees
         );
 

@@ -22,7 +22,7 @@ class CoordonneesRequerant
     #[ORM\Column(length: 255)]
     protected string $prenom;
     #[ORM\Column(length: 255)]
-    protected string $telephone;
+    protected ?string $telephone = null;
     #[ORM\Column(length: 255)]
     protected string $courriel;
 

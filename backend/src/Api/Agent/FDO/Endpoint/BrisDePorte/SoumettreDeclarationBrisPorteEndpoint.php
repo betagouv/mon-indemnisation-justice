@@ -4,20 +4,23 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
-use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationFDOBrisPorteOutputMapper;
+use MonIndemnisationJustice\Api\Agent\FDO\Output\DeclarationFDOBrisPorteOutput;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
+use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Service\Mailer;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -40,16 +43,45 @@ class SoumettreDeclarationBrisPorteEndpoint
         protected readonly Mailer $mailer,
     ) {}
 
-    public function __invoke(#[MapEntity(id: 'id')] BrouillonDeclarationFDOBrisPorte $brouillon, Security $security): Response
+    public function __invoke(Uuid $id, Security $security): Response
     {
-        /** @var DeclarationFDOBrisPorte $declaration */
-        $declaration = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class);
+        /** @var Agent $agent */
+        $agent = $security->getUser();
 
-        if ($this->validator->validate($declaration)) {
-            $this->em->persist($declaration);
-            $this->em->remove($brouillon);
-            $this->em->flush();
+        /** @var BrouillonDeclarationFDOBrisPorte $brouillon */
+        $brouillon = $this->em->find(BrouillonDeclarationFDOBrisPorte::class, $id);
+
+        /** @var DeclarationFDOBrisPorteInput $input */
+        $input = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class, context: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false]);
+
+        /** @var ConstraintViolationList $validation */
+        $violations = $this->validator->validate($input);
+
+        if ($violations->count() > 0) {
+            return new JsonResponse([
+                'erreurs' => array_merge(
+                    ...array_map(
+                        fn ($v) => [$v->getPropertyPath() => $v->getMessage()],
+                        iterator_to_array($violations->getIterator())
+                    )
+                ),
+            ], Response::HTTP_BAD_REQUEST);
         }
+
+        /** @var DeclarationFDOBrisPorte $declaration */
+        $declaration = $this->objectMapper->map(
+            $input,
+            (new DeclarationFDOBrisPorte())
+                ->setId($brouillon->getId())
+                ->setDateCreation($brouillon->getDateCreation())
+                ->setAgent($agent)
+        );
+
+        $this->em->persist($declaration);
+        $this->em->remove($brouillon);
+        $this->em->detach($brouillon);
+
+        $this->em->flush();
 
         // Envoi du mail d'invitation à déclarer
         if (null !== ($coordonneesRequerant = $declaration->getCoordonneesRequerant())) {
@@ -63,11 +95,12 @@ class SoumettreDeclarationBrisPorteEndpoint
             ;
         }
 
-        return new JsonResponse([
+        return new JsonResponse(
             $this->normalizer->normalize(
-                DeclarationFDOBrisPorteOutputMapper::mapper($declaration, $this->objectMapper),
+                $this->objectMapper->map($declaration, DeclarationFDOBrisPorteOutput::class),
                 'json'
             ),
-        ], Response::HTTP_CREATED);
+            Response::HTTP_CREATED
+        );
     }
 }
