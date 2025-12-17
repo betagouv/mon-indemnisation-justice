@@ -1,13 +1,13 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
+namespace MonIndemnisationJustice\Api\Agent\FDO\Output;
 
 use MonIndemnisationJustice\Entity\Civilite;
-use MonIndemnisationJustice\Entity\Metadonnees\InfosRequerant;
+use MonIndemnisationJustice\Entity\CoordonneesRequerant;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 
-#[Map(InfosRequerant::class)]
-class InfosRequerantInput
+#[Map(source: CoordonneesRequerant::class)]
+class CoordonneesRequerantOutput
 {
     public Civilite $civilite;
     public string $nom;

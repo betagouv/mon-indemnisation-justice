@@ -12,29 +12,29 @@ use Symfony\Component\Uid\Uuid;
 #[Map(source: DeclarationFDOBrisPorte::class)]
 class DeclarationFDOBrisPorteOutput
 {
-    public ?Uuid $id = null;
-    public string $reference;
-    #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTimeInterface::W3C])]
-    public \DateTimeInterface $dateOperation;
-    #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTimeInterface::W3C])]
-    public \DateTimeInterface $dateCreation;
-    #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTimeInterface::W3C])]
-    public \DateTimeInterface $dateSoumission;
-    public string $telephone;
+    public Uuid $id;
+    public ?string $reference;
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
+    public ?\DateTimeInterface $dateOperation;
 
-    public DeclarationFDOBrisPorteErreurType $estErreur;
+    public ?DeclarationFDOBrisPorteErreurType $estErreur;
     public ?string $descriptionErreur = null;
 
-    #[Map(target: AgentOutput::class)]
-    public AgentOutput $agent;
-
     #[Map(target: AdresseOutput::class)]
-    public AdresseOutput $adresse;
+    public ?AdresseOutput $adresse = null;
 
-    #[Map(target: InfosRequerantOutput::class)]
-    public ?InfosRequerantOutput $infosRequerant;
+    #[Map(target: CoordonneesRequerantOutput::class)]
+    public ?CoordonneesRequerantOutput $coordonneesRequerant;
     public ?string $precisionsRequerant;
 
-    #[Map(target: ProcedureOutput::class)]
-    public ProcedureOutput $procedure;
+    #[Map(target: ProcedureJudiciaireOutput::class)]
+    public ProcedureJudiciaireOutput $procedure;
+
+    #[Map(target: AgentOutput::class)]
+    public ?AgentOutput $agent = null;
+
+    #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTimeInterface::W3C])]
+    public ?\DateTimeInterface $dateCreation;
+    #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTimeInterface::W3C])]
+    public ?\DateTimeInterface $dateSoumission;
 }
