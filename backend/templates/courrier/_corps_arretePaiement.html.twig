@@ -11,18 +11,18 @@
     ({{ dossier.adresse.codeDepartemental }}) ;
 </p>
 <p>Vu la proposition du ministère de la justice en date
-    du {{ dossier.dateSignatureAgent|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+    du {{ dossier.dateSignatureAgent|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
     d'allouer à {{ dossier.requerant.nomComplet }} une indemnité définitive
     de {{ dossier.montantIndemnisation|montant_litteral }}
     ({{ dossier.montantIndemnisation|number_format(2, ',', ' ') }} EUR) ;
     Vu la déclaration d’acceptation de {{ dossier.requerant.nomComplet }} en date
-    du {{ dossier.dateSignatureRequerant|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}
+    du {{ dossier.dateSignatureRequerant|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
     ;
 </p>
 <p>
     Considérant que le préjudice matériel subi par {{ dossier.requerant.nomComplet }} résulte d’une opération de
     police judiciaire menée
-    le {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }} à
+    le {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }} à
     l’adresse susmentionnée ;
 </p>
 

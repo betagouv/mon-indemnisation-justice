@@ -4,6 +4,8 @@
     l’indemnisation du préjudice subi en raison de la détérioration de la porte d’entrée du logement sis
     {{ dossier.adresse.ligne1 }} à {{ dossier.adresse.localite|default }}
     ({{ dossier.adresse.codeDepartemental }}).
-    Cette dégradation aurait été occasionnée au cours d’une opération de police judiciaire{% if dossier.dateOperationPJ is not null %} menée le
-    {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}{% endif %}.
+    Cette dégradation aurait été occasionnée au cours d’une opération de police
+    judiciaire{% if dossier.dateOperationPJ is not null %} menée le
+    {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}{% endif %}
+    .
 </p>
