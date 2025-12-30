@@ -30,7 +30,7 @@
         {% include 'courrier/_corps_arretePaiement.html.twig' %}
     {% endif %}
 
-    <p>Fait à Paris, le {{ 'now'|format_datetime(locale='fr',pattern="d MMMM YYYY", timezone: 'Europe/Paris') }}</p>
+    <p>Fait à Paris, le {{ 'now'|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}</p>
 
 
     <p class="text-centre" style="width: 30%;margin:auto;">
