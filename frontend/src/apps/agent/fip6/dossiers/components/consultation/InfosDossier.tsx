@@ -274,16 +274,19 @@ export const InfosDossier = ({
 
                 <li>
                   <b>Requérant : </b>
-                  {dossier.declarationFDO.infosRequerant ? (
+                  {dossier.declarationFDO.coordonneesRequerant ? (
                     <>
-                      {dossier.declarationFDO.infosRequerant.prenom}{" "}
-                      {dossier.declarationFDO.infosRequerant.nom.toUpperCase()}
+                      {dossier.declarationFDO.coordonneesRequerant.prenom}{" "}
+                      {dossier.declarationFDO.coordonneesRequerant.nom.toUpperCase()}
                       <ul>
                         <li>
-                          {dossier.declarationFDO.infosRequerant.courriel}
+                          {dossier.declarationFDO.coordonneesRequerant.courriel}
                         </li>
                         <li>
-                          {dossier.declarationFDO.infosRequerant.telephone}
+                          {
+                            dossier.declarationFDO.coordonneesRequerant
+                              .telephone
+                          }
                         </li>
                       </ul>
                     </>

@@ -22,7 +22,7 @@ class DeclarationFDOBrisPorteOutputMapper
         $output->adresse = $mapper->map($declaration->getAdresse(), AdresseOutput::class);
         $output->procedure = $mapper->map($declaration->getProcedure(), ProcedureJudiciaireOutput::class);
 
-        $output->infosRequerant = null !== $declaration->getInfosRequerant() ? $mapper->map($declaration->getInfosRequerant(), CoordonneesRequerantOutput::class) : null;
+        $output->coordonneesRequerant = null !== $declaration->getCoordonneesRequerant() ? $mapper->map($declaration->getCoordonneesRequerant(), CoordonneesRequerantOutput::class) : null;
 
         return $output;
     }
