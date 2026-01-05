@@ -25,6 +25,5 @@ class DeclarationFDOBrisPorteInput
     #[Assert\NotNull(message: 'La procédure judiciaire est requise')]
     public ?ProcedureJudiciaireInput $procedure = null;
     public ?string $precisionsRequerant = null;
-    #[Map(if: false)]
     public ?CoordonneesRequerantInput $coordonneesRequerant = null;
 }

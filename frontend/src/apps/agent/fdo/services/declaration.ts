@@ -148,7 +148,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   async enregistrer(
     declaration: DeclarationFDOBrisPorte,
-    miseAJour?: any,
+    miseAJour: Partial<DeclarationFDOBrisPorte>,
   ): Promise<void> {
     const response = await fetch(
       `/api/agent/fdo/bris-de-porte/${declaration.id}/editer`,
@@ -157,7 +157,25 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         headers: {
           Accept: "application/json",
         },
-        body: JSON.stringify(miseAJour),
+        body: JSON.stringify({
+          ...miseAJour,
+          ...(miseAJour.coordonneesRequerant?.civilite
+            ? {
+                coordonneesRequerant: {
+                  ...miseAJour.coordonneesRequerant,
+                  civilite: miseAJour.coordonneesRequerant.civilite.id,
+                },
+              }
+            : {}),
+          ...(miseAJour.dateOperation
+            ? {
+                dateOperation: miseAJour.dateOperation
+                  ?.toISOString()
+                  .split("T")
+                  .at(0),
+              }
+            : {}),
+        }),
       },
     );
 
@@ -183,7 +201,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
   async soumettre(declaration: DeclarationFDOBrisPorte): Promise<void> {
     // Appel à la route API `api_agent_fdo_bris_porte_soumettre` :
     const response = await fetch(
-      `/api/agent/fdo/bris-de-porte/${declaration.id}/editer`,
+      `/api/agent/fdo/bris-de-porte/${declaration.id}/soumettre`,
       {
         method: "POST",
         headers: {
@@ -193,7 +211,8 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
       },
     );
     if (response.ok) {
-      this.setDeclaration(
+      this.supprimer(declaration);
+      this.ajouter(
         plainToInstance(DeclarationFDOBrisPorte, await response.json()),
       );
     }

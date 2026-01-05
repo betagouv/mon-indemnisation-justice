@@ -21,7 +21,7 @@ final class Version20251217160042 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE declarations_fdo_bris_porte ADD precisions_requerant TEXT DEFAULT NULL');
-        $this->addSql('ALTER TABLE procedures_judiciaires ADD telephone VARCHAR(20) NOT NULL');
+        $this->addSql('ALTER TABLE procedures_judiciaires ADD telephone VARCHAR(20)');
         $this->addSql(
             <<<'SQL'
 update procedures_judiciaires
@@ -30,6 +30,7 @@ from declarations_fdo_bris_porte d
 where d.procedure_id = procedures_judiciaires.id
 SQL
         );
+        $this->addSql('ALTER TABLE procedures_judiciaires ALTER COLUMN telephone SET NOT NULL');
         $this->addSql('ALTER TABLE declarations_fdo_bris_porte DROP telephone');
     }
 

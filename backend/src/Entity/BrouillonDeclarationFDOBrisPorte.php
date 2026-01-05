@@ -5,11 +5,10 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use MonIndemnisationJustice\Repository\RequerantRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity(repositoryClass: RequerantRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'brouillons_declaration_fdo_bris_porte')]
 #[ORM\HasLifecycleCallbacks]
 class BrouillonDeclarationFDOBrisPorte
@@ -49,6 +48,7 @@ class BrouillonDeclarationFDOBrisPorte
             'id' => $this->id,
         ]);
         $args->getObjectManager()->persist($this);
+        $args->getObjectManager()->flush();
     }
 
     public function getId(): ?Uuid

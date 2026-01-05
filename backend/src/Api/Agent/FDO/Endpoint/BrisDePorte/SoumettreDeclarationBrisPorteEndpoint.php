@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
-use MonIndemnisationJustice\Api\Agent\FDO\Output\DeclarationFDOBrisPorteOutput;
+use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationFDOBrisPorteOutputMapper;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
@@ -97,7 +97,7 @@ class SoumettreDeclarationBrisPorteEndpoint
 
         return new JsonResponse(
             $this->normalizer->normalize(
-                $this->objectMapper->map($declaration, DeclarationFDOBrisPorteOutput::class),
+                DeclarationFDOBrisPorteOutputMapper::mapper($declaration, $this->objectMapper),
                 'json'
             ),
             Response::HTTP_CREATED

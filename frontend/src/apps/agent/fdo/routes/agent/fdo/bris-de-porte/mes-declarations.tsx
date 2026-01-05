@@ -68,7 +68,11 @@ const Page = () => {
               ) : (
                 <i>Non renseignée</i>
               ),
-              `${declaration.adresse?.ligne1} ${declaration.adresse?.codePostal} ${declaration.adresse?.localite}`,
+              declaration.adresse ? (
+                `${declaration.adresse?.ligne1} ${declaration.adresse?.codePostal} ${declaration.adresse?.localite}`
+              ) : (
+                <i>Non renseignée</i>
+              ),
               <ButtonsGroup
                 buttonsEquisized={false}
                 inlineLayoutWhen={"always"}
