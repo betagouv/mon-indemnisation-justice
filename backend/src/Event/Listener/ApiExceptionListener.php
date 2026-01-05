@@ -14,7 +14,7 @@ class ApiExceptionListener
 {
     public function __invoke(ExceptionEvent $event, #[Autowire('%env(APP_ENV)')] string $env): void
     {
-        if (str_starts_with($event->getRequest()->getRequestUri(), '/api/') && (!str_starts_with($env, 'prod') || !$event->getRequest()->query->has('_debug'))) {
+        if (str_starts_with($event->getRequest()->getRequestUri(), '/api/') && (!str_starts_with($env, 'prod') && !$event->getRequest()->query->has('_debug'))) {
             $exception = $event->getThrowable();
 
             $event->setResponse(new JsonResponse([

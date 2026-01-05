@@ -49,7 +49,7 @@ class ListerMesDeclarationsEndpoint
                     'json'
                 ),
                 array_map(
-                    fn (BrouillonDeclarationFDOBrisPorte $brouillon) => $brouillon->getDonnees(),
+                    fn (BrouillonDeclarationFDOBrisPorte $brouillon) => (object) $brouillon->getDonnees(),
                     $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findBy(['agent' => $agent])
                 ),
             )
