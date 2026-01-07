@@ -55,7 +55,7 @@ class BrisPorteController extends RequerantController
         }
 
         if ($dossier->estSigne()) {
-            return $this->redirectToRoute('requerant_dossier_consulter_decision');
+            return $this->redirectToRoute('requerant_dossier_consulter_decision', ['id' => $dossier->getId()]);
         }
 
         return $this->render('requerant/dossier/declare_bris_porte.html.twig', [

@@ -17,8 +17,13 @@ import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import ReactDOM from "react-dom/client";
+import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
+import type { FrIconClassName } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 
-startReactDsfr({ defaultColorScheme: "system" });
+startReactDsfr({
+  defaultColorScheme:
+    (localStorage.getItem("scheme") as ColorScheme) ?? "system",
+});
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
@@ -163,11 +168,13 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
               </>
             ) : (
               ""
-            )}{" "}
-            dont vous êtes{" "}
-            {dossier.testEligibilite.estProprietaire
-              ? "propriétaire"
-              : "locataire"}
+            )}
+            {dossier.testEligibilite &&
+              `, dont vous êtes ${
+                dossier.testEligibilite.estProprietaire
+                  ? "propriétaire"
+                  : "locataire"
+              }`}
             , a été {dossier.estAccepte() ? "acceptée" : "refusée"}.
           </p>
 
@@ -457,13 +464,12 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                   />
                 ),
               },
-            ].concat(
-              dossier.estAccepte()
+              ...(dossier.estAccepte()
                 ? [
                     {
                       label: "Déclaration d'acceptation",
                       isDefault: false,
-                      iconId: "fr-icon-chat-check-line",
+                      iconId: "fr-icon-chat-check-line" as FrIconClassName,
                       content: (
                         <PieceJointe
                           pieceJointe={
@@ -476,8 +482,8 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                       ),
                     },
                   ]
-                : [],
-            )}
+                : []),
+            ]}
           />
         </div>
       </div>
