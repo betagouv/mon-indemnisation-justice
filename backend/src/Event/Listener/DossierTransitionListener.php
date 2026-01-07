@@ -162,7 +162,7 @@ class DossierTransitionListener
         foreach ($this->agentRepository->getAgentsLiaisonBudget() as $agentLiaisonBudget) {
             $this->mailer
                 ->toAgent($agentLiaisonBudget)
-                ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à transmettre à FIP6')
+                ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à transmettre à FIP3')
                 ->htmlTemplate('email/agent/fip6/dossier_a_transmettre.twig', [
                     'agent' => $agentLiaisonBudget,
                     'dossier' => $evenement->dossier,
