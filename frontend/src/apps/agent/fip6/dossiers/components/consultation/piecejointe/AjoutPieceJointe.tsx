@@ -99,7 +99,7 @@ const component = function AjoutPieceJointe({
           {
             priority: "primary",
             iconId: "fr-icon-file-add-line",
-            disabled: !(agent.estValidateur() || agent.instruit(dossier)),
+            disabled: !(agent.estValidateur() || agent.estRedacteur()),
             onClick: () => _modale.open(),
             children: "Ajouter",
           },

@@ -40,7 +40,7 @@ class AjouterPieceJointeEndpoint
         #[MapUploadedFile(name: 'pieceJointe')]
         UploadedFile $pieceJointe
     ): Response {
-        if (null === ($documentType = DocumentType::tryFrom($type)) || !$documentType->estPieceJointe()) {
+        if (null === ($documentType = DocumentType::tryFrom($type)) || in_array($documentType, [DocumentType::TYPE_COURRIER_MINISTERE, DocumentType::TYPE_ARRETE_PAIEMENT])) {
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
         }
 
