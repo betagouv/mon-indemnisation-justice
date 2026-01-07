@@ -22,30 +22,32 @@ export const Uploader = ({
   const handleFileInput = (ev) => {
     setErreur("");
     const file: File = ev.target.files[0];
-    if (
-      !["image/jpeg", "image/png", "image/webp", "application/pdf"].includes(
-        file.type,
-      )
-    ) {
-      setErreur("Type de fichier nom accepté");
-    } else if (file.size > MAX_SIZE) {
-      setErreur("Taille de fichier supérieure à 5Mo");
-      return;
-    } else {
-      const data = new FormData();
-      data.append("piece-jointe", ev.target.files[0]);
-      fetch(`/requerant/document/${dossier.id}/${type}`, {
-        method: "POST",
-        body: data,
-      })
-        .then((response) => response.json())
-        .then((document) => onUploaded?.(document))
-        .catch((e) => {
-          Sentry.captureException(e);
-          setErreur(
-            "Un problème technique est survenu lors du téléversement. Nous vous invitons à ré-essayer.",
-          );
-        });
+    if (file.type) {
+      if (
+        !["image/jpeg", "image/png", "image/webp", "application/pdf"].includes(
+          file.type,
+        )
+      ) {
+        setErreur("Type de fichier nom accepté");
+      } else if (file.size > MAX_SIZE) {
+        setErreur("Taille de fichier supérieure à 5Mo");
+        return;
+      } else {
+        const data = new FormData();
+        data.append("piece-jointe", ev.target.files[0]);
+        fetch(`/requerant/document/${dossier.id}/${type}`, {
+          method: "POST",
+          body: data,
+        })
+          .then((response) => response.json())
+          .then((document) => onUploaded?.(document))
+          .catch((e) => {
+            Sentry.captureException(e);
+            setErreur(
+              "Un problème technique est survenu lors du téléversement. Nous vous invitons à ré-essayer.",
+            );
+          });
+      }
     }
   };
 
