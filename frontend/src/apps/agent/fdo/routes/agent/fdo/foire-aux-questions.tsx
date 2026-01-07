@@ -73,11 +73,11 @@ export const Route = createFileRoute("/agent/fdo/foire-aux-questions")({
             remise au nouvel occupant du logement (locataire ou propriétaire).
           </p>
         </Accordion>
-        <Accordion label="Que faire en cas de flagrance Lorsque l’auteur ?">
+        <Accordion label="Que faire en cas de flagrance ?">
           <p className="fr-mt-2w">
-            d’une infraction, poursuivi par les forces de l’ordre, se réfugie
-            chez une personne tierce à l’opération de police judiciaire,
-            l’attestation doit être remise à cette dernière.
+            Lorsque l’auteur d’une infraction, poursuivi par les forces de
+            l’ordre, se réfugie chez une personne tierce à l’opération de police
+            judiciaire, l’attestation doit être remise à cette dernière.
           </p>
         </Accordion>
       </section>
