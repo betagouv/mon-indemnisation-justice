@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Dossier;
 
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
 
 /**
  * Teste le point d'entrée @ListerDossierArreteASignerEndpoint de l'API, listant les dossiers dont l'arrêté de paiement
@@ -12,7 +12,7 @@ use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCa
  *
  * @coversNothing
  */
-class ListerDossierArreteASignerEndpointTest extends AbstractEndpointTestCase
+class ListerDossierArreteASignerEndpointTest extends APIEndpointTestCase
 {
     /**
      * ETQ agent attributeur, je dois pouvoir charger la liste des dossiers à attribuer.

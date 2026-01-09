@@ -16,7 +16,7 @@ test("FDO - Gendarme - déclarer bris de porte", async ({browser}) => {
 
     await page.getByText("Déclarer un bris de porte").click();
 
-    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/1-bris-de-porte/);
+    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/[0-9a-f\-]+\/1-bris-de-porte/);
     await expect(getTitre(page, "Nouvelle déclaration de bris de porte", 'h1')).toBeVisible();
     await expect(getTitre(page, "Eléments relatifs au bris de porte", 'h2')).toBeVisible();
 
@@ -43,7 +43,7 @@ test("FDO - Gendarme - déclarer bris de porte", async ({browser}) => {
     await page.waitForTimeout(500);
     await page.getByText("Continuer", {exact: true}).click();
 
-    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/2-service-enqueteur/);
+    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/[0-9a-f\-]+\/2-service-enqueteur/);
 
     await expect(getTitre(page, "Nouvelle déclaration de bris de porte", 'h1')).toBeVisible();
     await expect(getTitre(page, "Éléments relatifs au service enquêteur", 'h2')).toBeVisible();
@@ -59,7 +59,7 @@ test("FDO - Gendarme - déclarer bris de porte", async ({browser}) => {
     await page.waitForTimeout(500);
     await page.getByText("Continuer", {exact: true}).click();
 
-    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/3-usager/);
+    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/[0-9a-f\-]+\/3-usager/);
 
     await expect(getTitre(page, "Nouvelle déclaration de bris de porte", 'h1')).toBeVisible();
     await expect(getTitre(page, "Informations concernant l'usager", 'h2')).toBeVisible();
@@ -113,7 +113,7 @@ test("FDO - Policier - déclarer bris de porte", async ({browser}) => {
 
     await page.getByText("Déclarer un bris de porte").click();
 
-    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/1-bris-de-porte/);
+    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/[0-9a-f\-]+\/1-bris-de-porte/);
     await expect(getTitre(page, "Nouvelle déclaration de bris de porte", 'h1')).toBeVisible();
     await expect(getTitre(page, "Eléments relatifs au bris de porte", 'h2')).toBeVisible();
 
@@ -139,7 +139,7 @@ test("FDO - Policier - déclarer bris de porte", async ({browser}) => {
     await page.waitForTimeout(500);
     await page.getByText("Continuer", {exact: true}).click();
 
-    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/2-service-enqueteur/);
+    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/[0-9a-f\-]+\/2-service-enqueteur/);
 
     await expect(getTitre(page, "Nouvelle déclaration de bris de porte", 'h1')).toBeVisible();
     await expect(getTitre(page, "Éléments relatifs au service enquêteur", 'h2')).toBeVisible();
@@ -155,7 +155,7 @@ test("FDO - Policier - déclarer bris de porte", async ({browser}) => {
     await page.waitForTimeout(500);
     await page.getByText("Continuer", {exact: true}).click();
 
-    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/\d+\/3-usager/);
+    await page.waitForURL(/\/agent\/fdo\/bris-de-porte\/[0-9a-f\-]+\/3-usager/);
 
     await expect(getTitre(page, "Nouvelle déclaration de bris de porte", 'h1')).toBeVisible();
     await expect(getTitre(page, "Informations concernant l'usager", 'h2')).toBeVisible();

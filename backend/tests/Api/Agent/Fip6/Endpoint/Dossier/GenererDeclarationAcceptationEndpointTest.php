@@ -6,7 +6,7 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererDeclarationAc
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
 
 /**
  * Teste le point d'entrée @GenererDeclarationAcceptationEndpoint de l'API, permettant de générer la déclaration
@@ -16,7 +16,7 @@ use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCa
  *
  * @coversNothing
  */
-class GenererDeclarationAcceptationEndpointTest extends AbstractEndpointTestCase
+class GenererDeclarationAcceptationEndpointTest extends APIEndpointTestCase
 {
     /**
      * ETQ agent rédacteur, je dois pouvoir générer la déclaration d'acceptation d'un dossier à l'état `EN_INSTRUCTION`.

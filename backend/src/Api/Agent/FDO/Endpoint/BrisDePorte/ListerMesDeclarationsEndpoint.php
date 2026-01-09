@@ -1,11 +1,12 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint;
+namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationErreurOperationnelleOutputMapper;
-use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationErreurOperationelleVoter;
+use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationFDOBrisPorteOutputMapper;
+use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,13 +19,13 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 /**
  * Route API qui permet à un agent des FDO de consulter ses déclarations d'erreur opérationnelle.
  */
-#[Route('/api/agent/fdo/erreur-operationnelle/mes-declarations', name: 'api_agent_fdo_erreur_operationnelle_mes_declaration', methods: ['GET'])]
+#[Route('/api/agent/fdo/bris-de-porte/mes-declarations', name: 'api_agent_fdo_bris_porte_mes_declaration_lister', methods: ['GET'])]
 #[IsGranted(
-    DeclarationErreurOperationelleVoter::ACTION_LISTER,
+    DeclarationFDOBrisPorteVoter::ACTION_LISTER,
     message: "L'accès aux déclarations d'erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
-class MesDeclarationsEndpoint
+class ListerMesDeclarationsEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
@@ -39,12 +40,18 @@ class MesDeclarationsEndpoint
         $declarations = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findBy(['agent' => $agent]);
 
         return new JsonResponse(
-            $this->normalizer->normalize(
-                array_map(
-                    fn (DeclarationFDOBrisPorte $declaration) => DeclarationErreurOperationnelleOutputMapper::mapper($declaration, $this->objectMapper),
-                    $declarations
+            array_merge(
+                $this->normalizer->normalize(
+                    array_map(
+                        fn (DeclarationFDOBrisPorte $declaration) => DeclarationFDOBrisPorteOutputMapper::mapper($declaration, $this->objectMapper),
+                        $declarations
+                    ),
+                    'json'
                 ),
-                'json'
+                array_map(
+                    fn (BrouillonDeclarationFDOBrisPorte $brouillon) => (object) $brouillon->getDonnees(),
+                    $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findBy(['agent' => $agent])
+                ),
             )
         );
     }
