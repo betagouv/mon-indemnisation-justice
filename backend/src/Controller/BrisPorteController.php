@@ -173,13 +173,13 @@ class BrisPorteController extends AbstractController
                 return $this->redirectToRoute('bris_porte_tester_eligibilite');
             }
         } else {
-            if (null !== ($infosRequerant = $preinscription->declarationErreurOperationnelle->getInfosRequerant())) {
-                $inscription->civilite = $infosRequerant->civilite;
-                $inscription->nom = $infosRequerant->nom;
-                $inscription->nomNaissance = $infosRequerant->nom;
-                $inscription->prenom = $infosRequerant->prenom;
-                $inscription->courriel = $infosRequerant->courriel;
-                $inscription->telephone = $infosRequerant->telephone;
+            if (null !== ($coordoneesRequerant = $preinscription->declarationErreurOperationnelle->getCoordonneesRequerant())) {
+                $inscription->civilite = $coordoneesRequerant->getCivilite();
+                $inscription->nom = $coordoneesRequerant->getNom();
+                $inscription->nomNaissance = $coordoneesRequerant->getNom();
+                $inscription->prenom = $coordoneesRequerant->getPrenom();
+                $inscription->courriel = $coordoneesRequerant->getCourriel();
+                $inscription->telephone = $coordoneesRequerant->getTelephone();
             }
         }
 
