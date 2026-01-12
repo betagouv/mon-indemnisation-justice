@@ -115,6 +115,7 @@ services:
       - SERVER_NAME=:80
       - HTTPS=true;
       - REQUEST_SCHEME=https
+      - INSTANCE_NUMBER=0
     volumes:
       - .docker/php/fichiers:/app/fichiers
       - ./backend/.env.test:/app/.env.test

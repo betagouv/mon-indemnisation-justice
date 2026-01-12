@@ -33,4 +33,8 @@ RUN rm -Rf /assets/*
 
 WORKDIR /app
 
-CMD ["bash", "-c", "frankenphp php-server -r /app/public -a /app/public/index.php"]
+COPY ./.docker/php/scripts/demarrage_${APP_ENV}.sh /app/bin/demarrage.sh
+
+RUN chmod u+x /app/bin/demarrage.sh
+
+ENTRYPOINT ["/app/bin/demarrage.sh"]
