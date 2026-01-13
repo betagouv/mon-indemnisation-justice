@@ -35,7 +35,7 @@ class ImporterCatalogueFournisseurIdentiteAgentCommand extends Command
     {
         $path = $input->getArgument('path');
         if (!filter_var($path, FILTER_VALIDATE_URL) && !is_file($path)) {
-            $output->writeln("<error>URL ou chemin de fichier inconnu $path</error>");
+            $output->writeln("<error>URL ou chemin de fichier inconnu {$path}</error>");
 
             return Command::FAILURE;
         }
@@ -55,7 +55,7 @@ class ImporterCatalogueFournisseurIdentiteAgentCommand extends Command
                             ->setActif(in_array(strtolower($actif), ['oui', 'true', 1]))
                             ->setUrlDecouverte($urlDecouverte)
                             ->setReseauInterne(FournisseurIdentiteAgent::RESEAU_INTERNE === $reseau)
-                            ->setDomaines(explode(',', $listeFQDNs))
+                            ->setDomaines(array_map('trim', explode(',', $listeFQDNs)))
                         ;
                         $this->em->persist($fournisseurIdentite);
                     }

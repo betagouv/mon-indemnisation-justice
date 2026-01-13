@@ -32,7 +32,7 @@ export const Route = createFileRoute("/agent/fdo/les-documents")({
                   label="Attestation à remettre en cas d'erreur de porte"
                   details={""}
                   linkProps={{
-                    href: urlAttestation,
+                    href: `${window.location.origin}${urlAttestation}`,
                     download: true,
                   }}
                 />
@@ -56,7 +56,7 @@ export const Route = createFileRoute("/agent/fdo/les-documents")({
                   label="Guide de remise de l'attestation"
                   details={""}
                   linkProps={{
-                    href: urlGuideREmise,
+                    href: `${window.location.origin}${urlGuideREmise}`,
                     download: true,
                   }}
                 />
