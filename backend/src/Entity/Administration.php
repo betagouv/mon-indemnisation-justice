@@ -65,11 +65,11 @@ enum Administration: string
 
     public function estMinistereJustice(): bool
     {
-        return self::MINISTERE_JUSTICE === $this->value;
+        return self::MINISTERE_JUSTICE === $this;
     }
 
     /**
-     * Liste des roles automatiquement octroyés à la première connexion.
+     * Liste des rôles automatiquement octroyés à la première connexion.
      */
     public function getRolesAutomatiques(): array
     {
