@@ -33,6 +33,7 @@ export const Route = createFileRoute("/agent/fdo/les-documents")({
                   details={""}
                   linkProps={{
                     href: urlAttestation,
+                    download: true,
                   }}
                 />
 
@@ -56,6 +57,7 @@ export const Route = createFileRoute("/agent/fdo/les-documents")({
                   details={""}
                   linkProps={{
                     href: urlGuideREmise,
+                    download: true,
                   }}
                 />
 

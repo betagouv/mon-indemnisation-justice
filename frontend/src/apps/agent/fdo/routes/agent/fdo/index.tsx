@@ -2,7 +2,7 @@ import { router } from "@/apps/agent/fdo/_init/_router.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Card from "@codegouvfr/react-dsfr/Card";
 import React from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/agent/fdo/")({
   component: RouteComponent,
@@ -26,7 +26,7 @@ function RouteComponent() {
           {/*
           <div className="fr-col-6">
             <h4 className="fr-text-label--blue-france fr-m-0">
-              Déclarer une erreur opérationelle
+              Déclarer une erreur opérationnelle
             </h4>
           </div>
           */}
