@@ -26,4 +26,6 @@ class DeclarationFDOBrisPorteInput
     public ?ProcedureJudiciaireInput $procedure = null;
     public ?string $precisionsRequerant = null;
     public ?CoordonneesRequerantInput $coordonneesRequerant = null;
+    #[Map(target: DocumentDto::class)]
+    public array $piecesJointes = [];
 }
