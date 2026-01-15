@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
+use MonIndemnisationJustice\Api\Agent\FDO\Input\DocumentDto;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Document;
@@ -58,7 +59,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
         /** @var BrouillonDeclarationFDOBrisPorte $brouillon */
         $brouillon = $this->em->find(BrouillonDeclarationFDOBrisPorte::class, $id);
 
-        if (null === ($documentType = DocumentType::tryFrom($type)) || in_array($documentType->estPieceJointe(), [DocumentType::TYPE_COURRIER_MINISTERE, DocumentType::TYPE_ARRETE_PAIEMENT])) {
+        if (null === ($documentType = DocumentType::tryFrom($type)) || !in_array($documentType, [DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_PREJUDICE])) {
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
         }
 
@@ -74,17 +75,29 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
         $this->documentManager->enregistrerDocument($pieceJointe, $fichierTeleverse->getContent());
 
         $this->em->persist($pieceJointe);
+        $this->em->flush();
 
         // 2. Rattacher le document au brouillon
-        $brouillon->ajouterPieceJointe($pieceJointe);
+        $brouillon->ajouterPieceJointe(
+            $this->normalizer->normalize(
+                $this->objectMapper->map($pieceJointe, DocumentDto::class),
+                'json'
+            )
+        );
 
         try {
             $input = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class, context: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false]);
         } catch (UnexpectedValueException $e) {
+            $this->em->remove($pieceJointe);
+            $this->em->flush();
+
             return new JsonResponse([
                 'erreur' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
         } catch (ExtraAttributesException $e) {
+            $this->em->remove($pieceJointe);
+            $this->em->flush();
+
             return new JsonResponse([
                 'erreur' => (count($e->getExtraAttributes()) > 1 ? 'Champs non reconnus' : 'Champ non reconnu').': '.implode(', ', $e->getExtraAttributes()),
             ], Response::HTTP_BAD_REQUEST);

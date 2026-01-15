@@ -36,6 +36,12 @@ export class DocumentType {
     "photo_prejudice",
     "Photo de la porte endommagée",
   );
+
+  public static readonly TYPE_PV_FDO = new DocumentType(
+    "pv_fdo",
+    "Procès verbal d'intervention",
+  );
+
   public static readonly TYPE_CARTE_IDENTITE = new DocumentType(
     "carte_identite",
     "Pièce d'identité",
@@ -165,6 +171,7 @@ export class Document {
   public static types: DocumentType[] = [
     DocumentType.TYPE_ATTESTATION_INFORMATION,
     DocumentType.TYPE_PHOTO_PREJUDICE,
+    DocumentType.TYPE_PV_FDO,
     DocumentType.TYPE_CARTE_IDENTITE,
     DocumentType.TYPE_FACTURE,
     DocumentType.TYPE_PREUVE_PAIEMENT_FACTURE,
@@ -176,5 +183,10 @@ export class Document {
     DocumentType.TYPE_COURRIER_MINISTERE,
     DocumentType.TYPE_COURRIER_REQUERANT,
     DocumentType.TYPE_ARRETE_PAIEMENT,
+  ];
+
+  public static typesFDO: DocumentType[] = [
+    DocumentType.TYPE_PHOTO_PREJUDICE,
+    DocumentType.TYPE_PV_FDO,
   ];
 }
