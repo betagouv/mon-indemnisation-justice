@@ -5,14 +5,15 @@ import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import React from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import Download from "@codegouvfr/react-dsfr/Download";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { z } from "zod";
 import { useInjection } from "inversify-react";
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import {
+  DeclarationFDOBrisPorte,
+  Procedure,
+} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
@@ -56,9 +57,6 @@ export const Route = createFileRoute(
 });
 
 const schemaInfosJuridiques = z.object({
-  telephone: z
-    .string({ error: "Le numéro de téléphone est requis" })
-    .min(7, { error: "Le numéro de téléphone est requis" }),
   procedure: z.object({
     serviceEnqueteur: z.string(),
     numeroProcedure: z
@@ -67,6 +65,9 @@ const schemaInfosJuridiques = z.object({
       .min(1, { error: "Le numéro de procédure est requis" }),
     juridictionOuParquet: z.string(),
     nomMagistrat: z.string(),
+    telephone: z
+      .string({ error: "Le numéro de téléphone est requis" })
+      .min(7, { error: "Le numéro de téléphone est requis" }),
   }),
 });
 
@@ -96,23 +97,36 @@ function Page() {
 
   const form = useForm({
     defaultValues: {
-      telephone: declaration.telephone ?? contexte.agent.telephone ?? "",
-      procedure: { ...declaration.procedure },
+      procedure: {
+        ...(declaration.procedure ?? new Procedure()),
+        telephone:
+          declaration.procedure?.telephone ?? contexte.agent.telephone ?? "",
+      },
     },
     listeners: {
-      onChange: async ({ fieldApi, formApi }) => {
-        if (fieldApi.name == "numeroAgent") {
-          // TODO persister le changement de numéro
-          contexte.agent.telephone = fieldApi.state.value;
+      onBlur: async ({ fieldApi, formApi }) => {
+        if (declaration.estBrouillon()) {
+          if (fieldApi.name == "numeroAgent") {
+            // TODO persister le changement de numéro
+            contexte.agent.telephone = fieldApi.state.value;
+          }
+          declarationManager.mettreAJour(declaration, formApi.state.values);
         }
-        declarationManager.enregistrer(declaration, formApi.state.values);
       },
-      onChangeDebounceMs: 200,
+      onSubmit: async ({ formApi }) => {
+        if (declaration.estBrouillon()) {
+          await declarationManager.enregistrer(
+            declaration,
+            formApi.state.values,
+          );
+        }
+      },
     },
     validators: {
       onSubmit: schemaInfosJuridiques,
     },
     onSubmit: async ({ value }) => {
+      // TODO
       await naviguer({
         to: "/agent/fdo/bris-de-porte/$reference/3-usager",
         params: { reference } as any,
@@ -244,7 +258,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-6 fr-m-0 fr-champ-requis"
                   label="Service enquêteur"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
                     autoFocus: true,
@@ -265,13 +279,13 @@ function Page() {
           />
 
           <form.Field
-            name="telephone"
+            name="procedure.telephone"
             children={(field) => {
               return (
                 <Input
                   className="fr-col-lg-3 fr-m-0  fr-champ-requis"
                   label="Téléphone du service ou de l'agent"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,
@@ -307,7 +321,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4 fr-m-0"
                   label="Numéro de procédure *"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,
@@ -333,7 +347,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4 fr-m-0"
                   label="Juridiction / parquet (le cas échéant)"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,
@@ -351,7 +365,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4 fr-m-0"
                   label="Nom du magistrat (le cas échéant)"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,

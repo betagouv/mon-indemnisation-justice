@@ -6,10 +6,12 @@ use MonIndemnisationJustice\Entity\ProcedureJudiciaire;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 
 #[Map(source: ProcedureJudiciaire::class)]
-class ProcedureOutput
+class ProcedureJudiciaireOutput
 {
     public string $numeroProcedure;
     public string $serviceEnqueteur;
-    public string $juridictionOuParquet;
-    public string $nomMagistrat;
+
+    public string $telephone;
+    public ?string $juridictionOuParquet = null;
+    public ?string $nomMagistrat = null;
 }

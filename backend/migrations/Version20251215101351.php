@@ -20,9 +20,10 @@ final class Version20251215101351 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE declarations_erreur_operationnelle ADD est_erreur VARCHAR(6) NOT NULL');
+        $this->addSql('ALTER TABLE declarations_erreur_operationnelle ADD est_erreur VARCHAR(6)');
         $this->addSql("UPDATE declarations_erreur_operationnelle SET est_erreur = 'DOUTE' where doute = true");
         $this->addSql("UPDATE declarations_erreur_operationnelle SET est_erreur = 'OUI' where doute = false");
+        $this->addSql('ALTER TABLE declarations_erreur_operationnelle ALTER COLUMN est_erreur SET NOT NULL');
         $this->addSql('ALTER TABLE declarations_erreur_operationnelle DROP doute');
         $this->addSql('ALTER TABLE declarations_erreur_operationnelle RENAME COLUMN motif_doute TO description_erreur');
         $this->addSql('ALTER TABLE declarations_erreur_operationnelle RENAME TO declarations_fdo_bris_porte');

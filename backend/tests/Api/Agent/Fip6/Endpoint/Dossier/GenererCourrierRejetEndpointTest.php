@@ -6,7 +6,7 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererCourrierRejet
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
 
 /**
  * Teste le point d'entrée @GenererCourrierRejetEndpoint de l'API, permettant de générer le courrier de rejet d'un
@@ -16,7 +16,7 @@ use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCa
  *
  * @coversNothing
  */
-class GenererCourrierRejetEndpointTest extends AbstractEndpointTestCase
+class GenererCourrierRejetEndpointTest extends APIEndpointTestCase
 {
     /**
      * ETQ agent rédacteur, je dois pouvoir générer le courrier de rejet à l'état `EN_INSTRUCTION`.

@@ -2,7 +2,7 @@ import { Exclude, Expose, Transform, Type } from "class-transformer";
 import { Agent } from "@/common/models";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 
-class Adresse {
+export class Adresse {
   public ligne1: string = "";
   public ligne2: string = "";
   public codePostal: string = "";
@@ -27,7 +27,7 @@ export class Civilite {
   }
 }
 
-class InformationsRequerant {
+export class CoordonneesRequerant {
   @Transform(
     ({ value }: { value?: Civilite }) => {
       return value?.id;
@@ -47,11 +47,12 @@ class InformationsRequerant {
   courriel: string = "";
 }
 
-class Procedure {
+export class Procedure {
   numeroProcedure: string = "";
   serviceEnqueteur: string = "";
   juridictionOuParquet: string = "";
   nomMagistrat: string = "";
+  telephone: string;
 }
 
 export const DeclarationFDOBrisPorteErreurTypes = <const>[
@@ -65,36 +66,47 @@ export type DeclarationFDOBrisPorteErreurType =
 export class DeclarationFDOBrisPorte {
   @Exclude({ toPlainOnly: true })
   public readonly id?: string;
+
   @DateTransform()
   public readonly dateCreation: Date;
+
   public estErreur?: DeclarationFDOBrisPorteErreurType;
+
   public descriptionErreur?: string;
-  @DateTransform() public dateOperation: Date;
+
+  @DateTransform(true)
+  @Expose()
+  public dateOperation?: Date;
+
   @DateTransform()
-  @Exclude({ toPlainOnly: true })
+  @Expose({ toClassOnly: true })
   public dateSoumission?: Date;
+
   @Type(() => Adresse)
-  adresse: Adresse = new Adresse();
+  adresse?: Adresse;
+
   @Expose({ toClassOnly: true })
   @Type(() => Agent)
   public readonly agent?: Agent;
-  telephone: string;
+
   @Expose({ name: "enPresenceRequerant" })
   @Transform(
     ({ obj }) => {
-      return !!obj.infosRequerant;
+      return !!obj.coordonneesRequerant;
     },
     { toClassOnly: true },
   )
   enPresenceRequerant?: boolean;
+
   @Expose()
   precisionsRequerant?: string;
-  @Type(() => InformationsRequerant)
-  infosRequerant?: InformationsRequerant;
+
+  @Type(() => CoordonneesRequerant)
+  coordonneesRequerant?: CoordonneesRequerant;
+
   procedure: Procedure = new Procedure();
 
   public constructor() {
-    this.dateOperation = new Date();
     this.dateCreation = new Date();
   }
 
@@ -102,11 +114,11 @@ export class DeclarationFDOBrisPorte {
     return this.id ?? this.dateCreation.getTime().toString();
   }
 
-  public estSauvegarde(): boolean {
-    return !!this.id;
+  public estSoumise(): boolean {
+    return !!this.dateSoumission;
   }
 
   public estBrouillon(): boolean {
-    return !this.estSauvegarde();
+    return !this.dateSoumission;
   }
 }

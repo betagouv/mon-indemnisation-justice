@@ -2,7 +2,7 @@ import { dateChiffre } from "@/common/services/date.ts";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { useForm } from "@tanstack/react-form";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent } from "react";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -11,7 +11,7 @@ import { z } from "zod";
 import "@/style/index.css";
 import {
   DeclarationFDOBrisPorte,
-  DeclarationFDOBrisPorteErreurType,
+  Adresse,
   DeclarationFDOBrisPorteErreurTypes,
 } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
@@ -94,13 +94,22 @@ const Page = () => {
       estErreur: declaration.estErreur,
       descriptionErreur: declaration.descriptionErreur,
       dateOperation: declaration.dateOperation,
-      adresse: declaration.adresse,
+      adresse: declaration.adresse ?? new Adresse(),
     },
     listeners: {
-      onChange: async ({ fieldApi, formApi }) => {
-        declarationManager.enregistrer(declaration, formApi.state.values);
+      onBlur: async ({ fieldApi, formApi }) => {
+        if (declaration.estBrouillon()) {
+          declarationManager.mettreAJour(declaration, formApi.state.values);
+        }
       },
-      onChangeDebounceMs: 200,
+      onSubmit: async ({ formApi }) => {
+        if (declaration.estBrouillon()) {
+          await declarationManager.enregistrer(
+            declaration,
+            formApi.state.values,
+          );
+        }
+      },
     },
     validators: {
       onSubmit: schemaErreurOperationnelle,
@@ -161,7 +170,7 @@ const Page = () => {
                   }
                   small={false}
                   orientation="vertical"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   options={[
                     {
                       label: "Oui",
@@ -228,7 +237,7 @@ const Page = () => {
                   label="Décrivez l’opération"
                   textArea
                   className="fr-col-12"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeTextAreaProps={{
                     defaultValue: declaration.descriptionErreur ?? "",
                     onChange: (e) => field.handleChange(e.target.value),
@@ -250,7 +259,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-4 fr-my-0 fr-champ-requis"
                   label="Date de l'opération"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     value: dateChiffre(field.state.value),
                     onChange: (e) =>
@@ -278,7 +287,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-8 fr-my-0 fr-champ-requis"
                   label="Adresse du logement ayant subi le bris de porte"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "Numéro de voie, rue",
@@ -305,7 +314,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-6 fr-m-0"
                   label="Complément d'adresse"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "Étage, escalier",
@@ -324,7 +333,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-3 fr-m-0 fr-champ-requis"
                   label="Code postal"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,
@@ -350,7 +359,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-3 fr-m-0 fr-champ-requis"
                   label="Ville"
-                  disabled={declaration.estSauvegarde()}
+                  disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,

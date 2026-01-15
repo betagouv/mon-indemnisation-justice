@@ -71,6 +71,7 @@ services:
       - HTTPS=true;
       - REQUEST_SCHEME=https
       - FIREFOX_PATH=/usr/bin/firefox
+      - INSTANCE_NUMBER=0
     restart: always
     depends_on:
       - postgres
@@ -114,6 +115,7 @@ services:
       - SERVER_NAME=:80
       - HTTPS=true;
       - REQUEST_SCHEME=https
+      - INSTANCE_NUMBER=0
     volumes:
       - .docker/php/fichiers:/app/fichiers
       - ./backend/.env.test:/app/.env.test

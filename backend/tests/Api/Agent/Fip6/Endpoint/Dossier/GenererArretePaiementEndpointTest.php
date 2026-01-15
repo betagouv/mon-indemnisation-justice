@@ -6,7 +6,7 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererArretePaiemen
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
 
 /**
  * Teste le point d'entrée @GenererArretePaiementEndpoint de l'API, permettant de générer l'arrêté de paiement d'un
@@ -16,7 +16,7 @@ use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCa
  *
  * @coversNothing
  */
-class GenererArretePaiementEndpointTest extends AbstractEndpointTestCase
+class GenererArretePaiementEndpointTest extends APIEndpointTestCase
 {
     /**
      * ETQ agent rédacteur, je dois pouvoir générer l'arrêté d'un dossier à l'état `OK_A_VERIFIER`.
