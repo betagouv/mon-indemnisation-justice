@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
@@ -90,6 +91,13 @@ class DeclarationFDOBrisPorte
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     #[Groups(['agent:detail'])]
     protected Agent $agent;
+
+    #[ORM\JoinTable(name: 'declaration_fdo_bris_porte_pieces_jointes')]
+    #[ORM\JoinColumn(name: 'declaration_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'document', referencedColumnName: 'id')]
+    #[ORM\ManyToMany(targetEntity: Document::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    /** @var Collection<Document> */
+    protected array $piecesJointes = [];
 
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
@@ -269,6 +277,18 @@ class DeclarationFDOBrisPorte
     public function setDateSuppression(\DateTimeInterface $dateSuppression): DeclarationFDOBrisPorte
     {
         $this->dateSuppression = $dateSuppression;
+
+        return $this;
+    }
+
+    public function getPiecesJointes(): array
+    {
+        return $this->piecesJointes;
+    }
+
+    public function setPiecesJointes(array $piecesJointes): DeclarationFDOBrisPorte
+    {
+        $this->piecesJointes = $piecesJointes;
 
         return $this;
     }
