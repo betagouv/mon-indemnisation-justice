@@ -1,5 +1,5 @@
 import { Exclude, Expose, Transform, Type } from "class-transformer";
-import { Agent } from "@/common/models";
+import { Agent, Document, DocumentType } from "@/common/models";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 
 export class Adresse {
@@ -104,6 +104,10 @@ export class DeclarationFDOBrisPorte {
   coordonneesRequerant?: CoordonneesRequerant;
 
   procedure: Procedure = new Procedure();
+
+  @Type(() => Document)
+  @Exclude({ toPlainOnly: true })
+  piecesJointes: Document[] = [];
 
   public constructor() {
     this.dateCreation = new Date();
