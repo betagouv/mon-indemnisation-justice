@@ -388,6 +388,7 @@ const FormulaireEditionAgent = ({
                         setEtape("sauvegarde");
                         onEdite(
                           await agentManager.editerAgent({
+                            id: agent?.id,
                             prenom: validation.prenom,
                             nom: validation.nom,
                             courriel: validation.courriel,
