@@ -46,10 +46,7 @@ export abstract class BaseDossier {
   }
 
   public estAAttribuer(): boolean {
-    return (
-      this.etat.etat.egal(EtatDossierType.A_ATTRIBUER) &&
-      null === this.redacteur
-    );
+    return this.etat.etat.egal(EtatDossierType.A_ATTRIBUER);
   }
 
   estDepose(): boolean {

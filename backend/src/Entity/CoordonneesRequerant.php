@@ -28,6 +28,11 @@ class CoordonneesRequerant
 
     public function __construct() {}
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     public function getCivilite(): ?Civilite
     {
         return $this->civilite;

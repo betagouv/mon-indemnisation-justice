@@ -71,7 +71,13 @@ class EtatDossier
     public function postActivation(?bool $progression = true): void
     {
         if (EtatDossierType::DOSSIER_A_ATTRIBUER === $this->etat) {
-            $this->dossier->setDateDepot(new \DateTimeImmutable());
+            if ($progression) {
+                // En cas de dépôt, mettre à jour la date
+                $this->dossier->setDateDepot(new \DateTimeImmutable());
+            } else {
+                // En cas de retour à l'attribution, supprimer le rédacteur précédent
+                $this->dossier->setRedacteur(null);
+            }
         }
 
         // Répercuter le montant de l'indemnisation sur le dossier :
