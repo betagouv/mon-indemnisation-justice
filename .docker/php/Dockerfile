@@ -14,6 +14,7 @@ RUN apt-get update -y && \
     apt-get install -y vim wget locales
 
 # Configurer la langue Française 🇫🇷
+RUN sed -i '/fr_FR.UTF-8/s/^#//g' /etc/locale.gen
 RUN locale-gen fr_FR.UTF-8
 
 # PHP extensions
