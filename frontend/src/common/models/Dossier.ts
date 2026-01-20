@@ -67,6 +67,7 @@ export abstract class BaseDossier {
 
   estCloturable(): boolean {
     return [
+      EtatDossierType.A_ATTRIBUER,
       EtatDossierType.A_INSTRUIRE,
       EtatDossierType.EN_INSTRUCTION,
       EtatDossierType.OK_A_SIGNER,

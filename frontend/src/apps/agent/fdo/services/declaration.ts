@@ -124,9 +124,12 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     throw new Error("Erreur lors de la création d'un nouveau brouillon");
   }
 
-  protected setDeclaration(declaration: DeclarationFDOBrisPorte): void {
+  protected setDeclaration(
+    reference: string,
+    declaration: DeclarationFDOBrisPorte,
+  ): void {
     this._declarations = this._declarations.map((d: DeclarationFDOBrisPorte) =>
-      d.id === declaration.id ? declaration : d,
+      d.id === reference ? declaration : d,
     );
   }
 
@@ -135,6 +138,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     miseAJour?: Partial<DeclarationFDOBrisPorte>,
   ): void {
     this.setDeclaration(
+      declaration.reference,
       plainToInstance(
         DeclarationFDOBrisPorte,
         merge.withOptions(
@@ -181,6 +185,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
     if (response.ok) {
       this.setDeclaration(
+        declaration.reference,
         plainToInstance(DeclarationFDOBrisPorte, await response.json()),
       );
     }
