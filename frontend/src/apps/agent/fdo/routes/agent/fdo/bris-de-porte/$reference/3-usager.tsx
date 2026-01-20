@@ -124,11 +124,12 @@ function Page() {
         : undefined,
     },
     listeners: {
-      onBlur: async ({ formApi }) => {
+      onChange: async ({ formApi }) => {
         if (declaration.estBrouillon()) {
           declarationManager.mettreAJour(declaration, formApi.state.values);
         }
       },
+      onChangeDebounceMs: 500,
     },
     validators: {
       onSubmit: schemaRequerant,

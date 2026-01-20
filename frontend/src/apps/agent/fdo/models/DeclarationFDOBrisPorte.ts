@@ -64,8 +64,7 @@ export type DeclarationFDOBrisPorteErreurType =
   (typeof DeclarationFDOBrisPorteErreurTypes)[number];
 
 export class DeclarationFDOBrisPorte {
-  @Exclude({ toPlainOnly: true })
-  public readonly id?: string;
+  public readonly id: string;
 
   @DateTransform()
   public readonly dateCreation: Date;
@@ -111,7 +110,7 @@ export class DeclarationFDOBrisPorte {
   }
 
   public get reference(): string {
-    return this.id ?? this.dateCreation.getTime().toString();
+    return this.id;
   }
 
   public estSoumise(): boolean {

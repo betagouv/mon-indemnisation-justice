@@ -3,7 +3,12 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { useForm } from "@tanstack/react-form";
 import React, { ChangeEvent } from "react";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
@@ -75,10 +80,7 @@ const schemaErreurOperationnelle = z.object({
 });
 
 const Page = () => {
-  const {
-    declaration,
-    reference,
-  }: { declaration: DeclarationFDOBrisPorte; reference: string } =
+  const { declaration }: { declaration: DeclarationFDOBrisPorte } =
     Route.useLoaderData();
 
   const naviguer = useNavigate<typeof router>({
@@ -97,11 +99,12 @@ const Page = () => {
       adresse: declaration.adresse ?? new Adresse(),
     },
     listeners: {
-      onBlur: async ({ fieldApi, formApi }) => {
+      onChange: async ({ formApi }) => {
         if (declaration.estBrouillon()) {
           declarationManager.mettreAJour(declaration, formApi.state.values);
         }
       },
+      onChangeDebounceMs: 500,
       onSubmit: async ({ formApi }) => {
         if (declaration.estBrouillon()) {
           await declarationManager.enregistrer(
@@ -117,7 +120,7 @@ const Page = () => {
     onSubmit: async ({ value }) => {
       await naviguer({
         to: "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
-        params: { reference } as any,
+        params: { reference: declaration.id } as any,
       });
     },
   });
@@ -206,9 +209,12 @@ const Page = () => {
                         <>
                           Vous avez un doute sur la situation? Vous ne savez pas
                           s'il s’agit d’une erreur opérationnelle ? Vous pouvez
-                          consulter <a href="">la foire aux questions</a>. Le
-                          Bureau du précontentieux se chargera d'instruire la
-                          demande a posteriori.
+                          consulter{" "}
+                          <Link to={"/agent/fdo/foire-aux-questions"}>
+                            la foire aux questions
+                          </Link>
+                          . Le Bureau du précontentieux se chargera d'instruire
+                          la demande a posteriori.
                         </>
                       ),
                       nativeInputProps: {

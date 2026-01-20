@@ -99,20 +99,15 @@ function Page() {
     defaultValues: {
       procedure: {
         ...(declaration.procedure ?? new Procedure()),
-        telephone:
-          declaration.procedure?.telephone ?? contexte.agent.telephone ?? "",
       },
     },
     listeners: {
-      onBlur: async ({ fieldApi, formApi }) => {
+      onChange: async ({ formApi }) => {
         if (declaration.estBrouillon()) {
-          if (fieldApi.name == "numeroAgent") {
-            // TODO persister le changement de numéro
-            contexte.agent.telephone = fieldApi.state.value;
-          }
           declarationManager.mettreAJour(declaration, formApi.state.values);
         }
       },
+      onChangeDebounceMs: 500,
       onSubmit: async ({ formApi }) => {
         if (declaration.estBrouillon()) {
           await declarationManager.enregistrer(

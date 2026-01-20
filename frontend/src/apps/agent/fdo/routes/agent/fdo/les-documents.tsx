@@ -3,7 +3,8 @@ import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import urlAttestation from "@/assets/attestations/v1/attestation-a-remettre-en-cas-d-erreur-de-porte.pdf";
-import urlGuideREmise from "@/assets/attestations/v1/guide-de-remise-de-l-attestation.pdf";
+import urlGuideRemiseAttestation from "@/assets/attestations/v1/guide-de-remise-de-l-attestation.pdf";
+import urlGuideDeclaration from "@/assets/fdo/guide-declaration-bris-porte.pdf";
 
 export const Route = createFileRoute("/agent/fdo/les-documents")({
   component: () => (
@@ -29,10 +30,36 @@ export const Route = createFileRoute("/agent/fdo/les-documents")({
             content: (
               <>
                 <Download
+                  label="Guide de remise de l'attestation"
+                  details={""}
+                  linkProps={{
+                    to: `${window.location.origin}${urlGuideDeclaration}`,
+                    replace: true,
+                    download: true,
+                  }}
+                />
+
+                <div className="fr-grid-row fr-col-12">
+                  <object
+                    data={urlGuideDeclaration}
+                    type="application/pdf"
+                    style={{ width: "100%", aspectRatio: "210/297" }}
+                  ></object>
+                </div>
+              </>
+            ),
+            label: "Guide de remise",
+            isDefault: true,
+          },
+          {
+            content: (
+              <>
+                <Download
                   label="Attestation à remettre en cas d'erreur de porte"
                   details={""}
                   linkProps={{
-                    href: `${window.location.origin}${urlAttestation}`,
+                    to: `${window.location.origin}${urlAttestation}`,
+                    replace: true,
                     download: true,
                   }}
                 />
@@ -56,14 +83,15 @@ export const Route = createFileRoute("/agent/fdo/les-documents")({
                   label="Guide de remise de l'attestation"
                   details={""}
                   linkProps={{
-                    href: `${window.location.origin}${urlGuideREmise}`,
+                    to: `${window.location.origin}${urlGuideRemiseAttestation}`,
+                    replace: true,
                     download: true,
                   }}
                 />
 
                 <div className="fr-grid-row fr-col-12">
                   <object
-                    data={urlGuideREmise}
+                    data={urlGuideRemiseAttestation}
                     type="application/pdf"
                     style={{ width: "100%", aspectRatio: "210/297" }}
                   ></object>
