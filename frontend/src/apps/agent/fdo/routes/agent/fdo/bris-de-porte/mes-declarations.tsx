@@ -105,9 +105,8 @@ const Page = () => {
                           priority: "secondary",
                           nativeButtonProps: {
                             onClick: async () => {
-                              declarationManager.supprimer(declaration);
-                              // Petit hack : forcer le routeur à se recharger et ainsi le loader à s'exécuter pour rafraichir la liste des déclarations
-                              router.invalidate();
+                              await declarationManager.supprimer(declaration);
+                              await router.invalidate();
                             },
                           },
                         } as ButtonProps,
