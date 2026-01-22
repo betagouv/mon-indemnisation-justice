@@ -1,24 +1,25 @@
 <?php
 
-namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Dossier;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
 
 /**
- * Teste le point d'entrée @ListerDossierAAttribuerEndpointTest de l'API, listant les dossiers à attribuer.
+ * Teste le point d'entrée @ListeDossierRejetASignerEndpoint de l'API, listant les dossiers dont le courrier de rejet
+ * est à signer.
  *
  * @internal
  *
  * @coversNothing
  */
-class ListerDossierAAttribuerEndpointTest extends APIEndpointTestCase
+class ListeDossierRejetASignerEndpointTest extends APIEndpointTestCase
 {
     /**
      * ETQ agent attributeur, je dois pouvoir charger la liste des dossiers à attribuer.
      */
     public function testListeOk(): void
     {
-        $this->connexion('attributeur@justice.gouv.fr');
+        $this->connexion('validateur@justice.gouv.fr');
         $this->apiGet();
 
         $this->assertTrue($this->client->getResponse()->isOk());
@@ -31,6 +32,6 @@ class ListerDossierAAttribuerEndpointTest extends APIEndpointTestCase
 
     protected function getApiRoute(): string
     {
-        return '/api/agent/fip6/dossiers/liste/a-attribuer';
+        return '/api/agent/fip6/dossiers/liste/rejet-a-signer';
     }
 }

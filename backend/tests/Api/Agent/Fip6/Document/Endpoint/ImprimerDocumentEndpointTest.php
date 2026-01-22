@@ -1,11 +1,11 @@
 <?php
 
-namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Document;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Document\Endpoint;
 
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 
 /**
  * @internal
