@@ -412,7 +412,7 @@ class Agent implements UserInterface
      */
     public function setRoles(array $roles): self
     {
-        $this->roles = $roles;
+        $this->roles = array_merge($roles, !in_array(self::ROLE_AGENT, $roles) ? [self::ROLE_AGENT] : []);
 
         return $this;
     }

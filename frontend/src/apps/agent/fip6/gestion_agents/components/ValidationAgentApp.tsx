@@ -149,8 +149,6 @@ const FormulaireEditionAgent = ({
     validationAgent(agent),
   );
 
-  console.log(validation.administration);
-
   const aRole = useCallback(
     (...roles: RoleAgent[]) =>
       validation.roles

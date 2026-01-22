@@ -1,18 +1,18 @@
 <?php
 
-namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Dossier;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
 
 /**
- * Teste le point d'entrée @ListeDossierATransmettreEndpoint de l'API, listant les dossiers à transmettre au bureau
- * du budget.
+ * Teste le point d'entrée @ListeDossierEnAttenteIndemnisationEndpoint de l'API, listant les dossiers transmis à FIP6 et
+ * dont le versement de l'indemnisation est attendu.
  *
  * @internal
  *
  * @coversNothing
  */
-class ListerDossierATransmettreEndpointTest extends APIEndpointTestCase
+class ListerDossierEnAttenteIndemnisationEndpointTest extends APIEndpointTestCase
 {
     /**
      * ETQ agent attributeur, je dois pouvoir charger la liste des dossiers à attribuer.
@@ -32,6 +32,6 @@ class ListerDossierATransmettreEndpointTest extends APIEndpointTestCase
 
     protected function getApiRoute(): string
     {
-        return '/api/agent/fip6/dossiers/liste/a-transmettre';
+        return '/api/agent/fip6/dossiers/liste/en-attente-indemnisation';
     }
 }

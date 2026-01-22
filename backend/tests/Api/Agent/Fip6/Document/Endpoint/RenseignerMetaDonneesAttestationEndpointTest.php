@@ -1,12 +1,12 @@
 <?php
 
-namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Document;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Document\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Document\RenseignerMetaDonneesAttestationEndpoint;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\TypeAttestation;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
 
 /**
  * Teste le point d'entrée @RenseignerMetaDonneesAttestationEndpoint de l'API, permettant de renseigner les métadonnées

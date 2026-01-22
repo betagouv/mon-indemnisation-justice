@@ -1,6 +1,6 @@
 <?php
 
-namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;

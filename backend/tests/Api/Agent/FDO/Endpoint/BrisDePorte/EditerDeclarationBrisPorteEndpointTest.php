@@ -1,11 +1,11 @@
 <?php
 
-namespace Api\Agent\FDO\Endpoint\BrisDePorte;
+namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\EditerDeclarationBrisPorteEndpoint;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\AbstractEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 use Symfony\Component\Uid\Uuid;
 
 /**
