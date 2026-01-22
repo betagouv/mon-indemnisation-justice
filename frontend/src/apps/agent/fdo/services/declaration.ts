@@ -28,7 +28,7 @@ export interface DeclarationManagerInterface {
 
   soumettre(declaration: DeclarationFDOBrisPorte): Promise<void>;
 
-  supprimer(declaration: DeclarationFDOBrisPorte): void;
+  supprimer(declaration: DeclarationFDOBrisPorte): Promise<void>;
 }
 
 export namespace DeclarationManagerInterface {
@@ -197,10 +197,23 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
       .concat(declaration);
   }
 
-  supprimer(declaration: DeclarationFDOBrisPorte): void {
-    this._declarations = this._declarations.filter(
-      (d) => d.reference !== declaration.reference,
+  async supprimer(declaration: DeclarationFDOBrisPorte): Promise<void> {
+    // Appel à la route API `api_agent_fdo_bris_porte_supprimer` :
+    const response = await fetch(
+      `/api/agent/fdo/bris-de-porte/${declaration.id}/supprimer`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
     );
+    if (response.ok) {
+      this._declarations = this._declarations.filter(
+        (d) => d.reference !== declaration.reference,
+      );
+    }
   }
 
   async soumettre(declaration: DeclarationFDOBrisPorte): Promise<void> {
