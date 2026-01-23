@@ -21,8 +21,8 @@ export const Uploader = ({
 
   const handleFileInput = (ev) => {
     setErreur("");
-    const file: File = ev.target.files[0];
-    if (file.type) {
+    const file: File = ev.target.files.item(0);
+    if (file?.type) {
       if (
         !["image/jpeg", "image/png", "image/webp", "application/pdf"].includes(
           file.type,
