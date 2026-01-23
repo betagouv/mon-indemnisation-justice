@@ -1,12 +1,12 @@
 <?php
 
-namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Dossier;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererArretePaiementEndpoint;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
 
 /**
  * Teste le point d'entrée @GenererArretePaiementEndpoint de l'API, permettant de générer l'arrêté de paiement d'un

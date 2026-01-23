@@ -1,9 +1,9 @@
 <?php
 
-namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\Dossier;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\ListerDossierACategoriserEndpoint;
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\Endpoint\APIEndpointTestCase;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
 
 /**
  * Teste le point d'entrée @ListerDossierACategoriserEndpoint de l'API, listant les dossiers à catégoriser.
