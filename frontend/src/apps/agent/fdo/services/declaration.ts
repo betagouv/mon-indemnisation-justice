@@ -229,7 +229,9 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
       },
     );
     if (response.ok) {
-      this.supprimer(declaration);
+      this._declarations = this._declarations.filter(
+        (d) => d.reference !== declaration.reference,
+      );
       this.ajouter(
         plainToInstance(DeclarationFDOBrisPorte, await response.json()),
       );
