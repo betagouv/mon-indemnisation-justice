@@ -28,6 +28,21 @@ export class DocumentType {
     ].includes(this);
   }
 
+  /**
+   * Libellé du document tel que présenté à un agent des Forces de l'Ordre.
+   *
+   */
+  public libelleFDO(): string {
+    switch (this) {
+      case DocumentType.TYPE_PHOTO_FDO:
+        return "Photo de la porte endommagée";
+      case DocumentType.TYPE_PV_FDO:
+        return "Procès verbal d'intervention";
+      default:
+        return "";
+    }
+  }
+
   public static readonly TYPE_ATTESTATION_INFORMATION = new DocumentType(
     "attestation_information",
     "Attestation à remettre en cas d'erreur de porte",
@@ -35,6 +50,11 @@ export class DocumentType {
   public static readonly TYPE_PHOTO_PREJUDICE = new DocumentType(
     "photo_prejudice",
     "Photo de la porte endommagée",
+  );
+
+  public static readonly TYPE_PHOTO_FDO = new DocumentType(
+    "photo_fdo",
+    "Photo prise par les FDOs",
   );
 
   public static readonly TYPE_PV_FDO = new DocumentType(
@@ -186,7 +206,7 @@ export class Document {
   ];
 
   public static typesFDO: DocumentType[] = [
-    DocumentType.TYPE_PHOTO_PREJUDICE,
+    DocumentType.TYPE_PHOTO_FDO,
     DocumentType.TYPE_PV_FDO,
   ];
 }

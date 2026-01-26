@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
@@ -97,7 +98,12 @@ class DeclarationFDOBrisPorte
     #[ORM\InverseJoinColumn(name: 'document', referencedColumnName: 'id')]
     #[ORM\ManyToMany(targetEntity: Document::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     /** @var Collection<Document> */
-    protected array $piecesJointes = [];
+    protected Collection $piecesJointes;
+
+    public function __construct()
+    {
+        $this->piecesJointes = new ArrayCollection([]);
+    }
 
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
