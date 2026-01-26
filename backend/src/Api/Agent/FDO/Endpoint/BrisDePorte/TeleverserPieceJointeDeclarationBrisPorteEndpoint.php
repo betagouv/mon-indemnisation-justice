@@ -59,7 +59,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
         /** @var BrouillonDeclarationFDOBrisPorte $brouillon */
         $brouillon = $this->em->find(BrouillonDeclarationFDOBrisPorte::class, $id);
 
-        if (null === ($documentType = DocumentType::tryFrom($type)) || !in_array($documentType, [DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_PREJUDICE])) {
+        if (null === ($documentType = DocumentType::tryFrom($type)) || !in_array($documentType, [DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_FDO])) {
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
         }
 

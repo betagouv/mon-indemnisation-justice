@@ -143,7 +143,7 @@ function Page() {
         ref={refModaleAjoutPJ}
         declarationFDO={declaration}
         onTeleverse={async (declarationMiseAJour: DeclarationFDOBrisPorte) => {
-          declarationManager.mettreAJour(declarationMiseAJour);
+          declarationManager.mettreAJour(declaration, declarationMiseAJour);
           // Petit hack : forcer le routeur à se recharger et ainsi le loader à s'exécuter pour rafraichir la liste des déclarations
           await router.invalidate();
         }}
@@ -196,7 +196,10 @@ function Page() {
               className="fr-col-lg-4"
               key={`declaration-piece-jointe-${p.id}`}
             >
-              <TelechargerPieceJointe pieceJointe={p} />
+              <TelechargerPieceJointe
+                pieceJointe={p}
+                key={`piece-jointe-${p.id}`}
+              />
             </div>
           ))}
 
@@ -260,7 +263,7 @@ function Page() {
                   disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
-                    value: field.state.value,
+                    value: field.state.value ?? "",
                     onChange: (e) => field.handleChange(e.target.value),
                   }}
                   state={!field.state.meta.isValid ? "error" : "default"}
