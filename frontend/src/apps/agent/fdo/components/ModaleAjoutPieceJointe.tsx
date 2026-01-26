@@ -49,7 +49,7 @@ export interface ModaleAjoutPieceJointeRef {
 export interface ModaleAjoutPieceJointeProps {
   declarationFDO: DeclarationFDOBrisPorte;
   pieceJointe?: Document;
-  onTeleverse: (DeclarationFDOBrisPorte) => void | Promise<void>;
+  onTeleverse: (declaration: DeclarationFDOBrisPorte) => void | Promise<void>;
 }
 
 export const ModaleAjoutPieceJointe = React.forwardRef<
@@ -98,7 +98,7 @@ export const ModaleAjoutPieceJointe = React.forwardRef<
         const data = await response.json();
 
         if (response.ok) {
-          onTeleverse(plainToInstance(DeclarationFDOBrisPorte, data));
+          await onTeleverse(plainToInstance(DeclarationFDOBrisPorte, data));
         } else {
           // TODO : afficher un message d'erreur
         }
@@ -147,7 +147,12 @@ export const ModaleAjoutPieceJointe = React.forwardRef<
                 <option value="">Sélectionnez un type</option>
 
                 {Document.typesFDO.map((type: DocumentType) => (
-                  <option value={type.type}>{type.libelleFDO()}</option>
+                  <option
+                    key={`type-piece-jointe-${type.type}`}
+                    value={type.type}
+                  >
+                    {type.libelleFDO()}
+                  </option>
                 ))}
               </Select>
             )}

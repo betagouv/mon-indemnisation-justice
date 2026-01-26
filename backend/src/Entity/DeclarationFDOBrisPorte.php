@@ -287,14 +287,16 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getPiecesJointes(): array
+    public function getPiecesJointes(): Collection
     {
         return $this->piecesJointes;
     }
 
-    public function setPiecesJointes(array $piecesJointes): DeclarationFDOBrisPorte
+    public function setPiecesJointes(array|Collection $piecesJointes): DeclarationFDOBrisPorte
     {
-        $this->piecesJointes = $piecesJointes;
+        foreach ($piecesJointes as $pieceJointe) {
+            $this->piecesJointes->add($pieceJointe);
+        }
 
         return $this;
     }
