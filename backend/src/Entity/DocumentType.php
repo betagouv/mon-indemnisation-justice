@@ -6,6 +6,7 @@ enum DocumentType: string
 {
     case TYPE_ATTESTATION_INFORMATION = 'attestation_information';
     case TYPE_PHOTO_PREJUDICE = 'photo_prejudice';
+    case TYPE_PHOTO_FDO = 'photo_fdo';
     case TYPE_PV_FDO = 'pv_fdo';
     case TYPE_CARTE_IDENTITE = 'carte_identite';
     case TYPE_FACTURE = 'facture';

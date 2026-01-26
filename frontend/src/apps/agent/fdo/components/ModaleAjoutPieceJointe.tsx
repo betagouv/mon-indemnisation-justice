@@ -146,10 +146,9 @@ export const ModaleAjoutPieceJointe = React.forwardRef<
               >
                 <option value="">Sélectionnez un type</option>
 
-                <option value="pv_fdo">PV d'intervention</option>
-                <option value="photo_prejudice">
-                  Photo de la porte endommagée
-                </option>
+                {Document.typesFDO.map((type: DocumentType) => (
+                  <option value={type.type}>{type.libelleFDO()}</option>
+                ))}
               </Select>
             )}
           />
