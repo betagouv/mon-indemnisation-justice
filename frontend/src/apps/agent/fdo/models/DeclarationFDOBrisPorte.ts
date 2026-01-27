@@ -124,4 +124,10 @@ export class DeclarationFDOBrisPorte {
   public estBrouillon(): boolean {
     return !this.dateSoumission;
   }
+
+  public getPiecesJointes(type: DocumentType): Document[] {
+    return this.piecesJointes.filter(
+      (pieceJointe: Document) => pieceJointe.type == type,
+    );
+  }
 }
