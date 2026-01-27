@@ -105,6 +105,11 @@ class Document
         return $this->id;
     }
 
+    public function setId(?int $id): Document
+    {
+        return $this;
+    }
+
     public function getFilename(): ?string
     {
         return $this->filename;
@@ -277,6 +282,13 @@ class Document
     public function getDateDerniereModification(): ?\DateTimeInterface
     {
         return $this->dateDerniereModification;
+    }
+
+    public function setDateDerniereModification(?\DateTimeInterface $dateDerniereModification): Document
+    {
+        $this->dateDerniereModification = $dateDerniereModification;
+
+        return $this;
     }
 
     public function setModifie(): static

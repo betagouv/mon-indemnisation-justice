@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use Symfony\Component\ObjectMapper\Attribute\Map;
+use Symfony\Component\ObjectMapper\Condition\TargetClass;
 
 #[Map(target: Document::class)]
 #[Map(source: Document::class)]
@@ -16,8 +17,10 @@ final class DocumentDto
     public string $mime;
     public int $size;
 
-    public ?bool $estAjoutRequerant;
-    #[Map(transform: [DocumentType::class, 'toString'])]
-    public string $type;
+    #[Map(if: new TargetClass(Document::class), target: 'setAjoutRequerant')]
+    public ?bool $estAjoutRequerant = false;
+
+    public DocumentType $type;
+
     public ?\DateTimeInterface $dateDerniereModification = null;
 }
