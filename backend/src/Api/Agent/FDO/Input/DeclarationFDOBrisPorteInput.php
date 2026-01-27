@@ -26,6 +26,26 @@ class DeclarationFDOBrisPorteInput
     public ?ProcedureJudiciaireInput $procedure = null;
     public ?string $precisionsRequerant = null;
     public ?CoordonneesRequerantInput $coordonneesRequerant = null;
-    #[Map(target: DocumentDto::class)]
-    public array $piecesJointes = [];
+
+    #[Map(if: false)]
+    /*
+     * Puisque l'object mapper ne sait pas encore gérer le mapping récursif, les pièces jointes ne seront pas propagées
+     * vers la déclaration.
+     *
+     * /!\ il faut donc _manuellement_ mapper et ajouter les pièces jointes à la déclaration cible.
+     */
+    protected array $piecesJointes = [];
+
+    public function getPiecesJointes(): array
+    {
+        return $this->piecesJointes;
+    }
+
+    /** @param DocumentDto[] $piecesJointes */
+    public function setPiecesJointes(array $piecesJointes): DeclarationFDOBrisPorteInput
+    {
+        $this->piecesJointes = $piecesJointes;
+
+        return $this;
+    }
 }

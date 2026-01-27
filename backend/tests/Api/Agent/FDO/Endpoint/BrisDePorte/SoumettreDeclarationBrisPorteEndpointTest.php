@@ -6,6 +6,8 @@ use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\SoumettreDeclarat
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 
 /**
@@ -23,26 +25,9 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
      */
     public function testSoumettreOkSansRequerant(): void
     {
-        $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
-        $brouillon = $this->creerBrouillon($gendarme, [
-            'estErreur' => 'OUI',
-            'dateOperation' => '2025-12-14',
-            'descriptionErreur' => null,
-            'adresse' => [
-                'ligne1' => '127 boulevard des Fleurs',
-                'ligne2' => 'Porte B',
-                'codePostal' => '75021',
-                'localite' => 'PARIS',
-            ],
-            'procedure' => [
-                'numeroProcedure' => 'PRO1653',
-                'serviceEnqueteur' => 'GPNV',
-                'telephone' => '0123456789',
-                'nomMagistrat' => null,
-            ],
-            'precisionsRequerant' => 'Logement vide lors de la perquisition',
-            'coordonneesRequerant' => null,
-        ]);
+        $policier = $this->connexion('policier@interieur.gouv.fr');
+
+        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
 
         $id = $brouillon->getId();
 
@@ -53,9 +38,13 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $output = json_decode($this->client->getResponse()->getContent(), false);
 
         $declaration = $this->em->find(DeclarationFDOBrisPorte::class, $output->id);
+        $this->assertEquals(1, $declaration->getPiecesJointes()->count());
+        $pieceJointe = $declaration->getPiecesJointes()->get(0);
+        $this->assertInstanceOf(Document::class, $pieceJointe);
+        $this->assertEquals(DocumentType::TYPE_PV_FDO, $pieceJointe->getType());
 
         $this->assertInstanceOf(DeclarationFDOBrisPorte::class, $declaration);
-        $this->assertEquals($gendarme, $declaration->getAgent());
+        $this->assertEquals($policier, $declaration->getAgent());
 
         // Le brouillon doit être supprimé
         $this->assertNull($this->em->find(DeclarationFDOBrisPorte::class, $id));
