@@ -191,6 +191,7 @@ export class Document {
   public static types: DocumentType[] = [
     DocumentType.TYPE_ATTESTATION_INFORMATION,
     DocumentType.TYPE_PHOTO_PREJUDICE,
+    DocumentType.TYPE_PHOTO_FDO,
     DocumentType.TYPE_PV_FDO,
     DocumentType.TYPE_CARTE_IDENTITE,
     DocumentType.TYPE_FACTURE,
@@ -203,6 +204,19 @@ export class Document {
     DocumentType.TYPE_COURRIER_MINISTERE,
     DocumentType.TYPE_COURRIER_REQUERANT,
     DocumentType.TYPE_ARRETE_PAIEMENT,
+  ];
+
+  public static typesUsager: DocumentType[] = [
+    DocumentType.TYPE_ATTESTATION_INFORMATION,
+    DocumentType.TYPE_PHOTO_PREJUDICE,
+    DocumentType.TYPE_CARTE_IDENTITE,
+    DocumentType.TYPE_FACTURE,
+    DocumentType.TYPE_PREUVE_PAIEMENT_FACTURE,
+    DocumentType.TYPE_RIB,
+    DocumentType.TYPE_TITRE_PROPRIETE,
+    DocumentType.TYPE_CONTRAT_LOCATION,
+    DocumentType.TYPE_NON_PRISE_EN_CHARGE_ASSURANCE,
+    DocumentType.TYPE_NON_PRISE_EN_CHARGE_BAILLEUR,
   ];
 
   public static typesFDO: DocumentType[] = [
