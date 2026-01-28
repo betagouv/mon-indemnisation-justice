@@ -39,6 +39,12 @@ const component = function AjoutPieceJointe({
   // Ref sur le champ de sélection du fichier, pour pouvoir le réinitialiser
   const refChampFichier = useRef<HTMLInputElement>(null);
 
+  const types = [
+    ...Document.typesUsager,
+    ...Document.typesFDO,
+    DocumentType.TYPE_COURRIER_REQUERANT,
+  ];
+
   // Type de document associé à la pièce jointe téléversée
   const [typePJ, setTypePj]: [
     DocumentType | null,
@@ -117,7 +123,7 @@ const component = function AjoutPieceJointe({
           nativeSelectProps={{
             onChange: (e) =>
               setTypePj(
-                Document.types.find(
+                types.find(
                   (type: DocumentType) => type.type == e.target.value,
                 ) as DocumentType,
               ),
@@ -127,19 +133,11 @@ const component = function AjoutPieceJointe({
           <option value="" disabled hidden>
             Sélectionnez un type
           </option>
-          {Document.types
-            .filter(
-              (type: DocumentType) =>
-                ![
-                  DocumentType.TYPE_COURRIER_MINISTERE,
-                  DocumentType.TYPE_ARRETE_PAIEMENT,
-                ].includes(type),
-            )
-            .map((type: DocumentType) => (
-              <option value={type.type} key={type.type}>
-                {type.libelle}
-              </option>
-            ))}
+          {types.map((type: DocumentType) => (
+            <option value={type.type} key={type.type}>
+              {type.libelle}
+            </option>
+          ))}
         </Select>
 
         <Upload

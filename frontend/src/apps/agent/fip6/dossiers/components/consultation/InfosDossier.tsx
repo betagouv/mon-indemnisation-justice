@@ -227,7 +227,8 @@ export const InfosDossier = ({
                   {dossier.declarationFDO.adresse?.localite}
                 </li>
                 <li>
-                  <b>Le :</b> {dateSimple(dossier.declarationFDO.dateOperation)}
+                  <b>Le :</b>{" "}
+                  {dateSimple(dossier.declarationFDO.dateOperation as Date)}
                 </li>
                 <li>
                   <b>Agent rapporteur</b>{" "}

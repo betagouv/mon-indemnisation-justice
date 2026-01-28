@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Agent\FDO\Output;
 
+use MonIndemnisationJustice\Api\Agent\FDO\Input\DocumentDto;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use Symfony\Component\ObjectMapper\Attribute\Map;
@@ -37,4 +38,8 @@ class DeclarationFDOBrisPorteOutput
     public ?\DateTimeInterface $dateCreation;
     #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTimeInterface::W3C])]
     public ?\DateTimeInterface $dateSoumission;
+
+    /** @param DocumentDto[] $piecesJointes */
+    #[Map(source: 'piecesJointes.toArray')]
+    public array $piecesJointes = [];
 }

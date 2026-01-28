@@ -1,20 +1,14 @@
 import { DossierActions } from "@/apps/agent/fip6/dossiers/components/consultation/action";
 import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/PieceJointe.tsx";
-import { Agent, Document, DocumentType, DossierDetail } from "@/common/models";
+import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
+import { Agent, Document, DossierDetail } from "@/common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { observer } from "mobx-react-lite";
-import React, { type ReactNode, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/editor";
-import {
-  AjoutPieceJointe,
-  TelechargerPieceJointe,
-} from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import {
-  ouvrirModaleSuppressionPieceJointe,
-  SuppressionPieceJointe,
-} from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/SuppressionPieceJointe.tsx";
-import { dateEtHeureSimple, dateSimple } from "@/common/services/date.ts";
+import { TelechargerPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
+import { dateEtHeureSimple } from "@/common/services/date.ts";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier.tsx";
 import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
@@ -36,21 +30,6 @@ export const ConsultationDossierApp = observer(
       selectTab(tab);
       history.replaceState({}, "", `#${tab}`);
     };
-
-    // Pièce jointe en cours de visualisation
-    const [pieceJointe, selectionnerPieceJointe] = useState<Document | null>(
-      dossier.piecesJointes?.at(0) ?? null,
-    );
-
-    const pieceJointeSuivante = () =>
-      selectionnerPieceJointe(
-        pieceJointe
-          ? (dossier.piecesJointes.at(
-              (dossier.piecesJointes.indexOf(pieceJointe) + 1) %
-                dossier.piecesJointes.length,
-            ) as Document)
-          : null,
-      );
 
     // Modélise la prise de notes de suivi en cours
     const [notes, setNotes]: [string, (notes: string) => void] =
@@ -97,8 +76,6 @@ export const ConsultationDossierApp = observer(
       changerOnglet("courrier");
     };
 
-    // @ts-ignore
-    // @ts-ignore
     return (
       <>
         <div className="fr-container fr-container--fluid fr-mt-2w">
@@ -124,11 +101,6 @@ export const ConsultationDossierApp = observer(
                   >
                     {dossier.etat.etat.libelle}
                   </p>
-                  {dossier.declarationFDO && (
-                    <Badge severity="new" small={false}>
-                      Déclaration FDO
-                    </Badge>
-                  )}
                 </div>
                 {dossier.etat.estCloture() && (
                   <span
@@ -274,144 +246,10 @@ export const ConsultationDossierApp = observer(
 
                   {selectedTab == "pieces-jointes" && (
                     <section className="mij-dossier-documents">
-                      <h3>Pièces jointes</h3>
-                      <div className="fr-grid-row">
-                        <div className="fr-col-3 mij-dossier-documents-liste">
-                          {/* Ajout d'une pièce jointe */}
-                          <AjoutPieceJointe
-                            dossier={dossier}
-                            agent={agent}
-                            onAjoute={(nouvellePieceJointe: Document) =>
-                              selectionnerPieceJointe(nouvellePieceJointe)
-                            }
-                          />
-
-                          {/* Menu latéral des pièces jointes */}
-                          <ul>
-                            {Document.types
-                              .filter(
-                                (t) =>
-                                  t.estPieceJointe() &&
-                                  (!dossier.declarationFDO ||
-                                    t.type !==
-                                      DocumentType.TYPE_ATTESTATION_INFORMATION
-                                        .type),
-                              )
-                              .map((type: DocumentType) => (
-                                <React.Fragment key={type.type}>
-                                  <li
-                                    {...(dossier.getDocumentsType(type)
-                                      .length == 0
-                                      ? { "data-section-vide": "" }
-                                      : {})}
-                                    {...(pieceJointe?.type === type
-                                      ? { "data-section-active": true }
-                                      : {})}
-                                  >
-                                    {type.libelle}{" "}
-                                    {dossier.getDocumentsType(type).length > 0
-                                      ? `(${dossier.getDocumentsType(type).length})`
-                                      : ""}
-                                  </li>
-
-                                  {dossier.getDocumentsType(type).length >
-                                    0 && (
-                                    <ul>
-                                      {dossier
-                                        .getDocumentsType(type)
-                                        .map((doc: Document) => (
-                                          <li
-                                            key={doc.id}
-                                            {...(pieceJointe == doc
-                                              ? {
-                                                  "data-document-selectionne":
-                                                    true,
-                                                }
-                                              : {})}
-                                          >
-                                            <a
-                                              href={void 0}
-                                              onClick={() =>
-                                                selectionnerPieceJointe(doc)
-                                              }
-                                            >
-                                              {doc.originalFilename}
-                                            </a>
-                                          </li>
-                                        ))}
-                                    </ul>
-                                  )}
-                                </React.Fragment>
-                              ))}
-                          </ul>
-                        </div>
-                        {/* Affichage de la pièce jointe sélectionnée */}
-                        <div className="fr-col-9 fr-px-4w">
-                          {pieceJointe ? (
-                            <>
-                              <div className="fr-grid-row fr-col-12">
-                                <h4>{pieceJointe.originalFilename}</h4>
-
-                                <TelechargerPieceJointe
-                                  className="fr-grid-row fr-col-12"
-                                  pieceJointe={pieceJointe}
-                                />
-
-                                {pieceJointe.estEditable(dossier, agent) && (
-                                  <>
-                                    <SuppressionPieceJointe
-                                      pieceJointe={pieceJointe}
-                                      dossier={dossier}
-                                      onSupprime={() =>
-                                        selectionnerPieceJointe(
-                                          dossier.documents
-                                            .values()
-                                            ?.find(
-                                              (documents) =>
-                                                documents.length > 0,
-                                            )
-                                            ?.at(0) ?? null,
-                                        )
-                                      }
-                                    />
-                                    <ButtonsGroup
-                                      className="fr-grid-row fr-col-12"
-                                      inlineLayoutWhen="always"
-                                      alignment="right"
-                                      buttonsIconPosition="right"
-                                      buttonsSize="small"
-                                      buttons={[
-                                        {
-                                          children: "Supprimer",
-                                          iconId: "fr-icon-delete-bin-line",
-                                          priority: "secondary",
-                                          onClick: () =>
-                                            ouvrirModaleSuppressionPieceJointe(),
-                                        },
-                                        /*
-                                                                            TODO: réactiver quand la modale d'ajout sera étendue pour gérer l'édition
-                                                                            {
-                                                                              children: "Éditer",
-                                                                              iconId: "fr-icon-edit-line",
-                                                                              priority: "secondary",
-                                                                            },
-                                                                            */
-                                      ]}
-                                    />
-                                  </>
-                                )}
-
-                                <PieceJointe
-                                  pieceJointe={pieceJointe}
-                                  className="fr-col-12"
-                                />
-                              </div>
-                            </>
-                          ) : (
-                            <i>Aucune pièce jointe sélectionnée</i>
-                          )}
-                        </div>
-                      </div>
+                      <PiecesJointes
+                        dossier={dossier}
+                        agent={agent}
+                      ></PiecesJointes>
                     </section>
                   )}
 

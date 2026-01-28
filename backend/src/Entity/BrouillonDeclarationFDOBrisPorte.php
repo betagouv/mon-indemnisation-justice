@@ -92,6 +92,21 @@ class BrouillonDeclarationFDOBrisPorte
         return $this->donnees;
     }
 
+    public function ajouterPieceJointe(array $pieceJointe): BrouillonDeclarationFDOBrisPorte
+    {
+        return $this->setPiecesJointes(array_merge($this->donnees['piecesJointes'] ?? [], [$pieceJointe]));
+    }
+
+    /**
+     * @return $this
+     */
+    public function setPiecesJointes(array $piecesJointes): BrouillonDeclarationFDOBrisPorte
+    {
+        return $this->ajouterDonnees([
+            'piecesJointes' => $piecesJointes,
+        ]);
+    }
+
     public function ajouterDonnees(array $donnees): BrouillonDeclarationFDOBrisPorte
     {
         $this->donnees = array_replace_recursive(

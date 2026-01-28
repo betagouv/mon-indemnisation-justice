@@ -4,11 +4,13 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
+use MonIndemnisationJustice\Api\Agent\FDO\Input\DocumentDto;
 use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationFDOBrisPorteOutputMapper;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -52,7 +54,13 @@ class SoumettreDeclarationBrisPorteEndpoint
         $brouillon = $this->em->find(BrouillonDeclarationFDOBrisPorte::class, $id);
 
         /** @var DeclarationFDOBrisPorteInput $input */
-        $input = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class, context: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false]);
+        $input = $this->denormalizer->denormalize(
+            $brouillon->getDonnees(),
+            DeclarationFDOBrisPorteInput::class,
+            context: [
+                AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false,
+            ],
+        );
 
         /** @var ConstraintViolationList $validation */
         $violations = $this->validator->validate($input);
@@ -75,6 +83,10 @@ class SoumettreDeclarationBrisPorteEndpoint
                 ->setId($brouillon->getId())
                 ->setDateCreation($brouillon->getDateCreation())
                 ->setAgent($agent)
+                ->setPiecesJointes(array_map(
+                    fn (DocumentDto $pieceJointe) => $this->objectMapper->map($pieceJointe, Document::class),
+                    $input->getPiecesJointes()
+                ))
         );
 
         $this->em->persist($declaration);

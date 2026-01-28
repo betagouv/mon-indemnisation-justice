@@ -28,6 +28,21 @@ export class DocumentType {
     ].includes(this);
   }
 
+  /**
+   * Libellé du document tel que présenté à un agent des Forces de l'Ordre.
+   *
+   */
+  public libelleFDO(): string {
+    switch (this) {
+      case DocumentType.TYPE_PHOTO_FDO:
+        return "Photo de la porte endommagée";
+      case DocumentType.TYPE_PV_FDO:
+        return "Procès verbal d'intervention";
+      default:
+        return "";
+    }
+  }
+
   public static readonly TYPE_ATTESTATION_INFORMATION = new DocumentType(
     "attestation_information",
     "Attestation à remettre en cas d'erreur de porte",
@@ -36,6 +51,17 @@ export class DocumentType {
     "photo_prejudice",
     "Photo de la porte endommagée",
   );
+
+  public static readonly TYPE_PHOTO_FDO = new DocumentType(
+    "photo_fdo",
+    "Photo prise par les FDOs",
+  );
+
+  public static readonly TYPE_PV_FDO = new DocumentType(
+    "pv_fdo",
+    "Procès verbal d'intervention",
+  );
+
   public static readonly TYPE_CARTE_IDENTITE = new DocumentType(
     "carte_identite",
     "Pièce d'identité",
@@ -165,6 +191,8 @@ export class Document {
   public static types: DocumentType[] = [
     DocumentType.TYPE_ATTESTATION_INFORMATION,
     DocumentType.TYPE_PHOTO_PREJUDICE,
+    DocumentType.TYPE_PHOTO_FDO,
+    DocumentType.TYPE_PV_FDO,
     DocumentType.TYPE_CARTE_IDENTITE,
     DocumentType.TYPE_FACTURE,
     DocumentType.TYPE_PREUVE_PAIEMENT_FACTURE,
@@ -176,5 +204,23 @@ export class Document {
     DocumentType.TYPE_COURRIER_MINISTERE,
     DocumentType.TYPE_COURRIER_REQUERANT,
     DocumentType.TYPE_ARRETE_PAIEMENT,
+  ];
+
+  public static typesUsager: DocumentType[] = [
+    DocumentType.TYPE_ATTESTATION_INFORMATION,
+    DocumentType.TYPE_PHOTO_PREJUDICE,
+    DocumentType.TYPE_CARTE_IDENTITE,
+    DocumentType.TYPE_FACTURE,
+    DocumentType.TYPE_PREUVE_PAIEMENT_FACTURE,
+    DocumentType.TYPE_RIB,
+    DocumentType.TYPE_TITRE_PROPRIETE,
+    DocumentType.TYPE_CONTRAT_LOCATION,
+    DocumentType.TYPE_NON_PRISE_EN_CHARGE_ASSURANCE,
+    DocumentType.TYPE_NON_PRISE_EN_CHARGE_BAILLEUR,
+  ];
+
+  public static typesFDO: DocumentType[] = [
+    DocumentType.TYPE_PHOTO_FDO,
+    DocumentType.TYPE_PV_FDO,
   ];
 }
