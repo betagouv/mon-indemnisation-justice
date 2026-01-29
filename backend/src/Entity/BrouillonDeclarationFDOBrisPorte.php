@@ -138,4 +138,19 @@ class BrouillonDeclarationFDOBrisPorte
 
         return $this;
     }
+
+    private static function arrayPatch(array $base, array $replacements): array
+    {
+        foreach ($replacements as $key => $value) {
+            if (array_key_exists($key, $base)) {
+                // Override the value in $base, even if it's an array
+                $base[$key] = $value;
+            } else {
+                // Add the key-value pair if it doesn't exist in $base
+                $base[$key] = $value;
+            }
+        }
+
+        return $base;
+    }
 }
