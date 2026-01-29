@@ -23,7 +23,12 @@ import {
   ModaleAjoutPieceJointe,
   ModaleAjoutPieceJointeRef,
 } from "@/apps/agent/fdo/components/ModaleAjoutPieceJointe.tsx";
-import { TelechargerPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
+import {
+  ModalePrevisualiserPieceJointe,
+  ModalePrevisualiserPieceJointeRef,
+} from "@/apps/agent/fdo/components/ModalePrévisualiserPieceJointe.tsx";
+import { Document } from "@/common/models";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 export const Route = createFileRoute(
   "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
@@ -65,7 +70,10 @@ export const Route = createFileRoute(
 
 const schemaInfosJuridiques = z.object({
   procedure: z.object({
-    serviceEnqueteur: z.string(),
+    serviceEnqueteur: z
+      .string()
+      .trim()
+      .min(1, { error: "Le nom du service enquêteur est requis" }),
     numeroProcedure: z
       .string()
       .trim()
@@ -100,6 +108,8 @@ function Page() {
   );
 
   const refModaleAjoutPJ = useRef<ModaleAjoutPieceJointeRef>(null);
+  const refModalePrevisualiserPJ =
+    useRef<ModalePrevisualiserPieceJointeRef>(null);
 
   // TODO: gérer les pièces jointes dans un state "façade" qui peut-être modifiable
 
@@ -139,15 +149,33 @@ function Page() {
 
   return (
     <>
-      <ModaleAjoutPieceJointe
-        ref={refModaleAjoutPJ}
-        declarationFDO={declaration}
-        onTeleverse={async (declarationMiseAJour: DeclarationFDOBrisPorte) => {
-          declarationManager.mettreAJour(declaration, declarationMiseAJour);
-          // Petit hack : forcer le routeur à se recharger et ainsi le loader à s'exécuter pour rafraichir la liste des déclarations
-          await router.invalidate();
-        }}
-      />
+      {!declaration.estSoumise() && (
+        <>
+          <ModaleAjoutPieceJointe
+            ref={refModaleAjoutPJ}
+            declarationFDO={declaration}
+            onTeleverse={async (
+              declarationMiseAJour: DeclarationFDOBrisPorte,
+            ) => {
+              declarationManager.mettreAJour(declaration, declarationMiseAJour);
+              // Petit hack : forcer le routeur à se recharger et ainsi le loader à s'exécuter pour rafraichir la liste des déclarations
+              await router.invalidate();
+            }}
+          />
+          <ModalePrevisualiserPieceJointe
+            ref={refModalePrevisualiserPJ}
+            declarationFDO={declaration}
+            onSupprime={async (pieceJointe: Document) => {
+              declarationManager.mettreAJour(declaration, {
+                piecesJointes: declaration.piecesJointes.filter(
+                  (value) => value.id !== pieceJointe.id,
+                ),
+              });
+              await router.invalidate();
+            }}
+          />
+        </>
+      )}
       <form
         style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}
         onSubmit={(e) => {
@@ -172,19 +200,17 @@ function Page() {
           </h6>
         </div>
 
-        {/*
         <Alert
           severity="info"
           title=""
-          description="Le téléversement de pièces justificatives (ex: PV d’intervention,
-          photos de la porte endommagée) sera prochainement disponible"
+          description="Merci de mettre à disposition les pièces justificatives pertinentes
+          dans le cadre de la déclaration : PV d’intervention ou photos de la
+          porte endommagée"
         ></Alert>
-        */}
 
         <p className="fr-text--sm fr-m-0">
-          Merci de mettre à disposition les pièces justificatives pertinentes
-          dans le cadre de la déclaration : PV d’intervention, photos de la
-          porte, ...{" "}
+          Les documents que vous joignez au dossier faciliteront la travail
+          d'instruction des rédacteurs du bureau du Précontentieux.
         </p>
 
         <div
@@ -196,27 +222,47 @@ function Page() {
               className="fr-col-lg-4"
               key={`declaration-piece-jointe-${p.id}`}
             >
-              <TelechargerPieceJointe
-                pieceJointe={p}
-                key={`piece-jointe-${p.id}`}
-              />
+              <a
+                className="fr-link"
+                target="_blank"
+                href={`/agent/fdo/document/${p.id}/${p.fileHash}`}
+                title={`Consulter la pièce jointe "${p.filename}" dans un nouvel onglet`}
+              >
+                {p.originalFilename}
+              </a>
+              {!declaration.estSoumise() && (
+                <button
+                  role={"button"}
+                  type={"button"}
+                  className="fr-btn fr-btn--sm fr-icon-delete-line fr-btn--tertiary-no-outline fr-mx-1w"
+                  onClick={() =>
+                    refModalePrevisualiserPJ.current?.previsualiserPieceJointe(
+                      p,
+                    )
+                  }
+                >
+                  Retirer
+                </button>
+              )}
             </div>
           ))}
 
-          <div className="fr-col-lg-4">
-            <Button
-              children="Ajouter un document"
-              iconId="fr-icon-add-line"
-              size="small"
-              priority="secondary"
-              iconPosition="right"
-              onClick={() => refModaleAjoutPJ.current?.ouvrir()}
-              nativeButtonProps={{
-                type: "button",
-                role: "button",
-              }}
-            />
-          </div>
+          {!declaration.estSoumise() && (
+            <div className="fr-col-lg-4">
+              <Button
+                children="Ajouter un document"
+                iconId="fr-icon-add-line"
+                size="small"
+                priority="secondary"
+                iconPosition="right"
+                onClick={() => refModaleAjoutPJ.current?.ouvrir()}
+                nativeButtonProps={{
+                  type: "button",
+                  role: "button",
+                }}
+              />
+            </div>
+          )}
         </div>
 
         <div className="fr-grid-row">

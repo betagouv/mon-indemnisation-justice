@@ -67,12 +67,11 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
         $pieceJointe = (new Document())
             ->setType($documentType)
             ->setOriginalFilename($fichierTeleverse->getClientOriginalName())
-            ->setAjoutRequerant(true)
-            ->setMime($fichierTeleverse->getClientMimeType())
             ->setAjoutRequerant(false)
+            ->setMime($fichierTeleverse->getClientMimeType())
         ;
 
-        $this->documentManager->enregistrerDocument($pieceJointe, $fichierTeleverse->getContent());
+        $pieceJointe = $this->documentManager->enregistrerDocument($pieceJointe, $fichierTeleverse->getContent());
 
         $this->em->persist($pieceJointe);
         $this->em->flush();
