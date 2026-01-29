@@ -19,6 +19,7 @@ final class DocumentDto
 
     #[Map(if: new TargetClass(Document::class), target: 'setAjoutRequerant')]
     public ?bool $estAjoutRequerant = false;
+    public string $fileHash;
 
     public DocumentType $type;
 

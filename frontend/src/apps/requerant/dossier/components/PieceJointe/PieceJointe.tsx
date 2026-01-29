@@ -47,6 +47,13 @@ export const Document = ({
 
         {(documents ?? []).map((document) => (
           <div key={document.id} className="fr-grid-row fr-col-lg-6">
+            <a
+              className="fr-link"
+              target="_blank"
+              href={`/requerant/document/${document.id}/${document.filename}`}
+            >
+              {document.originalFilename}
+            </a>
             {!lectureSeule && (
               <button
                 className="fr-btn fr-btn--sm fr-icon-delete-line fr-btn--tertiary-no-outline fr-mx-1w"
@@ -55,13 +62,6 @@ export const Document = ({
                 Retirer
               </button>
             )}
-            <a
-              className="fr-link"
-              target="_blank"
-              href={`/requerant/document/${document.id}/${document.filename}`}
-            >
-              {document.originalFilename}
-            </a>
           </div>
         ))}
         {documents?.length === 0 && <i>Aucun document</i>}

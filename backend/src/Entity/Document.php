@@ -63,6 +63,11 @@ class Document
     /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
 
+    #[ORM\ManyToMany(targetEntity: DeclarationFDOBrisPorte::class, mappedBy: 'piecesJointes', cascade: ['persist'])]
+    #[Ignore]
+    /** @var Collection<BrisPorte> */
+    protected Collection $declarations;
+
     #[Groups(['agent:detail'])]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     protected ?\DateTimeInterface $dateDerniereModification = null;
@@ -183,6 +188,18 @@ class Document
     public function getDossier(): ?BrisPorte
     {
         return $this->dossiers->first();
+    }
+
+    public function getDeclarations(): Collection
+    {
+        return $this->declarations;
+    }
+
+    public function setDeclarations(Collection $declarations): Document
+    {
+        $this->declarations = $declarations;
+
+        return $this;
     }
 
     public function getSize(): ?int
