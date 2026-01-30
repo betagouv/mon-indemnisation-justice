@@ -234,8 +234,14 @@ export const InfosDossier = ({
                   <b>Agent rapporteur</b>{" "}
                   {dossier.declarationFDO.agent?.nomComplet()}
                   <ul>
-                    <li>{dossier.declarationFDO.agent?.courriel}</li>
-                    <li>{dossier.declarationFDO.agent?.telephone}</li>
+                    <li>
+                      <b>Adresse courriel:</b>{" "}
+                      {dossier.declarationFDO.agent?.courriel}
+                    </li>
+                    <li>
+                      <b>Téléphone: </b>
+                      {dossier.declarationFDO.procedure.telephone}
+                    </li>
                   </ul>
                 </li>
                 <li>
