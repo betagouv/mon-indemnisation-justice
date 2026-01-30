@@ -4,71 +4,58 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
+use MonIndemnisationJustice\Api\Agent\FDO\Input\DocumentDto;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\Document;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\ObjectMapper\ObjectMapperInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Exception\ExtraAttributesException;
-use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Route API qui permet à un agent des FDO de déclarer une erreur opérationnelle.
- *
- * @internal
- *
- * @coversNothing
  */
-#[Route('/api/agent/fdo/bris-de-porte/{declarationId}/editer', name: 'api_agent_fdo_bris_porte_editer', methods: ['PATCH'])]
+#[Route('/api/agent/fdo/bris-de-porte/{declarationId}/piece-jointe/{pieceJointeId}/{hash}/supprimer', name: 'api_agent_fdo_bris_porte_supprimer_piece_jointe', methods: ['DELETE'])]
 #[IsGranted(
-    DeclarationFDOBrisPorteVoter::ACTION_EDITER,
+    DeclarationFDOBrisPorteVoter::ACTION_AJOUTER_PJ,
     'brouillon',
     message: "La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
-class EditerDeclarationBrisPorteEndpoint
+class SupprimerPieceJointeDeclarationBrisPorteEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly ObjectMapperInterface $objectMapper,
         protected readonly NormalizerInterface $normalizer,
         protected readonly DenormalizerInterface $denormalizer,
-        protected readonly ValidatorInterface $validator,
     ) {}
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
         BrouillonDeclarationFDOBrisPorte $brouillon,
-        Request $request,
-        Security $security
+        #[MapEntity(id: 'pieceJointeId', message: 'Document inconnu')]
+        Document $pieceJointe,
+        string $hash,
     ): Response {
-        $brouillon->ajouterDonnees(
-            json_decode($request->getContent(), true)
-        );
+        $input = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class, context: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false]);
 
-        try {
-            $input = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class, context: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false]);
-        } catch (UnexpectedValueException $e) {
-            return new JsonResponse([
-                'erreur' => $e->getMessage(),
-            ], Response::HTTP_BAD_REQUEST);
-        } catch (ExtraAttributesException $e) {
-            return new JsonResponse([
-                'erreur' => (count($e->getExtraAttributes()) > 1 ? 'Champs non reconnus' : 'Champ non reconnu').': '.implode(', ', $e->getExtraAttributes()),
-            ], Response::HTTP_BAD_REQUEST);
+        if (md5($pieceJointe->getFilename()) !== $hash || !in_array($pieceJointe->getId(), array_map(fn (DocumentDto $d) => $d->id === $pieceJointe->getId(), $input->getPiecesJointes()))) {
+            throw new NotFoundHttpException('Document inconnu');
         }
 
+        $brouillon->supprimerPieceJointe($pieceJointe);
+
         $this->em->persist($brouillon);
+        $this->em->remove($pieceJointe);
         $this->em->flush();
+
+        $input = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class, context: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false]);
 
         return new JsonResponse(
             $this->normalizer->normalize(

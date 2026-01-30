@@ -23,7 +23,31 @@ class DeclarationFDOBrisPorteInput
     #[Assert\NotNull(message: "L'adresse du bris de porte est requise")]
     public ?AdresseInput $adresse = null;
     #[Assert\NotNull(message: 'La procédure judiciaire est requise')]
+    #[Assert\Valid]
     public ?ProcedureJudiciaireInput $procedure = null;
     public ?string $precisionsRequerant = null;
+    #[Assert\Valid]
     public ?CoordonneesRequerantInput $coordonneesRequerant = null;
+
+    #[Map(if: false)]
+    /*
+     * Puisque l'object mapper ne sait pas encore gérer le mapping récursif, les pièces jointes ne seront pas propagées
+     * vers la déclaration.
+     *
+     * /!\ il faut donc _manuellement_ mapper et ajouter les pièces jointes à la déclaration cible.
+     */
+    protected array $piecesJointes = [];
+
+    public function getPiecesJointes(): array
+    {
+        return $this->piecesJointes;
+    }
+
+    /** @param DocumentDto[] $piecesJointes */
+    public function setPiecesJointes(array $piecesJointes): DeclarationFDOBrisPorteInput
+    {
+        $this->piecesJointes = $piecesJointes;
+
+        return $this;
+    }
 }

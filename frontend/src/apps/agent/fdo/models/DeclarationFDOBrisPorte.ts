@@ -1,5 +1,5 @@
 import { Exclude, Expose, Transform, Type } from "class-transformer";
-import { Agent } from "@/common/models";
+import { Agent, Document, DocumentType } from "@/common/models";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 
 export class Adresse {
@@ -105,6 +105,10 @@ export class DeclarationFDOBrisPorte {
 
   procedure: Procedure = new Procedure();
 
+  @Type(() => Document)
+  @Exclude({ toPlainOnly: true })
+  piecesJointes: Document[] = [];
+
   public constructor() {
     this.dateCreation = new Date();
   }
@@ -119,5 +123,11 @@ export class DeclarationFDOBrisPorte {
 
   public estBrouillon(): boolean {
     return !this.dateSoumission;
+  }
+
+  public getPiecesJointes(type: DocumentType): Document[] {
+    return this.piecesJointes.filter(
+      (pieceJointe: Document) => pieceJointe.type == type,
+    );
   }
 }

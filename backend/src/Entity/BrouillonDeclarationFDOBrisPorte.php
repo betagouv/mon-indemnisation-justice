@@ -92,6 +92,36 @@ class BrouillonDeclarationFDOBrisPorte
         return $this->donnees;
     }
 
+    public function ajouterPieceJointe(array $pieceJointe): BrouillonDeclarationFDOBrisPorte
+    {
+        return $this->setPiecesJointes(array_merge($this->donnees['piecesJointes'] ?? [], [$pieceJointe]));
+    }
+
+    public function supprimerPieceJointe(Document $pieceJointe): BrouillonDeclarationFDOBrisPorte
+    {
+        return $this->setPiecesJointes(
+            array_values(
+                array_filter(
+                    $this->donnees['piecesJointes'] ?? [],
+                    fn (array $d) => $d['id'] !== $pieceJointe->getId()
+                )
+            )
+        );
+    }
+
+    public function getPiecesJointes(): array
+    {
+        return $this->donnees['piecesJointes'] ?? [];
+    }
+
+    /**
+     * @return $this
+     */
+    public function setPiecesJointes(array $piecesJointes): BrouillonDeclarationFDOBrisPorte
+    {
+        return $this->setDonnees(array_merge($this->donnees, ['piecesJointes' => $piecesJointes]));
+    }
+
     public function ajouterDonnees(array $donnees): BrouillonDeclarationFDOBrisPorte
     {
         $this->donnees = array_replace_recursive(
@@ -107,5 +137,20 @@ class BrouillonDeclarationFDOBrisPorte
         $this->donnees = $donnees;
 
         return $this;
+    }
+
+    private static function arrayPatch(array $base, array $replacements): array
+    {
+        foreach ($replacements as $key => $value) {
+            if (array_key_exists($key, $base)) {
+                // Override the value in $base, even if it's an array
+                $base[$key] = $value;
+            } else {
+                // Add the key-value pair if it doesn't exist in $base
+                $base[$key] = $value;
+            }
+        }
+
+        return $base;
     }
 }

@@ -227,14 +227,21 @@ export const InfosDossier = ({
                   {dossier.declarationFDO.adresse?.localite}
                 </li>
                 <li>
-                  <b>Le :</b> {dateSimple(dossier.declarationFDO.dateOperation)}
+                  <b>Le :</b>{" "}
+                  {dateSimple(dossier.declarationFDO.dateOperation as Date)}
                 </li>
                 <li>
                   <b>Agent rapporteur</b>{" "}
                   {dossier.declarationFDO.agent?.nomComplet()}
                   <ul>
-                    <li>{dossier.declarationFDO.agent?.courriel}</li>
-                    <li>{dossier.declarationFDO.agent?.telephone}</li>
+                    <li>
+                      <b>Adresse courriel:</b>{" "}
+                      {dossier.declarationFDO.agent?.courriel}
+                    </li>
+                    <li>
+                      <b>Téléphone: </b>
+                      {dossier.declarationFDO.procedure.telephone}
+                    </li>
                   </ul>
                 </li>
                 <li>

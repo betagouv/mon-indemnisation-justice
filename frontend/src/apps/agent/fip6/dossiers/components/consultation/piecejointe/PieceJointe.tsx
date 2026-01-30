@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-import { Document } from "@/common/models";
+import { Agent, Document } from "@/common/models";
 import { fr } from "@codegouvfr/react-dsfr";
 
 export const PieceJointe = function PieceJointe({
@@ -10,7 +10,7 @@ export const PieceJointe = function PieceJointe({
 }: {
   pieceJointe: Document;
   className?: string;
-  lienTelechargement?: string | ((Document) => string);
+  lienTelechargement?: string | ((pieceJointe: Document) => string);
 }) {
   const url = useMemo<string>(() => {
     if (lienTelechargement) {

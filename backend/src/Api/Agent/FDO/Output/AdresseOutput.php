@@ -9,7 +9,7 @@ use Symfony\Component\ObjectMapper\Attribute\Map;
 class AdresseOutput
 {
     public string $ligne1;
-    public string $ligne2;
+    public ?string $ligne2;
     public string $codePostal;
     public string $localite;
 }

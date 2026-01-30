@@ -12,11 +12,26 @@ class DeclarationFDOBrisPorteVoter extends Voter
 {
     public const ACTION_LISTER = 'declaration:lister';
     public const ACTION_DECLARER = 'declaration:declarer';
+    public const ACTION_EDITER = 'declaration:editer';
     public const ACTION_SUPPRIMER = 'declaration:supprimer';
+    public const ACTION_SOUMETTRE = 'declaration:soumettre';
+    public const ACTION_AJOUTER_PJ = 'declaration:ajouter-pj';
+    public const ACTION_SUPPRIMER_PJ = 'declaration:supprimer-pj';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::ACTION_LISTER, self::ACTION_DECLARER, self::ACTION_SUPPRIMER]);
+        return in_array(
+            $attribute,
+            [
+                self::ACTION_LISTER,
+                self::ACTION_DECLARER,
+                self::ACTION_EDITER,
+                self::ACTION_SOUMETTRE,
+                self::ACTION_SUPPRIMER,
+                self::ACTION_AJOUTER_PJ,
+                self::ACTION_SUPPRIMER_PJ,
+            ]
+        );
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
@@ -28,16 +43,21 @@ class DeclarationFDOBrisPorteVoter extends Voter
         /** @var Agent $agent */
         $agent = $token->getUser();
 
-        if (self::ACTION_SUPPRIMER === $attribute) {
-            if ($subject instanceof BrouillonDeclarationFDOBrisPorte) {
-                $brouillon = $subject;
-
-                return $agent->aRole(Agent::ROLE_AGENT_FORCES_DE_L_ORDRE) && $brouillon->getAgent() === $agent;
-            }
-
+        if (!$agent->aRole(Agent::ROLE_AGENT_FORCES_DE_L_ORDRE)) {
             return false;
         }
 
-        return $agent->aRole(Agent::ROLE_AGENT_FORCES_DE_L_ORDRE);
+        if (in_array($attribute, [self::ACTION_LISTER, self::ACTION_DECLARER])) {
+            return true;
+        }
+
+        // Les actions d'édition / suppression / soumissions / ajout PJ / suppression PJ sont liées à un brouillon
+        if (!$subject instanceof BrouillonDeclarationFDOBrisPorte) {
+            return false;
+        }
+
+        $brouillon = $subject;
+
+        return $brouillon->getAgent() === $agent;
     }
 }

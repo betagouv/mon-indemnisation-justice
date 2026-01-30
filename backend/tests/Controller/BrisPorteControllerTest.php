@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Tests\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController;
+use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
@@ -15,7 +16,7 @@ use Symfony\Component\BrowserKit\Cookie;
 /**
  * @internal
  *
- * @coversNothing
+ * @covers \MonIndemnisationJustice\Controller\BrisPorteController
  */
 class BrisPorteControllerTest extends WebTestCase
 {
@@ -98,9 +99,21 @@ class BrisPorteControllerTest extends WebTestCase
         ];
     }
 
-    public function testDemarrerDepuisInvitation(): void
+    public function testDemarrerDepuisInvitationOk(): void
     {
-        $this->markTestIncomplete('À implémenter');
+        $policier = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'policier@interieur.gouv.fr']);
+        $declaration = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
+
+        $this->client->request('GET', "/bris-de-porte/invitation/{$declaration->getReference()}");
+
+        $this->assertResponseRedirects('/bris-de-porte/creation-de-compte', 302);
+    }
+
+    public function testDemarrerDepuisInvitationKoReferenceInconnue(): void
+    {
+        $this->client->request('GET', '/bris-de-porte/invitation/NONNON');
+
+        $this->assertResponseRedirects('', 302);
     }
 
     /**

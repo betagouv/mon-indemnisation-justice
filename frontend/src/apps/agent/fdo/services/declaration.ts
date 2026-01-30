@@ -18,7 +18,7 @@ export interface DeclarationManagerInterface {
 
   mettreAJour(
     declaration: DeclarationFDOBrisPorte,
-    miseAJour?: Partial<DeclarationFDOBrisPorte>,
+    miseAJour?: Partial<DeclarationFDOBrisPorte> | DeclarationFDOBrisPorte,
   ): void;
 
   enregistrer(
@@ -135,18 +135,23 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   mettreAJour(
     declaration: DeclarationFDOBrisPorte,
-    miseAJour?: Partial<DeclarationFDOBrisPorte>,
+    miseAJour?: Partial<DeclarationFDOBrisPorte> | DeclarationFDOBrisPorte,
   ): void {
     this.setDeclaration(
       declaration.reference,
-      plainToInstance(
-        DeclarationFDOBrisPorte,
-        merge.withOptions(
-          { mergeArrays: false },
-          instanceToPlain(declaration),
-          miseAJour as any,
-        ),
-      ),
+      // Si la mise à jour concerne une déclaration complète...
+      miseAJour instanceof DeclarationFDOBrisPorte
+        ? // ... alors, on la remplace dans la liste
+          miseAJour
+        : // ... sinon on fusionne la mise à jour partielle avec les valeurs déjà existantes
+          plainToInstance(
+            DeclarationFDOBrisPorte,
+            merge.withOptions(
+              { mergeArrays: false },
+              instanceToPlain(declaration),
+              miseAJour as any,
+            ),
+          ),
     );
   }
 

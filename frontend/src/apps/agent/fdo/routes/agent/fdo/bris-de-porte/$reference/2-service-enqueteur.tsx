@@ -1,13 +1,14 @@
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  redirect,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import React from "react";
+import React, { useRef } from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { Upload } from "@codegouvfr/react-dsfr/Upload";
-import { Select } from "@codegouvfr/react-dsfr/Select";
 import { z } from "zod";
 import { useInjection } from "inversify-react";
 import {
@@ -17,6 +18,17 @@ import {
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import {
+  ModaleAjoutPieceJointe,
+  ModaleAjoutPieceJointeRef,
+} from "@/apps/agent/fdo/components/ModaleAjoutPieceJointe.tsx";
+import {
+  ModalePrevisualiserPieceJointe,
+  ModalePrevisualiserPieceJointeRef,
+} from "@/apps/agent/fdo/components/ModalePrévisualiserPieceJointe.tsx";
+import { Document } from "@/common/models";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 export const Route = createFileRoute(
   "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
@@ -58,7 +70,10 @@ export const Route = createFileRoute(
 
 const schemaInfosJuridiques = z.object({
   procedure: z.object({
-    serviceEnqueteur: z.string(),
+    serviceEnqueteur: z
+      .string()
+      .trim()
+      .min(1, { error: "Le nom du service enquêteur est requis" }),
     numeroProcedure: z
       .string()
       .trim()
@@ -69,11 +84,6 @@ const schemaInfosJuridiques = z.object({
       .string({ error: "Le numéro de téléphone est requis" })
       .min(7, { error: "Le numéro de téléphone est requis" }),
   }),
-});
-
-const ModaleAjoutFichier = createModal({
-  id: "modale-ajouter-fichier-declaration-bris-porte",
-  isOpenedByDefault: false,
 });
 
 function Page() {
@@ -91,9 +101,17 @@ function Page() {
     from: Route.fullPath,
   });
 
+  const router = useRouter();
+
   const declarationManager = useInjection<DeclarationManagerInterface>(
     DeclarationManagerInterface.$,
   );
+
+  const refModaleAjoutPJ = useRef<ModaleAjoutPieceJointeRef>(null);
+  const refModalePrevisualiserPJ =
+    useRef<ModalePrevisualiserPieceJointeRef>(null);
+
+  // TODO: gérer les pièces jointes dans un state "façade" qui peut-être modifiable
 
   const form = useForm({
     defaultValues: {
@@ -131,39 +149,33 @@ function Page() {
 
   return (
     <>
-      <ModaleAjoutFichier.Component
-        size="large"
-        title="Ajouter un document"
-        buttons={[
-          {
-            children: "Ajouter",
-          },
-        ]}
-      >
-        <div className="fr-grid-row fr-grid-row--gutters">
-          <Upload
-            className="fr-col-lg-6"
-            label="Fichier à téléverser"
-            hint="Taille maximale : 10 Mo. Format pdf uniquement."
-            nativeInputProps={{
-              accept: "application/pdf,image/*",
+      {!declaration.estSoumise() && (
+        <>
+          <ModaleAjoutPieceJointe
+            ref={refModaleAjoutPJ}
+            declarationFDO={declaration}
+            onTeleverse={async (
+              declarationMiseAJour: DeclarationFDOBrisPorte,
+            ) => {
+              declarationManager.mettreAJour(declaration, declarationMiseAJour);
+              // Petit hack : forcer le routeur à se recharger et ainsi le loader à s'exécuter pour rafraichir la liste des déclarations
+              await router.invalidate();
             }}
           />
-
-          <Select
-            label="Type de document"
-            className="fr-col-lg-6"
-            nativeSelectProps={{}}
-          >
-            <option value="" disabled hidden>
-              Sélectionnez un type
-            </option>
-
-            <option value="pv_intervention">PV d'intervention</option>
-            <option value="photo_porte">Photo de la porte endommagée</option>
-          </Select>
-        </div>
-      </ModaleAjoutFichier.Component>
+          <ModalePrevisualiserPieceJointe
+            ref={refModalePrevisualiserPJ}
+            declarationFDO={declaration}
+            onSupprime={async (pieceJointe: Document) => {
+              declarationManager.mettreAJour(declaration, {
+                piecesJointes: declaration.piecesJointes.filter(
+                  (value) => value.id !== pieceJointe.id,
+                ),
+              });
+              await router.invalidate();
+            }}
+          />
+        </>
+      )}
       <form
         style={{ display: "flex", flexDirection: "column", gap: "1.5vh" }}
         onSubmit={(e) => {
@@ -191,53 +203,67 @@ function Page() {
         <Alert
           severity="info"
           title=""
-          description="Le téléversement de pièces justificatives (ex: PV d’intervention,
-          photos de la porte endommagée) sera prochainement disponible"
+          description="Merci de mettre à disposition les pièces justificatives pertinentes
+          dans le cadre de la déclaration : PV d’intervention ou photos de la
+          porte endommagée"
         ></Alert>
 
-        {/*
         <p className="fr-text--sm fr-m-0">
-          Merci de mettre à disposition les pièces justificatives pertinentes
-          dans le cadre de la déclaration : PV d’intervention, photos de la
-          porte, ...{" "}
+          Les documents que vous joignez au dossier faciliteront la travail
+          d'instruction des rédacteurs du bureau du Précontentieux.
         </p>
 
         <div
           className="fr-grid-row fr-grid-row--gutters"
           style={{ alignItems: "center" }}
         >
-          <div className="fr-col-lg-4">
-            <Download
-              details="PDF - 88 Ko"
-              label="PV d'intervention"
-              linkProps={{}}
-            />
-          </div>
+          {declaration.piecesJointes.map((p) => (
+            <div
+              className="fr-col-lg-4"
+              key={`declaration-piece-jointe-${p.id}`}
+            >
+              <a
+                className="fr-link"
+                target="_blank"
+                href={`/agent/fdo/document/${p.id}/${p.fileHash}`}
+                title={`Consulter la pièce jointe "${p.filename}" dans un nouvel onglet`}
+              >
+                {p.originalFilename}
+              </a>
+              {!declaration.estSoumise() && (
+                <button
+                  role={"button"}
+                  type={"button"}
+                  className="fr-btn fr-btn--sm fr-icon-delete-line fr-btn--tertiary-no-outline fr-mx-1w"
+                  onClick={() =>
+                    refModalePrevisualiserPJ.current?.previsualiserPieceJointe(
+                      p,
+                    )
+                  }
+                >
+                  Retirer
+                </button>
+              )}
+            </div>
+          ))}
 
-          <div className="fr-col-lg-4">
-            <Download
-              label="Photo de la porte d'entrée"
-              details="JPEG - 792 Ko"
-              linkProps={{}}
-            />
-          </div>
-
-          <div className="fr-col-lg-4">
-            <Button
-              children="Ajouter un document"
-              iconId="fr-icon-add-line"
-              size="small"
-              priority="secondary"
-              iconPosition="right"
-              onClick={() => ModaleAjoutFichier.open()}
-              nativeButtonProps={{
-                type: "button",
-                role: "button",
-              }}
-            />
-          </div>
+          {!declaration.estSoumise() && (
+            <div className="fr-col-lg-4">
+              <Button
+                children="Ajouter un document"
+                iconId="fr-icon-add-line"
+                size="small"
+                priority="secondary"
+                iconPosition="right"
+                onClick={() => refModaleAjoutPJ.current?.ouvrir()}
+                nativeButtonProps={{
+                  type: "button",
+                  role: "button",
+                }}
+              />
+            </div>
+          )}
         </div>
-        */}
 
         <div className="fr-grid-row">
           <h6 className="fr-m-0 fr-text-label--blue-france">
@@ -283,7 +309,7 @@ function Page() {
                   disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     type: "text",
-                    value: field.state.value,
+                    value: field.state.value ?? "",
                     onChange: (e) => field.handleChange(e.target.value),
                   }}
                   state={!field.state.meta.isValid ? "error" : "default"}

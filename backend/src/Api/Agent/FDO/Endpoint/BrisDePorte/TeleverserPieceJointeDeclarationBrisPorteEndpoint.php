@@ -4,13 +4,20 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
+use MonIndemnisationJustice\Api\Agent\FDO\Input\DocumentDto;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapUploadedFile;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -23,19 +30,15 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Route API qui permet à un agent des FDO de déclarer une erreur opérationnelle.
- *
- * @internal
- *
- * @coversNothing
  */
-#[Route('/api/agent/fdo/bris-de-porte/{declarationId}/editer', name: 'api_agent_fdo_bris_porte_editer', methods: ['PATCH'])]
+#[Route('/api/agent/fdo/bris-de-porte/{declarationId}/piece-jointe/televerser/{type}', name: 'api_agent_fdo_bris_porte_televerser_piece_jointe', methods: ['POST'])]
 #[IsGranted(
-    DeclarationFDOBrisPorteVoter::ACTION_EDITER,
+    DeclarationFDOBrisPorteVoter::ACTION_SUPPRIMER_PJ,
     'brouillon',
     message: "La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
-class EditerDeclarationBrisPorteEndpoint
+class TeleverserPieceJointeDeclarationBrisPorteEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
@@ -43,25 +46,56 @@ class EditerDeclarationBrisPorteEndpoint
         protected readonly NormalizerInterface $normalizer,
         protected readonly DenormalizerInterface $denormalizer,
         protected readonly ValidatorInterface $validator,
+        protected readonly DocumentManager $documentManager,
     ) {}
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
         BrouillonDeclarationFDOBrisPorte $brouillon,
         Request $request,
-        Security $security
+        Security $security,
+        string $type,
+        #[MapUploadedFile(name: 'pieceJointe')]
+        UploadedFile $fichierTeleverse
     ): Response {
-        $brouillon->ajouterDonnees(
-            json_decode($request->getContent(), true)
+        if (null === ($documentType = DocumentType::tryFrom($type)) || !in_array($documentType, [DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_FDO])) {
+            throw new BadRequestHttpException('Type de pièce jointe non reconnu');
+        }
+
+        // 1. Créer le document
+        $pieceJointe = (new Document())
+            ->setType($documentType)
+            ->setOriginalFilename($fichierTeleverse->getClientOriginalName())
+            ->setAjoutRequerant(false)
+            ->setMime($fichierTeleverse->getClientMimeType())
+        ;
+
+        $pieceJointe = $this->documentManager->enregistrerDocument($pieceJointe, $fichierTeleverse->getContent());
+
+        $this->em->persist($pieceJointe);
+        $this->em->flush();
+
+        // 2. Rattacher le document au brouillon
+        $brouillon->ajouterPieceJointe(
+            $this->normalizer->normalize(
+                $this->objectMapper->map($pieceJointe, DocumentDto::class),
+                'json'
+            )
         );
 
         try {
             $input = $this->denormalizer->denormalize($brouillon->getDonnees(), DeclarationFDOBrisPorteInput::class, context: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false]);
         } catch (UnexpectedValueException $e) {
+            $this->em->remove($pieceJointe);
+            $this->em->flush();
+
             return new JsonResponse([
                 'erreur' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
         } catch (ExtraAttributesException $e) {
+            $this->em->remove($pieceJointe);
+            $this->em->flush();
+
             return new JsonResponse([
                 'erreur' => (count($e->getExtraAttributes()) > 1 ? 'Champs non reconnus' : 'Champ non reconnu').': '.implode(', ', $e->getExtraAttributes()),
             ], Response::HTTP_BAD_REQUEST);
