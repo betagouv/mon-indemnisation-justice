@@ -23,7 +23,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  */
 #[Route('/api/agent/fdo/bris-de-porte/{declarationId}/piece-jointe/{pieceJointeId}/{hash}/supprimer', name: 'api_agent_fdo_bris_porte_supprimer_piece_jointe', methods: ['DELETE'])]
 #[IsGranted(
-    DeclarationFDOBrisPorteVoter::ACTION_DECLARER,
+    DeclarationFDOBrisPorteVoter::ACTION_AJOUTER_PJ,
+    'brouillon',
     message: "La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]

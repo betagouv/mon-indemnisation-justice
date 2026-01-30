@@ -34,4 +34,19 @@ class InitierDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         $this->assertTrue(Uuid::isValid($input->id));
     }
+
+    /**
+     * ETQ agent du MJ, je ne dois pas pouvoir initier un brouillon de déclaration de bris de porte.
+     */
+    public function testInitierKoPasAgentFDO(): void
+    {
+        $this->connexion('redacteur@justice.gouv.fr');
+
+        $this->client->request('PUT', '/api/agent/fdo/bris-de-porte/initier');
+
+        $this->assertTrue($this->client->getResponse()->isClientError());
+
+        ['erreur' => $erreur] = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals("La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre", $erreur);
+    }
 }

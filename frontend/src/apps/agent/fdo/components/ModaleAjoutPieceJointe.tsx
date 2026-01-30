@@ -88,7 +88,7 @@ export const ModaleAjoutPieceJointe = React.forwardRef<
         payload.append("pieceJointe", fichier);
 
         const response = await fetch(
-          `/api/agent/fdo/bris-de-porte/${declarationFDO.id}/televerser-piece-jointe/${type.type}`,
+          `/api/agent/fdo/bris-de-porte/${declarationFDO.id}/piece-jointe/televerser/${type.type}`,
           {
             method: "POST",
             body: payload,

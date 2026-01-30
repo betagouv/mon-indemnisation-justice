@@ -10,6 +10,7 @@ use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Service\DocumentManager;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,15 +26,15 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Route API qui permet à un agent des FDO de déclarer une erreur opérationnelle.
  */
-#[Route('/api/agent/fdo/bris-de-porte/{id}/televerser-piece-jointe/{type}', name: 'api_agent_fdo_bris_porte_televerser_piece_jointe', methods: ['POST'])]
+#[Route('/api/agent/fdo/bris-de-porte/{declarationId}/piece-jointe/televerser/{type}', name: 'api_agent_fdo_bris_porte_televerser_piece_jointe', methods: ['POST'])]
 #[IsGranted(
-    DeclarationFDOBrisPorteVoter::ACTION_DECLARER,
+    DeclarationFDOBrisPorteVoter::ACTION_SUPPRIMER_PJ,
+    'brouillon',
     message: "La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
@@ -49,16 +50,14 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
     ) {}
 
     public function __invoke(
-        Uuid $id,
+        #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
+        BrouillonDeclarationFDOBrisPorte $brouillon,
         Request $request,
         Security $security,
         string $type,
         #[MapUploadedFile(name: 'pieceJointe')]
         UploadedFile $fichierTeleverse
     ): Response {
-        /** @var BrouillonDeclarationFDOBrisPorte $brouillon */
-        $brouillon = $this->em->find(BrouillonDeclarationFDOBrisPorte::class, $id);
-
         if (null === ($documentType = DocumentType::tryFrom($type)) || !in_array($documentType, [DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_FDO])) {
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
         }

@@ -111,6 +111,53 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->assertEquals('Champ non reconnu: champInconnu', $erreur);
     }
 
+    /**
+     * ETQ agent des FDO, je ne dois pas pouvoir modifier les données de la déclaration d'un autre agent.
+     */
+    public function testEditerKoPasEditeur(): void
+    {
+        $gendarme = $this->getAgent('gendarme@gendarmerie.interieur.gouv.fr');
+
+        $brouillon = $this->creerBrouillon($gendarme, [
+            'estErreur' => 'DOUTE',
+            'dateOperation' => '2025-12-14',
+        ]);
+
+        $this->connexion('policier@interieur.gouv.fr');
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
+            'estErreur' => 'OUI',
+            'dateOperation' => '2025-11-13',
+        ]));
+
+        $this->assertTrue($this->client->getResponse()->isClientError());
+
+        ['erreur' => $erreur] = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals("La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre", $erreur);
+    }
+
+    /**
+     * ETQ agent du MJ, je ne dois pas pouvoir modifier les données de la déclaration d'un agent FDO.
+     */
+    public function testEditerKoPasFDO(): void
+    {
+        $gendarme = $this->getAgent('gendarme@gendarmerie.interieur.gouv.fr');
+        $brouillon = $this->creerBrouillon($gendarme, [
+            'estErreur' => 'DOUTE',
+            'dateOperation' => '2025-12-14',
+        ]);
+
+        $this->connexion('redacteur@justice.gouv.fr');
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
+            'estErreur' => 'OUI',
+            'dateOperation' => '2025-11-13',
+        ]));
+
+        $this->assertTrue($this->client->getResponse()->isClientError());
+
+        ['erreur' => $erreur] = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals("La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre", $erreur);
+    }
+
     protected function creerBrouillon(Agent $agent, array $donnees = []): BrouillonDeclarationFDOBrisPorte
     {
         $brouillon = (new BrouillonDeclarationFDOBrisPorte())

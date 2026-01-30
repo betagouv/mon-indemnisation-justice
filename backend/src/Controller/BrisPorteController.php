@@ -139,7 +139,7 @@ class BrisPorteController extends AbstractController
         $preinscription = $this->getPreinscription($request);
         $declaration = $this->entityManager->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['reference' => $reference]);
 
-        if ($declaration->estAttribue()) {
+        if (null === $declaration || $declaration->estAttribue()) {
             // TODO compter la tentative pour le rate limiter
             return $this->redirectToRoute('app_homepage');
         }
