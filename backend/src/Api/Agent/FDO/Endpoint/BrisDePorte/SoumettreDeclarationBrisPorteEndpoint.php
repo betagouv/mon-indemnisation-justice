@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Service\Mailer;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,16 +22,16 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Route API qui permet à un agent des FDO de déclarer une erreur opérationnelle.
  */
-#[Route('/api/agent/fdo/bris-de-porte/{id}/soumettre', name: 'api_agent_fdo_bris_porte_soumettre', methods: ['POST'])]
+#[Route('/api/agent/fdo/bris-de-porte/{declarationId}/soumettre', name: 'api_agent_fdo_bris_porte_soumettre', methods: ['POST'])]
 #[IsGranted(
-    DeclarationFDOBrisPorteVoter::ACTION_DECLARER,
+    DeclarationFDOBrisPorteVoter::ACTION_SOUMETTRE,
+    'brouillon',
     message: "La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
@@ -45,13 +46,13 @@ class SoumettreDeclarationBrisPorteEndpoint
         protected readonly Mailer $mailer,
     ) {}
 
-    public function __invoke(Uuid $id, Security $security): Response
-    {
+    public function __invoke(
+        #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
+        BrouillonDeclarationFDOBrisPorte $brouillon,
+        Security $security
+    ): Response {
         /** @var Agent $agent */
         $agent = $security->getUser();
-
-        /** @var BrouillonDeclarationFDOBrisPorte $brouillon */
-        $brouillon = $this->em->find(BrouillonDeclarationFDOBrisPorte::class, $id);
 
         /** @var DeclarationFDOBrisPorteInput $input */
         $input = $this->denormalizer->denormalize(

@@ -23,8 +23,10 @@ class DeclarationFDOBrisPorteInput
     #[Assert\NotNull(message: "L'adresse du bris de porte est requise")]
     public ?AdresseInput $adresse = null;
     #[Assert\NotNull(message: 'La procédure judiciaire est requise')]
+    #[Assert\Valid]
     public ?ProcedureJudiciaireInput $procedure = null;
     public ?string $precisionsRequerant = null;
+    #[Assert\Valid]
     public ?CoordonneesRequerantInput $coordonneesRequerant = null;
 
     #[Map(if: false)]
