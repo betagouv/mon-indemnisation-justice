@@ -40,7 +40,7 @@ class DossierManagerTest extends WebTestCase
 
             $this->assertEquals(EtatDossierType::DOSSIER_A_ATTRIBUER, $dossierAFinaliser->getEtatDossier()->getEtat());
             $this->assertEquals(
-                'BRI/'.(new \DateTime())->format('Ymd').'/'.str_pad($index + 1, 3, '0', STR_PAD_LEFT),
+                'BRI/' . new \DateTime()->format('Ymd') . '/' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
                 $dossierAFinaliser->getReference()
             );
         }

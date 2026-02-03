@@ -73,7 +73,7 @@ class EtatDossier
         if (EtatDossierType::DOSSIER_A_ATTRIBUER === $this->etat) {
             if ($progression) {
                 // En cas de dépôt, mettre à jour la date
-                $this->dossier->setDateDepot(new \DateTimeImmutable());
+                $this->dossier->setDateDepot(new \DateTime());
             } else {
                 // En cas de retour à l'attribution, supprimer le rédacteur précédent
                 $this->dossier->setRedacteur(null);

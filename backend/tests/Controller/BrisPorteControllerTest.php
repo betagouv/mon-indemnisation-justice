@@ -9,6 +9,7 @@ use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -35,15 +36,14 @@ class BrisPorteControllerTest extends WebTestCase
      * Variantes :
      * * Si j'ai déjà rempli le questionnaire, alors je dois être automatiquement renvoyé vers la page suivante
      * * Si j'ai déjà rempli mon questionnaire ET créé mon compte, alors je dois être automatiquement renvoyé sur la page
-     * "Finaliser la création de votre compte"
-     *
-     * @dataProvider donneesTesterMonEligibilite
+     * "Finaliser la création de votre compte"e
      */
-    public function testTesterMonEligibilite(?callable $getTestEligibilite = null, ?string $redirection = null, bool $aRequerant = false): void
+    #[DataProvider('donneesTesterMonEligibilite')]
+    public function testTesterMonEligibilite(?array $donneesTestEligibilite = null, ?string $redirection = null, bool $aRequerant = false): void
     {
-        if ($getTestEligibilite) {
+        if (is_array($donneesTestEligibilite)) {
             /** @var TestEligibilite $testEligibilite */
-            $testEligibilite = $getTestEligibilite($this->em);
+            $testEligibilite = $this->creerTestEligibilite($donneesTestEligibilite);
             $this->initializeSession([BrisPorteController::CLEF_SESSION_TEST_ELIGIBILITE => $testEligibilite->id]);
         }
 
@@ -73,8 +73,7 @@ class BrisPorteControllerTest extends WebTestCase
             ->orderBy('t.dateSoumission', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
         $this->assertNotNull($testEligibilite);
         $this->assertNotNull($testEligibilite->dateSoumission);
         $this->assertFalse($testEligibilite->estVise);
@@ -90,12 +89,12 @@ class BrisPorteControllerTest extends WebTestCase
         $this->assertTrue($testEligibilite->estEligibleExperimentation);
     }
 
-    public function donneesTesterMonEligibilite()
+    public static function donneesTesterMonEligibilite()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/creation-de-compte'],
-            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
-            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation', true],
+            'test_incomplet' => [self::donneesTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_complet' => [self::donneesTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation', true],
         ];
     }
 
@@ -119,14 +118,15 @@ class BrisPorteControllerTest extends WebTestCase
     /**
      * ETQ visiteur, après avoir rempli le formulaire de test d'éligibilité, si j'ai choisi un département en
      * expérimentation, je dois être invité à créer mon compte.
-     *
-     * @dataProvider donneesCreationDeCompte
      */
-    public function testCreationDeCompte(?callable $getTestEligibilite = null, ?string $redirection = null): void
+    #[DataProvider('donneesCreationDeCompte')]
+    public function testCreationDeCompte(?array $donneesTestEligibilite = null, ?string $redirection = null): void
     {
-        if ($getTestEligibilite) {
+        if (is_array($donneesTestEligibilite)) {
             /** @var TestEligibilite $testEligibilite */
-            $testEligibilite = $getTestEligibilite($this->em);
+            $testEligibilite = $this->creerTestEligibilite($donneesTestEligibilite);
+            $this->em->persist($testEligibilite);
+
             $this->initializePreinscription($testEligibilite);
         }
 
@@ -135,6 +135,7 @@ class BrisPorteControllerTest extends WebTestCase
         if ($redirection) {
             $this->assertTrue($this->client->getResponse()->isRedirect($redirection));
         } else {
+
             $this->assertTrue($this->client->getResponse()->isSuccessful());
 
             $reactArgs = json_decode(trim($this->client->getCrawler()->filter('#react-arguments')->first()->text()), true);
@@ -162,12 +163,12 @@ class BrisPorteControllerTest extends WebTestCase
         }
     }
 
-    public function donneesCreationDeCompte()
+    public static function donneesCreationDeCompte()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet()],
-            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
+            'test_incomplet' => [self::donneesTestEligibiliteEnXpIncomplet()],
+            'test_complet' => [self::donneesTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
             // TODO rajouter une erreur opérationnelle
         ];
     }
@@ -176,14 +177,13 @@ class BrisPorteControllerTest extends WebTestCase
      * ETQ visiteur, après avoir rempli le formulaire de test d'éligibilité et créé mon compte, je dois être avisé que,
      * pour continuer, je dois valider mon adresse en cliquant sur le lien figurant dans le courriel que je viens de
      * recevoir.
-     *
-     * @dataProvider donneesFinaliserLaCreation
      */
-    public function testFinaliserLaCreation(?callable $getTestEligibilite = null, ?string $redirection = null): void
+    #[DataProvider('donneesFinaliserLaCreation')]
+    public function testFinaliserLaCreation(?array $donneesTestEligibilite = null, ?string $redirection = null): void
     {
-        if ($getTestEligibilite) {
+        if (is_array($donneesTestEligibilite)) {
             /** @var TestEligibilite $testEligibilite */
-            $testEligibilite = $getTestEligibilite($this->em);
+            $testEligibilite = $this->creerTestEligibilite($donneesTestEligibilite);
             $this->initializePreinscription($testEligibilite);
         }
 
@@ -196,13 +196,29 @@ class BrisPorteControllerTest extends WebTestCase
         }
     }
 
-    public function donneesFinaliserLaCreation()
+    public static function donneesFinaliserLaCreation()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
-            'test_complet' => [$this->getTestEligibiliteEnXpComplet()],
+            'test_incomplet' => [self::donneesTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_complet' => [self::donneesTestEligibiliteEnXpComplet()],
         ];
+    }
+
+    protected function creerTestEligibilite(array $donnees): TestEligibilite
+    {
+        $testEligibilite = TestEligibilite::fromArray(
+            array_replace(
+                $donnees, isset($donnees['requerant']) ? [
+                'requerant' => filter_var($donnees['requerant'], FILTER_VALIDATE_EMAIL) ? $this->em->getRepository(Requerant::class)->findOneBy(['email' => $donnees['requerant']]) : $donnees['requerant']
+            ] : []
+            )
+        );
+
+        $this->em->persist($testEligibilite);
+        $this->em->flush();
+
+        return $testEligibilite;
     }
 
     protected function initializePreinscription(?TestEligibilite $testEligibilite = null, ?DeclarationFDOBrisPorte $declarationErreurOperationnelle = null): void
@@ -223,41 +239,29 @@ class BrisPorteControllerTest extends WebTestCase
 
         $session->save();
 
-        $domains = array_unique(array_map(fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
+        $domains = array_unique(array_map(fn(Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
         foreach ($domains as $domain) {
             $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
             $this->client->getCookieJar()->set($cookie);
         }
     }
 
-    protected function getTestEligibiliteEnXpComplet(): callable
+    protected static function donneesTestEligibiliteEnXpComplet(): array
     {
-        return function (EntityManagerInterface $em) {
-            $test = TestEligibilite::fromArray([
-                // 'description' => 'Test complet',
-                'estVise' => true,
-                'requerant' => $em->getRepository(Requerant::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
-
-            $em->persist($test);
-            $em->flush();
-
-            return $test;
-        };
+        return [
+            // 'description' => 'Test complet',
+            'estVise' => true,
+            'requerant' => 'raquel.randt@courriel.fr',
+            'dateSoumission' => (new \DateTime())->modify('-2 minutes')
+        ];
     }
 
-    protected function getTestEligibiliteEnXpIncomplet(): callable
+    protected static function donneesTestEligibiliteEnXpIncomplet(): array
     {
-        return function (EntityManagerInterface $em) {
-            $test = TestEligibilite::fromArray([
-                // 'description' => 'Test incomplet',
-                'estVise' => true,
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
-
-            $em->persist($test);
-            $em->flush();
-
-            return $test;
-        };
+        return [
+            // 'description' => 'Test incomplet',
+            'estVise' => true,
+            'dateSoumission' => (new \DateTime())->modify('-2 minutes')
+        ];
     }
 }

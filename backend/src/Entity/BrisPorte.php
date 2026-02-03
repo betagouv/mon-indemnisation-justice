@@ -65,10 +65,10 @@ class BrisPorte
 
     #[Groups('dossier:lecture')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
-    protected \DateTimeInterface $dateCreation;
+    protected \DateTime $dateCreation;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateDepot = null;
+    protected ?\DateTime $dateDepot = null;
 
     #[ORM\JoinTable(name: 'document_dossiers')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -353,24 +353,24 @@ class BrisPorte
         return $this->estDepose();
     }
 
-    public function getDateCreation(): \DateTimeInterface
+    public function getDateCreation(): \DateTime
     {
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): static
+    public function setDateCreation(\DateTime $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
 
         return $this;
     }
 
-    public function getDateDepot(): ?\DateTimeInterface
+    public function getDateDepot(): ?\DateTime
     {
         return $this->dateDepot;
     }
 
-    public function setDateDepot(\DateTimeInterface $dateDepot): BrisPorte
+    public function setDateDepot(\DateTime $dateDepot): BrisPorte
     {
         $this->dateDepot = $dateDepot;
 
