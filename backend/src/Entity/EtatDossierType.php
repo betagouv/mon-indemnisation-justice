@@ -122,7 +122,7 @@ enum EtatDossierType: string
 
     public function estEditable(): bool
     {
-        return in_array($this, [self::DOSSIER_A_FINALISER, self::DOSSIER_A_ATTRIBUER, self::DOSSIER_A_INSTRUIRE]);
+        return in_array($this, [self::DOSSIER_A_FINALISER, self::DOSSIER_A_ATTRIBUER, self::DOSSIER_A_INSTRUIRE, self::DOSSIER_EN_INSTRUCTION, self::DOSSIER_OK_A_SIGNER, self::DOSSIER_KO_A_SIGNER]);
     }
 
     public function estAAttribuer(): bool
