@@ -44,7 +44,7 @@ class AjouterPieceJointeEndpoint
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
         }
 
-        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $pieceJointe, $documentType);
+        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $pieceJointe, $documentType, estAjoutRequerant: false);
 
         $this->em->persist($dossier);
         $this->em->flush();

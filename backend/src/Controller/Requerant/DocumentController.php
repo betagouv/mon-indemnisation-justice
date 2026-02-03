@@ -51,7 +51,7 @@ class DocumentController extends AbstractController
             throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
         }
 
-        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, $type);
+        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, $type, estAjoutRequerant: true);
 
         return new JsonResponse([
             'id' => $document->getId(),

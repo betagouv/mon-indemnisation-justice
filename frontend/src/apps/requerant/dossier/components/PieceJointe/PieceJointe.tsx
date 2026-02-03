@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { Uploader } from "@/apps/requerant/dossier/components/Uploader";
 import { DossierContext } from "@/apps/requerant/dossier/contexts/DossierContext.ts";
 import * as Sentry from "@sentry/browser";
@@ -7,6 +7,7 @@ export const Document = ({
   documents,
   libelle,
   lectureSeule = false,
+  estRequis = false,
   type,
   onRemoved,
   onUploaded,
@@ -14,6 +15,7 @@ export const Document = ({
   documents: any[];
   libelle: string;
   lectureSeule?: boolean;
+  estRequis?: boolean;
   type: string;
   onRemoved?: (document: any) => void;
   onUploaded?: (document: any) => void;
@@ -30,12 +32,16 @@ export const Document = ({
       });
   };
 
+  const classes = useMemo<string>((): string => {
+    return estRequis
+      ? `fr-icon-close-line  ${documents.length ? "fr-text-default--success" : "fr-text-default--error"}`
+      : "";
+  }, [documents.length, estRequis]);
+
   return (
     <>
       <div className="fr-col-12 fr-my-2w">
-        <h6
-          className={`${documents?.length ? "fr-icon-check-line fr-text-default--success" : "fr-icon-close-line fr-text-default--error"}`}
-        >
+        <h6 className={classes}>
           {" "}
           {libelle} ({documents?.length || "aucun"} document
           {documents?.length > 1 ? "s" : ""})

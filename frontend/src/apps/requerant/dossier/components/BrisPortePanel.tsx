@@ -122,6 +122,7 @@ const BrisPortePanel = function ({
                   <Document
                     documents={dossier.documents.attestation_information}
                     libelle="Attestation complétée par les forces de l'ordre"
+                    estRequis={true}
                     type={"attestation_information"}
                     onRemoved={(document) => {
                       patchDossier({
@@ -154,6 +155,7 @@ const BrisPortePanel = function ({
                 <Document
                   documents={dossier.documents.photo_prejudice}
                   libelle="Photos de la porte endommagée"
+                  estRequis={true}
                   type={"photo_prejudice"}
                   onRemoved={(document) =>
                     patchDossier({
@@ -182,6 +184,7 @@ const BrisPortePanel = function ({
               <section className="pr-form-section">
                 <Document
                   documents={dossier.documents.carte_identite}
+                  estRequis={true}
                   libelle="Copie de votre pièce d'identité recto-verso"
                   type={"carte_identite"}
                   onRemoved={(document) =>
@@ -212,6 +215,7 @@ const BrisPortePanel = function ({
                 <Document
                   documents={dossier.documents.facture}
                   libelle="Facture acquittée attestant de la réalité des travaux de remise en état à l'identique "
+                  estRequis={true}
                   type={"facture"}
                   onRemoved={(document) =>
                     patchDossier({
@@ -243,6 +247,7 @@ const BrisPortePanel = function ({
                       ? "Relevé d'identité bancaire de votre société"
                       : "Votre relevé d'identité bancaire"
                   }
+                  estRequis={true}
                   type={"rib"}
                   onRemoved={(document) =>
                     patchDossier({
@@ -265,13 +270,14 @@ const BrisPortePanel = function ({
                 />
               </section>
             </div>
-            {/* Est propriétaire */}
-            {dossier.qualiteRequerant === "PRO" && (
+            {/* Est propriétaire ou bailleur */}
+            {["PRO", "BAI", "AUT"].includes(dossier.qualiteRequerant) && (
               <div className="fr-col-12">
                 <section className="pr-form-section">
                   <Document
                     documents={dossier.documents.titre_propriete}
                     libelle="Titre de propriété"
+                    estRequis={dossier.qualiteRequerant !== "AUT"}
                     type={"titre_propriete"}
                     onRemoved={(document) =>
                       patchDossier({
@@ -299,13 +305,14 @@ const BrisPortePanel = function ({
                 </section>
               </div>
             )}
-            {/* Est locataire */}
-            {dossier.qualiteRequerant === "LOC" && (
+            {/* Est locataire ou bailleur */}
+            {["LOC", "BAI", "AUT"].includes(dossier.qualiteRequerant) && (
               <div className="fr-col-12">
                 <section className="pr-form-section">
                   <Document
                     documents={dossier.documents.contrat_location}
                     libelle={"Contrat de location"}
+                    estRequis={dossier.qualiteRequerant !== "AUT"}
                     type={"contrat_location"}
                     onRemoved={(document) =>
                       patchDossier({
@@ -333,8 +340,8 @@ const BrisPortePanel = function ({
                 </section>
               </div>
             )}
-            {/* Est locataire */}
-            {dossier.qualiteRequerant === "LOC" && (
+            {/* Est locataire ou autre */}
+            {["LOC", "BAI", "AUT"].includes(dossier.qualiteRequerant) && (
               <div className="fr-col-12">
                 <section className="pr-form-section">
                   <Document
@@ -342,6 +349,7 @@ const BrisPortePanel = function ({
                     libelle={
                       "Attestation de non prise en charge par le bailleur"
                     }
+                    estRequis={dossier.qualiteRequerant !== "AUT"}
                     type={"non_prise_en_charge_bailleur"}
                     onRemoved={(document) =>
                       patchDossier({
@@ -376,6 +384,7 @@ const BrisPortePanel = function ({
                   libelle={
                     "Attestation de non prise en charge par l'assurance habitation"
                   }
+                  estRequis={dossier.qualiteRequerant !== "AUT"}
                   type={"non_prise_en_charge_assurance"}
                   onRemoved={(document) =>
                     patchDossier({

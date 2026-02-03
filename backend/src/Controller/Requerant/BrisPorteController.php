@@ -116,7 +116,7 @@ class BrisPorteController extends RequerantController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $acceptation = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_COURRIER_REQUERANT);
+        $acceptation = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_COURRIER_REQUERANT, estAjoutRequerant: true);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_VERIFIER);
 
