@@ -58,7 +58,6 @@ class DocumentManager
             $dossier,
             $dossier->getOrCreateDocument($type)
                 ->setOriginalFilename($fichierTeleverse->getClientOriginalName())
-                ->setAjoutRequerant(true)
                 ->setType($type)
                 ->setMime($fichierTeleverse->getClientMimeType())
                 ->setAjoutRequerant($estAjoutRequerant),

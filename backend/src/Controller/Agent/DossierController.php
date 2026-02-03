@@ -175,7 +175,7 @@ class DossierController extends AgentController
                 throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
             }
 
-            $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_COURRIER_MINISTERE);
+            $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_COURRIER_MINISTERE, estAjoutRequerant: false);
         }
 
         $this->dossierRepository->save($dossier);
@@ -195,7 +195,7 @@ class DossierController extends AgentController
 
         /** @var UploadedFile $file */
         $file = $request->files->get('fichierSigne');
-        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_ARRETE_PAIEMENT, false);
+        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_ARRETE_PAIEMENT, estAjoutRequerant: false);
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_A_INDEMNISER, agent: $this->getAgent(), contexte: array_merge(
             $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : [],
