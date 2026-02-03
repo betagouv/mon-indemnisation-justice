@@ -10,7 +10,7 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Metadonnees\MetadonneesAttestation;
 use MonIndemnisationJustice\Repository\DocumentRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]

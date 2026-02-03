@@ -72,7 +72,7 @@ services:
       - REQUEST_SCHEME=https
       - FIREFOX_PATH=/usr/bin/firefox
       - INSTANCE_NUMBER=0
-    restart: always
+    restart: no
     depends_on:
       - postgres
       - mailpit

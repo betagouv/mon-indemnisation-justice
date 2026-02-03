@@ -21,7 +21,7 @@ class SupprimerDossierCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument('id', InputArgument::REQUIRED);
     }
@@ -32,7 +32,7 @@ class SupprimerDossierCommand extends Command
         $dossier = $this->em->find(BrisPorte::class, $id);
 
         if (null == $dossier) {
-            throw new \LogicException("Aucun dossier trouve pour l'id $id");
+            throw new \LogicException("Aucun dossier trouve pour l'id {$id}");
         }
 
         $this->em->remove($dossier);

@@ -207,7 +207,12 @@ class PersonnePhysique
         return $this;
     }
 
-    public function getCommuneNaissance(): ?string
+    public function getCommuneNaissance(): ?GeoCodePostal
+    {
+        return $this->codePostalNaissance;
+    }
+
+    public function getCommuneNaissanceLibelle(): ?string
     {
         return $this->codePostalNaissance?->getCommune()->getNom();
     }

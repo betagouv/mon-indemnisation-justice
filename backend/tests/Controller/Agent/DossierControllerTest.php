@@ -119,7 +119,7 @@ class DossierControllerTest extends WebTestCase
                 'courriel' => $dossier->getRequerant()->getEmail(),
                 'telephone' => $dossier->getRequerant()->getPersonnePhysique()->getTelephone(),
                 'dateNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance()->getTimestamp() * 1000,
-                'communeNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getCommuneNaissance(),
+                'communeNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getCommuneNaissanceLibelle(),
                 'paysNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getPaysNaissance()?->getNom(),
                 'raisonSociale' => $dossier->getRequerant()->getPersonneMorale()?->getRaisonSociale(),
                 'siren' => $dossier->getRequerant()->getPersonneMorale()?->getSirenSiret(),

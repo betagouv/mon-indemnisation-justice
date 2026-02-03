@@ -96,7 +96,7 @@ class DeclarationFDOBrisPorte
     #[ORM\JoinTable(name: 'declaration_fdo_bris_porte_pieces_jointes')]
     #[ORM\JoinColumn(name: 'declaration_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'document', referencedColumnName: 'id')]
-    #[ORM\ManyToMany(targetEntity: Document::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'declarations', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['agent:detail'])]
     /** @var Collection<Document> */
     protected Collection $piecesJointes;

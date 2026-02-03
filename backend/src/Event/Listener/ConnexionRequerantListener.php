@@ -17,7 +17,9 @@ class ConnexionRequerantListener implements EventSubscriberInterface
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-    ) {}
+    )
+    {
+    }
 
     public function onSecurityInteractiveLogin(LoginSuccessEvent $event): void
     {
@@ -34,11 +36,10 @@ class ConnexionRequerantListener implements EventSubscriberInterface
             // ... associée à aucun de ses dossiers existants...
             if (null !== $testEligibilite && null === $testEligibilite->dossier) {
                 // ... alors, on crée un nouveau dossier lié à ce test d'éligibilité
-                $dossier = (new BrisPorte())
+                $dossier = new BrisPorte()
                     ->setRequerant($requerant)
                     ->setQualiteRequerant($testEligibilite->rapportAuLogement)
-                    ->setTestEligibilite($testEligibilite)
-                ;
+                    ->setTestEligibilite($testEligibilite);
                 $requerant->setNavigation(null);
 
                 $this->em->persist($requerant);
@@ -51,19 +52,18 @@ class ConnexionRequerantListener implements EventSubscriberInterface
             // ... associée à aucun de ses dossiers existants...
             if (null !== $declarationFDO && null === $declarationFDO->getDossier()) {
                 // ... alors, on crée un nouveau dossier lié à cette déclaration
-                $dossier = (new BrisPorte())
+                $dossier = new BrisPorte()
                     ->setRequerant($requerant)
                     ->setDeclarationFDO($declarationFDO)
                     ->setDateOperationPJ($declarationFDO->getDateOperation())
                     // On recrée une nouvelle adresse pour conserver les données des FDO et pouvoir plus tard comparer et arbitrer
                     ->setAdresse(
-                        (new Adresse())
+                        new Adresse()
                             ->setLigne1($declarationFDO->getAdresse()->getLigne1())
                             ->setLigne2($declarationFDO->getAdresse()->getLigne2())
                             ->setCodePostal($declarationFDO->getAdresse()->getCodePostal())
                             ->setLocalite($declarationFDO->getAdresse()->getLocalite())
-                    )
-                ;
+                    );
 
                 $requerant->setNavigation(null);
 

@@ -359,7 +359,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[SerializedName('communeNaissance')]
     public function getCommuneNaissance(): ?string
     {
-        return $this->personnePhysique->getCommuneNaissance();
+        return $this->personnePhysique->getCommuneNaissanceLibelle();
     }
 
     #[Groups('agent:detail')]

@@ -136,7 +136,7 @@ class BrisPorte
 
     public function __construct()
     {
-        $this->dateCreation = new \DateTimeImmutable();
+        $this->dateCreation = new \DateTime();
         $this->adresse = new Adresse();
         $this->documents = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
@@ -178,7 +178,6 @@ class BrisPorte
     }
 
     #[Groups(['agent:liste'])]
-    #[SerializedName('requerant')]
     public function getReferenceRequerant(): ?string
     {
         return $this->requerant->getNomCourant(capital: true);

@@ -1,14 +1,13 @@
 when@prod: &prod
     sentry:
-        # See https://docs.sentry.io/platforms/php/guides/symfony/configuration/
-        dsn: '%env(default::SENTRY_DSN)%'
+        dsn: '%env(SENTRY_DSN)%'
         options:
-            ignore_exceptions:
-                - 'Symfony\Component\ErrorHandler\Error\FatalError'
-                - 'Symfony\Component\Debug\Exception\FatalErrorException'
-                - 'Symfony\Component\HttpKernel\Exception\HttpException'
-                - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
-                - 'Symfony\Component\Console\Exception\CommandNotFoundException'
-            send-default-pii: true
+          ignore_exceptions:
+            - 'Symfony\Component\ErrorHandler\Error\FatalError'
+            - 'Symfony\Component\Debug\Exception\FatalErrorException'
+            - 'Symfony\Component\HttpKernel\Exception\HttpException'
+            - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
+            - 'Symfony\Component\Console\Exception\CommandNotFoundException'
+          send-default-pii: true
 
 when@develop: *prod

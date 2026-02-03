@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Voter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Document;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DocumentVoter extends Voter
@@ -17,7 +18,7 @@ class DocumentVoter extends Voter
         return in_array($attribute, [self::ACTION_IMPRIMER, self::ACTION_RENSEIGNER]);
     }
 
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         if (!$token->getUser() instanceof Agent) {
             return false;

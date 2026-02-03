@@ -21,7 +21,7 @@ class SupprimerRequerantCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument('courriel', InputArgument::REQUIRED);
     }
@@ -32,7 +32,7 @@ class SupprimerRequerantCommand extends Command
         $requerant = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $courriel]);
 
         if (null == $requerant) {
-            throw new \LogicException("Aucun requérant associé au courriel $courriel");
+            throw new \LogicException("Aucun requérant associé au courriel {$courriel}");
         }
 
         $this->em->remove($requerant);

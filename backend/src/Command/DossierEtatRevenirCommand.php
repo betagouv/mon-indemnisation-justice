@@ -26,7 +26,7 @@ class DossierEtatRevenirCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument('id', InputArgument::REQUIRED, 'Id ou référence du dossier');
         $this->addArgument('nb-etapes', InputArgument::OPTIONAL, "Nombre d'étapes où revenir en arrière", 0);

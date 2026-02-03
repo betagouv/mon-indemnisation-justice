@@ -6,6 +6,7 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class FDODocumentVoter extends Voter
@@ -17,7 +18,7 @@ class FDODocumentVoter extends Voter
         return in_array($attribute, [self::ACTION_CONSULTER]) && $subject instanceof Document;
     }
 
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         if (!$subject instanceof Document) {
             return false;

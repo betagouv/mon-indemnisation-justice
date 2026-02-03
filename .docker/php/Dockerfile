@@ -62,6 +62,5 @@ RUN apt autoremove -y
 
 ENV TZ=Europe/Paris
 ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV APP_RUNTIME="Runtime\\FrankenPhpSymfony\\Runtime"
 
 WORKDIR /app
