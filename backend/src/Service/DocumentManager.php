@@ -21,17 +21,19 @@ class DocumentManager
 {
     public function __construct(
         #[Target('default.storage')]
-        protected readonly FilesystemOperator $storage,
+        protected readonly FilesystemOperator     $storage,
         protected readonly EntityManagerInterface $em,
-        protected readonly ImprimanteCourrier $imprimanteCourrier,
-        protected readonly Environment $twig,
-    ) {}
+        protected readonly ImprimanteCourrier     $imprimanteCourrier,
+        protected readonly Environment            $twig,
+    )
+    {
+    }
 
     public function ajouterFichierLocal(BrisPorte $dossier, string $cheminOuURL, DocumentType $type, bool $estAjoutRequerant = true): void
     {
         $contenu = file_get_contents($cheminOuURL);
         if (filter_var($cheminOuURL, FILTER_VALIDATE_URL)) {
-            $cheminFichier = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
+            $cheminFichier = Path::normalize(sys_get_temp_dir() . '/' . Uuid::uuid4()->toString());
             file_put_contents($cheminFichier, $contenu);
         } else {
             $cheminFichier = $cheminOuURL;
@@ -88,8 +90,7 @@ class DocumentManager
 
             $document
                 ->setFilename($nom)
-                ->setSize($this->storage->fileSize($nom))
-            ;
+                ->setSize($this->storage->fileSize($nom));
 
             return $document;
         } catch (FilesystemException|UnableToWriteFile $e) {
@@ -125,20 +126,43 @@ class DocumentManager
         return $this->storage->read($document->getFilename());
     }
 
-    public function genererArretePaiement(BrisPorte $dossier): void
+    public function genererCorps(BrisPorte $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?string $motifRejet = null): string
     {
-        $arretePaiement = $dossier->getOrCreateArretePaiement()->setCorps(
-            $this->twig->render('courrier/_corps_arretePaiement.html.twig', [
-                'dossier' => $dossier,
-            ])
-        )->ajouterAuDossier($dossier);
+        return $this->twig->render(
+            $type->getGabaritCorps(),
+            array_merge(
+                [
+                    'dossier' => $dossier,
+                    'corps' => true,
+                ],
+                $montantIndemnisation ? ['montantIndemnisation' => $montantIndemnisation, 'indemnisation' => true] : [],
+                $motifRejet ? ['motifRejet' => $motifRejet, 'indemnisation' => false] : []
+            )
+        );
+    }
 
-        $arretePaiement = $this->imprimanteCourrier->imprimerDocument($arretePaiement)
-            ->setOriginalFilename("Arrêté de paiement - dossier {$dossier->getReference()}")
-        ;
+    public function generer(BrisPorte $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?string $motifRejet = null): Document
+    {
+        if (!$type->estEditableAgent()) {
+            throw new \LogicException("Les documents de type '$type->value' ne sont pas éditables");
 
-        $this->em->persist($arretePaiement);
+        }
+        $document = $dossier
+            ->getOrCreateDocument($type)
+            ->setCorps(
+                $this->genererCorps($dossier, $type, $montantIndemnisation, $motifRejet)
+            )->setMetaDonnees(array_merge(
+                $montantIndemnisation ? ['montantIndemnisation' => $montantIndemnisation, 'indemnisation' => true] : [],
+                $motifRejet ? ['motifRejet' => $motifRejet, 'indemnisation' => true] : []
+            ));
+
+        $document = $this->imprimanteCourrier->imprimerDocument($document)
+            ->setOriginalFilename($type->nommerFichier($dossier));
+
+        $this->em->persist($document);
         $this->em->flush();
+
+        return $document;
     }
 
     public function calculerTypeMime(string $cheminFichier): string

@@ -2,19 +2,18 @@
 
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
-use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererCourrierRejetEndpoint;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
 
 /**
- * Teste le point d'entrée @GenererCourrierRejetEndpoint de l'API, permettant de générer le courrier de proposition
+ * Teste le point d'entrée @GenererCourrierPropositionIndemnisationEndpoint de l'API, permettant de générer le courrier de proposition
  * d'indemnisation d'un dossier.
  *
  * @internal
  *
- * @coversNothing
+ * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererCourrierPropositionIndemnisationEndpoint
  */
 class GenererCourrierPropositionIndemnisationEndpointTest extends APIEndpointTestCase
 {
@@ -46,6 +45,6 @@ class GenererCourrierPropositionIndemnisationEndpointTest extends APIEndpointTes
 
     protected function getApiRoute(): string
     {
-        return '/api/agent/fip6/dossier/{id}/generer-courrier-rejet';
+        return '/api/agent/fip6/dossier/{id}/generer-courrier-proposition-indemnisation';
     }
 }

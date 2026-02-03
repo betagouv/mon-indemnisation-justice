@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DocumentOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,7 +30,7 @@ class GenererArretePaiementEndpoint
         BrisPorte $dossier,
     ) {
         try {
-            $this->documentManager->genererArretePaiement($dossier);
+            $this->documentManager->generer($dossier, DocumentType::TYPE_ARRETE_PAIEMENT);
         } catch (\Throwable $e) {
             return new JsonResponse([
                 'error' => $e->getMessage(),

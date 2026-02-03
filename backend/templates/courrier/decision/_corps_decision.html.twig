@@ -1,0 +1,5 @@
+{% if indemnisation %}
+    {% include 'courrier/decision/propositionIndemnisation/_pi_corps.html.twig' %}
+{% else %}
+    {% include 'courrier/decision/rejet/_rejet_corps.html.twig' %}
+{% endif %}
