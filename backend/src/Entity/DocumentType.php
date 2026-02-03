@@ -44,7 +44,7 @@ enum DocumentType: string
 
     public static function piecesJointes(): array
     {
-        return array_filter(self::cases(), fn (DocumentType $type) => $type->estPieceJointe());
+        return array_filter(self::cases(), fn(DocumentType $type) => $type->estPieceJointe());
     }
 
     /**
@@ -56,6 +56,20 @@ enum DocumentType: string
             self::TYPE_COURRIER_MINISTERE => 'courrier/decision.html.twig',
             self::TYPE_COURRIER_REQUERANT => 'courrier/declarationAcceptation.html.twig',
             self::TYPE_ARRETE_PAIEMENT => 'courrier/arretePaiement.html.twig',
+
+            default => null,
+        };
+    }
+
+    /**
+     * Retourne le chemin vers le gabarit (i.e. "template") twig à utiliser pour la génération du corps du document.
+     */
+    public function getGabaritCorps(): ?string
+    {
+        return match ($this) {
+            self::TYPE_COURRIER_MINISTERE => 'courrier/decision/_corps_decision.html.twig',
+            self::TYPE_COURRIER_REQUERANT => 'courrier/declarationAcceptation/_corps_declaration_acceptation.html.twig',
+            self::TYPE_ARRETE_PAIEMENT => 'courrier/arretePaiement/_corps_arrete_paiement.html.twig',
 
             default => null,
         };

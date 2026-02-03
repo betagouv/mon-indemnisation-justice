@@ -10,7 +10,7 @@ use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 /**
  * @internal
  *
- * @coversNothing
+ * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Document\ImprimerDocumentEndpoint
  */
 class ImprimerDocumentEndpointTest extends AbstractEndpointTestCase
 {

@@ -14,7 +14,7 @@ use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
  *
  * @internal
  *
- * @coversNothing
+ * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererArretePaiementEndpoint
  */
 class GenererArretePaiementEndpointTest extends APIEndpointTestCase
 {
