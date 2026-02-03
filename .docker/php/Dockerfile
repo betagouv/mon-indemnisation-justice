@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:1.9.1-php8.3.24-trixie AS frankenphp
+FROM dunglas/frankenphp:1.11.1-php8.4-trixie AS frankenphp
 
 # Extra .bashrc config
 RUN echo "alias ll='ls -l'" > /root/.bashrc
@@ -36,6 +36,7 @@ RUN echo 'date.timezone = "Europe/Paris"' >> $PHP_INI_DIR/php.ini
 RUN echo 'memory_limit = -1' >> $PHP_INI_DIR/php.ini
 RUN echo 'upload_max_filesize = 20M' >> $PHP_INI_DIR/php.ini
 RUN echo 'post_max_size = 30M' >> $PHP_INI_DIR/php.ini
+RUN echo 'intl.default_locale = "fr"' >> $PHP_INI_DIR/php.ini
 
 # Node
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
