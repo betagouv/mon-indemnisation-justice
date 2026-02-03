@@ -6,6 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DocumentOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,6 +25,7 @@ class GenererCourrierRejetEndpoint
 {
     public function __construct(
         protected readonly ImprimanteCourrier $imprimanteCourrier,
+        protected readonly DocumentManager $documentManager,
         protected readonly Environment $twig,
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
@@ -49,9 +52,7 @@ class GenererCourrierRejetEndpoint
         };
 
         $courrierMinistere->setCorps(
-            $this->twig->render($gabarit, [
-                'dossier' => $dossier,
-            ])
+            $this->documentManager->genererCorps($dossier, DocumentType::TYPE_COURRIER_MINISTERE)
         );
 
         $courrierMinistere = $this->imprimanteCourrier->imprimerDocument($courrierMinistere);

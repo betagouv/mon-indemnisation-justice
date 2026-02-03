@@ -1,141 +1,147 @@
-{% extends 'courrier/_base_courrier.html.twig' %}
+{# Si seul le corps du document est demandé #}
+{% if corps|default(false) %}
+    {% include 'courrier/arretePaiement/_arrete_corps.html.twig' %}
+    {# Sinon générer le courrier entier, avec en-tête et pied de page #}
+{% else %}
+    {% extends 'courrier/_base_courrier.html.twig' %}
 
-{% block style %}
-    <style>
-        body {
+    {% block style %}
+        <style>
+            body {
 
-            header {
+                header {
 
-                .courrier-decision-courrier-titre {
-                    font-family: 'Marianne', sans-serif;
-                    width: 33%;
-                    text-align: right;
-                    font-weight: bold;
-                    font-size: 12pt;
-                    letter-spacing: -.5pt;
+                    .courrier-decision-courrier-titre {
+                        font-family: 'Marianne', sans-serif;
+                        width: 33%;
+                        text-align: right;
+                        font-weight: bold;
+                        font-size: 12pt;
+                        letter-spacing: -.5pt;
+                    }
                 }
-            }
 
-            #courrier-decision {
+                #courrier-decision {
 
 
-                #courrier-decision-courrier-introduction {
-                    display: flex;
-                    flex-direction: row;
-                    align-items: flex-start;
-                    flex-wrap: wrap;
-                    margin: 0 0 30pt 0;
+                    #courrier-decision-courrier-introduction {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: flex-start;
+                        flex-wrap: wrap;
+                        margin: 0 0 30pt 0;
 
-                    p {
-                        &:first-child {
-                            margin-top: 0 !important;
+                        p {
+                            &:first-child {
+                                margin-top: 0 !important;
+                            }
+
+                            margin: 10pt 0;
+                            font-size: 10pt;
+                            line-height: 13pt;
                         }
 
-                        margin: 10pt 0;
-                        font-size: 10pt;
-                        line-height: 13pt;
-                    }
+                        .contact-bureau {
+                        }
 
-                    .contact-bureau {
-                    }
+                        .section-a-gauche {
+                            width: calc(11 * 100% / 18)
+                        }
 
-                    .section-a-gauche {
-                        width: calc(11 * 100% / 18)
-                    }
+                        .section-a-droite {
+                            width: calc(7 * 100% / 18);
 
-                    .section-a-droite {
-                        width: calc(7 * 100% / 18);
-
-                        &.section-flottante {
-                            margin-left: calc(11 * 100% / 18);
+                            &.section-flottante {
+                                margin-left: calc(11 * 100% / 18);
+                            }
                         }
                     }
-                }
 
-                #courrier-decision-courrier-contenu {
-                    p {
-                        margin: 12pt 0;
-                        letter-spacing: 0;
-                        font-size: 11pt;
-                        line-height: 13pt;
-                        word-wrap: break-word;
+                    #courrier-decision-courrier-contenu {
+                        p {
+                            margin: 12pt 0;
+                            letter-spacing: 0;
+                            font-size: 11pt;
+                            line-height: 13pt;
+                            word-wrap: break-word;
+                        }
+
                     }
-
                 }
+
             }
 
-        }
+        </style>
+    {% endblock style %}
 
-    </style>
-{% endblock style %}
+    {% block pages %}
 
-{% block pages %}
+        <header>
 
-    <header>
-
-        <div id="logo-ministere">
-            {% include 'courrier/logo_ministere.svg' %}
-        </div>
+            <div id="logo-ministere">
+                {% include 'courrier/logo_ministere.svg' %}
+            </div>
 
 
-        <span class="courrier-decision-courrier-titre">Direction des services judiciaires</span>
+            <span class="courrier-decision-courrier-titre">Direction des services judiciaires</span>
 
-    </header>
-    <div id="courrier-decision" class="page">
-        <div id="courrier-decision-courrier-introduction">
+        </header>
+        <div id="courrier-decision" class="page">
+            <div id="courrier-decision-courrier-introduction">
 
-            <div class="section-a-gauche">
-                <p>
-                    <b>Chef de bureau / Adjointe au chef du bureau</b>
-                </p>
-
-                {% if dossier.redacteur is not null %}
+                <div class="section-a-gauche">
                     <p>
-                        <u>Affaire suivie par</u> : <span
-                                class="texte-majuscule">{{ dossier.redacteur.nomCourt }}</span>
+                        <b>Chef de bureau / Adjointe au chef du bureau</b>
                     </p>
-                {% endif %}
 
-                <p>
-                    <b class="texte-majuscule">
-                        Sous-direction des finances, <br/>
-                        de l’immobilier et de la performance<br/>
-                        bureau du precontentieux (FIP6)
-
-                    </b>
-                </p>
-
-                <p class="contact-bureau">
-                    <a href="mailto:precontentieux.dsj-fip6@justice.gouv.fr">precontentieux.dsj-fip6@justice.gouv.fr</a><br/>
-                    <b><u>Référence à rappeler</u></b> : {{ dossier.reference }}
-                </p>
-            </div>
-
-            <div class="section-a-droite">
-                Paris,
-                le {{ "now"|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
-            </div>
-
-
-            <div class="section-a-droite section-flottante">
-                <p>
-                    {{ dossier.requerant.personnePhysique.civilite.libelle }} {{ dossier.requerant.personnePhysique.nom|upper }} {{ dossier.requerant.personnePhysique.prenom1|capitalize }}{% if dossier.requerant.email != null %}
-                        <br/>
-                        Courriel: <a
-                                href="mailto:{{ dossier.requerant.email }}">{{ dossier.requerant.email }}</a>
+                    {% if dossier.redacteur is not null %}
+                        <p>
+                            <u>Affaire suivie par</u> : <span
+                                    class="texte-majuscule">{{ dossier.redacteur.nomCourt }}</span>
+                        </p>
                     {% endif %}
-                </p>
+
+                    <p>
+                        <b class="texte-majuscule">
+                            Sous-direction des finances, <br/>
+                            de l’immobilier et de la performance<br/>
+                            bureau du precontentieux (FIP6)
+
+                        </b>
+                    </p>
+
+                    <p class="contact-bureau">
+                        <a href="mailto:precontentieux.dsj-fip6@justice.gouv.fr">precontentieux.dsj-fip6@justice.gouv.fr</a><br/>
+                        <b><u>Référence à rappeler</u></b> : {{ dossier.reference }}
+                    </p>
+                </div>
+
+                <div class="section-a-droite">
+                    Paris,
+                    le {{ "now"|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
+                </div>
+
+
+                <div class="section-a-droite section-flottante">
+                    <p>
+                        {{ dossier.requerant.personnePhysique.civilite.libelle }} {{ dossier.requerant.personnePhysique.nom|upper }} {{ dossier.requerant.personnePhysique.prenom1|capitalize }}{% if dossier.requerant.email != null %}
+                            <br/>
+                            Courriel: <a
+                                    href="mailto:{{ dossier.requerant.email }}">{{ dossier.requerant.email }}</a>
+                        {% endif %}
+                    </p>
+                </div>
+
             </div>
 
+            <div id="courrier-decision-courrier-contenu">
+                <p>
+                    {{ dossier.requerant.personnePhysique.civilite.libelle }},
+                </p>
+                {% if corps is defined and corps is not null %}
+                    {{ corps|raw }}
+                {% endif %}
+            </div>
         </div>
-
-        <div id="courrier-decision-courrier-contenu">
-            <p>
-                {{ dossier.requerant.personnePhysique.civilite.libelle }},
-            </p>
-            {% if corps is defined and corps is not null %}
-                {{ corps|raw }}
-            {% endif %}
-        </div>
-    </div>
-{% endblock pages %}
+    {% endblock pages %}
+{% endif %}

@@ -126,13 +126,26 @@ class DocumentManager
         return $this->storage->read($document->getFilename());
     }
 
+    public function genererCorps(BrisPorte $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?string $motifRejet): string
+    {
+        return $this->twig->render(
+            $type->getGabarit(),
+            array_merge(
+                [
+                    'dossier' => $dossier,
+                    'corps' => true,
+                ],
+                $montantIndemnisation ? ['montantIndemnisation' => $montantIndemnisation] : [],
+                $motifRejet ? ['motifRejet' => $motifRejet] : []
+            )
+        );
+    }
+
     public function genererArretePaiement(BrisPorte $dossier): void
     {
         $arretePaiement = $dossier->getOrCreateArretePaiement()->setCorps(
-            $this->twig->render('courrier/_corps_arretePaiement.html.twig', [
-                'dossier' => $dossier,
-            ])
-        )->ajouterAuDossier($dossier);
+            $this->genererCorps($dossier, DocumentType::TYPE_ARRETE_PAIEMENT)
+        );
 
         $arretePaiement = $this->imprimanteCourrier->imprimerDocument($arretePaiement)
             ->setOriginalFilename("Arrêté de paiement - dossier {$dossier->getReference()}")
