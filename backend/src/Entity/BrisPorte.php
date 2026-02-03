@@ -12,8 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Event\Listener\DossierEntitylistener;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\DateConvertisseur;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
@@ -178,6 +178,7 @@ class BrisPorte
     }
 
     #[Groups(['agent:liste'])]
+    #[SerializedName('requerant')]
     public function getReferenceRequerant(): ?string
     {
         return $this->requerant->getNomCourant(capital: true);
@@ -331,7 +332,7 @@ class BrisPorte
 
     public function getEtat(EtatDossierType $type): ?EtatDossier
     {
-        return $this->historiqueEtats->findFirst(fn (int $index, EtatDossier $etat) => $etat->getEtat() === $type);
+        return $this->historiqueEtats->findFirst(fn(int $index, EtatDossier $etat) => $etat->getEtat() === $type);
     }
 
     public function estCloture(): bool
@@ -421,7 +422,7 @@ class BrisPorte
 
     public function supprimerDocumentsParType(DocumentType $type): void
     {
-        foreach ($this->documents->filter(fn (Document $d) => $d->getType() === $type) as $document) {
+        foreach ($this->documents->filter(fn(Document $d) => $d->getType() === $type) as $document) {
             $this->documents->removeElement($document);
         }
 
@@ -439,7 +440,7 @@ class BrisPorte
 
     public function getDocumentsATransmettre(): Collection
     {
-        return $this->documents->filter(fn (Document $document) => in_array($document->getType(), [
+        return $this->documents->filter(fn(Document $document) => in_array($document->getType(), [
             DocumentType::TYPE_COURRIER_REQUERANT,
             DocumentType::TYPE_ARRETE_PAIEMENT,
             DocumentType::TYPE_CARTE_IDENTITE,
@@ -632,7 +633,7 @@ class BrisPorte
 
     public function getAdressePlaintext(): string
     {
-        return (string) $this->getAdresse();
+        return (string)$this->getAdresse();
     }
 
     public function getPrecisionRequerant(): ?string
@@ -681,20 +682,20 @@ class BrisPorte
         $this->typeAttestation = array_reduce(
             array_filter(
                 array_map(
-                    fn (Document $document) => $document->getMetaDonneesAttestation()?->typeAttestation,
+                    fn(Document $document) => $document->getMetaDonneesAttestation()?->typeAttestation,
                     $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
                 ),
-                fn (?TypeAttestation $typeAttestation) => null !== $typeAttestation
+                fn(?TypeAttestation $typeAttestation) => null !== $typeAttestation
             ),
-            fn (?TypeAttestation $cumul, TypeAttestation $typeAttestation) => $typeAttestation->getPrioritaire($cumul)
+            fn(?TypeAttestation $cumul, TypeAttestation $typeAttestation) => $typeAttestation->getPrioritaire($cumul)
         );
 
         $typeInstitutionSecuritePublique = current(array_filter(
             array_map(
-                fn (Document $document) => $document->getMetaDonneesAttestation()?->typeInstitutionSecuritePublique,
+                fn(Document $document) => $document->getMetaDonneesAttestation()?->typeInstitutionSecuritePublique,
                 $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
             ),
-            fn (?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique) => null !== $typeInstitutionSecuritePublique
+            fn(?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique) => null !== $typeInstitutionSecuritePublique
         )) ?? null;
 
         if (false !== $typeInstitutionSecuritePublique) {
@@ -732,8 +733,7 @@ class BrisPorte
     {
         return $this->historiqueEtats
             ->findFirst(
-                fn (int $index, EtatDossier $e) => $etat === $e->getEtat()
-            )?->getDate()
-        ;
+                fn(int $index, EtatDossier $e) => $etat === $e->getEtat()
+            )?->getDate();
     }
 }

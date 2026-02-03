@@ -5,7 +5,7 @@ namespace MonIndemnisationJustice\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Table(name: 'geo_pays')]
 #[ORM\Entity(repositoryClass: GeoPaysRepository::class)]

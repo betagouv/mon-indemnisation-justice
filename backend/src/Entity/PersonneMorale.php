@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\PersonneMoraleRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PersonneMoraleRepository::class)]
 class PersonneMorale

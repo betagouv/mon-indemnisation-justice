@@ -7,8 +7,8 @@ use ApiPlatform\Metadata\ApiResource;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\PersonnePhysiqueRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
@@ -128,8 +128,8 @@ class PersonnePhysique
     public function recalculerNumeroSecuriteSociale(): void
     {
         if (null !== $this->civilite && null !== $this->dateNaissance && (
-            null !== $this->codePostalNaissance || (null !== $this->paysNaissance && !$this->paysNaissance->estFrance())
-        )
+                null !== $this->codePostalNaissance || (null !== $this->paysNaissance && !$this->paysNaissance->estFrance())
+            )
         ) {
             $this->dateNaissance->format('m');
             $this->numeroSecuriteSociale = sprintf(
@@ -192,7 +192,7 @@ class PersonnePhysique
 
     public function getPrenoms(): ?string
     {
-        return implode(', ', array_filter([$this->prenom1, $this->prenom2, $this->prenom3], fn ($prenom) => !empty($prenom)));
+        return implode(', ', array_filter([$this->prenom1, $this->prenom2, $this->prenom3], fn($prenom) => !empty($prenom)));
     }
 
     public function getTelephone(): ?string
@@ -275,7 +275,7 @@ class PersonnePhysique
     {
         return sprintf(
             '%s%s %s',
-            $civilite ? ucfirst(strtolower($this->civilite->value)).'. ' : '',
+            $civilite ? ucfirst(strtolower($this->civilite->value)) . '. ' : '',
             $this->prenom1,
             $capital ? strtoupper($this->nom) : ucfirst($this->nom)
         );

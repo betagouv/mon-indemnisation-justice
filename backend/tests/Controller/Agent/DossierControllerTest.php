@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 /**
  * @internal
  *
- * @coversNothing
+ * @covers \MonIndemnisationJustice\Controller\Agent\DossierController
  */
 class DossierControllerTest extends WebTestCase
 {

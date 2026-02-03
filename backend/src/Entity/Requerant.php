@@ -13,7 +13,7 @@ use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: RequerantRepository::class)]
@@ -153,7 +153,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -408,7 +408,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     public function getNomComplet(): string
     {
         return ($this->isPersonneMorale
-                ? "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '').$this->personnePhysique->getNomComplet();
+                ? "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '') . $this->personnePhysique->getNomComplet();
     }
 
     public function getDernierDossier(): ?BrisPorte
@@ -426,7 +426,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function nbDossiersEnAttente(): int
     {
-        return $this->dossiers->filter(fn (BrisPorte $dossier) => !$dossier->estDepose())->count();
+        return $this->dossiers->filter(fn(BrisPorte $dossier) => !$dossier->estDepose())->count();
     }
 
     public function getNavigation(): ?NavigationRequerant
