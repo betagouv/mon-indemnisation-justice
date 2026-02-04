@@ -30,7 +30,7 @@ class BrouillonDeclarationFDOBrisPorte
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     #[Groups(['agent:detail'])]
-    protected \DateTimeInterface $dateCreation;
+    protected \DateTimeImmutable $dateCreation;
 
     #[ORM\Column(type: Types::JSON, nullable: false)]
     protected array $donnees = [];
@@ -75,12 +75,12 @@ class BrouillonDeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateCreation(): \DateTimeInterface
+    public function getDateCreation(): \DateTimeImmutable
     {
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): BrouillonDeclarationFDOBrisPorte
+    public function setDateCreation(\DateTimeImmutable $dateCreation): BrouillonDeclarationFDOBrisPorte
     {
         $this->dateCreation = $dateCreation;
 
@@ -103,7 +103,7 @@ class BrouillonDeclarationFDOBrisPorte
             array_values(
                 array_filter(
                     $this->donnees['piecesJointes'] ?? [],
-                    fn (array $d) => $d['id'] !== $pieceJointe->getId()
+                    fn(array $d) => $d['id'] !== $pieceJointe->getId()
                 )
             )
         );

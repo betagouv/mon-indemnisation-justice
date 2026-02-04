@@ -26,7 +26,7 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $brouillonPolice = (new BrouillonDeclarationFDOBrisPorte())
-            ->setDateCreation(new \DateTime())
+            ->setDateCreation(new \DateTimeImmutable())
             ->setAgent($this->getReference('agent-policier', Agent::class))
             ->setDonnees([
                 'estErreur' => 'DOUTE',
@@ -50,19 +50,14 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
                 ],
                 'precisionsRequerant' => 'Logement vide lors de la perquisition',
                 'coordonneesRequerant' => null,
-            ])
-        ;
+            ]);
         $manager->persist($brouillonPolice);
 
         $declarationPolice = (new DeclarationFDOBrisPorte())
             ->setEstErreur(DeclarationFDOBrisPorteErreurType::DOUTE)
             ->setDescriptionErreur("On a fracturé la porte d'accès au sous-sol de la résidence")
             ->setDateCreation(
-                \DateTimeImmutable::createFromMutable(
-                    (new \DateTime())->sub(
-                        \DateInterval::createFromDateString('7 days')
-                    )
-                )
+                new \DateTimeImmutable('-7 days')
             )
             ->setDateOperation(
                 \DateTimeImmutable::createFromMutable(
@@ -76,7 +71,7 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
                     ->setCodePostal('31000')
                     ->setLocalite('TOULOUSE')
             )
-            ->setDateSoumission(new \DateTime())
+            ->setDateSoumission(new \DateTimeImmutable())
             ->setProcedure(
                 (new ProcedureJudiciaire())
                     ->setNumeroProcedure('PRO3177')
@@ -85,12 +80,11 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
             )
             ->setPiecesJointes([
                 $this->getReference('document-agent-fdo-photo-2', Document::class),
-            ])
-        ;
+            ]);
         $manager->persist($declarationPolice);
 
         $brouillonGendarmerie = (new BrouillonDeclarationFDOBrisPorte())
-            ->setDateCreation((new \DateTime())->sub(\DateInterval::createFromDateString('5 days')))
+            ->setDateCreation((new \DateTimeImmutable('-5 days')))
             ->setAgent($this->getReference('agent-gendarme', Agent::class))
             ->setDonnees([
                 'estErreur' => 'DOUTE',
@@ -120,8 +114,7 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
                     'telephone' => '06 11 11 11 11',
                     'courriel' => 'rekke@courriel.fr',
                 ],
-            ])
-        ;
+            ]);
 
         $manager->persist($brouillonGendarmerie);
 

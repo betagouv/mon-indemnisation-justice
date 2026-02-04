@@ -45,19 +45,16 @@ class DeclarationFDOBrisPorte
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: false)]
     #[Groups(['agent:detail'])]
-    protected \DateTimeInterface $dateOperation;
+    protected \DateTimeImmutable $dateOperation;
 
-    /**
-     * @var Adresse l'adresse du logement dans laquelle
-     */
+    #[Groups(['agent:detail'])]
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[Groups(['agent:detail'])]
     protected Adresse $adresse;
 
+    #[Groups(['agent:detail'])]
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'procedure_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[Groups(['agent:detail'])]
     protected ProcedureJudiciaire $procedure;
 
     #[Groups(['agent:detail'])]
@@ -75,15 +72,15 @@ class DeclarationFDOBrisPorte
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Groups(['agent:detail'])]
-    protected \DateTimeInterface $dateCreation;
+    protected \DateTimeImmutable $dateCreation;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Groups(['agent:detail'])]
-    protected \DateTimeInterface $dateSoumission;
+    protected \DateTimeImmutable $dateSoumission;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     #[Groups(['agent:detail'])]
-    protected ?\DateTimeInterface $dateSuppression = null;
+    protected ?\DateTimeImmutable $dateSuppression = null;
 
     /**
      * @var Agent l'agent des FDO déclarant
@@ -163,12 +160,12 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateOperation(): \DateTimeInterface
+    public function getDateOperation(): \DateTimeImmutable
     {
         return $this->dateOperation;
     }
 
-    public function setDateOperation(\DateTimeInterface $dateOperation): static
+    public function setDateOperation(\DateTimeImmutable $dateOperation): static
     {
         $this->dateOperation = $dateOperation;
 
@@ -182,7 +179,8 @@ class DeclarationFDOBrisPorte
 
     public function setAdresse(Adresse $adresse): static
     {
-        $this->adresse = $adresse;
+        // Hack : sans ça l'adresse mappée ne contient que des champs nuls
+        $this->adresse = clone($adresse);
 
         return $this;
     }
@@ -228,24 +226,24 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateCreation(): \DateTimeInterface
+    public function getDateCreation(): \DateTimeImmutable
     {
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): static
+    public function setDateCreation(\DateTimeImmutable $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
 
         return $this;
     }
 
-    public function getDateSoumission(): \DateTimeInterface
+    public function getDateSoumission(): \DateTimeImmutable
     {
         return $this->dateSoumission;
     }
 
-    public function setDateSoumission(\DateTimeInterface $dateSoumission): static
+    public function setDateSoumission(\DateTimeImmutable $dateSoumission): static
     {
         $this->dateSoumission = $dateSoumission;
 
@@ -276,12 +274,12 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateSuppression(): \DateTimeInterface
+    public function getDateSuppression(): \DateTimeImmutable
     {
         return $this->dateSuppression;
     }
 
-    public function setDateSuppression(\DateTimeInterface $dateSuppression): DeclarationFDOBrisPorte
+    public function setDateSuppression(\DateTimeImmutable $dateSuppression): DeclarationFDOBrisPorte
     {
         $this->dateSuppression = $dateSuppression;
 

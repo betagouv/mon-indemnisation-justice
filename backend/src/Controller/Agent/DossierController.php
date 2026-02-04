@@ -31,13 +31,15 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class DossierController extends AgentController
 {
     public function __construct(
-        protected readonly BrisPorteRepository $dossierRepository,
-        protected readonly AgentRepository $agentRepository,
-        protected readonly DossierManager $dossierManager,
-        protected readonly DocumentManager $documentManager,
+        protected readonly BrisPorteRepository    $dossierRepository,
+        protected readonly AgentRepository        $agentRepository,
+        protected readonly DossierManager         $dossierManager,
+        protected readonly DocumentManager        $documentManager,
         protected readonly EntityManagerInterface $em,
-        protected readonly NormalizerInterface $normalizer,
-    ) {}
+        protected readonly NormalizerInterface    $normalizer,
+    )
+    {
+    }
 
     #[Route('/', name: 'app_agent_redacteur_accueil')]
     public function index(): Response
@@ -63,7 +65,7 @@ class DossierController extends AgentController
     public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
     {
         return $this->render('agent/dossier/consulter_bris_porte.html.twig', [
-            'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
+            'titre' => 'Traitement du bris de porte ' . $dossier->getReference(),
             'react' => [
                 'agent' => [
                     'id' => $this->getAgent()->getId(),
@@ -144,7 +146,8 @@ class DossierController extends AgentController
     public function validerArretePaiementDossier(
         #[MapEntity(id: 'id')]
         BrisPorte $dossier,
-    ): Response {
+    ): Response
+    {
         if (null === $dossier->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT)) {
             return new JsonResponse([], Response::HTTP_NOT_FOUND);
         }
@@ -235,7 +238,7 @@ class DossierController extends AgentController
             page: $page,
             taille: $taille,
             etats: $request->query->has('e')
-                ? array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e'))
+                ? array_map(fn($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e'))
                 : [
                     // EtatDossierType::DOSSIER_CLOTURE,
                     // EtatDossierType::DOSSIER_A_FINALISER,
@@ -252,7 +255,7 @@ class DossierController extends AgentController
                 ],
             attributaires: count($ids = array_filter(
                 self::extraireCritereRecherche($request, 'a'),
-                fn ($a) => is_numeric($a)
+                fn($a) => is_numeric($a)
             )) > 0 ? $this->agentRepository->findBy(['id' => $ids]) : [],
             filtres: self::extraireCritereRecherche($request, 'r'),
             nonAttribue: in_array('_', self::extraireCritereRecherche($request, 'a'))
@@ -264,9 +267,7 @@ class DossierController extends AgentController
                 'taille' => $taille,
                 'total' => $paginator->count(),
                 'resultats' => $normalizer->normalize(
-                    iterator_to_array(
-                        $paginator->getIterator()
-                    ),
+                    $paginator->getIterator(),
                     'json',
                     ['groups' => 'agent:liste']
                 ),
@@ -296,7 +297,7 @@ class DossierController extends AgentController
         $zipName = tempnam(sys_get_temp_dir(), "zip_dossier_{$dossier->getId()}");
 
         if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
-            throw new \RuntimeException('Cannot open '.$zipName);
+            throw new \RuntimeException('Cannot open ' . $zipName);
         }
 
         /** @var Document $document */
@@ -310,8 +311,7 @@ class DossierController extends AgentController
             'Content-Type' => 'application/zip',
             'Content-Length' => filesize($zipName),
         ]))
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"))
-        ;
+            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
     }
 
     #[IsGranted(
@@ -356,7 +356,7 @@ class DossierController extends AgentController
 
         return array_filter(
             explode('|', $request->query->getString($nom, '')),
-            fn ($v) => !empty($v)
+            fn($v) => !empty($v)
         );
     }
 }

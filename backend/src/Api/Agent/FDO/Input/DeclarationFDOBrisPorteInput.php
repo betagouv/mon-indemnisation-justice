@@ -20,7 +20,9 @@ class DeclarationFDOBrisPorteInput
     #[Assert\NotNull(message: "Veuillez-nous indiquer s'il s'agit d'une erreur")]
     public ?DeclarationFDOBrisPorteErreurType $estErreur = null;
     public ?string $descriptionErreur = null;
+
     #[Assert\NotNull(message: "L'adresse du bris de porte est requise")]
+    #[Assert\Valid]
     public ?AdresseInput $adresse = null;
     #[Assert\NotNull(message: 'La procédure judiciaire est requise')]
     #[Assert\Valid]

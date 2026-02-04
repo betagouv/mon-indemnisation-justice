@@ -14,7 +14,7 @@ class InstitutionSecuritePublique
     protected TypeInstitutionSecuritePublique $type;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateIntegration = null;
+    protected ?\DateTime $dateIntegration = null;
 
     public function getType(): TypeInstitutionSecuritePublique
     {

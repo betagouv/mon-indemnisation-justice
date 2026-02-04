@@ -39,18 +39,21 @@ class SoumettreDeclarationBrisPorteEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly ObjectMapperInterface $objectMapper,
-        protected readonly NormalizerInterface $normalizer,
-        protected readonly DenormalizerInterface $denormalizer,
-        protected readonly ValidatorInterface $validator,
-        protected readonly Mailer $mailer,
-    ) {}
+        protected readonly ObjectMapperInterface  $objectMapper,
+        protected readonly NormalizerInterface    $normalizer,
+        protected readonly DenormalizerInterface  $denormalizer,
+        protected readonly ValidatorInterface     $validator,
+        protected readonly Mailer                 $mailer,
+    )
+    {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
         BrouillonDeclarationFDOBrisPorte $brouillon,
-        Security $security
-    ): Response {
+        Security                         $security
+    ): Response
+    {
         /** @var Agent $agent */
         $agent = $security->getUser();
 
@@ -65,47 +68,50 @@ class SoumettreDeclarationBrisPorteEndpoint
 
         /** @var ConstraintViolationList $validation */
         $violations = $this->validator->validate($input);
+        $erreurs = array_merge(
+            ...array_map(
+                fn($v) => [$v->getPropertyPath() => $v->getMessage()],
+                iterator_to_array($violations->getIterator())
+            )
+        );
 
         if ($violations->count() > 0) {
             return new JsonResponse([
-                'erreurs' => array_merge(
-                    ...array_map(
-                        fn ($v) => [$v->getPropertyPath() => $v->getMessage()],
-                        iterator_to_array($violations->getIterator())
-                    )
-                ),
+                'erreurs' => $erreurs,
             ], Response::HTTP_BAD_REQUEST);
         }
+
 
         /** @var DeclarationFDOBrisPorte $declaration */
         $declaration = $this->objectMapper->map(
             $input,
-            (new DeclarationFDOBrisPorte())
-                ->setId($brouillon->getId())
-                ->setDateCreation($brouillon->getDateCreation())
-                ->setAgent($agent)
-                ->setPiecesJointes(array_map(
-                    fn (DocumentDto $pieceJointe) => $this->objectMapper->map($pieceJointe, Document::class),
-                    $input->getPiecesJointes()
-                ))
+            DeclarationFDOBrisPorte::class,
         );
+
+        $declaration
+            ->setId($brouillon->getId())
+            ->setDateCreation($brouillon->getDateCreation())
+            ->setAgent($agent)
+            ->setPiecesJointes(array_map(
+                fn(DocumentDto $pieceJointe) => $this->objectMapper->map($pieceJointe, Document::class),
+                $input->getPiecesJointes()
+            ));
 
         $this->em->persist($declaration);
         $this->em->remove($brouillon);
-        $this->em->detach($brouillon);
+
 
         $this->em->flush();
 
         // Envoi du mail d'invitation à déclarer
         if (null !== ($coordonneesRequerant = $declaration->getCoordonneesRequerant())) {
             $this->mailer
-                ->to($coordonneesRequerant->getCourriel(), $coordonneesRequerant->getPrenom().' '.$coordonneesRequerant->getNom())
+                ->to($coordonneesRequerant->getCourriel(), $coordonneesRequerant->getPrenom() . ' ' . $coordonneesRequerant->getNom())
                 ->subject("Mon Indemnisation Justice: vous pouvez faire une demande d'indemnisation")
                 ->htmlTemplate('email/invitation_a_deposer.html.twig', [
                     'declaration' => $declaration,
                 ])
-                ->send()
-            ;
+                ->send();
         }
 
         return new JsonResponse(

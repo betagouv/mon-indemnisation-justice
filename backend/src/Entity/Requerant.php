@@ -14,6 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: RequerantRepository::class)]
@@ -53,7 +54,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     protected array $roles = [self::ROLE_REQUERANT];
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
-    protected \DateTimeInterface $dateInscription;
+    protected \DateTime $dateInscription;
 
     #[ORM\Column(type: 'string', length: 12, nullable: true)]
     protected ?string $jetonVerification;
@@ -62,6 +63,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(options: ['default' => false])]
     protected bool $isPersonneMorale = false;
 
+    #[Ignore]
     #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
     /** @var Collection<BrisPorte> */
@@ -232,7 +234,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function getDateInscription(): ?\DateTimeInterface
+    public function getDateInscription(): ?\DateTime
     {
         return $this->dateInscription;
     }
@@ -411,6 +413,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
                 ? "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '') . $this->personnePhysique->getNomComplet();
     }
 
+    #[Ignore]
     public function getDernierDossier(): ?BrisPorte
     {
         return $this->dossiers->isEmpty() ? null : $this->dossiers->last();

@@ -22,7 +22,7 @@ class Document
     public ?bool $estValide = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    public ?\DateTimeInterface $dateValidation = null;
+    public ?\DateTimeImmutable $dateValidation = null;
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
@@ -38,7 +38,7 @@ class Document
     protected ?string $mime = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    protected \DateTimeInterface $dateAjout;
+    protected \DateTimeImmutable $dateAjout;
 
     /**
      * Si `true`, alors ajouté par le requérant lors du dépôt de dossier.
@@ -70,7 +70,7 @@ class Document
 
     #[Groups(['agent:detail'])]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateDerniereModification = null;
+    protected ?\DateTimeImmutable $dateDerniereModification = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['dossier:lecture', 'requerant:detail'])]
@@ -151,7 +151,7 @@ class Document
         return $this;
     }
 
-    public function getDateAjout(): \DateTimeInterface
+    public function getDateAjout(): \DateTimeImmutable
     {
         return $this->dateAjout;
     }
@@ -296,12 +296,12 @@ class Document
         return $this;
     }
 
-    public function getDateDerniereModification(): ?\DateTimeInterface
+    public function getDateDerniereModification(): ?\DateTimeImmutable
     {
         return $this->dateDerniereModification;
     }
 
-    public function setDateDerniereModification(?\DateTimeInterface $dateDerniereModification): Document
+    public function setDateDerniereModification(?\DateTimeImmutable $dateDerniereModification): Document
     {
         $this->dateDerniereModification = $dateDerniereModification;
 

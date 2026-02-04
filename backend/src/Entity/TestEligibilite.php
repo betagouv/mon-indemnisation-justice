@@ -54,7 +54,7 @@ class TestEligibilite
     public bool $estIssuAttestation = false;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    public ?\DateTimeInterface $dateSoumission = null;
+    public ?\DateTime $dateSoumission = null;
 
     #[ORM\PrePersist]
     public function prePersist()

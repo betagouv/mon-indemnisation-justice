@@ -14,6 +14,7 @@ use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
@@ -41,7 +42,7 @@ class BrisPorte
     #[ORM\Column]
     public ?int $id = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail'])]
     #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected Requerant $requerant;
@@ -115,7 +116,7 @@ class BrisPorte
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste', 'requerant:detail'])]
+    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail'])]
     #[ORM\ManyToOne(cascade: ['persist', 'remove'], inversedBy: 'brisPortes')]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Adresse $adresse;
@@ -123,7 +124,7 @@ class BrisPorte
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateOperationPJ = null;
+    private ?\DateTime $dateOperationPJ = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail'])]
     #[SerializedName('estPorteBlindee')]
@@ -177,8 +178,15 @@ class BrisPorte
         return $this->id;
     }
 
-    #[Groups(['agent:liste'])]
-    #[SerializedName('requerant')]
+    ##[Groups(['agent:liste'])]
+    ##[SerializedName('requerant')]
+    #[Context(
+        normalizationContext: [
+            'groups' => ['agent:liste'],
+            'name' => 'requerant'
+        ],
+        groups: ['agent:liste']
+    )]
     public function getReferenceRequerant(): ?string
     {
         return $this->requerant->getNomCourant(capital: true);
@@ -266,6 +274,7 @@ class BrisPorte
         return $this;
     }
 
+    #[Ignore]
     public function getLastStatut(): EtatDossier
     {
         return $this->getEtatDossier();
@@ -278,6 +287,7 @@ class BrisPorte
         return $this->etatDossier;
     }
 
+    #[Ignore]
     public function getHistoriqueEtats(): Collection
     {
         return $this->historiqueEtats;
@@ -365,6 +375,7 @@ class BrisPorte
         return $this;
     }
 
+
     public function getDateDepot(): ?\DateTime
     {
         return $this->dateDepot;
@@ -377,7 +388,7 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
+    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[SerializedName('dateDepot')]
     public function getDateDepotMillis(): ?int
     {
@@ -385,17 +396,19 @@ class BrisPorte
     }
 
     #[Groups('dossier:lecture')]
-    public function getDateDeclaration(): ?\DateTimeInterface
+    public function getDateDeclaration(): ?\DateTime
     {
         return $this->getDateDepot();
     }
 
-    public function getDateSignatureAgent(): ?\DateTimeInterface
+    #[Ignore]
+    public function getDateSignatureAgent(): ?\DateTimeImmutable
     {
         return $this->getDateEtat(EtatDossierType::DOSSIER_OK_A_APPROUVER);
     }
 
-    public function getDateSignatureRequerant(): ?\DateTimeInterface
+    #[Ignore]
+    public function getDateSignatureRequerant(): ?\DateTimeImmutable
     {
         return $this->getDateEtat(EtatDossierType::DOSSIER_OK_A_VERIFIER);
     }
@@ -438,6 +451,7 @@ class BrisPorte
         return $this->documentsParType;
     }
 
+    #[Ignore]
     public function getDocumentsATransmettre(): Collection
     {
         return $this->documents->filter(fn(Document $document) => in_array($document->getType(), [
@@ -448,21 +462,25 @@ class BrisPorte
         ]));
     }
 
+    #[Ignore]
     public function getDocumentParType(DocumentType $type): ?Document
     {
         return $this->documentsParType[$type->value][0] ?? null;
     }
 
+    #[Ignore]
     public function getOrCreatePropositionIndemnisation(): Document
     {
         return $this->getOrCreateDocument(DocumentType::TYPE_COURRIER_MINISTERE);
     }
 
+    #[Ignore]
     public function getOrCreateArretePaiement(): Document
     {
         return $this->getOrCreateDocument(DocumentType::TYPE_ARRETE_PAIEMENT);
     }
 
+    #[Ignore]
     public function getOrCreateDeclarationAcceptation(): Document
     {
         return $this->getOrCreateDocument(DocumentType::TYPE_COURRIER_REQUERANT);
@@ -471,16 +489,19 @@ class BrisPorte
     /**
      * @return Document[]
      */
+    #[Ignore]
     public function getDocumentsParType(DocumentType $type): array
     {
         return $this->documentsParType[$type->value] ?? [];
     }
 
+    #[Ignore]
     public function getCourrierDecision(): ?Document
     {
         return $this->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
     }
 
+    #[Ignore]
     public function getArretePaiement(): ?Document
     {
         return $this->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT);
@@ -520,6 +541,8 @@ class BrisPorte
         return $this->getEtatDossier()->getElementContexte('explication');
     }
 
+    #[Ignore]
+    // TODO : supprimer ce champ
     public function getNumeroPV(): ?string
     {
         return $this->numeroPV;
@@ -532,7 +555,7 @@ class BrisPorte
         return $this;
     }
 
-    #[Groups('agent:liste')]
+    #[Groups(['agent:liste'])]
     #[SerializedName('adresse')]
     public function getReferenceAdresse(): string
     {
@@ -551,7 +574,7 @@ class BrisPorte
         return $this;
     }
 
-    public function getDateOperationPJ(): ?\DateTimeInterface
+    public function getDateOperationPJ(): ?\DateTime
     {
         return $this->dateOperationPJ;
     }
@@ -563,7 +586,7 @@ class BrisPorte
         return DateConvertisseur::enMillisecondes($this->dateOperationPJ);
     }
 
-    public function setDateOperationPJ(?\DateTimeInterface $dateOperationPJ): self
+    public function setDateOperationPJ(?\DateTime $dateOperationPJ): self
     {
         $this->dateOperationPJ = $dateOperationPJ;
 
@@ -729,7 +752,7 @@ class BrisPorte
         return $this;
     }
 
-    protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
+    protected function getDateEtat(EtatDossierType $etat): ?\DateTimeImmutable
     {
         return $this->historiqueEtats
             ->findFirst(

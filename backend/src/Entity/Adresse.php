@@ -22,19 +22,19 @@ class Adresse
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $ligne1 = null;
+    protected ?string $ligne1 = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $ligne2 = null;
+    protected ?string $ligne2 = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $codePostal = null;
+    protected ?string $codePostal = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $localite = null;
+    protected ?string $localite = null;
 
     /**
      * @var Collection<int, BrisPorte>

@@ -55,7 +55,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
                 $dossier = new BrisPorte()
                     ->setRequerant($requerant)
                     ->setDeclarationFDO($declarationFDO)
-                    ->setDateOperationPJ($declarationFDO->getDateOperation())
+                    ->setDateOperationPJ(\DateTime::createFromImmutable($declarationFDO->getDateOperation()))
                     // On recrée une nouvelle adresse pour conserver les données des FDO et pouvoir plus tard comparer et arbitrer
                     ->setAdresse(
                         new Adresse()

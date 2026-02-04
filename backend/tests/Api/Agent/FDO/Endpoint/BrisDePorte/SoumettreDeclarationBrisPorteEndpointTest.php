@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\SoumettreDeclarationBrisPorteEndpoint;
+use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
@@ -39,6 +40,12 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $output = json_decode($this->client->getResponse()->getContent(), false);
 
         $declaration = $this->em->find(DeclarationFDOBrisPorte::class, $output->id);
+
+        $this->assertInstanceOf(Adresse::class, $declaration->getAdresse());
+        $this->assertEquals("127 boulevard des Fleurs", $declaration->getAdresse()->getLigne1());
+        $this->assertEquals("75021", $declaration->getAdresse()->getCodePostal());
+        $this->assertEquals("PARIS", $declaration->getAdresse()->getLocalite());
+
         $this->assertEquals(2, $declaration->getPiecesJointes()->count());
 
         $pieceJointe = $declaration->getPiecesJointes()->get(0);
@@ -57,7 +64,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         // La déclaration doit avoir récupéré les pièces jointes du brouillon
         $this->assertEquals(2, $declaration->getPiecesJointes()->count());
-        $this->assertEquals([DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_FDO], $declaration->getPiecesJointes()->map(fn (Document $document) => $document->getType())->toArray());
+        $this->assertEquals([DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_FDO], $declaration->getPiecesJointes()->map(fn(Document $document) => $document->getType())->toArray());
     }
 
     /**
@@ -97,7 +104,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         // La déclaration doit avoir récupéré les pièces jointes du brouillon
         $this->assertEquals(2, $declaration->getPiecesJointes()->count());
-        $this->assertEquals([DocumentType::TYPE_PHOTO_FDO, DocumentType::TYPE_PHOTO_FDO], $declaration->getPiecesJointes()->map(fn (Document $document) => $document->getType())->toArray());
+        $this->assertEquals([DocumentType::TYPE_PHOTO_FDO, DocumentType::TYPE_PHOTO_FDO], $declaration->getPiecesJointes()->map(fn(Document $document) => $document->getType())->toArray());
     }
 
     /**
@@ -300,8 +307,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     {
         $brouillon = (new BrouillonDeclarationFDOBrisPorte())
             ->setAgent($agent)
-            ->setDonnees($donnees)
-        ;
+            ->setDonnees($donnees);
 
         $this->em->persist($brouillon);
         $this->em->flush();
