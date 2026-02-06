@@ -26,11 +26,6 @@ RUN install-php-extensions \
     pdo pdo_pgsql pgsql \
     bcmath
 
-# Symfony CLI
-
-#RUN curl -1sLf https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh | bash && \
-#    apt install -y symfony-cli
-
 # PHP config
 RUN echo 'date.timezone = "Europe/Paris"' >> $PHP_INI_DIR/php.ini
 RUN echo 'memory_limit = -1' >> $PHP_INI_DIR/php.ini
@@ -48,16 +43,14 @@ RUN npm install --force -g yarn
 RUN apt install -y firefox-esr
 ENV FIREFOX_PATH=/usr/bin/firefox
 
-# PDFtk
+# Installer pdf2text pour pouvoir extraire le texte d'un fichier PDF
+RUN apt install -y poppler-utils
 
-RUN apt install -y pdftk
-
-# Extra
+# Installer un client Postgre
 RUN apt install -y postgresql-client
 RUN echo 'alias database="psql \${DATABASE_URL/\?*/}"' >> /root/.bashrc
 
 # Cleanups
-
 RUN apt autoremove -y
 
 ENV TZ=Europe/Paris

@@ -9,6 +9,7 @@ use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\QualiteRequerant;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -36,9 +37,8 @@ class BrisPorteControllerTest extends WebTestCase
      * * Si j'ai déjà rempli le questionnaire, alors je dois être automatiquement renvoyé vers la page suivante
      * * Si j'ai déjà rempli mon questionnaire ET créé mon compte, alors je dois être automatiquement renvoyé sur la page
      * "Finaliser la création de votre compte"
-     *
-     * @dataProvider donneesTesterMonEligibilite
      */
+    #[DataProvider('donneesTesterMonEligibilite')]
     public function testTesterMonEligibilite(?callable $getTestEligibilite = null, ?string $redirection = null, bool $aRequerant = false): void
     {
         if ($getTestEligibilite) {
@@ -73,8 +73,7 @@ class BrisPorteControllerTest extends WebTestCase
             ->orderBy('t.dateSoumission', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
         $this->assertNotNull($testEligibilite);
         $this->assertNotNull($testEligibilite->dateSoumission);
         $this->assertFalse($testEligibilite->estVise);
@@ -90,12 +89,12 @@ class BrisPorteControllerTest extends WebTestCase
         $this->assertTrue($testEligibilite->estEligibleExperimentation);
     }
 
-    public function donneesTesterMonEligibilite()
+    public static function donneesTesterMonEligibilite()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/creation-de-compte'],
-            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
-            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation', true],
+            'test_incomplet' => [self::getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_complet' => [self::getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation', true],
         ];
     }
 
@@ -119,9 +118,8 @@ class BrisPorteControllerTest extends WebTestCase
     /**
      * ETQ visiteur, après avoir rempli le formulaire de test d'éligibilité, si j'ai choisi un département en
      * expérimentation, je dois être invité à créer mon compte.
-     *
-     * @dataProvider donneesCreationDeCompte
      */
+    #[DataProvider('donneesCreationDeCompte')]
     public function testCreationDeCompte(?callable $getTestEligibilite = null, ?string $redirection = null): void
     {
         if ($getTestEligibilite) {
@@ -162,12 +160,12 @@ class BrisPorteControllerTest extends WebTestCase
         }
     }
 
-    public function donneesCreationDeCompte()
+    public static function donneesCreationDeCompte()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet()],
-            'test_complet' => [$this->getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
+            'test_incomplet' => [self::getTestEligibiliteEnXpIncomplet()],
+            'test_complet' => [self::getTestEligibiliteEnXpComplet(), '/bris-de-porte/finaliser-la-creation'],
             // TODO rajouter une erreur opérationnelle
         ];
     }
@@ -176,9 +174,8 @@ class BrisPorteControllerTest extends WebTestCase
      * ETQ visiteur, après avoir rempli le formulaire de test d'éligibilité et créé mon compte, je dois être avisé que,
      * pour continuer, je dois valider mon adresse en cliquant sur le lien figurant dans le courriel que je viens de
      * recevoir.
-     *
-     * @dataProvider donneesFinaliserLaCreation
      */
+    #[DataProvider('donneesFinaliserLaCreation')]
     public function testFinaliserLaCreation(?callable $getTestEligibilite = null, ?string $redirection = null): void
     {
         if ($getTestEligibilite) {
@@ -196,12 +193,12 @@ class BrisPorteControllerTest extends WebTestCase
         }
     }
 
-    public function donneesFinaliserLaCreation()
+    public static function donneesFinaliserLaCreation()
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],
-            'test_incomplet' => [$this->getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
-            'test_complet' => [$this->getTestEligibiliteEnXpComplet()],
+            'test_incomplet' => [self::getTestEligibiliteEnXpIncomplet(), '/bris-de-porte/creation-de-compte'],
+            'test_complet' => [self::getTestEligibiliteEnXpComplet()],
         ];
     }
 
@@ -223,14 +220,14 @@ class BrisPorteControllerTest extends WebTestCase
 
         $session->save();
 
-        $domains = array_unique(array_map(fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
+        $domains = array_unique(array_map(fn(Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
         foreach ($domains as $domain) {
             $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
             $this->client->getCookieJar()->set($cookie);
         }
     }
 
-    protected function getTestEligibiliteEnXpComplet(): callable
+    protected static function getTestEligibiliteEnXpComplet(): callable
     {
         return function (EntityManagerInterface $em) {
             $test = TestEligibilite::fromArray([
@@ -246,7 +243,7 @@ class BrisPorteControllerTest extends WebTestCase
         };
     }
 
-    protected function getTestEligibiliteEnXpIncomplet(): callable
+    protected static function getTestEligibiliteEnXpIncomplet(): callable
     {
         return function (EntityManagerInterface $em) {
             $test = TestEligibilite::fromArray([

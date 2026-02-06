@@ -38,12 +38,13 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
     public function __construct(
         protected readonly UserPasswordHasherInterface $passwordHasher,
         #[Autowire(param: 'kernel.project_dir')]
-        protected readonly string $kernelDirectory,
-        protected readonly DocumentManager $documentManager,
-    ) {
+        protected readonly string                      $kernelDirectory,
+        protected readonly DocumentManager             $documentManager,
+    )
+    {
         $this->faker = Factory::create('fr_FR');
-        $this->dossierTeleversement = $this->kernelDirectory.'/fichiers/test/';
-        $this->dossierRessources = $this->kernelDirectory.'/tests/ressources/';
+        $this->dossierTeleversement = $this->kernelDirectory . '/fichiers/test/';
+        $this->dossierRessources = $this->kernelDirectory . '/tests/ressources/';
         $this->filesystem = new Filesystem();
     }
 
@@ -85,8 +86,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     'requerant' => $this->getReference('requerant-raquel', Requerant::class),
                     'dateSoumission' => new \DateTime('-30 seconds'),
                 ])
-            )
-        ;
+            );
 
         $this->addReference('dossier-a-finaliser-nantes', $dossierAFinaliser);
 
@@ -123,8 +123,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setTestEligibilite(
                 $this->getReference('test-eligibilite-melun', TestEligibilite::class)
             )
-            ->setQualiteRequerant(QualiteRequerant::BAI)
-        ;
+            ->setQualiteRequerant(QualiteRequerant::BAI);
 
         $dossierAAttribuer->setHistoriqueEtats([
             (new EtatDossier())
@@ -166,16 +165,18 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $manager->persist($dossierAInstruire);
 
-        $dossierEnInstruction = (new BrisPorte())
+        $dossierEnInstruction = new BrisPorte()
             ->setReference('BRI/20250103/001')
             ->setDateDepot(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-01-03'))
             ->setRequerant($this->getReference('requerant-ray', Requerant::class))
+            ->setAdresse(
+                $this->getReference('requerant-ray', Requerant::class)->getAdresse()
+            )
             ->setRedacteur($this->getReference('agent-redacteur', Agent::class))
             ->setTestEligibilite(
                 $this->getReference('test-eligibilite-ray-keran', TestEligibilite::class)
             )
-            ->setQualiteRequerant(QualiteRequerant::LOC)
-        ;
+            ->setQualiteRequerant(QualiteRequerant::LOC);
 
         $dossierEnInstruction->setHistoriqueEtats([
             (new EtatDossier())
@@ -323,8 +324,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setRequerant($requerant)
             ->setRedacteur($redacteur)
             ->setDateCreation($dateCreation)
-            ->setAdresse($adresse ?? $requerant->getAdresse())
-        ;
+            ->setAdresse($adresse ?? $requerant->getAdresse());
 
         $dossier
             ->setTestEligibilite(
@@ -338,8 +338,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ),
                 )
             )
-            ->setQualiteRequerant($dossier->getTestEligibilite()->rapportAuLogement)
-        ;
+            ->setQualiteRequerant($dossier->getTestEligibilite()->rapportAuLogement);
 
         foreach (self::historiqueTheorique($etatActuel) as $etat) {
             $historique[] = (new EtatDossier())
@@ -347,11 +346,10 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                 ->setDateEntree(
                     empty($historique)
                         ? $dossier->getDateCreation()
-                        : (clone ($historique[count($historique) - 1])->getDate())->modify(sprintf('+ %d minutes', random_int(10, 3 * 24 * 60)))
+                        : (clone($historique[count($historique) - 1])->getDate())->modify(sprintf('+ %d minutes', random_int(10, 3 * 24 * 60)))
                 )
                 ->setRequerant(in_array($etat, [EtatDossierType::DOSSIER_A_FINALISER, EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_OK_A_VERIFIER]) ? $dossier->getRequerant() : null)
-                ->setAgent($this->getAgentPourEtat($dossier, $etat))
-            ;
+                ->setAgent($this->getAgentPourEtat($dossier, $etat));
         }
 
         $dossier->setHistoriqueEtats($historique);
@@ -389,7 +387,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
     private function creerDocumentDepuisRessource(string $chemin, DocumentType $type, ?bool $estAjoutRequerant = true): Document
     {
-        $cheminFichier = $this->dossierRessources.$chemin;
+        $cheminFichier = $this->dossierRessources . $chemin;
 
         return $this->documentManager->enregistrerDocument(
             (new Document())
