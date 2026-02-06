@@ -4,7 +4,6 @@ namespace MonIndemnisationJustice\Controller\Requerant;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class HomeController extends RequerantController
 {
     #[Route('', name: 'requerant_home_index')]
+    #[Route('/{extra?}', name: 'requerant_react', requirements: ['extra' => '.*'])]
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         // Suppression du contexte de session lié à l'inscription, s'il y en a un
@@ -23,14 +23,18 @@ class HomeController extends RequerantController
 
         $requerant = $this->getRequerant();
 
+        /*
         // Rediriger vers un dossier à finaliser en priorité, s'il y en a un
         if (null !== ($dossier = $requerant->getDossiers()->findFirst(fn (int $indice, BrisPorte $dossier) => !$dossier->estDepose()))) {
             return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
         }
 
         return $this->redirectToRoute('requerant_home_dossiers');
+        */
+        return $this->render('requerant/requerant.html.twig');
     }
 
+    /*
     #[Route('/mes-demandes', name: 'requerant_home_dossiers')]
     public function mesDemandes(Request $request, EntityManagerInterface $em): Response
     {
@@ -40,4 +44,5 @@ class HomeController extends RequerantController
             'dossiers' => $requerant->getDossiers(),
         ]);
     }
+    */
 }
