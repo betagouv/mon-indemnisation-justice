@@ -15,11 +15,11 @@ export class RequerantAPICLient implements RequerantManagerInterface {
 
   async estAdresseCourrielAttribuee(adresse: string): Promise<boolean> {
     if (!adresse.match(RequerantAPICLient.adresseRegex)) {
-      return undefined;
+      return false;
     }
 
     if (this.registre.has(adresse)) {
-      return this.registre.get(adresse);
+      return this.registre.get(adresse) ?? false;
     }
 
     try {
@@ -37,7 +37,7 @@ export class RequerantAPICLient implements RequerantManagerInterface {
         const data = await response.json();
 
         this.registre.set(adresse, (data.disponible as boolean) ?? false);
-        return this.registre.get(adresse);
+        return this.registre.get(adresse) ?? false;
       }
 
       return false;
