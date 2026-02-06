@@ -30,6 +30,12 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         generatedRouteTree: "./src/apps/agent/fdo/routeur/routeur-fdo.gen.ts",
         routesDirectory: "./src/apps/agent/fdo/routes/",
       }),
+      tanstackRouter({
+        target: "react",
+        generatedRouteTree:
+          "./src/apps/requerant/routeur/routeur-requerant.gen.ts",
+        routesDirectory: "./src/apps/requerant/routes/",
+      }),
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
         //targets: ['defaults', 'not IE 11'],
@@ -65,10 +71,9 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
               "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
             "requerant/dossier/creation_de_compte":
               "./src/apps/requerant/dossier/creation_de_compte.tsx",
-            "requerant/dossier/deposer_mon_dossier":
-              "./src/apps/requerant/dossier/deposer_mon_dossier.tsx",
             "requerant/dossier/consulter_la_decision":
               "./src/apps/requerant/dossier/consulter_la_decision.tsx",
+            requerant: "./src/apps/requerant/requerant.tsx",
             // Espace agent
             "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
             "agent/dossiers/recherche":
