@@ -112,6 +112,11 @@ jobs:
         with:
           node-version: 22.x
 
+      - name: Install system packages
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: poppler-utils
+
       - name: Cache composer dependencies
         uses: actions/cache@v4
         with:
@@ -169,14 +174,14 @@ jobs:
         env:
           FIREFOX_PATH: ${{ steps.setup-firefox.outputs.firefox-path }}
 
-      - name: Backend test report
-        uses: mbeccati/test-reporter@phpunit-support
+      - name: Report backend test result
         if: ${{ !cancelled() }}
+        uses: dorny/test-reporter@v2
         with:
-          name: Backend test report
-          path: backend/test-result-*.xml
-          reporter: java-junit
-          fail-on-error: false
+          name: "Rapport des tests backend"
+          report-title: "Rapport des tests backend"
+          path: backend/test-result-backend.xml
+          reporter: phpunit-junit
 
   test-frontend:
     runs-on: ubuntu-24.04
@@ -204,14 +209,14 @@ jobs:
         run: yarn vitest run --reporter=junit --outputFile=test-result-frontend.xml --reporter=verbose
         working-directory: frontend
 
-      - name: Frontend test report
-        uses: dorny/test-reporter@v2
+      - name: Report frontend test result
         if: ${{ !cancelled() }}
+        uses: dorny/test-reporter@v2
         with:
-          name: Frontend test report
+          name: "Rapport des tests frontend"
+          report-title: "Rapport des tests frontend"
           path: frontend/test-result-frontend.xml
           reporter: jest-junit
-          fail-on-error: false
 
   test-end2end:
     runs-on: ubuntu-24.04
@@ -379,7 +384,6 @@ jobs:
       PRO_CONNECT_WELL_KNOWN_URL: http://localhost:9998/.well-known/openid-configuration
       PRO_CONNECT_CLIENT_ID: proconnect-mock
       PRO_CONNECT_CLIENT_SECRET: bar
-      PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-result-end2end.xml
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -454,14 +458,14 @@ jobs:
         # Pour l'heure on se limite à Firefox car on ne sait pas encore créer des fixtures par Browser
         run: npx playwright test --project firefox --retries 0
         working-directory: end2end
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-result-end2end.xml
 
-      - name: End-to-end test report
-        uses: dorny/test-reporter@v2
+      - name: Report end2end test result
         if: ${{ !cancelled() }}
+        uses: dorny/test-reporter@v2
         with:
-          name: End-to-end test report
+          name: "Rapport des tests fonctionnels"
+          report-title: "Rapport des tests fonctionnels"
           path: end2end/test-result-end2end.xml
           reporter: jest-junit
-          fail-on-error: false
-          only-summary: false
-          use-actions-summary: true

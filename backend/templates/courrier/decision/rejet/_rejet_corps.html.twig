@@ -1,0 +1,9 @@
+{% if motifRejet == 'est_vise' %}
+    {% include 'courrier/decision/rejet/_rejet_corps_est_vise.html.twig' %}
+{% elseif motifRejet == 'est_bailleur' %}
+    {% include 'courrier/decision/rejet/_rejet_corps_est_bailleur.html.twig' %}
+{% elseif motifRejet == 'est_hebergeant' %}
+    {% include 'courrier/decision/rejet/_rejet_corps_est_hebergeant.html.twig' %}
+{% else %}
+    {% include 'courrier/decision/rejet/_rejet_corps_autre.html.twig' %}
+{% endif %}

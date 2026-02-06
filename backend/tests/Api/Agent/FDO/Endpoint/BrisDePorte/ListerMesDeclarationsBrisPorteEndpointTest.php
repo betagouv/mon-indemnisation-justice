@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Agent\FDO\Endpoint\BrisDePorte;
+namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\ListerMesDeclarationsEndpoint;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;

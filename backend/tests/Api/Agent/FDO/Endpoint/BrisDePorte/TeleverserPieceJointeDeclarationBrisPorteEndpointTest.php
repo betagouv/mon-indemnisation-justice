@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Agent\FDO\Endpoint\BrisDePorte;
+namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\TeleverserPieceJointeDeclarationBrisPorteEndpoint;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
@@ -33,7 +33,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndp
             'POST',
             "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/piece-jointe/televerser/{$type->value}",
             files: [
-                'pieceJointe' => new UploadedFile(dirname(__FILE__).'/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
+                'pieceJointe' => new UploadedFile(dirname(__FILE__) . '/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
             ]
         );
 
@@ -67,7 +67,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndp
             'POST',
             "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/piece-jointe/televerser/{$type->value}",
             files: [
-                'pieceJointe' => new UploadedFile(dirname(__FILE__).'/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
+                'pieceJointe' => new UploadedFile(dirname(__FILE__) . '/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
             ]
         );
 
@@ -90,7 +90,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndp
             'POST',
             "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/piece-jointe/televerser/{$type->value}",
             files: [
-                'pieceJointe' => new UploadedFile(dirname(__FILE__).'/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
+                'pieceJointe' => new UploadedFile(dirname(__FILE__) . '/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
             ]
         );
 
