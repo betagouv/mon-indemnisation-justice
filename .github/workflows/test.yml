@@ -112,6 +112,11 @@ jobs:
         with:
           node-version: 22.x
 
+      - name: Install system packages
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: poppler-utils
+
       - name: Cache composer dependencies
         uses: actions/cache@v4
         with:
