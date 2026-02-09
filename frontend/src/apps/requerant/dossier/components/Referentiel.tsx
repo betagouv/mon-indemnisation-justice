@@ -3,7 +3,7 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 const Referentiel = ({
   label,
   options,
-  content = null,
+  content,
   setContent,
 }: {
   label: string;
