@@ -5,13 +5,11 @@ import { randomId } from "@/apps/requerant/dossier/services/Random.ts";
 const Civilite = ({
   civilite,
   setCivilite,
-  defaultOptionText = null,
   estActif = true,
 }: {
-  civilite: string;
+  civilite?: string;
   setCivilite: (civilite: string) => void;
-  defaultOptionText?: string;
-  estActif: boolean;
+  estActif?: boolean;
 }) => {
   const civilites = {
     M: "Monsieur",
@@ -30,7 +28,7 @@ const Civilite = ({
       }}
     >
       <option value="" disabled hidden>
-        {defaultOptionText ?? "Sélectionnez une option"}
+        Sélectionnez une option
       </option>
       {Object.entries(civilites).map(([key, label]) => (
         <option key={key} value={key}>

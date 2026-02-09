@@ -3,6 +3,7 @@ import {
   createRootRouteWithContext,
   type LinkProps,
   Outlet,
+  useLoaderData,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Header } from "@codegouvfr/react-dsfr/Header";
@@ -10,8 +11,11 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import "@/style/index.css";
 import { ContexteUsager } from "@/apps/requerant/routeur/contexte.ts";
+import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 
 const EspaceRequerant = () => {
+  const { contexte }: { contexte: ContexteUsager } = useLoaderData({} as any);
+
   return (
     <>
       <Header
@@ -39,8 +43,31 @@ const EspaceRequerant = () => {
             )}
           </>
         }
-        navigation={[]}
-        quickAccessItems={[]}
+        navigation={[
+          {
+            text: "Mes demandes",
+            linkProps: {
+              to: "/requerant/mes-demandes",
+              activeOptions: { exact: true },
+            },
+          },
+        ]}
+        quickAccessItems={[
+          {
+            iconId: "fr-icon-account-circle-line",
+            text: `${contexte.usager.prenom} ${contexte.usager.nom.toUpperCase()}`,
+            linkProps: {
+              href: "",
+            },
+          },
+          {
+            iconId: "fr-icon-logout-box-r-line",
+            text: "Déconnexion",
+            linkProps: {
+              href: `${window.location.origin}/deconnexion`,
+            } as LinkProps,
+          },
+        ]}
       />
 
       <main role="main">
