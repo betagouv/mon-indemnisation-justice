@@ -4,7 +4,7 @@ import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { JSX } from "react";
 
-import { router } from "./_router.ts";
+import { RouteurFDO } from "./_router.ts";
 import { container } from "./_container.ts";
 import { queryClient } from "./_queryClient.ts";
 
@@ -26,4 +26,4 @@ declare module "@codegouvfr/react-dsfr/spa" {
   }
 }
 
-export { router, container, queryClient };
+export { RouteurFDO, container, queryClient };
