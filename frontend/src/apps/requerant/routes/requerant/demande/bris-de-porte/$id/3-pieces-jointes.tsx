@@ -69,8 +69,23 @@ function Etape3PiecesJointes() {
         buttonsIconPosition="right"
         buttons={[
           {
+            priority: "secondary",
+            children: "Revenir à l'étape suivante",
+            nativeButtonProps: {
+              type: "button",
+            },
+            onClick: () =>
+              naviguer({
+                from: Route.fullPath,
+                to: "../2-bris-de-porte",
+              }),
+          },
+          {
             priority: "primary",
             children: "Valider et passer à l'étape suivante",
+            nativeButtonProps: {
+              type: "submit",
+            },
             onClick: () =>
               naviguer({
                 from: Route.fullPath,

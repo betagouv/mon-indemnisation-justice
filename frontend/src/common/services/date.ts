@@ -5,17 +5,11 @@ export const hier = (): Date => dateIlYaNJours(1);
 export const estAujourdhui = (a: Date): boolean => memeJour(a, aujourdhui());
 
 export const dateIlYaNJours = (n: number, debut?: Date) => {
-  debut = debut || new Date();
-  debut.setDate(debut.getDate() + n);
-
-  return new Date(-debut.setHours(0, 0, 0, 0) + n * 24 * 60 * 60 * 1000);
+  return new Date((debut || new Date()).getTime() - n * 24 * 60 * 60 * 1000);
 };
 
 export const dateDansNJours = (n: number, debut?: Date) => {
-  debut = debut || new Date();
-  debut.setDate(debut.getDate() + n);
-
-  return new Date(+debut.setHours(0, 0, 0, 0) + n * 24 * 60 * 60 * 1000);
+  return new Date((debut || new Date()).getTime() + n * 24 * 60 * 60 * 1000);
 };
 
 export const memeJour = (a: Date, b: Date): boolean => {
