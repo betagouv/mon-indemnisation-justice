@@ -37,31 +37,38 @@ declare module "@codegouvfr/react-dsfr/spa" {
 }
 
 // Création du router Tanstack
+let RouteurFIP6;
 
-container
+await container
   .get(AgentManagerInterface.$)
   .moi()
   .then((context: AgentContext) => {
-    const router = createRouter({
+    RouteurFIP6 = createRouter({
       routeTree,
       defaultPreload: "intent",
       defaultStaleTime: 5000,
       scrollRestoration: true,
       context,
     });
-
-    const rootElement = document.getElementById("react-app")!;
-
-    if (!rootElement.innerHTML) {
-      const root = ReactDOM.createRoot(rootElement);
-      root.render(
-        <StrictMode>
-          <QueryClientProvider client={queryClient}>
-            <Provider container={container}>
-              <RouterProvider router={router} />
-            </Provider>
-          </QueryClientProvider>
-        </StrictMode>,
-      );
-    }
   });
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof RouteurFIP6;
+  }
+}
+
+const rootElement = document.getElementById("react-app")!;
+
+if (!rootElement.innerHTML) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <Provider container={container}>
+          <RouterProvider router={RouteurFIP6} />
+        </Provider>
+      </QueryClientProvider>
+    </StrictMode>,
+  );
+}

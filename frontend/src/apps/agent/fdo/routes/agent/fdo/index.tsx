@@ -1,4 +1,4 @@
-import { router } from "@/apps/agent/fdo/_init/_router.ts";
+import { RouteurFDO } from "@/apps/agent/fdo/_init/_router.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Card from "@codegouvfr/react-dsfr/Card";
 import React from "react";
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/agent/fdo/")({
 });
 
 function RouteComponent() {
-  const naviguer = useNavigate<typeof router>({
+  const naviguer = useNavigate<typeof RouteurFDO>({
     from: Route.fullPath,
   });
 
