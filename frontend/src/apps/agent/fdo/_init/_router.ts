@@ -6,12 +6,12 @@ import { AgentContext } from "@/apps/agent/_commun/contexts";
 
 // Création du router Tanstack
 
-let router;
+let RouteurFDO;
 await container
   .get(AgentManagerInterface.$)
   .moi()
   .then((context: AgentContext) => {
-    router = createRouter({
+    RouteurFDO = createRouter({
       routeTree,
       defaultPreload: "intent",
       defaultStaleTime: 5000,
@@ -20,4 +20,4 @@ await container
     });
   });
 
-export { router };
+export { RouteurFDO };
