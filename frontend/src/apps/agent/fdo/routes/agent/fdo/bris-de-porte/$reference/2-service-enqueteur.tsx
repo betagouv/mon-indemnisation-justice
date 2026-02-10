@@ -112,7 +112,6 @@ function Page() {
     useRef<ModalePrevisualiserPieceJointeRef>(null);
 
   // TODO: gérer les pièces jointes dans un state "façade" qui peut-être modifiable
-
   const form = useForm({
     defaultValues: {
       procedure: {

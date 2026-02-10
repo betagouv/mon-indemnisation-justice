@@ -19,4 +19,10 @@ await container
     });
   });
 
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof RouteurRequerant;
+  }
+}
+
 export { RouteurRequerant };

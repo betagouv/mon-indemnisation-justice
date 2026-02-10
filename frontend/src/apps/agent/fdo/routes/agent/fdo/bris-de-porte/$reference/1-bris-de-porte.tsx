@@ -21,7 +21,7 @@ import {
 } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { useInjection } from "inversify-react";
-import { router } from "@/apps/agent/fdo/_init/_router.ts";
+import { RouteurFDO } from "@/apps/agent/fdo/_init/_router.ts";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute(
@@ -83,7 +83,7 @@ const Page = () => {
   const { declaration }: { declaration: DeclarationFDOBrisPorte } =
     Route.useLoaderData();
 
-  const naviguer = useNavigate<typeof router>({
+  const naviguer = useNavigate<typeof RouteurFDO>({
     from: Route.fullPath,
   });
 
@@ -121,6 +121,7 @@ const Page = () => {
       await naviguer({
         to: "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
         params: { reference: declaration.id } as any,
+        search: {} as any,
       });
     },
   });

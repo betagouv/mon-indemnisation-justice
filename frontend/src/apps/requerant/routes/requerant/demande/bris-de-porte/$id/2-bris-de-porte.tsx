@@ -184,8 +184,23 @@ function Etape2BrisDePorte() {
         buttonsIconPosition="right"
         buttons={[
           {
+            priority: "secondary",
+            children: "Revenir à l'étape suivante",
+            nativeButtonProps: {
+              type: "button",
+            },
+            onClick: () =>
+              naviguer({
+                from: Route.fullPath,
+                to: "../1-etat-civil",
+              }),
+          },
+          {
             priority: "primary",
             children: "Valider et passer à l'étape suivante",
+            nativeButtonProps: {
+              type: "submit",
+            },
             onClick: () =>
               naviguer({
                 from: Route.fullPath,
