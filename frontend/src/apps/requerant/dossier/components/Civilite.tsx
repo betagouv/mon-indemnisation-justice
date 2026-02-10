@@ -2,7 +2,7 @@ import React from "react";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { randomId } from "@/apps/requerant/dossier/services/Random.ts";
 
-const Civilite = ({
+export const ChampCivilite = ({
   civilite,
   setCivilite,
   estActif = true,
@@ -38,5 +38,3 @@ const Civilite = ({
     </Select>
   );
 };
-
-export default Civilite;
