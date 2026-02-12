@@ -8,7 +8,7 @@ export class Requerant {
   raisonSociale: string;
   siren: string;
   estRepresentantLegal?: boolean;
-  civiliteRepresentantLegal?: string;
+  civiliteRepresentantLegal?: Civilite;
   nomRepresentantLegal?: string;
   nomNaissanceRepresentantLegal?: string;
   prenomRepresentantLegal?: string;
@@ -25,4 +25,5 @@ export class Requerant {
   dateNaissance: Date;
   paysNaissance: Pays;
   communeNaissance?: Commune;
+  villeNaissance?: string;
 }
