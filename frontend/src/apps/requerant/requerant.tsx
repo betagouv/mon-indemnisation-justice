@@ -1,5 +1,6 @@
 import "@/apps/_init.ts";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/apps/requerant/query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import React, { JSX, StrictMode } from "react";
 import { Link, LinkProps, RouterProvider } from "@tanstack/react-router";
 
@@ -22,8 +23,6 @@ declare global {
     dsfr: any;
   }
 }
-// Création du query client Tanstack
-const queryClient = new QueryClient();
 
 declare module "@codegouvfr/react-dsfr/spa" {
   interface RegisterLink {
