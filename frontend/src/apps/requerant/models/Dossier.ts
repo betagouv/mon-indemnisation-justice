@@ -32,8 +32,8 @@ export abstract class BaseDossier {
 
 export class Dossier extends BaseDossier {
   initiePar: Usager;
-  requerant: Requerant;
-  adresse: Adresse;
+  requerant: Requerant = new Requerant();
+  adresse: Adresse = new Adresse();
   dateOperation: Date;
   description: string;
 }
