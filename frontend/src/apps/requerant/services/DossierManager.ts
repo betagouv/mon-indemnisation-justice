@@ -58,8 +58,6 @@ export class InMemoryDossierManager implements DossierManagerInterface {
       return Promise.reject(`Aucun dossier de référence ${reference}`);
     }
 
-    console.dir(modifications);
-
     this.dossiers.set(
       reference,
       plainToClassFromExist(
@@ -68,7 +66,10 @@ export class InMemoryDossierManager implements DossierManagerInterface {
       ),
     );
 
-    console.log(this.dossiers.get(reference));
+    console.log(
+      `Dossier ${reference} mis à jour : `,
+      this.dossiers.get(reference),
+    );
 
     return Promise.resolve(this.dossiers.get(reference) as Dossier);
   }
