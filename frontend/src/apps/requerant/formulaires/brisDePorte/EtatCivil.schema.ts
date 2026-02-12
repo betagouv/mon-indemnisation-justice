@@ -1,6 +1,29 @@
 import { z } from "zod";
 import { Pays, Commune, Civilite, Civilites } from "@/apps/requerant/models";
 
+export type TypeEtatCivil = {
+  requerant: {
+    estPersonneMorale?: boolean;
+    raisonSociale: string;
+    siren: string;
+    adresse?: {
+      ligne1: string;
+      ligne2: string;
+      commune?: {
+        nom: string;
+        codePostal: string;
+      };
+    };
+    estRepresentantLegal: boolean;
+    civiliteRepresentantLegal?: Civilite;
+    nomRepresentantLegal?: boolean;
+    nomNaissanceRepresentantLegal;
+    prenomRepresentantLegal;
+    courrielRepresentantLegal;
+    telephoneRepresentantLegal;
+  };
+};
+
 export const SchemaValidationEtatCivil = z.object({
   requerant: z.discriminatedUnion("estPersonneMorale", [
     // Cas de la personne morale
@@ -14,7 +37,7 @@ export const SchemaValidationEtatCivil = z.object({
         .trim()
         .min(1, { error: "La raison sociale de l'entreprise est requise" }),
       // https://annuaire-entreprises.data.gouv.fr/definitions/numero-siren
-      siren: z.regex(/\d{9}(\d{5})?/, {
+      siren: z.string().regex(/\d{9}(\d{5})?/, {
         error: "Le numéro de SIREN / SIRET est invalide",
       }),
       adresse: z.object({
@@ -37,15 +60,15 @@ export const SchemaValidationEtatCivil = z.object({
       prenomRepresentantLegal: z.string(),
       courrielRepresentantLegal: z.email(),
       telephoneRepresentantLegal: z.string(),
-      civilite: z.any().optional(),
-      prenom: z.any().optional(),
-      nom: z.any().optional(),
-      nomNaissance: z.any().optional(),
-      courriel: z.any().optional(),
-      telephone: z.any().optional(),
-      dateNaissance: z.any().optional(),
-      paysNaissance: z.any().optional(),
-      communeNaissance: z.any().optional(),
+      civilite: z.any(),
+      prenom: z.any(),
+      nom: z.any(),
+      nomNaissance: z.any(),
+      courriel: z.any(),
+      telephone: z.any(),
+      dateNaissance: z.any(),
+      paysNaissance: z.any(),
+      communeNaissance: z.any(),
     }),
     // Cas de la personne physique
     z
@@ -54,15 +77,15 @@ export const SchemaValidationEtatCivil = z.object({
           error:
             "Veuillez-nous indiquez si vous déposez votre demande au nom du personne morale",
         }),
-        raisonSociale: z.any().optional(),
-        siren: z.any().optional(),
-        estRepresentantLegal: z.any().optional(),
-        civiliteRepresentantLegal: z.any().optional(),
-        nomRepresentantLegal: z.any().optional(),
-        nomNaissanceRepresentantLegal: z.any().optional(),
-        prenomRepresentantLegal: z.any().optional(),
-        courrielRepresentantLegal: z.any().optional(),
-        telephoneRepresentantLegal: z.any().optional(),
+        raisonSociale: z.any(),
+        siren: z.any(),
+        estRepresentantLegal: z.any(),
+        civiliteRepresentantLegal: z.any(),
+        nomRepresentantLegal: z.any(),
+        nomNaissanceRepresentantLegal: z.any(),
+        prenomRepresentantLegal: z.any(),
+        courrielRepresentantLegal: z.any(),
+        telephoneRepresentantLegal: z.any(),
         civilite: z.enum(Civilites),
         prenom: z.string().trim().min(1, { error: "Le prénom est requis" }),
         nom: z

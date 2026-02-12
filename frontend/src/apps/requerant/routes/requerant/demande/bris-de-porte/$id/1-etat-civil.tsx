@@ -1,12 +1,14 @@
+import { router } from "@/apps/agent/fip6/_init";
+import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite";
 import { container } from "@/apps/requerant/container";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
+import { instanceToPlain } from "class-transformer";
 import React, { FormEventHandler, KeyboardEvent } from "react";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import { ChampCivilite } from "@/apps/requerant/dossier/components/Civilite.tsx";
-import { Dossier } from "@/apps/requerant/models";
+import { Civilite, Dossier, Requerant } from "@/apps/requerant/models";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
@@ -14,7 +16,6 @@ import { useForm } from "@tanstack/react-form";
 import { SchemaValidationEtatCivil } from "@/apps/requerant/formulaires/brisDePorte/EtatCivil.schema.ts";
 import { useInjection } from "inversify-react";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
-import { instanceToPlain } from "class-transformer";
 import { Loader } from "@/common/components/Loader.tsx";
 
 const DossierInconnu = ({
@@ -42,7 +43,7 @@ export const Route = createFileRoute(
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
-      .aDossier(params.id);
+      .getDossier(params.id);
 
     if (!dossier) {
       console.log("Not found");
@@ -57,6 +58,7 @@ export const Route = createFileRoute(
 
     return { reference: params.id, dossier };
   },
+  shouldReload: true,
 });
 
 function Etape1EtatCivil() {
@@ -70,7 +72,9 @@ function Etape1EtatCivil() {
 
   // Récupérer la référence depuis le paramètre de la route
   const { reference, dossier }: { reference: string; dossier: Dossier } =
-    Route.useParams();
+    Route.useLoaderData();
+
+  console.log(dossier);
 
   const formulaire = useForm({
     canSubmitWhenInvalid: true,
@@ -79,7 +83,7 @@ function Etape1EtatCivil() {
       // TODO retirer à la fin du développement
       //onChange: SchemaValidationEtatCivil,
     },
-    defaultValues: dossier ? instanceToPlain(dossier) : {},
+    defaultValues: instanceToPlain(dossier) as Partial<Dossier>,
     listeners: {
       onChangeDebounceMs: 500,
       onChange: async ({ formApi }) => {
@@ -132,7 +136,7 @@ function Etape1EtatCivil() {
                         {
                           label: "Oui",
                           nativeInputProps: {
-                            checked: field.getValue() == true,
+                            checked: field.state.value == true,
                             onChange: () => {
                               field.setValue(true);
                             },
@@ -141,7 +145,7 @@ function Etape1EtatCivil() {
                         {
                           label: "Non",
                           nativeInputProps: {
-                            checked: field.getValue() == false,
+                            checked: field.state.value == false,
                             onChange: () => {
                               field.setValue(false);
                             },
@@ -269,14 +273,15 @@ function Etape1EtatCivil() {
 
                           <div className="fr-col-lg-2 fr-col-4">
                             <formulaire.Field
-                              name="requerant.adresse.codePostal"
+                              name="requerant.adresse.commune.codePostal"
                               children={(field) => {
                                 return (
                                   <Input
                                     label="Code postal"
                                     nativeInputProps={{
                                       onChange: (e) =>
-                                        field.setValue(e.target.value),
+                                        // TODO charger la liste des communes
+                                        console.log(e.target.value),
                                       maxLength: 5,
                                     }}
                                   />
@@ -286,7 +291,7 @@ function Etape1EtatCivil() {
                           </div>
                           <div className="fr-col-lg-10 fr-col-8">
                             <formulaire.Field
-                              name="requerant.adresse.commune"
+                              name="requerant.adresse.commune.nom"
                               children={(field) => {
                                 return (
                                   <Input
@@ -316,9 +321,9 @@ function Etape1EtatCivil() {
                               name="requerant.civiliteRepresentantLegal"
                               children={(field) => {
                                 return (
-                                  <ChampCivilite
-                                    civilite={undefined}
-                                    setCivilite={(civilite) =>
+                                  <SelectionCivilite
+                                    civilite={field.state.value}
+                                    onChange={(civilite: Civilite) =>
                                       field.setValue(civilite)
                                     }
                                   />
@@ -335,6 +340,7 @@ function Etape1EtatCivil() {
                                     label="Prénom(s)"
                                     nativeInputProps={{
                                       placeholder: "Premier prénom",
+                                      value: field.state.value,
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                     }}
@@ -425,9 +431,9 @@ function Etape1EtatCivil() {
                               name="requerant.civilite"
                               children={(field) => {
                                 return (
-                                  <ChampCivilite
-                                    civilite={field.getValue()}
-                                    setCivilite={(civilite) =>
+                                  <SelectionCivilite
+                                    civilite={field.state.value}
+                                    onChange={(civilite) =>
                                       field.setValue(civilite)
                                     }
                                   />
@@ -658,7 +664,9 @@ function Etape1EtatCivil() {
                                     label="Pays de naissance"
                                     nativeSelectProps={{
                                       onChange: (e) =>
-                                        field.setValue(e.target.value),
+                                        // TODO sélectionner le pays
+                                        //field.setValue(e.target.value),
+                                        console.log(e.target.value),
                                     }}
                                     state={
                                       !field.state.meta.isValid
@@ -692,7 +700,7 @@ function Etape1EtatCivil() {
                           </div>
 
                           <formulaire.Field
-                            name="requerant.communeNaissance"
+                            name="requerant.communeNaissance.codePostal"
                             children={(field) => {
                               return (
                                 <>
@@ -761,7 +769,7 @@ function Etape1EtatCivil() {
                                   </div>
                                   <div className="fr-col-lg-4 fr-col-8">
                                     <formulaire.Field
-                                      name="requerant.adresse.commune"
+                                      name="requerant.communeNaissance"
                                       children={(field) => {
                                         return (
                                           <Select
@@ -769,7 +777,9 @@ function Etape1EtatCivil() {
                                             label="Ville de naissance"
                                             nativeSelectProps={{
                                               onChange: (e) =>
-                                                field.setValue(e.target.value),
+                                                // TODO charger la liste des pays depuis un objet
+                                                //field.setValue(e.target.value),
+                                                console.log(e.target.value),
                                             }}
                                             state={
                                               !field.state.meta.isValid
@@ -881,7 +891,7 @@ function Etape1EtatCivil() {
                           </div>
                           <div className="fr-col-lg-2 fr-col-4">
                             <formulaire.Field
-                              name="requerant.adresse.codePostal"
+                              name="requerant.adresse.commune.codePostal"
                               children={(field) => {
                                 return (
                                   <Input
@@ -915,7 +925,7 @@ function Etape1EtatCivil() {
                           </div>
                           <div className="fr-col-lg-10 fr-col-8">
                             <formulaire.Field
-                              name="requerant.adresse.commune"
+                              name="requerant.adresse.commune.nom"
                               children={(field) => {
                                 return (
                                   <Input
