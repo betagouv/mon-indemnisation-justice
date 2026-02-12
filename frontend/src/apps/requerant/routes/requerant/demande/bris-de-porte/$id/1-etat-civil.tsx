@@ -77,7 +77,7 @@ function Etape1EtatCivil() {
     validators: {
       onSubmit: SchemaValidationEtatCivil,
       // TODO retirer à la fin du développement
-      onChange: SchemaValidationEtatCivil,
+      //onChange: SchemaValidationEtatCivil,
     },
     defaultValues: dossier ? instanceToPlain(dossier) : {},
     listeners: {
@@ -132,8 +132,7 @@ function Etape1EtatCivil() {
                         {
                           label: "Oui",
                           nativeInputProps: {
-                            checked:
-                              dossier.requerant?.estPersonneMorale == true,
+                            checked: field.getValue() == true,
                             onChange: () => {
                               field.setValue(true);
                             },
@@ -142,8 +141,7 @@ function Etape1EtatCivil() {
                         {
                           label: "Non",
                           nativeInputProps: {
-                            checked:
-                              dossier.requerant?.estPersonneMorale == false,
+                            checked: field.getValue() == false,
                             onChange: () => {
                               field.setValue(false);
                             },
@@ -428,7 +426,7 @@ function Etape1EtatCivil() {
                               children={(field) => {
                                 return (
                                   <ChampCivilite
-                                    civilite={undefined}
+                                    civilite={field.getValue()}
                                     setCivilite={(civilite) =>
                                       field.setValue(civilite)
                                     }
