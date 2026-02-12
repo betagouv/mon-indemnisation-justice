@@ -1,5 +1,7 @@
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import React, { KeyboardEvent, useState } from "react";
+import { container } from "@/apps/requerant/container";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
+import React, { FormEventHandler, KeyboardEvent } from "react";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -12,15 +14,49 @@ import { useForm } from "@tanstack/react-form";
 import { SchemaValidationEtatCivil } from "@/apps/requerant/formulaires/brisDePorte/EtatCivil.schema.ts";
 import { useInjection } from "inversify-react";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
-import { useQuery } from "@tanstack/react-query";
 import { instanceToPlain } from "class-transformer";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Loader } from "@/common/components/Loader.tsx";
+
+const DossierInconnu = ({
+  data: { titre, message },
+}: {
+  data: { titre: string; message: string };
+}) => {
+  console.log({ titre, message });
+
+  return (
+    <div className="fr-grid-row fr-grid-row--gutters">
+      <div className="fr-col-12">
+        <Alert severity={"error"} title={titre} description={message} />
+      </div>
+    </div>
+  );
+};
 
 export const Route = createFileRoute(
   "/requerant/demande/bris-de-porte/$id/1-etat-civil",
 )({
   component: Etape1EtatCivil,
+  pendingComponent: Loader,
+  notFoundComponent: DossierInconnu,
+  loader: async ({ params }) => {
+    const dossier = await container
+      .get<DossierManagerInterface>(DossierManagerInterface.$)
+      .aDossier(params.id);
+
+    if (!dossier) {
+      console.log("Not found");
+      throw notFound({
+        data: {
+          titre: `Impossible de trouver le dossier ${params.id}`,
+          message: "Le dossier n'existe pas ou ne vous est pas accessible.",
+        },
+        throw: true,
+      });
+    }
+
+    return { reference: params.id, dossier };
+  },
 });
 
 function Etape1EtatCivil() {
@@ -32,26 +68,9 @@ function Etape1EtatCivil() {
     DossierManagerInterface.$,
   );
 
-  const { id: reference } = Route.useParams();
-  const {
-    data: dossier,
-    isPending,
-    error,
-  } = useQuery<Dossier>({
-    queryKey: ["dossier-bris-de-porte-detail", reference],
-    queryFn: async () => {
-      const dossier = await dossierManager.getDossier(reference);
-
-      if (!dossier) {
-        throw new Error(`Aucun dossier trouvé de référence ${reference}`);
-      }
-
-      return dossier;
-    },
-    retry: false,
-    retryDelay: 0,
-    throwOnError: false,
-  });
+  // Récupérer la référence depuis le paramètre de la route
+  const { reference, dossier }: { reference: string; dossier: Dossier } =
+    Route.useParams();
 
   const formulaire = useForm({
     canSubmitWhenInvalid: true,
@@ -63,9 +82,8 @@ function Etape1EtatCivil() {
     defaultValues: dossier ? instanceToPlain(dossier) : {},
     listeners: {
       onChangeDebounceMs: 500,
-      onChange: ({ formApi }) => {
-        console.log(formApi.state.values);
-        console.log(formApi.state.errors);
+      onChange: async ({ formApi }) => {
+        await dossierManager.modifierDossier(reference, formApi.state.values);
       },
     },
     onSubmit: async ({ value, formApi }) => {
@@ -75,26 +93,6 @@ function Etape1EtatCivil() {
       });
     },
   });
-
-  if (isPending) {
-    return (
-      <>
-        <Loader />
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <>
-        <Alert
-          severity="error"
-          title={"Erreur lors de la récupération du dossier"}
-          description={<p>{error.message}</p>}
-        ></Alert>
-      </>
-    );
-  }
 
   return (
     <>

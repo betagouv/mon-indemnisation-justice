@@ -86,8 +86,6 @@ function RouteComponent() {
     );
   }
 
-  console.log(dossiers);
-
   return (
     <div>
       <div className="fr-grid-row">
