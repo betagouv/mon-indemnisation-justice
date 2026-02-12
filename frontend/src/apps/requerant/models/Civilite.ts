@@ -11,7 +11,8 @@ const CiviliteLibelles: {
 const getCiviliteLibelle = (civilite: Civilite): string =>
   CiviliteLibelles[civilite];
 
-const getCivilite = (libelle: string): Civilite | undefined =>
-  libelle in Civilites ? (libelle as Civilite) : undefined;
+const getCivilite = (libelle: string): Civilite | undefined => {
+  return Civilites.includes(libelle) ? (libelle as Civilite) : undefined;
+};
 
 export { Civilites, type Civilite, getCivilite, getCiviliteLibelle };
