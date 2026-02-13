@@ -1,10 +1,14 @@
-import { router } from "@/apps/agent/fip6/_init";
 import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite";
 import { container } from "@/apps/requerant/container";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  useNavigate,
+} from "@tanstack/react-router";
 import { instanceToPlain } from "class-transformer";
-import React, { FormEventHandler, KeyboardEvent } from "react";
+import React, { KeyboardEvent } from "react";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -17,6 +21,9 @@ import { SchemaValidationEtatCivil } from "@/apps/requerant/formulaires/brisDePo
 import { useInjection } from "inversify-react";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/components/Loader.tsx";
+import { ErreurResourceInconnue } from "@/apps/requerant/routeur";
+import { CheckInput } from "@/apps/requerant/composants/champs/check/CheckInput.tsx";
+import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 
 const DossierInconnu = ({
   data: { titre, message },
@@ -35,31 +42,45 @@ const DossierInconnu = ({
 };
 
 export const Route = createFileRoute(
-  "/requerant/demande/bris-de-porte/$id/1-etat-civil",
+  "/requerant/dossier/bris-de-porte/$reference/1-bris-porte",
 )({
   component: Etape1EtatCivil,
   pendingComponent: Loader,
-  notFoundComponent: DossierInconnu,
+  notFoundComponent: (props: NotFoundRouteProps) => {
+    const { titre, message } = props.data as ErreurResourceInconnue;
+    return (
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-12">
+          <Alert
+            severity={"error"}
+            title={titre ?? "Page introuvable"}
+            description={message}
+          />
+        </div>
+      </div>
+    );
+  },
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
-      .getDossier(params.id);
+      .getDossier(params.reference);
 
     if (!dossier) {
       console.log("Not found");
       throw notFound({
         data: {
-          titre: `Impossible de trouver le dossier ${params.id}`,
+          titre: `Impossible de trouver le dossier ${params.reference}`,
           message: "Le dossier n'existe pas ou ne vous est pas accessible.",
         },
         throw: true,
       });
     }
 
-    return { reference: params.id, dossier };
+    return { reference: params.reference, dossier };
   },
   shouldReload: true,
 });
+export default Route;
 
 function Etape1EtatCivil() {
   const naviguer = useNavigate({
@@ -74,14 +95,10 @@ function Etape1EtatCivil() {
   const { reference, dossier }: { reference: string; dossier: Dossier } =
     Route.useLoaderData();
 
-  console.log(dossier);
-
   const formulaire = useForm({
     canSubmitWhenInvalid: true,
     validators: {
       onSubmit: SchemaValidationEtatCivil,
-      // TODO retirer à la fin du développement
-      //onChange: SchemaValidationEtatCivil,
     },
     defaultValues: instanceToPlain(dossier) as Partial<Dossier>,
     listeners: {
@@ -131,23 +148,23 @@ function Etape1EtatCivil() {
                   return (
                     <RadioButtons
                       orientation="horizontal"
-                      legend="Votre demande d'indemnisation concerne une personne morale (société, entreprise, association, fondation etc.)"
+                      legend="Je suis"
                       options={[
                         {
-                          label: "Oui",
-                          nativeInputProps: {
-                            checked: field.state.value == true,
-                            onChange: () => {
-                              field.setValue(true);
-                            },
-                          },
-                        },
-                        {
-                          label: "Non",
+                          label: "Une personne physique",
                           nativeInputProps: {
                             checked: field.state.value == false,
                             onChange: () => {
                               field.setValue(false);
+                            },
+                          },
+                        },
+                        {
+                          label: "Une personne morale",
+                          nativeInputProps: {
+                            checked: field.state.value == true,
+                            onChange: () => {
+                              field.setValue(true);
                             },
                           },
                         },
@@ -184,30 +201,14 @@ function Etape1EtatCivil() {
                               name="requerant.raisonSociale"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Raison sociale"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -218,13 +219,14 @@ function Etape1EtatCivil() {
                               name="requerant.siren"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="SIREN / SIRET"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -238,7 +240,7 @@ function Etape1EtatCivil() {
                               name="requerant.adresse.ligne1"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Adresse"
                                     nativeInputProps={{
                                       placeholder: "Numéro de voie, rue",
@@ -246,6 +248,7 @@ function Etape1EtatCivil() {
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -257,7 +260,7 @@ function Etape1EtatCivil() {
                               name="requerant.adresse.ligne2"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Complément d'adresse"
                                     nativeInputProps={{
                                       placeholder: "Étage, escalier",
@@ -265,6 +268,7 @@ function Etape1EtatCivil() {
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -276,7 +280,7 @@ function Etape1EtatCivil() {
                               name="requerant.adresse.commune.codePostal"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Code postal"
                                     nativeInputProps={{
                                       onChange: (e) =>
@@ -284,6 +288,7 @@ function Etape1EtatCivil() {
                                         console.log(e.target.value),
                                       maxLength: 5,
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -294,13 +299,14 @@ function Etape1EtatCivil() {
                               name="requerant.adresse.commune.nom"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Ville"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -336,7 +342,7 @@ function Etape1EtatCivil() {
                               name="requerant.prenomRepresentantLegal"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Prénom(s)"
                                     nativeInputProps={{
                                       placeholder: "Premier prénom",
@@ -344,6 +350,7 @@ function Etape1EtatCivil() {
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -354,12 +361,13 @@ function Etape1EtatCivil() {
                               name="requerant.nomNaissanceRepresentantLegal"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Nom de naissance"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -370,12 +378,13 @@ function Etape1EtatCivil() {
                               name="requerant.nomRepresentantLegal"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Nom d'usage"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -386,12 +395,13 @@ function Etape1EtatCivil() {
                               name="requerant.courrielRepresentantLegal"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Courriel professionnel"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -402,12 +412,13 @@ function Etape1EtatCivil() {
                               name="requerant.telephoneRepresentantLegal"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Numéro de téléphone professionnel"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                     }}
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -446,7 +457,7 @@ function Etape1EtatCivil() {
                               name="requerant.prenom"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Prénom(s)"
                                     nativeInputProps={{
                                       placeholder: "Prénom(s)",
@@ -454,23 +465,7 @@ function Etape1EtatCivil() {
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -481,30 +476,14 @@ function Etape1EtatCivil() {
                               name="requerant.nom"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Nom d'usage"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -515,30 +494,14 @@ function Etape1EtatCivil() {
                               name="requerant.nomNaissance"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Nom de naissance"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -549,7 +512,7 @@ function Etape1EtatCivil() {
                               name="requerant.courriel"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Adresse courriel"
                                     nativeInputProps={{
                                       onChange: (e) =>
@@ -557,23 +520,7 @@ function Etape1EtatCivil() {
                                       disabled: true,
                                       maxLength: 255,
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -584,7 +531,7 @@ function Etape1EtatCivil() {
                               name="requerant.telephone"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Téléphone"
                                     nativeInputProps={{
                                       type: "tel",
@@ -592,23 +539,7 @@ function Etape1EtatCivil() {
                                       onChange: (e) =>
                                         field.handleChange(e.target.value),
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -623,7 +554,7 @@ function Etape1EtatCivil() {
                               name="requerant.dateNaissance"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Date de naissance"
                                     nativeInputProps={{
                                       type: "date",
@@ -632,23 +563,7 @@ function Etape1EtatCivil() {
                                           new Date(e.target.value),
                                         ),
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -705,7 +620,7 @@ function Etape1EtatCivil() {
                               return (
                                 <>
                                   <div className="fr-col-lg-2 fr-col-4">
-                                    <Input
+                                    <FormInput
                                       label="Code postal"
                                       nativeInputProps={{
                                         type: "text",
@@ -748,23 +663,7 @@ function Etape1EtatCivil() {
                                         onChange: (e) =>
                                           field.setValue(e.target.value),
                                       }}
-                                      state={
-                                        !field.state.meta.isValid
-                                          ? "error"
-                                          : "default"
-                                      }
-                                      stateRelatedMessage={
-                                        !field.state.meta.isValid ? (
-                                          <>
-                                            {
-                                              field.state.meta.errors.at(0)
-                                                ?.message
-                                            }
-                                          </>
-                                        ) : (
-                                          <></>
-                                        )
-                                      }
+                                      champ={field}
                                     />
                                   </div>
                                   <div className="fr-col-lg-4 fr-col-8">
@@ -823,7 +722,7 @@ function Etape1EtatCivil() {
                               name="requerant.adresse.ligne1"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Adresse"
                                     nativeInputProps={{
                                       placeholder: "Numéro de voie, rue",
@@ -831,23 +730,7 @@ function Etape1EtatCivil() {
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -859,7 +742,7 @@ function Etape1EtatCivil() {
                               name="requerant.adresse.ligne2"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Complément d'adresse (facultatif)"
                                     nativeInputProps={{
                                       placeholder: "Étage, escalier",
@@ -867,23 +750,7 @@ function Etape1EtatCivil() {
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -894,30 +761,14 @@ function Etape1EtatCivil() {
                               name="requerant.adresse.commune.codePostal"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Code postal"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                       maxLength: 5,
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
@@ -928,30 +779,14 @@ function Etape1EtatCivil() {
                               name="requerant.adresse.commune.nom"
                               children={(field) => {
                                 return (
-                                  <Input
+                                  <FormInput
                                     label="Ville"
                                     nativeInputProps={{
                                       onChange: (e) =>
                                         field.setValue(e.target.value),
                                       maxLength: 255,
                                     }}
-                                    state={
-                                      !field.state.meta.isValid
-                                        ? "error"
-                                        : "default"
-                                    }
-                                    stateRelatedMessage={
-                                      !field.state.meta.isValid ? (
-                                        <>
-                                          {
-                                            field.state.meta.errors.at(0)
-                                              ?.message
-                                          }
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )
-                                    }
+                                    champ={field}
                                   />
                                 );
                               }}
