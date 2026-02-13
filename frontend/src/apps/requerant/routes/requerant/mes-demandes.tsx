@@ -127,7 +127,7 @@ function RouteComponent() {
                     iconId={"fr-icon-ball-pen-line"}
                     size={"small"}
                     linkProps={{
-                      to: `/requerant/demande/bris-de-porte/$id`,
+                      to: `/requerant/dossier/bris-de-porte/$id`,
                       params: {
                         id: dossier.reference,
                       },
