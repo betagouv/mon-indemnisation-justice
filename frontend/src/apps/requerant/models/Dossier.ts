@@ -34,6 +34,7 @@ export class Dossier extends BaseDossier {
   initiePar: Usager;
   requerant: Requerant = new Requerant();
   adresse: Adresse = new Adresse();
+  rapportAuLogement?: string;
   dateOperation: Date;
   description: string;
 }
