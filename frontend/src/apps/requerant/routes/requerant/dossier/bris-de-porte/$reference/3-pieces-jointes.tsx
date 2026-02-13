@@ -37,10 +37,9 @@ function Etape3PiecesJointes() {
 
       <section>
         <Stepper
-          currentStep={1}
+          currentStep={3}
           stepCount={3}
-          title={"Données personnelles"}
-          nextTitle={"Informations relatives au bris de porte"}
+          title={"Documents à joindre à votre demande"}
         />
       </section>
 

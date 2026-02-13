@@ -22,7 +22,7 @@ const BrisPortePanel = function ({
   const sections = [
     "Données personnelles",
     "Informations relatives au bris de porte",
-    "Documents à joindre obligatoirement à votre demande",
+    "Documents à joindre à votre demande",
     "Vérification et soumission de votre demande",
   ];
   const gotoFirstSection = () => gotoSection(0);
