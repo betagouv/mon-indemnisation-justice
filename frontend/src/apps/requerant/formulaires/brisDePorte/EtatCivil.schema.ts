@@ -33,7 +33,7 @@ export const SchemaValidationEtatCivil = z.object({
           "Veuillez-nous indiquez si vous déposez votre demande au nom du personne morale",
       }),
       raisonSociale: z
-        .string()
+        .string({ error: "La raison sociale de l'entreprise est requise" })
         .trim()
         .min(1, { error: "La raison sociale de l'entreprise est requise" }),
       // https://annuaire-entreprises.data.gouv.fr/definitions/numero-siren

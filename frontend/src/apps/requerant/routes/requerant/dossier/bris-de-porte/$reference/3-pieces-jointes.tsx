@@ -5,7 +5,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe.tsx";
 
 export const Route = createFileRoute(
-  "/requerant/demande/bris-de-porte/$id/3-pieces-jointes",
+  "/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes",
 )({
   component: Etape3PiecesJointes,
 });
@@ -77,7 +77,8 @@ function Etape3PiecesJointes() {
             onClick: () =>
               naviguer({
                 from: Route.fullPath,
-                to: "../2-bris-de-porte",
+                to: "../2-",
+                search: {} as any,
               }),
           },
           {
@@ -90,6 +91,7 @@ function Etape3PiecesJointes() {
               naviguer({
                 from: Route.fullPath,
                 to: "re",
+                search: {} as any,
               }),
           },
         ]}
