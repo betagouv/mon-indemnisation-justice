@@ -31,7 +31,7 @@ export class InMemoryDossierManager implements DossierManagerInterface {
     this.dossiers = new Map(
       [
         plainToInstance(Dossier, {
-          reference: self.crypto.randomUUID(),
+          reference: "b636a358-2118-4345-93d6-2633cd59f34a",
           etatActuel: {
             date: dateIlYaNJours(3),
             etat: "A_COMPLETER",
