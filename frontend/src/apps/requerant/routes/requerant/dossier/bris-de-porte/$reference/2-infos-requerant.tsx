@@ -12,7 +12,7 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 
 export const Route = createFileRoute(
-  "/requerant/demande/bris-de-porte/$id/2-bris-de-porte",
+  "/requerant/dossier/bris-de-porte/$reference/2-infos-requerant",
 )({
   component: Etape2BrisDePorte,
 });
@@ -192,7 +192,8 @@ function Etape2BrisDePorte() {
             onClick: () =>
               naviguer({
                 from: Route.fullPath,
-                to: "../1-etat-civil",
+                to: "../1-bris-porte",
+                search: {} as any,
               }),
           },
           {
@@ -205,6 +206,7 @@ function Etape2BrisDePorte() {
               naviguer({
                 from: Route.fullPath,
                 to: "../3-pieces-jointes",
+                search: {} as any,
               }),
           },
         ]}
