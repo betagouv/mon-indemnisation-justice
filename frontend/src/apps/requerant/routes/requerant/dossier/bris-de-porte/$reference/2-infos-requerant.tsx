@@ -13,6 +13,7 @@ import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx
 import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite.tsx";
 import classes from "@/apps/requerant/style/form.module.css";
 import { container } from "@/apps/requerant/container.ts";
+import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/2-infos-requerant",
@@ -118,6 +119,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(e.target.value),
                                   maxLength: 255,
                                 }}
+                                estRequis={true}
                                 champ={field}
                               />
                             );
@@ -136,6 +138,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(e.target.value),
                                   maxLength: 255,
                                 }}
+                                estRequis={true}
                                 champ={field}
                               />
                             );
@@ -158,6 +161,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(e.target.value),
                                   maxLength: 255,
                                 }}
+                                estRequis={true}
                                 champ={field}
                               />
                             );
@@ -198,6 +202,7 @@ function Etape2InfosRequerant() {
                                     console.log(e.target.value),
                                   maxLength: 5,
                                 }}
+                                estRequis={true}
                                 champ={field}
                               />
                             );
@@ -216,6 +221,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(e.target.value),
                                   maxLength: 255,
                                 }}
+                                estRequis={true}
                                 champ={field}
                               />
                             );
@@ -242,6 +248,8 @@ function Etape2InfosRequerant() {
                                 onChange={(civilite: Civilite) =>
                                   field.setValue(civilite)
                                 }
+                                champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -261,6 +269,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(e.target.value),
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -278,6 +287,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(e.target.value),
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -295,6 +305,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(e.target.value),
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -312,6 +323,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(e.target.value),
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -329,6 +341,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(e.target.value),
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -354,6 +367,7 @@ function Etape2InfosRequerant() {
                                 onChange={(civilite) =>
                                   field.setValue(civilite)
                                 }
+                                estRequis={true}
                               />
                             );
                           }}
@@ -373,6 +387,7 @@ function Etape2InfosRequerant() {
                                   maxLength: 255,
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -391,6 +406,7 @@ function Etape2InfosRequerant() {
                                   maxLength: 255,
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -409,6 +425,7 @@ function Etape2InfosRequerant() {
                                   maxLength: 255,
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -428,6 +445,7 @@ function Etape2InfosRequerant() {
                                   maxLength: 255,
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -447,6 +465,7 @@ function Etape2InfosRequerant() {
                                     field.handleChange(e.target.value),
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -471,6 +490,7 @@ function Etape2InfosRequerant() {
                                     ),
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -482,7 +502,7 @@ function Etape2InfosRequerant() {
                           name="requerant.paysNaissance"
                           children={(field) => {
                             return (
-                              <Select
+                              <FormSelect
                                 label="Pays de naissance"
                                 nativeSelectProps={{
                                   onChange: (e) =>
@@ -490,6 +510,8 @@ function Etape2InfosRequerant() {
                                     //field.setValue(e.target.value),
                                     console.log(e.target.value),
                                 }}
+                                champ={field}
+                                estRequis={true}
                               >
                                 <option value="" disabled hidden>
                                   Sélectionnez un pays
@@ -498,7 +520,7 @@ function Etape2InfosRequerant() {
                                 <option value={"FRA"}>France</option>
                                 <option value={"CIV"}>Côte d'ivoire</option>
                                 <option value={"BEL"}>Belgique</option>
-                              </Select>
+                              </FormSelect>
                             );
                           }}
                         />
@@ -554,6 +576,7 @@ function Etape2InfosRequerant() {
                                       field.setValue(e.target.value),
                                   }}
                                   champ={field}
+                                  estRequis={true}
                                 />
                               </div>
                               <div className="fr-col-lg-4 fr-col-8">
@@ -561,7 +584,7 @@ function Etape2InfosRequerant() {
                                   name="requerant.communeNaissance"
                                   children={(field) => {
                                     return (
-                                      <Select
+                                      <FormSelect
                                         disabled={true}
                                         label="Ville de naissance"
                                         nativeSelectProps={{
@@ -570,12 +593,14 @@ function Etape2InfosRequerant() {
                                             //field.setValue(e.target.value),
                                             console.log(e.target.value),
                                         }}
+                                        champ={field}
+                                        estRequis={true}
                                       >
                                         <option value={""}>
                                           Sélectionnez une ville
                                         </option>
                                         {/* TODO alimenter avec les communes liées au code postal */}
-                                      </Select>
+                                      </FormSelect>
                                     );
                                   }}
                                 />
@@ -603,6 +628,7 @@ function Etape2InfosRequerant() {
                                   maxLength: 255,
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -641,6 +667,7 @@ function Etape2InfosRequerant() {
                                   maxLength: 5,
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}
@@ -659,6 +686,7 @@ function Etape2InfosRequerant() {
                                   maxLength: 255,
                                 }}
                                 champ={field}
+                                estRequis={true}
                               />
                             );
                           }}

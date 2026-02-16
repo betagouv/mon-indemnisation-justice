@@ -5,7 +5,10 @@ import {
   getCivilite,
   getCiviliteLibelle,
 } from "@/apps/requerant/models";
-import { Select, SelectProps } from "@codegouvfr/react-dsfr/Select";
+import {
+  FormSelect,
+  FormSelectProps,
+} from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 
 export const SelectionCivilite = ({
   civilite,
@@ -13,7 +16,7 @@ export const SelectionCivilite = ({
   onChange,
   nativeSelectProps,
   ...props
-}: Omit<SelectProps, "children" | "label" | "nativeSelectProps"> & {
+}: Omit<FormSelectProps, "children" | "label" | "nativeSelectProps"> & {
   civilite?: Civilite;
   label?: string;
   onChange: (civilite: Civilite) => void;
@@ -23,7 +26,7 @@ export const SelectionCivilite = ({
   >;
 }) => {
   return (
-    <Select
+    <FormSelect
       label={label}
       {...props}
       nativeSelectProps={{
@@ -48,6 +51,6 @@ export const SelectionCivilite = ({
           {getCiviliteLibelle(civilite)}
         </option>
       ))}
-    </Select>
+    </FormSelect>
   );
 };
