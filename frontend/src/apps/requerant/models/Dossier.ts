@@ -39,6 +39,7 @@ export class Dossier extends BaseDossier {
   descriptionRapportAuLogement?: string;
   dateOperation: Date;
   description: string;
+  estPorteBlindee: boolean;
 }
 
 export class DossierApercu extends BaseDossier {}

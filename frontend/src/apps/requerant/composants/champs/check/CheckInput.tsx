@@ -12,33 +12,35 @@ export type CheckInputProps = Omit<
 > & {
   estRequis?: boolean;
   message?: ReactNode;
+  validation: boolean;
   estValide?: boolean;
 };
 
 export const CheckInput = ({
   estRequis,
   message,
+  validation = true,
   estValide,
+  label,
   ...props
 }: CheckInputProps) => {
-  // Hack : on caste les `props` en `any` pour empêcher TS de se plaindre de type hint lié au type _discriminated union_
-  const { label, ...baseProps } = props as any;
-
   return (
     <Input
       label={
         <>
           {label}
           {estRequis && (
-            <span className="fr-text-default--error">&#x2217;</span>
+            <span className="fr-text-default--error"> &#x2217;</span>
           )}
         </>
       }
       state={
-        estValide !== undefined ? (estValide ? "success" : "error") : "default"
+        validation && !!message ? (estValide ? "success" : "error") : "default"
       }
-      stateRelatedMessage={message}
-      {...baseProps}
+      stateRelatedMessage={validation && !!message ? message : ""}
+      /* Hack : on caste les `props` en `any` pour empêcher TS de se plaindre de type hint lié à l'aplatissement du type
+       _discriminated union_ une fois déstructuré */
+      {...(props as any)}
     />
   );
 };
