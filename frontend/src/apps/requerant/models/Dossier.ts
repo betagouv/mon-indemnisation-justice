@@ -1,8 +1,9 @@
 import { Usager } from "./Usager.ts";
-import { Requerant } from ".//Requerant.ts";
+import { Requerant } from "./Requerant.ts";
 import { Adresse } from "./Adresse.ts";
-import { EtatDossier } from "@/apps/requerant/models/EtatDossier.ts";
+import { EtatDossier } from "./EtatDossier.ts";
 import { Type } from "class-transformer";
+import { RapportAuLogement } from "./RapportAuLogement.ts";
 
 export abstract class BaseDossier {
   reference: string;
@@ -34,7 +35,8 @@ export class Dossier extends BaseDossier {
   initiePar: Usager;
   requerant: Requerant = new Requerant();
   adresse: Adresse = new Adresse();
-  rapportAuLogement?: string;
+  rapportAuLogement: RapportAuLogement;
+  descriptionRapportAuLogement?: string;
   dateOperation: Date;
   description: string;
 }

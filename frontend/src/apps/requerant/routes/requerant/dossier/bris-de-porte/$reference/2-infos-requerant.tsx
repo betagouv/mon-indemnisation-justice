@@ -1,13 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import React, { KeyboardEvent, useState } from "react";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import {
-  type QualiteRequerant,
-  QualiteRequerants,
-} from "@/apps/requerant/models/QualiteRequerant.ts";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { useInjection } from "inversify-react";
@@ -17,14 +11,35 @@ import { useForm } from "@tanstack/react-form";
 import { instanceToPlain } from "class-transformer";
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite.tsx";
+import classes from "@/apps/requerant/style/form.module.css";
+import { container } from "@/apps/requerant/container.ts";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/2-infos-requerant",
 )({
-  component: Etape2BrisDePorte,
+  component: Etape2InfosRequerant,
+  loader: async ({ params }) => {
+    const dossier = await container
+      .get<DossierManagerInterface>(DossierManagerInterface.$)
+      .getDossier(params.reference);
+
+    if (!dossier) {
+      console.log("Not found");
+      throw notFound({
+        data: {
+          titre: `Impossible de trouver le dossier ${params.reference}`,
+          message: "Le dossier n'existe pas ou ne vous est pas accessible.",
+        },
+        throw: true,
+      });
+    }
+
+    return { reference: params.reference, dossier };
+  },
+  shouldReload: true,
 });
 
-function Etape2BrisDePorte() {
+function Etape2InfosRequerant() {
   const naviguer = useNavigate({
     from: Route.fullPath,
   });
@@ -57,21 +72,9 @@ function Etape2BrisDePorte() {
     },
   });
 
-  const [qualiteRequerant, setQualiteRequerant] =
-    useState<QualiteRequerant>("LOC");
-
   return (
     <>
       <h1>Déclarer un bris de porte</h1>
-
-      <section>
-        <Stepper
-          currentStep={2}
-          stepCount={3}
-          title={"Données personnelles"}
-          nextTitle={"Documents à joindre à votre demande"}
-        />
-      </section>
 
       <form
         onSubmit={async (e) => {
@@ -83,7 +86,17 @@ function Etape2BrisDePorte() {
             console.error(e);
           }
         }}
+        className={classes.mijForm}
       >
+        <section>
+          <Stepper
+            currentStep={2}
+            stepCount={3}
+            title={"Données personnelles"}
+            nextTitle={"Documents à joindre à votre demande"}
+          />
+        </section>
+
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12">
             {dossier.requerant.estPersonneMorale ? (

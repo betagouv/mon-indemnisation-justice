@@ -12,6 +12,11 @@ import {
   type QualiteRequerant,
   QualiteRequerants,
 } from "./QualiteRequerant.ts";
+import {
+  type RapportAuLogement,
+  getListeRapportAuLogement,
+  getRapportAuLogementLibelle,
+} from "./RapportAuLogement.ts";
 import { Requerant } from "./Requerant.ts";
 import { Usager } from "./Usager";
 
@@ -26,6 +31,9 @@ export {
   Pays,
   QualiteRequerant,
   QualiteRequerants,
+  RapportAuLogement,
+  getListeRapportAuLogement,
+  getRapportAuLogementLibelle,
   Requerant,
   Usager,
 };
