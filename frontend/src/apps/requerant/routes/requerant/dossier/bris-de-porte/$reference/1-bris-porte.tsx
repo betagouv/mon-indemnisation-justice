@@ -7,14 +7,13 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { instanceToPlain } from "class-transformer";
-import React from "react";
+import React, { useId } from "react";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import {
   Dossier,
   getListeRapportAuLogement,
   getRapportAuLogementLibelle,
-  QualiteRequerants,
   RapportAuLogement,
 } from "@/apps/requerant/models";
 import { Select } from "@codegouvfr/react-dsfr/Select";
@@ -28,6 +27,8 @@ import { ErreurResourceInconnue } from "@/apps/requerant/routeur";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import classes from "@/apps/requerant/style/form.module.css";
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
+import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
+import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 
 const DossierInconnu = ({
   data: { titre, message },
@@ -150,9 +151,11 @@ function Etape1BrisPorte() {
                 name="requerant.estPersonneMorale"
                 children={(field) => {
                   return (
-                    <RadioButtons
+                    <FormRadioButtons
                       orientation="horizontal"
                       legend="Je suis"
+                      champ={field}
+                      estRequis={true}
                       options={[
                         {
                           label: "Une personne physique",
@@ -201,8 +204,10 @@ function Etape1BrisPorte() {
                             name="rapportAuLogement"
                             children={(field) => {
                               return (
-                                <Select
+                                <FormSelect
                                   label="Vous effectuez votre demande en qualité de"
+                                  champ={field}
+                                  estRequis={true}
                                   nativeSelectProps={{
                                     defaultValue: field.state.value || "",
                                     onChange: (event) => {
@@ -230,7 +235,7 @@ function Etape1BrisPorte() {
                                       )}
                                     </option>
                                   ))}
-                                </Select>
+                                </FormSelect>
                               );
                             }}
                           />
@@ -246,8 +251,11 @@ function Etape1BrisPorte() {
                                     name="descriptionRapportAuLogement"
                                     children={(field) => {
                                       return (
-                                        <Input
+                                        <FormInput
                                           label="Précisez"
+                                          estRequis={
+                                            rapportAuLogement === "AUT"
+                                          }
                                           nativeInputProps={{
                                             onChange: (e) =>
                                               field.setValue(e.target.value),
@@ -305,6 +313,7 @@ function Etape1BrisPorte() {
                                   onChange: (e) =>
                                     field.setValue(new Date(e.target.value)),
                                 }}
+                                estRequis={true}
                                 champ={field}
                               />
                             );
@@ -349,6 +358,7 @@ function Etape1BrisPorte() {
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                 }}
+                                estRequis={true}
                                 champ={field}
                               />
                             );
@@ -357,7 +367,7 @@ function Etape1BrisPorte() {
                       </div>
                       <div className="fr-col-12 fr-col-lg-6">
                         <formulaire.Field
-                          name="requerant.adresse.ligne1"
+                          name="adresse.ligne1"
                           children={(field) => {
                             return (
                               <FormInput
@@ -375,36 +385,42 @@ function Etape1BrisPorte() {
                       </div>
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="requerant.adresse.commune.codePostal"
+                          name="adresse.commune.codePostal"
                           children={(field) => {
                             return (
-                              <FormInput
-                                label="Code postal"
-                                nativeInputProps={{
-                                  onChange: (e) =>
-                                    field.setValue(e.target.value),
-                                  maxLength: 5,
-                                }}
-                                champ={field}
-                              />
+                              <>
+                                <FormInput
+                                  label="Code postal"
+                                  nativeInputProps={{
+                                    onChange: (e) =>
+                                      field.setValue(e.target.value),
+                                    maxLength: 5,
+                                  }}
+                                  estRequis={true}
+                                  champ={field}
+                                />
+                              </>
                             );
                           }}
                         />
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="requerant.adresse.commune.nom"
+                          name="adresse.commune.nom"
                           children={(field) => {
                             return (
-                              <FormInput
-                                label="Ville"
-                                nativeInputProps={{
-                                  onChange: (e) =>
-                                    field.setValue(e.target.value),
-                                  maxLength: 255,
-                                }}
-                                champ={field}
-                              />
+                              <>
+                                <FormInput
+                                  label="Ville"
+                                  nativeInputProps={{
+                                    onChange: (e) =>
+                                      field.setValue(e.target.value),
+                                    maxLength: 255,
+                                  }}
+                                  estRequis={true}
+                                  champ={field}
+                                />
+                              </>
                             );
                           }}
                         />
@@ -412,7 +428,7 @@ function Etape1BrisPorte() {
                     </div>
                     <div className="fr-col-12">
                       <formulaire.Field
-                        name="description"
+                        name="estPorteBlindee"
                         children={(field) => {
                           return (
                             <RadioButtons
@@ -422,16 +438,15 @@ function Etape1BrisPorte() {
                                 {
                                   label: "Oui",
                                   nativeInputProps: {
-                                    onChange: (e) =>
-                                      field.setValue(e.target.value),
+                                    checked: field.state.value === false,
+                                    onChange: (e) => field.setValue(false),
                                   },
                                 },
                                 {
                                   label: "Non",
                                   nativeInputProps: {
-                                    checked: true,
-                                    onChange: (e) =>
-                                      field.setValue(e.target.value),
+                                    checked: field.state.value === true,
+                                    onChange: (e) => field.setValue(false),
                                   },
                                 },
                               ]}
