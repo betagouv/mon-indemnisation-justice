@@ -12,7 +12,9 @@ const getCiviliteLibelle = (civilite: Civilite): string =>
   CiviliteLibelles[civilite];
 
 const getCivilite = (libelle: string): Civilite | undefined => {
-  return Civilites.includes(libelle) ? (libelle as Civilite) : undefined;
+  return Civilites.includes(libelle as Civilite)
+    ? (libelle as Civilite)
+    : undefined;
 };
 
 export { Civilites, type Civilite, getCivilite, getCiviliteLibelle };
