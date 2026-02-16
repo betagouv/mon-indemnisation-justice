@@ -1,19 +1,18 @@
-import React, { useMemo } from "react";
 import {
-  CheckInput,
-  CheckInputProps,
-} from "@/apps/requerant/composants/champs/check/CheckInput.tsx";
+  CheckSelect,
+  CheckSelectProps,
+} from "@/apps/requerant/composants/champs/check/CheckSelect.tsx";
+import React from "react";
 import { TanstackFormField } from "@/apps/requerant/composants/champs/form/TanstackFormField";
 
-export type FormInputProps = Omit<
-  CheckInputProps,
+export type FormSelectProps = Omit<
+  CheckSelectProps,
   "message" | "validation" | "estValide"
-> & {
-  champ?: TanstackFormField;
-};
-export const FormInput = ({ champ, ...props }: FormInputProps) => {
+> & { champ?: TanstackFormField };
+
+export const FormSelect = ({ champ, ...props }: FormSelectProps) => {
   return (
-    <CheckInput
+    <CheckSelect
       estValide={champ?.state.meta.isValid}
       validation={!!champ}
       message={
