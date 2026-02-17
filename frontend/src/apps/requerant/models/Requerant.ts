@@ -24,7 +24,7 @@ export class Requerant {
   prenom: string;
   courriel: string;
   telephone: string;
-  adresse: Adresse;
+  adresse: Adresse = new Adresse();
   dateNaissance: Date;
   paysNaissance: Pays;
   /** La commune de naissance ne peut être déclarée que pour les usagers nés en France, puisque seules les communes
