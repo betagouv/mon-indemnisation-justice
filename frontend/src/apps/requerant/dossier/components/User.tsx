@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import PersonnePhysique from "@/apps/requerant/dossier/components/PersonnePhysique";
+import { ChampCivilite } from "@/apps/requerant/dossier/components/Civilite";
 import PersonneMorale from "@/apps/requerant/dossier/components/PersonneMorale";
+import PersonnePhysique from "@/apps/requerant/dossier/components/PersonnePhysique";
 import {
   DossierContext,
   PatchDossierContext,
 } from "@/apps/requerant/dossier/contexts/DossierContext.ts";
-import Civilite from "@/apps/requerant/dossier/components/Civilite";
 import { Input } from "@codegouvfr/react-dsfr/Input.js";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import React, { useContext } from "react";
 
 const User = function () {
   const dossier = useContext<any>(DossierContext);
@@ -125,7 +125,7 @@ const User = function () {
                   <h3>Identité du représentant légal</h3>
                   <div className="fr-grid-row fr-grid-row--gutters">
                     <div className="fr-col-lg-2 fr-col-4">
-                      <Civilite
+                      <ChampCivilite
                         estActif={!dossier.requerant.estFranceConnect}
                         civilite={dossier.requerant.personnePhysique.civilite}
                         setCivilite={(civilite) =>

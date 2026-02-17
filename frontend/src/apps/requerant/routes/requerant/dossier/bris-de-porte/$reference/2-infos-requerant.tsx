@@ -7,6 +7,7 @@ import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import { Civilite, Commune, Dossier, Pays } from "@/apps/requerant/models";
+import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader";
@@ -19,7 +20,6 @@ import {
   NotFoundRouteProps,
   useNavigate,
 } from "@tanstack/react-router";
-import { instanceToPlain, plainToInstance } from "class-transformer";
 import { useInjection } from "inversify-react";
 import React, { useEffect, useState } from "react";
 
@@ -37,11 +37,15 @@ export const Route = createFileRoute(
       .getDossier(params.reference);
 
     if (!dossier) {
-      console.log("Not found");
       throw notFound({
         data: {
-          titre: `Impossible de trouver le dossier ${params.reference}`,
-          message: "Le dossier n'existe pas ou ne vous est pas accessible.",
+          titre: "Impossible de trouver le dossier",
+          message: (
+            <>
+              Le dossier de référence <i>${params.reference}</i>n'existe pas ou
+              ne vous est pas accessible.
+            </>
+          ),
         },
         throw: true,
       });
@@ -61,6 +65,10 @@ function Etape2InfosRequerant() {
     DossierManagerInterface.$,
   );
 
+  const adresseManager = useInjection<AdresseManagerInterface>(
+    AdresseManagerInterface.$,
+  );
+
   // Récupérer la référence depuis le paramètre de la route
   const { reference, dossier }: { reference: string; dossier: Dossier } =
     Route.useLoaderData();
@@ -77,15 +85,7 @@ function Etape2InfosRequerant() {
   }, [reference, codePostal]);
 
   const rafraichirListeCommunes = async (codePostal: string) => {
-    const response = await fetch(`/api/communes/${codePostal}`);
-
-    const data = await response.json();
-    setListeCommunes(
-      plainToInstance(
-        Commune,
-        data as { id: number; code: string; nom: string }[],
-      ),
-    );
+    setListeCommunes(await adresseManager.listerCommunes(codePostal));
   };
 
   const formulaire = useForm({
@@ -93,7 +93,7 @@ function Etape2InfosRequerant() {
     validators: {
       //onSubmit: TODO définir le schéma de validation,
     },
-    defaultValues: instanceToPlain(dossier) as Partial<Dossier>,
+    defaultValues: dossier as Partial<Dossier>,
     listeners: {
       onChangeDebounceMs: 500,
       onChange: async ({ formApi, fieldApi }) => {
@@ -552,12 +552,13 @@ function Etape2InfosRequerant() {
                       </div>
 
                       <formulaire.Subscribe
-                        selector={(state) =>
-                          state.values.requerant?.paysNaissance
-                        }
+                        selector={(state) => {
+                          console.log(state.values.requerant?.paysNaissance);
+                          return state.values.requerant?.paysNaissance;
+                        }}
                         children={(paysNaissance) => (
                           <>
-                            {!paysNaissance || paysNaissance.estFrance() ? (
+                            {!paysNaissance || paysNaissance?.estFrance() ? (
                               <formulaire.Field
                                 name="requerant.communeNaissance"
                                 children={(field) => {
