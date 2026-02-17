@@ -1,3 +1,4 @@
+import { CodePostalInput } from "@/apps/requerant/composants/champs/CodePostalInput.tsx";
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 import { PaysSelect } from "@/apps/requerant/composants/champs/PaysSelect";
@@ -5,7 +6,7 @@ import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouv
 import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite.tsx";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
-import { Civilite, Dossier, Pays } from "@/apps/requerant/models";
+import { Civilite, Commune, Dossier, Pays } from "@/apps/requerant/models";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader";
@@ -18,9 +19,9 @@ import {
   NotFoundRouteProps,
   useNavigate,
 } from "@tanstack/react-router";
-import { instanceToPlain } from "class-transformer";
+import { instanceToPlain, plainToInstance } from "class-transformer";
 import { useInjection } from "inversify-react";
-import React, { KeyboardEvent } from "react";
+import React, { useEffect, useState } from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/2-infos-requerant",
@@ -64,6 +65,29 @@ function Etape2InfosRequerant() {
   const { reference, dossier }: { reference: string; dossier: Dossier } =
     Route.useLoaderData();
 
+  const [codePostal, setCodePostal] = useState<string>(
+    dossier.requerant.communeNaissance?.codePostal ?? "",
+  );
+  const [listeCommunes, setListeCommunes] = useState<Commune[]>([]);
+
+  useEffect(() => {
+    if (codePostal.length === 5) {
+      rafraichirListeCommunes(codePostal);
+    }
+  }, [reference, codePostal]);
+
+  const rafraichirListeCommunes = async (codePostal: string) => {
+    const response = await fetch(`/api/communes/${codePostal}`);
+
+    const data = await response.json();
+    setListeCommunes(
+      plainToInstance(
+        Commune,
+        data as { id: number; code: string; nom: string }[],
+      ),
+    );
+  };
+
   const formulaire = useForm({
     canSubmitWhenInvalid: true,
     validators: {
@@ -72,7 +96,7 @@ function Etape2InfosRequerant() {
     defaultValues: instanceToPlain(dossier) as Partial<Dossier>,
     listeners: {
       onChangeDebounceMs: 500,
-      onChange: async ({ formApi }) => {
+      onChange: async ({ formApi, fieldApi }) => {
         await dossierManager.modifierDossier(reference, formApi.state.values);
       },
     },
@@ -527,88 +551,90 @@ function Etape2InfosRequerant() {
                         />
                       </div>
 
-                      <formulaire.Field
-                        name="requerant.communeNaissance.codePostal"
-                        children={(field) => {
-                          return (
-                            <>
-                              <div className="fr-col-lg-2 fr-col-4">
-                                <FormInput
-                                  label="Code postal"
-                                  nativeInputProps={{
-                                    type: "text",
-                                    maxLength: 5,
-                                    pattern: "^[0-9]{0,5}$",
-                                    onFocus: (e) => {
-                                      // Mettre le curseur à la fin
-                                      e.target.setSelectionRange(
-                                        e.target.value.length + 1,
-                                        e.target.value.length + 1,
-                                      );
-                                    },
-                                    onKeyDown: (
-                                      e: KeyboardEvent<HTMLInputElement>,
-                                    ) => {
-                                      if (e.key !== "Backspace") {
-                                        const target: HTMLInputElement =
-                                          e.target as HTMLInputElement;
+                      <formulaire.Subscribe
+                        selector={(state) =>
+                          state.values.requerant?.paysNaissance
+                        }
+                        children={(paysNaissance) => (
+                          <>
+                            {!paysNaissance || paysNaissance.estFrance() ? (
+                              <formulaire.Field
+                                name="requerant.communeNaissance"
+                                children={(field) => {
+                                  return (
+                                    <>
+                                      <div className="fr-col-lg-2 fr-col-4">
+                                        <CodePostalInput
+                                          label="Code postal"
+                                          disabled={!paysNaissance}
+                                          nativeInputProps={{
+                                            onChange: async (e) => {
+                                              setCodePostal(e.target.value);
+                                            },
+                                          }}
+                                          estRequis={true}
+                                        />
+                                      </div>
+                                      <div className="fr-col-lg-4 fr-col-8">
+                                        <FormSelect
+                                          disabled={!listeCommunes.length}
+                                          label="Ville de naissance"
+                                          nativeSelectProps={{
+                                            onChange: (e) => {
+                                              const id = parseInt(
+                                                e.target.value,
+                                              );
 
-                                        const projectedValue =
-                                          target.value.substring(
-                                            0,
-                                            target.selectionStart || 0,
-                                          ) +
-                                          e.key +
-                                          target.value.substring(
-                                            target.selectionEnd || 0,
-                                          );
-
-                                        if (
-                                          !projectedValue.match(
-                                            new RegExp(target.pattern),
-                                          )
-                                        ) {
-                                          e.stopPropagation();
-                                          e.preventDefault();
-                                        }
-                                      }
-                                    },
-                                    onChange: (e) =>
-                                      field.setValue(e.target.value),
-                                  }}
-                                  champ={field}
-                                  estRequis={true}
-                                />
-                              </div>
-                              <div className="fr-col-lg-4 fr-col-8">
-                                <formulaire.Field
-                                  name="requerant.communeNaissance"
-                                  children={(field) => {
-                                    return (
-                                      <FormSelect
-                                        disabled={true}
+                                              if (id) {
+                                                field.setValue(
+                                                  listeCommunes.find(
+                                                    (commune: Commune) =>
+                                                      commune.id == id,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                          }}
+                                          champ={field}
+                                          estRequis={true}
+                                        >
+                                          <option value={""}>
+                                            Sélectionnez une ville
+                                          </option>
+                                          {listeCommunes.map(
+                                            (commune: Commune) => (
+                                              <option
+                                                key={commune.id}
+                                                value={commune.id}
+                                              >
+                                                {commune.nom}
+                                              </option>
+                                            ),
+                                          )}
+                                        </FormSelect>
+                                      </div>
+                                    </>
+                                  );
+                                }}
+                              />
+                            ) : (
+                              <formulaire.Field
+                                name="requerant.villeNaissance"
+                                children={(field) => {
+                                  return (
+                                    <div className="fr-col-lg-6 fr-col-12">
+                                      <FormInput
                                         label="Ville de naissance"
-                                        nativeSelectProps={{
-                                          onChange: (e) =>
-                                            // TODO charger la liste des pays depuis un objet
-                                            //field.setValue(e.target.value),
-                                            console.log(e.target.value),
-                                        }}
                                         champ={field}
                                         estRequis={true}
-                                      >
-                                        <option value={""}>
-                                          Sélectionnez une ville
-                                        </option>
-                                        {/* TODO alimenter avec les communes liées au code postal */}
-                                      </FormSelect>
-                                    );
-                                  }}
-                                />
-                              </div>
-                            </>
-                          );
-                        }}
+                                      />
+                                    </div>
+                                  );
+                                }}
+                              />
+                            )}
+                          </>
+                        )}
                       />
                     </div>
 
