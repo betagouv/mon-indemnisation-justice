@@ -1,10 +1,6 @@
-import React, {
-  DetailedHTMLProps,
-  InputHTMLAttributes,
-  type ReactNode,
-} from "react";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { type InputProps } from "@codegouvfr/react-dsfr/src/Input.tsx";
+import React, { type ReactNode } from "react";
 
 export type CheckInputProps = Omit<
   InputProps,
