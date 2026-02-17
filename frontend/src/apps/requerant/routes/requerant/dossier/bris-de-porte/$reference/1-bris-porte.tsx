@@ -85,6 +85,7 @@ function Etape1BrisPorte() {
     listeners: {
       onChangeDebounceMs: 500,
       onChange: async ({ formApi }) => {
+        console.log(formApi.state.values);
         await dossierManager.modifierDossier(reference, formApi.state.values);
       },
     },
