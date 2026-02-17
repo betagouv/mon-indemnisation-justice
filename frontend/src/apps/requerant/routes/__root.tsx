@@ -2,6 +2,7 @@ import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouv
 import { ContexteUsager } from "@/apps/requerant/routeur/contexte.ts";
 import "@/style/index.css";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import {
@@ -71,7 +72,7 @@ const EspaceRequerant = () => {
         ]}
       />
 
-      <main role="main">
+      <main role="main" className="fr-p-2w">
         <div className="fr-container fr-container--fluid">
           <Outlet />
         </div>
@@ -80,6 +81,7 @@ const EspaceRequerant = () => {
       <Footer
         accessibility="non compliant"
         contentDescription=""
+        bottomItems={[headerFooterDisplayItem]}
         termsLinkProps={
           {
             href: `${window.location.origin}/mentions-legales`,

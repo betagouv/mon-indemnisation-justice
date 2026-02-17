@@ -1,12 +1,12 @@
 /// <reference types="./types" />
 
-import * as path from "path";
-import { defineConfig, loadEnv, UserConfig } from "vite";
-import { fileURLToPath, URL } from "node:url";
-import symfonyPlugin from "vite-plugin-symfony";
-import { default as react } from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import legacy from "@vitejs/plugin-legacy";
+import { default as react } from "@vitejs/plugin-react";
+import { fileURLToPath, URL } from "node:url";
+import * as path from "path";
+import { defineConfig, loadEnv, UserConfig } from "vite";
+import symfonyPlugin from "vite-plugin-symfony";
 
 export default defineConfig(({ mode }: UserConfig): UserConfig => {
   process.env = mode ? { ...process.env, ...loadEnv(mode, process.cwd()) } : {};
@@ -21,17 +21,20 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
     plugins: [
       tanstackRouter({
         target: "react",
+        autoCodeSplitting: true,
         virtualRouteConfig: "./src/apps/agent/fip6/routeur/routeur-fip6.ts",
         generatedRouteTree: "./src/apps/agent/fip6/routeur/routeur-fip6.gen.ts",
         routesDirectory: "./src/apps/agent/fip6/routes/",
       }),
       tanstackRouter({
         target: "react",
+        autoCodeSplitting: true,
         generatedRouteTree: "./src/apps/agent/fdo/routeur/routeur-fdo.gen.ts",
         routesDirectory: "./src/apps/agent/fdo/routes/",
       }),
       tanstackRouter({
         target: "react",
+        autoCodeSplitting: true,
         generatedRouteTree:
           "./src/apps/requerant/routeur/routeur-requerant.gen.ts",
         routesDirectory: "./src/apps/requerant/routes/",
