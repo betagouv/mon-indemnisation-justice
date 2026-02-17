@@ -1,7 +1,10 @@
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
+import { ErreurResourceInconnue } from "@/apps/requerant/routeur";
 import * as React from "react";
 import {
   createRootRouteWithContext,
   type LinkProps,
+  NotFoundRouteProps,
   Outlet,
   useLoaderData,
 } from "@tanstack/react-router";
@@ -26,7 +29,7 @@ const EspaceRequerant = () => {
           </>
         }
         homeLinkProps={{
-          href: "/",
+          to: "/",
           title: "Accueil - Mon Indemnisation Justice",
         }}
         serviceTitle={
@@ -99,14 +102,9 @@ export const Route = createRootRouteWithContext<ContexteUsager>()({
   },
   loader: async ({ context }) => ({ contexte: context }),
   component: () => <EspaceRequerant />,
-  notFoundComponent: () => {
-    return (
-      <div>
-        {/* TODO s'inspirer de pages d'erreur comme celles-ci https://ui.mantine.dev/category/error-pages/ */}
-        <p>Oups ce chemin n'existe pas</p>
-      </div>
-    );
-  },
+  notFoundComponent: (props: NotFoundRouteProps) => (
+    <NonTrouveComposant {...props} />
+  ),
   scripts: () =>
     import.meta.env.DEV
       ? [
