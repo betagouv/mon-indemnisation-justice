@@ -1,0 +1,28 @@
+.suggestedInput {
+    position: relative;
+
+    ul {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        max-height: 12.5rem;
+        overflow-y: auto;
+        border: 1px solid var(--border-default-grey);
+        background-color: var(--background-alt-grey);
+        z-index: 100;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+            padding: .5rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-disabled-grey);
+
+            &:hover {
+                background-color: var(--background-contrast-info-hover);
+            }
+        }
+    }
+}

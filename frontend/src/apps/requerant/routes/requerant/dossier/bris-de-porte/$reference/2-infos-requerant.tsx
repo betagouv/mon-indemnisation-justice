@@ -1,12 +1,19 @@
 import { CodePostalInput } from "@/apps/requerant/composants/champs/CodePostalInput.tsx";
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
+import { FormSuggestedInput } from "@/apps/requerant/composants/champs/form/FormSuggeestedInput.tsx";
 import { PaysSelect } from "@/apps/requerant/composants/champs/PaysSelect";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite.tsx";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
-import { Civilite, Commune, Dossier, Pays } from "@/apps/requerant/models";
+import {
+  Adresse,
+  Civilite,
+  Commune,
+  Dossier,
+  Pays,
+} from "@/apps/requerant/models";
 import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
@@ -232,9 +239,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Code postal"
                                 nativeInputProps={{
-                                  onChange: (e) =>
-                                    // TODO charger la liste des communes
-                                    console.log(e.target.value),
+                                  // TODO charger la liste des communes
                                   maxLength: 5,
                                 }}
                                 estRequis={true}
@@ -553,7 +558,6 @@ function Etape2InfosRequerant() {
 
                       <formulaire.Subscribe
                         selector={(state) => {
-                          console.log(state.values.requerant?.paysNaissance);
                           return state.values.requerant?.paysNaissance;
                         }}
                         children={(paysNaissance) => (
@@ -647,16 +651,37 @@ function Etape2InfosRequerant() {
                           name="requerant.adresse.ligne1"
                           children={(field) => {
                             return (
-                              <FormInput
+                              <FormSuggestedInput<Adresse>
                                 label="Adresse"
                                 nativeInputProps={{
-                                  placeholder: "Numéro de voie, rue",
-                                  onChange: (e) =>
-                                    field.setValue(e.target.value),
-                                  maxLength: 255,
+                                  onChange: (e) => {
+                                    field.setValue(e.target.value);
+                                  },
+                                  defaultValue: field.state.value,
                                 }}
-                                champ={field}
+                                onSelectionne={(suggestion: Adresse) => {
+                                  field.form.setFieldValue(
+                                    "requerant.adresse",
+                                    suggestion,
+                                  );
+                                  return suggestion.ligne1;
+                                }}
+                                rafraichisseur={async (valeur: string) =>
+                                  (
+                                    await adresseManager.suggererAdresse(valeur)
+                                  ).map((adresse: Adresse) => ({
+                                    libelle: adresse.libelle,
+                                    valeur: adresse,
+                                  }))
+                                }
+                                // Ne rafraichir la liste des suggestions que le lorsque la valeur saisie atteint au moins 5 caractères non blancs
+                                estARafraichir={(valeur: string) => {
+                                  return (
+                                    valeur.replaceAll(/\s+/g, "").length >= 5
+                                  );
+                                }}
                                 estRequis={true}
+                                champ={field}
                               />
                             );
                           }}
@@ -669,8 +694,9 @@ function Etape2InfosRequerant() {
                           children={(field) => {
                             return (
                               <FormInput
-                                label="Complément d'adresse (facultatif)"
+                                label="Complément d'adresse"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   placeholder: "Étage, escalier",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
@@ -690,6 +716,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Code postal"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 5,
@@ -709,6 +736,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Ville"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
