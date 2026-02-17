@@ -1,4 +1,13 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
+import { container } from "@/apps/requerant/container";
+import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager";
+import { Loader } from "@/common/components/Loader";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  useNavigate,
+} from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import React from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
@@ -8,6 +17,29 @@ export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes",
 )({
   component: Etape3PiecesJointes,
+  pendingComponent: Loader,
+  notFoundComponent: (props: NotFoundRouteProps) => (
+    <NonTrouveComposant {...props} />
+  ),
+  loader: async ({ params }) => {
+    const dossier = await container
+      .get<DossierManagerInterface>(DossierManagerInterface.$)
+      .getDossier(params.reference);
+
+    if (!dossier) {
+      console.log("Not found");
+      throw notFound({
+        data: {
+          titre: `Impossible de trouver le dossier ${params.reference}`,
+          message: "Le dossier n'existe pas ou ne vous est pas accessible.",
+        },
+        throw: true,
+      });
+    }
+
+    return { reference: params.reference, dossier };
+  },
+  shouldReload: true,
 });
 
 const CategoriesDocuments = {
