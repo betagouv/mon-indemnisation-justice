@@ -1,6 +1,6 @@
+import { Adresse } from "./Adresse.ts";
 import { Civilite } from "./Civilite.ts";
 import { Commune } from "./Commune.ts";
-import { Adresse } from "./Adresse.ts";
 import { Pays } from "./Pays.ts";
 
 export class Requerant {
@@ -24,6 +24,10 @@ export class Requerant {
   adresse: Adresse;
   dateNaissance: Date;
   paysNaissance: Pays;
+  /** La commune de naissance ne peut être déclarée que pour les usagers nés en France, puisque seules les communes
+   *  françaises disposent d'un code INSEE
+   */
   communeNaissance?: Commune;
+  // Pour les autres usagers, le nom de la ville de naissance doit être renseigné
   villeNaissance?: string;
 }
