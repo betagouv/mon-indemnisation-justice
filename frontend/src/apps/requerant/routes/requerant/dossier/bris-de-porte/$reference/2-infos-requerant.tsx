@@ -1,4 +1,11 @@
-import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
+import { Loader } from "@/common/components/Loader";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  useNavigate,
+} from "@tanstack/react-router";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import React, { KeyboardEvent, useState } from "react";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
@@ -19,6 +26,10 @@ export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/2-infos-requerant",
 )({
   component: Etape2InfosRequerant,
+  pendingComponent: Loader,
+  notFoundComponent: (props: NotFoundRouteProps) => (
+    <NonTrouveComposant {...props} />
+  ),
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
