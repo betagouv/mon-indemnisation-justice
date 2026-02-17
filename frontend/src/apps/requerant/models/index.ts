@@ -1,7 +1,8 @@
+import "reflect-metadata";
 import { Adresse } from "./Adresse.ts";
 import {
-  Civilites,
   type Civilite,
+  Civilites,
   getCivilite,
   getCiviliteLibelle,
 } from "./Civilite.ts";
@@ -21,19 +22,19 @@ import { Requerant } from "./Requerant.ts";
 import { Usager } from "./Usager";
 
 export {
-  Civilites,
-  Civilite,
-  getCivilite,
-  getCiviliteLibelle,
-  Commune,
   Adresse,
+  Civilite,
+  Civilites,
+  Commune,
   Dossier,
   Pays,
   QualiteRequerant,
   QualiteRequerants,
   RapportAuLogement,
-  getListeRapportAuLogement,
-  getRapportAuLogementLibelle,
   Requerant,
   Usager,
+  getCivilite,
+  getCiviliteLibelle,
+  getListeRapportAuLogement,
+  getRapportAuLogementLibelle,
 };

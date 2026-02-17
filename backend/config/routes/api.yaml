@@ -1,4 +1,9 @@
-# config/routes/attributes.yaml
+requerant:
+  resource:
+    path: ../../src/Api/Requerant/
+    namespace: MonIndemnisationJustice\Api\Requerant
+  type: attribute
+
 agent_fip6:
   resource:
     path: ../../src/Api/Agent/Fip6/Endpoint

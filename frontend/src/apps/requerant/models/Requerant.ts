@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import { Adresse } from "./Adresse.ts";
 import { Civilite } from "./Civilite.ts";
 import { Commune } from "./Commune.ts";
@@ -27,6 +28,7 @@ export class Requerant {
   /** La commune de naissance ne peut être déclarée que pour les usagers nés en France, puisque seules les communes
    *  françaises disposent d'un code INSEE
    */
+  @Type(() => Commune)
   communeNaissance?: Commune;
   // Pour les autres usagers, le nom de la ville de naissance doit être renseigné
   villeNaissance?: string;
