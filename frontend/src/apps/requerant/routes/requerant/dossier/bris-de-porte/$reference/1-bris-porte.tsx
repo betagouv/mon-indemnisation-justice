@@ -14,6 +14,7 @@ import {
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
+import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader.tsx";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
