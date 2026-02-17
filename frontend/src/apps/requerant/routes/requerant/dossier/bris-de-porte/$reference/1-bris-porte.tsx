@@ -1,6 +1,5 @@
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { container } from "@/apps/requerant/container";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import {
   createFileRoute,
   notFound,
@@ -9,7 +8,7 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { instanceToPlain } from "class-transformer";
-import React, { useId } from "react";
+import React from "react";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import {
@@ -18,18 +17,12 @@ import {
   getRapportAuLogementLibelle,
   RapportAuLogement,
 } from "@/apps/requerant/models";
-import { Select } from "@codegouvfr/react-dsfr/Select";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { useForm } from "@tanstack/react-form";
 import { useInjection } from "inversify-react";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/components/Loader.tsx";
-import {
-  ErreurResourceInconnue,
-  RouteurRequerant,
-} from "@/apps/requerant/routeur";
-import { Input } from "@codegouvfr/react-dsfr/Input";
 import classes from "@/apps/requerant/style/form.module.css";
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
