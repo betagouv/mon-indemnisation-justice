@@ -1,32 +1,30 @@
+import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
+import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
+import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
+import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container";
-import {
-  createFileRoute,
-  notFound,
-  NotFoundRouteProps,
-  redirect,
-  useNavigate,
-} from "@tanstack/react-router";
-import { instanceToPlain } from "class-transformer";
-import React from "react";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import {
   Dossier,
   getListeRapportAuLogement,
   getRapportAuLogementLibelle,
   RapportAuLogement,
 } from "@/apps/requerant/models";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
-import { useForm } from "@tanstack/react-form";
-import { useInjection } from "inversify-react";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
-import { Loader } from "@/common/components/Loader.tsx";
 import classes from "@/apps/requerant/style/form.module.css";
-import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
-import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
-import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
+import { Loader } from "@/common/components/Loader.tsx";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { useForm } from "@tanstack/react-form";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  useNavigate,
+} from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
+import React from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/1-bris-porte",
@@ -42,11 +40,15 @@ export const Route = createFileRoute(
       .getDossier(params.reference);
 
     if (!dossier) {
-      console.log("Not found");
       throw notFound({
         data: {
-          titre: `Impossible de trouver le dossier ${params.reference}`,
-          message: "Le dossier n'existe pas ou ne vous est pas accessible.",
+          titre: "Impossible de trouver le dossier",
+          message: (
+            <>
+              Le dossier de référence <i>${params.reference}</i>n'existe pas ou
+              ne vous est pas accessible.
+            </>
+          ),
         },
         throw: true,
       });
@@ -76,7 +78,7 @@ function Etape1BrisPorte() {
     validators: {
       //onSubmit: TODO définir le schéma de validation,
     },
-    defaultValues: instanceToPlain(dossier) as Partial<Dossier>,
+    defaultValues: dossier as Partial<Dossier>,
     listeners: {
       onChangeDebounceMs: 500,
       onChange: async ({ formApi }) => {
