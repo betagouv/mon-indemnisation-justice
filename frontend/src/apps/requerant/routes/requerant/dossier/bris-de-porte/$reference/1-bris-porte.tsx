@@ -1,9 +1,11 @@
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { container } from "@/apps/requerant/container";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import {
   createFileRoute,
   notFound,
   NotFoundRouteProps,
+  redirect,
   useNavigate,
 } from "@tanstack/react-router";
 import { instanceToPlain } from "class-transformer";
@@ -23,47 +25,24 @@ import { useForm } from "@tanstack/react-form";
 import { useInjection } from "inversify-react";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/components/Loader.tsx";
-import { ErreurResourceInconnue } from "@/apps/requerant/routeur";
+import {
+  ErreurResourceInconnue,
+  RouteurRequerant,
+} from "@/apps/requerant/routeur";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import classes from "@/apps/requerant/style/form.module.css";
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
 import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 
-const DossierInconnu = ({
-  data: { titre, message },
-}: {
-  data: { titre: string; message: string };
-}) => {
-  return (
-    <div className="fr-grid-row fr-grid-row--gutters">
-      <div className="fr-col-12">
-        <Alert severity={"error"} title={titre} description={message} />
-      </div>
-    </div>
-  );
-};
-
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/1-bris-porte",
 )({
   component: Etape1BrisPorte,
   pendingComponent: Loader,
-  // TODO: génériser
-  notFoundComponent: (props: NotFoundRouteProps) => {
-    const { titre, message } = props.data as ErreurResourceInconnue;
-    return (
-      <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12">
-          <Alert
-            severity={"error"}
-            title={titre ?? "Page introuvable"}
-            description={message}
-          />
-        </div>
-      </div>
-    );
-  },
+  notFoundComponent: (props: NotFoundRouteProps) => (
+    <NonTrouveComposant {...props} />
+  ),
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
@@ -464,7 +443,7 @@ function Etape1BrisPorte() {
                 buttonsIconPosition="right"
                 buttons={[
                   {
-                    disabled: estPersonneMorale === undefined,
+                    disabled: false, // TODO : désactiver pendant la sauvegarde
                     priority: "primary",
                     children: "Valider et passer à l'étape suivante",
                     nativeButtonProps: {
