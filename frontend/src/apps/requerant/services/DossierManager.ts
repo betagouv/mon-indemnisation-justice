@@ -1,8 +1,8 @@
 import { Dossier } from "@/apps/requerant/models";
-import { ServiceIdentifier } from "inversify";
-import { plainToClassFromExist, plainToInstance } from "class-transformer";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { dateIlYaNJours } from "@/common/services/date.ts";
+import { plainToClassFromExist, plainToInstance } from "class-transformer";
+import { ServiceIdentifier } from "inversify";
 
 export interface DossierManagerInterface {
   aDossier(reference: string): Promise<boolean>;
@@ -64,11 +64,6 @@ export class InMemoryDossierManager implements DossierManagerInterface {
         this.dossiers.get(reference) as Dossier,
         modifications,
       ),
-    );
-
-    console.log(
-      `Dossier ${reference} mis à jour : `,
-      this.dossiers.get(reference),
     );
 
     return Promise.resolve(this.dossiers.get(reference) as Dossier);
