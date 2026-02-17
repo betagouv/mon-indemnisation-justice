@@ -1,26 +1,26 @@
+import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
+import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
+import { PaysSelect } from "@/apps/requerant/composants/champs/PaysSelect";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
+import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite.tsx";
+import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
+import { container } from "@/apps/requerant/container.ts";
+import { Civilite, Dossier, Pays } from "@/apps/requerant/models";
+import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
+import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { useForm } from "@tanstack/react-form";
 import {
   createFileRoute,
   notFound,
   NotFoundRouteProps,
   useNavigate,
 } from "@tanstack/react-router";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import React, { KeyboardEvent, useState } from "react";
-import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
-import { Select } from "@codegouvfr/react-dsfr/Select";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { useInjection } from "inversify-react";
-import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
-import { Civilite, Dossier } from "@/apps/requerant/models";
-import { useForm } from "@tanstack/react-form";
 import { instanceToPlain } from "class-transformer";
-import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
-import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite.tsx";
-import classes from "@/apps/requerant/style/form.module.css";
-import { container } from "@/apps/requerant/container.ts";
-import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
+import { useInjection } from "inversify-react";
+import React, { KeyboardEvent } from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/2-infos-requerant",
@@ -513,25 +513,15 @@ function Etape2InfosRequerant() {
                           name="requerant.paysNaissance"
                           children={(field) => {
                             return (
-                              <FormSelect
+                              <PaysSelect
                                 label="Pays de naissance"
-                                nativeSelectProps={{
-                                  onChange: (e) =>
-                                    // TODO sélectionner le pays
-                                    //field.setValue(e.target.value),
-                                    console.log(e.target.value),
-                                }}
+                                pays={field.state.value}
+                                onSelectionne={(pays: Pays) =>
+                                  field.setValue(pays)
+                                }
                                 champ={field}
                                 estRequis={true}
-                              >
-                                <option value="" disabled hidden>
-                                  Sélectionnez un pays
-                                </option>
-                                {/* TODO ajouter la liste complète des pays */}
-                                <option value={"FRA"}>France</option>
-                                <option value={"CIV"}>Côte d'ivoire</option>
-                                <option value={"BEL"}>Belgique</option>
-                              </FormSelect>
+                              />
                             );
                           }}
                         />

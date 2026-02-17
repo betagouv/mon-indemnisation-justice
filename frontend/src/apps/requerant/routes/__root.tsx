@@ -1,6 +1,9 @@
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
-import { ErreurResourceInconnue } from "@/apps/requerant/routeur";
-import * as React from "react";
+import { ContexteUsager } from "@/apps/requerant/routeur/contexte.ts";
+import "@/style/index.css";
+import Badge from "@codegouvfr/react-dsfr/Badge";
+import Footer from "@codegouvfr/react-dsfr/Footer";
+import { Header } from "@codegouvfr/react-dsfr/Header";
 import {
   createRootRouteWithContext,
   type LinkProps,
@@ -9,12 +12,7 @@ import {
   useLoaderData,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { Header } from "@codegouvfr/react-dsfr/Header";
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import Footer from "@codegouvfr/react-dsfr/Footer";
-import "@/style/index.css";
-import { ContexteUsager } from "@/apps/requerant/routeur/contexte.ts";
-import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
+import * as React from "react";
 
 const EspaceRequerant = () => {
   const { contexte }: { contexte: ContexteUsager } = useLoaderData({} as any);
