@@ -26,7 +26,7 @@ const listePays = donnesPays
       return 1;
     }
 
-    // Pour le reste on trie par ordre alphabétique
+    // Pour le reste, on trie par ordre alphabétique
     return a.nom.localeCompare(b.nom);
   });
 
