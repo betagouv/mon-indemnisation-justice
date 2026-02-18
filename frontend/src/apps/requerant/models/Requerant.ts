@@ -3,9 +3,11 @@ import { Adresse } from "./Adresse.ts";
 import { Civilite } from "./Civilite.ts";
 import { Commune } from "./Commune.ts";
 import { Pays } from "./Pays.ts";
+import { PersonneMoraleType } from "./PersonneMoraleType.ts";
 
 export class Requerant {
   estPersonneMorale: boolean;
+  typePersonneMorale?: PersonneMoraleType;
   raisonSociale: string;
   siren: string;
   estRepresentantLegal?: boolean;
