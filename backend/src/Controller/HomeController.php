@@ -16,6 +16,12 @@ class HomeController extends AbstractController
         ]);
     }
 
+    #[Route('/faq', name: 'public_faq')]
+    public function faq(): Response
+    {
+        return $this->render('faq.html.twig');
+    }
+
     #[Route('/qui-sommes-nous', name: 'app_qui_sommes_nous')]
     public function quiSommesNous(): Response
     {
