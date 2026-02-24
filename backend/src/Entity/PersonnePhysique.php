@@ -20,7 +20,7 @@ class PersonnePhysique
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     // #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
     #[SerializedName('communeNaissance')]
-    #[ORM\ManyToOne(targetEntity: GeoCodePostal::class)]
+    #[ORM\ManyToOne(targetEntity: GeoCodePostal::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
     public ?GeoCodePostal $codePostalNaissance = null;
 
@@ -128,8 +128,8 @@ class PersonnePhysique
     public function recalculerNumeroSecuriteSociale(): void
     {
         if (null !== $this->civilite && null !== $this->dateNaissance && (
-            null !== $this->codePostalNaissance || (null !== $this->paysNaissance && !$this->paysNaissance->estFrance())
-        )
+                null !== $this->codePostalNaissance || (null !== $this->paysNaissance && !$this->paysNaissance->estFrance())
+            )
         ) {
             $this->dateNaissance->format('m');
             $this->numeroSecuriteSociale = sprintf(
@@ -192,7 +192,7 @@ class PersonnePhysique
 
     public function getPrenoms(): ?string
     {
-        return implode(', ', array_filter([$this->prenom1, $this->prenom2, $this->prenom3], fn ($prenom) => !empty($prenom)));
+        return implode(', ', array_filter([$this->prenom1, $this->prenom2, $this->prenom3], fn($prenom) => !empty($prenom)));
     }
 
     public function getTelephone(): ?string
@@ -270,7 +270,7 @@ class PersonnePhysique
     {
         return sprintf(
             '%s%s %s',
-            $civilite ? ucfirst(strtolower($this->civilite->value)).'. ' : '',
+            $civilite ? ucfirst(strtolower($this->civilite->value)) . '. ' : '',
             $this->prenom1,
             $capital ? strtoupper($this->nom) : ucfirst($this->nom)
         );
