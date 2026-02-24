@@ -1,14 +1,14 @@
-import React from "react";
+import {
+  FormSelect,
+  FormSelectProps,
+} from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 import {
   Civilite,
   Civilites,
   getCivilite,
   getCiviliteLibelle,
 } from "@/apps/requerant/models";
-import {
-  FormSelect,
-  FormSelectProps,
-} from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
+import React from "react";
 
 export const SelectionCivilite = ({
   civilite,
@@ -33,7 +33,6 @@ export const SelectionCivilite = ({
         ...(nativeSelectProps || {}),
         onChange: (e) => {
           const civilite = getCivilite(e.target.value);
-          console.log(civilite);
 
           if (civilite) {
             onChange(civilite);
