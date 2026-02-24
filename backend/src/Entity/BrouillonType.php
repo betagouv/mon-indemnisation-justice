@@ -38,15 +38,4 @@ enum BrouillonType: string
             self::BROUILLON_DOSSIER_BRIS_PORTE => DossierDto::class,
         };
     }
-
-    public static function detecterDepuisSource(mixed $source): ?self
-    {
-        $class = get_class($source);
-
-        if (!$class) {
-            return null;
-        }
-
-        return array_find(self::cases(), fn(BrouillonType $type) => $type->getClassePublication() === $class);
-    }
 }
