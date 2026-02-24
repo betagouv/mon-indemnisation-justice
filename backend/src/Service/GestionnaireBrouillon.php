@@ -8,7 +8,6 @@ use MonIndemnisationJustice\Entity\Brouillon;
 use MonIndemnisationJustice\Entity\BrouillonType;
 use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
