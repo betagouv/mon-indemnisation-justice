@@ -3,21 +3,29 @@
 namespace MonIndemnisationJustice\Event\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\DossierDto;
+use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\RequerantDto;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\BrouillonType;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Service\GestionnaireBrouillon;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class ConnexionRequerantListener implements EventSubscriberInterface
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-    ) {
+        protected readonly GestionnaireBrouillon  $gestionnaireBrouillon,
+        protected readonly NormalizerInterface    $normalizer,
+    )
+    {
     }
 
     public function onSecurityInteractiveLogin(LoginSuccessEvent $event): void
@@ -34,16 +42,19 @@ class ConnexionRequerantListener implements EventSubscriberInterface
         if (null !== ($testEligibilite = $this->getTestEligibiliteEnCours($request, $requerant))) {
             // ... associée à aucun de ses dossiers existants...
             if (null !== $testEligibilite && null === $testEligibilite->dossier) {
-                // ... alors, on crée un nouveau dossier lié à ce test d'éligibilité
-                $dossier = (new BrisPorte())
-                    ->setRequerant($requerant)
-                    ->setQualiteRequerant($testEligibilite->rapportAuLogement)
-                    ->setTestEligibilite($testEligibilite);
-                $requerant->setNavigation(null);
+                // ... alors, on initie un nouveau brouillon de dossier lié à ce test d'éligibilité
+                $dossier = new DossierDto();
+                $dossier->requerant = new RequerantDto();
+                $dossier->requerant->estPersonneMorale = $requerant->getIsPersonneMorale();
+                $dossier->requerant->raisonSociale = $requerant->getPersonneMorale()?->getRaisonSociale();
+                $dossier->requerant->siren = $requerant->getPersonneMorale()?->getSirenSiret();
+                // TODO finir de transvaser les champs
+                $dossier->testEligibilite = new TestEligibilite();
+                $dossier->testEligibilite->id = $testEligibilite->id;
 
-                $this->em->persist($requerant);
-                $this->em->persist($dossier);
-                $this->em->flush();
+                $this->gestionnaireBrouillon->initierDepuis($dossier, $requerant);
+
+                $requerant->setNavigation(null);
             }
         } else {
             // Sinon si une déclaration des FDO existe en session...
@@ -53,24 +64,32 @@ class ConnexionRequerantListener implements EventSubscriberInterface
             // ... associée à aucun de ses dossiers existants...
             if (null !== $declarationFDO && null === $dossier) {
                 // ... alors, on crée un nouveau dossier lié à cette déclaration
-                $dossier = (new BrisPorte())
+                /*
+                $dossier = new BrisPorte()
                     ->setRequerant($requerant)
                     ->setDeclarationFDO($declarationFDO)
                     ->setDateOperationPJ($declarationFDO->getDateOperation())
                     // On recrée une nouvelle adresse pour conserver les données des FDO et pouvoir plus tard comparer et arbitrer
                     ->setAdresse(
-                        (new Adresse())
+                        new Adresse()
                             ->setLigne1($declarationFDO->getAdresse()->getLigne1())
                             ->setLigne2($declarationFDO->getAdresse()->getLigne2())
                             ->setCodePostal($declarationFDO->getAdresse()->getCodePostal())
                             ->setLocalite($declarationFDO->getAdresse()->getLocalite())
                     );
+                */
+
+                $this->gestionnaireBrouillon->initier(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE, requerant: $requerant, donnees: [
+                    'requerant' => [
+                        'estPersonneMorale' => $requerant->getIsPersonneMorale(),
+                        'raisonSociale' => $requerant->getPersonneMorale()?->getRaisonSociale(),
+                        'siren' => $requerant->getPersonneMorale()?->getSirenSiret(),
+
+                        // TODO finir de transvaser les champs
+                    ]
+                ]);
 
                 $requerant->setNavigation(null);
-
-                $this->em->persist($requerant);
-                $this->em->persist($dossier);
-                $this->em->flush();
             }
         }
 

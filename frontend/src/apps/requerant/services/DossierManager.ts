@@ -7,7 +7,13 @@ import { ServiceIdentifier } from "inversify";
 export interface DossierManagerInterface {
   aDossier(reference: string): Promise<boolean>;
   getDossier(reference: string): Promise<Dossier | undefined>;
-  modifierDossier(
+
+  modifier(
+    reference: string,
+    modifications: Partial<Dossier>,
+  ): void;
+
+  enregistrer(
     reference: string,
     modifications: Partial<Dossier>,
   ): Promise<Dossier>;
@@ -50,12 +56,12 @@ export class InMemoryDossierManager implements DossierManagerInterface {
     return Promise.resolve(this.dossiers.get(reference));
   }
 
-  modifierDossier(
+  modifier(
     reference: string,
     modifications: Partial<Dossier>,
-  ): Promise<Dossier> {
+  ): void {
     if (!this.dossiers.has(reference)) {
-      return Promise.reject(`Aucun dossier de référence ${reference}`);
+      throw new Error(`Aucun dossier de référence ${reference}`);
     }
 
     this.dossiers.set(
@@ -65,8 +71,28 @@ export class InMemoryDossierManager implements DossierManagerInterface {
         modifications,
       ),
     );
+  }
 
-    return Promise.resolve(this.dossiers.get(reference) as Dossier);
+  async enregistrer(reference: string, modifications: Partial<Dossier>): Promise<Dossier> {
+    const reponse = await fetch(`/api/requerant/brouillon/bris-de-porte/${reference}/amender`, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+      },
+      body: JSON.stringify(modifications)
+    });
+
+    const data = await reponse.json();
+
+    this.dossiers.set(
+      reference,
+      plainToInstance(
+        Dossier,
+        data,
+      ),
+    );
+
+    return this.dossiers.get(reference) as Dossier;
   }
 
   mesDemandes(): Promise<DossierApercu[]> {

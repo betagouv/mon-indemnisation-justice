@@ -9,15 +9,28 @@ use MonIndemnisationJustice\Entity\BrouillonType;
 use MonIndemnisationJustice\Entity\Requerant;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class GestionnaireBrouillon
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
+        protected readonly NormalizerInterface $normalizer,
         protected readonly DenormalizerInterface $denormalizer,
         protected readonly ValidatorInterface $validator,
     ) {
+    }
+
+    public function initierDepuis(mixed $source, ?Requerant $requerant = null, ?Agent $agent = null): Brouillon
+    {
+        $type = BrouillonType::detecterDepuisSource($source);
+
+        if (!$type) {
+            throw new \Exception("Impossible de determiner le type de brouillon associé à un object de type '" . get_class($source) . "'");
+        }
+
+        return $this->initier($type, $requerant, $this->normalizer->normalize($source));
     }
 
     /**
@@ -82,7 +95,7 @@ class GestionnaireBrouillon
      *
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
-    protected function genererEntite(Brouillon $brouillon): object
+    public function genererEntite(Brouillon $brouillon): object
     {
         return $this->denormalizer->denormalize(
             $brouillon->getDonnees(),
