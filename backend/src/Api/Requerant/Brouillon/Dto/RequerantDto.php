@@ -3,7 +3,11 @@
 namespace MonIndemnisationJustice\Api\Requerant\Brouillon\Dto;
 
 use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Entity\Requerant;
+use Symfony\Component\ObjectMapper\Attribute\Map;
 
+#[Map(source: Requerant::class)]
+#[Map(target: Requerant::class)]
 class RequerantDto
 {
     public ?bool $estPersonneMorale;
