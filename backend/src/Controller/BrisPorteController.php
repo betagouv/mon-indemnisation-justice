@@ -33,7 +33,8 @@ class PreInscription
         public ?TestEligibilite $testEligibilite = null,
         public ?DeclarationFDOBrisPorte $declarationErreurOperationnelle = null,
         public ?Requerant $requerant = null,
-    ) {}
+    ) {
+    }
 }
 
 #[Route('/bris-de-porte')]
@@ -48,7 +49,8 @@ class BrisPorteController extends AbstractController
         private readonly Mailer $mailer,
         #[Autowire(service: 'oidc_client_france_connect')]
         protected readonly OidcClient $oidcClientFranceConnect,
-    ) {}
+    ) {
+    }
 
     #[Route('/tester-mon-eligibilite', name: 'bris_porte_tester_eligibilite', methods: ['GET', 'POST'])]
     public function testerMonEligibilite(Request $request): Response
@@ -89,8 +91,7 @@ class BrisPorteController extends AbstractController
                 if (($requerant = $this->getUser()) instanceof Requerant) {
                     $dossier = (new BrisPorte())
                         ->setRequerant($requerant)
-                        ->setTestEligibilite($testEligibilite)
-                    ;
+                        ->setTestEligibilite($testEligibilite);
 
                     $this->entityManager->persist($dossier);
                     $this->entityManager->flush();
@@ -186,8 +187,8 @@ class BrisPorteController extends AbstractController
         return $this->render('brisPorte/creation_de_compte.html.twig', [
             'react' => [
                 'routes' => [
-                    'connexion' => $router->generate('app_login'),
-                    'inscriptionFranceConnect' => $this->oidcClientFranceConnect->buildAuthorizeUrl($request, 'requerant_securite_inscription'),
+                    'connexion' => $router->generate('securite_connexion'),
+                    'inscriptionFranceConnect' => $this->oidcClientFranceConnect->buildAuthorizeUrl($request, 'securite_usager_inscription'),
                     'cgu' => $router->generate('public_cgu'),
                 ],
                 'token' => $csrfTokenManager->getToken('creation-de-compte')->getValue(),
@@ -215,16 +216,14 @@ class BrisPorteController extends AbstractController
 
         // Création du compte requérant
         $requerant = (new Requerant())
-            ->setEmail($inscription->courriel)
-        ;
+            ->setEmail($inscription->courriel);
         $requerant->getPersonnePhysique()
             ->setCivilite($inscription->civilite)
             ->setPrenom1($inscription->prenom)
             ->setEmail($inscription->courriel)
             ->setTelephone($inscription->telephone)
             ->setNom($inscription->nom)
-            ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom)
-        ;
+            ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom);
         $requerant->setPassword(
             $this->userPasswordHasher->hashPassword(
                 $requerant,
@@ -256,8 +255,7 @@ class BrisPorteController extends AbstractController
             ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
                 'requerant' => $requerant,
             ])
-            ->send()
-        ;
+            ->send();
 
         return new JsonResponse('', Response::HTTP_CREATED);
     }

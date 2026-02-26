@@ -40,12 +40,14 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
         protected readonly LoggerInterface $logger,
         protected readonly EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
-    ) {}
+    ) {
+    }
 
     public function supports(Request $request): ?bool
     {
         return
-            (
+            $request->isMethod(Request::METHOD_GET)
+            && (
                 $this->httpUtils->checkRequestPath($request, $this->signupCheckRoute)
                 || $this->httpUtils->checkRequestPath($request, $this->loginCheckRoute)
             )
@@ -66,6 +68,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
             $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
 
             $requerant = $this->requerantRepository->findByEmailOrSub($userInfo['email'] ?? null, $userInfo['sub'] ?? null);
+
             if (null === $requerant) {
                 if ($this->httpUtils->checkRequestPath($request, $this->signupCheckRoute)) {
                     // Inscription
@@ -85,8 +88,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                                 ->setPrenom3($prenoms[2] ?? null)
                                 ->setDateNaissance(new \DateTime($userInfo['birthdate'] ?? ''))
                                 ->setEmail($userInfo['email'] ?? null)
-                        )
-                    ;
+                        );
 
                     // Récupération du pays de naissance
                     if (null !== ($codePaysNaissance = $userInfo['birthcountry'])) {
@@ -109,8 +111,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                         if (null !== $codePostalNaissance) {
                             $requerant->getPersonnePhysique()
                                 ->setCommuneNaissance($codePostalNaissance)
-                                ->setPaysNaissance($this->em->getRepository(GeoPays::class)->getFrance())
-                            ;
+                                ->setPaysNaissance($this->em->getRepository(GeoPays::class)->getFrance());
                         }
                     }
 

@@ -91,7 +91,7 @@
                             >
                                 J'ai oublié mon mot de passe
                             </h1>
-                            <form action="{{ absolute_url(path('app_send_reset_password')) }}" method="post">
+                            <form action="{{ absolute_url(path('securite_connexion_mdp_oublie')) }}" method="post">
                                 <input type="hidden" name="_token" value="{{ mdp_oublie_form._token.vars.value }}">
 
                                 <div class="fr-grid-row fr-grid-row--gutters">
@@ -278,19 +278,22 @@
                             </div>
                         </div>
 
-                        <div class="fr-connect-group">
-                            <a class="fr-btn fr-connect" href="{{ france_connect_url }}" rel="nofollow">
-                                <span class="fr-connect__login">S’identifier avec</span>
-                                <span class="fr-connect__brand">FranceConnect</span>
-                            </a>
-                            <p>
-                                <a href="https://franceconnect.gouv.fr/" target="_blank" rel="noopener"
-                                   title="Qu’est-ce que FranceConnect ? - nouvelle fenêtre"
-                                >
-                                    Qu’est-ce que FranceConnect ?
-                                </a>
-                            </p>
-                        </div>
+                        <form method="post" action="{{ path('securite_usager_connexion') }}">
+                            <input type="hidden" name="_csrf_token_usager" value="{{ csrf_token('connexionUsager') }}">
+                            <div class="fr-connect-group">
+                                <button class="fr-btn fr-connect" rel="nofollow" type="submit">
+                                    <span class="fr-connect__login">S’identifier avec</span>
+                                    <span class="fr-connect__brand">FranceConnect</span>
+                                </button>
+                                <p>
+                                    <a href="https://franceconnect.gouv.fr/" target="_blank" rel="noopener"
+                                       title="Qu’est-ce que FranceConnect ? - nouvelle fenêtre"
+                                    >
+                                        Qu’est-ce que FranceConnect ?
+                                    </a>
+                                </p>
+                            </div>
+                        </form>
 
                         <div class="fr-section-separateur--ligne">
                             <span>ou</span>
@@ -394,7 +397,7 @@
                     <div class="fr-grow fr-column fr-column--centered">
 
 
-                        <form method="post" action="{{ path('securite_connexion_agent') }}">
+                        <form method="post" action="{{ path('securite_agent_connexion') }}">
                             <input type="hidden" name="_csrf_token_agent" value="{{ csrf_token('connexionAgent') }}">
                             <div class="fr-connect-group">
                                 <button class="fr-connect fr-pro-connect" type="submit">
