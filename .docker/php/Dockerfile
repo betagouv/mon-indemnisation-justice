@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:1.11.1-php8.4-trixie AS frankenphp
+FROM dunglas/frankenphp:1.11.3-php8.4-trixie AS frankenphp
 
 # Extra .bashrc config
 RUN echo "alias ll='ls -l'" > /root/.bashrc
@@ -40,7 +40,19 @@ RUN npm update -g
 RUN npm install --force -g yarn
 
 # Firefox
-RUN apt install -y firefox-esr
+RUN apt install -y ca-certificates curl gnupg
+RUN curl -fsSL https://packages.mozilla.org/apt/repo-signing-key.gpg | gpg --dearmor -o /usr/share/keyrings/packages.mozilla.org.gpg
+RUN gpg --show-keys --with-fingerprint /usr/share/keyrings/packages.mozilla.org.gpg | head -n 2
+
+RUN echo 'Types: deb \n\
+URIs: https://packages.mozilla.org/apt \n\
+Suites: mozilla \n\
+Components: main \n\
+Signed-By: /usr/share/keyrings/packages.mozilla.org.gpg\n' >> /etc/apt/sources.list.d/mozilla.sources
+
+RUN cat /etc/apt/sources.list.d/mozilla.sources
+RUN apt-get update -y && \
+    apt-get install -y firefox
 ENV FIREFOX_PATH=/usr/bin/firefox
 
 # Installer pdf2text pour pouvoir extraire le texte d'un fichier PDF
