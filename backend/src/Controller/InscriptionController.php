@@ -15,7 +15,8 @@ class InscriptionController extends AbstractController
     public function __construct(
         protected EntityManagerInterface $em,
         protected readonly RequerantRepository $requerantRepository,
-    ) {}
+    ) {
+    }
 
     #[Route('/inscription/validation-du-compte/{jeton}', name: 'app_verify_email')]
     public function verifyUserEmail(string $jeton, Request $request): Response
@@ -23,7 +24,7 @@ class InscriptionController extends AbstractController
         /** @var Requerant $requerant */
         $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
         if (null === $requerant) {
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('securite_connexion');
         }
         $requerant->setVerifieCourriel();
         $requerant->supprimerJetonVerification();
@@ -31,6 +32,6 @@ class InscriptionController extends AbstractController
 
         $request->getSession()->getFlashBag()->add('connexion', $requerant->getEmail());
 
-        return $this->redirectToRoute('app_login');
+        return $this->redirectToRoute('securite_connexion');
     }
 }

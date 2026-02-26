@@ -22,12 +22,12 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
     requerant:
-      pattern: ^/(requerant|connexion-requerant|api-v1)
+      pattern: ^/(requerant|connexion-requerant|connexion/usager|inscription/usager|api-v1)
       user_checker: MonIndemnisationJustice\Security\RequerantChecker
       lazy: true
       provider: app_requerant_provider
       form_login:
-        login_path: app_login
+        login_path: securite_connexion
         check_path: securite_connexion_requerant
         enable_csrf: true
         default_target_path: requerant_home_index
@@ -41,15 +41,15 @@ security:
       logout:
         path: app_logout
         # where to redirect after logout
-        target: app_login
+        target: securite_connexion
     agent:
-      pattern: ^/(api/agent|agent)
+      pattern: ^/(api/agent|agent|connexion/agent)
       lazy: true
       provider: agent_provider
       custom_authenticator: MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator
       logout:
         path: agent_securite_deconnexion
-        target: app_login
+        target: securite_connexion
       switch_user: true
 
 

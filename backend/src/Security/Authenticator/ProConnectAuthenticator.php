@@ -37,12 +37,13 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
          */
         #[Autowire('%env(default::json:MIJ_AUTO_PROMOTION_HASHES)%')]
         protected readonly ?array $autoPromotionHashes,
-    ) {}
+    ) {
+    }
 
     public function supports(Request $request): ?bool
     {
         return
-            'agent_securite_connexion' === $request->attributes->get('_route')
+            'securite_agent_connexion' === $request->attributes->get('_route')
             && $request->query->has('state')
             && (
                 $request->query->has('code')
@@ -77,8 +78,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
                     ->setUid($userInfo['uid'])
                     ->setCree()
                     ->setFournisseurIdentite($fournisseurIdentite)
-                    ->setDonnesAuthentification($userInfo)
-                ;
+                    ->setDonnesAuthentification($userInfo);
 
                 if ($autoPromotion) {
                     $agent
@@ -87,14 +87,12 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
                         ->addRole(Agent::ROLE_AGENT_REDACTEUR)
                         ->addRole(Agent::ROLE_AGENT_BETAGOUV)
                         ->setAdministration(Administration::MINISTERE_JUSTICE)
-                        ->setValide()
-                    ;
+                        ->setValide();
                 }
             } else {
                 $agent->setEmail($userInfo['email'])
                     ->setPrenom($userInfo['given_name'])
-                    ->setNom($userInfo['usual_name'])
-                ;
+                    ->setNom($userInfo['usual_name']);
 
                 if ($autoPromotion) {
                     $agent->addRole(Agent::ROLE_AGENT_BETAGOUV);
@@ -139,7 +137,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new RedirectResponse($this->urlGenerator->generate('app_login', ['erreur' => $exception->getMessage()]));
+        return new RedirectResponse($this->urlGenerator->generate('securite_connexion', ['erreur' => $exception->getMessage()]));
     }
 
     public function start(Request $request, ?AuthenticationException $authException = null): Response
@@ -147,7 +145,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
         $request->getSession()->set('agent_connexion_redirection', $request->getPathInfo());
 
         return new RedirectResponse(
-            $this->urlGenerator->generate('app_login'),
+            $this->urlGenerator->generate('securite_connexion'),
             Response::HTTP_TEMPORARY_REDIRECT
         );
     }
