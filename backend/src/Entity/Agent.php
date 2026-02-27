@@ -90,10 +90,10 @@ class Agent implements UserInterface
     #[Groups(['agent:detail'])]
     protected array $roles = [];
 
-    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'redacteur', cascade: ['detach'])]
+    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'redacteur', cascade: ['detach'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
     #[Ignore]
-    /** @var Collection<BrisPorte> */
+    /** @var Collection<Dossier> */
     protected Collection $dossiers;
 
     /**
@@ -289,11 +289,11 @@ class Agent implements UserInterface
     }
 
     /**
-     * @return BrisPorte[]
+     * @return Dossier[]
      */
     public function getDossiersAInstruire(): array
     {
-        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (BrisPorte $dossier) => in_array($dossier->getEtatDossier()->getEtat(), [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_EN_INSTRUCTION]))->toArray() : [];
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (Dossier $dossier) => in_array($dossier->getEtatDossier()->getEtat(), [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_EN_INSTRUCTION]))->toArray() : [];
     }
 
     public function nbDossiersAVerifier(): int
@@ -302,11 +302,11 @@ class Agent implements UserInterface
     }
 
     /**
-     * @return BrisPorte[]
+     * @return Dossier[]
      */
     public function getDossiersAVerifier(): array
     {
-        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (BrisPorte $dossier) => EtatDossierType::DOSSIER_OK_A_VERIFIER === $dossier->getEtatDossier()->getEtat())->toArray() : [];
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (Dossier $dossier) => EtatDossierType::DOSSIER_OK_A_VERIFIER === $dossier->getEtatDossier()->getEtat())->toArray() : [];
     }
 
     /**
@@ -368,7 +368,7 @@ class Agent implements UserInterface
         return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR);
     }
 
-    public function instruit(BrisPorte $dossier): bool
+    public function instruit(Dossier $dossier): bool
     {
         return $this->estRedacteur() && $dossier->getRedacteur() === $this;
     }
@@ -378,7 +378,7 @@ class Agent implements UserInterface
         return $this->donnesAuthentification ? json_decode($this->donnesAuthentification, true) : null;
     }
 
-    public function setDonnesAuthentification(null|array|string $donnesAuthentification): Agent
+    public function setDonnesAuthentification(array|string|null $donnesAuthentification): Agent
     {
         if (null !== $donnesAuthentification) {
             $this->donnesAuthentification = (is_array($donnesAuthentification) ? (json_encode($donnesAuthentification) ?? '') : $donnesAuthentification);
@@ -420,7 +420,9 @@ class Agent implements UserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials(): void {}
+    public function eraseCredentials(): void
+    {
+    }
 
     public function getUsername(): ?string
     {

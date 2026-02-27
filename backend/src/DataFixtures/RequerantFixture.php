@@ -11,7 +11,7 @@ use MonIndemnisationJustice\Entity\Civilite;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class RequerantFixture extends Fixture
@@ -27,7 +27,7 @@ class RequerantFixture extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach ([
-            'raquel' => (new Requerant())
+            'raquel' => (new Usager())
                 ->setAdresse(
                     (new Adresse())
                         ->setLigne1('12 rue des Oliviers')
@@ -46,8 +46,8 @@ class RequerantFixture extends Fixture
                 )
                 ->setEmail('raquel.randt@courriel.fr')
                 ->setVerifieCourriel()
-                ->setRoles([Requerant::ROLE_REQUERANT]),
-            'ray' => (new Requerant())
+                ->setRoles([Usager::ROLE_REQUERANT]),
+            'ray' => (new Usager())
                 ->setAdresse(
                     (new Adresse())
                         ->setLigne1('37 rue du Nivernais')
@@ -66,8 +66,8 @@ class RequerantFixture extends Fixture
                 ->setEmail('ray.keran@courriel.fr')
                 ->setSub('3297f962-d6a2-4e30-a134-4b85615fd62c')
                 ->setVerifieCourriel()
-                ->setRoles([Requerant::ROLE_REQUERANT]),
-            'melun' => (new Requerant())->setAdresse(
+                ->setRoles([Usager::ROLE_REQUERANT]),
+            'melun' => (new Usager())->setAdresse(
                 (new Adresse())
                     ->setLigne1($this->faker->streetAddress())
                     ->setLocalite($this->faker->city())
@@ -85,8 +85,8 @@ class RequerantFixture extends Fixture
                 )
                 ->setEmail($this->faker->email())
                 ->setVerifieCourriel()
-                ->setRoles([Requerant::ROLE_REQUERANT]),
-            'aix-en-provence' => (new Requerant())->setAdresse(
+                ->setRoles([Usager::ROLE_REQUERANT]),
+            'aix-en-provence' => (new Usager())->setAdresse(
                 (new Adresse())
                     ->setLigne1($this->faker->streetAddress())
                     ->setLocalite($this->faker->city())
@@ -104,8 +104,8 @@ class RequerantFixture extends Fixture
                 )
                 ->setEmail($this->faker->email())
                 ->setVerifieCourriel()
-                ->setRoles([Requerant::ROLE_REQUERANT]),
-            'saint-malo' => (new Requerant())->setAdresse(
+                ->setRoles([Usager::ROLE_REQUERANT]),
+            'saint-malo' => (new Usager())->setAdresse(
                 (new Adresse())
                     ->setLigne1($this->faker->streetAddress())
                     ->setLocalite($this->faker->city())
@@ -123,8 +123,8 @@ class RequerantFixture extends Fixture
                 )
                 ->setEmail($this->faker->email())
                 ->setVerifieCourriel()
-                ->setRoles([Requerant::ROLE_REQUERANT]),
-            'ancenis' => (new Requerant())->setAdresse(
+                ->setRoles([Usager::ROLE_REQUERANT]),
+            'ancenis' => (new Usager())->setAdresse(
                 (new Adresse())
                     ->setLigne1($this->faker->streetAddress())
                     ->setLocalite($this->faker->city())
@@ -142,8 +142,8 @@ class RequerantFixture extends Fixture
                 )
                 ->setEmail($this->faker->email())
                 ->setVerifieCourriel()
-                ->setRoles([Requerant::ROLE_REQUERANT]),
-            'istres' => (new Requerant())->setAdresse(
+                ->setRoles([Usager::ROLE_REQUERANT]),
+            'istres' => (new Usager())->setAdresse(
                 (new Adresse())
                     ->setLigne1($this->faker->streetAddress())
                     ->setLocalite($this->faker->city())
@@ -161,9 +161,9 @@ class RequerantFixture extends Fixture
                 )
                 ->setEmail($this->faker->email())
                 ->setVerifieCourriel()
-                ->setRoles([Requerant::ROLE_REQUERANT]),
+                ->setRoles([Usager::ROLE_REQUERANT]),
         ] as $reference => $requerant) {
-            /** @var Requerant $requerant */
+            /** @var Usager $requerant */
             if (null === $requerant->getSub()) {
                 $requerant->setPassword($this->passwordHasher->hashPassword($requerant, 'P4ssword'));
             }

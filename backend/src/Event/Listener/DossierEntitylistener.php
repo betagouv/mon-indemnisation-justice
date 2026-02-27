@@ -4,20 +4,21 @@ namespace MonIndemnisationJustice\Event\Listener;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-#[AsEntityListener(BrisPorte::class)]
+#[AsEntityListener(Dossier::class)]
 class DossierEntitylistener
 {
     public function __construct(
         protected readonly EventDispatcherInterface $eventDispatcher,
         protected readonly BrisPorteRepository $brisPorteRepository,
-    ) {}
+    ) {
+    }
 
-    public function preUpdate(BrisPorte $dossier, PreUpdateEventArgs $args)
+    public function preUpdate(Dossier $dossier, PreUpdateEventArgs $args)
     {
         if ($args->hasChangedField('etatDossier')) {
             if (

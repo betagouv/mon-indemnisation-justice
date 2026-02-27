@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
@@ -27,14 +27,15 @@ class AttribuerDossierEndpoint
         protected readonly ObjectMapperInterface $objectMapper,
         protected readonly AgentRepository $agentRepository,
         protected readonly BrisPorteRepository $dossierRepository,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity]
-        BrisPorte $dossier,
+        Dossier $dossier,
         #[MapRequestPayload]
         AttribuerDossierInput $input,
-        Security $security
+        Security $security,
     ) {
         if (!$dossier->estAAttribuer()) {
             return new JsonResponse(['erreur' => "Ce dossier n'est pas à attribuer"], Response::HTTP_BAD_REQUEST);
@@ -49,8 +50,7 @@ class AttribuerDossierEndpoint
             ->setRedacteur($agent)
             ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, agent: $security->getUser(), contexte: [
                 'redacteur' => $agent->getId(),
-            ])
-        ;
+            ]);
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([

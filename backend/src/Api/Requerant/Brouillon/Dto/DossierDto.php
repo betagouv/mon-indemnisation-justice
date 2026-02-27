@@ -2,12 +2,12 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Brouillon\Dto;
 
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\QualiteRequerant;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 
-#[Map(source: BrisPorte::class)]
-#[Map(target: BrisPorte::class)]
+#[Map(source: Dossier::class)]
+#[Map(target: Dossier::class)]
 class DossierDto
 {
     public string $reference;
