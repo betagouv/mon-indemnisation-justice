@@ -31,7 +31,7 @@ class AppRuntime implements RuntimeExtensionInterface
         protected readonly UrlGeneratorInterface $router,
         protected readonly FranceConnectAuthenticator $franceConnectAuthenticator,
         protected readonly FirewallMapInterface $firewallMap,
-        protected readonly Security $security
+        protected readonly Security $security,
     ) {
         $this->publicDirectory = "{$projectDirectory}/public";
     }
@@ -47,7 +47,7 @@ class AppRuntime implements RuntimeExtensionInterface
             return $logoutUrl;
         }
 
-        return $this->router->generate('requerant_securite_deconnexion');
+        return $this->router->generate('securite_usager_deconnexion');
     }
 
     public function etatDossierRequerant(BrisPorte $dossier): string

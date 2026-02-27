@@ -23,7 +23,7 @@ export const connexionAgent = async (page: Page, identifiant: string): Promise<v
 export const connexionFranceConnect = async (page: Page, identifiant: string): Promise<void> => {
     await page.goto("/connexion");
 
-    const locatorBoutonFranceConnect = page.locator("a.fr-btn, button", {
+    const locatorBoutonFranceConnect = page.locator("button.fr-btn, button", {
         hasText: new RegExp("S’identifier.*avec.*FranceConnect", "su"),
     });
 
