@@ -61,12 +61,8 @@ export class APIAdresseManager implements AdresseManagerInterface {
       Adresse,
       results.map(({ city, zipcode, fulltext }) => ({
         ligne1: fulltext.split(",").at(0) || "",
-        commune: {
-          // Est-ce qu'on a vraiment besoin de ça ?
-          id: 1,
-          nom: city,
-          codePostal: zipcode,
-        },
+        commune: city,
+        codePostal: zipcode,
       })),
     );
   }
