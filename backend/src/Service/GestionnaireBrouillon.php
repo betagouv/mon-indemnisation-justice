@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Brouillon;
 use MonIndemnisationJustice\Entity\BrouillonType;
 use MonIndemnisationJustice\Entity\Requerant;
+use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -16,10 +17,12 @@ class GestionnaireBrouillon
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly NormalizerInterface $normalizer,
-        protected readonly DenormalizerInterface $denormalizer,
-        protected readonly ValidatorInterface $validator,
-    ) {
+        protected readonly NormalizerInterface    $normalizer,
+        protected readonly DenormalizerInterface  $denormalizer,
+        protected readonly ObjectMapperInterface  $mapper,
+        protected readonly ValidatorInterface     $validator,
+    )
+    {
     }
 
     public function initierDepuis(mixed $source, ?Requerant $requerant = null, ?Agent $agent = null): Brouillon
@@ -69,7 +72,7 @@ class GestionnaireBrouillon
      */
     public function verifier(Brouillon $brouillon): array
     {
-        return $this->listerViolations($this->genererEntite($brouillon));
+        return $this->listerViolations($this->extraireEntiteTravail($brouillon));
     }
 
     /**
@@ -82,7 +85,7 @@ class GestionnaireBrouillon
 
         return array_merge(
             ...array_map(
-                fn ($v) => [$v->getPropertyPath() => $v->getMessage()],
+                fn($v) => [$v->getPropertyPath() => $v->getMessage()],
                 iterator_to_array($violations->getIterator())
             )
         );
@@ -95,11 +98,11 @@ class GestionnaireBrouillon
      *
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
-    public function genererEntite(Brouillon $brouillon): object
+    public function extraireEntiteTravail(Brouillon $brouillon): object
     {
         return $this->denormalizer->denormalize(
             $brouillon->getDonnees(),
-            $brouillon->getType()->getEntiteCible(),
+            $brouillon->getType()->getClasseTravail(),
             context: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false]
         );
     }
@@ -113,10 +116,12 @@ class GestionnaireBrouillon
      */
     public function publier(Brouillon $brouillon): object
     {
-        $entite = $this->genererEntite($brouillon);
-        if (!empty($violations = $this->listerViolations($entite))) {
-            throw new \Exception('Impossible de publier le brouillon de type '.strtolower($brouillon->getType()->getLibelle()));
+        $travail = $this->extraireEntiteTravail($brouillon);
+        if (!empty($violations = $this->listerViolations($travail))) {
+            throw new \Exception('Impossible de publier le brouillon de type ' . strtolower($brouillon->getType()->getLibelle()));
         }
+
+        $entite = $this->mapper->map($travail, $brouillon->getType()->getClassePublication());
 
         $this->em->persist($entite);
         $this->em->remove($brouillon);

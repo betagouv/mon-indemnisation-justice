@@ -1,11 +1,10 @@
-import { Commune } from "@/apps/requerant/models/Commune.ts";
-
 export class Adresse {
   ligne1: string;
   ligne2: string;
-  commune: Commune = new Commune();
+  codePostal: string;
+  commune: string;
 
   get libelle(): string {
-    return `${this.ligne1}, ${this.commune.codePostal} ${this.commune.nom}`;
+    return `${this.ligne1}, ${this.codePostal} ${this.commune}`;
   }
 }

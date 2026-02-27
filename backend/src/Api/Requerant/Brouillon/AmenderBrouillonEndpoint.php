@@ -17,18 +17,20 @@ class AmenderBrouillonEndpoint
 {
     public function __construct(
         protected readonly GestionnaireBrouillon $gestionnaireBrouillon,
-        protected readonly NormalizerInterface $normalizer,
-    ) {}
+        protected readonly NormalizerInterface   $normalizer,
+    )
+    {
+    }
 
     public function __invoke(#[MapEntity(id: 'id', message: 'Brouillon inconnu')]
-        Brouillon $brouillon,
-        Request $request)
+                             Brouillon $brouillon,
+                             Request   $request)
     {
         $this->gestionnaireBrouillon->amender($brouillon, json_decode($request->getContent(), true));
 
         return new JsonResponse(
             $this->normalizer->normalize(
-                $this->gestionnaireBrouillon->genererEntite($brouillon),
+                $this->gestionnaireBrouillon->extraireEntiteTravail($brouillon),
                 'json',
                 [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]
             ),

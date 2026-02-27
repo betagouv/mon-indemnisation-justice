@@ -1,14 +1,17 @@
-import { Usager } from "./Usager.ts";
-import { Requerant } from "./Requerant.ts";
-import { Adresse } from "./Adresse.ts";
-import { EtatDossier } from "./EtatDossier.ts";
-import { Type } from "class-transformer";
-import { RapportAuLogement } from "./RapportAuLogement.ts";
+import { Transform, Type } from "class-transformer";
+import { Adresse } from "./Adresse";
+import { EtatDossier } from "./EtatDossier";
+import { PersonneMorale } from "./PersonneMorale";
+import { PersonnePhysique } from "./PersonnePhysique";
+import { type RapportAuLogement } from "./RapportAuLogement";
+import { Usager } from "./Usager";
 
 export abstract class BaseDossier {
+  // Référence du dossier ou id du brouillon
   reference: string;
   @Type(() => EtatDossier)
   etatActuel: EtatDossier;
+  dateDepot?: Date;
 
   get estAccepte(): boolean {
     return this.etatActuel.etat.estAccepte;
@@ -32,14 +35,24 @@ export abstract class BaseDossier {
 }
 
 export class Dossier extends BaseDossier {
+  // '`Usager` = `Requerant`
   initiePar: Usager;
-  requerant: Requerant = new Requerant();
+  // '`Requerant` = `PersonnePhysique` | `PersonneMorale`
+  requerant: PersonnePhysique | PersonneMorale;
   adresse: Adresse = new Adresse();
+  // `RapportAuLogement` = `QualiteRequerant`
   rapportAuLogement: RapportAuLogement;
   descriptionRapportAuLogement?: string;
+  @Transform(({ value }: { value: any }) =>
+    typeof value == "string" ? new Date(value) : undefined,
+  )
   dateOperation: Date;
   description: string;
   estPorteBlindee: boolean;
+
+  get estPersonneMorale(): boolean {
+    return "raisonSociale" in this.requerant;
+  }
 }
 
 export class DossierApercu extends BaseDossier {}
