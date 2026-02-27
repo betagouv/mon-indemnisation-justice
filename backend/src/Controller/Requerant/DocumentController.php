@@ -4,10 +4,10 @@ namespace MonIndemnisationJustice\Controller\Requerant;
 
 use League\Flysystem\FilesystemException;
 use League\Flysystem\UnableToReadFile;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -22,17 +22,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(Requerant::ROLE_REQUERANT)]
+#[IsGranted(Usager::ROLE_REQUERANT)]
 #[Route('/requerant/document')]
 class DocumentController extends AbstractController
 {
     public function __construct(
         protected readonly DocumentManager $documentManager,
         protected readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     #[Route('/{id}/{type}', name: 'document_upload', methods: ['POST'])]
-    public function upload(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, DocumentType $type): JsonResponse
+    public function upload(#[MapEntity(id: 'id')] Dossier $dossier, Request $request, DocumentType $type): JsonResponse
     {
         /** @var UploadedFile $file */
         $file = $request->files->get('piece-jointe');

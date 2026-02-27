@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
@@ -38,7 +38,7 @@ class GenererCourrierPropositionIndemnisationEndpointTest extends APIEndpointTes
         $this->assertEquals(DocumentType::TYPE_COURRIER_MINISTERE->value, $output->document->type);
     }
 
-    protected function genererCourrierRejet(BrisPorte $dossier, float $montantIndemnisation): void
+    protected function genererCourrierRejet(Dossier $dossier, float $montantIndemnisation): void
     {
         $this->apiPost(['montantIndemnisation' => $montantIndemnisation], ['id' => $dossier->getId()]);
     }
