@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererArretePaiementEndpoint;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
@@ -39,7 +39,7 @@ class GenererArretePaiementEndpointTest extends APIEndpointTestCase
         $this->assertEquals(DocumentType::TYPE_ARRETE_PAIEMENT->value, $output->document->type);
     }
 
-    protected function genererArretePaiement(BrisPorte $dossier): void
+    protected function genererArretePaiement(Dossier $dossier): void
     {
         $this->apiPost([], ['id' => $dossier->getId()]);
     }

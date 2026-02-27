@@ -30,33 +30,33 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: DossierIndemniseEvent::class, method: 'dossierIndemnise')]
 class DossierTransitionListener
 {
-    public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository) {}
+    public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository)
+    {
+    }
 
     public function dossierCloture(DossierClotureEvent $evenement): void
     {
         // Informer le requérant que son dossier est clos :
         // Envoi du mail de confirmation.
         $this->mailer
-            ->toRequerant($evenement->dossier->getRequerant())
+            ->toRequerant($evenement->dossier->getUsager())
             ->subject("Clôture du dossier {$evenement->dossier->getReference()}")
             ->htmlTemplate('email/requerant/dossier_cloture.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
-            ->send()
-        ;
+            ->send();
     }
 
     public function dossierDepose(DossierDeposeEvent $evenement): void
     {
         // Informer le requérant que son dossier est bien déposé :
         $this->mailer
-            ->toRequerant($evenement->dossier->getRequerant())
+            ->toRequerant($evenement->dossier->getUsager())
             ->subject('Votre déclaration de bris de porte a bien été prise en compte')
             ->htmlTemplate('email/requerant/dossier_depose.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
-            ->send()
-        ;
+            ->send();
         // Prévenir les attributeurs qu'un nouveau dossier attend d'être attribué :
         foreach ($this->agentRepository->getAttributeurs() as $attributeur) {
             $this->mailer
@@ -66,8 +66,7 @@ class DossierTransitionListener
                     'agent' => $attributeur,
                     'dossier' => $evenement->dossier,
                 ])
-                ->send()
-            ;
+                ->send();
         }
     }
 
@@ -81,21 +80,19 @@ class DossierTransitionListener
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
             ])
-            ->send()
-        ;
+            ->send();
     }
 
     public function dossierEnInstruction(DossierEnCoursInstructionEvent $evenement): void
     {
         // Informer le requérant que son dossier est bien déposé :
         $this->mailer
-            ->toRequerant($evenement->dossier->getRequerant())
+            ->toRequerant($evenement->dossier->getUsager())
             ->subject("Votre dossier de demande d'indemnisation entre en instruction")
             ->htmlTemplate('email/requerant/dossier_en_instruction.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
-            ->send()
-        ;
+            ->send();
     }
 
     public function dossierInstruitProposition(DossierInstruitPropositionEvent $evenement): void
@@ -109,8 +106,7 @@ class DossierTransitionListener
                     'agent' => $validateur,
                     'dossier' => $evenement->dossier,
                 ])
-                ->send()
-            ;
+                ->send();
         }
     }
 
@@ -118,13 +114,12 @@ class DossierTransitionListener
     {
         // Prévenir le requérant qu'une décision l'attend sur son espace :
         $this->mailer
-            ->toRequerant($evenement->dossier->getRequerant())
+            ->toRequerant($evenement->dossier->getUsager())
             ->subject("Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse")
             ->htmlTemplate('email/requerant/dossier_decide.twig', [
                 'dossier' => $evenement->dossier,
             ])
-            ->send()
-        ;
+            ->send();
     }
 
     public function dossierPropositionAcceptee(DossierPropositionAccepteeEvent $evenement): void
@@ -136,8 +131,7 @@ class DossierTransitionListener
             ->htmlTemplate('email/agent/fip6/dossier_proposition_acceptee.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
-            ])
-        ;
+            ]);
     }
 
     public function dossierArreteEdite(DossierArreteEditeEvent $evenement): void
@@ -151,8 +145,7 @@ class DossierTransitionListener
                     'agent' => $validateur,
                     'dossier' => $evenement->dossier,
                 ])
-                ->send()
-            ;
+                ->send();
         }
     }
 
@@ -167,8 +160,7 @@ class DossierTransitionListener
                     'agent' => $agentLiaisonBudget,
                     'dossier' => $evenement->dossier,
                 ])
-                ->send()
-            ;
+                ->send();
         }
     }
 
@@ -176,20 +168,19 @@ class DossierTransitionListener
     {
         // Prévenir le requérant qu'une décision l'attend sur son espace :
         $this->mailer
-            ->toRequerant($evenement->dossier->getRequerant())
+            ->toRequerant($evenement->dossier->getUsager())
             ->subject("Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse")
             ->htmlTemplate('email/requerant/dossier_decide.twig', [
                 'dossier' => $evenement->dossier,
             ])
-            ->send()
-        ;
+            ->send();
     }
 
     public function dossierIndemnise(DossierIndemniseEvent $evenement): void
     {
         // Prévenir le requérant que le versement de son indemnisation a bien été fait
         $this->mailer
-            ->toRequerant($evenement->dossier->getRequerant())
+            ->toRequerant($evenement->dossier->getUsager())
             ->subject('Mon Indemnisation Justice: le versement de votre indemnisation a été effectué')
             ->htmlTemplate('email/requerant/dossier_indemnise.twig', [
                 'dossier' => $evenement->dossier,

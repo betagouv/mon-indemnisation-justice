@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\DemarrerInstructionDossierEndpoint;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -61,7 +61,7 @@ class DemarrerInstructionDossierEndpointTest extends APIEndpointTestCase
         $this->assertEquals("Seul l'agent rédacteur attribué peut instruire un dossier", $output->erreur);
     }
 
-    protected function demarrerInstruction(BrisPorte $dossier): void
+    protected function demarrerInstruction(Dossier $dossier): void
     {
         $this->apiPost([], ['id' => $dossier->getId()]);
     }

@@ -40,12 +40,12 @@ class TestEligibilite
     #[ORM\Column(nullable: true)]
     public ?bool $aContacteBailleur = null;
 
-    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist'])]
+    #[ORM\ManyToOne(targetEntity: Usager::class, cascade: ['persist'])]
     #[ORM\JoinColumn(unique: false, nullable: true, onDelete: 'CASCADE')]
-    public ?Requerant $requerant = null;
+    public ?Usager $requerant = null;
 
-    #[ORM\OneToOne(targetEntity: BrisPorte::class, mappedBy: 'testEligibilite')]
-    public ?BrisPorte $dossier;
+    #[ORM\OneToOne(targetEntity: Dossier::class, mappedBy: 'testEligibilite')]
+    public ?Dossier $dossier;
 
     #[ORM\Column]
     public bool $estEligibleExperimentation = false;

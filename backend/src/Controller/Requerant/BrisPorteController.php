@@ -3,10 +3,10 @@
 namespace MonIndemnisationJustice\Controller\Requerant;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
 use MonIndemnisationJustice\Service\DocumentManager;
@@ -23,29 +23,27 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-#[IsGranted(Requerant::ROLE_REQUERANT)]
+#[IsGranted(Usager::ROLE_REQUERANT)]
 #[Route('/requerant/bris-de-porte')]
 class BrisPorteController extends RequerantController
 {
     public function __construct(
-        protected readonly BrisPorteRepository      $brisPorteRepository,
+        protected readonly BrisPorteRepository $brisPorteRepository,
         protected readonly EventDispatcherInterface $eventDispatcher,
-        protected readonly GeoPaysRepository        $geoPaysRepository,
+        protected readonly GeoPaysRepository $geoPaysRepository,
         // A supprimer
-        protected readonly EntityManagerInterface   $em,
-        protected readonly Mailer                   $mailer,
-        protected readonly DocumentManager          $documentManager,
-    )
-    {
+        protected readonly EntityManagerInterface $em,
+        protected readonly Mailer $mailer,
+        protected readonly DocumentManager $documentManager,
+    ) {
     }
 
     #[Route('/declarer-un-bris-de-porte/{id}', name: 'app_bris_porte_edit', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function edit(
         #[MapEntity(id: 'id')]
-        BrisPorte $dossier
-    ): Response
-    {
-        if ($dossier->getRequerant() !== $this->getUser()) {
+        Dossier $dossier,
+    ): Response {
+        if ($dossier->getUsager() !== $this->getUser()) {
             throw new AccessDeniedHttpException();
         }
 
@@ -60,7 +58,7 @@ class BrisPorteController extends RequerantController
     }
 
     #[Route('/passage-a-l-etat-constitue/{id}', name: 'app_requerant_update_statut_to_constitue', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function redirection(#[MapEntity(id: 'id')] BrisPorte $brisPorte): RedirectResponse
+    public function redirection(#[MapEntity(id: 'id')] Dossier $brisPorte): RedirectResponse
     {
         $requerant = $this->getRequerant();
 
@@ -80,7 +78,7 @@ class BrisPorteController extends RequerantController
     }
 
     #[Route('/{id}/consulter-la-decision', name: 'requerant_dossier_consulter_decision', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function consulterDecision(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
+    public function consulterDecision(#[MapEntity(id: 'id')] Dossier $dossier, NormalizerInterface $normalizer): Response
     {
         if (!$dossier->estSigne()) {
             return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
@@ -94,7 +92,7 @@ class BrisPorteController extends RequerantController
     }
 
     #[Route('/{id}/accepter-la-decision.json', name: 'requerant_dossier_accepter_decision', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function accepterDecision(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, NormalizerInterface $normalizer): Response
+    public function accepterDecision(#[MapEntity(id: 'id')] Dossier $dossier, Request $request, NormalizerInterface $normalizer): Response
     {
         if (EtatDossierType::DOSSIER_OK_A_APPROUVER == !$dossier->getEtatDossier()->getEtat()->value) {
             return new JsonResponse([
@@ -123,7 +121,7 @@ class BrisPorteController extends RequerantController
             // Envoi du courriel de notification au rédacteur
             $this->mailer
                 ->toAgent($dossier->getRedacteur())
-                ->subject(sprintf("Dossier %s: %s a approuvé l'indemnisation", $dossier->getReference(), $dossier->getRequerant()->estFeminin() ? 'la requérante' : 'le requérant'))
+                ->subject(sprintf("Dossier %s: %s a approuvé l'indemnisation", $dossier->getReference(), $dossier->getUsager()->estFeminin() ? 'la requérante' : 'le requérant'))
                 ->htmlTemplate('email/agent_indemnisation_approuvee.twig', [
                     'dossier' => $dossier,
                     'agent' => $dossier->getRedacteur(),

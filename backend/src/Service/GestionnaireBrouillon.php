@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Brouillon;
 use MonIndemnisationJustice\Entity\BrouillonType;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -16,20 +16,19 @@ class GestionnaireBrouillon
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly NormalizerInterface    $normalizer,
-        protected readonly DenormalizerInterface  $denormalizer,
-        protected readonly ObjectMapperInterface  $mapper,
-        protected readonly ValidatorInterface     $validator,
-    )
-    {
+        protected readonly NormalizerInterface $normalizer,
+        protected readonly DenormalizerInterface $denormalizer,
+        protected readonly ObjectMapperInterface $mapper,
+        protected readonly ValidatorInterface $validator,
+    ) {
     }
 
-    public function initierDepuis(mixed $source, ?Requerant $requerant = null, ?Agent $agent = null): Brouillon
+    public function initierDepuis(mixed $source, ?Usager $requerant = null, ?Agent $agent = null): Brouillon
     {
         $type = BrouillonType::detecterDepuisSource($source);
 
         if (!$type) {
-            throw new \Exception("Impossible de determiner le type de brouillon associé à un object de type '" . get_class($source) . "'");
+            throw new \Exception("Impossible de determiner le type de brouillon associé à un object de type '".get_class($source)."'");
         }
 
         return $this->initier($type, $requerant, $this->normalizer->normalize($source));
@@ -38,7 +37,7 @@ class GestionnaireBrouillon
     /**
      * Initier un brouillon de type $type.
      */
-    public function initier(BrouillonType $type, ?Requerant $requerant = null, ?Agent $agent = null, ?array $donnees = []): Brouillon
+    public function initier(BrouillonType $type, ?Usager $requerant = null, ?Agent $agent = null, ?array $donnees = []): Brouillon
     {
         $brouillon = new Brouillon()
             ->setType($type)
@@ -84,7 +83,7 @@ class GestionnaireBrouillon
 
         return array_merge(
             ...array_map(
-                fn($v) => [$v->getPropertyPath() => $v->getMessage()],
+                fn ($v) => [$v->getPropertyPath() => $v->getMessage()],
                 iterator_to_array($violations->getIterator())
             )
         );
@@ -117,7 +116,7 @@ class GestionnaireBrouillon
     {
         $travail = $this->extraireEntiteTravail($brouillon);
         if (!empty($violations = $this->listerViolations($travail))) {
-            throw new \Exception('Impossible de publier le brouillon de type ' . strtolower($brouillon->getType()->getLibelle()));
+            throw new \Exception('Impossible de publier le brouillon de type '.strtolower($brouillon->getType()->getLibelle()));
         }
 
         $entite = $this->mapper->map($travail, $brouillon->getType()->getClassePublication());

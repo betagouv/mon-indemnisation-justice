@@ -25,7 +25,7 @@ class PersonnePhysique
     public ?GeoCodePostal $codePostalNaissance = null;
 
     #[ORM\OneToOne(mappedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
-    protected ?Requerant $compte = null;
+    protected ?Usager $compte = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
@@ -128,8 +128,8 @@ class PersonnePhysique
     public function recalculerNumeroSecuriteSociale(): void
     {
         if (null !== $this->civilite && null !== $this->dateNaissance && (
-                null !== $this->codePostalNaissance || (null !== $this->paysNaissance && !$this->paysNaissance->estFrance())
-            )
+            null !== $this->codePostalNaissance || (null !== $this->paysNaissance && !$this->paysNaissance->estFrance())
+        )
         ) {
             $this->dateNaissance->format('m');
             $this->numeroSecuriteSociale = sprintf(
@@ -192,7 +192,7 @@ class PersonnePhysique
 
     public function getPrenoms(): ?string
     {
-        return implode(', ', array_filter([$this->prenom1, $this->prenom2, $this->prenom3], fn($prenom) => !empty($prenom)));
+        return implode(', ', array_filter([$this->prenom1, $this->prenom2, $this->prenom3], fn ($prenom) => !empty($prenom)));
     }
 
     public function getTelephone(): ?string
@@ -270,7 +270,7 @@ class PersonnePhysique
     {
         return sprintf(
             '%s%s %s',
-            $civilite ? ucfirst(strtolower($this->civilite->value)) . '. ' : '',
+            $civilite ? ucfirst(strtolower($this->civilite->value)).'. ' : '',
             $this->prenom1,
             $capital ? strtoupper($this->nom) : ucfirst($this->nom)
         );

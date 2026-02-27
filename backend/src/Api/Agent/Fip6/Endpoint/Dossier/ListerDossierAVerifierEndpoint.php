@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierAVerifierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +24,8 @@ class ListerDossierAVerifierEndpoint
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
         protected readonly NormalizerInterface $normalizer,
-    ) {}
+    ) {
+    }
 
     public function __invoke(Security $security): Response
     {
@@ -39,7 +40,7 @@ class ListerDossierAVerifierEndpoint
                     mapper ... Et je n'ai pas non plus réussi à utiliser des _arrow function_ en guise de callable
                     transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
                     */
-                    fn (BrisPorte $dossier) => DossierAVerifierOutput::creerDepuisDossier($dossier),
+                    fn (Dossier $dossier) => DossierAVerifierOutput::creerDepuisDossier($dossier),
                     array_values($agent->getDossiersAVerifier())
                 ),
                 'json',

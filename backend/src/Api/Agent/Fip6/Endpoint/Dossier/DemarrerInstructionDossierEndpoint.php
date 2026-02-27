@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
@@ -26,20 +26,20 @@ class DemarrerInstructionDossierEndpoint
         protected readonly ObjectMapperInterface $objectMapper,
         protected readonly AgentRepository $agentRepository,
         protected readonly BrisPorteRepository $dossierRepository,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity]
-        BrisPorte $dossier,
-        Security $security
+        Dossier $dossier,
+        Security $security,
     ) {
         if (EtatDossierType::DOSSIER_A_INSTRUIRE === !$dossier->getEtatDossier()->getEtat()) {
             return new JsonResponse(['erreur' => "Ce dossier n'est pas en attente d'instruction"], Response::HTTP_BAD_REQUEST);
         }
 
         $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_EN_INSTRUCTION, agent: $security->getUser())
-        ;
+            ->changerStatut(EtatDossierType::DOSSIER_EN_INSTRUCTION, agent: $security->getUser());
 
         $this->dossierRepository->save($dossier);
 

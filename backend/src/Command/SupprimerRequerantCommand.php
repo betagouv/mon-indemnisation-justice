@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,7 +29,7 @@ class SupprimerRequerantCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $courriel = $input->getArgument('courriel');
-        $requerant = $this->em->getRepository(Requerant::class)->findOneBy(['email' => $courriel]);
+        $requerant = $this->em->getRepository(Usager::class)->findOneBy(['email' => $courriel]);
 
         if (null == $requerant) {
             throw new \LogicException("Aucun requérant associé au courriel $courriel");

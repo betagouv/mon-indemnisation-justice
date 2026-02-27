@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Service;
 
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\TransportInterface;
@@ -25,7 +25,7 @@ class Mailer
         return $this;
     }
 
-    public function toRequerant(Requerant $requerant): self
+    public function toRequerant(Usager $requerant): self
     {
         return $this->to($requerant->getEmail());
     }

@@ -44,7 +44,7 @@ enum DocumentType: string
 
     public static function piecesJointes(): array
     {
-        return array_filter(self::cases(), fn(DocumentType $type) => $type->estPieceJointe());
+        return array_filter(self::cases(), fn (DocumentType $type) => $type->estPieceJointe());
     }
 
     /**
@@ -78,7 +78,7 @@ enum DocumentType: string
     /**
      * Retourne le nom à donner au fichier pour la génération du document.
      */
-    public function nommerFichier(BrisPorte $dossier): ?string
+    public function nommerFichier(Dossier $dossier): ?string
     {
         return match ($this) {
             self::TYPE_COURRIER_MINISTERE => "Lettre décision dossier {$dossier->getReference()}.pdf",

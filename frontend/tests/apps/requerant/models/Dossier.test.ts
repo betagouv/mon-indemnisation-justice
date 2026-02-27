@@ -1,6 +1,6 @@
 import { Dossier } from "@/apps/requerant/models";
 import { plainToInstance } from "class-transformer";
-import { describe, expect, it, test } from "vitest";
+import { assert, describe, expect, it, test } from "vitest";
 import { formaterDate } from "../../../helpers";
 
 describe("la dénormalisation d'un dossier ", () => {
@@ -118,6 +118,7 @@ describe("la dénormalisation d'un dossier ", () => {
       expect(dossier).toBeInstanceOf(Dossier);
       expect(dossier.etatActuel.etat.type).toBe("DEPOSE");
       expect(dossier.estPersonneMorale).toBe(true);
+      assert("raisonSociale" in dossier.requerant);
       expect(dossier.requerant.raisonSociale).toBe("SCI Les oiseaux");
       expect(dossier.requerant.siren).toBe("12345678944100");
       expect(dossier.rapportAuLogement).toBe("PRO");

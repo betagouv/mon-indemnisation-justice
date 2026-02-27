@@ -4,13 +4,13 @@ namespace MonIndemnisationJustice\Controller\Requerant;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(Requerant::ROLE_REQUERANT)]
+#[IsGranted(Usager::ROLE_REQUERANT)]
 #[Route('/requerant')]
 class HomeController extends RequerantController
 {

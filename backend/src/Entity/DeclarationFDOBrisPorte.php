@@ -69,9 +69,9 @@ class DeclarationFDOBrisPorte
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     protected ?string $precisionsRequerant = null;
 
-    #[ORM\OneToOne(targetEntity: BrisPorte::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Dossier::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    protected ?BrisPorte $dossier = null;
+    protected ?Dossier $dossier = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     #[Groups(['agent:detail'])]
@@ -199,12 +199,12 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDossier(): ?BrisPorte
+    public function getDossier(): ?Dossier
     {
         return $this->dossier;
     }
 
-    public function setDossier(BrisPorte $dossier): static
+    public function setDossier(Dossier $dossier): static
     {
         $this->dossier = $dossier;
 
