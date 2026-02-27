@@ -30,18 +30,18 @@ class EtatDossier
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, name: 'date')]
     protected \DateTimeImmutable $dateEntree;
 
-    #[ORM\ManyToOne(targetEntity: BrisPorte::class, inversedBy: 'historiqueEtats')]
+    #[ORM\ManyToOne(targetEntity: Dossier::class, inversedBy: 'historiqueEtats')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    protected ?BrisPorte $dossier;
+    protected ?Dossier $dossier;
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     #[Ignore]
     protected ?Agent $agent;
 
-    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: [])]
+    #[ORM\ManyToOne(targetEntity: Usager::class, cascade: [])]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id')]
-    protected ?Requerant $requerant = null;
+    protected ?Usager $requerant = null;
 
     #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'json', nullable: true)]
@@ -159,12 +159,12 @@ class EtatDossier
         return $this;
     }
 
-    public function getDossier(): BrisPorte
+    public function getDossier(): Dossier
     {
         return $this->dossier;
     }
 
-    public function setDossier(?BrisPorte $dossier): EtatDossier
+    public function setDossier(?Dossier $dossier): EtatDossier
     {
         $this->dossier = $dossier;
 
@@ -198,7 +198,7 @@ class EtatDossier
     }
 
     #[Groups(['agent:detail'])]
-    public function getRequerant(): ?Requerant
+    public function getRequerant(): ?Usager
     {
         return $this->requerant;
     }
@@ -210,7 +210,7 @@ class EtatDossier
         return null !== $this->requerant;
     }
 
-    public function setRequerant(?Requerant $requerant): EtatDossier
+    public function setRequerant(?Usager $requerant): EtatDossier
     {
         $this->requerant = $requerant;
 
@@ -232,7 +232,7 @@ class EtatDossier
         return $this->contexte = array_merge_recursive($this->contexte, $contexte);
     }
 
-    final public static function creer(BrisPorte $dossier, EtatDossierType $etat, ?array $contexte = null): static
+    final public static function creer(Dossier $dossier, EtatDossierType $etat, ?array $contexte = null): static
     {
         $nouvelEtat = (new self());
         $nouvelEtat->dossier = $dossier;
@@ -243,15 +243,15 @@ class EtatDossier
         return $nouvelEtat;
     }
 
-    public static function creerRequerant(BrisPorte $dossier, EtatDossierType $etat, ?array $contexte = null): static
+    public static function creerRequerant(Dossier $dossier, EtatDossierType $etat, ?array $contexte = null): static
     {
         $nouvelEtat = self::creer($dossier, $etat, $contexte);
-        $nouvelEtat->requerant = $dossier->getRequerant();
+        $nouvelEtat->requerant = $dossier->getUsager();
 
         return $nouvelEtat;
     }
 
-    public static function creerAgent(BrisPorte $dossier, EtatDossierType $etat, Agent $agent, ?array $contexte = null): static
+    public static function creerAgent(Dossier $dossier, EtatDossierType $etat, Agent $agent, ?array $contexte = null): static
     {
         $nouvelEtat = self::creer($dossier, $etat, $contexte);
         $nouvelEtat->agent = $agent;

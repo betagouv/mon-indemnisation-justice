@@ -16,7 +16,7 @@ class PersonneMorale
     private ?int $id = null;
 
     #[ORM\OneToOne(mappedBy: 'personneMorale', cascade: ['persist', 'remove'])]
-    private ?Requerant $compte = null;
+    private ?Usager $compte = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -31,7 +31,7 @@ class PersonneMorale
         return $this->id;
     }
 
-    public function getCompte(): ?Requerant
+    public function getCompte(): ?Usager
     {
         return $this->compte;
     }

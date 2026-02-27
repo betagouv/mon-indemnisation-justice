@@ -2,8 +2,8 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Output;
 
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
@@ -17,14 +17,15 @@ class DossierRejetASignerOutput
         public readonly \DateTimeImmutable $dateDecision,
         public readonly string $agentDecision,
         public readonly ?string $motif = null,
-    ) {}
+    ) {
+    }
 
-    public static function creerDepuisDossier(BrisPorte $dossier): self
+    public static function creerDepuisDossier(Dossier $dossier): self
     {
         return new self(
             id: $dossier->getId(),
             reference: $dossier->getReference(),
-            requerant: $dossier->getRequerant()->getNomCourant(),
+            requerant: $dossier->getUsager()->getNomCourant(),
             motif: $dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE)?->getMetaDonnee('motifRejet') ?? null,
             dateDecision: $dossier->getEtatDossier()->getDate(),
             agentDecision: $dossier->getEtatDossier()->getAgent()->getNomComplet()

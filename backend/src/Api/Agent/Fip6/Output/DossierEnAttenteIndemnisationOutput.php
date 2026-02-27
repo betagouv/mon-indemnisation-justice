@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Output;
 
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -16,16 +16,17 @@ class DossierEnAttenteIndemnisationOutput
         public readonly float $montantIndemnisation,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         public readonly \DateTimeImmutable $dateTransmission,
-    ) {}
+    ) {
+    }
 
-    public static function creerDepuisDossier(BrisPorte $dossier): self
+    public static function creerDepuisDossier(Dossier $dossier): self
     {
         $etatValidation = $dossier->getEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
 
         return new self(
             id: $dossier->getId(),
             reference: $dossier->getReference(),
-            requerant: $dossier->getRequerant()->getNomCourant(),
+            requerant: $dossier->getUsager()->getNomCourant(),
             montantIndemnisation: $dossier->getMontantIndemnisation(),
             dateTransmission: $etatValidation->getDate(),
         );

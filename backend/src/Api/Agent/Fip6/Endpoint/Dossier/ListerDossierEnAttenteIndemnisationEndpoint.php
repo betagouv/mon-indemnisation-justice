@@ -5,7 +5,7 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierEnAttenteIndemnisationOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,11 +23,12 @@ class ListerDossierEnAttenteIndemnisationEndpoint
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
         protected readonly NormalizerInterface $normalizer,
-    ) {}
+    ) {
+    }
 
     public function __invoke(): Response
     {
-        $dossiers = $this->entityManager->getRepository(BrisPorte::class)->listerDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
+        $dossiers = $this->entityManager->getRepository(Dossier::class)->listerDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
 
         return new JsonResponse(
             $this->normalizer->normalize(
@@ -37,7 +38,7 @@ class ListerDossierEnAttenteIndemnisationEndpoint
                     mapper ... Et je n'ai pas non plus réussi à utiliser des _arrow function_ en guise de callable
                     transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
                     */
-                    fn (BrisPorte $dossier) => DossierEnAttenteIndemnisationOutput::creerDepuisDossier($dossier),
+                    fn (Dossier $dossier) => DossierEnAttenteIndemnisationOutput::creerDepuisDossier($dossier),
                     $dossiers
                 ),
                 'json'

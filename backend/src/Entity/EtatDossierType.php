@@ -64,7 +64,7 @@ enum EtatDossierType: string
     /**
      * Créer un évènement lorsque le dossier passe à cet état.
      */
-    public function creerTransitionEvent(BrisPorte $dossier): ?DossierTransitionEvent
+    public function creerTransitionEvent(Dossier $dossier): ?DossierTransitionEvent
     {
         return match ($this) {
             self::DOSSIER_EN_INSTRUCTION => new DossierEnCoursInstructionEvent($dossier),
