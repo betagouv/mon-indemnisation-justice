@@ -2,9 +2,9 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Output;
 
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
@@ -20,15 +20,16 @@ class DossierACategoriserOutput
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
         public readonly \DateTimeInterface $datePublication,
         /** @var DocumentOutput[] */
-        public readonly array $attestations
-    ) {}
+        public readonly array $attestations,
+    ) {
+    }
 
-    public static function creerDepuisDossier(BrisPorte $dossier): self
+    public static function creerDepuisDossier(Dossier $dossier): self
     {
         return new self(
             id: $dossier->getId(),
             reference: $dossier->getReference(),
-            requerant: $dossier->getRequerant()->getNomCourant(),
+            requerant: $dossier->getUsager()->getNomCourant(),
             adresse: $dossier->getAdresse()->getLibelle(),
             dateOperation: $dossier->getDateOperationPJ(),
             datePublication: $dossier->getDateDeclaration(),

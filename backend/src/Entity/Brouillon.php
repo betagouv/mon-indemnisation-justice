@@ -23,7 +23,7 @@ class Brouillon
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
-    protected ?Requerant $requerant = null;
+    protected ?Usager $requerant = null;
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
@@ -59,12 +59,12 @@ class Brouillon
         return $this;
     }
 
-    public function getRequerant(): ?Requerant
+    public function getRequerant(): ?Usager
     {
         return $this->requerant;
     }
 
-    public function setRequerant(?Requerant $requerant): self
+    public function setRequerant(?Usager $requerant): self
     {
         $this->requerant = $requerant;
 

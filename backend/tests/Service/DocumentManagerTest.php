@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Tests\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -32,16 +32,16 @@ class DocumentManagerTest extends WebTestCase
         $this->storage = $container->get('default.storage');
     }
 
-    static function donneesGenererCorpsRejetOk(): array
+    public static function donneesGenererCorpsRejetOk(): array
     {
         return [
             'est_vise' => [
                 'est_vise',
                 8,
                 [
-                    [3, "l’opération de police judiciaire ayant conduit au bris de porte du domicile visait à l’interpellation de"],
+                    [3, 'l’opération de police judiciaire ayant conduit au bris de porte du domicile visait à l’interpellation de'],
                     [4, "l'instruction de votre demande n'a pas permis de mettre en évidence un dysfonctionnement du service public de la justice"],
-                ]
+                ],
             ],
             'est_hebergeant' => [
                 'est_hebergeant',
@@ -49,15 +49,15 @@ class DocumentManagerTest extends WebTestCase
                 [
                     [2, "l’article 7 de la Loi n° 89-462 du 6 juillet 1989 impose au locataire d’user paisiblement des locaux conformément à leur destination contractuelle et de s'assurer contre les risques dont il doit répondre en tant que locataire"],
                     [3, "hébergé à votre domicile, sans qu'il n'y ait eu d'erreur de porte de la part des"],
-                ]
+                ],
             ],
             'est_bailleur' => [
                 'est_bailleur',
                 8,
                 [
                     [2, "l’article 7 de la Loi n° 89-462 du 6 juillet 1989 impose au locataire d’user paisiblement des locaux conformément à leur destination contractuelle et de s'assurer contre les risques dont il doit répondre en tant que locataire"],
-                    [3, "il appartient à votre locataire de répondre des dommages causés engageant sa responsabilité contractuelle"],
-                ]
+                    [3, 'il appartient à votre locataire de répondre des dommages causés engageant sa responsabilité contractuelle'],
+                ],
             ],
         ];
     }
@@ -80,14 +80,14 @@ class DocumentManagerTest extends WebTestCase
         }
     }
 
-    static function donneesGenererCourrierRejetOk(): array
+    public static function donneesGenererCourrierRejetOk(): array
     {
         return [
             'est_vise' => [
                 'est_vise',
                 [
-                    "l’opération de police judiciaire ayant conduit au bris de porte du domicile visait à l’interpellation de"
-                ]
+                    'l’opération de police judiciaire ayant conduit au bris de porte du domicile visait à l’interpellation de',
+                ],
             ],
         ];
     }
@@ -105,7 +105,7 @@ class DocumentManagerTest extends WebTestCase
         $lignes = $this->extraireTexteDocument($courrier);
 
         foreach ($mentions as $mention) {
-            $this->assertNotNull(array_find($lignes, fn($ligne) => str_contains($ligne, $mention)));
+            $this->assertNotNull(array_find($lignes, fn ($ligne) => str_contains($ligne, $mention)));
         }
     }
 
@@ -115,15 +115,13 @@ class DocumentManagerTest extends WebTestCase
     }
 
     /**
-     * @param string $contenuPdf
-     *
      * @return string[]
      */
     protected function extraireTextePDf(string $contenuPdf): array
     {
-        file_put_contents($tmp = (sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid() . '.pdf'), $contenuPdf);
+        file_put_contents($tmp = (sys_get_temp_dir().DIRECTORY_SEPARATOR.uniqid().'.pdf'), $contenuPdf);
 
-        $process = new Process(["pdftotext", $tmp, "-"]);
+        $process = new Process(['pdftotext', $tmp, '-']);
         $process->run();
 
         unlink($tmp);
@@ -133,27 +131,26 @@ class DocumentManagerTest extends WebTestCase
         }
 
         return array_filter(
-        // On filtre les lignes vides
+            // On filtre les lignes vides
             array_map(
-            // On nettoie les lignes de caractères blancs en début et fin de chaine
+                // On nettoie les lignes de caractères blancs en début et fin de chaine
                 'trim',
                 explode(
-                // On découpe les "lignes" selon le caractère `\n`
+                    // On découpe les "lignes" selon le caractère `\n`
                     PHP_EOL,
                     // Hack : comme `pdftotext` sort une ligne par ligne "lue" sur le document, on reconstitue les
                     // paragraphes en remplaçant les `\n` qui ne sont pas précédés d'un `.` et des éventuels caractères blancs
-                    preg_replace("/([^.]\s*)\n/", "$1 ", $process->getOutput())
+                    preg_replace("/([^.]\s*)\n/", '$1 ', $process->getOutput())
                 )
             ),
-            fn(string $ligne) => !empty($ligne)
+            fn (string $ligne) => !empty($ligne)
         );
     }
 
-    protected function getDossierParEtat(EtatDossierType $etat, int $index = 0): ?BrisPorte
+    protected function getDossierParEtat(EtatDossierType $etat, int $index = 0): ?Dossier
     {
-        $dossiers = $this->em->getRepository(BrisPorte::class)->listerDossierParEtat($etat);
+        $dossiers = $this->em->getRepository(Dossier::class)->listerDossierParEtat($etat);
 
         return @$dossiers[$index] ?? null;
     }
-
 }

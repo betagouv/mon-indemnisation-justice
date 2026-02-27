@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Tests\Controller\Agent;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -41,7 +41,7 @@ class DossierControllerTest extends WebTestCase
         $this->assertCount(2, $dossiers);
 
         foreach ($dossiers as $donneesDossier) {
-            $dossier = $this->em->getRepository(BrisPorte::class)->find($donneesDossier['id']);
+            $dossier = $this->em->getRepository(Dossier::class)->find($donneesDossier['id']);
 
             $this->assertArraysSimilar([
                 'id' => $dossier->getId(),
@@ -56,7 +56,7 @@ class DossierControllerTest extends WebTestCase
                 ],
                 'dateDepot' => $dossier->getDateDeclaration() ? $dossier->getDateDeclaration()->getTimestamp() * 1000 : null,
                 'redacteur' => $dossier->getRedacteur()?->getId(),
-                'requerant' => $dossier->getRequerant()->getNomCourant(capital: true),
+                'requerant' => $dossier->getUsager()->getNomCourant(capital: true),
                 'adresse' => $dossier->getAdresse()->getLibelle(),
                 'estEligible' => true,
                 'typeAttestation' => null,
@@ -68,7 +68,7 @@ class DossierControllerTest extends WebTestCase
     public function testConsulterDossier(): void
     {
         $agent = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'redacteur@justice.gouv.fr']);
-        $dossier = $this->em->getRepository(BrisPorte::class)->findOneBy(['reference' => 'BRI/20250103/001']);
+        $dossier = $this->em->getRepository(Dossier::class)->findOneBy(['reference' => 'BRI/20250103/001']);
 
         $this->client->loginUser($agent, 'agent');
 
@@ -108,21 +108,21 @@ class DossierControllerTest extends WebTestCase
                 'localite' => $dossier->getAdresse()->getLocalite(),
             ],
             'requerant' => [
-                'civilite' => $dossier->getRequerant()->getPersonnePhysique()->getCivilite()->value,
-                'nom' => $dossier->getRequerant()->getPersonnePhysique()->getNom(),
+                'civilite' => $dossier->getUsager()->getPersonnePhysique()->getCivilite()->value,
+                'nom' => $dossier->getUsager()->getPersonnePhysique()->getNom(),
                 'prenoms' => [
-                    $dossier->getRequerant()->getPersonnePhysique()->getPrenom1(),
-                    $dossier->getRequerant()->getPersonnePhysique()->getPrenom2(),
-                    $dossier->getRequerant()->getPersonnePhysique()->getPrenom3(),
+                    $dossier->getUsager()->getPersonnePhysique()->getPrenom1(),
+                    $dossier->getUsager()->getPersonnePhysique()->getPrenom2(),
+                    $dossier->getUsager()->getPersonnePhysique()->getPrenom3(),
                 ],
                 'nomNaissance' => null,
-                'courriel' => $dossier->getRequerant()->getEmail(),
-                'telephone' => $dossier->getRequerant()->getPersonnePhysique()->getTelephone(),
-                'dateNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getDateNaissance()->getTimestamp() * 1000,
-                'communeNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getCommuneNaissance(),
-                'paysNaissance' => $dossier->getRequerant()->getPersonnePhysique()->getPaysNaissance()?->getNom(),
-                'raisonSociale' => $dossier->getRequerant()->getPersonneMorale()?->getRaisonSociale(),
-                'siren' => $dossier->getRequerant()->getPersonneMorale()?->getSirenSiret(),
+                'courriel' => $dossier->getUsager()->getEmail(),
+                'telephone' => $dossier->getUsager()->getPersonnePhysique()->getTelephone(),
+                'dateNaissance' => $dossier->getUsager()->getPersonnePhysique()->getDateNaissance()->getTimestamp() * 1000,
+                'communeNaissance' => $dossier->getUsager()->getPersonnePhysique()->getCommuneNaissance(),
+                'paysNaissance' => $dossier->getUsager()->getPersonnePhysique()->getPaysNaissance()?->getNom(),
+                'raisonSociale' => $dossier->getUsager()->getPersonneMorale()?->getRaisonSociale(),
+                'siren' => $dossier->getUsager()->getPersonneMorale()?->getSirenSiret(),
             ],
             'typeAttestation' => null,
         ]);

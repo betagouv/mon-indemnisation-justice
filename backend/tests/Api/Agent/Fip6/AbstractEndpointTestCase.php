@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -20,14 +20,14 @@ abstract class AbstractEndpointTestCase extends WebTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    protected function getDossierParReference(string $reference): ?BrisPorte
+    protected function getDossierParReference(string $reference): ?Dossier
     {
-        return $this->em->getRepository(BrisPorte::class)->findOneBy(['reference' => $reference]);
+        return $this->em->getRepository(Dossier::class)->findOneBy(['reference' => $reference]);
     }
 
-    protected function getDossierParEtat(EtatDossierType $etat, int $index = 0): ?BrisPorte
+    protected function getDossierParEtat(EtatDossierType $etat, int $index = 0): ?Dossier
     {
-        $dossiers = $this->em->getRepository(BrisPorte::class)->listerDossierParEtat($etat);
+        $dossiers = $this->em->getRepository(Dossier::class)->listerDossierParEtat($etat);
 
         return @$dossiers[$index] ?? null;
     }
