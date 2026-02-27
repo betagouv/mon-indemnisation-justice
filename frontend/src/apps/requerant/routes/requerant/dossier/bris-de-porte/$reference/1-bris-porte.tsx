@@ -8,12 +8,11 @@ import {
   Dossier,
   getLibelleTypePersonneMorale,
   getRapportAuLogementLibelle,
-  PersonneMoraleType,
-  PersonneMoraleTypes,
   RapportAuLogement,
+  TypePersonneMoraleType,
+  TypesPersonneMorale,
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
-import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader.tsx";
@@ -90,8 +89,9 @@ function Etape1BrisPorte() {
       },
     },
     onSubmit: async ({ value, formApi }) => {
+      // Enregistrer le brouillon...
       await dossierManager.enregistrer(reference, formApi.state.values);
-
+      // ...et passer à l'étape suivante
       await naviguer({
         to: "../2-infos-requerant",
         search: {} as any,
@@ -182,7 +182,7 @@ function Etape1BrisPorte() {
                   <div className="fr-col-12">
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <formulaire.Field
-                        name="requerant.typePersonneMorale"
+                        name="requerant.personneMorale.typePersonneMorale"
                         children={(field) => {
                           return (
                             <FormSelect
@@ -195,15 +195,16 @@ function Etape1BrisPorte() {
                                 defaultValue: field.state.value ?? "",
                                 onChange: (event) =>
                                   field.setValue(
-                                    event.target.value as PersonneMoraleType,
+                                    event.target
+                                      .value as TypePersonneMoraleType,
                                   ),
                               }}
                             >
                               <option value="" disabled hidden>
                                 Selectionnez une option
                               </option>
-                              {PersonneMoraleTypes.map(
-                                (type: PersonneMoraleType) => (
+                              {TypesPersonneMorale.map(
+                                (type: TypePersonneMoraleType) => (
                                   <option key={type} value={type}>
                                     {getLibelleTypePersonneMorale(type)}
                                   </option>
@@ -222,86 +223,87 @@ function Etape1BrisPorte() {
                     estPersonneMorale:
                       state.values.requerant?.estPersonneMorale,
                     typePersonneMorale:
-                      state.values.requerant?.typePersonneMorale,
+                      state.values.requerant?.personneMorale
+                        ?.typePersonneMorale,
                   })}
                   children={({ estPersonneMorale, typePersonneMorale }) => (
                     <>
                       {(estPersonneMorale === false ||
                         !!typePersonneMorale) && (
-                          <div className="fr-grid-row fr-grid-row--gutters">
-                            <div className="fr-col-lg-6 fr-col-12">
-                              <formulaire.Field
-                                name="rapportAuLogement"
-                                children={(field) => {
-                                  return (
-                                    <FormSelect
-                                      label="Vous effectuez votre demande en qualité de"
-                                      champ={field}
-                                      estRequis={true}
-                                      nativeSelectProps={{
-                                        defaultValue: field.state.value || "",
-                                        onChange: (event) => {
-                                          if (!!event.target.value) {
-                                            field.setValue(
-                                              event.target
-                                                .value as RapportAuLogement,
-                                            );
-                                          }
-                                        },
-                                      }}
-                                    >
-                                      <option value="" disabled hidden>
-                                        Selectionnez une option
-                                      </option>
-                                      {RapportAuLogements.map(
-                                        (rapportAuLogement) => (
-                                          <option
-                                            key={rapportAuLogement}
-                                            value={rapportAuLogement}
-                                          >
-                                            {getRapportAuLogementLibelle(
-                                              rapportAuLogement,
-                                            )}
-                                          </option>
-                                        ),
-                                      )}
-                                    </FormSelect>
-                                  );
-                                }}
-                              />
-                            </div>
-
-                            <formulaire.Subscribe
-                              selector={(state) => state.values.rapportAuLogement}
-                              children={(rapportAuLogement) => (
-                                <>
-                                  {rapportAuLogement === "AUT" && (
-                                    <div className="fr-col-lg-6 fr-col-12">
-                                      <formulaire.Field
-                                        name="descriptionRapportAuLogement"
-                                        children={(field) => {
-                                          return (
-                                            <FormInput
-                                              label="Précisez"
-                                              estRequis={
-                                                rapportAuLogement === "AUT"
-                                              }
-                                              nativeInputProps={{
-                                                onChange: (e) =>
-                                                  field.setValue(e.target.value),
-                                                maxLength: 255,
-                                              }}
-                                            />
+                        <div className="fr-grid-row fr-grid-row--gutters">
+                          <div className="fr-col-lg-6 fr-col-12">
+                            <formulaire.Field
+                              name="rapportAuLogement"
+                              children={(field) => {
+                                return (
+                                  <FormSelect
+                                    label="Vous effectuez votre demande en qualité de"
+                                    champ={field}
+                                    estRequis={true}
+                                    nativeSelectProps={{
+                                      defaultValue: field.state.value || "",
+                                      onChange: (event) => {
+                                        if (!!event.target.value) {
+                                          field.setValue(
+                                            event.target
+                                              .value as RapportAuLogement,
                                           );
-                                        }}
-                                      />
-                                    </div>
-                                  )}
-                                </>
-                              )}
+                                        }
+                                      },
+                                    }}
+                                  >
+                                    <option value="" disabled hidden>
+                                      Selectionnez une option
+                                    </option>
+                                    {RapportAuLogements.map(
+                                      (rapportAuLogement) => (
+                                        <option
+                                          key={rapportAuLogement}
+                                          value={rapportAuLogement}
+                                        >
+                                          {getRapportAuLogementLibelle(
+                                            rapportAuLogement,
+                                          )}
+                                        </option>
+                                      ),
+                                    )}
+                                  </FormSelect>
+                                );
+                              }}
                             />
                           </div>
-                        )}
+
+                          <formulaire.Subscribe
+                            selector={(state) => state.values.rapportAuLogement}
+                            children={(rapportAuLogement) => (
+                              <>
+                                {rapportAuLogement === "AUT" && (
+                                  <div className="fr-col-lg-6 fr-col-12">
+                                    <formulaire.Field
+                                      name="descriptionRapportAuLogement"
+                                      children={(field) => {
+                                        return (
+                                          <FormInput
+                                            label="Précisez"
+                                            estRequis={
+                                              rapportAuLogement === "AUT"
+                                            }
+                                            nativeInputProps={{
+                                              onChange: (e) =>
+                                                field.setValue(e.target.value),
+                                              maxLength: 255,
+                                            }}
+                                          />
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          />
+                        </div>
+                      )}
                     </>
                   )}
                 />
@@ -379,7 +381,7 @@ function Etape1BrisPorte() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-12 fr-col-lg-6">
                         <formulaire.Field
-                          name="requerant.adresse.ligne1"
+                          name="requerant.personnePhysique.adresse.ligne1"
                           children={(field) => {
                             return (
                               <FormInput
@@ -416,7 +418,7 @@ function Etape1BrisPorte() {
                       </div>
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="adresse.commune.codePostal"
+                          name="adresse.codePostal"
                           children={(field) => {
                             return (
                               <>
@@ -437,7 +439,7 @@ function Etape1BrisPorte() {
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="adresse.commune.nom"
+                          name="adresse.commune"
                           children={(field) => {
                             return (
                               <>
