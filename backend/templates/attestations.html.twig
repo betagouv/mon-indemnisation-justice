@@ -35,7 +35,7 @@
                         FranceConnect :
                     </p>
 
-                    <form method="post" action="{{ path('securite_connexion_agent') }}">
+                    <form method="post" action="{{ path('securite_agent_connexion') }}">
                         <input type="hidden" name="_csrf_token_agent" value="{{ csrf_token('connexionAgent') }}">
                         <div class="fr-connect-group">
                             <button class="fr-connect fr-pro-connect" type="submit">
