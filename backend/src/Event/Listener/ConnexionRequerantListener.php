@@ -8,8 +8,8 @@ use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\UsagerDto;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
 use MonIndemnisationJustice\Entity\BrouillonType;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
-use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Service\GestionnaireBrouillon;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +29,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
     {
         $requerant = $event->getUser();
 
-        if (!$requerant instanceof Requerant) {
+        if (!$requerant instanceof Usager) {
             return;
         }
 
@@ -99,7 +99,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
         ];
     }
 
-    protected function getTestEligibiliteEnCours(Request $request, Requerant $requerant): ?TestEligibilite
+    protected function getTestEligibiliteEnCours(Request $request, Usager $requerant): ?TestEligibilite
     {
         $preInscription = $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, []);
         $idTestEligibilite = $requerant->getNavigation()?->idTestEligibilite ?? @$preInscription['testEligibilite'] ?? null;
@@ -107,7 +107,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
         return $idTestEligibilite ? $this->em->find(TestEligibilite::class, $idTestEligibilite) : null;
     }
 
-    protected function getDeclarationFDOEnCours(Request $request, Requerant $requerant): ?DeclarationFDOBrisPorte
+    protected function getDeclarationFDOEnCours(Request $request, Usager $requerant): ?DeclarationFDOBrisPorte
     {
         $preInscription = $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, []);
         $idDeclarationFDO = $requerant->getNavigation()?->idDeclaration ?? $preInscription['declarationErreurOperationnelle'] ?? null;

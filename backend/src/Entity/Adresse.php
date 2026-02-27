@@ -37,9 +37,9 @@ class Adresse
     private ?string $localite = null;
 
     /**
-     * @var Collection<int, BrisPorte>
+     * @var Collection<int, Dossier>
      */
-    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'adresse', cascade: [])]
+    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'adresse', cascade: [])]
     private Collection $brisPortes;
 
     public function __construct()
@@ -128,14 +128,14 @@ class Adresse
     }
 
     /**
-     * @return Collection<int, BrisPorte>
+     * @return Collection<int, Dossier>
      */
     public function getBrisPortes(): Collection
     {
         return $this->brisPortes;
     }
 
-    public function addBrisPorte(BrisPorte $brisPorte): static
+    public function addBrisPorte(Dossier $brisPorte): static
     {
         if (!$this->brisPortes->contains($brisPorte)) {
             $this->brisPortes->add($brisPorte);
@@ -145,7 +145,7 @@ class Adresse
         return $this;
     }
 
-    public function removeBrisPorte(BrisPorte $brisPorte): static
+    public function removeBrisPorte(Dossier $brisPorte): static
     {
         if ($this->brisPortes->removeElement($brisPorte)) {
             // set the owning side to null (unless already changed)

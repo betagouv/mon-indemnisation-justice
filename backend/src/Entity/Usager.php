@@ -17,15 +17,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: RequerantRepository::class)]
-#[ORM\Table(name: 'requerants')]
+#[ORM\Table(name: 'usagers')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SUB', fields: ['sub'])]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 #[\AllowDynamicProperties]
-class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
+class Usager implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const ROLE_REQUERANT = 'ROLE_REQUERANT';
+    public const string ROLE_REQUERANT = 'ROLE_REQUERANT';
 
     #[Groups(['user:read', 'dossier:lecture'])]
     #[ORM\Id]
@@ -62,9 +62,9 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(options: ['default' => false])]
     protected bool $isPersonneMorale = false;
 
-    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'usager', cascade: ['remove'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    /** @var Collection<BrisPorte> */
+    /** @var Collection<Dossier> */
     protected Collection $dossiers;
 
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
@@ -200,7 +200,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->sub;
     }
 
-    public function setSub(?string $sub): Requerant
+    public function setSub(?string $sub): Usager
     {
         $this->sub = $sub;
 
@@ -277,7 +277,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->adresse;
     }
 
-    public function setAdresse(?Adresse $adresse): Requerant
+    public function setAdresse(?Adresse $adresse): Usager
     {
         $this->adresse = $adresse;
 
@@ -374,7 +374,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->personneMorale;
     }
 
-    public function setPersonneMorale(?PersonneMorale $personneMorale): Requerant
+    public function setPersonneMorale(?PersonneMorale $personneMorale): Usager
     {
         $this->personneMorale = $personneMorale;
 
@@ -411,13 +411,13 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
                 ? "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '').$this->personnePhysique->getNomComplet();
     }
 
-    public function getDernierDossier(): ?BrisPorte
+    public function getDernierDossier(): ?Dossier
     {
         return $this->dossiers->isEmpty() ? null : $this->dossiers->last();
     }
 
     /**
-     * @return BrisPorte[]|Collection
+     * @return Dossier[]|Collection
      */
     public function getDossiers(): array|Collection
     {
@@ -426,7 +426,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function nbDossiersEnAttente(): int
     {
-        return $this->dossiers->filter(fn (BrisPorte $dossier) => !$dossier->estDepose())->count();
+        return $this->dossiers->filter(fn (Dossier $dossier) => !$dossier->estDepose())->count();
     }
 
     public function getNavigation(): ?NavigationRequerant
@@ -434,7 +434,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return null !== $this->navigation ? NavigationRequerant::depuisArray($this->navigation ?? []) : null;
     }
 
-    public function setNavigation(null|array|NavigationRequerant $navigation): Requerant
+    public function setNavigation(array|NavigationRequerant|null $navigation): Usager
     {
         $this->navigation = $navigation instanceof NavigationRequerant ? $navigation->versArray() : $navigation;
 

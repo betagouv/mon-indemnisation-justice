@@ -2,14 +2,15 @@
 
 namespace MonIndemnisationJustice\Controller\Requerant;
 
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 abstract class RequerantController extends AbstractController
 {
-    protected function getRequerant(): ?Requerant
+    protected function getRequerant(): ?Usager
     {
         $user = $this->getUser();
-        return $user instanceof Requerant ? $user : null;
+
+        return $user instanceof Usager ? $user : null;
     }
 }

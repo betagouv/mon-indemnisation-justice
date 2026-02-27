@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DocumentOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -23,11 +23,12 @@ class GenererArretePaiementEndpoint
         protected readonly DocumentManager $documentManager,
         protected readonly NormalizerInterface $normalizer,
         protected readonly ObjectMapperInterface $objectMapper,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity]
-        BrisPorte $dossier,
+        Dossier $dossier,
     ) {
         try {
             $this->documentManager->generer($dossier, DocumentType::TYPE_ARRETE_PAIEMENT);

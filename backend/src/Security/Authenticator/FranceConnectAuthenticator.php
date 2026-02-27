@@ -7,7 +7,7 @@ use MonIndemnisationJustice\Entity\Civilite;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use Psr\Log\LoggerInterface;
@@ -74,7 +74,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                     // Inscription
                     $prenoms = $userInfo['given_name_array'] ?? explode(' ', $userInfo['given_name']);
 
-                    $requerant = (new Requerant())
+                    $requerant = (new Usager())
                         ->setSub($userInfo['sub'])
                         ->setEmail($userInfo['email'] ?? null)
                         ->setVerifieCourriel()
