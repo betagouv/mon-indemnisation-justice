@@ -26,14 +26,12 @@ class PersonneMorale
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
 
+
+    protected ?Personne $representantLegal;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCompte(): ?Usager
-    {
-        return $this->compte;
     }
 
     public function getSirenSiret(): ?string
