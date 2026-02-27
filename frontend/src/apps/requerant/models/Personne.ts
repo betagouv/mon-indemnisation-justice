@@ -1,3 +1,4 @@
+import { PersonnePhysique } from "@/apps/requerant/models/PersonnePhysique.ts";
 import { Civilite } from "./Civilite.ts";
 
 export class Personne {
@@ -9,4 +10,6 @@ export class Personne {
   prenoms?: string[] = [];
   courriel: string;
   telephone?: string;
+
+  personnePhysique?: PersonnePhysique;
 }
