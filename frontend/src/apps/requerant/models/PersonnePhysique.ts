@@ -4,7 +4,8 @@ import { Adresse } from "./Adresse.ts";
 import { Commune } from "./Commune.ts";
 import { Pays } from "./Pays.ts";
 
-export class PersonnePhysique extends Personne {
+export class PersonnePhysique {
+  personne: Personne;
   // L'adresse de résidence
   adresse: Adresse = new Adresse();
   // L'état civil

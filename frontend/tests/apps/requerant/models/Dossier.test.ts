@@ -18,12 +18,14 @@ describe("la dénormalisation d'un dossier ", () => {
         },
         dataDepot: "2026-02-01",
         requerant: {
-          civilite: "MME",
-          nom: "Randt",
-          nomNaissance: "",
-          prenom: "Raquel",
-          courriel: "raquel.randt@courriel.fr",
-          telephone: "0621436587",
+          personne: {
+            civilite: "MME",
+            nom: "Randt",
+            nomNaissance: "",
+            prenom: "Raquel",
+            courriel: "raquel.randt@courriel.fr",
+            telephone: "0621436587",
+          },
           adresse: {
             ligne1: "12 rue des Oliviers",
             codePostal: "44100",
