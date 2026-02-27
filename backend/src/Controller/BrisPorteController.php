@@ -6,11 +6,11 @@ namespace MonIndemnisationJustice\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Dto\Inscription;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
-use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Forms\TestEligibiliteType;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use MonIndemnisationJustice\Service\Mailer;
@@ -32,7 +32,7 @@ class PreInscription
     public function __construct(
         public ?TestEligibilite $testEligibilite = null,
         public ?DeclarationFDOBrisPorte $declarationErreurOperationnelle = null,
-        public ?Requerant $requerant = null,
+        public ?Usager $requerant = null,
     ) {
     }
 }
@@ -55,8 +55,8 @@ class BrisPorteController extends AbstractController
     #[Route('/tester-mon-eligibilite', name: 'bris_porte_tester_eligibilite', methods: ['GET', 'POST'])]
     public function testerMonEligibilite(Request $request): Response
     {
-        if ($this->getUser() instanceof Requerant) {
-            /** @var Requerant $requerant */
+        if ($this->getUser() instanceof Usager) {
+            /** @var Usager $requerant */
             $requerant = $this->getUser();
             if (null !== $requerant->getDernierDossier() && !$requerant->getDernierDossier()->estDepose()) {
                 return $this->redirectToRoute('app_bris_porte_edit', ['id' => $requerant->getDernierDossier()->getId()]);
@@ -88,9 +88,9 @@ class BrisPorteController extends AbstractController
                 $this->entityManager->persist($testEligibilite);
                 $this->entityManager->flush();
 
-                if (($requerant = $this->getUser()) instanceof Requerant) {
-                    $dossier = (new BrisPorte())
-                        ->setRequerant($requerant)
+                if (($requerant = $this->getUser()) instanceof Usager) {
+                    $dossier = (new Dossier())
+                        ->setUsager($requerant)
                         ->setTestEligibilite($testEligibilite);
 
                     $this->entityManager->persist($dossier);
@@ -158,7 +158,7 @@ class BrisPorteController extends AbstractController
         UrlGeneratorInterface $router,
         CsrfTokenManagerInterface $csrfTokenManager,
     ): Response {
-        if ($this->getUser() instanceof Requerant) {
+        if ($this->getUser() instanceof Usager) {
             return $this->redirectToRoute('requerant_home_index');
         }
 
@@ -215,7 +215,7 @@ class BrisPorteController extends AbstractController
         $declaration = $preinscription->declarationErreurOperationnelle;
 
         // Création du compte requérant
-        $requerant = (new Requerant())
+        $requerant = (new Usager())
             ->setEmail($inscription->courriel);
         $requerant->getPersonnePhysique()
             ->setCivilite($inscription->civilite)
@@ -269,7 +269,7 @@ class BrisPorteController extends AbstractController
             return new JsonResponse("{$adresse} n'est pas une adresse courriel valide", Response::HTTP_BAD_REQUEST);
         }
 
-        $existant = $this->entityManager->getRepository(Requerant::class)->findOneBy(['email' => $adresse]);
+        $existant = $this->entityManager->getRepository(Usager::class)->findOneBy(['email' => $adresse]);
 
         return new JsonResponse(['disponible' => null === $existant], Response::HTTP_OK);
     }
@@ -304,7 +304,7 @@ class BrisPorteController extends AbstractController
         return new PreInscription(
             testEligibilite: $this->chargerEntite(TestEligibilite::class, @$session['testEligibilite'] ?? $request->getSession()->get(self::CLEF_SESSION_TEST_ELIGIBILITE)),
             declarationErreurOperationnelle: $this->chargerEntite(DeclarationFDOBrisPorte::class, @$session['declarationErreurOperationnelle']),
-            requerant: $this->chargerEntite(Requerant::class, @$session['requerant']),
+            requerant: $this->chargerEntite(Usager::class, @$session['requerant']),
         );
     }
 

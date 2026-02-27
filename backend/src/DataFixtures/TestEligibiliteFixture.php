@@ -7,8 +7,8 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\QualiteRequerant;
-use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\Usager;
 
 class TestEligibiliteFixture extends Fixture implements DependentFixtureInterface
 {
@@ -30,7 +30,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
                 'rapportAuLogement' => QualiteRequerant::LOC,
                 'aContacteAssurance' => false,
                 'aContacteBailleur' => false,
-                'requerant' => $this->getReference('requerant-ray', Requerant::class),
+                'requerant' => $this->getReference('requerant-ray', Usager::class),
                 'dateSoumission' => new \DateTime('-7 days'),
             ]),
             'melun' => TestEligibilite::fromArray([
@@ -38,7 +38,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
                 'estHebergeant' => false,
                 'rapportAuLogement' => QualiteRequerant::BAI,
                 'aContacteAssurance' => false,
-                'requerant' => $this->getReference('requerant-melun', Requerant::class),
+                'requerant' => $this->getReference('requerant-melun', Usager::class),
                 'dateSoumission' => \DateTime::createFromFormat('Y-m-d H:i:s', '2025-04-10 13:51:27'),
             ]),
         ] as $reference => $testEligibilite) {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Controller\Agent;
 
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +20,7 @@ class PrevisualiserController extends AbstractController
 {
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
     #[Route('/dossier/{id}/decision', name: 'agent_previsualiser_courrier_decision', methods: ['GET'])]
-    public function previsualiserCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function previsualiserCourrierDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
         $document = $dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
 
@@ -37,7 +37,7 @@ class PrevisualiserController extends AbstractController
 
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
     #[Route('/dossier/{id}/declaration-acceptation', name: 'agent_previsualiser_declaration_acceptation', methods: ['GET'])]
-    public function previsualiserDeclarationAcceptation(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function previsualiserDeclarationAcceptation(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
         return $this->render('courrier/declarationAcceptation.html.twig', [
             'dossier' => $dossier,
@@ -47,7 +47,7 @@ class PrevisualiserController extends AbstractController
 
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
     #[Route('/dossier/{id}/arrete-paiement', name: 'agent_previsualiser_courrier_decision', methods: ['GET'])]
-    public function previsualiserArretePaiementDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function previsualiserArretePaiementDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
         return $this->render('courrier/arretePaiement.html.twig', [
             'dossier' => $dossier,

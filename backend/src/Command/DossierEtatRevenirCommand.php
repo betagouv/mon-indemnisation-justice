@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossier;
 use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -37,7 +37,7 @@ class DossierEtatRevenirCommand extends Command
         $id = $input->getArgument('id');
         $nbEtapes = intval($input->getArgument('nb-etapes'));
 
-        $dossier = $this->em->getRepository(BrisPorte::class)->getByIdOuReference($id);
+        $dossier = $this->em->getRepository(Dossier::class)->getByIdOuReference($id);
 
         if (null == $dossier) {
             throw new \LogicException("Aucun dossier trouve pour l'id {$id}");
@@ -50,7 +50,7 @@ class DossierEtatRevenirCommand extends Command
                     '<info>%s</info> le %s par %s ',
                     $etatPrecedent->getEtat()->value,
                     $etatPrecedent->getDate()->format('d/m/Y à H:i'),
-                    $etatPrecedent->getEstRequerant() ? $dossier->getRequerant()->getNomCourant(capital: true).' (requérant)' : $etatPrecedent->getAgent()?->getNomComplet(true),
+                    $etatPrecedent->getEstRequerant() ? $dossier->getUsager()->getNomCourant(capital: true).' (requérant)' : $etatPrecedent->getAgent()?->getNomComplet(true),
                 ),
                 array_slice($etatsPrecedents = $dossier->getHistoriqueEtats()->toArray(), 0, count($etatsPrecedents)),
             );

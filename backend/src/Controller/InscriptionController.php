@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +21,7 @@ class InscriptionController extends AbstractController
     #[Route('/inscription/validation-du-compte/{jeton}', name: 'app_verify_email')]
     public function verifyUserEmail(string $jeton, Request $request): Response
     {
-        /** @var Requerant $requerant */
+        /** @var Usager $requerant */
         $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
         if (null === $requerant) {
             return $this->redirectToRoute('securite_connexion');
