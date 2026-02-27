@@ -4,10 +4,8 @@ namespace MonIndemnisationJustice\Event\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\DossierDto;
-use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\RequerantDto;
+use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\UsagerDto;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
-use MonIndemnisationJustice\Entity\Adresse;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\BrouillonType;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Requerant;
@@ -22,10 +20,9 @@ class ConnexionRequerantListener implements EventSubscriberInterface
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly GestionnaireBrouillon  $gestionnaireBrouillon,
-        protected readonly NormalizerInterface    $normalizer,
-    )
-    {
+        protected readonly GestionnaireBrouillon $gestionnaireBrouillon,
+        protected readonly NormalizerInterface $normalizer,
+    ) {
     }
 
     public function onSecurityInteractiveLogin(LoginSuccessEvent $event): void
@@ -44,7 +41,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
             if (null !== $testEligibilite && null === $testEligibilite->dossier) {
                 // ... alors, on initie un nouveau brouillon de dossier lié à ce test d'éligibilité
                 $dossier = new DossierDto();
-                $dossier->requerant = new RequerantDto();
+                $dossier->requerant = new UsagerDto();
                 $dossier->requerant->estPersonneMorale = $requerant->getIsPersonneMorale();
                 $dossier->requerant->raisonSociale = $requerant->getPersonneMorale()?->getRaisonSociale();
                 $dossier->requerant->siren = $requerant->getPersonneMorale()?->getSirenSiret();
@@ -84,7 +81,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
                         'siren' => $requerant->getPersonneMorale()?->getSirenSiret(),
 
                         // TODO finir de transvaser les champs
-                    ]
+                    ],
                 ]);
 
                 $requerant->setNavigation(null);
