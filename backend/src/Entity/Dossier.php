@@ -30,10 +30,10 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 )]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\Table(name: 'bris_porte')]
+#[ORM\Table(name: 'dossiers')]
 #[ORM\EntityListeners([DossierEntitylistener::class])]
 #[\AllowDynamicProperties]
-class BrisPorte
+class Dossier
 {
     #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Id]
@@ -41,10 +41,14 @@ class BrisPorte
     #[ORM\Column]
     public ?int $id = null;
 
+    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $reference = null;
+
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
-    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist'], inversedBy: 'dossiers')]
+    #[ORM\ManyToOne(targetEntity: Usager::class, cascade: ['persist'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    protected Requerant $requerant;
+    protected Usager $usager;
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: ['persist'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
@@ -77,10 +81,6 @@ class BrisPorte
     protected Collection $documents;
     protected ?array $documentsParType = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    protected ?string $numeroPV = null;
-
     #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\OneToOne(targetEntity: TestEligibilite::class, inversedBy: 'dossier', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -106,10 +106,6 @@ class BrisPorte
     #[Groups(['agent:liste', 'agent:detail'])]
     #[ORM\Column(length: 20, nullable: true, enumType: TypeAttestation::class)]
     protected ?TypeAttestation $typeAttestation = null;
-
-    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
-    #[ORM\Column(length: 20, nullable: true)]
-    private ?string $reference = null;
 
     #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
@@ -181,17 +177,17 @@ class BrisPorte
     #[SerializedName('requerant')]
     public function getReferenceRequerant(): ?string
     {
-        return $this->requerant->getNomCourant(capital: true);
+        return $this->usager->getNomCourant(capital: true);
     }
 
-    public function getRequerant(): ?Requerant
+    public function getUsager(): ?Usager
     {
-        return $this->requerant;
+        return $this->usager;
     }
 
-    public function setRequerant(?Requerant $requerant): self
+    public function setUsager(?Usager $usager): self
     {
-        $this->requerant = $requerant;
+        $this->usager = $usager;
 
         return $this;
     }
@@ -208,7 +204,7 @@ class BrisPorte
         return $this->redacteur;
     }
 
-    public function setRedacteur(?Agent $redacteur): BrisPorte
+    public function setRedacteur(?Agent $redacteur): Dossier
     {
         $this->redacteur = $redacteur;
 
@@ -220,7 +216,7 @@ class BrisPorte
         return $this->notes;
     }
 
-    public function setNotes(?string $notes): BrisPorte
+    public function setNotes(?string $notes): Dossier
     {
         $this->notes = $notes;
 
@@ -370,7 +366,7 @@ class BrisPorte
         return $this->dateDepot;
     }
 
-    public function setDateDepot(\DateTimeInterface $dateDepot): BrisPorte
+    public function setDateDepot(\DateTimeInterface $dateDepot): Dossier
     {
         $this->dateDepot = $dateDepot;
 
@@ -430,7 +426,7 @@ class BrisPorte
     }
 
     /**
-     * @return null|Document[]
+     * @return Document[]|null
      */
     #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     public function getDocuments(): array
@@ -705,7 +701,7 @@ class BrisPorte
 
     public function getOrCreateDocument(DocumentType $type): Document
     {
-        /** @var null|Document $document */
+        /** @var Document|null $document */
         $document = null;
         if ($type->estUnique()) {
             $document = $this->getDocumentParType($type);
@@ -715,7 +711,7 @@ class BrisPorte
     }
 
     /**
-     * @param null|bool $progression est-ce qu'il s'agit d'une avancée d'un état vers le suivant ou d'un retour arrière ?
+     * @param bool|null $progression est-ce qu'il s'agit d'une avancée d'un état vers le suivant ou d'un retour arrière ?
      *
      * @return $this
      */
@@ -734,7 +730,6 @@ class BrisPorte
         return $this->historiqueEtats
             ->findFirst(
                 fn (int $index, EtatDossier $e) => $etat === $e->getEtat()
-            )?->getDate()
-        ;
+            )?->getDate();
     }
 }

@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\AttribuerDossierEndpoint;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -109,7 +109,7 @@ class AttribuerDossierEndpointTest extends APIEndpointTestCase
         $this->assertEquals("Cet agent n'est pas rédacteur", $output->erreur);
     }
 
-    protected function attribuer(BrisPorte $dossier, Agent $redacteur): void
+    protected function attribuer(Dossier $dossier, Agent $redacteur): void
     {
         $this->apiPost(['redacteur_id' => $redacteur->getId()], ['id' => $dossier->getId()]);
     }
