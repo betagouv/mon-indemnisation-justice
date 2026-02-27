@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Voter;
 
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -62,11 +62,11 @@ class DossierVoter extends Voter
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
             self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
             self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
-            default => false
+            default => false,
         };
     }
 
-    protected function agentPeutAjouterPieceJointe(Agent $agent, BrisPorte $dossier): bool
+    protected function agentPeutAjouterPieceJointe(Agent $agent, Dossier $dossier): bool
     {
         return $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR, Agent::ROLE_AGENT_ATTRIBUTEUR, Agent::ROLE_AGENT_REDACTEUR);
     }
@@ -76,12 +76,12 @@ class DossierVoter extends Voter
         return $agent->hasRole(Agent::ROLE_AGENT_ATTRIBUTEUR);
     }
 
-    protected function agentPeutInstruire(Agent $agent, BrisPorte $dossier): bool
+    protected function agentPeutInstruire(Agent $agent, Dossier $dossier): bool
     {
         return $agent->estRedacteur() && $agent->instruit($dossier);
     }
 
-    protected function agentPeutGenererDocument(Agent $agent, BrisPorte $dossier): bool
+    protected function agentPeutGenererDocument(Agent $agent, Dossier $dossier): bool
     {
         return ($agent->estRedacteur() && $agent->instruit($dossier)) || $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR);
     }
@@ -94,7 +94,7 @@ class DossierVoter extends Voter
             self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_A_VERIFIER => $agent->aRole(Agent::ROLE_AGENT_REDACTEUR),
             self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_ARRETE_A_SIGNER => $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR),
             self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET),
-            default => false
+            default => false,
         };
     }
 }

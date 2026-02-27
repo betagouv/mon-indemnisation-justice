@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,7 +29,7 @@ class SupprimerDossierCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('id');
-        $dossier = $this->em->find(BrisPorte::class, $id);
+        $dossier = $this->em->find(Dossier::class, $id);
 
         if (null == $dossier) {
             throw new \LogicException("Aucun dossier trouve pour l'id $id");

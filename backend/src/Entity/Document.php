@@ -58,16 +58,16 @@ class Document
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $metaDonnees = null;
 
-    #[ORM\ManyToMany(targetEntity: BrisPorte::class, mappedBy: 'documents', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Dossier::class, mappedBy: 'documents', cascade: ['persist'])]
     #[Ignore]
-    /** @var Collection<BrisPorte> */
+    /** @var Collection<Dossier> */
     protected Collection $dossiers;
 
     #[ORM\ManyToMany(targetEntity: DeclarationFDOBrisPorte::class, cascade: ['persist'])]
     #[ORM\JoinTable(name: 'declaration_fdo_bris_porte_pieces_jointes')]
     #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[Ignore]
-    /** @var Collection<BrisPorte> */
+    /** @var Collection<Dossier> */
     protected Collection $declarations;
 
     #[Groups(['agent:detail'])]
@@ -170,7 +170,7 @@ class Document
         return $this;
     }
 
-    public function ajouterAuDossier(BrisPorte $dossier): static
+    public function ajouterAuDossier(Dossier $dossier): static
     {
         $dossier->ajouterDocument($this);
         $this->dossiers->add($dossier);
@@ -179,7 +179,7 @@ class Document
     }
 
     /**
-     * @return Collection<BrisPorte>
+     * @return Collection<Dossier>
      */
     public function getDossiers(): Collection
     {
@@ -187,7 +187,7 @@ class Document
     }
 
     #[Ignore]
-    public function getDossier(): ?BrisPorte
+    public function getDossier(): ?Dossier
     {
         return $this->dossiers->first();
     }

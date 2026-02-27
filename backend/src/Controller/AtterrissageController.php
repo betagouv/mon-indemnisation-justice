@@ -2,8 +2,6 @@
 
 namespace MonIndemnisationJustice\Controller;
 
-use MonIndemnisationJustice\Entity\BrisPorte;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
