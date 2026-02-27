@@ -11,10 +11,10 @@ use Symfony\Component\ObjectMapper\Attribute\Map;
 class DossierDto
 {
     public string $reference;
-    public RequerantDto|AdresseDto $requerant;
+    public UsagerDto|AdresseDto $requerant;
     #[Map(source: 'qualiteRequerant')]
     public QualiteRequerant $rapportAuLogement;
     public string $descriptionRapportAuLogement;
-    //public ?TestEligibilite $testEligibilite;
-    //public ?DeclarationFDOBrisPorte $declarationFDO;
+    // public ?TestEligibilite $testEligibilite;
+    // public ?DeclarationFDOBrisPorte $declarationFDO;
 }
