@@ -6,9 +6,11 @@ namespace MonIndemnisationJustice\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Dto\Inscription;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
+use MonIndemnisationJustice\Entity\Personne;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Forms\TestEligibiliteType;
@@ -56,10 +58,10 @@ class BrisPorteController extends AbstractController
     public function testerMonEligibilite(Request $request): Response
     {
         if ($this->getUser() instanceof Usager) {
-            /** @var Usager $requerant */
-            $requerant = $this->getUser();
-            if (null !== $requerant->getDernierDossier() && !$requerant->getDernierDossier()->estDepose()) {
-                return $this->redirectToRoute('app_bris_porte_edit', ['id' => $requerant->getDernierDossier()->getId()]);
+            /** @var Usager $usager */
+            $usager = $this->getUser();
+            if (null !== $usager->getDernierDossier() && !$usager->getDernierDossier()->estDepose()) {
+                return $this->redirectToRoute('app_bris_porte_edit', ['id' => $usager->getDernierDossier()->getId()]);
             }
 
             // Sinon, on poursuit le test d'éligibilité en vue de créer un nouveau dossier.
@@ -88,10 +90,14 @@ class BrisPorteController extends AbstractController
                 $this->entityManager->persist($testEligibilite);
                 $this->entityManager->flush();
 
-                if (($requerant = $this->getUser()) instanceof Usager) {
-                    $dossier = (new Dossier())
-                        ->setUsager($requerant)
-                        ->setTestEligibilite($testEligibilite);
+                if (($usager = $this->getUser()) instanceof Usager) {
+                    $dossier = Dossier::brisDePorte()
+                        ->setUsager($usager)
+                        ->setBrisPorte(
+                            new BrisPorte()
+                                ->setTestEligibilite($testEligibilite)
+                        );
+
 
                     $this->entityManager->persist($dossier);
                     $this->entityManager->flush();
@@ -215,45 +221,49 @@ class BrisPorteController extends AbstractController
         $declaration = $preinscription->declarationErreurOperationnelle;
 
         // Création du compte requérant
-        $requerant = (new Usager())
-            ->setEmail($inscription->courriel);
-        $requerant->getPersonnePhysique()
-            ->setCivilite($inscription->civilite)
-            ->setPrenom1($inscription->prenom)
+        $usager = new Usager()
             ->setEmail($inscription->courriel)
-            ->setTelephone($inscription->telephone)
-            ->setNom($inscription->nom)
-            ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom);
-        $requerant->setPassword(
+            ->setPersonne(
+                new Personne()
+                    ->setCivilite($inscription->civilite)
+                    ->setPrenom($inscription->prenom)
+                    ->setCourriel($inscription->courriel)
+                    ->setTelephone($inscription->telephone)
+                    ->setNom($inscription->nom)
+                    ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom)
+            );
+
+
+        $usager->setPassword(
             $this->userPasswordHasher->hashPassword(
-                $requerant,
+                $usager,
                 $inscription->motDePasse
             )
         );
-        $requerant->genererJetonVerification();
-        $requerant->setNavigation(new NavigationRequerant(
+        $usager->genererJetonVerification();
+        $usager->setNavigation(new NavigationRequerant(
             idTestEligibilite: $testEligibilite?->id,
             idDeclaration: $declaration?->getId(),
         ));
 
-        $this->entityManager->persist($requerant);
+        $this->entityManager->persist($usager);
 
         if (null !== $testEligibilite) {
-            $testEligibilite->requerant = $requerant;
+            $testEligibilite->requerant = $usager;
             $this->entityManager->persist($testEligibilite);
         }
 
         $this->entityManager->flush();
 
-        $preinscription->requerant = $requerant;
+        $preinscription->requerant = $usager;
         $this->setPreinscription($request, $preinscription);
 
         // Envoi du mail de confirmation.
         $this->mailer
-            ->toRequerant($requerant)
+            ->toRequerant($usager)
             ->subject("Activation de votre compte sur l'application Mon Indemnisation Justice")
             ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
-                'requerant' => $requerant,
+                'requerant' => $usager,
             ])
             ->send();
 

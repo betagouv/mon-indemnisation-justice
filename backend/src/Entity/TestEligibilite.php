@@ -29,7 +29,7 @@ class TestEligibilite
     public ?bool $estHebergeant = null;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
-    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: RapportAuLogement::class)]
+    #[ORM\Column(type: 'string', length: 16, nullable: true, enumType: RapportAuLogement::class)]
     public ?RapportAuLogement $rapportAuLogement = null;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
@@ -44,8 +44,8 @@ class TestEligibilite
     #[ORM\JoinColumn(unique: false, nullable: true, onDelete: 'CASCADE')]
     public ?Usager $requerant = null;
 
-    #[ORM\OneToOne(targetEntity: Dossier::class, mappedBy: 'testEligibilite')]
-    public ?Dossier $dossier;
+    #[ORM\OneToOne(targetEntity: BrisPorte::class, mappedBy: 'testEligibilite')]
+    public ?BrisPorte $dossier;
 
     #[ORM\Column]
     public bool $estEligibleExperimentation = false;
