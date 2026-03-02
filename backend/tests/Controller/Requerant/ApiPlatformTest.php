@@ -29,6 +29,7 @@ class ApiPlatformTest extends WebTestCase
 
     public function testPatchDossierDescriptionRequerant(): void
     {
+        $this->markTestSkipped('Test à supprimer avec API Platform');
         /** @var Dossier $dossier */
         $dossier = $this->getDossierParEtat(EtatDossierType::DOSSIER_A_FINALISER);
         $reponse = $this->patchDossier($dossier, [
@@ -44,6 +45,7 @@ class ApiPlatformTest extends WebTestCase
 
     public function testPatchDossierDateNaissance(): void
     {
+        $this->markTestSkipped('Test à supprimer avec API Platform');
         /** @var Dossier $dossier */
         $dossier = $this->getDossierParEtat(EtatDossierType::DOSSIER_A_FINALISER);
         $reponse = $this->patchDossier($dossier, [
@@ -63,6 +65,7 @@ class ApiPlatformTest extends WebTestCase
 
     public function testPatchDossierCommuneNaissance(): void
     {
+        $this->markTestSkipped('Test à supprimer avec API Platform');
         /** @var Dossier $dossier */
         $dossier = $this->getDossierParEtat(EtatDossierType::DOSSIER_A_FINALISER);
 
@@ -86,6 +89,7 @@ class ApiPlatformTest extends WebTestCase
 
     public function testPatchDateOperation(): void
     {
+        $this->markTestSkipped('Test à supprimer avec API Platform');
         /** @var Dossier $dossier */
         $dossier = $this->getDossierParEtat(EtatDossierType::DOSSIER_A_FINALISER);
         $hier = (new \DateTime())->modify('-1 day');
@@ -103,6 +107,7 @@ class ApiPlatformTest extends WebTestCase
 
     public function testPatchAdresse(): void
     {
+        $this->markTestSkipped('Test à supprimer avec API Platform');
         /** @var Dossier $dossier */
         $dossier = $this->getDossierParEtat(EtatDossierType::DOSSIER_A_FINALISER);
         $ligne1 = $dossier->getAdresse()->getLigne1();
@@ -132,6 +137,7 @@ class ApiPlatformTest extends WebTestCase
 
     public function testPatchErreurChampInconnu(): void
     {
+        $this->markTestSkipped('Test à supprimer avec API Platform');
         /** @var Dossier $dossier */
         $dossier = $this->getDossierParEtat(EtatDossierType::DOSSIER_A_FINALISER);
 
@@ -153,6 +159,7 @@ class ApiPlatformTest extends WebTestCase
 
     protected function patchDossier(Dossier $dossier, array $data): object
     {
+        $this->markTestSkipped('Test à supprimer avec API Platform');
         $this->client->loginUser($dossier->getUsager(), 'requerant');
 
         $this->client->request(

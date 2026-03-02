@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import CallOut from "@codegouvfr/react-dsfr/CallOut";
-import { useBreakpointsValuesPx } from "@codegouvfr/react-dsfr/useBreakpointsValuesPx";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { useWindowInnerSize } from "@codegouvfr/react-dsfr/tools/useWindowInnerSize";
+import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
+import { useBreakpointsValuesPx } from "@codegouvfr/react-dsfr/useBreakpointsValuesPx";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 type LibelleAvancementTest =
   | "rapport_au_logement"
@@ -206,7 +206,7 @@ export const TestEligibiliteForm = ({
                 nativeInputProps: {
                   name: "rapportAuLogement",
                   checked: test.rapportAuLogement === "proprietaire",
-                  value: "PRO",
+                  value: "PROPRIETAIRE",
                   onChange: () => setRapportAuLogement("proprietaire"),
                 },
               },
@@ -215,7 +215,7 @@ export const TestEligibiliteForm = ({
                 nativeInputProps: {
                   name: "rapportAuLogement",
                   checked: test.rapportAuLogement === "locataire",
-                  value: "LOC",
+                  value: "LOCATAIRE",
                   onChange: () => setRapportAuLogement("locataire"),
                 },
               },
@@ -224,7 +224,7 @@ export const TestEligibiliteForm = ({
                 nativeInputProps: {
                   name: "rapportAuLogement",
                   checked: test.rapportAuLogement === "bailleur",
-                  value: "BAI",
+                  value: "BAILLEUR",
                   onChange: () => setRapportAuLogement("bailleur"),
                 },
               },
