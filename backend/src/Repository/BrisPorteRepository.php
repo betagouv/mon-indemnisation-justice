@@ -6,8 +6,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 
 /**
@@ -47,13 +47,13 @@ class BrisPorteRepository extends ServiceEntityRepository
         $nbDossiersDeposesMemeJour = $this->createQueryBuilder('d')
             ->select('count(d.id)')
             ->where('d.reference like :reference')
-            ->setParameter('reference', '%/'.$dossier->getDateDeclaration()->format('Ymd').'/%')->getQuery()
+            ->setParameter('reference', $dossier->getType()->getCodeReference().'/'.$dossier->getDateDeclaration()->format('Ymd').'/%')->getQuery()
             ->getSingleScalarResult();
 
         return
             sprintf(
                 '%s/%s/%s',
-                $dossier->getType()->value,
+                $dossier->getType()->getCodeReference(),
                 $dossier->getDateDeclaration()->format('Ymd'),
                 str_pad($nbDossiersDeposesMemeJour + 1, 3, '0', STR_PAD_LEFT)
             );
