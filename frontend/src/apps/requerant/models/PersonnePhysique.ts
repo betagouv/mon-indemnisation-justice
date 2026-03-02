@@ -18,4 +18,9 @@ export class PersonnePhysique {
   communeNaissance?: Commune;
   // Pour les autres usagers, le nom de la ville de naissance doit être renseigné
   villeNaissance?: string;
+  //raisonSociale: unknown;
+
+  get estPersonneMorale(): boolean {
+    return false;
+  }
 }

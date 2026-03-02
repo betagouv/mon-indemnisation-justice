@@ -48,11 +48,21 @@ class Dossier
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
     #[ORM\ManyToOne(targetEntity: Usager::class, cascade: ['persist'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    // L'usager qui a initié la requête
     protected Usager $usager;
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: ['persist'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    // L'agent rédacteur qui instruit le dossier
     protected ?Agent $redacteur = null;
+
+    #[ORM\ManyToOne(targetEntity: PersonnePhysique::class, cascade: ['persist', 'remove'], inversedBy: 'dossiers')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    protected ?PersonnePhysique $requerantPersonnePhysique;
+
+    #[ORM\ManyToOne(targetEntity: PersonneMorale::class, cascade: ['persist', 'remove'], inversedBy: 'dossiers')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    protected ?PersonneMorale $requerantPersonneMorale;
 
     #[Groups('agent:detail')]
     #[ORM\Column(type: 'text', nullable: true)]

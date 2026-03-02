@@ -81,7 +81,7 @@ function Etape2InfosRequerant() {
     Route.useLoaderData();
 
   const [codePostal, setCodePostal] = useState<string>(
-    dossier.requerant.personnePhysique.communeNaissance?.codePostal ?? "",
+    dossier.requerant.communeNaissance?.codePostal ?? "",
   );
   const [listeCommunes, setListeCommunes] = useState<Commune[]>([]);
 
@@ -154,7 +154,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.personneMorale.raisonSociale"
+                          name="requerant.raisonSociale"
                           children={(field) => {
                             return (
                               <FormInput
@@ -561,8 +561,7 @@ function Etape2InfosRequerant() {
 
                       <formulaire.Subscribe
                         selector={(state) => {
-                          return state.values.requerant?.personnePhysique
-                            ?.paysNaissance;
+                          return state.values.requerant?.paysNaissance;
                         }}
                         children={(paysNaissance) => (
                           <>
