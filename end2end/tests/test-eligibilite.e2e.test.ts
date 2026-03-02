@@ -1,9 +1,9 @@
-import {test, expect} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 
 test("test éligibilité", async ({page}) => {
     await page.goto("/");
 
-    await page.getByText("Tester votre éligibilité").first().click();
+    await page.getByText("Tester mon éligibilité à l'indemnisation").first().click();
 
     await expect(page).toHaveURL("/bris-de-porte/tester-mon-eligibilite");
 

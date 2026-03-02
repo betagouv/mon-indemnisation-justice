@@ -54,33 +54,6 @@
             margin: 1.5rem 0;
         }
 
-        .pr-info-importante {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            /*background-color: #E6EEFE;*/
-            background-color: var(--background-contrast-blue-cumulus);
-            background-clip: content-box;
-        }
-
-        .pr-info-importante--titre {
-            /*background-color: #BCD3FC;*/
-            background-color: var(--background-contrast-blue-cumulus-hover);
-            padding: 1rem;
-        }
-
-        .pr-info-importante--titre strong {
-            background-image: url('{{ asset("images/icon/arrow-right-circle-line.svg") }}');
-            background-position: left center !important;
-            background-repeat: no-repeat;
-            background-size: 1rem;
-            padding-left: 30px;
-        }
-
-        .pr-comment-reagir--infos-info {
-
-            padding: 1rem;
-        }
 
         /** Section "Comment faire ma demande d'indemnisation ?" */
 
@@ -285,43 +258,6 @@
             background-color: var(--background-contrast-grey);
         }
 
-        @media (max-width: 991px) {
-            .pr-section-deposer--3a {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .pr-section-deposer--3a-icone {
-                display: flex;
-                align-content: center;
-            }
-
-            .pr-section-deposer--3a-icone img {
-                width: 10rem;
-                margin: 3rem auto;
-            }
-
-            .pr-section-deposer--3a-description {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-
-        @media (min-width: 992px) {
-            .pr-section-deposer--3a {
-                display: flex;
-                flex-direction: row;
-            }
-
-            .pr-section-deposer--3a-icone img {
-                width: 60%;
-                margin: auto;
-            }
-        }
-
-
     </style>
 
 {% endblock stylesheets %}
@@ -342,124 +278,152 @@
                         pour un bris de porte ou tout autre dégât matériel causé dans le cadre d’une opération de police
                         judiciaire.
                     </p>
-                    <p>
-                        {% block appelAAction %}
-                            <a class="fr-btn fr-p-3v" href="{{ url('bris_porte_tester_eligibilite') }}">
-                                Tester votre éligibilité
-                            </a>
-                        {% endblock appelAAction %}
-                    </p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section class="fr-my-6w">
+        <div class="fr-container">
+            <h3>Comment utiliser notre service en ligne ?</h3>
+
+            <h5>Vous avez reçu un email d’invitation à la suite de la déclaration des forces de l'ordre ?</h5>
+
+            <p>
+                Les forces de l’ordre ont déjà déclaré le bris de porte au ministère de la Justice et initié votre
+                dossier.
+            </p>
+
+            <p>
+                Accédez à notre service en ligne via le mail d’invitation et complétez votre dossier en joignant les
+                pièces demandées.
+            </p>
+
+            <h5>Vous avez reçu un avis d'intervention à la suite de l'opération des forces de l'ordre?</h5>
+
+            <p>
+                Nous vous invitons à vous rendre au commissariat ou à la brigade de gendarmerie dont les coordonnées
+                figurent sur l'avis d'intervention afin qu'un agent déclare le bris de porte et initie votre dossier sur
+                Mon Indemnisation Justice.
+            </p>
+
+            <p>
+                Vous recevrez ensuite un email avec un lien pour vous connecter à notre service en ligne et compléter
+                votre dossier en joignant les pièces demandées.
+            </p>
+
+
+            <h5>Vous avez reçu une attestation papier des forces de l'ordre ?</h5>
+
+            <p>Assurez vous que l’agent a complété l’espace qui lui est réservé : date et adresse de l’opération de
+                police judiciaire, nom et coordonnées du service enquêteur, numéro de parquet ou d’instruction.</p>
+
+            <div class="fr-alert fr-alert--warning fr-alert--sm">
+
+                <p>
+                    Avant de déposer votre dossier en ligne, vous devez tester votre éligibilité à
+                    l'indemnisation.
+                </p>
+            </div>
+
+            <ul class="fr-btns-group fr-btns-group--inline fr-my-2w ">
+                <li>
+                    <a class="fr-btn" role="link" href="{{ url('bris_porte_tester_eligibilite') }}">
+                        Tester mon éligibilité à l'indemnisation
+                    </a>
+                </li>
+            </ul>
+
+            <h5>Vous n'avez pas reçu d'attestation ni d'avis d'intervention de la part des forces de l'ordre ?</h5>
+
+            <p>Rendez vous à votre commissariat ou à votre brigade de gendarmerie afin qu'un agent déclare le bris de
+                porte et initie votre dossier sur Mon Indemnisation Justice.</p>
+            <p>Vous recevrez ensuite un email avec un lien pour vous connecter à notre service en ligne et compléter
+                votre dossier en joignant les pièces demandées.</p>
+
+
+            <ul class="fr-btns-group fr-btns-group--inline fr-my-2w ">
+                <li>
+                    <a class="fr-btn" role="link" target="_blank"
+                       href="https://www.masecurite.interieur.gouv.fr/fr/trouver-un-commissariat-une-gendarmerie">
+                        Localiser le commissariat / la gendarmerie
+                    </a>
+                </li>
+            </ul>
+
+            <div class="fr-callout fr-icon-info-line">
+                <h3 class="fr-callout__title">Conditions d’indemnisation</h3>
+                <p>Deux conditions cumulatives d’indemnisation :</p>
+                <ul class="fr-my-2w">
+                    <li>
+                        Vous ne devez pas être concerné(e) par l'opération de police judiciaire <b>ET</b>
+                    </li>
+                    <li>
+                        L'opération de police judiciaire doit avoir été réalisée par erreur à votre domicile.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="fr-alert fr-alert--warning fr-alert--sm">
+                <p>
+                    Seuls les frais de remise en état à l’identique de la porte endommagée seront remboursés.
+                </p>
+            </div>
+
+
         </div>
     </section>
 
     <section class="fr-my-6w pr-section-comment-reagir">
         <div class="fr-container">
-            <h3>Comment réagir ?</h3>
+            <h3>Les bons réflexes</h3>
 
             <div class="pr-comment-reagir--reflexes">
-                <h5>Les bons réflexes</h5>
+
+                <ol>
+
+                    <li>Rendez vous à votre commissariat ou gendarmerie</li>
+                    <li>Connectez-vous via le lien reçu par mail de *Mon Indemnisation Justice*</li>
+                    <li>Identifiez-vous via FranceConnect ou créez votre compte</li>
+                    <li>Téléversez les documents demandés :
+                        <ul>
+                            <li>Une photo de la porte endommagée</li>
+                            <li>Une attestation de non prise en charge du sinistre par votre assurance</li>
+                            <li>Une attestation de non prise en charge du sinistre par votre bailleur (si vous êtes
+                                locataire)
+                            </li>
+                            <li>Une copie recto-verso de votre pièce d’identité ou un extrait Kbis de moins de 3 mois
+                                (si vous êtes une personne morale)
+                            </li>
+                            <li>La facture acquittée attestant de la réalité des travaux de remise en état à
+                                l'identique
+                            </li>
+                            <li>Votre titre de propriété ou votre contrat de bail</li>
+                        </ul>
+                    </li>
+                </ol>
+
                 <p>
-                    L’agent des forces de l’ordre doit vous remettre une attestation qui vous sera nécessaire pour faire
-                    votre demande d’indemnisation. Cette attestation est remise par l’agent <a class="fr-link"
-                                                                                               aria-describedby="tooltip-erreur-de-porte"
-                                                                                               id="link-2990" href="#">en
-                        cas d’erreur de porte uniquement.</a><span class="fr-tooltip fr-placement"
-                                                                   id="tooltip-erreur-de-porte" role="tooltip"
-                                                                   aria-hidden="true">c’est-à-dire <b>lorsque le logement ayant subi le bris de porte n’est pas celui qui était visé par l’opération de police judiciaire</b>.<br/>
-                        <br/>
-                        <u>Exemple :</u> la porte du logement 301 est fracturée alors que l’objectif visé par l’enquête est le logement 302.</span>
+                    Un accusé de réception vous sera envoyé après le dépôt de votre dossier. Vous recevrez des
+                    notifications par email à chaque étape du traitement de votre dossier. Restez attentif afin de
+                    faciliter et accélérer votre indemnisation.
 
                 </p>
-                <ul>
-                    <li>Assurez-vous que l’agent a complété l’espace qui lui est réservé : date et adresse de
-                        l’opération de police judiciaire, nom du service, numéro de parquet ou d’instruction ….
-                    </li>
-                    <li>Si un serrurier est intervenu à la demande des forces de l’ordre pour sécuriser votre logement,
-                        vous
-                        n’avez pas à régler sa facture. Nos services prendront en charge l’intervention.
-                    </li>
-                </ul>
-            </div>
 
-            <div class="pr-comment-reagir--infos">
-                <h5>Informations importantes</h5>
-                <p>
-                    La victime d’un dommage ne peut obtenir des indemnisations distinctes en réparation du même
-                    préjudice.
-                    Afin de garantir <a class="fr-link" aria-describedby="infobulle-respect-principe"
-                                        id="lien-infobulle-respect-principe"
-                                        href="#">le respect de ce principe</a>, nous vous invitons à nous fournir les
-                    différentes attestations
-                    qui correspondent à votre situation.
-                </p>
-                <span class="fr-tooltip fr-placement" id="infobulle-respect-principe" role="tooltip" aria-hidden="true">
-                En vertu du principe de réparation intégrale du préjudice sans perte ni profit, la victime d'un dommage
-                ne peut obtenir deux indemnisations distinctes en réparation du même préjudice (Cour de cassation,
-                civile, Chambre civile 2, 16 décembre 2021, 19-11.294, Inédit ; Cour de cassation, civile, Chambre
-                civile 2, 9 février 2023, 21-21.217, Publié au bulletin)
-            </span>
-
-                <div class="fr-container--fluid">
-                    <div class="fr-grid-row fr-grid-row--gutters">
-                        <div class="fr-col-lg-6 fr-col-12 pr-info-importante">
-                            <div class="pr-info-importante--titre">
-                                <strong>Vous êtes propriétaire</strong>
-                            </div>
-                            <div class="pr-comment-reagir--infos-info">
-                                <ul>
-                                    <li>
-                                        Prenez contact avec votre <b>assurance</b> afin de vérifier la prise
-                                        en
-                                        charge du sinistre <sup>1</sup>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="fr-col-lg-6 fr-col-12 pr-info-importante">
-
-                            <div class="pr-info-importante--titre">
-                                <strong>Vous êtes locataire</strong>
-                            </div>
-                            <div class="pr-comment-reagir--infos-info">
-                                <ul>
-                                    <li>
-                                        Prenez contact avec votre <b>assurance habitation</b> afin de vérifier la prise
-                                        en charge du sinistre <sup>1</sup>
-                                    </li>
-                                </ul>
-
-                                <ul>
-                                    <li>
-                                        Prenez contact avec votre <b>bailleur</b> qui a, à votre égard, une
-                                        <a class="fr-link" aria-describedby="infobulle-ref-article-1720"
-                                           id="lien-infobulle-ref-article-1720" href="#">
-                                            obligation de sécurité
-                                        </a> <sup>1</sup>
-                                    </li>
-                                </ul>
-
-
-                                <span class="fr-tooltip fr-placement" id="infobulle-ref-article-1720" role="tooltip"
-                                      aria-hidden="true">
-                                Article 1720 du code civil : « Le bailleur est tenu de délivrer la chose en bon état de réparations de toute espèce. Il doit y faire, pendant la durée du bail, toutes les réparations qui peuvent devenir nécessaires, autres que les locatives ».
-                            </span>
-                            </div>
-
-                        </div>
-                    </div>
+                <div class="fr-alert fr-alert--warning fr-alert--sm">
 
                     <p>
-                        <i class="fr-text--xs">1. En cas de refus, demandez une attestation de non-prise en charge</i>
+                        <b>Si un serrurier est intervenu à la demande des forces de l’ordre pour sécuriser votre
+                            logement, vous n’avez pas à régler sa facture.</b>
                     </p>
                 </div>
             </div>
 
+
         </div>
     </section>
 
+    {#
     <section class="fr-my-6w pr-section-comment-faire">
         <div class="fr-container">
             <div class="fr-col-lg-6 fr-col-12 pr-section-comment-faire--titre">
@@ -517,7 +481,8 @@
                             <li>Au moins une photo de la porte endommagée</li>
                             <li>Attestation de non prise en charge du sinistre par votre assurance habitation</li>
                             <li>Attestation de non prise en charge du sinistre par le bailleur (si locataire)</li>
-                            <li>Copie recto-verso de votre pièce d’identité ou un extrait Kbis de moins de 3 mois (si
+                            <li>Copie recto-verso de votre pièce d’identité ou un extrait Kbis de moins de 3 mois
+                                (si
                                 vous êtes une personne morale)
                             </li>
                             <li>La facture acquittée attestant de la réalité des travaux de remise en état à
@@ -547,6 +512,7 @@
 
         </div>
     </section>
+    #}
 
     <section class="fr-my-6w">
         <div class="fr-container">
@@ -564,9 +530,9 @@
                     <h6>Instruction de votre dossier</h6>
 
                     <p>
-                        Nos services se rapprochent des autorités compétentes afin de recueillir les informations
-                        nécessaires
-                        au traitement de votre demande.
+                        Nos services peuvent vous demander des informations ou pièces complémentaires. Les services
+                        enquêteurs peuvent également être interrogés.
+
                     </p>
                 </div>
 
@@ -579,13 +545,7 @@
                     <h6>Proposition d’indemnisation</h6>
 
                     <p>
-                        Après l’instruction de votre dossier, une proposition d’indemnisation vous sera adressée
-                        <sup>1</sup>.
-                    </p>
-
-                    <p>
-                        <i class="fr-text--xs">1. Si vous remplissez les conditions
-                            d’indemnisation.</i>
+                        Une proposition d’indemnisation vous est adressée si vous remplissez les conditions requises.
                     </p>
                 </div>
 
@@ -598,49 +558,14 @@
                     <h6>Indemnisation</h6>
 
                     <p>
-                        Après acceptation de la proposition, vous percevrez l’indemnisation par virement
-                        sur votre compte bancaire.
+                        Après acceptation de la proposition, l’indemnisation est versée par virement bancaire.
                     </p>
                 </div>
 
             </div>
 
-            <div class="fr-callout fr-icon-info-line">
-                <h3 class="fr-callout__title">Conditions d’indemnisation</h3>
-                <p>Deux conditions cumulatives d’indemnisation : (cf : test d’éligibilité).</p>
-                <ul class="fr-my-2w">
-                    <li>
-                        Vous ne devez pas être concerné(e) par l'opération de police judiciaire <b>ET</b>
-                    </li>
-                    <li>
-                        L'opération de police judiciaire doit avoir été réalisée par erreur à votre domicile.
-                    </li>
-                </ul>
-                <p>
-                    <b>Seuls les frais de remise en état à l’identique de la porte endommagée seront remboursés.</b>
-                </p>
-            </div>
         </div>
 
-
     </section>
-
-    <section class="fr-my-6w pr-section-deposer">
-        <div class="fr-container">
-            <h3>Déposer votre demande d'indemnisation</h3>
-
-            <div class="pr-section-deposer--3a">
-                <div class="pr-section-deposer--3a-icone fr-col-lg-2 fr-col-12">
-                    <img alt="" src="{{ asset('images/undraw_reminder.svg') }}"/>
-                </div>
-                <div class="pr-section-deposer--3a-description fr-col-lg-10 fr-col-12">
-
-                    {{ block('appelAAction') }}
-                </div>
-
-            </div>
-        </div>
-    </section>
-
 
 {% endblock %}
