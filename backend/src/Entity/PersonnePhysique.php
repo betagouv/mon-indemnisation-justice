@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\PersonnePhysiqueRepository;
@@ -23,6 +24,10 @@ class PersonnePhysique
 
     #[ORM\OneToOne(targetEntity: Personne::class, inversedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
     protected Personne $personne;
+
+    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'requerantPersonnePhysique')]
+    /** @var Collection<Dossier> */
+    protected Collection $dossiers;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 13, nullable: true)]
@@ -47,7 +52,6 @@ class PersonnePhysique
     #[ORM\ManyToOne(targetEntity: GeoCodePostal::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
     public ?GeoCodePostal $codePostalNaissance = null;
-
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
