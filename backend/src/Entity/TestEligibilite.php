@@ -29,8 +29,8 @@ class TestEligibilite
     public ?bool $estHebergeant = null;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
-    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
-    public ?QualiteRequerant $rapportAuLogement = null;
+    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: RapportAuLogement::class)]
+    public ?RapportAuLogement $rapportAuLogement = null;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true)]
