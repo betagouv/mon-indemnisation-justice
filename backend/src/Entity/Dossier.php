@@ -92,7 +92,7 @@ class Dossier
     protected Collection $documents;
     protected ?array $documentsParType = null;
 
-    #[ORM\OneToOne(targetEntity: BrisPorte::class, inversedBy: 'dossier')]
+    #[ORM\OneToOne(targetEntity: BrisPorte::class, inversedBy: 'dossier', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'bris_porte_id', nullable: true)]
     protected ?BrisPorte $brisPorte = null;
 
@@ -103,7 +103,6 @@ class Dossier
     public function __construct()
     {
         $this->dateCreation = new \DateTimeImmutable();
-        $this->adresse = new Adresse();
         $this->documents = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
     }
@@ -112,7 +111,7 @@ class Dossier
     public function onPrePersist(PrePersistEventArgs $args): void
     {
         if ($this->historiqueEtats->isEmpty()) {
-            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: null === $this->declarationFDO, agent: $this->declarationFDO?->getAgent());
+            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: null === $this->brisPorte->getDeclarationFDO(), agent: $this->brisPorte->getDeclarationFDO()?->getAgent());
         }
     }
 
@@ -150,6 +149,38 @@ class Dossier
         return $this->usager->getNomCourant(capital: true);
     }
 
+    public function getRequerantPersonneMorale(): ?PersonneMorale
+    {
+        return $this->requerantPersonneMorale;
+    }
+
+    public function getRequerantPersonnePhysique(): ?PersonnePhysique
+    {
+        return $this->requerantPersonnePhysique;
+    }
+
+    public function setRequerant(PersonnePhysique|PersonneMorale $requerant): self
+    {
+        if ($requerant instanceof PersonneMorale) {
+            $this->requerantPersonneMorale = $requerant;
+        } else {
+            $this->requerantPersonnePhysique = $requerant;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Affiche l'appellation officielle du requérant, soit:
+     * - "Monsieur DUPONT Jean" pour un particulier
+     * - "la société ACME représentée par Madame DUPONT, née MARTIN, Jeanne" pour un particulier
+     */
+    public function getNomCompletRequerant(): string
+    {
+        return ($this->requerantPersonneMorale
+                ? "la société {$this->requerantPersonneMorale->getRaisonSociale()} représentée par " : '').$this->requerantPersonnePhysique->getNomComplet();
+    }
+
     public function getUsager(): ?Usager
     {
         return $this->usager;
@@ -158,6 +189,18 @@ class Dossier
     public function setUsager(?Usager $usager): self
     {
         $this->usager = $usager;
+
+        return $this;
+    }
+
+    public function getBrisPorte(): ?BrisPorte
+    {
+        return $this->brisPorte;
+    }
+
+    public function setBrisPorte(?BrisPorte $brisPorte): Dossier
+    {
+        $this->brisPorte = $brisPorte;
 
         return $this;
     }
@@ -493,170 +536,11 @@ class Dossier
         return $this->getEtatDossier()->getElementContexte('explication');
     }
 
-    #[Groups('agent:liste')]
-    #[SerializedName('adresse')]
-    public function getReferenceAdresse(): string
-    {
-        return $this->adresse->getLibelle();
-    }
-
-    public function getAdresse(): ?Adresse
-    {
-        return $this->adresse;
-    }
-
-    public function setAdresse(?Adresse $adresse): self
-    {
-        $this->adresse = $adresse;
-
-        return $this;
-    }
-
-    public function getDateOperationPJ(): ?\DateTimeInterface
-    {
-        return $this->dateOperationPJ;
-    }
-
-    #[Groups(['agent:detail', 'requerant:detail'])]
-    #[SerializedName('dateOperation')]
-    public function getDateOperationPJMillis(): ?int
-    {
-        return DateConvertisseur::enMillisecondes($this->dateOperationPJ);
-    }
-
-    public function setDateOperationPJ(?\DateTimeInterface $dateOperationPJ): self
-    {
-        $this->dateOperationPJ = $dateOperationPJ;
-
-        return $this;
-    }
-
-    public function getTestEligibilite(): ?TestEligibilite
-    {
-        return $this->testEligibilite;
-    }
-
-    #[Groups(['agent:liste', 'agent:detail'])]
-    #[SerializedName('estEligible')]
-    public function getEstEligible(): ?bool
-    {
-        return $this->testEligibilite?->estEligible();
-    }
-
-    public function setTestEligibilite(?TestEligibilite $testEligibilite): static
-    {
-        $this->testEligibilite = $testEligibilite;
-
-        return $this;
-    }
-
-    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail'])]
-    public function isIssuDeclarationFDO(): ?bool
-    {
-        return null !== $this->declarationFDO;
-    }
-
-    public function getDeclarationFDO(): ?DeclarationFDOBrisPorte
-    {
-        return $this->declarationFDO;
-    }
-
-    public function setDeclarationFDO(DeclarationFDOBrisPorte $declarationFDO): static
-    {
-        $this->declarationFDO = $declarationFDO;
-
-        return $this;
-    }
-
-    public function isPorteBlindee(): ?bool
-    {
-        return $this->isPorteBlindee;
-    }
-
     public function setPorteBlindee(?bool $isPorteBlindee): self
     {
         $this->isPorteBlindee = $isPorteBlindee;
 
         return $this;
-    }
-
-    public function getIsPorteBlindee(): ?bool
-    {
-        return $this->isPorteBlindee();
-    }
-
-    public function setIsPorteBlindee(?bool $isPorteBlindee): self
-    {
-        $this->setPorteBlindee($isPorteBlindee);
-
-        return $this;
-    }
-
-    public function getAdressePlaintext(): string
-    {
-        return (string) $this->getAdresse();
-    }
-
-    public function getPrecisionRequerant(): ?string
-    {
-        return $this->precisionRequerant;
-    }
-
-    public function setPrecisionRequerant(?string $precisionRequerant): self
-    {
-        $this->precisionRequerant = $precisionRequerant;
-
-        return $this;
-    }
-
-    public function getQualiteRequerant(): ?RapportAuLogement
-    {
-        return $this->qualiteRequerant;
-    }
-
-    public function setQualiteRequerant(?RapportAuLogement $qualiteRequerant): static
-    {
-        $this->qualiteRequerant = $qualiteRequerant;
-
-        return $this;
-    }
-
-    public function getDescriptionRequerant(): ?string
-    {
-        return $this->descriptionRequerant;
-    }
-
-    public function setDescriptionRequerant(?string $descriptionRequerant): self
-    {
-        $this->descriptionRequerant = $descriptionRequerant;
-
-        return $this;
-    }
-
-    public function recalculerMetaDonnees(): void
-    {
-        $this->typeAttestation = array_reduce(
-            array_filter(
-                array_map(
-                    fn (Document $document) => $document->getMetaDonneesAttestation()?->typeAttestation,
-                    $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
-                ),
-                fn (?TypeAttestation $typeAttestation) => null !== $typeAttestation
-            ),
-            fn (?TypeAttestation $cumul, TypeAttestation $typeAttestation) => $typeAttestation->getPrioritaire($cumul)
-        );
-
-        $typeInstitutionSecuritePublique = current(array_filter(
-            array_map(
-                fn (Document $document) => $document->getMetaDonneesAttestation()?->typeInstitutionSecuritePublique,
-                $this->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
-            ),
-            fn (?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique) => null !== $typeInstitutionSecuritePublique
-        )) ?? null;
-
-        if (false !== $typeInstitutionSecuritePublique) {
-            $this->typeInstitutionSecuritePublique = $typeInstitutionSecuritePublique;
-        }
     }
 
     public function getOrCreateDocument(DocumentType $type): Document

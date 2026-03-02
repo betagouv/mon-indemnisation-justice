@@ -9,7 +9,6 @@ use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
 use MonIndemnisationJustice\Repository\RequerantRepository;
-use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -68,10 +67,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     protected Collection $dossiers;
 
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    protected ?Adresse $adresse;
-
-    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     protected Personne $personne;
@@ -81,9 +76,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->personneMorale = null;
-        $this->personnePhysique = new PersonnePhysique();
-        $this->adresse = new Adresse();
         $this->dossiers = new ArrayCollection();
     }
 
@@ -269,143 +261,16 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAdresse(): ?Adresse
+    public function getPersonne(): Personne
     {
-        return $this->adresse;
+        return $this->personne;
     }
 
-    public function setAdresse(?Adresse $adresse): Usager
+    public function setPersonne(Personne $personne): Usager
     {
-        $this->adresse = $adresse;
+        $this->personne = $personne;
 
         return $this;
-    }
-
-    public function getIsPersonneMorale(): ?bool
-    {
-        return $this->isPersonneMorale && null !== $this->personneMorale;
-    }
-
-    public function setIsPersonneMorale(bool $isPersonneMorale): self
-    {
-        $this->isPersonneMorale = $isPersonneMorale;
-
-        return $this;
-    }
-
-    public function getPersonnePhysique(): ?PersonnePhysique
-    {
-        return $this->personnePhysique;
-    }
-
-    public function setPersonnePhysique(PersonnePhysique $personnePhysique): self
-    {
-        $this->personnePhysique = $personnePhysique;
-
-        return $this;
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('civilite')]
-    public function getCivilite(): string
-    {
-        return $this->personnePhysique->getCivilite()->value;
-    }
-
-    public function estFeminin(): bool
-    {
-        return $this->personnePhysique->getCivilite()->estFeminin();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('nom')]
-    public function getNom(): string
-    {
-        return $this->personnePhysique->getNom();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('prenoms')]
-    public function getPrenoms(): array
-    {
-        return [$this->personnePhysique->getPrenom1(), $this->personnePhysique->getPrenom2(), $this->personnePhysique->getPrenom3()];
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('nomNaissance')]
-    public function getNomNaissance(): ?string
-    {
-        return $this->personnePhysique->getNomNaissance();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('telephone')]
-    public function getTelephone(): ?string
-    {
-        return $this->personnePhysique->getTelephone();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('dateNaissance')]
-    public function getDateNaissance(): ?int
-    {
-        return DateConvertisseur::enMillisecondes($this->personnePhysique->getDateNaissance());
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('communeNaissance')]
-    public function getCommuneNaissance(): ?string
-    {
-        return $this->personnePhysique->getCommuneNaissance();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('paysNaissance')]
-    public function getPaysNaissance(): ?string
-    {
-        return $this->personnePhysique->getPaysNaissance()?->getNom();
-    }
-
-    public function getPersonneMorale(): ?PersonneMorale
-    {
-        return $this->personneMorale;
-    }
-
-    public function setPersonneMorale(?PersonneMorale $personneMorale): Usager
-    {
-        $this->personneMorale = $personneMorale;
-
-        return $this;
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('raisonSociale')]
-    public function getRaisonSociale(): ?string
-    {
-        return $this->isPersonneMorale ? $this->personneMorale?->getRaisonSociale() : null;
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('siren')]
-    public function getSiren(): ?string
-    {
-        return $this->isPersonneMorale ? $this->getPersonneMorale()?->getRaisonSociale() : null;
-    }
-
-    public function getNomCourant(bool $civilite = false, bool $capital = false): string
-    {
-        return $this->getPersonnePhysique()?->getNomCourant($civilite, $capital);
-    }
-
-    /**
-     * Affiche l'appellation officielle du requérant, soit:
-     * - "Monsieur DUPONT Jean" pour un particulier
-     * - "la société ACME représentée par Madame DUPONT, née MARTIN, Jeanne" pour un particulier
-     */
-    public function getNomComplet(): string
-    {
-        return ($this->isPersonneMorale
-                ? "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '').$this->personnePhysique->getNomComplet();
     }
 
     public function getDernierDossier(): ?Dossier
