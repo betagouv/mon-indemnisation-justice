@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\PersonneMoraleRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ORM\Table(name: 'personnes_morales')]
 #[ORM\Entity(repositoryClass: PersonneMoraleRepository::class)]
 class PersonneMorale
 {

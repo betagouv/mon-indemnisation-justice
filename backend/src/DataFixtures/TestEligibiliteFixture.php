@@ -15,7 +15,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
     public function getDependencies(): array
     {
         return [
-            RequerantFixture::class,
+            UsagerFixture::class,
         ];
     }
 
@@ -27,7 +27,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
                 // 'description' => 'Porte fracturée tôt ce matin',
                 'estVise' => false,
                 'estHebergeant' => false,
-                'rapportAuLogement' => RapportAuLogement::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOCATAIRE,
                 'aContacteAssurance' => false,
                 'aContacteBailleur' => false,
                 'requerant' => $this->getReference('requerant-ray', Usager::class),
@@ -36,7 +36,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
             'melun' => TestEligibilite::fromArray([
                 'estVise' => false,
                 'estHebergeant' => false,
-                'rapportAuLogement' => RapportAuLogement::BAI,
+                'rapportAuLogement' => RapportAuLogement::BAILLEUR,
                 'aContacteAssurance' => false,
                 'requerant' => $this->getReference('requerant-melun', Usager::class),
                 'dateSoumission' => \DateTime::createFromFormat('Y-m-d H:i:s', '2025-04-10 13:51:27'),
