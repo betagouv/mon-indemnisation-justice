@@ -85,14 +85,14 @@ class BrisPorte
         return $this;
     }
 
-    public function getRapportAulogement(): ?RapportAuLogement
+    public function getRapportAuLogement(): ?RapportAuLogement
     {
-        return $this->rapportAulogement;
+        return $this->rapportAuLogement;
     }
 
-    public function setRapportAulogement(?RapportAuLogement $rapportAulogement): self
+    public function setRapportAuLogement(?RapportAuLogement $rapportAuLogement): self
     {
-        $this->rapportAulogement = $rapportAulogement;
+        $this->rapportAuLogement = $rapportAuLogement;
 
         return $this;
     }
@@ -143,6 +143,32 @@ class BrisPorte
         $this->typeAttestation = $typeAttestation;
 
         return $this;
+    }
+
+    public function recalculerMetaDonnees(): void
+    {
+        $this->typeAttestation = array_reduce(
+            array_filter(
+                array_map(
+                    fn (Document $document) => $document->getMetaDonneesAttestation()?->typeAttestation,
+                    $this->dossier->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
+                ),
+                fn (?TypeAttestation $typeAttestation) => null !== $typeAttestation
+            ),
+            fn (?TypeAttestation $cumul, TypeAttestation $typeAttestation) => $typeAttestation->getPrioritaire($cumul)
+        );
+
+        $typeInstitutionSecuritePublique = current(array_filter(
+            array_map(
+                fn (Document $document) => $document->getMetaDonneesAttestation()?->typeInstitutionSecuritePublique,
+                $this->dossier->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
+            ),
+            fn (?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique) => null !== $typeInstitutionSecuritePublique
+        )) ?? null;
+
+        if (false !== $typeInstitutionSecuritePublique) {
+            $this->typeInstitutionSecuritePublique = $typeInstitutionSecuritePublique;
+        }
     }
 
     public function getAdresse(): ?Adresse

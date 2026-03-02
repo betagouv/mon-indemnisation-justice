@@ -49,7 +49,7 @@ class HomeControllerTest extends WebTestCase
                 'ray.keran@courriel.fr', false,
             ],
             'avec_dossier_a_finaliser' => [
-                'raquel.randt@courriel.fr', true,
+                'wossewodda-3728@yopmail.com', true,
             ],
         ];
     }
