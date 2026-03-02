@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
+#[ORM\Table(name: 'personnes_physiques')]
 #[ORM\Entity(repositoryClass: PersonnePhysiqueRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class PersonnePhysique
@@ -25,10 +26,6 @@ class PersonnePhysique
     #[ORM\OneToOne(targetEntity: Personne::class, inversedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
     protected Personne $personne;
 
-    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'requerantPersonnePhysique')]
-    /** @var Collection<Dossier> */
-    protected Collection $dossiers;
-
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 13, nullable: true)]
     private ?string $numeroSecuriteSociale = null;
@@ -40,6 +37,9 @@ class PersonnePhysique
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom3 = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    protected ?Adresse $adresse;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
@@ -58,6 +58,10 @@ class PersonnePhysique
     #[ORM\ManyToOne(targetEntity: GeoPays::class)]
     #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code')]
     protected ?GeoPays $paysNaissance = null;
+
+    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'requerantPersonnePhysique')]
+    /** @var Collection<Dossier> */
+    protected Collection $dossiers;
 
     public function __toString()
     {
@@ -103,6 +107,18 @@ class PersonnePhysique
         }
     }
 
+    public function getPersonne(): Personne
+    {
+        return $this->personne;
+    }
+
+    public function setPersonne(Personne $personne): PersonnePhysique
+    {
+        $this->personne = $personne;
+
+        return $this;
+    }
+
     public function getPrenom2(): ?string
     {
         return $this->prenom2;
@@ -130,6 +146,18 @@ class PersonnePhysique
     public function getPrenoms(): ?string
     {
         return implode(', ', array_filter([$this->personne->getPrenom(), $this->prenom2, $this->prenom3], fn ($prenom) => !empty($prenom)));
+    }
+
+    public function getAdresse(): ?Adresse
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?Adresse $adresse): PersonnePhysique
+    {
+        $this->adresse = $adresse;
+
+        return $this;
     }
 
     public function getCommuneNaissance(): ?string

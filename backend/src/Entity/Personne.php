@@ -47,9 +47,11 @@ class Personne
         return $this->civilite;
     }
 
-    public function setCivilite(?Civilite $civilite): void
+    public function setCivilite(?Civilite $civilite): self
     {
         $this->civilite = $civilite;
+
+        return $this;
     }
 
     public function getPrenom(): ?string
@@ -57,9 +59,11 @@ class Personne
         return $this->prenom;
     }
 
-    public function setPrenom(?string $prenom): void
+    public function setPrenom(?string $prenom): self
     {
         $this->prenom = $prenom;
+
+        return $this;
     }
 
     public function getNom(): ?string
@@ -67,9 +71,11 @@ class Personne
         return $this->nom;
     }
 
-    public function setNom(?string $nom): void
+    public function setNom(?string $nom): self
     {
         $this->nom = $nom;
+
+        return $this;
     }
 
     public function getNomNaissance(): ?string
@@ -77,9 +83,11 @@ class Personne
         return $this->nomNaissance;
     }
 
-    public function setNomNaissance(?string $nomNaissance): void
+    public function setNomNaissance(?string $nomNaissance): self
     {
         $this->nomNaissance = $nomNaissance;
+
+        return $this;
     }
 
     /**
@@ -126,9 +134,11 @@ class Personne
         return $this->courriel;
     }
 
-    public function setCourriel(?string $courriel): void
+    public function setCourriel(?string $courriel): self
     {
         $this->courriel = $courriel;
+
+        return $this;
     }
 
     public function getTelephone(): ?string
@@ -136,9 +146,11 @@ class Personne
         return $this->telephone;
     }
 
-    public function setTelephone(?string $telephone): void
+    public function setTelephone(?string $telephone): self
     {
         $this->telephone = $telephone;
+
+        return $this;
     }
 
     public function getPersonnePhysique(): ?PersonnePhysique
@@ -146,8 +158,10 @@ class Personne
         return $this->personnePhysique;
     }
 
-    public function setPersonnePhysique(PersonnePhysique $personnePhysique = new PersonnePhysique()): void
+    public function setPersonnePhysique(PersonnePhysique $personnePhysique = new PersonnePhysique()): self
     {
         $this->personnePhysique = $personnePhysique;
+
+        return $this;
     }
 }
