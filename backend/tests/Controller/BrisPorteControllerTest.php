@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
-use MonIndemnisationJustice\Entity\QualiteRequerant;
+use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Entity\Usager;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -78,7 +78,7 @@ class BrisPorteControllerTest extends WebTestCase
         $this->assertNotNull($testEligibilite->dateSoumission);
         $this->assertFalse($testEligibilite->estVise);
         $this->assertFalse($testEligibilite->estHebergeant);
-        $this->assertEquals(QualiteRequerant::PRO, $testEligibilite->rapportAuLogement);
+        $this->assertEquals(RapportAuLogement::PRO, $testEligibilite->rapportAuLogement);
         $this->assertFalse($testEligibilite->aContacteAssurance);
         if ($aRequerant) {
             $this->assertInstanceOf(Usager::class, $testEligibilite->requerant);

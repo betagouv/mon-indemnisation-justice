@@ -16,7 +16,7 @@ use MonIndemnisationJustice\Entity\EtatDossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\GeoCommune;
 use MonIndemnisationJustice\Entity\GeoDepartement;
-use MonIndemnisationJustice\Entity\QualiteRequerant;
+use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Service\DocumentManager;
@@ -69,7 +69,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         }
 
         // Dossiers
-        $dossierAFinaliser = (new Dossier())
+        $dossierAFinaliser = Dossier::brisDePorte()
             ->setUsager($this->getReference('requerant-raquel', Usager::class))
             ->setAdresse((new Adresse())
                 ->setLigne1('12 rue des Oliviers')
@@ -80,7 +80,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     'departement' => $this->getReference('departement-bouches-du-rhone', GeoDepartement::class),
                     'estVise' => false,
                     'estHebergeant' => false,
-                    'rapportAuLogement' => QualiteRequerant::PRO,
+                    'rapportAuLogement' => RapportAuLogement::PROPRIETAIRE,
                     'aContacteAssurance' => false,
                     'requerant' => $this->getReference('requerant-raquel', Usager::class),
                     'dateSoumission' => new \DateTime('-30 seconds'),
@@ -94,7 +94,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierAFinaliser2 = $this->creerDossier(
             $this->getReference('requerant-saint-malo', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOC,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => false,
@@ -122,7 +122,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setTestEligibilite(
                 $this->getReference('test-eligibilite-melun', TestEligibilite::class)
             )
-            ->setQualiteRequerant(QualiteRequerant::BAI);
+            ->setQualiteRequerant(RapportAuLogement::BAI);
 
         $dossierAAttribuer->setHistoriqueEtats([
             (new EtatDossier())
@@ -152,7 +152,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierAInstruire = $this->creerDossier(
             $this->getReference('requerant-melun', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::BAI,
+                'rapportAuLogement' => RapportAuLogement::BAI,
                 'estVise' => true,
             ],
             new \DateTimeImmutable('-18 days'),
@@ -175,7 +175,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setTestEligibilite(
                 $this->getReference('test-eligibilite-ray-keran', TestEligibilite::class)
             )
-            ->setQualiteRequerant(QualiteRequerant::LOC);
+            ->setQualiteRequerant(RapportAuLogement::LOC);
 
         $dossierEnInstruction->setHistoriqueEtats([
             (new EtatDossier())
@@ -201,7 +201,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierRejetASigner = $this->creerDossier(
             $this->getReference('requerant-saint-malo', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::PRO,
+                'rapportAuLogement' => RapportAuLogement::PRO,
                 'estVise' => true,
             ],
             new \DateTimeImmutable('-35 days'),
@@ -216,7 +216,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierPropositionASigner = $this->creerDossier(
             $this->getReference('requerant-aix-en-provence', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOC,
                 'estVise' => false,
                 'estHebergeant' => true,
             ],
@@ -232,7 +232,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierAVerifier = $this->creerDossier(
             $this->getReference('requerant-melun', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOC,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => true,
@@ -250,7 +250,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierArreteASigner = $this->creerDossier(
             $this->getReference('requerant-saint-malo', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::BAI,
+                'rapportAuLogement' => RapportAuLogement::BAI,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => true,
@@ -267,7 +267,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierATransmettre = $this->creerDossier(
             $this->getReference('requerant-ancenis', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::BAI,
+                'rapportAuLogement' => RapportAuLogement::BAI,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => true,
@@ -284,7 +284,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossierEnAttenteIndemnisation = $this->creerDossier(
             $this->getReference('requerant-istres', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOC,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => true,
