@@ -40,7 +40,7 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     protected ?string $sub = null;
 
     #[ORM\Column(type: 'boolean')]
-    protected $estVerifieCourriel = false;
+    protected bool $estVerifieCourriel = false;
 
     #[Groups(['user:read', 'dossier:lecture'])]
     #[ORM\Column(length: 180)]
@@ -72,12 +72,9 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     protected ?Adresse $adresse;
 
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
-    protected ?PersonnePhysique $personnePhysique;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
-    protected ?PersonneMorale $personneMorale;
+    #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    protected Personne $personne;
 
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $navigation = null;
