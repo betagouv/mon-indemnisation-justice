@@ -10,4 +10,10 @@ export class PersonneMorale {
   delegataires?: Personne[];
   gestionnaires?: Personne[];
   adresse: Adresse;
+  paysNaissance: never;
+  communeNaissance: never;
+
+  get estPersonneMorale(): boolean {
+    return true;
+  }
 }
