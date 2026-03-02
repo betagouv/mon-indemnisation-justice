@@ -13,9 +13,7 @@ use MonIndemnisationJustice\Event\Listener\DossierEntitylistener;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\SerializedName;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ApiResource(
     operations: [
@@ -44,6 +42,9 @@ class Dossier
     #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $reference = null;
+
+    #[ORM\Column(length: 64, enumType: DossierType::class)]
+    protected DossierType $type;
 
     #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
     #[ORM\ManyToOne(targetEntity: Usager::class, cascade: ['persist'], inversedBy: 'dossiers')]
@@ -91,54 +92,13 @@ class Dossier
     protected Collection $documents;
     protected ?array $documentsParType = null;
 
-    #[Groups(['agent:detail', 'requerant:detail'])]
-    #[ORM\OneToOne(targetEntity: TestEligibilite::class, inversedBy: 'dossier', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    protected ?TestEligibilite $testEligibilite = null;
-
-    #[Groups(['agent:detail'])]
-    #[ORM\OneToOne(targetEntity: DeclarationFDOBrisPorte::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'declaration_id', nullable: true, onDelete: 'SET NULL')]
-    protected ?DeclarationFDOBrisPorte $declarationFDO = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
-    protected ?QualiteRequerant $qualiteRequerant = null;
-
-    #[Groups(['dossier:patch', 'dossier:lecture', 'agent:detail', 'requerant:detail'])]
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    protected ?string $descriptionRequerant;
-
-    #[Groups(['agent:detail'])]
-    #[ORM\Column(length: 2, nullable: true, enumType: TypeInstitutionSecuritePublique::class)]
-    protected ?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique = null;
-
-    #[Groups(['agent:liste', 'agent:detail'])]
-    #[ORM\Column(length: 20, nullable: true, enumType: TypeAttestation::class)]
-    protected ?TypeAttestation $typeAttestation = null;
+    #[ORM\OneToOne(targetEntity: BrisPorte::class, inversedBy: 'dossier')]
+    #[ORM\JoinColumn(name: 'bris_porte_id', nullable: true)]
+    protected ?BrisPorte $brisPorte = null;
 
     #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'agent:liste', 'requerant:detail'])]
-    #[ORM\ManyToOne(cascade: ['persist', 'remove'], inversedBy: 'brisPortes')]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    private ?Adresse $adresse;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateOperationPJ = null;
-
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail'])]
-    #[SerializedName('estPorteBlindee')]
-    #[ORM\Column(options: ['default' => false])]
-    private bool $isPorteBlindee = false;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $precisionRequerant = null;
 
     public function __construct()
     {
@@ -511,9 +471,16 @@ class Dossier
         return $this;
     }
 
-    public function getType(): PrejudiceType
+    public function getType(): DossierType
     {
-        return PrejudiceType::BRIS_PORTE;
+        return $this->type;
+    }
+
+    public function setType(DossierType $type): Dossier
+    {
+        $this->type = $type;
+
+        return $this;
     }
 
     public function getMotifCloture(): ?string
@@ -524,18 +491,6 @@ class Dossier
     public function getExplicationCloture(): ?string
     {
         return $this->getEtatDossier()->getElementContexte('explication');
-    }
-
-    public function getNumeroPV(): ?string
-    {
-        return $this->numeroPV;
-    }
-
-    public function setNumeroPV(?string $numeroPV): self
-    {
-        $this->numeroPV = $numeroPV;
-
-        return $this;
     }
 
     #[Groups('agent:liste')]
@@ -654,12 +609,12 @@ class Dossier
         return $this;
     }
 
-    public function getQualiteRequerant(): ?QualiteRequerant
+    public function getQualiteRequerant(): ?RapportAuLogement
     {
         return $this->qualiteRequerant;
     }
 
-    public function setQualiteRequerant(?QualiteRequerant $qualiteRequerant): static
+    public function setQualiteRequerant(?RapportAuLogement $qualiteRequerant): static
     {
         $this->qualiteRequerant = $qualiteRequerant;
 
@@ -676,11 +631,6 @@ class Dossier
         $this->descriptionRequerant = $descriptionRequerant;
 
         return $this;
-    }
-
-    public function getTypeAttestation(): ?TypeAttestation
-    {
-        return $this->typeAttestation;
     }
 
     public function recalculerMetaDonnees(): void
@@ -717,7 +667,7 @@ class Dossier
             $document = $this->getDocumentParType($type);
         }
 
-        return $document ?? (new Document())->setType($type)->ajouterAuDossier($this);
+        return $document ?? new Document()->setType($type)->ajouterAuDossier($this);
     }
 
     /**
@@ -741,5 +691,10 @@ class Dossier
             ->findFirst(
                 fn (int $index, EtatDossier $e) => $etat === $e->getEtat()
             )?->getDate();
+    }
+
+    public static function brisDePorte(): Dossier
+    {
+        return new self()->setType(DossierType::BRIS_PORTE);
     }
 }
