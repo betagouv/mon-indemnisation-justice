@@ -23,25 +23,14 @@ class GestionnaireBrouillon
     ) {
     }
 
-    public function initierDepuis(mixed $source, ?Usager $requerant = null, ?Agent $agent = null): Brouillon
-    {
-        $type = BrouillonType::detecterDepuisSource($source);
-
-        if (!$type) {
-            throw new \Exception("Impossible de determiner le type de brouillon associé à un object de type '".get_class($source)."'");
-        }
-
-        return $this->initier($type, $requerant, $this->normalizer->normalize($source));
-    }
-
     /**
      * Initier un brouillon de type $type.
      */
-    public function initier(BrouillonType $type, ?Usager $requerant = null, ?Agent $agent = null, ?array $donnees = []): Brouillon
+    public function initier(BrouillonType $type, ?Usager $usager = null, ?Agent $agent = null, ?array $donnees = []): Brouillon
     {
         $brouillon = new Brouillon()
             ->setType($type)
-            ->setRequerant($requerant)
+            ->setRequerant($usager)
             ->setAgent($agent)
             ->setDonnees($donnees);
 
