@@ -23,7 +23,7 @@ class InitierBrouillonEndpoint
         /** @var Usager $requerant */
         $requerant = $security->getUser();
 
-        $this->gestionnaireBrouillon->initier(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE, requerant: $requerant);
+        $this->gestionnaireBrouillon->initier(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE, usager: $requerant);
 
         return new JsonResponse(
             '',
