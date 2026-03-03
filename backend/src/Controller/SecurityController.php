@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\TooManyLoginAttemptsAuthenticationException;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
@@ -108,6 +109,8 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('app_logout');
     }
 
+    #[Route('/agent/connexion', name: 'agent_securite_connexion', methods: ['GET'])]
+    #[IsGranted('PUBLIC_ACCESS')]
     #[Route('/connexion/agent', name: 'securite_agent_connexion', methods: ['GET', 'POST'])]
     public function connexionProConnect(Request $request, #[Autowire(service: 'oidc_client_pro_connect')] OidcClient $proConnectOidcClient): Response
     {
