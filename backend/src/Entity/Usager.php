@@ -63,8 +63,12 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'usager', cascade: ['remove'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    /** @var Collection<Dossier> */
+    /** @var Collection<Brouillon> */
     protected Collection $dossiers;
+
+    #[ORM\OneToMany(targetEntity: Brouillon::class, mappedBy: 'usager', cascade: ['remove'])]
+    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    protected Collection $brouillons;
 
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
@@ -273,6 +277,13 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function setPersonnePhysique(PersonnePhysique $personnePhysique): Usager
+    {
+        $this->setPersonne($personnePhysique->getPersonne());
+
+        return $this;
+    }
+
     public function getDernierDossier(): ?Dossier
     {
         return $this->dossiers->isEmpty() ? null : $this->dossiers->last();
@@ -284,6 +295,11 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     public function getDossiers(): array|Collection
     {
         return $this->dossiers;
+    }
+
+    public function getBrouillons(): Collection
+    {
+        return $this->brouillons;
     }
 
     public function nbDossiersEnAttente(): int

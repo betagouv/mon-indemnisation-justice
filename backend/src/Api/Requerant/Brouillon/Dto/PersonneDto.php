@@ -11,8 +11,6 @@ class PersonneDto
     public ?string $nom;
     public ?string $nomNaissance;
     public ?string $prenom;
-    /** @var string[] */
-    public ?array $prenoms;
     public ?string $courriel;
     public ?string $telephone;
 }
