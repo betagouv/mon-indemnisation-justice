@@ -21,9 +21,9 @@ class Brouillon
     #[ORM\Column(type: 'string', nullable: false, enumType: BrouillonType::class)]
     protected BrouillonType $type;
 
-    #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
+    #[ORM\ManyToOne(targetEntity: Usager::class, cascade: [], inversedBy: 'brouillons')]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
-    protected ?Usager $requerant = null;
+    protected ?Usager $usager = null;
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
@@ -103,5 +103,12 @@ class Brouillon
         $this->donnees = $donnees;
 
         return $this;
+    }
+
+    public static function brisDePorte(array $donnees): self
+    {
+        return new self()
+            ->setType(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE)
+            ->setDonnees($donnees);
     }
 }
