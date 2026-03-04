@@ -8,10 +8,7 @@ export interface DossierManagerInterface {
   aDossier(reference: string): Promise<boolean>;
   getDossier(reference: string): Promise<Dossier | undefined>;
 
-  modifier(
-    reference: string,
-    modifications: Partial<Dossier>,
-  ): void;
+  modifier(reference: string, modifications: Partial<Dossier>): void;
 
   enregistrer(
     reference: string,
@@ -56,10 +53,7 @@ export class InMemoryDossierManager implements DossierManagerInterface {
     return Promise.resolve(this.dossiers.get(reference));
   }
 
-  modifier(
-    reference: string,
-    modifications: Partial<Dossier>,
-  ): void {
+  modifier(reference: string, modifications: Partial<Dossier>): void {
     if (!this.dossiers.has(reference)) {
       throw new Error(`Aucun dossier de référence ${reference}`);
     }
@@ -73,41 +67,33 @@ export class InMemoryDossierManager implements DossierManagerInterface {
     );
   }
 
-  async enregistrer(reference: string, modifications: Partial<Dossier>): Promise<Dossier> {
-    const reponse = await fetch(`/api/requerant/brouillon/bris-de-porte/${reference}/amender`, {
-      method: "PATCH",
-      headers: {
-        Accept: "application/json",
+  async enregistrer(
+    reference: string,
+    modifications: Partial<Dossier>,
+  ): Promise<Dossier> {
+    const reponse = await fetch(
+      `/api/requerant/brouillon/bris-de-porte/${reference}/amender`,
+      {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+        },
+        body: JSON.stringify(modifications),
       },
-      body: JSON.stringify(modifications)
-    });
+    );
 
     const data = await reponse.json();
 
-    this.dossiers.set(
-      reference,
-      plainToInstance(
-        Dossier,
-        data,
-      ),
-    );
+    this.dossiers.set(reference, plainToInstance(Dossier, data));
 
     return this.dossiers.get(reference) as Dossier;
   }
 
-  mesDemandes(): Promise<DossierApercu[]> {
-    return Promise.resolve(
-      this.dossiers
-        .values()
-        .map((d) => {
-          const apercu = new DossierApercu();
+  async mesDemandes(): Promise<DossierApercu[]> {
+    const reponse = await fetch("/api/requerant/mes-demandes");
 
-          apercu.etatActuel = d.etatActuel;
-          apercu.reference = d.reference;
+    const data = await reponse.json();
 
-          return apercu;
-        })
-        .toArray(),
-    );
+    return plainToInstance(DossierApercu, data as any[]);
   }
 }
