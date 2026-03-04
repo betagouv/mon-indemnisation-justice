@@ -285,75 +285,137 @@
 
     <section class="fr-my-6w">
         <div class="fr-container">
-            <h3>Comment utiliser notre service en ligne ?</h3>
+            <h3 id="comment-utiliser-notre-service">Comment utiliser notre service en ligne ?</h3>
 
-            <h5>Vous avez reçu un email d’invitation à la suite de la déclaration des forces de l'ordre ?</h5>
+            <p>Vous souhaitez déposer une demande d'indemnisation ? Quelle est votre situation parmi les cas suivants
+                ?</p>
 
-            <p>
-                Les forces de l’ordre ont déjà déclaré le bris de porte au ministère de la Justice et initié votre
-                dossier.
-            </p>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button type="button" class="fr-accordion__btn" aria-expanded="false"
+                            aria-controls="cas-1-invitation">
+                        Cas n°1 : vous avez reçu un email d’invitation à la suite de la déclaration des forces de
+                        l'ordre
+                    </button>
+                </h3>
+                <div class="fr-collapse" id="cas-1-invitation">
+                    <p>
+                        Les forces de l’ordre ont déjà déclaré le bris de porte au ministère de la Justice et initié
+                        votre
+                        dossier.
+                    </p>
 
-            <p>
-                Accédez à notre service en ligne via le mail d’invitation et complétez votre dossier en joignant les
-                pièces demandées.
-            </p>
+                    <p>
+                        Accédez à notre service en ligne via le mail d’invitation et complétez votre dossier en joignant
+                        les
+                        pièces demandées.
+                    </p>
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button type="button" class="fr-accordion__btn" aria-expanded="false"
+                            aria-controls="cas-2-avis-intervention">
+                        Cas n°2 : Vous avez reçu un avis d'intervention à la suite de l'opération des forces de l'ordre
+                    </button>
+                </h3>
+                <div class="fr-collapse" id="cas-2-avis-intervention">
 
-            <h5>Vous avez reçu un avis d'intervention à la suite de l'opération des forces de l'ordre?</h5>
+                    <p>
+                        Nous vous invitons à vous rendre au commissariat ou à la brigade de gendarmerie dont les
+                        coordonnées
+                        figurent sur l'avis d'intervention afin qu'un agent déclare le bris de porte et initie votre
+                        dossier
+                        sur
+                        Mon Indemnisation Justice.
+                    </p>
 
-            <p>
-                Nous vous invitons à vous rendre au commissariat ou à la brigade de gendarmerie dont les coordonnées
-                figurent sur l'avis d'intervention afin qu'un agent déclare le bris de porte et initie votre dossier sur
-                Mon Indemnisation Justice.
-            </p>
+                    <p>
+                        Vous recevrez ensuite un email avec un lien pour vous connecter à notre service en ligne et
+                        compléter
+                        votre dossier en joignant les pièces demandées.
+                    </p>
 
-            <p>
-                Vous recevrez ensuite un email avec un lien pour vous connecter à notre service en ligne et compléter
-                votre dossier en joignant les pièces demandées.
-            </p>
+                    <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-my-2w ">
+                        <li>
+                            <a class="fr-btn" role="link" target="_blank"
+                               href="https://www.masecurite.interieur.gouv.fr/fr/trouver-un-commissariat-une-gendarmerie">
+                                Localiser le commissariat / la gendarmerie
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button type="button" class="fr-accordion__btn" aria-expanded="false"
+                            aria-controls="cas-3-attestation-papier">
+                        Cas n°3 : vous avez reçu une attestation papier des forces de l'ordre
+                    </button>
+                </h3>
+                <div class="fr-collapse" id="cas-3-attestation-papier">
+                    <p>Assurez vous que l’agent a complété l’espace qui lui est réservé : date et adresse de l’opération
+                        de
+                        police judiciaire, nom et coordonnées du service enquêteur, numéro de parquet ou
+                        d’instruction.</p>
+
+                    <div class="fr-alert fr-alert--warning fr-alert--sm">
+
+                        <p>
+                            Avant de déposer votre dossier en ligne, vous devez tester votre éligibilité à
+                            l'indemnisation.
+                        </p>
+                    </div>
+
+                    <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-my-2w ">
+                        <li>
+                            <a class="fr-btn" role="link" href="{{ url('bris_porte_tester_eligibilite') }}">
+                                Tester mon éligibilité à l'indemnisation
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button type="button" class="fr-accordion__btn" aria-expanded="false"
+                            aria-controls="cas-4-pas-attestation">
+                        Cas n°4 : vous n'avez pas reçu d'attestation ni d'avis d'intervention de la part des forces de
+                        l'ordre
+                    </button>
+                </h3>
+                <div class="fr-collapse" id="cas-4-pas-attestation">
+
+                    <p>Rendez vous à votre commissariat ou à votre brigade de gendarmerie afin qu'un agent déclare le
+                        bris
+                        de
+                        porte et initie votre dossier sur Mon Indemnisation Justice.</p>
+                    <p>Vous recevrez ensuite un email avec un lien pour vous connecter à notre service en ligne et
+                        compléter
+                        votre dossier en joignant les pièces demandées.</p>
 
 
-            <h5>Vous avez reçu une attestation papier des forces de l'ordre ?</h5>
+                    <ul class="fr-btns-group fr-btns-group--inline fr-btns-group--right fr-my-2w ">
+                        <li>
+                            <a class="fr-btn" role="link" target="_blank"
+                               href="https://www.masecurite.interieur.gouv.fr/fr/trouver-un-commissariat-une-gendarmerie">
+                                Localiser le commissariat / la gendarmerie
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </section>
 
-            <p>Assurez vous que l’agent a complété l’espace qui lui est réservé : date et adresse de l’opération de
-                police judiciaire, nom et coordonnées du service enquêteur, numéro de parquet ou d’instruction.</p>
-
-            <div class="fr-alert fr-alert--warning fr-alert--sm">
-
-                <p>
-                    Avant de déposer votre dossier en ligne, vous devez tester votre éligibilité à
-                    l'indemnisation.
-                </p>
-            </div>
-
-            <ul class="fr-btns-group fr-btns-group--inline fr-my-2w ">
-                <li>
-                    <a class="fr-btn" role="link" href="{{ url('bris_porte_tester_eligibilite') }}">
-                        Tester mon éligibilité à l'indemnisation
-                    </a>
-                </li>
-            </ul>
-
-            <h5>Vous n'avez pas reçu d'attestation ni d'avis d'intervention de la part des forces de l'ordre ?</h5>
-
-            <p>Rendez vous à votre commissariat ou à votre brigade de gendarmerie afin qu'un agent déclare le bris de
-                porte et initie votre dossier sur Mon Indemnisation Justice.</p>
-            <p>Vous recevrez ensuite un email avec un lien pour vous connecter à notre service en ligne et compléter
-                votre dossier en joignant les pièces demandées.</p>
-
-
-            <ul class="fr-btns-group fr-btns-group--inline fr-my-2w ">
-                <li>
-                    <a class="fr-btn" role="link" target="_blank"
-                       href="https://www.masecurite.interieur.gouv.fr/fr/trouver-un-commissariat-une-gendarmerie">
-                        Localiser le commissariat / la gendarmerie
-                    </a>
-                </li>
-            </ul>
+    <section class="fr-my-6w">
+        <div class="fr-container">
+            <h3 id="conditions-d-indemnisation">Conditions d'indemnisation</h3>
 
             <div class="fr-callout fr-icon-info-line">
-                <h3 class="fr-callout__title">Conditions d’indemnisation</h3>
-                <p>Deux conditions cumulatives d’indemnisation :</p>
+                <h3 class="fr-callout__title fr-text--lg">Deux conditions cumulatives d’indemnisation :</h3>
                 <ul class="fr-my-2w">
                     <li>
                         Vous ne devez pas être concerné(e) par l'opération de police judiciaire <b>ET</b>
@@ -369,21 +431,20 @@
                     Seuls les frais de remise en état à l’identique de la porte endommagée seront remboursés.
                 </p>
             </div>
-
-
         </div>
     </section>
 
+
     <section class="fr-my-6w pr-section-comment-reagir">
         <div class="fr-container">
-            <h3>Les bons réflexes</h3>
+            <h3 id="les-bons-reflexes">Les bons réflexes</h3>
 
             <div class="pr-comment-reagir--reflexes">
 
                 <ol>
 
                     <li>Rendez vous à votre commissariat ou gendarmerie</li>
-                    <li>Connectez-vous via le lien reçu par mail de *Mon Indemnisation Justice*</li>
+                    <li>Connectez-vous via le lien reçu par mail de <b>Mon Indemnisation Justice</b></li>
                     <li>Identifiez-vous via FranceConnect ou créez votre compte</li>
                     <li>Téléversez les documents demandés :
                         <ul>
@@ -392,7 +453,8 @@
                             <li>Une attestation de non prise en charge du sinistre par votre bailleur (si vous êtes
                                 locataire)
                             </li>
-                            <li>Une copie recto-verso de votre pièce d’identité ou un extrait Kbis de moins de 3 mois
+                            <li>Une copie recto-verso de votre pièce d’identité ou un extrait Kbis de moins de 3
+                                mois
                                 (si vous êtes une personne morale)
                             </li>
                             <li>La facture acquittée attestant de la réalité des travaux de remise en état à
@@ -413,15 +475,22 @@
                 <div class="fr-alert fr-alert--warning fr-alert--sm">
 
                     <p>
-                        <b>Si un serrurier est intervenu à la demande des forces de l’ordre pour sécuriser votre
-                            logement, vous n’avez pas à régler sa facture.</b>
+                        Si un serrurier est intervenu à la demande des forces de l’ordre pour sécuriser votre
+                            logement, vous n’avez pas à régler sa facture.
+                    </p>
+                    <p>
+                        Il vous appartient ensuite de choisir l'artisan qui va procéder à la réparation ou au remplacement de
+                        votre porte.
                     </p>
                 </div>
+
+
             </div>
 
 
         </div>
     </section>
+
 
     {#
     <section class="fr-my-6w pr-section-comment-faire">
@@ -516,7 +585,8 @@
 
     <section class="fr-my-6w">
         <div class="fr-container">
-            <h3>Comment se passe le traitement de votre demande d'indemnisation ?</h3>
+            <h3 id="comment-se-passe-le-traitement">Comment se passe le traitement de votre demande d'indemnisation
+                ?</h3>
 
             <p>Vous avez constitué et déposé votre dossier ? Quelles sont les prochaines étapes ?</p>
 
@@ -545,7 +615,8 @@
                     <h6>Proposition d’indemnisation</h6>
 
                     <p>
-                        Une proposition d’indemnisation vous est adressée si vous remplissez les conditions requises.
+                        Une proposition d’indemnisation vous est adressée si vous remplissez les conditions
+                        requises.
                     </p>
                 </div>
 

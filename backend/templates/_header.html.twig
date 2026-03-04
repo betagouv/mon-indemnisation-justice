@@ -54,7 +54,8 @@
                 <div class="fr-header__menu-links">
                     <ul class="fr-btns-group">
                         <li>
-                            <a class="fr-btn fr-m-0 fr-icon-lock-line" href="{{ path('securite_connexion') }}">Se connecter</a>
+                            <a class="fr-btn fr-m-0 fr-icon-lock-line" href="{{ path('securite_connexion') }}">Se
+                                connecter</a>
                         </li>
                     </ul>
                 </div>
@@ -63,11 +64,44 @@
                 <nav id="fr-header-main-navigation fr-container" class="fr-nav" role="navigation"
                      aria-label="Menu principal" data-fr-js-navigation="true">
                     <ul class="fr-nav__list">
-                        <li class="fr-nav__item" data-fr-js-navigation-item="true">
-                            <a href="{{ url('public_faq') }}" class="fr-nav__link">Foire aux questions</a>
+
+                        <li class="fr-nav__item">
+                            <button id="navigation-1" aria-expanded="false" aria-controls="navigation-accueil" {% if app.current_route == 'app_homepage' %}aria-current="true" {% endif%}type="button" class="fr-nav__btn">
+                                Accueil
+                            </button>
+                            <div class="fr-collapse fr-menu" id="navigation-accueil">
+                                <ul class="fr-menu__list">
+                                    <li>
+                                        <a type="link" href="/#comment-utiliser-notre-service" class="fr-nav__link">
+                                            Comment utiliser notre service en ligne ?
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a type="link" href="/#conditions-d-indemnisation"
+                                           class="fr-nav__link">
+                                            Les conditions d'indemnisation
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a type="link" href="/#les-bons-reflexes"
+                                           class="fr-nav__link">
+                                            Les bons réflexes
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a type="link" href="/#comment-se-passe-le-traitement" class="fr-nav__link">
+                                            Comment se passe le traitement de votre demande d'indemnisation ?
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
+
                         <li class="fr-nav__item" data-fr-js-navigation-item="true">
-                            <a href="{{ path('app_qui_sommes_nous') }}" class="fr-nav__link">Qui sommes-nous ?</a>
+                            <a href="{{ url('public_faq') }}" class="fr-nav__link" {% if app.current_route == 'public_faq' %}aria-current="true" {% endif%}>Foire aux questions</a>
+                        </li>
+                        <li class="fr-nav__item" data-fr-js-navigation-item="true" >
+                            <a href="{{ path('app_qui_sommes_nous') }}" class="fr-nav__link" {% if app.current_route == 'app_qui_sommes_nous' %}aria-current="true" {% endif%}>Qui sommes-nous ?</a>
                         </li>
                     </ul>
                 </nav>
