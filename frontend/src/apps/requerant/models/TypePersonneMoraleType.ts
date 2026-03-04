@@ -15,7 +15,7 @@ const PersonneMoraleTypeLibelles: { [key in TypePersonneMoraleType]: string } =
     ASSOCIATION: "Association",
     ASSUREUR: "Assureur",
     BAILLEUR_SOCIAL: "Bailleur social",
-    COLLECTIVITE: "Association territoriale",
+    COLLECTIVITE: "Collectivité territoriale",
     PROFESSIONNEL: "Professionnel du secteur privé",
     SCI: "SCI",
     SYNDIC: "Syndic",
