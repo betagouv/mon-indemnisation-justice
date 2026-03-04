@@ -57,7 +57,7 @@ const EspaceRequerant = () => {
         quickAccessItems={[
           {
             iconId: "fr-icon-account-circle-line",
-            text: `${contexte.usager.prenom} ${contexte.usager.nom.toUpperCase()}`,
+            text: `${contexte.usager.personne?.prenom} ${contexte.usager.personne?.nom.toUpperCase()}`,
             linkProps: {
               href: "",
             },
