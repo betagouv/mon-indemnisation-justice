@@ -1,12 +1,14 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Agent;
+namespace MonIndemnisationJustice\Api\Requerant\Moi;
 
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\AgentOutput;
+use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\UsagerDto;
 use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
@@ -15,31 +17,36 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 /**
  * Route API qui retourne les informations sur l'agent actuellement connecté.
  */
-#[Route('/api/agent/fip6/moi', name: 'api_agent_fip6_moi', methods: ['GET'])]
+#[Route('/api/requerant/moi', name: 'api_requerant_moi', methods: ['GET'])]
 class MoiEndpoint
 {
     public function __construct(
-        protected readonly Security $security,
         private readonly NormalizerInterface $normalizer,
         private readonly ObjectMapperInterface $mapper,
     ) {
     }
 
-    public function __invoke(): Response
+    public function __invoke(Security $security): Response
     {
+        $usager = $security->getUser();
+
+        if (!$usager instanceof Usager) {
+            throw new UnauthorizedHttpException('Service réservé aux requérants');
+        }
+
         /** @var Agent $agentBetaIncarnant */
         $agentBetaIncarnant = null;
-        if ($this->security->getToken() instanceof SwitchUserToken) {
-            $agentBetaIncarnant = $this->security->getToken()->getOriginalToken()->getUser();
+        if ($security->getToken() instanceof SwitchUserToken) {
+            $agentBetaIncarnant = $security->getToken()->getOriginalToken()->getUser();
         }
 
         return new JsonResponse(
             $this->normalizer->normalize(
                 [
-                    'agent' => $this->mapper->map($this->security->getUser(), AgentOutput::class),
+                    'usager' => $this->mapper->map($security->getUser(), UsagerDto::class),
                     'incarnePar' => $agentBetaIncarnant?->getNomComplet(true),
                 ],
-                'json'
+                'json',
             )
         );
     }
