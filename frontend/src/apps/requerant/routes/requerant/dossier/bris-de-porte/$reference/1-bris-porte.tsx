@@ -10,7 +10,7 @@ import {
   getRapportAuLogementLibelle,
   RapportAuLogement,
   TypePersonneMoraleType,
-  TypesPersonneMorale,
+  TypesPersonneMorale
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
@@ -20,12 +20,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  notFound,
-  NotFoundRouteProps,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React from "react";
 
@@ -277,7 +272,7 @@ function Etape1BrisPorte() {
                             selector={(state) => state.values.rapportAuLogement}
                             children={(rapportAuLogement) => (
                               <>
-                                {rapportAuLogement === "AUT" && (
+                                {rapportAuLogement === "AUTRE" && (
                                   <div className="fr-col-lg-6 fr-col-12">
                                     <formulaire.Field
                                       name="descriptionRapportAuLogement"
