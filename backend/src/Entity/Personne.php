@@ -3,10 +3,12 @@
 namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity()]
 #[ORM\Table(name: 'personnes')]
+#[Map(target: PersonneDto::class)]
 class Personne
 {
     #[ORM\Id]
