@@ -59,6 +59,9 @@ class PersonnePhysique
     #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code')]
     protected ?GeoPays $paysNaissance = null;
 
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    protected ?string $villeNaissance = null;
+
     #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'requerantPersonnePhysique')]
     /** @var Collection<Dossier> */
     protected Collection $dossiers;
@@ -177,6 +180,18 @@ class PersonnePhysique
     public function getCodePostalNaissanceCode(): ?string
     {
         return $this->codePostalNaissance?->getCodePostal();
+    }
+
+    public function getVilleNaissance(): ?string
+    {
+        return $this->villeNaissance;
+    }
+
+    public function setVilleNaissance(?string $villeNaissance): PersonnePhysique
+    {
+        $this->villeNaissance = $villeNaissance;
+
+        return $this;
     }
 
     public function getPaysNaissance(): ?GeoPays
