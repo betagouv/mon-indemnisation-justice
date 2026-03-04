@@ -11,7 +11,7 @@ import {
   DeclarationFDOBrisPorte,
 } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import { container } from "@/apps/agent/fdo/_init/_container.ts";
-import { router } from "@/apps/agent/fdo/_init/_router.ts";
+import { RouteurFDO } from "@/apps/agent/fdo/_init/_router.ts";
 import { useInjection } from "inversify-react";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
@@ -102,7 +102,7 @@ function Page() {
   }: { declaration: DeclarationFDOBrisPorte; reference: string } =
     Route.useLoaderData();
 
-  const naviguer = useNavigate<typeof router>({
+  const naviguer = useNavigate<typeof RouteurFDO>({
     from: Route.fullPath,
   });
 

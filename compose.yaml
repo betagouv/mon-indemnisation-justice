@@ -132,6 +132,7 @@ services:
     hostname: vite
     stdin_open: true
     tty: true
+    restart: always
     # En attendant un accès à Harbor
     build:
       context: .

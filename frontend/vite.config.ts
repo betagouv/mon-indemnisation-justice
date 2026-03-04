@@ -1,12 +1,12 @@
 /// <reference types="./types" />
 
-import * as path from "path";
-import { defineConfig, loadEnv, UserConfig } from "vite";
-import { fileURLToPath, URL } from "node:url";
-import symfonyPlugin from "vite-plugin-symfony";
-import { default as react } from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import legacy from "@vitejs/plugin-legacy";
+import { default as react } from "@vitejs/plugin-react";
+import { fileURLToPath, URL } from "node:url";
+import * as path from "path";
+import { defineConfig, loadEnv, UserConfig } from "vite";
+import symfonyPlugin from "vite-plugin-symfony";
 
 export default defineConfig(({ mode }: UserConfig): UserConfig => {
   process.env = mode ? { ...process.env, ...loadEnv(mode, process.cwd()) } : {};
@@ -21,14 +21,23 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
     plugins: [
       tanstackRouter({
         target: "react",
+        autoCodeSplitting: true,
         virtualRouteConfig: "./src/apps/agent/fip6/routeur/routeur-fip6.ts",
         generatedRouteTree: "./src/apps/agent/fip6/routeur/routeur-fip6.gen.ts",
         routesDirectory: "./src/apps/agent/fip6/routes/",
       }),
       tanstackRouter({
         target: "react",
+        autoCodeSplitting: true,
         generatedRouteTree: "./src/apps/agent/fdo/routeur/routeur-fdo.gen.ts",
         routesDirectory: "./src/apps/agent/fdo/routes/",
+      }),
+      tanstackRouter({
+        target: "react",
+        autoCodeSplitting: true,
+        generatedRouteTree:
+          "./src/apps/requerant/routeur/routeur-requerant.gen.ts",
+        routesDirectory: "./src/apps/requerant/routes/",
       }),
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
@@ -65,10 +74,9 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
               "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
             "requerant/dossier/creation_de_compte":
               "./src/apps/requerant/dossier/creation_de_compte.tsx",
-            "requerant/dossier/deposer_mon_dossier":
-              "./src/apps/requerant/dossier/deposer_mon_dossier.tsx",
             "requerant/dossier/consulter_la_decision":
               "./src/apps/requerant/dossier/consulter_la_decision.tsx",
+            requerant: "./src/apps/requerant/requerant.tsx",
             // Espace agent
             "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
             "agent/dossiers/recherche":
