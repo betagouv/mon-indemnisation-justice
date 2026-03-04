@@ -8,9 +8,9 @@ import {
   Dossier,
   getLibelleTypePersonneMorale,
   getRapportAuLogementLibelle,
-  PersonneMoraleType,
-  PersonneMoraleTypes,
   RapportAuLogement,
+  TypePersonneMoraleType,
+  TypesPersonneMorale
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
@@ -20,12 +20,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  notFound,
-  NotFoundRouteProps,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React from "react";
 
@@ -85,10 +80,13 @@ function Etape1BrisPorte() {
     listeners: {
       onChangeDebounceMs: 500,
       onChange: async ({ formApi }) => {
-        await dossierManager.modifierDossier(reference, formApi.state.values);
+        dossierManager.modifier(reference, formApi.state.values);
       },
     },
     onSubmit: async ({ value, formApi }) => {
+      // Enregistrer le brouillon...
+      await dossierManager.enregistrer(reference, formApi.state.values);
+      // ...et passer à l'étape suivante
       await naviguer({
         to: "../2-infos-requerant",
         search: {} as any,
@@ -179,7 +177,7 @@ function Etape1BrisPorte() {
                   <div className="fr-col-12">
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <formulaire.Field
-                        name="requerant.typePersonneMorale"
+                        name="requerant.personneMorale.typePersonneMorale"
                         children={(field) => {
                           return (
                             <FormSelect
@@ -192,15 +190,16 @@ function Etape1BrisPorte() {
                                 defaultValue: field.state.value ?? "",
                                 onChange: (event) =>
                                   field.setValue(
-                                    event.target.value as PersonneMoraleType,
+                                    event.target
+                                      .value as TypePersonneMoraleType,
                                   ),
                               }}
                             >
                               <option value="" disabled hidden>
                                 Selectionnez une option
                               </option>
-                              {PersonneMoraleTypes.map(
-                                (type: PersonneMoraleType) => (
+                              {TypesPersonneMorale.map(
+                                (type: TypePersonneMoraleType) => (
                                   <option key={type} value={type}>
                                     {getLibelleTypePersonneMorale(type)}
                                   </option>
@@ -219,7 +218,8 @@ function Etape1BrisPorte() {
                     estPersonneMorale:
                       state.values.requerant?.estPersonneMorale,
                     typePersonneMorale:
-                      state.values.requerant?.typePersonneMorale,
+                      state.values.requerant?.personneMorale
+                        ?.typePersonneMorale,
                   })}
                   children={({ estPersonneMorale, typePersonneMorale }) => (
                     <>
@@ -272,7 +272,7 @@ function Etape1BrisPorte() {
                             selector={(state) => state.values.rapportAuLogement}
                             children={(rapportAuLogement) => (
                               <>
-                                {rapportAuLogement === "AUT" && (
+                                {rapportAuLogement === "AUTRE" && (
                                   <div className="fr-col-lg-6 fr-col-12">
                                     <formulaire.Field
                                       name="descriptionRapportAuLogement"
@@ -376,7 +376,7 @@ function Etape1BrisPorte() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-12 fr-col-lg-6">
                         <formulaire.Field
-                          name="requerant.adresse.ligne1"
+                          name="requerant.personnePhysique.adresse.ligne1"
                           children={(field) => {
                             return (
                               <FormInput
@@ -413,7 +413,7 @@ function Etape1BrisPorte() {
                       </div>
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="adresse.commune.codePostal"
+                          name="adresse.codePostal"
                           children={(field) => {
                             return (
                               <>
@@ -434,7 +434,7 @@ function Etape1BrisPorte() {
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="adresse.commune.nom"
+                          name="adresse.commune"
                           children={(field) => {
                             return (
                               <>

@@ -103,11 +103,14 @@ function Etape2InfosRequerant() {
     defaultValues: dossier as Partial<Dossier>,
     listeners: {
       onChangeDebounceMs: 500,
-      onChange: async ({ formApi, fieldApi }) => {
-        await dossierManager.modifierDossier(reference, formApi.state.values);
+      onChange: ({ formApi, fieldApi }) => {
+        dossierManager.modifier(reference, formApi.state.values);
       },
     },
     onSubmit: async ({ value, formApi }) => {
+      // Enregistrer le brouillon...
+      await dossierManager.enregistrer(reference, formApi.state.values);
+      // ...et passer à l'étape suivante
       await naviguer({
         to: "../3-pieces-jointes",
         search: {} as any,
@@ -170,7 +173,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.siren"
+                          name="requerant.personneMorale.siren"
                           children={(field) => {
                             return (
                               <FormInput
@@ -192,7 +195,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.adresse.ligne1"
+                          name="requerant.personnePhysique.adresse.ligne1"
                           children={(field) => {
                             return (
                               <FormInput
@@ -213,7 +216,7 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.adresse.ligne2"
+                          name="requerant.personnePhysique.adresse.ligne2"
                           children={(field) => {
                             return (
                               <FormInput
@@ -233,7 +236,7 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="requerant.adresse.commune.codePostal"
+                          name="requerant.personnePhysique.adresse.codePostal"
                           children={(field) => {
                             return (
                               <FormInput
@@ -251,7 +254,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="requerant.adresse.commune.nom"
+                          name="requerant.personnePhysique.adresse.commune"
                           children={(field) => {
                             return (
                               <FormInput
@@ -280,7 +283,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="requerant.civiliteRepresentantLegal"
+                          name="requerant.personneMorale.representantLegal.civilite"
                           children={(field) => {
                             return (
                               <SelectionCivilite
@@ -297,7 +300,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="requerant.prenomRepresentantLegal"
+                          name="requerant.personneMorale.representantLegal.prenom"
                           children={(field) => {
                             return (
                               <FormInput
@@ -317,7 +320,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.nomNaissanceRepresentantLegal"
+                          name="requerant.personneMorale.representantLegal.nomNaissance"
                           children={(field) => {
                             return (
                               <FormInput
@@ -335,7 +338,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.nomRepresentantLegal"
+                          name="requerant.personneMorale.representantLegal.nom"
                           children={(field) => {
                             return (
                               <FormInput
@@ -353,7 +356,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.courrielRepresentantLegal"
+                          name="requerant.personneMorale.representantLegal.courriel"
                           children={(field) => {
                             return (
                               <FormInput
@@ -371,7 +374,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.telephoneRepresentantLegal"
+                          name="requerant.personneMorale.representantLegal.telephone"
                           children={(field) => {
                             return (
                               <FormInput
@@ -399,7 +402,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="requerant.civilite"
+                          name="requerant.personnePhysique.civilite"
                           children={(field) => {
                             return (
                               <SelectionCivilite
@@ -415,7 +418,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-7 fr-col-8">
                         <formulaire.Field
-                          name="requerant.prenom"
+                          name="requerant.personnePhysique.prenom"
                           children={(field) => {
                             return (
                               <FormInput
@@ -435,7 +438,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-3 fr-col-6">
                         <formulaire.Field
-                          name="requerant.nom"
+                          name="requerant.personnePhysique.nom"
                           children={(field) => {
                             return (
                               <FormInput
@@ -454,7 +457,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-4 fr-col-6">
                         <formulaire.Field
-                          name="requerant.nomNaissance"
+                          name="requerant.personnePhysique.nomNaissance"
                           children={(field) => {
                             return (
                               <FormInput
@@ -473,7 +476,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-4 fr-col-6">
                         <formulaire.Field
-                          name="requerant.courriel"
+                          name="requerant.personnePhysique.courriel"
                           children={(field) => {
                             return (
                               <FormInput
@@ -493,7 +496,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-4 fr-col-6">
                         <formulaire.Field
-                          name="requerant.telephone"
+                          name="requerant.personnePhysique.telephone"
                           children={(field) => {
                             return (
                               <FormInput
@@ -517,7 +520,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-3 fr-col-6">
                         <formulaire.Field
-                          name="requerant.dateNaissance"
+                          name="requerant.personnePhysique.dateNaissance"
                           children={(field) => {
                             return (
                               <FormInput
@@ -539,7 +542,7 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-3 fr-col-6">
                         <formulaire.Field
-                          name="requerant.paysNaissance"
+                          name="requerant.personnePhysique.paysNaissance"
                           children={(field) => {
                             return (
                               <PaysSelect
@@ -564,7 +567,7 @@ function Etape2InfosRequerant() {
                           <>
                             {!paysNaissance || paysNaissance?.estFrance() ? (
                               <formulaire.Field
-                                name="requerant.communeNaissance"
+                                name="requerant.personnePhysique.communeNaissance"
                                 children={(field) => {
                                   return (
                                     <>
@@ -624,7 +627,7 @@ function Etape2InfosRequerant() {
                               />
                             ) : (
                               <formulaire.Field
-                                name="requerant.villeNaissance"
+                                name="requerant.personnePhysique.villeNaissance"
                                 children={(field) => {
                                   return (
                                     <div className="fr-col-lg-6 fr-col-12">
@@ -648,7 +651,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.adresse.ligne1"
+                          name="requerant.personnePhysique.adresse.ligne1"
                           children={(field) => {
                             return (
                               <FormSuggestedInput<Adresse>
@@ -661,7 +664,7 @@ function Etape2InfosRequerant() {
                                 }}
                                 onSelectionne={(suggestion: Adresse) => {
                                   field.form.setFieldValue(
-                                    "requerant.adresse",
+                                    "requerant.personnePhysique.adresse",
                                     suggestion,
                                   );
                                   return suggestion.ligne1;
@@ -690,7 +693,7 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.adresse.ligne2"
+                          name="requerant.personnePhysique.adresse.ligne2"
                           children={(field) => {
                             return (
                               <FormInput
@@ -710,7 +713,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="requerant.adresse.commune.codePostal"
+                          name="requerant.personnePhysique.adresse.codePostal"
                           children={(field) => {
                             return (
                               <FormInput
@@ -730,7 +733,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="requerant.adresse.commune.nom"
+                          name="requerant.personnePhysique.adresse.commune"
                           children={(field) => {
                             return (
                               <FormInput

@@ -2,10 +2,12 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\PersonneMoraleRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ORM\Table(name: 'personnes_morales')]
 #[ORM\Entity(repositoryClass: PersonneMoraleRepository::class)]
 class PersonneMorale
 {
@@ -15,8 +17,9 @@ class PersonneMorale
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(mappedBy: 'personneMorale', cascade: ['persist', 'remove'])]
-    private ?Requerant $compte = null;
+    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'requerantPersonneMorale')]
+    /** @var Collection<Dossier> */
+    protected Collection $dossiers;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -26,14 +29,13 @@ class PersonneMorale
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
 
+    #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'representant_legal_id', referencedColumnName: 'id')]
+    protected ?Personne $representantLegal;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCompte(): ?Requerant
-    {
-        return $this->compte;
     }
 
     public function getSirenSiret(): ?string

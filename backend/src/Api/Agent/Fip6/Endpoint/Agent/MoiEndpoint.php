@@ -6,6 +6,7 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Output\AgentOutput;
 use MonIndemnisationJustice\Entity\Agent;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
@@ -21,9 +22,10 @@ class MoiEndpoint
         protected readonly Security $security,
         private readonly NormalizerInterface $normalizer,
         private readonly ObjectMapperInterface $mapper,
-    ) {}
+    ) {
+    }
 
-    public function __invoke()
+    public function __invoke(): Response
     {
         /** @var Agent $agentBetaIncarnant */
         $agentBetaIncarnant = null;

@@ -6,16 +6,16 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use MonIndemnisationJustice\Entity\GeoDepartement;
-use MonIndemnisationJustice\Entity\QualiteRequerant;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\Usager;
 
 class TestEligibiliteFixture extends Fixture implements DependentFixtureInterface
 {
     public function getDependencies(): array
     {
         return [
-            RequerantFixture::class,
+            UsagerFixture::class,
         ];
     }
 
@@ -27,18 +27,18 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
                 // 'description' => 'Porte fracturée tôt ce matin',
                 'estVise' => false,
                 'estHebergeant' => false,
-                'rapportAuLogement' => QualiteRequerant::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOCATAIRE,
                 'aContacteAssurance' => false,
                 'aContacteBailleur' => false,
-                'requerant' => $this->getReference('requerant-ray', Requerant::class),
+                'requerant' => $this->getReference('requerant-ray', Usager::class),
                 'dateSoumission' => new \DateTime('-7 days'),
             ]),
             'melun' => TestEligibilite::fromArray([
                 'estVise' => false,
                 'estHebergeant' => false,
-                'rapportAuLogement' => QualiteRequerant::BAI,
+                'rapportAuLogement' => RapportAuLogement::BAILLEUR,
                 'aContacteAssurance' => false,
-                'requerant' => $this->getReference('requerant-melun', Requerant::class),
+                'requerant' => $this->getReference('requerant-melun', Usager::class),
                 'dateSoumission' => \DateTime::createFromFormat('Y-m-d H:i:s', '2025-04-10 13:51:27'),
             ]),
         ] as $reference => $testEligibilite) {

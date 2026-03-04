@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Tests\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * @covers \MonIndemnisationJustice\Controller\SecurityController
- *
  * @internal
  */
+#[CoversClass(\MonIndemnisationJustice\Controller\SecurityController::class)]
 class SecurityControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
@@ -33,7 +33,7 @@ class SecurityControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', '/connexion');
 
         $form = $crawler->selectButton('Je me connecte à mon espace')->form([
-            '_username' => 'raquel.randt@courriel.fr',
+            '_username' => 'wossewodda-3728@yopmail.com',
             '_password' => 'P4ssword',
         ]);
         $this->client->submit($form);
@@ -49,7 +49,7 @@ class SecurityControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', '/connexion');
 
         $form = $crawler->selectButton('Je me connecte à mon espace')->form([
-            '_username' => 'raquel.randt@courriel.fr',
+            '_username' => 'wossewodda-3728@yopmail.com',
             '_password' => 'motDePasseInv4lide',
         ]);
         $this->client->submit($form);

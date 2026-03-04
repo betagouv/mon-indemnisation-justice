@@ -4,9 +4,9 @@ namespace MonIndemnisationJustice\Controller\Agent;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
@@ -37,7 +37,8 @@ class DossierController extends AgentController
         protected readonly DocumentManager $documentManager,
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
-    ) {}
+    ) {
+    }
 
     #[Route('/', name: 'app_agent_redacteur_accueil')]
     public function index(): Response
@@ -60,7 +61,7 @@ class DossierController extends AgentController
     }
 
     #[Route('/dossier/{id}', name: 'agent_redacteur_consulter_dossier')]
-    public function consulterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, NormalizerInterface $normalizer): Response
+    public function consulterDossier(#[MapEntity(id: 'id')] Dossier $dossier, NormalizerInterface $normalizer): Response
     {
         return $this->render('agent/dossier/consulter_bris_porte.html.twig', [
             'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
@@ -83,7 +84,7 @@ class DossierController extends AgentController
         ]
     )]
     #[Route('/dossier/{id}/cloturer.json', name: 'agent_redacteur_marquer_doublon_papier_dossier', methods: ['POST'])]
-    public function cloturer(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function cloturer(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
         $dossier->changerStatut(EtatDossierType::DOSSIER_CLOTURE, agent: $this->getAgent(), contexte: [
             'motif' => $request->getPayload()->get('motif'),
@@ -98,7 +99,7 @@ class DossierController extends AgentController
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
     #[Route('/dossier/{id}/decider.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
-    public function decider(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, NormalizerInterface $normalizer): Response
+    public function decider(#[MapEntity(id: 'id')] Dossier $dossier, Request $request, NormalizerInterface $normalizer): Response
     {
         $agent = $this->getAgent();
 
@@ -119,7 +120,7 @@ class DossierController extends AgentController
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/proposition-indemnisation/changer-montant.json', name: 'agent_redacteur_editer_courrier_dossier', methods: ['PUT'])]
-    public function changerMontantIndemnisation(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function changerMontantIndemnisation(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
         if (!$dossier->getEtatDossier()->estASigner()) {
             return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
@@ -143,7 +144,7 @@ class DossierController extends AgentController
     #[Route('/dossier/{id}/arrete-paiement/valider.json', name: 'agent_redacteur_valider_arrete_paiement_dossier', methods: ['POST'])]
     public function validerArretePaiementDossier(
         #[MapEntity(id: 'id')]
-        BrisPorte $dossier,
+        Dossier $dossier,
     ): Response {
         if (null === $dossier->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT)) {
             return new JsonResponse([], Response::HTTP_NOT_FOUND);
@@ -159,7 +160,7 @@ class DossierController extends AgentController
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/signer-courrier.json', name: 'agent_redacteur_signer_courrier_dossier', methods: ['POST'])]
-    public function signerCourrierDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request, EventDispatcherInterface $eventDispatcher): Response
+    public function signerCourrierDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request, EventDispatcherInterface $eventDispatcher): Response
     {
         if (!$dossier->getEtatDossier()->estASigner()) {
             return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
@@ -187,7 +188,7 @@ class DossierController extends AgentController
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/arrete-paiement/signer.json', name: 'agent_redacteur_signer_arrete_paiement', methods: ['POST'])]
-    public function signerArretePaiement(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function signerArretePaiement(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
         if (EtatDossierType::DOSSIER_OK_VERIFIE !== $dossier->getEtatDossier()->getEtat()) {
             return new JsonResponse(['error' => "Cet dossier n'est pas à signer"], Response::HTTP_BAD_REQUEST);
@@ -212,7 +213,7 @@ class DossierController extends AgentController
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/envoyer.json', name: 'agent_redacteur_envoyer_dossier', methods: ['POST'])]
-    public function envoyer(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function envoyer(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
         $agent = $this->getAgent();
 
@@ -275,7 +276,7 @@ class DossierController extends AgentController
     }
 
     #[Route('/dossier/{id}/annoter.json', name: 'agent_redacteur_annoter_dossier', methods: ['POST'])]
-    public function annoterDossier(#[MapEntity(id: 'id')] BrisPorte $dossier, Request $request): Response
+    public function annoterDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
         $dossier->setNotes($request->getPayload()->get('notes'));
         $this->dossierRepository->save($dossier);
@@ -290,7 +291,7 @@ class DossierController extends AgentController
         ]
     )]
     #[Route('/{id}/documents-a-transmettre', name: 'agent_redacteur_documents_a_transmettre_dossier', methods: ['GET'])]
-    public function download(#[MapEntity] BrisPorte $dossier, Request $request): Response
+    public function download(#[MapEntity] Dossier $dossier, Request $request): Response
     {
         $zip = new \ZipArchive();
         $zipName = tempnam(sys_get_temp_dir(), "zip_dossier_{$dossier->getId()}");
@@ -310,8 +311,7 @@ class DossierController extends AgentController
             'Content-Type' => 'application/zip',
             'Content-Length' => filesize($zipName),
         ]))
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"))
-        ;
+            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
     }
 
     #[IsGranted(
@@ -321,7 +321,7 @@ class DossierController extends AgentController
         ]
     )]
     #[Route('/dossier/{id}/envoyer-pour-indemnisation.json', name: 'agent_redacteur_envoyer_pour_indemnisation_dossier', methods: ['POST'])]
-    public function envoyerPourIndemnisationDossier(#[MapEntity] BrisPorte $dossier): Response
+    public function envoyerPourIndemnisationDossier(#[MapEntity] Dossier $dossier): Response
     {
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT, agent: $this->getAgent());
         $this->dossierRepository->save($dossier);
@@ -338,7 +338,7 @@ class DossierController extends AgentController
         ]
     )]
     #[Route('/dossier/{id}/marquer-indemnise.json', name: 'agent_redacteur_marquer_indemnise_dossier', methods: ['POST'])]
-    public function marquerIndemniseDossier(#[MapEntity] BrisPorte $dossier): Response
+    public function marquerIndemniseDossier(#[MapEntity] Dossier $dossier): Response
     {
         $dossier->changerStatut(EtatDossierType::DOSSIER_OK_INDEMNISE, agent: $this->getAgent());
         $this->dossierRepository->save($dossier);
