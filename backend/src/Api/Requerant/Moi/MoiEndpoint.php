@@ -12,12 +12,14 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * Route API qui retourne les informations sur l'agent actuellement connecté.
  */
 #[Route('/api/requerant/moi', name: 'api_requerant_moi', methods: ['GET'])]
+#[IsGranted(Usager::ROLE_REQUERANT, message: 'Accès réservé aux requérants', statusCode: Response::HTTP_FORBIDDEN)]
 class MoiEndpoint
 {
     public function __construct(

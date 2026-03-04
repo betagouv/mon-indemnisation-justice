@@ -63,12 +63,16 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        $finder = new Finder();
-        $finder->files()->in($this->dossierTeleversement);
+        if ($this->filesystem->exists($this->dossierTeleversement)) {
+            $finder = new Finder();
 
-        if ($finder->hasResults()) {
-            foreach ($finder as $fichier) {
-                $this->filesystem->remove($fichier);
+
+            $finder->files()->in($this->dossierTeleversement);
+
+            if ($finder->hasResults()) {
+                foreach ($finder as $fichier) {
+                    $this->filesystem->remove($fichier);
+                }
             }
         }
 
