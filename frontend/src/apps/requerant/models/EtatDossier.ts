@@ -1,3 +1,4 @@
+import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import { Transform } from "class-transformer";
 
 /**
@@ -87,9 +88,7 @@ export class EtatDossier {
     toPlainOnly: true,
   })
   etat: EtatDossierType;
-  @Transform(({ value }: { value: any }) =>
-    typeof value == "string" ? new Date(value) : undefined,
-  )
+  @DateTransform()
   date: Date;
   agent?: { id: number; nom: string };
   requerant?: { id: number; nom: string };
