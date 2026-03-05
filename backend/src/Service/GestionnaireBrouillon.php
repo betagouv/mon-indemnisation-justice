@@ -8,6 +8,8 @@ use MonIndemnisationJustice\Entity\Brouillon;
 use MonIndemnisationJustice\Entity\BrouillonType;
 use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -30,7 +32,7 @@ class GestionnaireBrouillon
     {
         $brouillon = new Brouillon()
             ->setType($type)
-            ->setRequerant($usager)
+            ->setUsager($usager)
             ->setAgent($agent)
             ->setDonnees($donnees);
 
@@ -83,12 +85,14 @@ class GestionnaireBrouillon
      *
      * @return object|mixed|string
      *
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     * @throws ExceptionInterface
      */
     public function extraireEntiteTravail(Brouillon $brouillon): object
     {
+        $donnees = $brouillon->getDonnees(false);
+
         return $this->denormalizer->denormalize(
-            $brouillon->getDonnees(),
+            $donnees,
             $brouillon->getType()->getClasseTravail(),
             context: [AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => false]
         );
@@ -99,7 +103,7 @@ class GestionnaireBrouillon
      *
      * @return object|mixed|string
      *
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     * @throws ExceptionInterface
      */
     public function publier(Brouillon $brouillon): object
     {
