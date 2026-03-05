@@ -5,12 +5,16 @@ import { PersonneMorale } from "./PersonneMorale";
 import { PersonnePhysique } from "./PersonnePhysique";
 import { type RapportAuLogement } from "./RapportAuLogement";
 import { Usager } from "./Usager";
+import { PieceJointe } from "./PieceJointe.ts";
 
 export abstract class BaseDossier {
   // Référence du dossier ou id du brouillon
   reference: string;
   @Type(() => EtatDossier)
   etatActuel: EtatDossier;
+  @Transform(({ value }: { value: any }) =>
+    typeof value == "string" ? new Date(value) : undefined,
+  )
   dateDepot?: Date;
 
   get estAccepte(): boolean {
@@ -49,6 +53,7 @@ export class Dossier extends BaseDossier {
   dateOperation: Date;
   description: string;
   estPorteBlindee: boolean;
+  piecesJointes: PieceJointe[];
 
   get estPersonneMorale(): boolean {
     return "raisonSociale" in this.requerant;

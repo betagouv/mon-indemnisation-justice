@@ -87,6 +87,9 @@ export class EtatDossier {
     toPlainOnly: true,
   })
   etat: EtatDossierType;
+  @Transform(({ value }: { value: any }) =>
+    typeof value == "string" ? new Date(value) : undefined,
+  )
   date: Date;
   agent?: { id: number; nom: string };
   requerant?: { id: number; nom: string };

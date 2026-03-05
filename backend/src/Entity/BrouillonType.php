@@ -17,8 +17,6 @@ enum BrouillonType: string
 
     /**
      * Retourne la classe utilisée pour modéliser le brouillon en cours.
-     *
-     * @return string
      */
     public function getClasseTravail(): string
     {
@@ -29,13 +27,38 @@ enum BrouillonType: string
 
     /**
      * Retourne la classe utilisée pour engendrer une entité lors de la publication.
-     *
-     * @return string
      */
     public function getClassePublication(): string
     {
         return match ($this) {
             self::BROUILLON_DOSSIER_BRIS_PORTE => DossierDto::class,
+        };
+    }
+
+    /**
+     * Permet d'enrichir les données brutes avec les informations du contexte du brouillon.
+     *
+     * @return string
+     */
+    public function enrichirDonneesAvecContexteBrouillon(array $donnees, Brouillon $brouillon): array
+    {
+        return match ($this) {
+            self::BROUILLON_DOSSIER_BRIS_PORTE => array_merge(
+                $donnees,
+                [
+                    'reference' => $brouillon->getId()->toString(),
+                    'usager' => $brouillon->getUsager()->getId(),
+                    'etatActuel' => [
+                        'etat' => 'A_COMPLETER',
+                        'date' => $brouillon->getDateCreation()->format('Y-m-d'),
+                        'requerant' => [
+                            'id' => $brouillon->getUsager()->getId(),
+                            'nom' => $brouillon->getUsager()->getPersonne()->getNomCourant(capital: true),
+                        ],
+                    ],
+                ]
+            ),
+            default => $donnees,
         };
     }
 }
