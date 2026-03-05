@@ -59,14 +59,14 @@ class Brouillon
         return $this;
     }
 
-    public function getRequerant(): ?Usager
+    public function getUsager(): ?Usager
     {
-        return $this->requerant;
+        return $this->usager;
     }
 
-    public function setRequerant(?Usager $requerant): self
+    public function setUsager(?Usager $usager): Brouillon
     {
-        $this->requerant = $requerant;
+        $this->usager = $usager;
 
         return $this;
     }
@@ -88,8 +88,13 @@ class Brouillon
         return $this->dateCreation;
     }
 
-    public function getDonnees(): array
+    public function getDonnees(bool $brutes = true): array
     {
+        if (!$brutes) {
+            // Si les données sont demandées enrichies du contexte de brouillon
+            return $this->type->enrichirDonneesAvecContexteBrouillon($this->donnees, $this);
+        }
+
         return $this->donnees;
     }
 
