@@ -95,7 +95,8 @@ SELECT
                 'commune', a.localite
             ))
         END,
-        'dateOperation', bp.date_operation,
+        'dateOperation', CASE WHEN bp.date_operation IS NOT NULL THEN TO_CHAR(bp.date_operation, 'YYYY-MM-DD') END,
+        'description', d.description,
         'idTestEligibilite', bp.test_eligibilite_id,
         'idDeclarationFDO', bp.declaration_id,
         'estPorteBlindee', bp.est_porte_blindee,
