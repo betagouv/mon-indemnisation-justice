@@ -1,11 +1,12 @@
-import { Transform, Type } from "class-transformer";
+import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
+import { Exclude, Expose, Transform, Type } from "class-transformer";
 import { Adresse } from "./Adresse";
 import { EtatDossier } from "./EtatDossier";
 import { PersonneMorale } from "./PersonneMorale";
 import { PersonnePhysique } from "./PersonnePhysique";
+import { PieceJointe } from "./PieceJointe.ts";
 import { type RapportAuLogement } from "./RapportAuLogement";
 import { Usager } from "./Usager";
-import { PieceJointe } from "./PieceJointe.ts";
 
 export abstract class BaseDossier {
   // Référence du dossier ou id du brouillon
@@ -41,23 +42,33 @@ export abstract class BaseDossier {
 export class Dossier extends BaseDossier {
   // '`Usager` = `Requerant`
   initiePar: Usager;
+  @DateTransform()
+  dateCreation: Date;
+
+  @Transform(({ obj }: { obj: any }) => {
+    return "personnePhysique" in obj
+      ? false
+      : "personneMorale" in obj || undefined;
+  })
+  @Expose({ toClassOnly: true })
+  @Exclude({ toPlainOnly: true })
+  estPersonneMorale?: boolean;
+
   // '`Requerant` = `PersonnePhysique` | `PersonneMorale`
-  requerant: PersonnePhysique | PersonneMorale;
+  @Type(() => PersonnePhysique)
+  personnePhysique?: PersonnePhysique;
+  @Type(() => PersonneMorale)
+  personneMorale?: PersonneMorale;
+  @Type(() => Adresse)
   adresse: Adresse = new Adresse();
   // `RapportAuLogement` = `QualiteRequerant`
   rapportAuLogement: RapportAuLogement;
   descriptionRapportAuLogement?: string;
-  @Transform(({ value }: { value: any }) =>
-    typeof value == "string" ? new Date(value) : undefined,
-  )
+  @DateTransform(true)
   dateOperation: Date;
   description: string;
   estPorteBlindee: boolean;
   piecesJointes: PieceJointe[];
-
-  get estPersonneMorale(): boolean {
-    return "raisonSociale" in this.requerant;
-  }
 }
 
 export class DossierApercu extends BaseDossier {}
