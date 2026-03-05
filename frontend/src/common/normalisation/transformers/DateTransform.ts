@@ -1,9 +1,11 @@
+import { dateChiffre } from "@/common/services/date.ts";
 import { Transform } from "class-transformer";
 
 export default function DateTransform(dateOnly: boolean = false) {
   const toPlain = Transform(
-    ({ value }: { value: Date | undefined }) =>
-      dateOnly ? value?.toISOString().split("T").at(0) : value?.toISOString(),
+    ({ value }: { value: Date | undefined }) => {
+      return dateOnly ? dateChiffre(value) : value?.toISOString();
+    },
     {
       toPlainOnly: true,
     },

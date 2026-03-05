@@ -1,7 +1,10 @@
 import { Dossier } from "@/apps/requerant/models";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
-import { dateIlYaNJours } from "@/common/services/date.ts";
-import { plainToClassFromExist, plainToInstance } from "class-transformer";
+import {
+  instanceToPlain,
+  plainToClassFromExist,
+  plainToInstance,
+} from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
 export interface DossierManagerInterface {
@@ -30,27 +33,36 @@ export namespace DossierManagerInterface {
  */
 export class InMemoryDossierManager implements DossierManagerInterface {
   protected dossiers: Map<string, Dossier>;
-  constructor() {
-    this.dossiers = new Map(
-      [
-        plainToInstance(Dossier, {
-          reference: "b636a358-2118-4345-93d6-2633cd59f34a",
-          etatActuel: {
-            date: dateIlYaNJours(3),
-            etat: "A_COMPLETER",
-            requerant: { id: 123, nom: "Jean MICHON" },
-          },
-        }),
-      ].map((d) => [d.reference, d]),
-    );
+  constructor() {}
+
+  protected async chargerDossiers(): Promise<void> {
+    if (!this.dossiers) {
+      const reponse = await fetch("/api/requerant/mes-demandes", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const data = await reponse.json();
+      const dossiers = plainToInstance(Dossier, data as any[]);
+
+      this.dossiers = new Map(
+        dossiers.map((dossier) => [dossier.reference, dossier]),
+      );
+    }
   }
 
-  aDossier(reference: string): Promise<boolean> {
-    return Promise.resolve(this.dossiers.has(reference));
+  async aDossier(reference: string): Promise<boolean> {
+    await this.chargerDossiers();
+
+    return this.dossiers.has(reference);
   }
 
-  getDossier(reference: string): Promise<Dossier | undefined> {
-    return Promise.resolve(this.dossiers.get(reference));
+  async getDossier(reference: string): Promise<Dossier | undefined> {
+    await this.chargerDossiers();
+
+    return this.dossiers.get(reference);
   }
 
   modifier(reference: string, modifications: Partial<Dossier>): void {
@@ -78,7 +90,7 @@ export class InMemoryDossierManager implements DossierManagerInterface {
         headers: {
           Accept: "application/json",
         },
-        body: JSON.stringify(modifications),
+        body: JSON.stringify(instanceToPlain(modifications)),
       },
     );
 
