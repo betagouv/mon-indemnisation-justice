@@ -100,7 +100,7 @@ class Brouillon
 
     public function patchDonnees(array $donnees): self
     {
-        return $this->setDonnees(array_merge_recursive($this->donnees ?? [], $donnees));
+        return $this->setDonnees(array_replace_recursive($this->donnees ?? [], $donnees));
     }
 
     public function setDonnees(?array $donnees = []): self
