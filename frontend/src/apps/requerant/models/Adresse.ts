@@ -1,6 +1,6 @@
 export class Adresse {
   ligne1: string;
-  ligne2: string;
+  ligne2?: string;
   codePostal: string;
   commune: string;
 

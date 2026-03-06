@@ -38,7 +38,7 @@ export const RegExpInput = ({
               }
             : undefined,
           onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => {
-            if (e.key !== "Backspace") {
+            if (e.key !== "Backspace" && e.key !== "Tab") {
               const target: HTMLInputElement = e.target as HTMLInputElement;
 
               // Projection de la valeur du champ après la modification

@@ -8,6 +8,8 @@ import { Pays } from "./Pays.ts";
 export class PersonnePhysique {
   @Type(() => Personne)
   personne: Personne;
+  prenom2?: string;
+  prenom3?: string;
   // L'adresse de résidence
   @Type(() => Adresse)
   adresse: Adresse = new Adresse();
@@ -20,7 +22,7 @@ export class PersonnePhysique {
    *  françaises disposent d'un code INSEE
    */
   @Type(() => Commune)
-  communeNaissance?: Commune;
+  communeNaissance: Commune;
   // Pour les autres usagers, le nom de la ville de naissance doit être renseigné
   villeNaissance?: string;
   //raisonSociale: unknown;
