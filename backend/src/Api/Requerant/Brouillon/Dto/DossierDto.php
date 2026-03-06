@@ -34,6 +34,7 @@ class DossierDto
 
     public ?Uuid $idDeclarationFDO;
     public ?bool $estPorteBlindee;
+    public ?string $description;
     /** @var PieceJointeDto[] */
     public array $piecesJointes;
 }
