@@ -12,6 +12,7 @@ export abstract class BaseDossier {
   // Référence du dossier ou id du brouillon
   reference: string;
   @Type(() => EtatDossier)
+  @Exclude({ toPlainOnly: true })
   etatActuel: EtatDossier;
   @Transform(({ value }: { value: any }) =>
     typeof value == "string" ? new Date(value) : undefined,
@@ -45,14 +46,15 @@ export class Dossier extends BaseDossier {
   @DateTransform()
   dateCreation: Date;
 
-  @Transform(({ obj }: { obj: any }) => {
+  @Transform(({ obj, value }: { obj: any; value: any }) => {
+    if (value !== undefined) return value;
+
     return "personnePhysique" in obj
       ? false
       : "personneMorale" in obj || undefined;
   })
   @Expose({ toClassOnly: true })
-  @Exclude({ toPlainOnly: true })
-  estPersonneMorale?: boolean;
+  estPersonneMorale: boolean;
 
   // '`Requerant` = `PersonnePhysique` | `PersonneMorale`
   @Type(() => PersonnePhysique)
@@ -66,8 +68,8 @@ export class Dossier extends BaseDossier {
   descriptionRapportAuLogement?: string;
   @DateTransform(true)
   dateOperation: Date;
-  description: string;
-  estPorteBlindee: boolean;
+  description?: string;
+  estPorteBlindee: boolean = false;
   piecesJointes: PieceJointe[];
 }
 

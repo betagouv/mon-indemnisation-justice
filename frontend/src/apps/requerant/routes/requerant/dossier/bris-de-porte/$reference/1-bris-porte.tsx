@@ -1,10 +1,16 @@
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
 import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
+import { FormSuggestedInput } from "@/apps/requerant/composants/champs/form/FormSuggeestedInput.tsx";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container";
 import {
+  extraireDonneesBrisDeporte,
+  SchemaValidationBrisPorte,
+} from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
+import {
+  Adresse,
   Dossier,
   getLibelleTypePersonneMorale,
   getRapportAuLogementLibelle,
@@ -13,6 +19,7 @@ import {
   TypesPersonneMorale,
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
+import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader.tsx";
@@ -72,25 +79,28 @@ function Etape1BrisPorte() {
     DossierManagerInterface.$,
   );
 
+  const adresseManager = useInjection<AdresseManagerInterface>(
+    AdresseManagerInterface.$,
+  );
+
   // Récupérer la référence depuis le paramètre de la route
   const { reference, dossier }: { reference: string; dossier: Dossier } =
     Route.useLoaderData();
 
   const formulaire = useForm({
-    canSubmitWhenInvalid: true,
     validators: {
-      //onSubmit: TODO définir le schéma de validation,
+      onSubmit: SchemaValidationBrisPorte,
     },
-    defaultValues: dossier as Partial<Dossier>,
+    defaultValues: extraireDonneesBrisDeporte(dossier),
     listeners: {
       onChangeDebounceMs: 500,
-      onChange: async ({ formApi }) => {
+      onChange: async ({ fieldApi, formApi }) => {
         dossierManager.modifier(reference, formApi.state.values);
       },
     },
     onSubmit: async ({ value, formApi }) => {
       // Enregistrer le brouillon...
-      await dossierManager.enregistrer(reference, formApi.state.values);
+      await dossierManager.enregistrer(reference);
       // ...et passer à l'étape suivante
       await naviguer({
         to: "../2-infos-requerant",
@@ -120,7 +130,9 @@ function Etape1BrisPorte() {
           e.preventDefault();
           e.stopPropagation();
           try {
-            await void formulaire.handleSubmit();
+            // Rafraîchir la validation avant la soumission
+            formulaire.validate("submit");
+            await formulaire.handleSubmit();
           } catch (e) {
             console.error(e);
           }
@@ -159,6 +171,7 @@ function Etape1BrisPorte() {
 
                               field.form.setFieldValue(
                                 "rapportAuLogement",
+                                // @ts-ignore
                                 undefined,
                               );
                             },
@@ -174,6 +187,7 @@ function Etape1BrisPorte() {
                               field.setValue(true);
                               field.form.setFieldValue(
                                 "rapportAuLogement",
+                                // @ts-ignore
                                 undefined,
                               );
                             },
@@ -274,6 +288,7 @@ function Etape1BrisPorte() {
                         <FormInput
                           label="Précisez"
                           estRequis={rapportAuLogement === "AUTRE"}
+                          champ={field}
                           nativeInputProps={{
                             onChange: (e) => field.setValue(e.target.value),
                             maxLength: 255,
@@ -305,8 +320,13 @@ function Etape1BrisPorte() {
                           nativeInputProps={{
                             type: "date",
                             defaultValue: dateChiffre(field.state.value),
-                            onChange: (e) =>
-                              field.setValue(new Date(e.target.value)),
+                            onChange: (e) => {
+                              const date = new Date(e.target.value);
+
+                              if (!isNaN(date.getTime())) {
+                                field.setValue(date);
+                              }
+                            },
                           }}
                           estRequis={true}
                           champ={field}
@@ -345,12 +365,31 @@ function Etape1BrisPorte() {
                     name="adresse.ligne1"
                     children={(field) => {
                       return (
-                        <FormInput
+                        <FormSuggestedInput<Adresse>
                           label="Adresse du logement concerné par le bris de porte"
                           nativeInputProps={{
                             maxLength: 255,
                             defaultValue: field.state.value,
-                            onChange: (e) => field.setValue(e.target.value),
+                            onChange: (e) => {
+                              field.setValue(e.target.value);
+                            },
+                          }}
+                          onSelectionne={(suggestion: Adresse) => {
+                            field.form.setFieldValue("adresse", suggestion);
+                            field.form.validateField("adresse", "submit");
+                            return suggestion.ligne1;
+                          }}
+                          rafraichisseur={async (valeur: string) =>
+                            (await adresseManager.suggererAdresse(valeur)).map(
+                              (adresse: Adresse) => ({
+                                libelle: adresse.libelle,
+                                valeur: adresse,
+                              }),
+                            )
+                          }
+                          // Ne rafraichir la liste des suggestions que le lorsque la valeur saisie atteint au moins 5 caractères non blancs
+                          estARafraichir={(valeur: string) => {
+                            return valeur.replaceAll(/\s+/g, "").length >= 5;
                           }}
                           estRequis={true}
                           champ={field}

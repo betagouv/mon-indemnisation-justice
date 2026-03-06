@@ -8,25 +8,19 @@ import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import {
-  Adresse,
-  Civilite,
-  Commune,
-  Dossier,
-  Pays,
-} from "@/apps/requerant/models";
+  extraireDonneesInfosRequerant,
+  SchemaValidationInfosRequerants
+} from "@/apps/requerant/formulaires/brisDePorte/2-infos-requerants.schema.ts";
+import { Adresse, Civilite, Commune, Dossier, Pays } from "@/apps/requerant/models";
 import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader";
+import { dateChiffre } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm, useStore } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  notFound,
-  NotFoundRouteProps,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React, { useEffect, useState } from "react";
 
@@ -81,9 +75,7 @@ function Etape2InfosRequerant() {
     Route.useLoaderData();
 
   const [codePostal, setCodePostal] = useState<string>(
-    (dossier.estPersonneMorale
-      ? dossier.personneMorale?.adresse.codePostal
-      : dossier.personnePhysique?.adresse.codePostal) ?? "",
+    dossier.personnePhysique?.communeNaissance.codePostal ?? "",
   );
   const [listeCommunes, setListeCommunes] = useState<Commune[]>([]);
 
@@ -98,11 +90,10 @@ function Etape2InfosRequerant() {
   };
 
   const formulaire = useForm({
-    canSubmitWhenInvalid: true,
     validators: {
-      //onSubmit: TODO définir le schéma de validation,
+      onSubmit: SchemaValidationInfosRequerants,
     },
-    defaultValues: dossier as Partial<Dossier>,
+    defaultValues: extraireDonneesInfosRequerant(dossier),
     listeners: {
       onChangeDebounceMs: 500,
       onChange: ({ formApi, fieldApi }) => {
@@ -111,7 +102,7 @@ function Etape2InfosRequerant() {
     },
     onSubmit: async ({ value, formApi }) => {
       // Enregistrer le brouillon...
-      await dossierManager.enregistrer(reference, formApi.state.values);
+      await dossierManager.enregistrer(reference);
       // ...et passer à l'étape suivante
       await naviguer({
         to: "../3-pieces-jointes",
@@ -137,7 +128,9 @@ function Etape2InfosRequerant() {
           e.preventDefault();
           e.stopPropagation();
           try {
-            await void formulaire.handleSubmit();
+            // Rafraîchir la validation avant la soumission
+            formulaire.validate("submit");
+            await formulaire.handleSubmit();
           } catch (e) {
             console.error(e);
           }
@@ -416,7 +409,7 @@ function Etape2InfosRequerant() {
                           children={(field) => {
                             return (
                               <SelectionCivilite
-                                civilite={field.state.value}
+                                civilite={field.state.value as Civilite}
                                 onChange={(civilite) =>
                                   field.setValue(civilite)
                                 }
@@ -435,8 +428,31 @@ function Etape2InfosRequerant() {
                                 label="Prénom(s)"
                                 nativeInputProps={{
                                   placeholder: "Prénom(s)",
-                                  onChange: (e) =>
-                                    field.setValue(e.target.value),
+                                  defaultValue:
+                                    [
+                                      field.form.state.values.personnePhysique
+                                        ?.personne.prenom,
+                                      field.form.state.values.personnePhysique
+                                        ?.prenom2,
+                                      field.form.state.values.personnePhysique
+                                        ?.prenom3,
+                                    ]
+                                      .filter(Boolean)
+                                      ?.join(", ") || "",
+                                  onChange: (e) => {
+                                    const prenoms = e.target.value
+                                      .split(",")
+                                      .map((p) => p.trim());
+                                    field.setValue(prenoms.at(0) || "");
+                                    field.form.setFieldValue(
+                                      "personnePhysique.prenom2",
+                                      prenoms.at(1),
+                                    );
+                                    field.form.setFieldValue(
+                                      "personnePhysique.prenom3",
+                                      prenoms.at(2),
+                                    );
+                                  },
                                   maxLength: 255,
                                 }}
                                 champ={field}
@@ -454,6 +470,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Nom d'usage"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -473,6 +490,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Nom de naissance"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -492,6 +510,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Adresse courriel"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   disabled: true,
@@ -513,7 +532,8 @@ function Etape2InfosRequerant() {
                                 label="Téléphone"
                                 nativeInputProps={{
                                   type: "tel",
-                                  pattern: "(0,+){1}[0-9]{8,}",
+                                  //pattern: "[0-9]{7,}",
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.handleChange(e.target.value),
                                 }}
@@ -537,6 +557,7 @@ function Etape2InfosRequerant() {
                                 label="Date de naissance"
                                 nativeInputProps={{
                                   type: "date",
+                                  defaultValue: dateChiffre(field.state.value),
                                   onChange: (e) =>
                                     field.handleChange(
                                       new Date(e.target.value),
@@ -581,11 +602,14 @@ function Etape2InfosRequerant() {
                                     label="Code postal"
                                     disabled={!paysNaissance}
                                     nativeInputProps={{
+                                      defaultValue:
+                                        field.state.value?.codePostal || "",
                                       onChange: async (e) => {
                                         setCodePostal(e.target.value);
                                       },
                                     }}
                                     estRequis={true}
+                                    champ={field}
                                   />
                                 </div>
                                 <div className="fr-col-lg-4 fr-col-8">
@@ -593,16 +617,18 @@ function Etape2InfosRequerant() {
                                     disabled={!listeCommunes.length}
                                     label="Ville de naissance"
                                     nativeSelectProps={{
+                                      value: field.state.value?.id || "",
                                       onChange: (e) => {
                                         const id = parseInt(e.target.value);
 
                                         if (id) {
-                                          field.setValue(
-                                            listeCommunes.find(
-                                              (commune: Commune) =>
-                                                commune.id == id,
-                                            ),
+                                          const commune = listeCommunes.find(
+                                            (commune: Commune) =>
+                                              commune.id == id,
                                           );
+                                          field.setValue(commune);
+                                        } else {
+                                          field.setValue(undefined);
                                         }
                                       },
                                     }}
@@ -697,7 +723,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Complément d'adresse"
                                 nativeInputProps={{
-                                  defaultValue: field.state.value,
+                                  defaultValue: field.state.value || "",
                                   placeholder: "Étage, escalier",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
@@ -780,13 +806,8 @@ function Etape2InfosRequerant() {
               children: "Valider et passer à l'étape suivante",
               nativeButtonProps: {
                 type: "submit",
+                role: "submit",
               },
-              onClick: () =>
-                naviguer({
-                  from: Route.fullPath,
-                  to: "../3-pieces-jointes",
-                  search: {} as any,
-                }),
             },
           ]}
         />
