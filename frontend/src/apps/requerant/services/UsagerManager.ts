@@ -19,11 +19,6 @@ export class APIUsagerManager implements UsagerManagerInterface {
 
     const data = await reponse.json();
 
-    console.dir({
-      incarnePar: data,
-      usager: plainToInstance(Usager, data.usager),
-    });
-
     return {
       incarnePar: data,
       usager: plainToInstance(Usager, data.usager),
