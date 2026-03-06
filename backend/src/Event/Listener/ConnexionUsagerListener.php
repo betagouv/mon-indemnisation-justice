@@ -41,7 +41,8 @@ class ConnexionUsagerListener implements EventSubscriberInterface
                 // ... alors, on initie un nouveau brouillon de dossier lié à ce test d'éligibilité
                 $this->gestionnaireBrouillon->initier(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE, $usager, donnees: [
                     'idTestEligibilite' => $testEligibilite->id,
-                    'requerant' => [
+                    'rapportAuLogement' => $testEligibilite->rapportAuLogement,
+                    'personnePhysique' => [
                         'personne' => [
                             'id' => $usager->getPersonne()->getId(),
                             'civilite' => $usager->getPersonne()->getCivilite(),
@@ -72,7 +73,7 @@ class ConnexionUsagerListener implements EventSubscriberInterface
                         'codePostal' => $declarationFDO->getAdresse()->getCodePostal(),
                         'commune' => $declarationFDO->getAdresse()->getLocalite(),
                     ],
-                    'requerant' => $declarationFDO->getCoordonneesRequerant() ? [
+                    'personnePhysique' => $declarationFDO->getCoordonneesRequerant() ? [
                         'personne' => [
                             'civilite' => $declarationFDO->getCoordonneesRequerant()?->getCivilite(),
                             'nom' => $declarationFDO->getCoordonneesRequerant()?->getNom(),

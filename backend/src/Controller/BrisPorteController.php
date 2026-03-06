@@ -263,7 +263,7 @@ class BrisPorteController extends AbstractController
             ->toRequerant($usager)
             ->subject("Activation de votre compte sur l'application Mon Indemnisation Justice")
             ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
-                'requerant' => $usager,
+                'usager' => $usager,
             ])
             ->send();
 
