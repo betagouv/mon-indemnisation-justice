@@ -85,7 +85,17 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __toString(): string
     {
-        return $this->getPersonnePhysique()->__toString();
+        return $this->personne->__toString();
+    }
+
+    public function getNomCourant(bool $civilite = false, bool $capital = false): string
+    {
+        return $this->personne->getNomCourant($civilite, $capital);
+    }
+
+    public function getNomComplet(): string
+    {
+        return $this->personne->getNomComplet();
     }
 
     #[ORM\PrePersist]

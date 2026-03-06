@@ -1,23 +1,25 @@
 import { Dossier } from "@/apps/requerant/models";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
-import { differentiel, fusion } from "@/common/services";
-import {
-  instanceToInstance,
-  instanceToPlain,
-  plainToInstance,
-} from "class-transformer";
-import { ServiceIdentifier } from "inversify";
+import { differentiel } from "@/common/services";
+import { instanceToInstance, instanceToPlain, plainToClassFromExist, plainToInstance } from "class-transformer";
+import { ServiceIdentifier } from "inversify"; // Source - https://stackoverflow.com/a/61132308
+
+// Source - https://stackoverflow.com/a/61132308
+// Posted by Terry, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-03-09, License - CC BY-SA 4.0
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
 
 export interface DossierManagerInterface {
   aDossier(reference: string): Promise<boolean>;
   getDossier(reference: string): Promise<Dossier | undefined>;
 
-  modifier(reference: string, modifications: Partial<Dossier>): void;
+  modifier(reference: string, modifications: DeepPartial<Dossier>): void;
 
-  enregistrer(
-    reference: string,
-    modifications: Partial<Dossier>,
-  ): Promise<Dossier>;
+  enregistrer(reference: string): Promise<Dossier>;
 
   mesDemandes(): Promise<DossierApercu[]>;
 }
@@ -29,6 +31,7 @@ export namespace DossierManagerInterface {
 }
 
 type EtatSauvegardeDossier = {
+  // Le dossier tel qu'il est en temps réel
   original: Dossier;
   modifie: Dossier;
 };
@@ -57,6 +60,7 @@ export class ApiDossierManager implements DossierManagerInterface {
           dossier.reference,
           {
             original: dossier,
+            // On clone l'objet source pour ne pas également modifier le dossier original
             modifie: instanceToInstance(dossier),
           },
         ]),
@@ -76,33 +80,28 @@ export class ApiDossierManager implements DossierManagerInterface {
     return this.dossiers.get(reference)?.modifie;
   }
 
-  modifier(reference: string, modifications: Partial<Dossier>): void {
+  modifier(reference: string, modifications: DeepPartial<Dossier>): void {
     if (!this.dossiers.has(reference)) {
       throw new Error(`Aucun dossier de référence ${reference}`);
     }
 
-    const { original, ...reste } = this.dossiers.get(
+    let { original, modifie } = this.dossiers.get(
       reference,
     ) as EtatSauvegardeDossier;
 
     this.dossiers.set(reference, {
       original,
-      modifie: plainToInstance(
-        Dossier,
-        fusion(instanceToPlain(original), modifications),
-      ),
+      modifie: plainToClassFromExist(modifie, modifications),
     });
   }
 
-  async enregistrer(
-    reference: string,
-    modifications: Partial<Dossier>,
-  ): Promise<Dossier> {
-    const { original, modifie } = this.dossiers.get(
+  async enregistrer(reference: string): Promise<Dossier> {
+    await this.chargerDossiers();
+
+    let { original, modifie } = this.dossiers.get(
       reference,
     ) as EtatSauvegardeDossier;
 
-    // On calcule l'écart entre la version originale et la version modifiée
     const modificationsEnAttente = differentiel(
       instanceToPlain(original),
       instanceToPlain(modifie),
@@ -121,14 +120,15 @@ export class ApiDossierManager implements DossierManagerInterface {
         },
       );
       const data = await reponse.json();
+      const dossier = plainToInstance(Dossier, data);
 
       this.dossiers.set(reference, {
-        original: plainToInstance(Dossier, data),
-        modifie: plainToInstance(Dossier, data),
+        original: dossier,
+        modifie: instanceToInstance(dossier),
       });
     }
 
-    return this.dossiers.get(reference)?.original as Dossier;
+    return this.dossiers.get(reference)?.modifie as Dossier;
   }
 
   async mesDemandes(): Promise<DossierApercu[]> {
