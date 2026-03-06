@@ -38,7 +38,7 @@ enum BrouillonType: string
     /**
      * Permet d'enrichir les données brutes avec les informations du contexte du brouillon.
      *
-     * @return string
+     * @return array
      */
     public function enrichirDonneesAvecContexteBrouillon(array $donnees, Brouillon $brouillon): array
     {
@@ -58,6 +58,19 @@ enum BrouillonType: string
                     ],
                 ]
             ),
+            default => $donnees,
+        };
+    }
+
+    /**
+     * Permet d'ôter les données de contexte du brouillon avant qu'elles ne soient persistées.
+     *
+     * @return array
+     */
+    public function filtrerDonneesSansContexteBrouillon(array $donnees, Brouillon $brouillon): array
+    {
+        return match ($this) {
+            self::BROUILLON_DOSSIER_BRIS_PORTE => array_filter($donnees, fn($key) => !in_array($key, ['reference', 'usager', 'etatActuel']), ARRAY_FILTER_USE_KEY),
             default => $donnees,
         };
     }

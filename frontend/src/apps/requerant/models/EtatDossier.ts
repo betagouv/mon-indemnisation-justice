@@ -84,7 +84,7 @@ export class EtatDossier {
   @Transform(({ value }: { value: string }) => EtatDossierTypes[value], {
     toClassOnly: true,
   })
-  @Transform(({ value }: { value: EtatDossierType }) => value.type, {
+  @Transform(({ value }: { value: EtatDossierType }) => value?.type, {
     toPlainOnly: true,
   })
   etat: EtatDossierType;

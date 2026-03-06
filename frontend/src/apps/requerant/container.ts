@@ -3,8 +3,8 @@ import {
   APIAdresseManager,
 } from "@/apps/requerant/services/AdresseManager.ts";
 import {
+  ApiDossierManager,
   DossierManagerInterface,
-  InMemoryDossierManager,
 } from "@/apps/requerant/services/DossierManager.ts";
 import {
   APIUsagerManager,
@@ -21,7 +21,7 @@ container
 
 container
   .bind<DossierManagerInterface>(DossierManagerInterface.$)
-  .to(InMemoryDossierManager)
+  .to(ApiDossierManager)
   .inSingletonScope();
 
 container
