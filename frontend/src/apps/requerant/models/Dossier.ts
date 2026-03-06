@@ -67,7 +67,7 @@ export class Dossier extends BaseDossier {
   @DateTransform(true)
   dateOperation: Date;
   description: string;
-  estPorteBlindee: boolean;
+  estPorteBlindee: boolean = false;
   piecesJointes: PieceJointe[];
 }
 

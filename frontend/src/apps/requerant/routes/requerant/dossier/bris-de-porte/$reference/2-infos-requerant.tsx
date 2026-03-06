@@ -435,6 +435,7 @@ function Etape2InfosRequerant() {
                                 label="Prénom(s)"
                                 nativeInputProps={{
                                   placeholder: "Prénom(s)",
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -454,6 +455,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Nom d'usage"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -473,6 +475,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Nom de naissance"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -492,6 +495,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Adresse courriel"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   disabled: true,
@@ -514,6 +518,7 @@ function Etape2InfosRequerant() {
                                 nativeInputProps={{
                                   type: "tel",
                                   pattern: "(0,+){1}[0-9]{8,}",
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.handleChange(e.target.value),
                                 }}
@@ -537,6 +542,7 @@ function Etape2InfosRequerant() {
                                 label="Date de naissance"
                                 nativeInputProps={{
                                   type: "date",
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.handleChange(
                                       new Date(e.target.value),
@@ -581,6 +587,8 @@ function Etape2InfosRequerant() {
                                     label="Code postal"
                                     disabled={!paysNaissance}
                                     nativeInputProps={{
+                                      defaultValue:
+                                        field.state.value?.codePostal || "",
                                       onChange: async (e) => {
                                         setCodePostal(e.target.value);
                                       },
@@ -593,6 +601,11 @@ function Etape2InfosRequerant() {
                                     disabled={!listeCommunes.length}
                                     label="Ville de naissance"
                                     nativeSelectProps={{
+                                      defaultValue:
+                                        field.state.value?.villeNaissance ||
+                                        listeCommunes.length === 1
+                                          ? listeCommunes.at(0)?.id
+                                          : "",
                                       onChange: (e) => {
                                         const id = parseInt(e.target.value);
 

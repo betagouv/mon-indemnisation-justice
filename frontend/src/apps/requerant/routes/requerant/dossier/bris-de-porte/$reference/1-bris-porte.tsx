@@ -4,6 +4,7 @@ import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.t
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container";
+import { SchemaValidationBrisPorte } from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
 import {
   Dossier,
   getLibelleTypePersonneMorale,
@@ -79,7 +80,7 @@ function Etape1BrisPorte() {
   const formulaire = useForm({
     canSubmitWhenInvalid: true,
     validators: {
-      //onSubmit: TODO définir le schéma de validation,
+      onSubmit: SchemaValidationBrisPorte,
     },
     defaultValues: dossier as Partial<Dossier>,
     listeners: {
@@ -87,15 +88,22 @@ function Etape1BrisPorte() {
       onChange: async ({ formApi }) => {
         dossierManager.modifier(reference, formApi.state.values);
       },
+      onSubmit: async ({ formApi }) => {
+        console.log(formApi.state.errors);
+      },
     },
     onSubmit: async ({ value, formApi }) => {
-      // Enregistrer le brouillon...
-      await dossierManager.enregistrer(reference, formApi.state.values);
-      // ...et passer à l'étape suivante
-      await naviguer({
-        to: "../2-infos-requerant",
-        search: {} as any,
-      });
+      if (formApi.state.errors.length > 0) {
+        console.log("Form errors:", formApi.state.errors);
+      } else {
+        // Enregistrer le brouillon...
+        await dossierManager.enregistrer(reference, formApi.state.values);
+        // ...et passer à l'étape suivante
+        await naviguer({
+          to: "../2-infos-requerant",
+          search: {} as any,
+        });
+      }
     },
   });
 
@@ -274,6 +282,7 @@ function Etape1BrisPorte() {
                         <FormInput
                           label="Précisez"
                           estRequis={rapportAuLogement === "AUTRE"}
+                          champ={field}
                           nativeInputProps={{
                             onChange: (e) => field.setValue(e.target.value),
                             maxLength: 255,
