@@ -1,15 +1,15 @@
-import React, { useMemo } from "react";
 import {
   CheckInput,
   CheckInputProps,
 } from "@/apps/requerant/composants/champs/check/CheckInput.tsx";
 import { TanstackFormField } from "@/apps/requerant/composants/champs/form/TanstackFormField";
+import React from "react";
 
 export type FormInputProps = Omit<
   CheckInputProps,
   "message" | "validation" | "estValide"
 > & {
-  champ?: TanstackFormField;
+  champ: TanstackFormField;
 };
 export const FormInput = ({ champ, ...props }: FormInputProps) => {
   return (
