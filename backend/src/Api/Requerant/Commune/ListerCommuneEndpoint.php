@@ -29,6 +29,7 @@ class ListerCommuneEndpoint
             fn (GeoCodePostal $geoCodePostal) => [
                 'id' => $geoCodePostal->getId(),
                 'nom' => $geoCodePostal->getCommune()->getNom(),
+                'codePostal' => $geoCodePostal->getCodePostal(),
             ],
             $this->geoCodePostalRepository->findBy(['codePostal' => $codePostal])
         ));

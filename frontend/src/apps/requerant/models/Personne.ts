@@ -1,4 +1,5 @@
 import { PersonnePhysique } from "@/apps/requerant/models/PersonnePhysique.ts";
+import { Exclude } from "class-transformer";
 import { Civilite } from "./Civilite.ts";
 
 export class Personne {
@@ -7,9 +8,10 @@ export class Personne {
   nom: string;
   nomNaissance: string;
   prenom: string;
-  prenoms?: string[] = [];
+  @Exclude()
+  prenoms?: string[];
   courriel: string;
-  telephone?: string;
+  telephone: string;
 
   personnePhysique?: PersonnePhysique;
 }

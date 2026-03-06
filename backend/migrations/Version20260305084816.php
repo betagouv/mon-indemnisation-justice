@@ -44,6 +44,8 @@ SELECT
                             'courriel', p1.courriel,
                             'telephone', p1.telephone
                      )),
+                     'prenom2', pp.prenom2,
+                     'prenom3', pp.prenom3,
                      'adresse', CASE
                         WHEN a2.id IS NOT NULL THEN json_strip_nulls(json_build_object(
                             'ligne1', a2.ligne1,

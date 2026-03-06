@@ -41,10 +41,10 @@ export function differentiel(a: any, b: any): any {
     const clefsUniques = new Set([...Object.keys(a), ...Object.keys(b)]);
 
     for (const key of clefsUniques) {
-      const diff = differentiel(a[key], b[key]);
+      const d = differentiel(a[key], b[key]);
       // Chaque élément différent, recursivement, est stocké dans l'objet diff
-      if (diff !== undefined) {
-        diff[key] = diff;
+      if (d !== undefined) {
+        diff[key] = d;
       }
     }
 

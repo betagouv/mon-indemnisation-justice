@@ -9,6 +9,8 @@ import {
 import { Commune } from "./Commune.ts";
 import { Dossier } from "./Dossier.ts";
 import { Pays } from "./Pays.ts";
+import { PersonneMorale } from "./PersonneMorale";
+import { PersonnePhysique } from "./PersonnePhysique";
 import { PieceJointe } from "./PieceJointe";
 import {
   type QualiteRequerant,
@@ -36,6 +38,8 @@ export {
   getLibelleTypePersonneMorale,
   getRapportAuLogementLibelle,
   Pays,
+  PersonneMorale,
+  PersonnePhysique,
   PieceJointe,
   QualiteRequerant,
   QualiteRequerants,

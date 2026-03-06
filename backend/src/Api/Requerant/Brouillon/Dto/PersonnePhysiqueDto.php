@@ -8,6 +8,8 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 class PersonnePhysiqueDto
 {
     public ?PersonneDto $personne;
+    public ?string $prenom2;
+    public ?string $prenom3;
     public ?AdresseDto $adresse;
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     public ?\DateTimeImmutable $dateNaissance;
