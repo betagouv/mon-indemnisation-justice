@@ -1,8 +1,9 @@
 import { Dossier } from "@/apps/requerant/models";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
+import { differentiel, fusion } from "@/common/services";
 import {
+  instanceToInstance,
   instanceToPlain,
-  plainToClassFromExist,
   plainToInstance,
 } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
@@ -27,12 +28,16 @@ export namespace DossierManagerInterface {
   );
 }
 
+type EtatSauvegardeDossier = {
+  original: Dossier;
+  modifie: Dossier;
+};
+
 /**
- * Gère une collection de tests statiques et non sauvegardées, utile uniquement
- * pour les tests.
+ * Synchronise les dossiers du requérant avec l'API
  */
-export class InMemoryDossierManager implements DossierManagerInterface {
-  protected dossiers: Map<string, Dossier>;
+export class ApiDossierManager implements DossierManagerInterface {
+  protected dossiers: Map<string, EtatSauvegardeDossier>;
   constructor() {}
 
   protected async chargerDossiers(): Promise<void> {
@@ -48,7 +53,13 @@ export class InMemoryDossierManager implements DossierManagerInterface {
       const dossiers = plainToInstance(Dossier, data as any[]);
 
       this.dossiers = new Map(
-        dossiers.map((dossier) => [dossier.reference, dossier]),
+        dossiers.map((dossier) => [
+          dossier.reference,
+          {
+            original: dossier,
+            modifie: instanceToInstance(dossier),
+          },
+        ]),
       );
     }
   }
@@ -62,7 +73,7 @@ export class InMemoryDossierManager implements DossierManagerInterface {
   async getDossier(reference: string): Promise<Dossier | undefined> {
     await this.chargerDossiers();
 
-    return this.dossiers.get(reference);
+    return this.dossiers.get(reference)?.modifie;
   }
 
   modifier(reference: string, modifications: Partial<Dossier>): void {
@@ -70,35 +81,54 @@ export class InMemoryDossierManager implements DossierManagerInterface {
       throw new Error(`Aucun dossier de référence ${reference}`);
     }
 
-    this.dossiers.set(
+    const { original, ...reste } = this.dossiers.get(
       reference,
-      plainToClassFromExist(
-        this.dossiers.get(reference) as Dossier,
-        modifications,
+    ) as EtatSauvegardeDossier;
+
+    this.dossiers.set(reference, {
+      original,
+      modifie: plainToInstance(
+        Dossier,
+        fusion(instanceToPlain(original), modifications),
       ),
-    );
+    });
   }
 
   async enregistrer(
     reference: string,
     modifications: Partial<Dossier>,
   ): Promise<Dossier> {
-    const reponse = await fetch(
-      `/api/requerant/brouillon/bris-de-porte/${reference}/amender`,
-      {
-        method: "PATCH",
-        headers: {
-          Accept: "application/json",
-        },
-        body: JSON.stringify(instanceToPlain(modifications)),
-      },
+    const { original, modifie } = this.dossiers.get(
+      reference,
+    ) as EtatSauvegardeDossier;
+
+    // On calcule l'écart entre la version originale et la version modifiée
+    const modificationsEnAttente = differentiel(
+      instanceToPlain(original),
+      instanceToPlain(modifie),
     );
 
-    const data = await reponse.json();
+    // On ne déclenche l'enregistrement que si des modifications sont présentes
+    if (modificationsEnAttente) {
+      const reponse = await fetch(
+        `/api/requerant/brouillon/bris-de-porte/${reference}/amender`,
+        {
+          method: "PATCH",
+          headers: {
+            Accept: "application/json",
+          },
+          body: JSON.stringify(modificationsEnAttente),
+        },
+      );
+      const data = await reponse.json();
 
-    this.dossiers.set(reference, plainToInstance(Dossier, data));
+      this.dossiers.set(reference, {
+        original: plainToInstance(Dossier, data),
+        modifie: plainToInstance(Dossier, data),
+      });
+    }
 
-    return this.dossiers.get(reference) as Dossier;
+    return this.dossiers.get(reference)?.original as Dossier;
   }
 
   async mesDemandes(): Promise<DossierApercu[]> {
