@@ -62,7 +62,6 @@ export const Route = createFileRoute(
   },
   shouldReload: true,
 });
-export default Route;
 
 function Etape1BrisPorte() {
   const naviguer = useNavigate({
@@ -112,8 +111,6 @@ function Etape1BrisPorte() {
     descriptionRapportAuLogement: state.values.descriptionRapportAuLogement,
   }));
 
-  // @ts-ignore
-  // @ts-ignore
   return (
     <>
       <h1>Déclarer un bris de porte</h1>
@@ -331,6 +328,7 @@ function Etape1BrisPorte() {
                             placeholder: "Intervention survenue ce matin ...",
                             rows: 10,
                             cols: 50,
+                            defaultValue: field.state.value,
                             onChange: (e) => field.setValue(e.target.value),
                           }}
                           champ={field}
@@ -363,7 +361,7 @@ function Etape1BrisPorte() {
                 </div>
                 <div className="fr-col-12 fr-col-lg-6">
                   <formulaire.Field
-                    name="adresse.ligne1"
+                    name="adresse.ligne2"
                     children={(field) => {
                       return (
                         <FormInput
@@ -423,7 +421,7 @@ function Etape1BrisPorte() {
                 </div>
               </div>
               <div className="fr-col-12">
-                {/* @ts-ignore*/}
+                {/* @ts-ignore */}
                 <formulaire.Field
                   name="estPorteBlindee"
                   children={(field) => {

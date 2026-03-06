@@ -105,7 +105,7 @@ class Brouillon
 
     public function setDonnees(?array $donnees = []): self
     {
-        $this->donnees = $donnees;
+        $this->donnees = $this->type->filtrerDonneesSansContexteBrouillon($donnees, $this);
 
         return $this;
     }
