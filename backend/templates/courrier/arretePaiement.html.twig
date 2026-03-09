@@ -26,8 +26,6 @@
 
     {% if corps is defined and corps is not null %}
         {{ corps|raw }}
-    {% else %}
-        {% include 'courrier/arretePaiement/_arrete_corps.html.twig' %}
     {% endif %}
 
     <p>Fait à Paris, le {{ 'now'|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}</p>
