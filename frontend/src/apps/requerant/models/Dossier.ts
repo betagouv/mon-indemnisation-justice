@@ -1,14 +1,23 @@
-import { Usager } from "./Usager.ts";
-import { Requerant } from "./Requerant.ts";
-import { Adresse } from "./Adresse.ts";
-import { EtatDossier } from "./EtatDossier.ts";
-import { Type } from "class-transformer";
-import { RapportAuLogement } from "./RapportAuLogement.ts";
+import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
+import { Exclude, Expose, Transform, Type } from "class-transformer";
+import { Adresse } from "./Adresse";
+import { EtatDossier } from "./EtatDossier";
+import { PersonneMorale } from "./PersonneMorale";
+import { PersonnePhysique } from "./PersonnePhysique";
+import { PieceJointe } from "./PieceJointe.ts";
+import { type RapportAuLogement } from "./RapportAuLogement";
+import { Usager } from "./Usager";
 
 export abstract class BaseDossier {
+  // Référence du dossier ou id du brouillon
   reference: string;
   @Type(() => EtatDossier)
+  @Exclude({ toPlainOnly: true })
   etatActuel: EtatDossier;
+  @Transform(({ value }: { value: any }) =>
+    typeof value == "string" ? new Date(value) : undefined,
+  )
+  dateDepot?: Date;
 
   get estAccepte(): boolean {
     return this.etatActuel.etat.estAccepte;
@@ -32,14 +41,36 @@ export abstract class BaseDossier {
 }
 
 export class Dossier extends BaseDossier {
+  // '`Usager` = `Requerant`
   initiePar: Usager;
-  requerant: Requerant = new Requerant();
+  @DateTransform()
+  dateCreation: Date;
+
+  @Transform(({ obj, value }: { obj: any; value: any }) => {
+    if (value !== undefined) return value;
+
+    return "personnePhysique" in obj
+      ? false
+      : "personneMorale" in obj || undefined;
+  })
+  @Expose({ toClassOnly: true })
+  estPersonneMorale: boolean;
+
+  // '`Requerant` = `PersonnePhysique` | `PersonneMorale`
+  @Type(() => PersonnePhysique)
+  personnePhysique?: PersonnePhysique;
+  @Type(() => PersonneMorale)
+  personneMorale?: PersonneMorale;
+  @Type(() => Adresse)
   adresse: Adresse = new Adresse();
+  // `RapportAuLogement` = `QualiteRequerant`
   rapportAuLogement: RapportAuLogement;
   descriptionRapportAuLogement?: string;
+  @DateTransform(true)
   dateOperation: Date;
-  description: string;
-  estPorteBlindee: boolean;
+  description?: string;
+  estPorteBlindee: boolean = false;
+  piecesJointes: PieceJointe[];
 }
 
 export class DossierApercu extends BaseDossier {}

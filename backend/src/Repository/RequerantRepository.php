@@ -4,24 +4,24 @@ namespace MonIndemnisationJustice\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
- * @extends ServiceEntityRepository<Requerant>
+ * @extends ServiceEntityRepository<Usager>
  *
- * @method Requerant|null find($id, $lockMode = null, $lockVersion = null)
- * @method Requerant|null findOneBy(array $criteria, array $orderBy = null)
- * @method Requerant[]    findAll()
- * @method Requerant[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Usager|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Usager|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Usager[]    findAll()
+ * @method Usager[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class RequerantRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Requerant::class);
+        parent::__construct($registry, Usager::class);
     }
 
     /**
@@ -29,7 +29,7 @@ class RequerantRepository extends ServiceEntityRepository implements PasswordUpg
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
-        if (!$user instanceof Requerant) {
+        if (!$user instanceof Usager) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
@@ -38,7 +38,7 @@ class RequerantRepository extends ServiceEntityRepository implements PasswordUpg
         $this->getEntityManager()->flush();
     }
 
-    public function findByEmailOrSub(?string $email, ?string $sub): ?Requerant
+    public function findByEmailOrSub(?string $email, ?string $sub): ?Usager
     {
         return $this
             ->createQueryBuilder('u')

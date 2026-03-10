@@ -1,16 +1,32 @@
 import { Dossier } from "@/apps/requerant/models";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
-import { dateIlYaNJours } from "@/common/services/date.ts";
-import { plainToClassFromExist, plainToInstance } from "class-transformer";
+import { differentiel } from "@/common/services";
+import {
+  instanceToInstance,
+  instanceToPlain,
+  plainToClassFromExist,
+  plainToInstance,
+} from "class-transformer";
 import { ServiceIdentifier } from "inversify";
+
+// Source - https://stackoverflow.com/a/61132308
+// Posted by Terry, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-03-09, License - CC BY-SA 4.0
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
 
 export interface DossierManagerInterface {
   aDossier(reference: string): Promise<boolean>;
   getDossier(reference: string): Promise<Dossier | undefined>;
-  modifierDossier(
-    reference: string,
-    modifications: Partial<Dossier>,
-  ): Promise<Dossier>;
+
+  modifier(reference: string, modifications: DeepPartial<Dossier>): void;
+
+  enregistrer(reference: string): Promise<Dossier>;
+
+  soumettre(reference: string): Promise<void>;
 
   mesDemandes(): Promise<DossierApercu[]>;
 }
@@ -21,67 +37,131 @@ export namespace DossierManagerInterface {
   );
 }
 
+type EtatSauvegardeDossier = {
+  // Le dossier tel qu'il est en temps réel
+  original: Dossier;
+  modifie: Dossier;
+};
+
 /**
- * Gère une collection de tests statiques et non sauvegardées, utile uniquement
- * pour les tests.
+ * Synchronise les dossiers du requérant avec l'API
  */
-export class InMemoryDossierManager implements DossierManagerInterface {
-  protected dossiers: Map<string, Dossier>;
-  constructor() {
-    this.dossiers = new Map(
-      [
-        plainToInstance(Dossier, {
-          reference: "b636a358-2118-4345-93d6-2633cd59f34a",
-          etatActuel: {
-            date: dateIlYaNJours(3),
-            etat: "A_COMPLETER",
-            requerant: { id: 123, nom: "Jean MICHON" },
+export class ApiDossierManager implements DossierManagerInterface {
+  protected dossiers: Map<string, EtatSauvegardeDossier>;
+  constructor() {}
+
+  protected async chargerDossiers(rafraichir: boolean = false): Promise<void> {
+    if (!this.dossiers || rafraichir) {
+      const reponse = await fetch("/api/requerant/mes-demandes", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const data = await reponse.json();
+      const dossiers = plainToInstance(Dossier, data as any[]);
+
+      this.dossiers = new Map(
+        dossiers.map((dossier) => [
+          dossier.reference,
+          {
+            original: dossier,
+            // On clone l'objet source pour ne pas également modifier le dossier original
+            modifie: instanceToInstance(dossier),
           },
-        }),
-      ].map((d) => [d.reference, d]),
-    );
+        ]),
+      );
+    }
   }
 
-  aDossier(reference: string): Promise<boolean> {
-    return Promise.resolve(this.dossiers.has(reference));
+  async aDossier(reference: string): Promise<boolean> {
+    await this.chargerDossiers();
+
+    return this.dossiers.has(reference);
   }
 
-  getDossier(reference: string): Promise<Dossier | undefined> {
-    return Promise.resolve(this.dossiers.get(reference));
+  async getDossier(reference: string): Promise<Dossier | undefined> {
+    await this.chargerDossiers();
+
+    return this.dossiers.get(reference)?.modifie;
   }
 
-  modifierDossier(
-    reference: string,
-    modifications: Partial<Dossier>,
-  ): Promise<Dossier> {
+  modifier(reference: string, modifications: DeepPartial<Dossier>): void {
     if (!this.dossiers.has(reference)) {
-      return Promise.reject(`Aucun dossier de référence ${reference}`);
+      throw new Error(`Aucun dossier de référence ${reference}`);
     }
 
-    this.dossiers.set(
+    let { original, modifie } = this.dossiers.get(
       reference,
-      plainToClassFromExist(
-        this.dossiers.get(reference) as Dossier,
-        modifications,
-      ),
-    );
+    ) as EtatSauvegardeDossier;
 
-    return Promise.resolve(this.dossiers.get(reference) as Dossier);
+    this.dossiers.set(reference, {
+      original,
+      modifie: plainToClassFromExist(modifie, modifications),
+    });
   }
 
-  mesDemandes(): Promise<DossierApercu[]> {
-    return Promise.resolve(
-      this.dossiers
-        .values()
-        .map((d) => {
-          const apercu = new DossierApercu();
+  async enregistrer(reference: string): Promise<Dossier> {
+    await this.chargerDossiers();
 
-          apercu.etatActuel = d.etatActuel;
-          apercu.reference = d.reference;
+    let { original, modifie } = this.dossiers.get(
+      reference,
+    ) as EtatSauvegardeDossier;
 
-          return apercu;
-        })
-        .toArray(),
+    const modificationsEnAttente = differentiel(
+      instanceToPlain(original),
+      instanceToPlain(modifie),
     );
+
+    // On ne déclenche l'enregistrement que si des modifications sont présentes
+    if (modificationsEnAttente) {
+      const reponse = await fetch(
+        `/api/requerant/brouillon/bris-de-porte/${reference}/amender`,
+        {
+          method: "PATCH",
+          headers: {
+            Accept: "application/json",
+          },
+          body: JSON.stringify(modificationsEnAttente),
+        },
+      );
+      const data = await reponse.json();
+      const dossier = plainToInstance(Dossier, data);
+
+      this.dossiers.set(reference, {
+        original: dossier,
+        modifie: instanceToInstance(dossier),
+      });
+    }
+
+    return this.dossiers.get(reference)?.modifie as Dossier;
+  }
+
+  async mesDemandes(): Promise<DossierApercu[]> {
+    const reponse = await fetch("/api/requerant/mes-demandes");
+
+    const data = await reponse.json();
+
+    return plainToInstance(DossierApercu, data as any[]);
+  }
+
+  async soumettre(reference: string): Promise<void> {
+    const reponse = await fetch(
+      `/api/requerant/brouillon/bris-de-porte/${reference}/publier`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (!reponse.ok) {
+      const data = await reponse.json();
+      console.error(data.erreurs);
+    } else {
+      await this.chargerDossiers(true);
+    }
   }
 }

@@ -1,25 +1,33 @@
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
 import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
+import { FormSuggestedInput } from "@/apps/requerant/composants/champs/form/FormSuggeestedInput.tsx";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container";
 import {
+  extraireDonneesBrisDeporte,
+  SchemaValidationBrisPorte,
+} from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
+import {
+  Adresse,
   Dossier,
   getLibelleTypePersonneMorale,
   getRapportAuLogementLibelle,
-  PersonneMoraleType,
-  PersonneMoraleTypes,
   RapportAuLogement,
+  TypePersonneMoraleType,
+  TypesPersonneMorale,
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
+import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader.tsx";
+import { dateChiffre } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import {
   createFileRoute,
   notFound,
@@ -61,7 +69,6 @@ export const Route = createFileRoute(
   },
   shouldReload: true,
 });
-export default Route;
 
 function Etape1BrisPorte() {
   const naviguer = useNavigate({
@@ -72,29 +79,47 @@ function Etape1BrisPorte() {
     DossierManagerInterface.$,
   );
 
+  const adresseManager = useInjection<AdresseManagerInterface>(
+    AdresseManagerInterface.$,
+  );
+
   // Récupérer la référence depuis le paramètre de la route
   const { reference, dossier }: { reference: string; dossier: Dossier } =
     Route.useLoaderData();
 
   const formulaire = useForm({
-    canSubmitWhenInvalid: true,
     validators: {
-      //onSubmit: TODO définir le schéma de validation,
+      onSubmit: SchemaValidationBrisPorte,
     },
-    defaultValues: dossier as Partial<Dossier>,
+    defaultValues: extraireDonneesBrisDeporte(dossier),
     listeners: {
       onChangeDebounceMs: 500,
-      onChange: async ({ formApi }) => {
-        await dossierManager.modifierDossier(reference, formApi.state.values);
+      onChange: async ({ fieldApi, formApi }) => {
+        dossierManager.modifier(reference, formApi.state.values);
       },
     },
     onSubmit: async ({ value, formApi }) => {
+      // Enregistrer le brouillon...
+      await dossierManager.enregistrer(reference);
+      // ...et passer à l'étape suivante
       await naviguer({
         to: "../2-infos-requerant",
         search: {} as any,
       });
     },
   });
+
+  const {
+    estPersonneMorale,
+    typePersonneMorale,
+    rapportAuLogement,
+    descriptionRapportAuLogement,
+  } = useStore(formulaire.store, (state) => ({
+    estPersonneMorale: state.values.estPersonneMorale,
+    typePersonneMorale: state.values.personneMorale?.typePersonneMorale,
+    rapportAuLogement: state.values.rapportAuLogement,
+    descriptionRapportAuLogement: state.values.descriptionRapportAuLogement,
+  }));
 
   return (
     <>
@@ -105,7 +130,9 @@ function Etape1BrisPorte() {
           e.preventDefault();
           e.stopPropagation();
           try {
-            await void formulaire.handleSubmit();
+            // Rafraîchir la validation avant la soumission
+            formulaire.validate("submit");
+            await formulaire.handleSubmit();
           } catch (e) {
             console.error(e);
           }
@@ -125,7 +152,7 @@ function Etape1BrisPorte() {
           <div className="fr-grid-row">
             <div className="fr-col-12">
               <formulaire.Field
-                name="requerant.estPersonneMorale"
+                name="estPersonneMorale"
                 children={(field) => {
                   return (
                     <FormRadioButtons
@@ -141,8 +168,10 @@ function Etape1BrisPorte() {
                             checked: field.state.value == false,
                             onChange: () => {
                               field.setValue(false);
+
                               field.form.setFieldValue(
                                 "rapportAuLogement",
+                                // @ts-ignore
                                 undefined,
                               );
                             },
@@ -158,6 +187,7 @@ function Etape1BrisPorte() {
                               field.setValue(true);
                               field.form.setFieldValue(
                                 "rapportAuLogement",
+                                // @ts-ignore
                                 undefined,
                               );
                             },
@@ -171,339 +201,312 @@ function Etape1BrisPorte() {
             </div>
           </div>
 
-          <formulaire.Subscribe
-            selector={(state) => state.values.requerant?.estPersonneMorale}
-            children={(estPersonneMorale) => (
-              <>
-                {estPersonneMorale && (
-                  <div className="fr-col-12">
-                    <div className="fr-grid-row fr-grid-row--gutters">
-                      <formulaire.Field
-                        name="requerant.typePersonneMorale"
-                        children={(field) => {
-                          return (
-                            <FormSelect
-                              className="fr-col-12 fr-col-lg-6"
-                              label="Quel type de personne morale ?"
-                              hint="Ex: professionnel privé, représentant d'une association ou assureur du logement d'un particulier"
-                              estRequis={true}
-                              champ={field}
-                              nativeSelectProps={{
-                                defaultValue: field.state.value ?? "",
-                                onChange: (event) =>
-                                  field.setValue(
-                                    event.target.value as PersonneMoraleType,
-                                  ),
-                              }}
-                            >
-                              <option value="" disabled hidden>
-                                Selectionnez une option
-                              </option>
-                              {PersonneMoraleTypes.map(
-                                (type: PersonneMoraleType) => (
-                                  <option key={type} value={type}>
-                                    {getLibelleTypePersonneMorale(type)}
-                                  </option>
-                                ),
-                              )}
-                            </FormSelect>
-                          );
+          {estPersonneMorale && (
+            <div className="fr-col-12">
+              <div className="fr-grid-row fr-grid-row--gutters">
+                <formulaire.Field
+                  name="personneMorale.typePersonneMorale"
+                  children={(field) => {
+                    return (
+                      <FormSelect
+                        className="fr-col-12 fr-col-lg-6"
+                        label="Quel type de personne morale ?"
+                        hint="Ex: professionnel privé, représentant d'une association ou assureur du logement d'un particulier"
+                        estRequis={true}
+                        champ={field}
+                        nativeSelectProps={{
+                          defaultValue: field.state.value ?? "",
+                          onChange: (event) =>
+                            field.setValue(
+                              event.target.value as TypePersonneMoraleType,
+                            ),
                         }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <formulaire.Subscribe
-                  selector={(state) => ({
-                    estPersonneMorale:
-                      state.values.requerant?.estPersonneMorale,
-                    typePersonneMorale:
-                      state.values.requerant?.typePersonneMorale,
-                  })}
-                  children={({ estPersonneMorale, typePersonneMorale }) => (
-                    <>
-                      {(estPersonneMorale === false ||
-                        !!typePersonneMorale) && (
-                        <div className="fr-grid-row fr-grid-row--gutters">
-                          <div className="fr-col-lg-6 fr-col-12">
-                            <formulaire.Field
-                              name="rapportAuLogement"
-                              children={(field) => {
-                                return (
-                                  <FormSelect
-                                    label="Vous effectuez votre demande en qualité de"
-                                    champ={field}
-                                    estRequis={true}
-                                    nativeSelectProps={{
-                                      defaultValue: field.state.value || "",
-                                      onChange: (event) => {
-                                        if (!!event.target.value) {
-                                          field.setValue(
-                                            event.target
-                                              .value as RapportAuLogement,
-                                          );
-                                        }
-                                      },
-                                    }}
-                                  >
-                                    <option value="" disabled hidden>
-                                      Selectionnez une option
-                                    </option>
-                                    {RapportAuLogements.map(
-                                      (rapportAuLogement) => (
-                                        <option
-                                          key={rapportAuLogement}
-                                          value={rapportAuLogement}
-                                        >
-                                          {getRapportAuLogementLibelle(
-                                            rapportAuLogement,
-                                          )}
-                                        </option>
-                                      ),
-                                    )}
-                                  </FormSelect>
-                                );
-                              }}
-                            />
-                          </div>
-
-                          <formulaire.Subscribe
-                            selector={(state) => state.values.rapportAuLogement}
-                            children={(rapportAuLogement) => (
-                              <>
-                                {rapportAuLogement === "AUT" && (
-                                  <div className="fr-col-lg-6 fr-col-12">
-                                    <formulaire.Field
-                                      name="descriptionRapportAuLogement"
-                                      children={(field) => {
-                                        return (
-                                          <FormInput
-                                            label="Précisez"
-                                            estRequis={
-                                              rapportAuLogement === "AUT"
-                                            }
-                                            nativeInputProps={{
-                                              onChange: (e) =>
-                                                field.setValue(e.target.value),
-                                              maxLength: 255,
-                                            }}
-                                          />
-                                        );
-                                      }}
-                                    />
-                                  </div>
-                                )}
-                              </>
-                            )}
-                          />
-                        </div>
-                      )}
-                    </>
-                  )}
+                      >
+                        <option value="" disabled hidden>
+                          Selectionnez une option
+                        </option>
+                        {TypesPersonneMorale.map(
+                          (type: TypePersonneMoraleType) => (
+                            <option key={type} value={type}>
+                              {getLibelleTypePersonneMorale(type)}
+                            </option>
+                          ),
+                        )}
+                      </FormSelect>
+                    );
+                  }}
                 />
-              </>
-            )}
-          />
+              </div>
+            </div>
+          )}
+
+          {(estPersonneMorale === false || !!typePersonneMorale) && (
+            <div className="fr-grid-row fr-grid-row--gutters">
+              <div className="fr-col-lg-6 fr-col-12">
+                <formulaire.Field
+                  name="rapportAuLogement"
+                  children={(field) => {
+                    return (
+                      <FormSelect
+                        label="Vous effectuez votre demande en qualité de"
+                        champ={field}
+                        estRequis={true}
+                        nativeSelectProps={{
+                          defaultValue: field.state.value || "",
+                          onChange: (event) => {
+                            if (!!event.target.value) {
+                              field.setValue(
+                                event.target.value as RapportAuLogement,
+                              );
+                            }
+                          },
+                        }}
+                      >
+                        <option value="" disabled hidden>
+                          Selectionnez une option
+                        </option>
+                        {RapportAuLogements.map((rapportAuLogement) => (
+                          <option
+                            key={rapportAuLogement}
+                            value={rapportAuLogement}
+                          >
+                            {getRapportAuLogementLibelle(rapportAuLogement)}
+                          </option>
+                        ))}
+                      </FormSelect>
+                    );
+                  }}
+                />
+              </div>
+
+              {rapportAuLogement === "AUTRE" && (
+                <div className="fr-col-lg-6 fr-col-12">
+                  <formulaire.Field
+                    name="descriptionRapportAuLogement"
+                    children={(field) => {
+                      return (
+                        <FormInput
+                          label="Précisez"
+                          estRequis={rapportAuLogement === "AUTRE"}
+                          champ={field}
+                          nativeInputProps={{
+                            onChange: (e) => field.setValue(e.target.value),
+                            maxLength: 255,
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </section>
 
-        <formulaire.Subscribe
-          selector={(state) => [
-            state.values.requerant?.estPersonneMorale,
-            state.values.rapportAuLogement,
-            state.values.descriptionRapportAuLogement,
-          ]}
-          children={([
-            estPersonneMorale,
-            rapportAuLogement,
-            descriptionRapportAuLogement,
-          ]) => (
-            <>
-              {estPersonneMorale !== undefined &&
-                rapportAuLogement !== undefined &&
-                (rapportAuLogement !== "AUT" ||
-                  !!descriptionRapportAuLogement) && (
-                  <section>
-                    <TitreSection>
-                      Informations sur le bris de porte
-                    </TitreSection>
+        {estPersonneMorale !== undefined &&
+          rapportAuLogement !== undefined &&
+          (rapportAuLogement !== "AUTRE" || !!descriptionRapportAuLogement) && (
+            <section>
+              <TitreSection>Informations sur le bris de porte</TitreSection>
 
-                    <div className="fr-grid-row fr-grid-row--gutters">
-                      <div className="fr-col-lg-4 fr-col-12">
-                        <formulaire.Field
-                          name="dateOperation"
-                          children={(field) => {
-                            return (
-                              <FormInput
-                                label="Date du bris de porte"
-                                nativeInputProps={{
-                                  type: "date",
-                                  onChange: (e) =>
-                                    field.setValue(new Date(e.target.value)),
-                                }}
-                                estRequis={true}
-                                champ={field}
-                              />
-                            );
-                          }}
-                        />
-                      </div>
+              <div className="fr-grid-row fr-grid-row--gutters">
+                <div className="fr-col-lg-4 fr-col-12">
+                  <formulaire.Field
+                    name="dateOperation"
+                    children={(field) => {
+                      return (
+                        <FormInput
+                          label="Date du bris de porte"
+                          nativeInputProps={{
+                            type: "date",
+                            defaultValue: dateChiffre(field.state.value),
+                            onChange: (e) => {
+                              const date = new Date(e.target.value);
 
-                      <div className="fr-col-lg-8 fr-col-12">
-                        <formulaire.Field
-                          name="description"
-                          children={(field) => {
-                            return (
-                              <FormInput
-                                label="Décrivez-nous l’intervention"
-                                textArea
-                                nativeTextAreaProps={{
-                                  placeholder:
-                                    "Intervention survenue ce matin ...",
-                                  rows: 10,
-                                  cols: 50,
-                                  onChange: (e) =>
-                                    field.setValue(e.target.value),
-                                }}
-                                champ={field}
-                              />
-                            );
+                              if (!isNaN(date.getTime())) {
+                                field.setValue(date);
+                              }
+                            },
                           }}
+                          estRequis={true}
+                          champ={field}
                         />
-                      </div>
-                    </div>
+                      );
+                    }}
+                  />
+                </div>
 
-                    <div className="fr-grid-row fr-grid-row--gutters">
-                      <div className="fr-col-12 fr-col-lg-6">
-                        <formulaire.Field
-                          name="requerant.adresse.ligne1"
-                          children={(field) => {
-                            return (
-                              <FormInput
-                                label="Adresse du logement concerné par le bris de porte"
-                                nativeInputProps={{
-                                  maxLength: 255,
-                                  onChange: (e) =>
-                                    field.setValue(e.target.value),
-                                }}
-                                estRequis={true}
-                                champ={field}
-                              />
-                            );
+                <div className="fr-col-lg-8 fr-col-12">
+                  <formulaire.Field
+                    name="description"
+                    children={(field) => {
+                      return (
+                        <FormInput
+                          label="Décrivez-nous l’intervention"
+                          textArea
+                          nativeTextAreaProps={{
+                            placeholder: "Intervention survenue ce matin ...",
+                            rows: 10,
+                            cols: 50,
+                            defaultValue: field.state.value,
+                            onChange: (e) => field.setValue(e.target.value),
                           }}
+                          champ={field}
                         />
-                      </div>
-                      <div className="fr-col-12 fr-col-lg-6">
-                        <formulaire.Field
-                          name="adresse.ligne1"
-                          children={(field) => {
-                            return (
-                              <FormInput
-                                label="Complément d'adresse"
-                                nativeInputProps={{
-                                  maxLength: 255,
-                                  onChange: (e) =>
-                                    field.setValue(e.target.value),
-                                }}
-                                champ={field}
-                              />
-                            );
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="fr-grid-row fr-grid-row--gutters">
+                <div className="fr-col-12 fr-col-lg-6">
+                  <formulaire.Field
+                    name="adresse.ligne1"
+                    children={(field) => {
+                      return (
+                        <FormSuggestedInput<Adresse>
+                          label="Adresse du logement concerné par le bris de porte"
+                          nativeInputProps={{
+                            maxLength: 255,
+                            defaultValue: field.state.value,
+                            onChange: (e) => {
+                              field.setValue(e.target.value);
+                            },
                           }}
-                        />
-                      </div>
-                      <div className="fr-col-lg-2 fr-col-4">
-                        <formulaire.Field
-                          name="adresse.commune.codePostal"
-                          children={(field) => {
-                            return (
-                              <>
-                                <FormInput
-                                  label="Code postal"
-                                  nativeInputProps={{
-                                    onChange: (e) =>
-                                      field.setValue(e.target.value),
-                                    maxLength: 5,
-                                  }}
-                                  estRequis={true}
-                                  champ={field}
-                                />
-                              </>
-                            );
+                          onSelectionne={(suggestion: Adresse) => {
+                            field.form.setFieldValue("adresse", suggestion);
+                            field.form.validateField("adresse", "submit");
+                            return suggestion.ligne1;
                           }}
-                        />
-                      </div>
-                      <div className="fr-col-lg-10 fr-col-8">
-                        <formulaire.Field
-                          name="adresse.commune.nom"
-                          children={(field) => {
-                            return (
-                              <>
-                                <FormInput
-                                  label="Ville"
-                                  nativeInputProps={{
-                                    onChange: (e) =>
-                                      field.setValue(e.target.value),
-                                    maxLength: 255,
-                                  }}
-                                  estRequis={true}
-                                  champ={field}
-                                />
-                              </>
-                            );
+                          rafraichisseur={async (valeur: string) =>
+                            (await adresseManager.suggererAdresse(valeur)).map(
+                              (adresse: Adresse) => ({
+                                libelle: adresse.libelle,
+                                valeur: adresse,
+                              }),
+                            )
+                          }
+                          // Ne rafraichir la liste des suggestions que le lorsque la valeur saisie atteint au moins 5 caractères non blancs
+                          estARafraichir={(valeur: string) => {
+                            return valeur.replaceAll(/\s+/g, "").length >= 5;
                           }}
+                          estRequis={true}
+                          champ={field}
                         />
-                      </div>
-                    </div>
-                    <div className="fr-col-12">
-                      <formulaire.Field
-                        name="estPorteBlindee"
-                        children={(field) => {
-                          return (
-                            <RadioButtons
-                              legend="S'agit-il d'une porte blindée ?"
-                              orientation="horizontal"
-                              options={[
-                                {
-                                  label: "Oui",
-                                  nativeInputProps: {
-                                    checked: field.state.value === false,
-                                    onChange: (e) => field.setValue(false),
-                                  },
-                                },
-                                {
-                                  label: "Non",
-                                  nativeInputProps: {
-                                    checked: field.state.value === true,
-                                    onChange: (e) => field.setValue(false),
-                                  },
-                                },
-                              ]}
-                            />
-                          );
-                        }}
+                      );
+                    }}
+                  />
+                </div>
+                <div className="fr-col-12 fr-col-lg-6">
+                  <formulaire.Field
+                    name="adresse.ligne2"
+                    children={(field) => {
+                      return (
+                        <FormInput
+                          label="Complément d'adresse"
+                          nativeInputProps={{
+                            maxLength: 255,
+                            defaultValue: field.state.value,
+                            onChange: (e) => field.setValue(e.target.value),
+                          }}
+                          champ={field}
+                        />
+                      );
+                    }}
+                  />
+                </div>
+                <div className="fr-col-lg-2 fr-col-4">
+                  <formulaire.Field
+                    name="adresse.codePostal"
+                    children={(field) => {
+                      return (
+                        <>
+                          <FormInput
+                            label="Code postal"
+                            nativeInputProps={{
+                              defaultValue: field.state.value,
+                              onChange: (e) => field.setValue(e.target.value),
+                              maxLength: 5,
+                            }}
+                            estRequis={true}
+                            champ={field}
+                          />
+                        </>
+                      );
+                    }}
+                  />
+                </div>
+                <div className="fr-col-lg-10 fr-col-8">
+                  <formulaire.Field
+                    name="adresse.commune"
+                    children={(field) => {
+                      return (
+                        <>
+                          <FormInput
+                            label="Ville"
+                            nativeInputProps={{
+                              defaultValue: field.state.value,
+                              onChange: (e) => field.setValue(e.target.value),
+                              maxLength: 255,
+                            }}
+                            estRequis={true}
+                            champ={field}
+                          />
+                        </>
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="fr-col-12">
+                {/* @ts-ignore */}
+                <formulaire.Field
+                  name="estPorteBlindee"
+                  children={(field) => {
+                    return (
+                      <RadioButtons
+                        legend="S'agit-il d'une porte blindée ?"
+                        orientation="horizontal"
+                        options={[
+                          {
+                            label: "Oui",
+                            nativeInputProps: {
+                              checked: field.state.value === true,
+                              onChange: (e) => field.setValue(true),
+                            },
+                          },
+                          {
+                            label: "Non",
+                            nativeInputProps: {
+                              checked: field.state.value === false,
+                              onChange: (e) => field.setValue(false),
+                            },
+                          },
+                        ]}
                       />
-                    </div>
-                  </section>
-                )}
-
-              <ButtonsGroup
-                inlineLayoutWhen="always"
-                alignment="right"
-                buttonsIconPosition="right"
-                buttons={[
-                  {
-                    disabled: false, // TODO : désactiver pendant la sauvegarde
-                    priority: "primary",
-                    children: "Valider et passer à l'étape suivante",
-                    nativeButtonProps: {
-                      type: "submit",
-                      role: "submit",
-                    },
-                  },
-                ]}
-              />
-            </>
+                    );
+                  }}
+                />
+              </div>
+            </section>
           )}
+
+        <ButtonsGroup
+          inlineLayoutWhen="always"
+          alignment="right"
+          buttonsIconPosition="right"
+          buttons={[
+            {
+              disabled: false, // TODO : désactiver pendant la sauvegarde
+              priority: "primary",
+              children: "Valider et passer à l'étape suivante",
+              nativeButtonProps: {
+                type: "submit",
+                role: "submit",
+              },
+            },
+          ]}
         />
       </form>
     </>

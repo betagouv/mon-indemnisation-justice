@@ -49,7 +49,6 @@ class EditerDeclarationBrisPorteEndpoint
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
         BrouillonDeclarationFDOBrisPorte $brouillon,
         Request $request,
-        Security $security
     ): Response {
         $brouillon->ajouterDonnees(
             json_decode($request->getContent(), true)

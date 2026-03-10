@@ -6,8 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Civilite;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\GeoPays;
+use MonIndemnisationJustice\Entity\Personne;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Repository\RequerantRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use Psr\Log\LoggerInterface;
@@ -74,46 +75,36 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                     // Inscription
                     $prenoms = $userInfo['given_name_array'] ?? explode(' ', $userInfo['given_name']);
 
-                    $requerant = (new Requerant())
+                    /** @var GeoPays $paysNaissance */
+                    $paysNaissance = null !== ($codePaysNaissance = $userInfo['birthcountry']) ? $paysNaissance = $this->em->getRepository(GeoPays::class)->findOneBy(
+                        [
+                            'codeInsee' => $codePaysNaissance]
+                    ) : null;
+
+                    /** @var GeoCodePostal $codePostalNaissance */
+                    $codePostalNaissance = null !== ($codeCommuneNaissance = $userInfo['birthplace']) ? $this->em->getRepository(GeoCodePostal::class)->identifier($codeCommuneNaissance) : null;
+
+                    $requerant = new Usager()
                         ->setSub($userInfo['sub'])
                         ->setEmail($userInfo['email'] ?? null)
                         ->setVerifieCourriel()
                         ->setPersonnePhysique(
-                            (new PersonnePhysique())
-                                ->setCivilite('male' === $userInfo['gender'] ? Civilite::M : Civilite::MME)
-                                ->setNom($userInfo['family_name'] ?? '')
-                                ->setNomNaissance($userInfo['family_name'] ?? '')
-                                ->setPrenom1($prenoms[0] ?? null)
+                            new PersonnePhysique()
                                 ->setPrenom2($prenoms[1] ?? null)
                                 ->setPrenom3($prenoms[2] ?? null)
                                 ->setDateNaissance(new \DateTime($userInfo['birthdate'] ?? ''))
-                                ->setEmail($userInfo['email'] ?? null)
-                        );
-
-                    // Récupération du pays de naissance
-                    if (null !== ($codePaysNaissance = $userInfo['birthcountry'])) {
-                        /** @var GeoPays $paysNaissance */
-                        $paysNaissance = $this->em->getRepository(GeoPays::class)->findOneBy(
-                            [
-                                'codeInsee' => $codePaysNaissance]
-                        );
-
-                        if (null !== $paysNaissance) {
-                            $requerant->getPersonnePhysique()->setPaysNaissance($paysNaissance);
-                        }
-                    }
-
-                    // Récupération de la commune de naissance
-                    if (null !== ($codeCommuneNaissance = $userInfo['birthplace'])) {
-                        /** @var GeoCodePostal $codePostalNaissance */
-                        $codePostalNaissance = $this->em->getRepository(GeoCodePostal::class)->identifier($codeCommuneNaissance);
-
-                        if (null !== $codePostalNaissance) {
-                            $requerant->getPersonnePhysique()
+                                ->setPaysNaissance($paysNaissance)
                                 ->setCommuneNaissance($codePostalNaissance)
-                                ->setPaysNaissance($this->em->getRepository(GeoPays::class)->getFrance());
-                        }
-                    }
+                                ->setPersonne(
+                                    new Personne()
+                                        ->setCivilite('male' === $userInfo['gender'] ? Civilite::M : Civilite::MME)
+                                        ->setNom($userInfo['family_name'] ?? '')
+                                        ->setNomNaissance($userInfo['family_name'] ?? '')
+                                        ->setPrenom($prenoms[0] ?? null)
+                                        ->setCourriel($userInfo['email'] ?? null)
+                                )
+                        );
+
 
                     $this->em->persist($requerant);
                     $this->em->flush();

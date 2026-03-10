@@ -9,20 +9,22 @@ import {
 import { Commune } from "./Commune.ts";
 import { Dossier } from "./Dossier.ts";
 import { Pays } from "./Pays.ts";
-import {
-  type PersonneMoraleType,
-  PersonneMoraleTypes,
-  getLibelleTypePersonneMorale,
-} from "./PersonneMoraleType.ts";
+import { PersonneMorale } from "./PersonneMorale";
+import { PersonnePhysique } from "./PersonnePhysique";
+import { PieceJointe } from "./PieceJointe";
 import {
   type QualiteRequerant,
   QualiteRequerants,
 } from "./QualiteRequerant.ts";
 import {
-  type RapportAuLogement,
   getRapportAuLogementLibelle,
+  type RapportAuLogement,
 } from "./RapportAuLogement.ts";
-import { Requerant } from "./Requerant.ts";
+import {
+  getLibelleTypePersonneMorale,
+  type TypePersonneMoraleType,
+  TypesPersonneMorale,
+} from "./TypePersonneMoraleType.ts";
 import { Usager } from "./Usager";
 
 export {
@@ -31,16 +33,18 @@ export {
   Civilites,
   Commune,
   Dossier,
-  Pays,
-  PersonneMoraleType,
-  PersonneMoraleTypes,
-  QualiteRequerant,
-  QualiteRequerants,
-  RapportAuLogement,
-  Requerant,
-  Usager,
   getCivilite,
   getCiviliteLibelle,
   getLibelleTypePersonneMorale,
   getRapportAuLogementLibelle,
+  Pays,
+  PersonneMorale,
+  PersonnePhysique,
+  PieceJointe,
+  QualiteRequerant,
+  QualiteRequerants,
+  RapportAuLogement,
+  TypePersonneMoraleType,
+  TypesPersonneMorale,
+  Usager,
 };

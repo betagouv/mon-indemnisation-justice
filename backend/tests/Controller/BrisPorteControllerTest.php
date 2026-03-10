@@ -6,9 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
-use MonIndemnisationJustice\Entity\QualiteRequerant;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\Usager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -56,7 +56,7 @@ class BrisPorteControllerTest extends WebTestCase
             '_token' => $reactArgs->_token,
             'estIssuAttestation' => 'false',
             // 'description' => 'Perquisition pendant mon absence, ce matin',
-            'rapportAuLogement' => 'PRO',
+            'rapportAuLogement' => 'PROPRIETAIRE',
             'estVise' => 'false',
             'estHebergeant' => 'false',
             'aContacteAssurance' => 'false',
@@ -78,10 +78,10 @@ class BrisPorteControllerTest extends WebTestCase
         $this->assertNotNull($testEligibilite->dateSoumission);
         $this->assertFalse($testEligibilite->estVise);
         $this->assertFalse($testEligibilite->estHebergeant);
-        $this->assertEquals(QualiteRequerant::PRO, $testEligibilite->rapportAuLogement);
+        $this->assertEquals(RapportAuLogement::PROPRIETAIRE, $testEligibilite->rapportAuLogement);
         $this->assertFalse($testEligibilite->aContacteAssurance);
         if ($aRequerant) {
-            $this->assertInstanceOf(Requerant::class, $testEligibilite->requerant);
+            $this->assertInstanceOf(Usager::class, $testEligibilite->requerant);
         } else {
             $this->assertNull($testEligibilite->requerant);
         }
@@ -220,7 +220,7 @@ class BrisPorteControllerTest extends WebTestCase
 
         $session->save();
 
-        $domains = array_unique(array_map(fn(Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
+        $domains = array_unique(array_map(fn (Cookie $cookie) => $cookie->getName() === $session->getName() ? $cookie->getDomain() : '', $this->client->getCookieJar()->all())) ?: [''];
         foreach ($domains as $domain) {
             $cookie = new Cookie($session->getName(), $session->getId(), null, null, $domain);
             $this->client->getCookieJar()->set($cookie);
@@ -233,8 +233,8 @@ class BrisPorteControllerTest extends WebTestCase
             $test = TestEligibilite::fromArray([
                 // 'description' => 'Test complet',
                 'estVise' => true,
-                'requerant' => $em->getRepository(Requerant::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
+                'requerant' => $em->getRepository(Usager::class)->findOneBy(['email' => 'wossewodda-3728@yopmail.com']),
+                'dateSoumission' => new \DateTime()->modify('-2 minutes')]);
 
             $em->persist($test);
             $em->flush();
@@ -249,7 +249,7 @@ class BrisPorteControllerTest extends WebTestCase
             $test = TestEligibilite::fromArray([
                 // 'description' => 'Test incomplet',
                 'estVise' => true,
-                'dateSoumission' => (new \DateTime())->modify('-2 minutes')]);
+                'dateSoumission' => new \DateTime()->modify('-2 minutes')]);
 
             $em->persist($test);
             $em->flush();

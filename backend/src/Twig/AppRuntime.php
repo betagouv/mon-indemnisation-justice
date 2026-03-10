@@ -5,9 +5,9 @@ namespace MonIndemnisationJustice\Twig;
 use ApiPlatform\Metadata\UrlGeneratorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator;
 use Pentatrion\ViteBundle\Exception\EntrypointNotFoundException;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
@@ -38,10 +38,10 @@ class AppRuntime implements RuntimeExtensionInterface
 
     public function estRequerant(?UserInterface $user = null): bool
     {
-        return $user instanceof Requerant;
+        return $user instanceof Usager;
     }
 
-    public function urlDeconnexion(Requerant $requerant, Request $request): ?string
+    public function urlDeconnexion(Usager $requerant, Request $request): ?string
     {
         if ($requerant->estFranceConnect() && null !== ($logoutUrl = $this->franceConnectAuthenticator->getUrlDeconnexion($request))) {
             return $logoutUrl;
@@ -50,7 +50,7 @@ class AppRuntime implements RuntimeExtensionInterface
         return $this->router->generate('securite_usager_deconnexion');
     }
 
-    public function etatDossierRequerant(BrisPorte $dossier): string
+    public function etatDossierRequerant(Dossier $dossier): string
     {
         switch ($dossier->getEtatDossier()->getEtat()) {
             case EtatDossierType::DOSSIER_A_FINALISER:
@@ -146,36 +146,36 @@ class AppRuntime implements RuntimeExtensionInterface
 
     public function nbDossiersACategoriser(): int
     {
-        return $this->em->getRepository(BrisPorte::class)->compterDossierACategoriser();
+        return $this->em->getRepository(Dossier::class)->compterDossierACategoriser();
     }
 
     public function nbDossiersAAttribuer(): int
     {
-        return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
+        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
     }
 
     public function nbDossiersRejetASigner(): int
     {
-        return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_KO_A_SIGNER);
+        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_KO_A_SIGNER);
     }
 
     public function nbDossiersPropositionASigner(): int
     {
-        return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER);
+        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER);
     }
 
     public function nbDossiersArreteASigner(): int
     {
-        return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_VERIFIE);
+        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_VERIFIE);
     }
 
     public function nbDossiersATransmettre(): int
     {
-        return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
+        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
     }
 
     public function nbDossiersEnAttenteIndemnisation(): int
     {
-        return $this->em->getRepository(BrisPorte::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
+        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
     }
 }

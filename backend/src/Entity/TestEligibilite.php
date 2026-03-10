@@ -29,8 +29,8 @@ class TestEligibilite
     public ?bool $estHebergeant = null;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
-    #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: QualiteRequerant::class)]
-    public ?QualiteRequerant $rapportAuLogement = null;
+    #[ORM\Column(type: 'string', length: 16, nullable: true, enumType: RapportAuLogement::class)]
+    public ?RapportAuLogement $rapportAuLogement = null;
 
     #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true)]
@@ -40,9 +40,9 @@ class TestEligibilite
     #[ORM\Column(nullable: true)]
     public ?bool $aContacteBailleur = null;
 
-    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: ['persist'])]
+    #[ORM\ManyToOne(targetEntity: Usager::class, cascade: ['persist'])]
     #[ORM\JoinColumn(unique: false, nullable: true, onDelete: 'CASCADE')]
-    public ?Requerant $requerant = null;
+    public ?Usager $requerant = null;
 
     #[ORM\OneToOne(targetEntity: BrisPorte::class, mappedBy: 'testEligibilite')]
     public ?BrisPorte $dossier;

@@ -6,26 +6,26 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 
 /**
- * @extends ServiceEntityRepository<BrisPorte>
+ * @extends ServiceEntityRepository<Dossier>
  *
- * @method null|BrisPorte find($id, $lockMode = null, $lockVersion = null)
- * @method null|BrisPorte findOneBy(array $criteria, array $orderBy = null)
- * @method BrisPorte[]    findAll()
- * @method BrisPorte[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Dossier|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Dossier|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Dossier[]    findAll()
+ * @method Dossier[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class BrisPorteRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, BrisPorte::class);
+        parent::__construct($registry, Dossier::class);
     }
 
-    public function save(BrisPorte $dossier, bool $flush = true): void
+    public function save(Dossier $dossier, bool $flush = true): void
     {
         $this->getEntityManager()->persist($dossier);
         if ($flush) {
@@ -33,29 +33,27 @@ class BrisPorteRepository extends ServiceEntityRepository
         }
     }
 
-    public function getByIdOuReference(int|string $id): ?BrisPorte
+    public function getByIdOuReference(int|string $id): ?Dossier
     {
         return $this->createQueryBuilder('d')->where('d.id = :id')->orWhere('d.reference = :reference')
             ->setParameter('id', intval($id))
             ->setParameter('reference', $id)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
 
-    public function calculerReference(BrisPorte $dossier): string
+    public function calculerReference(Dossier $dossier): string
     {
         $nbDossiersDeposesMemeJour = $this->createQueryBuilder('d')
             ->select('count(d.id)')
             ->where('d.reference like :reference')
-            ->setParameter('reference', '%/'.$dossier->getDateDeclaration()->format('Ymd').'/%')->getQuery()
-            ->getSingleScalarResult()
-        ;
+            ->setParameter('reference', $dossier->getType()->getCodeReference().'/'.$dossier->getDateDeclaration()->format('Ymd').'/%')->getQuery()
+            ->getSingleScalarResult();
 
         return
             sprintf(
                 '%s/%s/%s',
-                $dossier->getType()->value,
+                $dossier->getType()->getCodeReference(),
                 $dossier->getDateDeclaration()->format('Ymd'),
                 str_pad($nbDossiersDeposesMemeJour + 1, 3, '0', STR_PAD_LEFT)
             );
@@ -74,14 +72,12 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->join('d.adresse', 'a')
             ->join('d.requerant', 'r')
             ->join('r.personnePhysique', 'pp')
-            ->orderBy('e.dateEntree', 'DESC')
-        ;
+            ->orderBy('e.dateEntree', 'DESC');
 
         if (!empty($etats)) {
             $qb
                 ->andWhere('e.etat in (:etats)')
-                ->setParameter('etats', $etats)
-            ;
+                ->setParameter('etats', $etats);
         }
 
         if (!empty($filtres)) {
@@ -104,8 +100,7 @@ class BrisPorteRepository extends ServiceEntityRepository
                 ->andWhere(
                     'd.redacteur in (:redacteurs)'.($nonAttribue ? ' or d.redacteur is null' : '')
                 )
-                ->setParameter('redacteurs', array_map(fn ($a) => $a->getId(), $attributaires))
-            ;
+                ->setParameter('redacteurs', array_map(fn ($a) => $a->getId(), $attributaires));
         } elseif ($nonAttribue) {
             $qb->andWhere('d.redacteur is null');
         }
@@ -116,7 +111,7 @@ class BrisPorteRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return BrisPorte[]
+     * @return Dossier[]
      */
     public function getListeDossiersATransmettre(): array
     {
@@ -124,7 +119,7 @@ class BrisPorteRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return BrisPorte[]
+     * @return Dossier[]
      */
     public function listerDossierParEtat(EtatDossierType $etat): array
     {
@@ -133,12 +128,11 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->where('ed.etat = :etat')
             ->setParameter('etat', $etat)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
     /**
-     * @return BrisPorte[]
+     * @return Dossier[]
      */
     public function compterDossierParEtat(EtatDossierType $etat): int
     {
@@ -148,12 +142,11 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->where('ed.etat = :etat')
             ->setParameter('etat', $etat)
             ->getQuery()
-            ->getSingleScalarResult()
-        ;
+            ->getSingleScalarResult();
     }
 
     /**
-     * @return BrisPorte[]
+     * @return Dossier[]
      */
     public function getDossierACategoriser(): array
     {
@@ -166,13 +159,11 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->andWhere('dd.type = :type_document')
             ->setParameter('type_document', DocumentType::TYPE_ATTESTATION_INFORMATION->value)
             ->groupBy('d.id')
-            ->having('count(dd.id) > 0')
-        ;
+            ->having('count(dd.id) > 0');
 
         return $qb
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
     public function compterDossierACategoriser(): int

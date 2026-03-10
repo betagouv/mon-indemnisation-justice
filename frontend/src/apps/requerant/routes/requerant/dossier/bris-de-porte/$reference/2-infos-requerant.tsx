@@ -8,6 +8,10 @@ import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import {
+  extraireDonneesInfosRequerant,
+  SchemaValidationInfosRequerants,
+} from "@/apps/requerant/formulaires/brisDePorte/2-infos-requerants.schema.ts";
+import {
   Adresse,
   Civilite,
   Commune,
@@ -18,9 +22,10 @@ import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManage
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader";
+import { dateChiffre } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import {
   createFileRoute,
   notFound,
@@ -81,7 +86,7 @@ function Etape2InfosRequerant() {
     Route.useLoaderData();
 
   const [codePostal, setCodePostal] = useState<string>(
-    dossier.requerant.communeNaissance?.codePostal ?? "",
+    dossier.personnePhysique?.communeNaissance.codePostal ?? "",
   );
   const [listeCommunes, setListeCommunes] = useState<Commune[]>([]);
 
@@ -96,24 +101,34 @@ function Etape2InfosRequerant() {
   };
 
   const formulaire = useForm({
-    canSubmitWhenInvalid: true,
     validators: {
-      //onSubmit: TODO définir le schéma de validation,
+      onSubmit: SchemaValidationInfosRequerants,
     },
-    defaultValues: dossier as Partial<Dossier>,
+    defaultValues: extraireDonneesInfosRequerant(dossier),
     listeners: {
       onChangeDebounceMs: 500,
-      onChange: async ({ formApi, fieldApi }) => {
-        await dossierManager.modifierDossier(reference, formApi.state.values);
+      onChange: ({ formApi, fieldApi }) => {
+        dossierManager.modifier(reference, formApi.state.values);
       },
     },
     onSubmit: async ({ value, formApi }) => {
+      // Enregistrer le brouillon...
+      await dossierManager.enregistrer(reference);
+      // ...et passer à l'étape suivante
       await naviguer({
         to: "../3-pieces-jointes",
         search: {} as any,
       });
     },
   });
+
+  const { estPersonneMorale, paysNaissance } = useStore(
+    formulaire.store,
+    (state) => ({
+      estPersonneMorale: state.values.estPersonneMorale,
+      paysNaissance: state.values.personnePhysique?.paysNaissance,
+    }),
+  );
 
   return (
     <>
@@ -124,7 +139,9 @@ function Etape2InfosRequerant() {
           e.preventDefault();
           e.stopPropagation();
           try {
-            await void formulaire.handleSubmit();
+            // Rafraîchir la validation avant la soumission
+            formulaire.validate("submit");
+            await formulaire.handleSubmit();
           } catch (e) {
             console.error(e);
           }
@@ -142,7 +159,7 @@ function Etape2InfosRequerant() {
 
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12">
-            {dossier.requerant.estPersonneMorale ? (
+            {estPersonneMorale ? (
               <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
                   <section className="fr-py-2w">
@@ -151,7 +168,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.raisonSociale"
+                          name="personneMorale.raisonSociale"
                           children={(field) => {
                             return (
                               <FormInput
@@ -170,7 +187,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.siren"
+                          name="personneMorale.siren"
                           children={(field) => {
                             return (
                               <FormInput
@@ -192,7 +209,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.adresse.ligne1"
+                          name="personnePhysique.adresse.ligne1"
                           children={(field) => {
                             return (
                               <FormInput
@@ -213,7 +230,7 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.adresse.ligne2"
+                          name="personnePhysique.adresse.ligne2"
                           children={(field) => {
                             return (
                               <FormInput
@@ -233,7 +250,7 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="requerant.adresse.commune.codePostal"
+                          name="personnePhysique.adresse.codePostal"
                           children={(field) => {
                             return (
                               <FormInput
@@ -251,7 +268,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="requerant.adresse.commune.nom"
+                          name="personnePhysique.adresse.commune"
                           children={(field) => {
                             return (
                               <FormInput
@@ -280,7 +297,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="requerant.civiliteRepresentantLegal"
+                          name="personneMorale.representantLegal.civilite"
                           children={(field) => {
                             return (
                               <SelectionCivilite
@@ -297,7 +314,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="requerant.prenomRepresentantLegal"
+                          name="personneMorale.representantLegal.prenom"
                           children={(field) => {
                             return (
                               <FormInput
@@ -317,7 +334,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.nomNaissanceRepresentantLegal"
+                          name="personneMorale.representantLegal.nomNaissance"
                           children={(field) => {
                             return (
                               <FormInput
@@ -335,7 +352,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.nomRepresentantLegal"
+                          name="personneMorale.representantLegal.nom"
                           children={(field) => {
                             return (
                               <FormInput
@@ -353,7 +370,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.courrielRepresentantLegal"
+                          name="personneMorale.representantLegal.courriel"
                           children={(field) => {
                             return (
                               <FormInput
@@ -371,7 +388,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.telephoneRepresentantLegal"
+                          name="personneMorale.representantLegal.telephone"
                           children={(field) => {
                             return (
                               <FormInput
@@ -399,11 +416,11 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="requerant.civilite"
+                          name="personnePhysique.personne.civilite"
                           children={(field) => {
                             return (
                               <SelectionCivilite
-                                civilite={field.state.value}
+                                civilite={field.state.value as Civilite}
                                 onChange={(civilite) =>
                                   field.setValue(civilite)
                                 }
@@ -415,15 +432,38 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-7 fr-col-8">
                         <formulaire.Field
-                          name="requerant.prenom"
+                          name="personnePhysique.personne.prenom"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Prénom(s)"
                                 nativeInputProps={{
                                   placeholder: "Prénom(s)",
-                                  onChange: (e) =>
-                                    field.setValue(e.target.value),
+                                  defaultValue:
+                                    [
+                                      field.form.state.values.personnePhysique
+                                        ?.personne.prenom,
+                                      field.form.state.values.personnePhysique
+                                        ?.prenom2,
+                                      field.form.state.values.personnePhysique
+                                        ?.prenom3,
+                                    ]
+                                      .filter(Boolean)
+                                      ?.join(", ") || "",
+                                  onChange: (e) => {
+                                    const prenoms = e.target.value
+                                      .split(",")
+                                      .map((p) => p.trim());
+                                    field.setValue(prenoms.at(0) || "");
+                                    field.form.setFieldValue(
+                                      "personnePhysique.prenom2",
+                                      prenoms.at(1),
+                                    );
+                                    field.form.setFieldValue(
+                                      "personnePhysique.prenom3",
+                                      prenoms.at(2),
+                                    );
+                                  },
                                   maxLength: 255,
                                 }}
                                 champ={field}
@@ -435,12 +475,13 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-3 fr-col-6">
                         <formulaire.Field
-                          name="requerant.nom"
+                          name="personnePhysique.personne.nom"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Nom d'usage"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -454,12 +495,13 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-4 fr-col-6">
                         <formulaire.Field
-                          name="requerant.nomNaissance"
+                          name="personnePhysique.personne.nomNaissance"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Nom de naissance"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -473,12 +515,13 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-4 fr-col-6">
                         <formulaire.Field
-                          name="requerant.courriel"
+                          name="personnePhysique.personne.courriel"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Adresse courriel"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   disabled: true,
@@ -493,14 +536,15 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-4 fr-col-6">
                         <formulaire.Field
-                          name="requerant.telephone"
+                          name="personnePhysique.personne.telephone"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Téléphone"
                                 nativeInputProps={{
                                   type: "tel",
-                                  pattern: "(0,+){1}[0-9]{8,}",
+                                  //pattern: "[0-9]{7,}",
+                                  defaultValue: field.state.value,
                                   onChange: (e) =>
                                     field.handleChange(e.target.value),
                                 }}
@@ -517,13 +561,14 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-3 fr-col-6">
                         <formulaire.Field
-                          name="requerant.dateNaissance"
+                          name="personnePhysique.dateNaissance"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Date de naissance"
                                 nativeInputProps={{
                                   type: "date",
+                                  defaultValue: dateChiffre(field.state.value),
                                   onChange: (e) =>
                                     field.handleChange(
                                       new Date(e.target.value),
@@ -539,7 +584,7 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-3 fr-col-6">
                         <formulaire.Field
-                          name="requerant.paysNaissance"
+                          name="personnePhysique.paysNaissance"
                           children={(field) => {
                             return (
                               <PaysSelect
@@ -556,91 +601,84 @@ function Etape2InfosRequerant() {
                         />
                       </div>
 
-                      <formulaire.Subscribe
-                        selector={(state) => {
-                          return state.values.requerant?.paysNaissance;
-                        }}
-                        children={(paysNaissance) => (
-                          <>
-                            {!paysNaissance || paysNaissance?.estFrance() ? (
-                              <formulaire.Field
-                                name="requerant.communeNaissance"
-                                children={(field) => {
-                                  return (
-                                    <>
-                                      <div className="fr-col-lg-2 fr-col-4">
-                                        <CodePostalInput
-                                          label="Code postal"
-                                          disabled={!paysNaissance}
-                                          nativeInputProps={{
-                                            onChange: async (e) => {
-                                              setCodePostal(e.target.value);
-                                            },
-                                          }}
-                                          estRequis={true}
-                                        />
-                                      </div>
-                                      <div className="fr-col-lg-4 fr-col-8">
-                                        <FormSelect
-                                          disabled={!listeCommunes.length}
-                                          label="Ville de naissance"
-                                          nativeSelectProps={{
-                                            onChange: (e) => {
-                                              const id = parseInt(
-                                                e.target.value,
-                                              );
+                      {!paysNaissance || paysNaissance?.estFrance() ? (
+                        /* @ts-ignore*/
+                        <formulaire.Field
+                          name="personnePhysique.communeNaissance"
+                          children={(field) => {
+                            return (
+                              <>
+                                <div className="fr-col-lg-2 fr-col-4">
+                                  <CodePostalInput
+                                    label="Code postal"
+                                    disabled={!paysNaissance}
+                                    nativeInputProps={{
+                                      defaultValue:
+                                        field.state.value?.codePostal || "",
+                                      onChange: async (e) => {
+                                        setCodePostal(e.target.value);
+                                      },
+                                    }}
+                                    estRequis={true}
+                                    champ={field}
+                                  />
+                                </div>
+                                <div className="fr-col-lg-4 fr-col-8">
+                                  <FormSelect
+                                    disabled={!listeCommunes.length}
+                                    label="Ville de naissance"
+                                    nativeSelectProps={{
+                                      value: field.state.value?.id || "",
+                                      onChange: (e) => {
+                                        const id = parseInt(e.target.value);
 
-                                              if (id) {
-                                                field.setValue(
-                                                  listeCommunes.find(
-                                                    (commune: Commune) =>
-                                                      commune.id == id,
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                          }}
-                                          champ={field}
-                                          estRequis={true}
-                                        >
-                                          <option value={""}>
-                                            Sélectionnez une ville
-                                          </option>
-                                          {listeCommunes.map(
-                                            (commune: Commune) => (
-                                              <option
-                                                key={commune.id}
-                                                value={commune.id}
-                                              >
-                                                {commune.nom}
-                                              </option>
-                                            ),
-                                          )}
-                                        </FormSelect>
-                                      </div>
-                                    </>
-                                  );
-                                }}
-                              />
-                            ) : (
-                              <formulaire.Field
-                                name="requerant.villeNaissance"
-                                children={(field) => {
-                                  return (
-                                    <div className="fr-col-lg-6 fr-col-12">
-                                      <FormInput
-                                        label="Ville de naissance"
-                                        champ={field}
-                                        estRequis={true}
-                                      />
-                                    </div>
-                                  );
-                                }}
-                              />
-                            )}
-                          </>
-                        )}
-                      />
+                                        if (id) {
+                                          const commune = listeCommunes.find(
+                                            (commune: Commune) =>
+                                              commune.id == id,
+                                          );
+                                          field.setValue(commune);
+                                        } else {
+                                          field.setValue(undefined);
+                                        }
+                                      },
+                                    }}
+                                    champ={field}
+                                    estRequis={true}
+                                  >
+                                    <option value={""}>
+                                      Sélectionnez une ville
+                                    </option>
+                                    {listeCommunes.map((commune: Commune) => (
+                                      <option
+                                        key={commune.id}
+                                        value={commune.id}
+                                      >
+                                        {commune.nom}
+                                      </option>
+                                    ))}
+                                  </FormSelect>
+                                </div>
+                              </>
+                            );
+                          }}
+                        />
+                      ) : (
+                        <formulaire.Field
+                          name="personnePhysique.villeNaissance"
+                          children={(field) => {
+                            return (
+                              <div className="fr-col-lg-6 fr-col-12">
+                                <FormInput
+                                  label="Ville de naissance"
+                                  champ={field}
+                                  estRequis={true}
+                                />
+                              </div>
+                            );
+                          }}
+                        />
+                      )}
                     </div>
 
                     <TitreSection> Votre adresse de résidence</TitreSection>
@@ -648,7 +686,7 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.adresse.ligne1"
+                          name="personnePhysique.adresse.ligne1"
                           children={(field) => {
                             return (
                               <FormSuggestedInput<Adresse>
@@ -661,7 +699,7 @@ function Etape2InfosRequerant() {
                                 }}
                                 onSelectionne={(suggestion: Adresse) => {
                                   field.form.setFieldValue(
-                                    "requerant.adresse",
+                                    "personnePhysique.adresse",
                                     suggestion,
                                   );
                                   return suggestion.ligne1;
@@ -690,13 +728,13 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="requerant.adresse.ligne2"
+                          name="personnePhysique.adresse.ligne2"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Complément d'adresse"
                                 nativeInputProps={{
-                                  defaultValue: field.state.value,
+                                  defaultValue: field.state.value || "",
                                   placeholder: "Étage, escalier",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
@@ -710,7 +748,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="requerant.adresse.commune.codePostal"
+                          name="personnePhysique.adresse.codePostal"
                           children={(field) => {
                             return (
                               <FormInput
@@ -730,7 +768,7 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="requerant.adresse.commune.nom"
+                          name="personnePhysique.adresse.commune"
                           children={(field) => {
                             return (
                               <FormInput
@@ -779,13 +817,8 @@ function Etape2InfosRequerant() {
               children: "Valider et passer à l'étape suivante",
               nativeButtonProps: {
                 type: "submit",
+                role: "submit",
               },
-              onClick: () =>
-                naviguer({
-                  from: Route.fullPath,
-                  to: "../3-pieces-jointes",
-                  search: {} as any,
-                }),
             },
           ]}
         />

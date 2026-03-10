@@ -9,7 +9,6 @@ use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
 use MonIndemnisationJustice\Repository\RequerantRepository;
-use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -17,15 +16,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: RequerantRepository::class)]
-#[ORM\Table(name: 'requerants')]
+#[ORM\Table(name: 'usagers')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SUB', fields: ['sub'])]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 #[\AllowDynamicProperties]
-class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
+class Usager implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const ROLE_REQUERANT = 'ROLE_REQUERANT';
+    public const string ROLE_REQUERANT = 'ROLE_REQUERANT';
 
     #[Groups(['user:read', 'dossier:lecture'])]
     #[ORM\Id]
@@ -40,7 +39,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     protected ?string $sub = null;
 
     #[ORM\Column(type: 'boolean')]
-    protected $estVerifieCourriel = false;
+    protected bool $estVerifieCourriel = false;
 
     #[Groups(['user:read', 'dossier:lecture'])]
     #[ORM\Column(length: 180)]
@@ -62,37 +61,41 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(options: ['default' => false])]
     protected bool $isPersonneMorale = false;
 
-    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'requerant', cascade: ['remove'])]
+    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'usager', cascade: ['remove'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    /** @var Collection<BrisPorte> */
+    /** @var Collection<Brouillon> */
     protected Collection $dossiers;
 
-    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    protected ?Adresse $adresse;
+    #[ORM\OneToMany(targetEntity: Brouillon::class, mappedBy: 'usager', cascade: ['remove'])]
+    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    protected Collection $brouillons;
 
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
-    protected ?PersonnePhysique $personnePhysique;
-
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ORM\OneToOne(inversedBy: 'compte', cascade: ['persist', 'remove'])]
-    protected ?PersonneMorale $personneMorale;
+    #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    protected Personne $personne;
 
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $navigation = null;
 
     public function __construct()
     {
-        $this->personneMorale = null;
-        $this->personnePhysique = new PersonnePhysique();
-        $this->adresse = new Adresse();
         $this->dossiers = new ArrayCollection();
     }
 
     public function __toString(): string
     {
-        return $this->getPersonnePhysique()->__toString();
+        return $this->personne->__toString();
+    }
+
+    public function getNomCourant(bool $civilite = false, bool $capital = false): string
+    {
+        return $this->personne->getNomCourant($civilite, $capital);
+    }
+
+    public function getNomComplet(): string
+    {
+        return $this->personne->getNomComplet();
     }
 
     #[ORM\PrePersist]
@@ -200,7 +203,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->sub;
     }
 
-    public function setSub(?string $sub): Requerant
+    public function setSub(?string $sub): Usager
     {
         $this->sub = $sub;
 
@@ -272,161 +275,46 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAdresse(): ?Adresse
+    public function getPersonne(): Personne
     {
-        return $this->adresse;
+        return $this->personne;
     }
 
-    public function setAdresse(?Adresse $adresse): Requerant
+    public function setPersonne(Personne $personne): Usager
     {
-        $this->adresse = $adresse;
+        $this->personne = $personne;
 
         return $this;
     }
 
-    public function getIsPersonneMorale(): ?bool
+    public function setPersonnePhysique(PersonnePhysique $personnePhysique): Usager
     {
-        return $this->isPersonneMorale && null !== $this->personneMorale;
-    }
-
-    public function setIsPersonneMorale(bool $isPersonneMorale): self
-    {
-        $this->isPersonneMorale = $isPersonneMorale;
+        $this->setPersonne($personnePhysique->getPersonne());
 
         return $this;
     }
 
-    public function getPersonnePhysique(): ?PersonnePhysique
-    {
-        return $this->personnePhysique;
-    }
-
-    public function setPersonnePhysique(PersonnePhysique $personnePhysique): self
-    {
-        $this->personnePhysique = $personnePhysique;
-
-        return $this;
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('civilite')]
-    public function getCivilite(): string
-    {
-        return $this->personnePhysique->getCivilite()->value;
-    }
-
-    public function estFeminin(): bool
-    {
-        return $this->personnePhysique->getCivilite()->estFeminin();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('nom')]
-    public function getNom(): string
-    {
-        return $this->personnePhysique->getNom();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('prenoms')]
-    public function getPrenoms(): array
-    {
-        return [$this->personnePhysique->getPrenom1(), $this->personnePhysique->getPrenom2(), $this->personnePhysique->getPrenom3()];
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('nomNaissance')]
-    public function getNomNaissance(): ?string
-    {
-        return $this->personnePhysique->getNomNaissance();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('telephone')]
-    public function getTelephone(): ?string
-    {
-        return $this->personnePhysique->getTelephone();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('dateNaissance')]
-    public function getDateNaissance(): ?int
-    {
-        return DateConvertisseur::enMillisecondes($this->personnePhysique->getDateNaissance());
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('communeNaissance')]
-    public function getCommuneNaissance(): ?string
-    {
-        return $this->personnePhysique->getCommuneNaissance();
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('paysNaissance')]
-    public function getPaysNaissance(): ?string
-    {
-        return $this->personnePhysique->getPaysNaissance()?->getNom();
-    }
-
-    public function getPersonneMorale(): ?PersonneMorale
-    {
-        return $this->personneMorale;
-    }
-
-    public function setPersonneMorale(?PersonneMorale $personneMorale): Requerant
-    {
-        $this->personneMorale = $personneMorale;
-
-        return $this;
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('raisonSociale')]
-    public function getRaisonSociale(): ?string
-    {
-        return $this->isPersonneMorale ? $this->personneMorale?->getRaisonSociale() : null;
-    }
-
-    #[Groups('agent:detail')]
-    #[SerializedName('siren')]
-    public function getSiren(): ?string
-    {
-        return $this->isPersonneMorale ? $this->getPersonneMorale()?->getRaisonSociale() : null;
-    }
-
-    public function getNomCourant(bool $civilite = false, bool $capital = false): string
-    {
-        return $this->getPersonnePhysique()?->getNomCourant($civilite, $capital);
-    }
-
-    /**
-     * Affiche l'appellation officielle du requérant, soit:
-     * - "Monsieur DUPONT Jean" pour un particulier
-     * - "la société ACME représentée par Madame DUPONT, née MARTIN, Jeanne" pour un particulier
-     */
-    public function getNomComplet(): string
-    {
-        return ($this->isPersonneMorale
-                ? "la société {$this->personneMorale->getRaisonSociale()} représentée par " : '').$this->personnePhysique->getNomComplet();
-    }
-
-    public function getDernierDossier(): ?BrisPorte
+    public function getDernierDossier(): ?Dossier
     {
         return $this->dossiers->isEmpty() ? null : $this->dossiers->last();
     }
 
     /**
-     * @return BrisPorte[]|Collection
+     * @return Dossier[]|Collection
      */
     public function getDossiers(): array|Collection
     {
         return $this->dossiers;
     }
 
+    public function getBrouillons(): Collection
+    {
+        return $this->brouillons;
+    }
+
     public function nbDossiersEnAttente(): int
     {
-        return $this->dossiers->filter(fn (BrisPorte $dossier) => !$dossier->estDepose())->count();
+        return $this->dossiers->filter(fn (Dossier $dossier) => !$dossier->estDepose())->count();
     }
 
     public function getNavigation(): ?NavigationRequerant
@@ -434,7 +322,7 @@ class Requerant implements UserInterface, PasswordAuthenticatedUserInterface
         return null !== $this->navigation ? NavigationRequerant::depuisArray($this->navigation ?? []) : null;
     }
 
-    public function setNavigation(null|array|NavigationRequerant $navigation): Requerant
+    public function setNavigation(array|NavigationRequerant|null $navigation): Usager
     {
         $this->navigation = $navigation instanceof NavigationRequerant ? $navigation->versArray() : $navigation;
 
