@@ -61,4 +61,16 @@ class PersonneMorale
 
         return $this;
     }
+
+    public function getRepresentantLegal(): ?Personne
+    {
+        return $this->representantLegal;
+    }
+
+    public function setRepresentantLegal(?Personne $representantLegal): PersonneMorale
+    {
+        $this->representantLegal = $representantLegal;
+
+        return $this;
+    }
 }

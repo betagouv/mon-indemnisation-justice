@@ -9,9 +9,15 @@ import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import {
   extraireDonneesInfosRequerant,
-  SchemaValidationInfosRequerants
+  SchemaValidationInfosRequerants,
 } from "@/apps/requerant/formulaires/brisDePorte/2-infos-requerants.schema.ts";
-import { Adresse, Civilite, Commune, Dossier, Pays } from "@/apps/requerant/models";
+import {
+  Adresse,
+  Civilite,
+  Commune,
+  Dossier,
+  Pays,
+} from "@/apps/requerant/models";
 import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
@@ -20,7 +26,12 @@ import { dateChiffre } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React, { useEffect, useState } from "react";
 
