@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Api\Requerant\Brouillon\Mapper;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\AdresseDto;
 use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\DossierDto;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\BrisPorte;
@@ -35,7 +36,34 @@ class DossierDtoMapper implements TransformCallableInterface
 
     public function depuisDossier(Dossier $dossier): DossierDto
     {
-        return new DossierDto();
+        $dto = new DossierDto();
+
+        // TODO utiliser un objet
+        $dto->etatActuel = [
+            // TODO convertir les états internes vers un état usager
+            'etat' => 'A_COMPLETER',
+            'date' => $dossier->getEtatDossier()->getDate(),
+            'requerant' => [
+                'id' => $dossier->getEtatDossier()->getRequerant()?->getId(),
+                'nom' => $dossier->getEtatDossier()->getRequerant()?->getNomCourant(capital: true),
+            ],
+        ];
+
+        $dto->reference = $dossier->getReference() ?? strval($dossier->getId());
+        $dto->usager = $dossier->getUsager()->getId();
+        $dto->estPersonneMorale = null !== $dossier->getRequerantPersonneMorale();
+
+        $dto->rapportAuLogement = $dossier->getBrisPorte()->getRapportAuLogement();
+        $dto->descriptionRapportAuLogement = $dossier->getBrisPorte()->getPrecisionRapportAuLogement();
+        $dto->adresse = new AdresseDto();
+        $dto->adresse->ligne1 = $dossier->getBrisPorte()->getAdresse()?->getLigne1();
+        $dto->adresse->ligne2 = $dossier->getBrisPorte()->getAdresse()?->getLigne2();
+        $dto->adresse->codePostal = $dossier->getBrisPorte()->getAdresse()?->getCodePostal();
+        $dto->adresse->commune = $dossier->getBrisPorte()->getAdresse()?->getLocalite();
+
+        $dto->dateOperation = $dossier->getBrisPorte()->getDateOperation();
+
+        return $dto;
     }
 
     public function versDossier(DossierDto $source): Dossier
