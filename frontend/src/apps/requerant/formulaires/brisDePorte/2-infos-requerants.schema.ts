@@ -1,5 +1,12 @@
-import { Civilites, Commune, Dossier, Pays, PersonneMorale, PersonnePhysique } from "@/apps/requerant/models";
-import { z } from "zod";
+import {
+  Civilites,
+  Commune,
+  Dossier,
+  Pays,
+  PersonneMorale,
+  PersonnePhysique,
+} from "@/apps/requerant/models";
+import { z } from "zod"; // Schema for a "personne morale" (company)
 
 // Schema for a "personne morale" (company)
 const SchemaPersonneMorale = z.object({
@@ -86,7 +93,6 @@ const SchemaPersonnePhysique = z
   .refine(
     // Si né en France, la commune de naissance est requise
     (donnees) => {
-      console.log("Né en France", [,]);
       return donnees.paysNaissance && donnees.paysNaissance.nom == "France"
         ? donnees.communeNaissance instanceof Commune
         : true;

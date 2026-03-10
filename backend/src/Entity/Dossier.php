@@ -102,6 +102,7 @@ class Dossier
 
     public function __construct()
     {
+        $this->brisPorte = new BrisPorte();
         $this->dateCreation = new \DateTimeImmutable();
         $this->documents = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
@@ -534,13 +535,6 @@ class Dossier
     public function getExplicationCloture(): ?string
     {
         return $this->getEtatDossier()->getElementContexte('explication');
-    }
-
-    public function setPorteBlindee(?bool $isPorteBlindee): self
-    {
-        $this->isPorteBlindee = $isPorteBlindee;
-
-        return $this;
     }
 
     public function getOrCreateDocument(DocumentType $type): Document
