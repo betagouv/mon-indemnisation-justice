@@ -2,34 +2,38 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Brouillon\Dto;
 
+use MonIndemnisationJustice\Api\Requerant\Brouillon\Mapper\DossierDtoMapper;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[Map(source: Dossier::class)]
-#[Map(target: Dossier::class)]
+// #[Map(source: Dossier::class)]
+#[Map(target: Dossier::class, transform: [DossierDtoMapper::class, 'versDossier'])]
 class DossierDto
 {
+    #[Map(if: false)]
     public ?string $reference;
     // public UsagerDto $usager;
+    #[Map(if: false)]
     public ?int $usager;
     #[Map(if: false)]
-    public ?bool $estPersonneMorale;
-    public PersonnePhysiqueDto $personnePhysique;
-    public PersonneMoraleDto $personneMorale;
-    #[Map(source: 'brisPorte.rapportAuLogement')]
+    public ?bool $estPersonneMorale = null;
+    public ?PersonnePhysiqueDto $personnePhysique;
+    public ?PersonneMoraleDto $personneMorale = null;
+    // #[Map(source: 'brisPorte.rapportAuLogement', if: new TargetClass(DossierDto::class))]
+    #[Map(target: 'brisPorte.rapportAuLogement')]
     public RapportAuLogement $rapportAuLogement;
-    #[Map(source: 'brisPorte.descriptionRapportAuLogement')]
-    public string $descriptionRapportAuLogement;
+    // #[Map(source: 'brisPorte.descriptionRapportAuLogement')]
+    // #[Map(target: 'brisPorte.descriptionRapportAuLogement', if: new TargetClass(Dossier::class))]
+    public ?string $descriptionRapportAuLogement = null;
+    #[Map(if: false)]
     public ?AdresseDto $adresse;
 
-    #[Map(source: 'brisPorte.dateOperation')]
+    // #[Map(source: 'brisPorte.dateOperation')]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-    #[Assert\Date]
     public ?\DateTimeImmutable $dateOperation;
 
     public array $etatActuel = [];
