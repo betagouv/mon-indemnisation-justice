@@ -4,12 +4,12 @@ namespace MonIndemnisationJustice\Event\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
-use MonIndemnisationJustice\Entity\BrouillonType;
+use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Entity\Usager;
-use MonIndemnisationJustice\Service\GestionnaireBrouillon;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
@@ -19,7 +19,6 @@ class ConnexionUsagerListener implements EventSubscriberInterface
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly GestionnaireBrouillon $gestionnaireBrouillon,
         protected readonly NormalizerInterface $normalizer,
     ) {
     }
@@ -39,20 +38,20 @@ class ConnexionUsagerListener implements EventSubscriberInterface
             // ... associée à aucun de ses dossiers existants...
             if (null !== $testEligibilite && null === $testEligibilite->dossier) {
                 // ... alors, on initie un nouveau brouillon de dossier lié à ce test d'éligibilité
-                $this->gestionnaireBrouillon->initier(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE, $usager, donnees: [
-                    'idTestEligibilite' => $testEligibilite->id,
-                    'rapportAuLogement' => $testEligibilite->rapportAuLogement->value,
-                    'personnePhysique' => [
-                        'personne' => [
-                            'id' => $usager->getPersonne()->getId(),
-                            'civilite' => $usager->getPersonne()->getCivilite(),
-                            'nom' => $usager->getPersonne()->getNom(),
-                            'prenom' => $usager->getPersonne()->getPrenom(),
-                            'courriel' => $usager->getPersonne()->getCourriel(),
-                            'telephone' => $usager->getPersonne()->getTelephone(),
-                        ],
-                    ],
-                ]);
+                $dossier = Dossier::brisDePorte()
+                    ->setUsager($usager)
+                    ->setRequerant(
+                        $usager->getPersonne()->getPersonnePhysique() ??
+                        new PersonnePhysique()
+                            ->setPersonne($usager->getPersonne())
+                    )
+                    ->setBrisPorte(
+                        new BrisPorte()
+                            ->setRapportAuLogement($testEligibilite->rapportAuLogement)
+                            ->setTestEligibilite($testEligibilite)
+                    );
+                $this->em->persist($dossier);
+                $this->em->flush();
 
                 $usager->setNavigation(null);
             }
@@ -64,6 +63,7 @@ class ConnexionUsagerListener implements EventSubscriberInterface
             // ... associée à aucun de ses dossiers existants...
             if (null !== $declarationFDO && null === $dossier) {
                 // ... alors, on crée un nouveau dossier lié à cette déclaration
+                /*
                 $this->gestionnaireBrouillon->initier(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE, $usager, donnees: [
                     'idDeclarationFDO' => $declarationFDO->getId(),
                     'dateOperation' => $declarationFDO->getDateOperation(),
@@ -83,6 +83,8 @@ class ConnexionUsagerListener implements EventSubscriberInterface
                         ],
                     ] : null,
                 ]);
+                */
+                // TODO créer dossier
 
                 $usager->setNavigation(null);
             }
