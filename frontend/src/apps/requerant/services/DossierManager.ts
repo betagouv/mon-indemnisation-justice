@@ -1,8 +1,13 @@
 import { Dossier } from "@/apps/requerant/models";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { differentiel } from "@/common/services";
-import { instanceToInstance, instanceToPlain, plainToClassFromExist, plainToInstance } from "class-transformer";
-import { ServiceIdentifier } from "inversify"; // Source - https://stackoverflow.com/a/61132308
+import {
+  instanceToInstance,
+  instanceToPlain,
+  plainToClassFromExist,
+  plainToInstance,
+} from "class-transformer";
+import { ServiceIdentifier } from "inversify";
 
 // Source - https://stackoverflow.com/a/61132308
 // Posted by Terry, modified by community. See post 'Timeline' for change history
@@ -20,6 +25,8 @@ export interface DossierManagerInterface {
   modifier(reference: string, modifications: DeepPartial<Dossier>): void;
 
   enregistrer(reference: string): Promise<Dossier>;
+
+  soumettre(reference: string): Promise<void>;
 
   mesDemandes(): Promise<DossierApercu[]>;
 }
@@ -43,8 +50,8 @@ export class ApiDossierManager implements DossierManagerInterface {
   protected dossiers: Map<string, EtatSauvegardeDossier>;
   constructor() {}
 
-  protected async chargerDossiers(): Promise<void> {
-    if (!this.dossiers) {
+  protected async chargerDossiers(rafraichir: boolean = false): Promise<void> {
+    if (!this.dossiers || rafraichir) {
       const reponse = await fetch("/api/requerant/mes-demandes", {
         method: "GET",
         headers: {
@@ -137,5 +144,24 @@ export class ApiDossierManager implements DossierManagerInterface {
     const data = await reponse.json();
 
     return plainToInstance(DossierApercu, data as any[]);
+  }
+
+  async soumettre(reference: string): Promise<void> {
+    const reponse = await fetch(
+      `/api/requerant/brouillon/bris-de-porte/${reference}/publier`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (!reponse.ok) {
+      const data = await reponse.json();
+      console.error(data.erreurs);
+    } else {
+      await this.chargerDossiers(true);
+    }
   }
 }

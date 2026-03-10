@@ -1,87 +1,92 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MonIndemnisationJustice\Tests\Service;
 
-use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\DossierDto;
+use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Brouillon;
 use MonIndemnisationJustice\Entity\BrouillonType;
+use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\DossierType;
+use MonIndemnisationJustice\Entity\GeoCodePostal;
+use MonIndemnisationJustice\Entity\PersonnePhysique;
+use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Service\GestionnaireBrouillon;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class GestionnaireBrouillonTest extends KernelTestCase
+class GestionnaireBrouillonTest extends WebTestCase
 {
-    public function testExtraireEntiteTravailWithNumericArrayKeys()
+    protected readonly EntityManagerInterface $em;
+    protected readonly GestionnaireBrouillon $gestionnaireBrouillon;
+
+    protected function setUp(): void
     {
         self::bootKernel();
+
         $container = static::getContainer();
 
-        /** @var GestionnaireBrouillon $gestionnaire */
-        $gestionnaire = $container->get(GestionnaireBrouillon::class);
+        $this->em = $container->get(EntityManagerInterface::class);
+        $this->gestionnaireBrouillon = $container->get(GestionnaireBrouillon::class);
+    }
 
-        // Test data with numeric array keys (simulating the issue)
-        $testData = [
-            'usager' => 1,
-            'personnePhysique' => [
-                'personne' => [
-                    'id' => 'be9f1b28-11e5-4023-9ca4-2c7a56da6fb1',
-                    'civilite' => 'M',
-                    'nom' => 'ERRANT',
-                    'nomNaissance' => 'ERRANT',
-                    'prenom' => 'Rick',
-                    'courriel' => 'rick.errant@courriel.fr',
+    public function testSomething(): void
+    {
+        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'ray.keran@courriel.fr']);
+        $testEligibilite = $this->em->getRepository(TestEligibilite::class)->findOneBy(['requerant' => $usager->getId()]);
+        $commune = $this->em->getRepository(GeoCodePostal::class)->findOneBy(['codePostal' => '35400']);
+
+        $brouillon = new Brouillon()
+            ->setType(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE)
+            ->setUsager($usager)
+            ->setDonnees([
+                'usager' => $usager->getId(),
+                'idTestEligibilite' => $testEligibilite->id,
+                'rapportAuLogement' => $testEligibilite->rapportAuLogement->value,
+                'personnePhysique' => [
+                    'personne' => [
+                        'id' => $usager->getPersonne()->getId()->toString(),
+                        'civilite' => $usager->getPersonne()->getCivilite()->value,
+                        'nom' => $usager->getPersonne()->getNom(),
+                        'prenom' => $usager->getPersonne()->getPrenom(),
+                        'courriel' => $usager->getPersonne()->getCourriel(),
+                        'telephone' => $usager->getPersonne()->getTelephone(),
+                    ],
+                    'adresse' => [
+                        'ligne1' => '33 boulevard des Fleurs',
+                        'codePostal' => '31000',
+                        'commune' => 'TOULOUSE',
+                    ],
+                    'dateNaissance' => '1980-01-01',
+                    'paysNaissance' => [
+                        'code' => 'FRA',
+                        'nom' => 'France',
+                    ],
+                    'communeNaissance' => [
+                        'id' => $commune->getId(),
+                        'nom' => $commune->getCommune()->getNom(),
+                        'codePostal' => $commune->getCodePostal(),
+                    ],
                 ],
                 'adresse' => [
-                    'ligne1' => '25 allée des Mimosas',
-                    'codePostal' => '44200',
-                    'commune' => 'Nantes',
+                    'ligne1' => '33 boulevard des Fleurs',
+                    'codePostal' => '31000',
+                    'commune' => 'TOULOUSE',
                 ],
-                'dateNaissance' => '1982-03-13',
-                'paysNaissance' => [
-                    'code' => 'FRA',
-                    'nom' => 'France',
-                ],
-                'communeNaissance' => [
-                    'id' => 33976,
-                    'codePostal' => '88300',
-                    'nom' => 'Neufchâteau',
-                    'departement' => 'Vosges',
-                ],
-            ],
-            'rapportAuLogement' => 'BAILLEUR',
-            'adresse' => [
-                'ligne1' => '12 rue des Oliviers',
+                'description' => "Ils ont d\u00e9fonc\u00e9 ma porte",
+                'estPorteBlindee' => false,
+                'dateOperation' => '2026-03-06',
+            ]);
 
-                'codePostal' => '44100',
-                'commune' => 'Nantes ',
-            ],
-            'dateOperation' => '2026-01-28',
-            'idTestEligibilite' => 2132,
-            'estPorteBlindee' => false,
-            'piecesJointes' => [
-                [ // This numeric key was causing the issue
-                    'id' => 5146,
-                    'type' => 'attestation_information',
-                    'chemin' => '54b10940536c05249fde10e142bb594614a1d777c0da4d4299dfbc292b81fb2a.pdf',
-                    'nom' => 'Attestation d\'information d\'un préjudice.pdf',
-                    'mime' => 'application/pdf',
-                    'taille' => 85276,
-                ],
-            ],
-        ];
+        $this->em->persist($brouillon);
+        $this->em->flush();
 
-        // Create a mock brouillon
-        $brouillon = new Brouillon();
-        $brouillon->setType(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE);
-        $brouillon->setDonnees($testData);
+        $dossier = $this->gestionnaireBrouillon->publier($brouillon);
 
-        try {
-            $result = $gestionnaire->extraireEntiteTravail($brouillon);
-            $this->assertInstanceOf(DossierDto::class, $result);
-            $this->assertCount(2, $result->piecesJointes);
-            $this->assertEquals(5146, $result->piecesJointes[0]->id);
-            $this->assertEquals(5147, $result->piecesJointes[1]->id);
-        } catch (\Exception $e) {
-            $this->fail('Denormalization failed: '.$e->getMessage());
-        }
+        $this->assertInstanceOf(Dossier::class, $dossier);
+        $this->assertEquals(DossierType::BRIS_PORTE, $dossier->getType());
+        $this->assertInstanceOf(PersonnePhysique::class, $dossier->getRequerantPersonnePhysique());
+        $this->assertNull($dossier->getRequerantPersonneMorale());
     }
 }

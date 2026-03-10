@@ -41,7 +41,7 @@ class ConnexionUsagerListener implements EventSubscriberInterface
                 // ... alors, on initie un nouveau brouillon de dossier lié à ce test d'éligibilité
                 $this->gestionnaireBrouillon->initier(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE, $usager, donnees: [
                     'idTestEligibilite' => $testEligibilite->id,
-                    'rapportAuLogement' => $testEligibilite->rapportAuLogement,
+                    'rapportAuLogement' => $testEligibilite->rapportAuLogement->value,
                     'personnePhysique' => [
                         'personne' => [
                             'id' => $usager->getPersonne()->getId(),

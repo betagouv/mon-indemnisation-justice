@@ -1,6 +1,7 @@
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { container } from "@/apps/requerant/container";
 import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe.tsx";
+import { Dossier } from "@/apps/requerant/models";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager";
 import { Loader } from "@/common/components/Loader";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
@@ -11,6 +12,7 @@ import {
   NotFoundRouteProps,
   useNavigate,
 } from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
 import React from "react";
 
 export const Route = createFileRoute(
@@ -67,6 +69,14 @@ function Etape3PiecesJointes() {
     from: Route.fullPath,
   });
 
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
+  // Récupérer la référence depuis le paramètre de la route
+  const { reference, dossier }: { reference: string; dossier: Dossier } =
+    Route.useLoaderData();
+
   return (
     <>
       <h1>Déclarer un bris de porte</h1>
@@ -122,12 +132,13 @@ function Etape3PiecesJointes() {
             nativeButtonProps: {
               type: "submit",
             },
-            onClick: () =>
-              naviguer({
-                from: Route.fullPath,
-                to: "re",
+            onClick: async () => {
+              await dossierManager.soumettre(reference);
+              await naviguer({
+                to: "/requerant/mes-demandes",
                 search: {} as any,
-              }),
+              });
+            },
           },
         ]}
       />
