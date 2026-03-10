@@ -15,7 +15,6 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class PublierBrouillonEndpoint
 {
     public function __construct(
-        protected readonly GestionnaireBrouillon $gestionnaireBrouillon,
         protected readonly NormalizerInterface $normalizer,
     ) {
     }
@@ -25,6 +24,8 @@ class PublierBrouillonEndpoint
         Brouillon $brouillon,
         Request $request,
     ) {
+        return new JsonResponse([], Response::HTTP_NOT_IMPLEMENTED);
+        /*
         $erreurs = $this->gestionnaireBrouillon->verifier($brouillon);
 
         if (!empty($erreurs)) {
@@ -40,5 +41,6 @@ class PublierBrouillonEndpoint
             '',
             Response::HTTP_NO_CONTENT
         );
+        */
     }
 }

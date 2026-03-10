@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;
 
 // #[Map(source: Dossier::class)]
+#[Map(source: Dossier::class, transform: [DossierDtoMapper::class, 'depuisDossier'])]
 #[Map(target: Dossier::class, transform: [DossierDtoMapper::class, 'versDossier'])]
 class DossierDto
 {
@@ -23,8 +24,8 @@ class DossierDto
     public ?bool $estPersonneMorale = null;
     public ?PersonnePhysiqueDto $personnePhysique;
     public ?PersonneMoraleDto $personneMorale = null;
-    // #[Map(source: 'brisPorte.rapportAuLogement', if: new TargetClass(DossierDto::class))]
-    #[Map(target: 'brisPorte.rapportAuLogement')]
+    // #[Map(source: 'brisPorte.rapportAuLogement')]
+    // #[Map(target: 'brisPorte.rapportAuLogement')]
     public RapportAuLogement $rapportAuLogement;
     // #[Map(source: 'brisPorte.descriptionRapportAuLogement')]
     // #[Map(target: 'brisPorte.descriptionRapportAuLogement', if: new TargetClass(Dossier::class))]

@@ -66,9 +66,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     /** @var Collection<Brouillon> */
     protected Collection $dossiers;
 
-    #[ORM\OneToMany(targetEntity: Brouillon::class, mappedBy: 'usager', cascade: ['remove'])]
-    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    protected Collection $brouillons;
 
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
@@ -307,9 +304,12 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->dossiers;
     }
 
-    public function getBrouillons(): Collection
+    /**
+     * @return Dossier[]|Collection
+     */
+    public function getDossiersBrisDePorte(): array|Collection
     {
-        return $this->brouillons;
+        return $this->dossiers->filter(fn (Dossier $dossier) => DossierType::BRIS_PORTE === $dossier->getType());
     }
 
     public function nbDossiersEnAttente(): int
