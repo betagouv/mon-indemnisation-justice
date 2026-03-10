@@ -9,24 +9,23 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/api/requerant/brouillon/bris-de-porte/{id}/amender', name: 'api_requerant_brouillon_bris_porte_amender', methods: ['PATCH'])]
 class AmenderBrouillonEndpoint
 {
     public function __construct(
-        protected readonly GestionnaireBrouillon $gestionnaireBrouillon,
-        protected readonly NormalizerInterface   $normalizer,
-    )
-    {
+        protected readonly NormalizerInterface $normalizer,
+    ) {
     }
 
-    public function __invoke(#[MapEntity(id: 'id', message: 'Brouillon inconnu')]
-                             Brouillon $brouillon,
-                             Request   $request)
-    {
-        $this->gestionnaireBrouillon->amender($brouillon, json_decode($request->getContent(), true));
+    public function __invoke(
+        #[MapEntity(id: 'id', message: 'Brouillon inconnu')]
+        Brouillon $brouillon,
+        Request $request,
+    ) {
+        return new JsonResponse([], Response::HTTP_NOT_IMPLEMENTED);
+        /* $this->gestionnaireBrouillon->amender($brouillon, json_decode($request->getContent(), true));
 
         return new JsonResponse(
             $this->normalizer->normalize(
@@ -36,7 +35,6 @@ class AmenderBrouillonEndpoint
             ),
             Response::HTTP_CREATED
         );
+        */
     }
-
-
 }
