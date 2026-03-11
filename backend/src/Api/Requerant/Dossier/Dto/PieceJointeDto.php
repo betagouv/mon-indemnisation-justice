@@ -1,6 +1,6 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Requerant\Brouillon\Dto;
+namespace MonIndemnisationJustice\Api\Requerant\Dossier\Dto;
 
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;

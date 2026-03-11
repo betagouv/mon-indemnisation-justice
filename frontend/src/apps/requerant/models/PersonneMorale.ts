@@ -14,6 +14,7 @@ export class PersonneMorale {
   adresse: Adresse;
   paysNaissance: never;
   communeNaissance: never;
+  villeNaissance: never;
 
   get estPersonneMorale(): boolean {
     return true;

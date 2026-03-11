@@ -117,7 +117,8 @@ export class ApiDossierManager implements DossierManagerInterface {
     // On ne déclenche l'enregistrement que si des modifications sont présentes
     if (modificationsEnAttente) {
       const reponse = await fetch(
-        `/api/requerant/brouillon/bris-de-porte/${reference}/amender`,
+        // Vers la route `api_requerant_dossier_bris_porte_amender`
+        `/api/requerant/dossier/bris-de-porte/${reference}/amender`,
         {
           method: "PATCH",
           headers: {
@@ -148,7 +149,7 @@ export class ApiDossierManager implements DossierManagerInterface {
 
   async soumettre(reference: string): Promise<void> {
     const reponse = await fetch(
-      `/api/requerant/brouillon/bris-de-porte/${reference}/publier`,
+      `/api/requerant/dossier/bris-de-porte/${reference}/publier`,
       {
         method: "POST",
         headers: {

@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Tests\Api\Requerant\Mapper;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\UsagerDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\UsagerDto;
 use MonIndemnisationJustice\Entity\Personne;
 use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

@@ -1,10 +1,13 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Requerant\Brouillon\Mapper;
+namespace MonIndemnisationJustice\Api\Requerant\Dossier\Mapper;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\AdresseDto;
-use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\DossierDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\AdresseDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\DossierDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\PersonneDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\PersonneMoraleDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\PersonnePhysiqueDto;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Dossier;
@@ -60,6 +63,22 @@ class DossierDtoMapper implements TransformCallableInterface
         $dto->adresse->ligne2 = $dossier->getBrisPorte()->getAdresse()?->getLigne2();
         $dto->adresse->codePostal = $dossier->getBrisPorte()->getAdresse()?->getCodePostal();
         $dto->adresse->commune = $dossier->getBrisPorte()->getAdresse()?->getLocalite();
+
+        if ($dossier->getRequerantPersonneMorale()) {
+            $dto->personneMorale = new PersonneMoraleDto();
+        } else {
+            $dto->personnePhysique = new PersonnePhysiqueDto();
+            $dto->personnePhysique->personne = new PersonneDto();
+            $dto->personnePhysique->personne->civilite = $dossier->getRequerantPersonnePhysique()->getPersonne()->getCivilite();
+            $dto->personnePhysique->personne->nom = $dossier->getRequerantPersonnePhysique()->getPersonne()->getNom();
+            $dto->personnePhysique->personne->prenom = $dossier->getRequerantPersonnePhysique()->getPersonne()->getPrenom();
+            $dto->personnePhysique->personne->nomNaissance = $dossier->getRequerantPersonnePhysique()->getPersonne()->getNomNaissance();
+            $dto->personnePhysique->personne->courriel = $dossier->getRequerantPersonnePhysique()->getPersonne()->getCourriel();
+            $dto->personnePhysique->personne->telephone = $dossier->getRequerantPersonnePhysique()->getPersonne()->getTelephone();
+
+            // Pays naissance
+            // Commune naissance
+        }
 
         $dto->dateOperation = $dossier->getBrisPorte()->getDateOperation();
 
