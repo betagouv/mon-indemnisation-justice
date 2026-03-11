@@ -30,18 +30,19 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
     public const LOGOUT_URL_SESSION_KEY = 'france_connect_deconnexion_url';
 
     public function __construct(
-        protected readonly HttpUtils $httpUtils,
-        protected readonly string $loginPageRoute,
-        protected readonly string $signupCheckRoute,
-        protected readonly string $loginCheckRoute,
-        protected readonly string $loginSuccessRoute,
+        protected readonly HttpUtils              $httpUtils,
+        protected readonly string                 $loginPageRoute,
+        protected readonly string                 $signupCheckRoute,
+        protected readonly string                 $loginCheckRoute,
+        protected readonly string                 $loginSuccessRoute,
         #[Autowire(service: 'oidc_client_france_connect')]
-        protected readonly OidcClient $oidcClient,
-        protected readonly UrlGeneratorInterface $urlGenerator,
-        protected readonly LoggerInterface $logger,
+        protected readonly OidcClient             $oidcClient,
+        protected readonly UrlGeneratorInterface  $urlGenerator,
+        protected readonly LoggerInterface        $logger,
         protected readonly EntityManagerInterface $em,
-        protected readonly RequerantRepository $requerantRepository,
-    ) {
+        protected readonly RequerantRepository    $requerantRepository,
+    )
+    {
     }
 
     public function supports(Request $request): ?bool
@@ -88,20 +89,20 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                         ->setSub($userInfo['sub'])
                         ->setEmail($userInfo['email'] ?? null)
                         ->setVerifieCourriel()
-                        ->setPersonnePhysique(
-                            new PersonnePhysique()
-                                ->setPrenom2($prenoms[1] ?? null)
-                                ->setPrenom3($prenoms[2] ?? null)
-                                ->setDateNaissance(new \DateTime($userInfo['birthdate'] ?? ''))
-                                ->setPaysNaissance($paysNaissance)
-                                ->setCommuneNaissance($codePostalNaissance)
-                                ->setPersonne(
-                                    new Personne()
-                                        ->setCivilite('male' === $userInfo['gender'] ? Civilite::M : Civilite::MME)
-                                        ->setNom($userInfo['family_name'] ?? '')
-                                        ->setNomNaissance($userInfo['family_name'] ?? '')
-                                        ->setPrenom($prenoms[0] ?? null)
-                                        ->setCourriel($userInfo['email'] ?? null)
+                        ->setPersonne(
+                            new Personne()
+                                ->setCivilite('male' === $userInfo['gender'] ? Civilite::M : Civilite::MME)
+                                ->setNom($userInfo['family_name'] ?? '')
+                                ->setNomNaissance($userInfo['family_name'] ?? '')
+                                ->setPrenom($prenoms[0] ?? null)
+                                ->setCourriel($userInfo['email'] ?? null)
+                                ->setPersonnePhysique(
+                                    new PersonnePhysique()
+                                        ->setPrenom2($prenoms[1] ?? null)
+                                        ->setPrenom3($prenoms[2] ?? null)
+                                        ->setDateNaissance(($dateNaissance = \DateTime::createFromFormat('Y-m-d', $userInfo['birthdate'])) ? $dateNaissance : null)
+                                        ->setPaysNaissance($paysNaissance)
+                                        ->setCommuneNaissance($codePostalNaissance)
                                 )
                         );
 
