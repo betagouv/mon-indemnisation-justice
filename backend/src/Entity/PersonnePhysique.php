@@ -96,8 +96,8 @@ class PersonnePhysique
     public function recalculerNumeroSecuriteSociale(): void
     {
         if (null !== $this->personne->getCivilite() && null !== $this->dateNaissance && (
-            null !== $this->codePostalNaissance || (null !== $this->paysNaissance && !$this->paysNaissance->estFrance())
-        )
+                null !== $this->codePostalNaissance || (null !== $this->paysNaissance && !$this->paysNaissance->estFrance())
+            )
         ) {
             $this->dateNaissance->format('m');
             $this->numeroSecuriteSociale = sprintf(
@@ -148,7 +148,7 @@ class PersonnePhysique
 
     public function getPrenoms(): ?string
     {
-        return implode(', ', array_filter([$this->personne->getPrenom(), $this->prenom2, $this->prenom3], fn ($prenom) => !empty($prenom)));
+        return implode(', ', array_filter([$this->personne->getPrenom(), $this->prenom2, $this->prenom3], fn($prenom) => !empty($prenom)));
     }
 
     public function getAdresse(): ?Adresse
@@ -162,6 +162,18 @@ class PersonnePhysique
 
         return $this;
     }
+
+    public function getCodePostalNaissance(): ?GeoCodePostal
+    {
+        return $this->codePostalNaissance;
+    }
+
+    public function setCodePostalNaissance(?GeoCodePostal $codePostalNaissance): PersonnePhysique
+    {
+        $this->codePostalNaissance = $codePostalNaissance;
+        return $this;
+    }
+
 
     public function getCommuneNaissance(): ?string
     {

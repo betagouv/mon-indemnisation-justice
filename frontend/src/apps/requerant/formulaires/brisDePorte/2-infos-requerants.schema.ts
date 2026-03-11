@@ -148,7 +148,10 @@ export const extraireDonneesInfosRequerant = (
     : {
         estPersonneMorale: false,
         personneMorale: undefined,
-        personnePhysique: { ...(dossier.personnePhysique as PersonnePhysique) },
+        personnePhysique: {
+          ...(dossier.personnePhysique as PersonnePhysique),
+          villeNaissance: "",
+        },
       };
 
 export const estDossierOkInfosRequerant = (dossier: Dossier): boolean =>

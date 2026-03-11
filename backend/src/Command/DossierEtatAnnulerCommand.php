@@ -6,6 +6,7 @@ namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -31,7 +32,7 @@ class DossierEtatAnnulerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('id');
-        $dossier = $this->em->getRepository(Dossier::class)->getByIdOuReference($id);
+        $dossier = $this->em->getRepository(Dossier::class)->getByIdOuReference($id, DossierType::BRIS_PORTE);
 
         if (null == $dossier) {
             throw new \LogicException("Aucun dossier trouve pour l'id {$id}");
