@@ -130,6 +130,8 @@ function Etape2InfosRequerant() {
     }),
   );
 
+  console.log(dossier.personnePhysique);
+
   return (
     <>
       <h1>Déclarer un bris de porte</h1>
@@ -671,6 +673,11 @@ function Etape2InfosRequerant() {
                               <div className="fr-col-lg-6 fr-col-12">
                                 <FormInput
                                   label="Ville de naissance"
+                                  nativeInputProps={{
+                                    defaultValue: field.state.value || "",
+                                    onChange: (e) =>
+                                      field.setValue(e.target.value),
+                                  }}
                                   champ={field}
                                   estRequis={true}
                                 />

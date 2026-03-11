@@ -75,7 +75,7 @@ export const extraireDonneesBrisDeporte = (
       }
     : undefined,
   rapportAuLogement: dossier.rapportAuLogement,
-  descriptionRapportAuLogement: dossier.descriptionRapportAuLogement,
+  descriptionRapportAuLogement: dossier.descriptionRapportAuLogement || "",
   dateOperation: dossier.dateOperation,
   description: dossier.description,
   adresse: {
