@@ -153,7 +153,7 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -284,13 +284,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function setPersonnePhysique(PersonnePhysique $personnePhysique): Usager
-    {
-        $this->setPersonne($personnePhysique->getPersonne());
-
-        return $this;
-    }
-
     public function getDernierDossier(): ?Dossier
     {
         return $this->dossiers->isEmpty() ? null : $this->dossiers->last();
@@ -309,12 +302,12 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getDossiersBrisDePorte(): array|Collection
     {
-        return $this->dossiers->filter(fn (Dossier $dossier) => DossierType::BRIS_PORTE === $dossier->getType());
+        return $this->dossiers->filter(fn(Dossier $dossier) => DossierType::BRIS_PORTE === $dossier->getType());
     }
 
     public function nbDossiersEnAttente(): int
     {
-        return $this->dossiers->filter(fn (Dossier $dossier) => !$dossier->estDepose())->count();
+        return $this->dossiers->filter(fn(Dossier $dossier) => !$dossier->estDepose())->count();
     }
 
     public function getNavigation(): ?NavigationRequerant

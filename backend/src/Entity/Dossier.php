@@ -143,11 +143,22 @@ class Dossier
         return $this->id;
     }
 
-    #[Groups(['agent:liste'])]
-    #[SerializedName('requerant')]
-    public function getReferenceRequerant(): ?string
+    public function getIdOuReference(): string
     {
-        return $this->usager->getNomCourant(capital: true);
+        return $this->reference ?? strval($this->id);
+    }
+
+    public function estPersonneMorale(): ?bool
+    {
+        if (null !== $this->requerantPersonneMorale) {
+            return true;
+        }
+
+        if (null !== $this->requerantPersonnePhysique) {
+            return false;
+        }
+
+        return null;
     }
 
     public function getRequerantPersonneMorale(): ?PersonneMorale
@@ -286,6 +297,11 @@ class Dossier
     public function getEtatDossier(): ?EtatDossier
     {
         return $this->etatDossier;
+    }
+
+    public function setEtatDossier(?EtatDossier $etatDossier): self
+    {
+        return $this;
     }
 
     public function getHistoriqueEtats(): Collection

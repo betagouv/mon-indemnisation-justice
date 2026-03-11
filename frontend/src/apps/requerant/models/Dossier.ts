@@ -47,18 +47,41 @@ export class Dossier extends BaseDossier {
   dateCreation: Date;
 
   @Transform(({ obj, value }: { obj: any; value: any }) => {
-    if (value !== undefined) return value;
+    if (typeof value === "boolean") {
+      return value;
+    }
 
-    return "personnePhysique" in obj
-      ? false
-      : "personneMorale" in obj || undefined;
+    if ("personneMorale" in obj && !!obj.personneMorale) {
+      return true;
+    }
+    if ("personnePhysique" in obj && !!obj.personnePhysique) {
+      return false;
+    }
+
+    return undefined;
   })
   @Expose({ toClassOnly: true })
-  estPersonneMorale: boolean;
+  protected _estPersonneMorale: boolean;
+
+  get estPersonneMorale(): boolean {
+    return this._estPersonneMorale;
+  }
+
+  set estPersonneMorale(estPersonneMorale: boolean) {
+    this._estPersonneMorale = estPersonneMorale;
+
+    if (this.estPersonneMorale && !this.personneMorale) {
+      this.personneMorale = new PersonneMorale();
+    }
+
+    if (!this.estPersonneMorale && !this.personnePhysique) {
+      this.personnePhysique = new PersonnePhysique();
+    }
+  }
 
   // '`Requerant` = `PersonnePhysique` | `PersonneMorale`
   @Type(() => PersonnePhysique)
-  personnePhysique?: PersonnePhysique;
+  personnePhysique?: PersonnePhysique = new PersonnePhysique();
   @Type(() => PersonneMorale)
   personneMorale?: PersonneMorale;
   @Type(() => Adresse)

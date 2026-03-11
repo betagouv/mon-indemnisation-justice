@@ -7,6 +7,7 @@ namespace MonIndemnisationJustice\Command;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
@@ -42,7 +43,7 @@ class DossierEtatAvancerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('id');
-        $dossier = $this->dossierRepository->getByIdOuReference($id);
+        $dossier = $this->dossierRepository->getByIdOuReference($id, DossierType::BRIS_PORTE);
 
         if (null == $dossier) {
             throw new \LogicException("Aucun dossier trouve pour l'id {$id}");

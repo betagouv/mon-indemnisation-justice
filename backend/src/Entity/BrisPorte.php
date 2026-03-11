@@ -56,6 +56,11 @@ class BrisPorte
     #[ORM\Column(options: ['default' => false])]
     protected bool $estPorteBlindee = false;
 
+    public function __construct()
+    {
+        $this->adresse = new Adresse();
+    }
+
     public function getId(): ?Uuid
     {
         return $this->id;
