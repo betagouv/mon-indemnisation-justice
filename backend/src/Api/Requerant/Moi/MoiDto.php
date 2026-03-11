@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Moi;
 
-use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\UsagerDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\UsagerDto;
 
 class MoiDto
 {

@@ -131,7 +131,7 @@ function Etape1BrisPorte() {
           e.stopPropagation();
           try {
             // Rafraîchir la validation avant la soumission
-            formulaire.validate("submit");
+            console.log(formulaire.validate("submit"));
             await formulaire.handleSubmit();
           } catch (e) {
             console.error(e);
@@ -502,8 +502,8 @@ function Etape1BrisPorte() {
               priority: "primary",
               children: "Valider et passer à l'étape suivante",
               nativeButtonProps: {
-                type: "submit",
                 role: "submit",
+                type: "submit",
               },
             },
           ]}

@@ -1,15 +1,14 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Requerant\Brouillon;
+namespace MonIndemnisationJustice\Api\Requerant\Dossier;
 
-use MonIndemnisationJustice\Api\Requerant\Brouillon\Dto\DossierDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\DossierDto;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -18,8 +17,6 @@ class MesDemandesEndpoint
 {
     public function __construct(
         protected readonly NormalizerInterface $normalizer,
-        // protected readonly DossierDtoMapper $mapper,
-        protected readonly ObjectMapperInterface $mapper,
     ) {
     }
 
@@ -35,7 +32,7 @@ class MesDemandesEndpoint
         return new JsonResponse(
             $this->normalizer->normalize(
                 $usager->getDossiersBrisDePorte()->map(
-                    fn (Dossier $dossier) => $this->mapper->map($dossier, DossierDto::class)
+                    fn (Dossier $dossier) => DossierDto::depuisDossier($dossier)
                 )->toArray(),
             ),
             Response::HTTP_OK

@@ -6,6 +6,7 @@ namespace MonIndemnisationJustice\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Entity\EtatDossier;
 use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -37,7 +38,7 @@ class DossierEtatRevenirCommand extends Command
         $id = $input->getArgument('id');
         $nbEtapes = intval($input->getArgument('nb-etapes'));
 
-        $dossier = $this->em->getRepository(Dossier::class)->getByIdOuReference($id);
+        $dossier = $this->em->getRepository(Dossier::class)->getByIdOuReference($id, DossierType::BRIS_PORTE);
 
         if (null == $dossier) {
             throw new \LogicException("Aucun dossier trouve pour l'id {$id}");
