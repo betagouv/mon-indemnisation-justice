@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 
 /**
@@ -33,9 +34,17 @@ class BrisPorteRepository extends ServiceEntityRepository
         }
     }
 
-    public function getByIdOuReference(int|string $id): ?Dossier
+    public function getByIdOuReference(int|string $id, DossierType $type): ?Dossier
     {
-        return $this->createQueryBuilder('d')->where('d.id = :id')->orWhere('d.reference = :reference')
+        $qb = $this->createQueryBuilder('d');
+
+        return $qb
+            ->where('d.type = :type')
+            ->andWhere($qb->expr()->orX(
+                'd.id = :id',
+                'd.reference = :reference'
+            ))
+            ->setParameter('type', $type)
             ->setParameter('id', intval($id))
             ->setParameter('reference', $id)
             ->getQuery()

@@ -1,17 +1,14 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Requerant\Brouillon;
+namespace MonIndemnisationJustice\Api\Requerant\Dossier;
 
-use MonIndemnisationJustice\Entity\Brouillon;
-use MonIndemnisationJustice\Service\GestionnaireBrouillon;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-#[Route('/api/requerant/brouillon/bris-de-porte/{id}/publier', name: 'api_requerant_brouillon_bris_porte_amender', methods: ['POST'])]
+#[Route('/api/requerant/dossier/bris-de-porte/{reference}/publier', name: 'api_requerant_dossier_bris_porte_publier', methods: ['POST'])]
 class PublierBrouillonEndpoint
 {
     public function __construct(
@@ -20,8 +17,7 @@ class PublierBrouillonEndpoint
     }
 
     public function __invoke(
-        #[MapEntity(id: 'id', message: 'Brouillon inconnu')]
-        Brouillon $brouillon,
+        string $reference,
         Request $request,
     ) {
         return new JsonResponse([], Response::HTTP_NOT_IMPLEMENTED);

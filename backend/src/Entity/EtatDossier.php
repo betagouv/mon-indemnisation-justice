@@ -27,7 +27,7 @@ class EtatDossier
     #[ORM\Column(type: 'string', nullable: false, enumType: EtatDossierType::class)]
     protected EtatDossierType $etat;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, name: 'date')]
+    #[ORM\Column(name: 'date', type: Types::DATETIME_IMMUTABLE)]
     protected \DateTimeImmutable $dateEntree;
 
     #[ORM\ManyToOne(targetEntity: Dossier::class, inversedBy: 'historiqueEtats')]
@@ -147,9 +147,14 @@ class EtatDossier
         return DateConvertisseur::enMillisecondes($this->dateEntree);
     }
 
-    public function getDate(): \DateTimeImmutable
+    public function getDateEntree(): \DateTimeImmutable
     {
         return $this->dateEntree;
+    }
+
+    public function getDate(): \DateTimeImmutable
+    {
+        return $this->getDateEntree();
     }
 
     public function setDateEntree(\DateTimeImmutable $dateEntree): EtatDossier

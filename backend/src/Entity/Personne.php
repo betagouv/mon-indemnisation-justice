@@ -100,7 +100,7 @@ class Personne
     {
         return sprintf(
             '%s%s %s',
-            $civilite ? ucfirst(strtolower($this->civilite->value)).'. ' : '',
+            $civilite ? ucfirst(strtolower($this->civilite->value)) . '. ' : '',
             $this->prenom,
             $capital ? strtoupper($this->nom) : ucfirst($this->nom)
         );
@@ -162,7 +162,7 @@ class Personne
 
     public function setPersonnePhysique(PersonnePhysique $personnePhysique = new PersonnePhysique()): self
     {
-        $this->personnePhysique = $personnePhysique;
+        $this->personnePhysique = $personnePhysique->setPersonne($this);
 
         return $this;
     }
