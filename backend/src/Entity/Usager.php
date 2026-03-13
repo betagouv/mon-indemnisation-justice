@@ -63,9 +63,8 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'usager', cascade: ['remove'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    /** @var Collection<Brouillon> */
-    protected Collection $dossiers;
-
+    /** @var Collection<Dossier> */
+    public Collection $dossiers;
 
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
@@ -153,7 +152,7 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string)$this->email;
+        return (string) $this->email;
     }
 
     /**
@@ -292,22 +291,14 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Dossier[]|Collection
      */
-    public function getDossiers(): array|Collection
-    {
-        return $this->dossiers;
-    }
-
-    /**
-     * @return Dossier[]|Collection
-     */
     public function getDossiersBrisDePorte(): array|Collection
     {
-        return $this->dossiers->filter(fn(Dossier $dossier) => DossierType::BRIS_PORTE === $dossier->getType());
+        return $this->dossiers->filter(fn (Dossier $dossier) => DossierType::BRIS_PORTE === $dossier->getType());
     }
 
     public function nbDossiersEnAttente(): int
     {
-        return $this->dossiers->filter(fn(Dossier $dossier) => !$dossier->estDepose())->count();
+        return $this->dossiers->filter(fn (Dossier $dossier) => !$dossier->estDepose())->count();
     }
 
     public function getNavigation(): ?NavigationRequerant

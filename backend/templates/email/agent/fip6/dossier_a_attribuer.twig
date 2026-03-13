@@ -14,8 +14,8 @@
     <br/>
     <br/>
     <p>
-        {% if dossier.requerant.estFeminin() %}La requérante{% else %}Le requérant{% endif %}
-        <b>{{ dossier.requerant.nomCourant }}</b>
+        {% if dossier.usager.personne.civilite.estFeminin() %}La requérante{% else %}Le requérant{% endif %}
+        <b>{{ dossier.usager.nomCourant }}</b>
         vient de déposer le dossier de référence <b>{{ dossier.reference }}</b>.
     </p>
     <p>
