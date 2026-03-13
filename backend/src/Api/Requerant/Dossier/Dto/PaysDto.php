@@ -9,9 +9,7 @@ class PaysDto
     public function __construct(
         public ?string $code = null,
         public ?string $nom = null,
-    )
-    {
-
+    ) {
     }
 
     public function versPays(?GeoPays $pays): GeoPays

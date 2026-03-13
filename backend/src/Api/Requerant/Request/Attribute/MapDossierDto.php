@@ -5,10 +5,9 @@ namespace MonIndemnisationJustice\Api\Requerant\Request\Attribute;
 use MonIndemnisationJustice\Entity\DossierType;
 
 #[\Attribute(\Attribute::TARGET_PARAMETER)]
-class MapDossier
+class MapDossierDto
 {
     public function __construct(
-        public bool $modifie = true,
         public string $reference = 'reference',
         public DossierType $type = DossierType::BRIS_PORTE,
     ) {
