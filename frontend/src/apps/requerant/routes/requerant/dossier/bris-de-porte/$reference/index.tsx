@@ -1,20 +1,31 @@
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container";
 import { estDossierOkBrisDePorte } from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema.ts";
 import { estDossierOkInfosRequerant } from "@/apps/requerant/formulaires/brisDePorte/2-infos-requerants.schema.ts";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager";
-import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { Loader } from "@/common/components/Loader.tsx";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  redirect,
+} from "@tanstack/react-router";
+import React from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/",
 )({
+  pendingComponent: Loader,
+  notFoundComponent: (props: NotFoundRouteProps) => (
+    <NonTrouveComposant {...props} />
+  ),
   beforeLoad: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
       .getDossier(params.reference);
 
     if (!dossier) {
-      console.log("Not found");
       throw notFound({
         data: {
           titre: `Impossible de trouver le dossier ${params.reference}`,
