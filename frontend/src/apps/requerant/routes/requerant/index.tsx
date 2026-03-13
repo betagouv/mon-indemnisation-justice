@@ -5,7 +5,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 
 export const Route = createFileRoute("/requerant/")({
-  loader: async ({ cause, params, route }) => {
+  loader: async ({ cause }) => {
     const mesDemandes = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
       .mesDemandes();
