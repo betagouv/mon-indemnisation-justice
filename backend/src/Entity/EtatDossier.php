@@ -37,7 +37,7 @@ class EtatDossier
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     #[Ignore]
-    protected ?Agent $agent;
+    protected ?Agent $agent = null;
 
     #[ORM\ManyToOne(targetEntity: Usager::class, cascade: [])]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id')]

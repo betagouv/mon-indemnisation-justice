@@ -11,44 +11,42 @@ use Symfony\Component\Uid\Uuid;
 class DossierDto
 {
     public function __construct(
-        public ?string              $reference,
-        public int                  $usager,
-        public ?EtatDossierDto      $etatActuel = null,
-        public ?bool                $estPersonneMorale = null,
+        public ?string $reference,
+        public int $usager,
+        public ?EtatDossierDto $etatActuel = null,
+        public ?bool $estPersonneMorale = null,
         public ?PersonnePhysiqueDto $personnePhysique = null,
-        public ?PersonneMoraleDto   $personneMorale = null,
-        public ?RapportAuLogement   $rapportAuLogement = null,
-        public ?string              $descriptionRapportAuLogement = null,
-        public ?AdresseDto          $adresse = null,
+        public ?PersonneMoraleDto $personneMorale = null,
+        public ?RapportAuLogement $rapportAuLogement = null,
+        public ?string $descriptionRapportAuLogement = null,
+        public ?AdresseDto $adresse = null,
         // #[Map(source: 'brisPorte.dateOperation'),
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        public ?\DateTimeImmutable  $dateOperation = null,
-        public ?int                 $idTestEligibilite = null,
-        public ?Uuid                $idDeclarationFDO = null,
-        public bool                 $estPorteBlindee = false,
-        public ?string              $description = null,
+        public ?\DateTimeImmutable $dateOperation = null,
+        public ?int $idTestEligibilite = null,
+        public ?Uuid $idDeclarationFDO = null,
+        public bool $estPorteBlindee = false,
+        public ?string $description = null,
         /** @var PieceJointeDto[] */
-        public array                $piecesJointes = [],
-    )
-    {
+        public array $piecesJointes = [],
+    ) {
     }
 
-    public function versDossier(?Dossier $dossier): Dossier
+    public function versDossier(Dossier $dossier): Dossier
     {
-        $entite = ($dossier ?? Dossier::brisDePorte());
-        return $entite->setRequerant(
+        return $dossier->setRequerant(
             $this->estPersonneMorale && $this->personneMorale ?
                 $this->personneMorale?->versPersonneMorale($dossier?->getRequerantPersonneMorale()) :
                 $this->personnePhysique->versPersonnePhysique($dossier?->getRequerantPersonnePhysique())
         )
             ->setBrisPorte(
-                $entite->getBrisPorte()
+                $dossier->getBrisPorte()
                     ->setRapportAuLogement($this->rapportAuLogement)
                     ->setPrecisionRapportAuLogement($this->descriptionRapportAuLogement)
                     ->setPorteBlindee($this->estPorteBlindee)
                     ->setDescriptionRequerant($this->description)
                     ->setDateOperation(\DateTime::createFromInterface($this->dateOperation))
-                    ->setAdresse($this->adresse?->versAdresse($entite->getBrisPorte()->getAdresse()))
+                    ->setAdresse($this->adresse?->versAdresse($dossier->getBrisPorte()->getAdresse()))
             );
     }
 
