@@ -36,8 +36,6 @@ class AmenderDossierEndpointTest extends WebTestCase
             )
             ->first();
         $reference = $dossier->getReference() ?? $dossier->getId();
-
-        // dump("/api/requerant/dossier/bris-de-porte/$reference}/amender");
         $this->client->loginUser($usager, 'requerant');
 
 

@@ -2,24 +2,27 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Voter;
 
-use MonIndemnisationJustice\Entity\Brouillon;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class RequerantBrouillonVoter extends Voter
+class RequerantDossierVoter extends Voter
 {
-    public const string ACTION_BROUILLON_INITIER = 'brouillon:initier';
-    public const string ACTION_BROUILLON_AMENDER = 'brouillon:amender';
+    public const string ACTION_DOSSIER_LISTER = 'dossier:lister';
+    public const string ACTION_DOSSIER_INITIER = 'dossier:initier';
+    public const string ACTION_DOSSIER_AMENDER = 'dossier:amender';
+    public const string ACTION_DOSSIER_PUBLIER = 'dossier:publier';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array(
             $attribute,
             [
-                self::ACTION_BROUILLON_INITIER,
-                self::ACTION_BROUILLON_AMENDER,
+                self::ACTION_DOSSIER_INITIER,
+                self::ACTION_DOSSIER_AMENDER,
+                self::ACTION_DOSSIER_PUBLIER,
             ]
         );
     }
@@ -33,15 +36,17 @@ class RequerantBrouillonVoter extends Voter
         /** @var Usager $usager */
         $usager = $token->getUser();
 
-        if (self::ACTION_BROUILLON_INITIER == $attribute) {
+        if (in_array($attribute, [self::ACTION_DOSSIER_LISTER, self::ACTION_DOSSIER_INITIER])) {
             return true;
         }
 
         // L'action d'édition est liée à un brouillon spécifique
-        if (!($brouillon = $subject) instanceof Brouillon) {
+        if (!($dossier = $subject) instanceof Dossier) {
             return false;
         }
 
-        return $brouillon->getUsager() === $usager;
+        // En tant qu'usager, je peux amender et publier seulement les dossiers que j'ai initiés.
+        // Note: c'est ici qu'on fera évoluer la règle avec les personnes morale.
+        return $dossier->getUsager() === $usager;
     }
 }
