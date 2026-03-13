@@ -5,15 +5,18 @@ namespace MonIndemnisationJustice\Api\Requerant\Dossier;
 use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\DossierDto;
 use MonIndemnisationJustice\Api\Requerant\Request\Attribute\MapDossier;
 use MonIndemnisationJustice\Api\Requerant\Request\Attribute\MapDossierDto;
+use MonIndemnisationJustice\Api\Requerant\Voter\RequerantDossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/requerant/dossier/bris-de-porte/{reference}/publier', name: 'api_requerant_dossier_bris_porte_publier', methods: ['POST', 'PATCH'])]
+#[IsGranted(RequerantDossierVoter::ACTION_DOSSIER_PUBLIER, 'dossier', message: 'Seul le requerant peut publier son dossier', statusCode: Response::HTTP_FORBIDDEN)]
 class PublierBrouillonEndpoint
 {
     public function __construct(
