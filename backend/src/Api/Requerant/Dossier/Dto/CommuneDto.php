@@ -7,12 +7,11 @@ use MonIndemnisationJustice\Entity\GeoCodePostal;
 class CommuneDto
 {
     public function __construct(
-        public ?int    $id,
+        public ?int $id,
         public ?string $codePostal,
         public ?string $nom,
         public ?string $departement,
-    )
-    {
+    ) {
 
     }
 
@@ -31,8 +30,8 @@ class CommuneDto
         return new self(
             id: $geoCodePostal->getId(),
             codePostal: $geoCodePostal->getCodePostal(),
-            nom: $geoCodePostal->getCommune()->getNom(),
-            departement: $geoCodePostal->getCommune()->getDepartement()->getNom(),
+            nom: null, // $geoCodePostal->getCommune()->getNom(),
+            departement: null, // $geoCodePostal->getCommune()->getDepartement()->getNom(),
         );
     }
 }

@@ -11,17 +11,16 @@ class PersonnePhysiqueDto
     public PersonneDto $personne;
 
     public function __construct(
-        ?PersonneDto               $personne = null,
-        public ?string             $prenom2 = null,
-        public ?string             $prenom3 = null,
-        public ?AdresseDto         $adresse = null,
+        ?PersonneDto $personne = null,
+        public ?string $prenom2 = null,
+        public ?string $prenom3 = null,
+        public ?AdresseDto $adresse = null,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         public ?\DateTimeImmutable $dateNaissance = null,
-        public ?PaysDto            $paysNaissance = null,
-        public ?CommuneDto         $communeNaissance = null,
-        public ?string             $villeNaissance = null,
-    )
-    {
+        public ?PaysDto $paysNaissance = null,
+        public ?CommuneDto $communeNaissance = null,
+        public ?string $villeNaissance = null,
+    ) {
         $this->personne = $personne ?? new PersonneDto();
     }
 
@@ -35,7 +34,7 @@ class PersonnePhysiqueDto
             ->setDateNaissance($this->dateNaissance)
             ->setPaysNaissance($this->paysNaissance?->versPays($personnePhysique?->getPaysNaissance()))
             ->setCommuneNaissance($this->communeNaissance?->versCommune($personnePhysique?->getCodePostalNaissance()))
-            ->setVilleNaissance(!is_null($this->villeNaissance) && !strlen(trim($this->villeNaissance)) ? $this->villeNaissance : null);
+            ->setVilleNaissance(!is_null($this->villeNaissance) && !empty(trim($this->villeNaissance)) ? $this->villeNaissance : null);
     }
 
     public static function depuisPersonnePhysique(?PersonnePhysique $personnePhysique): ?self

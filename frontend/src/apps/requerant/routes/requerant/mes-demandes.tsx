@@ -1,22 +1,18 @@
-import React, { ReactNode } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import Table from "@codegouvfr/react-dsfr/Table";
-import { dateSimple } from "@/common/services/date.ts";
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useInjection } from "inversify-react";
-import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
-import { useQuery } from "@tanstack/react-query";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
+import { EtatDossierType } from "@/apps/requerant/models/EtatDossier.ts";
+import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/components/Loader.tsx";
+import { dateSimple } from "@/common/services/date.ts";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import {
-  EtatDossier,
-  EtatDossierType,
-  EtatDossierTypeCode,
-} from "@/apps/requerant/models/EtatDossier.ts";
+import Badge from "@codegouvfr/react-dsfr/Badge";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import type { AlertProps } from "@codegouvfr/react-dsfr/src/Alert.tsx";
+import Table from "@codegouvfr/react-dsfr/Table";
+import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
+import React from "react";
 
 export const Route = createFileRoute("/requerant/mes-demandes")({
   component: RouteComponent,
@@ -127,9 +123,9 @@ function RouteComponent() {
                     iconId={"fr-icon-ball-pen-line"}
                     size={"small"}
                     linkProps={{
-                      to: `/requerant/dossier/bris-de-porte/$id`,
+                      to: `/requerant/dossier/bris-de-porte/$reference`,
                       params: {
-                        id: dossier.reference,
+                        reference: dossier.reference,
                       },
                     }}
                   >
