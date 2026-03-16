@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Event\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
+use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Dossier;
@@ -63,28 +64,28 @@ class ConnexionUsagerListener implements EventSubscriberInterface
             // ... associée à aucun de ses dossiers existants...
             if (null !== $declarationFDO && null === $dossier) {
                 // ... alors, on crée un nouveau dossier lié à cette déclaration
-                /*
-                $this->gestionnaireBrouillon->initier(BrouillonType::BROUILLON_DOSSIER_BRIS_PORTE, $usager, donnees: [
-                    'idDeclarationFDO' => $declarationFDO->getId(),
-                    'dateOperation' => $declarationFDO->getDateOperation(),
-                    'adresse' => [
-                        'ligne1' => $declarationFDO->getAdresse()->getLigne1(),
-                        'ligne2' => $declarationFDO->getAdresse()->getLigne2(),
-                        'codePostal' => $declarationFDO->getAdresse()->getCodePostal(),
-                        'commune' => $declarationFDO->getAdresse()->getLocalite(),
-                    ],
-                    'personnePhysique' => $declarationFDO->getCoordonneesRequerant() ? [
-                        'personne' => [
-                            'civilite' => $declarationFDO->getCoordonneesRequerant()?->getCivilite(),
-                            'nom' => $declarationFDO->getCoordonneesRequerant()?->getNom(),
-                            'prenom' => $declarationFDO->getCoordonneesRequerant()?->getPrenom(),
-                            'courriel' => $declarationFDO->getCoordonneesRequerant()?->getCourriel(),
-                            'telephone' => $declarationFDO->getCoordonneesRequerant()?->getTelephone(),
-                        ],
-                    ] : null,
-                ]);
-                */
-                // TODO créer dossier
+                $dossier = Dossier::brisDePorte()
+                    ->setUsager($usager)
+                    ->setRequerant(
+                        $usager->getPersonne()->getPersonnePhysique() ??
+                        new PersonnePhysique()
+                            ->setPersonne($usager->getPersonne())
+                    )
+                    ->setBrisPorte(
+                        new BrisPorte()
+                            ->setTestEligibilite($testEligibilite)
+                            ->setAdresse(
+                                new Adresse()
+                                    // On recopie les valeurs de l'adresse de la déclaration pour permettre au requérant de modifier
+                                    ->setLigne1($declarationFDO->getAdresse()->getLigne1())
+                                    ->setLigne2($declarationFDO->getAdresse()->getLigne2())
+                                    ->setCodePostal($declarationFDO->getAdresse()->getCodePostal())
+                                    ->setLocalite($declarationFDO->getAdresse()->getLocalite())
+                            )
+                    );
+
+                $this->em->persist($dossier);
+                $this->em->flush();
 
                 $usager->setNavigation(null);
             }
