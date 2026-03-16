@@ -4,10 +4,10 @@
 
 {% set consultation_url = url('agent_redacteur_consulter_dossier', {'id': dossier.id, '_fragment': 'courrier'}) %}
 
-{% block subject %}Dossier {{ dossier.reference }}: {% if dossier.requerant.estFeminin() %}la requérante{% else %}le requérant{% endif %} a approuvé l'indemnisation{% endblock subject %}
+{% block subject %}Dossier {{ dossier.reference }}: {% if dossier.usager.estFeminin() %}la requérante{% else %}le requérant{% endif %} a approuvé l'indemnisation{% endblock subject %}
 
 {% block entete %}
-    <b>{% if dossier.requerant.estFeminin() %}La requérante{% else %}Le requérant{% endif %} a approuvé
+    <b>{% if dossier.usager.estFeminin() %}La requérante{% else %}Le requérant{% endif %} a approuvé
         l'indemnisation</b>
 {% endblock entete %}
 
@@ -17,7 +17,7 @@
     <br/>
     <br/>
     <p>
-        {% if dossier.requerant.estFeminin() %}La requérante{% else %}Le requérant{% endif %} {{ dossier.requerant.nomCourant }}
+        {% if dossier.usager.estFeminin() %}La requérante{% else %}Le requérant{% endif %} {{ dossier.usager.nomCourant }}
         vient d'approuver la proposition d'indemnisation qui lui est
         faite sur le dossier de référence {{ dossier.reference }}.
     </p>
