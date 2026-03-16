@@ -22,7 +22,8 @@ class RenseignerMetaDonneesAttestationEndpoint
     public function __construct(
         protected readonly ObjectMapperInterface $objectMapper,
         protected readonly EntityManagerInterface $em,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity]
@@ -37,9 +38,10 @@ class RenseignerMetaDonneesAttestationEndpoint
         $metaDonnees = $this->objectMapper->map($input, MetadonneesAttestation::class);
         $document->setMetaDonneesAttestation($metaDonnees);
         $this->em->persist($document);
-        $document->getDossier()->recalculerMetaDonnees();
-        if (null !== $input->dateOperation && null === $document->getDossier()->getDateOperationPJ()) {
-            $document->getDossier()->setDateOperationPJ($input->dateOperation);
+        $document->getDossier()->getBrisPorte()->recalculerMetaDonnees();
+
+        if (null !== $input->dateOperation && null === $document->getDossier()->getBrisPorte()->getDateOperation()) {
+            $document->getDossier()->getBrisPorte()->setDateOperation($input->dateOperation);
         }
 
         $this->em->persist($document->getDossier());

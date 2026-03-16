@@ -2,19 +2,18 @@
 
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
-use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererCourrierPropositionIndemnisationEndpoint;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Teste le point d'entrée @GenererCourrierPropositionIndemnisationEndpoint de l'API, permettant de générer le courrier de proposition
  * d'indemnisation d'un dossier.
- *
- * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererCourrierPropositionIndemnisationEndpoint
  */
+#[CoversClass(GenererCourrierPropositionIndemnisationEndpoint::class)]
 class GenererCourrierPropositionIndemnisationEndpointTest extends APIEndpointTestCase
 {
     /**

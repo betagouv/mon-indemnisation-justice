@@ -2,15 +2,14 @@
 
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
+use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\ListerDossierAAttribuerEndpoint;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Teste le point d'entrée @ListerDossierAAttribuerEndpointTest de l'API, listant les dossiers à attribuer.
- *
- * @internal
- *
- * @coversNothing
  */
+#[CoversClass(ListerDossierAAttribuerEndpoint::class)]
 class ListerDossierAAttribuerEndpointTest extends APIEndpointTestCase
 {
     /**
