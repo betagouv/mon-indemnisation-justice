@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DocumentOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
@@ -37,7 +37,7 @@ class GenererDeclarationAcceptationEndpoint
 
         return new JsonResponse(
             ['document' => $this->normalizer->normalize(
-                $this->objectMapper->map($declarationAcceptation, DocumentOutput::class),
+                $this->objectMapper->map($declarationAcceptation, PieceJointeOutput::class),
                 'json'
             )],
             Response::HTTP_CREATED

@@ -176,13 +176,6 @@ class EtatDossier
         return $this;
     }
 
-    #[Groups(['agent:detail'])]
-    #[SerializedName('redacteur')]
-    public function getAgentId(): ?int
-    {
-        return $this->agent?->getId();
-    }
-
     public function getAgent(): ?Agent
     {
         return $this->agent;

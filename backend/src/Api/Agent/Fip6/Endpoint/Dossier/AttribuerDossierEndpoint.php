@@ -55,7 +55,7 @@ class AttribuerDossierEndpoint
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize(
-                $this->objectMapper->map($dossier->getEtatDossier(), EtatDossierOutput::class)
+                EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier())
             ),
         ]);
     }

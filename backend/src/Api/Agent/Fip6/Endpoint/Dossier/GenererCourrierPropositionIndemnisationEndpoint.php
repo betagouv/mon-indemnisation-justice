@@ -2,10 +2,10 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DocumentOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,7 +37,7 @@ class GenererCourrierPropositionIndemnisationEndpoint
 
         return new JsonResponse(
             ['document' => $this->normalizer->normalize(
-                $this->objectMapper->map($courrier, DocumentOutput::class),
+                $this->objectMapper->map($courrier, PieceJointeOutput::class),
                 'json'
             )],
             Response::HTTP_CREATED

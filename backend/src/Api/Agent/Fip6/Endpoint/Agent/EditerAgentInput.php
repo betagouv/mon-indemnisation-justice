@@ -19,4 +19,14 @@ class EditerAgentInput
     public Administration $administration;
     #[Assert\Choice(callback: [Agent::class, 'roles'], multiple: true, message: "Au moins un rôle n'a pas été reconnu")]
     public array $roles = [];
+
+    public function versAgent(): Agent
+    {
+        return new Agent()
+            ->setPrenom($this->prenom)
+            ->setNom($this->nom)
+            ->setEmail($this->courriel)
+            ->setAdministration($this->administration)
+            ->setRoles($this->roles);
+    }
 }

@@ -29,17 +29,14 @@ class ListerDossierAAttribuerEndpoint
 
     public function __invoke(): Response
     {
-        $dossiers = $this->entityManager->getRepository(Dossier::class)->listerDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
+        $dossiers = $this->entityManager
+            ->getRepository(Dossier::class)
+            ->listerDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
 
         return new JsonResponse(
             $this->normalizer->normalize(
                 array_map(
-                    /* Pas réussi à utiliser l'ObjectMapper ici : il se plaint de ne pas trouver les champs
-                    `dateValidation` et `agentValidateur` dans la classe source, ce qui est tout de même ballot pour un
-                    mapper ... Et je n'ai pas non plus réussi à utiliser des _arrow function_ en guise de callable
-                    transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
-                    */
-                    fn (Dossier $dossier) => DossierAAttribuerOutput::creerDepuisDossier($dossier),
+                    fn (Dossier $dossier) => DossierAAttribuerOutput::depuisDossier($dossier),
                     $dossiers
                 ),
                 'json'
