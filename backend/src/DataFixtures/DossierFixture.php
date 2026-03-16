@@ -198,6 +198,15 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setReference('BRI/20250103/001')
             ->setDateDepot(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-01-03'))
             ->setUsager($this->getReference('requerant-ray', Usager::class))
+            ->setRequerant(
+                new PersonnePhysique()
+                    ->setPersonne(
+                        $this->getReference('requerant-ray', Usager::class)->getPersonne()
+                    )
+                    ->setDateNaissance(new \DateTime('1983-11-23'))
+                    ->setCommuneNaissance($this->getReference('code-postal-35500', GeoCodePostal::class))
+                    ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
+            )
             ->setBrisPorte(
                 new BrisPorte()
                     ->setAdresse(

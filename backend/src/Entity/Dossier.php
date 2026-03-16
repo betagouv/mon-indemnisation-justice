@@ -171,6 +171,16 @@ class Dossier
         return $this->requerantPersonnePhysique;
     }
 
+    public function getRequerantPersonne(): Personne
+    {
+        return $this->requerantPersonneMorale?->getRepresentantLegal() ?? $this->requerantPersonnePhysique->getPersonne();
+    }
+
+    public function getCourrielRequerant(): string
+    {
+        return $this->getRequerantPersonne()->getCourriel();
+    }
+
     public function setRequerant(PersonnePhysique|PersonneMorale $requerant): self
     {
         if ($requerant instanceof PersonneMorale) {
