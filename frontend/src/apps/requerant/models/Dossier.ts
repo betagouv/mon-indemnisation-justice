@@ -1,5 +1,5 @@
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
-import { Exclude, Expose, Transform, Type } from "class-transformer";
+import { Expose, Transform, Type } from "class-transformer";
 import { Adresse } from "./Adresse";
 import { EtatDossier } from "./EtatDossier";
 import { PersonneMorale } from "./PersonneMorale";
@@ -12,7 +12,7 @@ export abstract class BaseDossier {
   // Référence du dossier ou id du brouillon
   reference: string;
   @Type(() => EtatDossier)
-  @Exclude({ toPlainOnly: true })
+  @Expose({ toClassOnly: true })
   etatActuel: EtatDossier;
   @Transform(({ value }: { value: any }) =>
     typeof value == "string" ? new Date(value) : undefined,
