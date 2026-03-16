@@ -99,6 +99,8 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ->setAdresse(new Adresse()
                         ->setLigne1('12 rue des Oliviers')
                         ->setCodePostal('44100'))
+                    ->setDateOperation(new \DateTimeImmutable('-10 days'))
+                    ->setRapportAuLogement(RapportAuLogement::PROPRIETAIRE)
                     ->setDescriptionRequerant('Porte fracturée tôt ce matin')
                     ->setTestEligibilite(
                         TestEligibilite::fromArray([
@@ -127,6 +129,13 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ],
             new \DateTimeImmutable('-15 days'),
             EtatDossierType::DOSSIER_A_FINALISER,
+            adresse: new Adresse()
+                ->setLigne1('15 allée de la Criée')
+                ->setCodePostal('35430')
+                ->setLocalite('Saint-Suliac')
+        )->setRequerant(
+            new PersonnePhysique()
+                ->setPersonne($this->getReference('requerant-saint-malo', Usager::class)->getPersonne())
         );
 
         $this->addReference('dossier-a-finaliser-saint-malo', $dossierAFinaliser2);
@@ -187,7 +196,11 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ],
             new \DateTimeImmutable('-18 days'),
             EtatDossierType::DOSSIER_A_INSTRUIRE,
-            redacteur: $this->getReference('agent-redacteur', Agent::class)
+            adresse: new Adresse()
+                ->setLigne1($this->faker->streetAddress())
+                ->setCodePostal($this->faker->postcode())
+                ->setLocalite($this->faker->city()),
+            redacteur: $this->getReference('agent-redacteur', Agent::class),
         )->ajouterDocument($this->creerDocumentDepuisRessource('pieces_jointes/Facture 1.png', DocumentType::TYPE_FACTURE, true));
 
         $this->addReference('dossier-en-instruction-melun', $dossierAInstruire);
@@ -286,8 +299,22 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ],
             new \DateTimeImmutable('-35 days'),
             EtatDossierType::DOSSIER_OK_A_VERIFIER,
+            adresse: new Adresse()
+                ->setLigne1($this->faker->streetAddress())
+                ->setCodePostal($this->faker->postcode())
+                ->setLocalite($this->faker->city()),
             redacteur: $this->getReference('agent-redacteur', Agent::class)
-        )->setPropositionIndemnisation('2031');
+        )
+            ->setRequerant(
+                new PersonnePhysique()
+                    ->setPersonne(
+                        $this->getReference('requerant-melun', Usager::class)->getPersonne()
+                    )
+                    // ->setDateNaissance($this->faker->dateTimeBetween('-60 years', '-18 years'))
+                    ->setCommuneNaissance($this->getReference('code-postal-77000', GeoCodePostal::class))
+                    ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
+            )
+            ->setPropositionIndemnisation('2031');
 
         $this->addReference('dossier-a-verifier-melun', $dossierAVerifier);
 

@@ -3,6 +3,8 @@
 namespace MonIndemnisationJustice\Controller\Agent;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierApercuOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierDetailOutput;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
@@ -70,7 +72,7 @@ class DossierController extends AgentController
                     'id' => $this->getAgent()->getId(),
                     'roles' => $this->getAgent()->getRoles(),
                 ],
-                'dossier' => $normalizer->normalize($dossier, 'json', ['groups' => 'agent:detail']),
+                'dossier' => $normalizer->normalize(DossierDetailOutput::creerDepuisDossier($dossier), 'json'),
                 'redacteurs' => $normalizer->normalize($this->agentRepository->getRedacteurs(), 'json', ['groups' => 'agent:resume']),
             ],
         ]);
@@ -259,17 +261,20 @@ class DossierController extends AgentController
             nonAttribue: in_array('_', self::extraireCritereRecherche($request, 'a'))
         );
 
+
         return new JsonResponse(
             [
                 'page' => $page,
                 'taille' => $taille,
                 'total' => $paginator->count(),
                 'resultats' => $normalizer->normalize(
-                    iterator_to_array(
-                        $paginator->getIterator()
+                    array_map(
+                        fn (Dossier $dossier) => DossierApercuOutput::creerDepuisDossier($dossier),
+                        iterator_to_array(
+                            $paginator->getIterator()
+                        ) ?? [],
                     ),
-                    'json',
-                    ['groups' => 'agent:liste']
+                    'json'
                 ),
             ]
         );

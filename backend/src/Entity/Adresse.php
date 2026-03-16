@@ -134,26 +134,4 @@ class Adresse
     {
         return $this->brisPortes;
     }
-
-    public function addBrisPorte(Dossier $brisPorte): static
-    {
-        if (!$this->brisPortes->contains($brisPorte)) {
-            $this->brisPortes->add($brisPorte);
-            $brisPorte->setAdresse($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBrisPorte(Dossier $brisPorte): static
-    {
-        if ($this->brisPortes->removeElement($brisPorte)) {
-            // set the owning side to null (unless already changed)
-            if ($brisPorte->getAdresse() === $this) {
-                $brisPorte->setAdresse(null);
-            }
-        }
-
-        return $this;
-    }
 }

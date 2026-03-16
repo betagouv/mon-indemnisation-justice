@@ -22,7 +22,7 @@
 </p>
 <p>
     Vu la déclaration d’acceptation
-    de {{ libelle }}{% if dossier.requerant.isPersonneMorale %}, représentée par {{ dossier.requerant.nomComplet }}, {% endif %}
+    de {{ libelle }}{% if dossier.estPersonneMorale %}, représentée par {{ dossier.requerantPersonneMorale.representantLegal.nomComplet }}, {% endif %}
     en date
     du {{ dossier.dateSignatureRequerant|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
     ;
