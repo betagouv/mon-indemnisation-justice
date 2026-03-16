@@ -2,18 +2,18 @@
 
 {% import "email/_macros.twig" as email %}
 
-{% set reinitialisation_url = url('securite_connexion_changer_mdp', {'jeton': requerant.jetonVerification }) %}
+{% set reinitialisation_url = url('securite_connexion_changer_mdp', {'jeton': usager.jetonVerification }) %}
 
 {% block subject %}Mon indemnisation justice : demande de modification de votre mot de passe{% endblock subject %}
 
 {% block entete %}
 <b>Mot de passe oublié</b>
 <br/>
-{{ requerant.email }}
+{{ usager.email }}
 {% endblock entete %}
 
 {% block contenu %}
-Bonjour {{ requerant.nomCourant }},
+Bonjour {{ usager.nomCourant }},
 <br/>
 <br/>
 Vous avez demandé à modifier votre mot de passe.
