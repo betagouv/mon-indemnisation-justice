@@ -1,3 +1,6 @@
+import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import { Expose, plainToInstance, Transform, Type } from "class-transformer";
+import { action, computed, makeObservable, observable } from "mobx";
 import {
   Adresse,
   Document,
@@ -9,9 +12,6 @@ import {
   TestEligibilite,
   TypeInstitutionSecuritePublique
 } from ".";
-import { Expose, plainToInstance, Transform, Type } from "class-transformer";
-import { action, computed, makeObservable, observable } from "mobx";
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 
 export type TypeAttestation =
   | "NOUVELLE_ATTESTATION"
@@ -25,24 +25,15 @@ export abstract class BaseDossier {
   public montantIndemnisation?: number;
 
   @Type(() => EtatDossier)
+  @Expose()
   public etat: EtatDossier;
-  protected _dateDepot: Date | null;
+  public dateDepot?: Date;
   @Expose()
   @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
   public redacteur: Redacteur | null = null;
   public typeAttestation?: TypeAttestation;
   public qualiteRequerant?: string;
   public readonly estEligible: boolean;
-  public readonly issuDeclarationFDO: boolean;
-
-  @Expose()
-  get dateDepot(): null | Date {
-    return this._dateDepot;
-  }
-
-  set dateDepot(value: Date | number) {
-    this._dateDepot = typeof value === "number" ? new Date(value) : value;
-  }
 
   public estAAttribuer(): boolean {
     return this.etat.etat.egal(EtatDossierType.A_ATTRIBUER);
@@ -133,6 +124,7 @@ export abstract class BaseDossier {
 }
 
 export class DossierApercu extends BaseDossier {
+  public readonly issuDeclarationFDO: boolean;
   public readonly requerant: string; // Prénom NOM
   public readonly adresse: string;
 }

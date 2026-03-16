@@ -465,13 +465,9 @@ class Dossier
         $this->documentsParType[$type->value] = [];
     }
 
-    /**
-     * @return Document[]|null
-     */
-    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
-    public function getDocuments(): array
+    public function getDocuments(): Collection
     {
-        return $this->documentsParType;
+        return $this->documents;
     }
 
     public function getDocumentsATransmettre(): Collection

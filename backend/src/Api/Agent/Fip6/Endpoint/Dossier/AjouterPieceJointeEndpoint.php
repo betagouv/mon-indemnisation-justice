@@ -3,10 +3,10 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DocumentOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -52,7 +52,7 @@ class AjouterPieceJointeEndpoint
 
         return new JsonResponse(
             $this->normalizer->normalize(
-                $this->objectMapper->map($document, DocumentOutput::class),
+                $this->objectMapper->map($document, PieceJointeOutput::class),
                 'json'
             ),
             Response::HTTP_OK

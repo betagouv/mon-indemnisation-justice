@@ -78,9 +78,12 @@ class BrisPorteRepository extends ServiceEntityRepository
         $qb = $this
             ->createQueryBuilder('d')
             ->join('d.etatDossier', 'e')
-            ->join('d.adresse', 'a')
-            ->join('d.requerant', 'r')
-            ->join('r.personnePhysique', 'pp')
+            ->join('d.brisPorte', 'bp')
+            ->join('bp.adresse', 'a')
+            ->leftJoin('d.requerantPersonnePhysique', 'pp')
+            ->leftJoin('pp.personne', 'ppp')
+            ->leftJoin('d.requerantPersonneMorale', 'pm')
+            ->leftJoin('pm.representantLegal', 'pmrl')
             ->orderBy('e.dateEntree', 'DESC');
 
         if (!empty($etats)) {
@@ -92,12 +95,17 @@ class BrisPorteRepository extends ServiceEntityRepository
         if (!empty($filtres)) {
             $wheres = [];
 
+            // TODO remplacer par une recherche _full text_ https://www.axopen.com/blog/2025/03/recherche-full-text-postgre-sql-guide-complet/
             foreach ($filtres as $index => $filtre) {
                 $wheres[] = "LOWER(a.codePostal) LIKE :filtre{$index}";
                 $wheres[] = "LOWER(a.ligne1) LIKE :filtre{$index}";
                 $wheres[] = "LOWER(a.localite) LIKE :filtre{$index}";
-                $wheres[] = "LOWER(pp.nom) LIKE :filtre{$index}";
-                $wheres[] = "LOWER(pp.prenom1) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(ppp.nom) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(ppp.prenom) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(pm.raisonSociale) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(pm.sirenSiret) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(pmrl.nom) LIKE :filtre{$index}";
+                $wheres[] = "LOWER(pmrl.prenom) LIKE :filtre{$index}";
                 $wheres[] = "d.reference LIKE UPPER(:filtre{$index})";
                 $qb->setParameter("filtre{$index}", strtolower("%{$filtre}%"));
             }
@@ -115,6 +123,7 @@ class BrisPorteRepository extends ServiceEntityRepository
         }
 
         $qb->setMaxResults($taille)->setFirstResult(($page - 1) * $taille);
+
 
         return new Paginator($qb->getQuery(), fetchJoinCollection: true);
     }
@@ -162,8 +171,9 @@ class BrisPorteRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('d')
             ->select('d')
             ->distinct()
+            ->join('d.brisPorte', 'bp')
             ->join('d.documents', 'dd')
-            ->where('d.typeAttestation is null')
+            ->where('bp.typeAttestation is null')
             ->andWhere('d.reference is not null')
             ->andWhere('dd.type = :type_document')
             ->setParameter('type_document', DocumentType::TYPE_ATTESTATION_INFORMATION->value)

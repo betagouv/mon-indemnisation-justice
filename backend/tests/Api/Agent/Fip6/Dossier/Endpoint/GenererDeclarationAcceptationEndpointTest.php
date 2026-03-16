@@ -3,19 +3,17 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererDeclarationAcceptationEndpoint;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Teste le point d'entrée @GenererDeclarationAcceptationEndpoint de l'API, permettant de générer la déclaration
  * d'acceptation d'un dossier.
- *
- * @internal
- *
- * @coversNothing
  */
+#[CoversClass(GenererDeclarationAcceptationEndpoint::class)]
 class GenererDeclarationAcceptationEndpointTest extends APIEndpointTestCase
 {
     /**
