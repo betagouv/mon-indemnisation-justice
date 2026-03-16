@@ -125,6 +125,11 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function estFeminin(): bool
+    {
+        return $this->personne->estFeminin();
+    }
+
     public function getPlaintextRole(): string
     {
         return '';

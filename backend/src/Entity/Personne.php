@@ -3,12 +3,10 @@
 namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity()]
 #[ORM\Table(name: 'personnes')]
-#[Map(target: PersonneDto::class)]
 class Personne
 {
     #[ORM\Id]
@@ -47,6 +45,11 @@ class Personne
     public function getCivilite(): ?Civilite
     {
         return $this->civilite;
+    }
+
+    public function estFeminin(): bool
+    {
+        return $this->civilite->estFeminin();
     }
 
     public function setCivilite(?Civilite $civilite): self
@@ -100,7 +103,7 @@ class Personne
     {
         return sprintf(
             '%s%s %s',
-            $civilite ? ucfirst(strtolower($this->civilite->value)) . '. ' : '',
+            $civilite ? ucfirst(strtolower($this->civilite->value)).'. ' : '',
             $this->prenom,
             $capital ? strtoupper($this->nom) : ucfirst($this->nom)
         );
