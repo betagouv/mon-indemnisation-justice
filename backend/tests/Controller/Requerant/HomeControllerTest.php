@@ -35,7 +35,7 @@ class HomeControllerTest extends WebTestCase
         $this->client->request('GET', '/requerant');
 
         if ($enAttenteFinalisation) {
-            $dossier = $requerant->dossiers->filter(fn (Dossier $dossier) => !$dossier->estDepose())->first();
+            $dossier = $requerant->getDossiersBrisDePorte()->filter(fn (Dossier $dossier) => !$dossier->estDepose())->first();
             $this->assertResponseRedirects("/requerant/bris-de-porte/declarer-un-bris-de-porte/{$dossier->getId()}");
         } else {
             $this->assertResponseRedirects('/requerant/mes-demandes');
