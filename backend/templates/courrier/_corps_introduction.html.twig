@@ -1,11 +1,11 @@
 <p>
     J’accuse réception de votre requête par laquelle vous
-    sollicitez{% if dossier.qualiteRequerant != 'AUT' or not dossier.precisionRequerant %}, en qualité de {{ dossier.qualiteRequerant != 'AUT' ? dossier.qualiteRequerant.libelle|lower : dossier.precisionRequerant|lower }},{% endif %}
+    sollicitez{% if dossier.brisPorte.rapportAuLogement != 'AUTRE' or not dossier.brisPorte.precisionRapportAuLogement %}, en qualité de {{ dossier.brisPorte.rapportAuLogement != 'AUT' ? dossier.brisPorte.rapportAuLogement.libelle|lower : dossier.brisPorte.precisionRapportAuLogement|lower }},{% endif %}
     l’indemnisation du préjudice subi en raison de la détérioration de la porte d’entrée du logement sis
-    {{ dossier.adresse.ligne1 }} à {{ dossier.adresse.localite|default }}
-    ({{ dossier.adresse.codeDepartemental }}).
+    {{ dossier.brisPorte.adresse.ligne1 }} à {{ dossier.brisPorte.adresse.localite|default }}
+    ({{ dossier.brisPorte.adresse.codeDepartemental }}).
     Cette dégradation aurait été occasionnée au cours d’une opération de police
-    judiciaire{% if dossier.dateOperationPJ is not null %} menée le
-    {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}{% endif %}
+    judiciaire{% if dossier.brisPorte.dateOperation is not null %} menée le
+    {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}{% endif %}
     .
 </p>

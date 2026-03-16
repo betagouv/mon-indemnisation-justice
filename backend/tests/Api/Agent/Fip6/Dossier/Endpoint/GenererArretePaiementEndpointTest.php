@@ -3,19 +3,17 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererArretePaiementEndpoint;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Teste le point d'entrée @GenererArretePaiementEndpoint de l'API, permettant de générer l'arrêté de paiement d'un
  * dossier.
- *
- * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererArretePaiementEndpoint
  */
+#[CoversClass(GenererArretePaiementEndpoint::class)]
 class GenererArretePaiementEndpointTest extends APIEndpointTestCase
 {
     /**
