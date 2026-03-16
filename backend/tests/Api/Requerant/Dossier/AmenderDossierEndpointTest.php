@@ -29,7 +29,7 @@ class AmenderDossierEndpointTest extends WebTestCase
     {
         $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'wossewodda-3728@yopmail.com']);
         /** @var Dossier $dossier */
-        $dossier = $usager->dossiers
+        $dossier = $usager->getDossiersBrisDePorte()
             ->filter(
                 fn (Dossier $d) => DossierType::BRIS_PORTE === $d->getType()
                     && EtatDossierType::DOSSIER_A_FINALISER === $d->getEtatDossier()->getEtat()
