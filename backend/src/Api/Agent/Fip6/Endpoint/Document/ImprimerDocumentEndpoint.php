@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Document;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DocumentOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DocumentVoter;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Service\ImprimanteCourrier;
@@ -30,7 +30,8 @@ class ImprimerDocumentEndpoint
         protected readonly ObjectMapperInterface $objectMapper,
         protected readonly EntityManagerInterface $entityManager,
         protected readonly NormalizerInterface $normalizer,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity]
@@ -49,6 +50,6 @@ class ImprimerDocumentEndpoint
         $this->entityManager->persist($document);
         $this->entityManager->flush();
 
-        return new JsonResponse($this->normalizer->normalize($this->objectMapper->map($document, DocumentOutput::class), 'json'));
+        return new JsonResponse($this->normalizer->normalize($this->objectMapper->map($document, PieceJointeOutput::class), 'json'));
     }
 }

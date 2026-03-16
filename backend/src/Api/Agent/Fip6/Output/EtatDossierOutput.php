@@ -2,26 +2,37 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Output;
 
-use MonIndemnisationJustice\Api\Agent\Fip6\Transformers\AgentIdTransformer;
-use MonIndemnisationJustice\Api\Agent\Fip6\Transformers\DossierEtatTransformer;
-use MonIndemnisationJustice\Api\Agent\Fip6\Transformers\RequerantNomTransformer;
 use MonIndemnisationJustice\Entity\EtatDossier;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[Map(source: EtatDossier::class)]
-final class EtatDossierOutput
+final readonly class EtatDossierOutput
 {
-    public int $id;
-    #[Map(transform: [DossierEtatTransformer::class])]
-    public string $etat;
-    #[Map(source: 'date')]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     public \DateTimeInterface $dateEntree;
-    #[Map(source: 'agent', transform: [AgentIdTransformer::class])]
-    public int $agent;
-    #[Map(source: 'requerant', transform: [RequerantNomTransformer::class])]
-    public ?string $redacteur;
-    public ?array $contexte = null;
+
+    public function __construct(
+        public int $id,
+        public string $etat,
+        \DateTimeInterface $dateEntree,
+        public ?int $redacteur = null,
+        public bool $requerant = false,
+        public ?array $contexte = null,
+    ) {
+        $this->dateEntree = $dateEntree;
+    }
+
+    public static function depuisEtatDossier(EtatDossier $etatDossier): self
+    {
+        return new self(
+            id: $etatDossier->getId(),
+            etat: $etatDossier->getEtat()->value,
+            dateEntree: $etatDossier->getDateEntree(),
+            redacteur: $etatDossier->getAgent()?->getId(),
+            requerant: null !== $etatDossier->getRequerant(),
+            contexte: $etatDossier->getContexte(),
+        );
+    }
 }

@@ -6,14 +6,9 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Agent\DeclarerNouvelAgentEnd
 use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/**
- * Teste le point d'entrée @DeclarerNouvelAgentEndpoint de l'API, permettant de déclarer un nouvel agent.
- *
- * @internal
- *
- * @coversNothing
- */
+#[CoversClass(DeclarerNouvelAgentEndpoint::class)]
 class DeclarerNouvelAgentEndpointTest extends AbstractEndpointTestCase
 {
     /**
@@ -32,7 +27,7 @@ class DeclarerNouvelAgentEndpointTest extends AbstractEndpointTestCase
             'roles' => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
         ]);
 
-        $this->assertTrue($this->client->getResponse()->isOk());
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         /** @var object $output */
         $output = json_decode($this->client->getResponse()->getContent());
