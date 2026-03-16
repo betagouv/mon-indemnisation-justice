@@ -7,7 +7,7 @@ import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container";
 import {
   extraireDonneesBrisDeporte,
-  SchemaValidationBrisPorte,
+  SchemaValidationBrisPorte
 } from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
 import {
   Adresse,
@@ -16,7 +16,7 @@ import {
   getRapportAuLogementLibelle,
   RapportAuLogement,
   TypePersonneMoraleType,
-  TypesPersonneMorale,
+  TypesPersonneMorale
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
@@ -28,12 +28,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm, useStore } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  notFound,
-  NotFoundRouteProps,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React from "react";
 
@@ -131,7 +126,7 @@ function Etape1BrisPorte() {
           e.stopPropagation();
           try {
             // Rafraîchir la validation avant la soumission
-            console.log(formulaire.validate("submit"));
+            formulaire.validate("submit");
             await formulaire.handleSubmit();
           } catch (e) {
             console.error(e);

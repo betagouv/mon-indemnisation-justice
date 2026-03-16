@@ -130,8 +130,6 @@ function Etape2InfosRequerant() {
     }),
   );
 
-  console.log(dossier.personnePhysique);
-
   return (
     <>
       <h1>Déclarer un bris de porte</h1>

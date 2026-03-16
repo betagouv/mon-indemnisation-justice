@@ -64,7 +64,8 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'usager', cascade: ['remove'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
     /** @var Collection<Dossier> */
-    public Collection $dossiers;
+    protected Collection $dossiers;
+
 
     #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
