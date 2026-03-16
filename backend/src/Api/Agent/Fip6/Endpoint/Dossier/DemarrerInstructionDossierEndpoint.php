@@ -34,7 +34,7 @@ class DemarrerInstructionDossierEndpoint
         Dossier $dossier,
         Security $security,
     ) {
-        if (EtatDossierType::DOSSIER_A_INSTRUIRE === !$dossier->getEtatDossier()->getEtat()) {
+        if (EtatDossierType::DOSSIER_A_INSTRUIRE !== $dossier->getEtatDossier()->getEtat()) {
             return new JsonResponse(['erreur' => "Ce dossier n'est pas en attente d'instruction"], Response::HTTP_BAD_REQUEST);
         }
 
@@ -45,7 +45,7 @@ class DemarrerInstructionDossierEndpoint
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize(
-                $this->objectMapper->map($dossier->getEtatDossier(), EtatDossierOutput::class)
+                EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier())
             ),
         ]);
     }

@@ -7,15 +7,13 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Teste le point d'entrée @AttribuerDossierEndpoint de l'API, permettant d'attribuer un dossier à un rédacteur.
- *
- * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\AttribuerDossierEndpoint
  */
+#[CoversClass(AttribuerDossierEndpoint::class)]
 class AttribuerDossierEndpointTest extends APIEndpointTestCase
 {
     /**
@@ -39,8 +37,8 @@ class AttribuerDossierEndpointTest extends APIEndpointTestCase
         $this->assertObjectHasProperty('etat', $output->etat);
 
         $this->assertEquals(EtatDossierType::DOSSIER_A_INSTRUIRE->value, $output->etat->etat);
-        $this->assertObjectHasProperty('agent', $output->etat);
-        $this->assertEquals($attributeur->getId(), $output->etat->agent);
+        $this->assertObjectHasProperty('redacteur', $output->etat);
+        $this->assertEquals($attributeur->getId(), $output->etat->redacteur);
     }
 
     /**

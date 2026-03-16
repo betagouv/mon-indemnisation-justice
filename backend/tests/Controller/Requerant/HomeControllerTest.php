@@ -3,17 +3,13 @@
 namespace MonIndemnisationJustice\Tests\Controller\Requerant;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Controller\Requerant\HomeController;
 use MonIndemnisationJustice\Entity\Usager;
-use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-/**
- * @internal
- *
- * @coversNothing
- */
+#[CoversClass(HomeController::class)]
 class HomeControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
@@ -25,32 +21,15 @@ class HomeControllerTest extends WebTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[DataProvider('donneesIndex')]
-    public function testIndex(string $courriel, bool $enAttenteFinalisation = false)
+    public function testIndex()
     {
-        $requerant = $this->em->getRepository(Usager::class)->findOneBy(['email' => $courriel]);
+        $requerant = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'wossewodda-3728@yopmail.com']);
 
         $this->client->loginUser($requerant, 'requerant');
 
         $this->client->request('GET', '/requerant');
 
-        if ($enAttenteFinalisation) {
-            $dossier = $requerant->getDossiersBrisDePorte()->filter(fn (Dossier $dossier) => !$dossier->estDepose())->first();
-            $this->assertResponseRedirects("/requerant/bris-de-porte/declarer-un-bris-de-porte/{$dossier->getId()}");
-        } else {
-            $this->assertResponseRedirects('/requerant/mes-demandes');
-        }
-    }
-
-    public static function donneesIndex()
-    {
-        return [
-            'sans_dossier_a_finaliser' => [
-                'ray.keran@courriel.fr', false,
-            ],
-            'avec_dossier_a_finaliser' => [
-                'wossewodda-3728@yopmail.com', true,
-            ],
-        ];
+        // Plus de redirection backend, c'est le router React qui renverra vers le dossier à finaliser
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
     }
 }

@@ -6,16 +6,14 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\DemarrerInstructionD
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Teste le point d'entrée @DemarrerInstructionDossierEndpoint de l'API, permettant au rédacteur attribué de démarrer
  * l'instruction.
- *
- * @internal
- *
- * @coversNothing
  */
+#[CoversClass(DemarrerInstructionDossierEndpoint::class)]
 class DemarrerInstructionDossierEndpointTest extends APIEndpointTestCase
 {
     /**
@@ -37,8 +35,8 @@ class DemarrerInstructionDossierEndpointTest extends APIEndpointTestCase
         $this->assertObjectHasProperty('etat', $output->etat);
 
         $this->assertEquals(EtatDossierType::DOSSIER_EN_INSTRUCTION->value, $output->etat->etat);
-        $this->assertObjectHasProperty('agent', $output->etat);
-        $this->assertEquals($redacteur->getId(), $output->etat->agent);
+        $this->assertObjectHasProperty('redacteur', $output->etat);
+        $this->assertEquals($redacteur->getId(), $output->etat->redacteur);
     }
 
     /**

@@ -21,16 +21,6 @@ class HomeController extends RequerantController
         // Suppression du contexte de session lié à l'inscription, s'il y en a un
         $request->getSession()->remove(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION);
 
-        $requerant = $this->getRequerant();
-
-        /*
-        // Rediriger vers un dossier à finaliser en priorité, s'il y en a un
-        if (null !== ($dossier = $requerant->getDossiers()->findFirst(fn (int $indice, BrisPorte $dossier) => !$dossier->estDepose()))) {
-            return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
-        }
-
-        return $this->redirectToRoute('requerant_home_dossiers');
-        */
         return $this->render('requerant/requerant.html.twig');
     }
 

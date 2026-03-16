@@ -20,14 +20,14 @@ class DossierAAttribuerOutput
     ) {
     }
 
-    public static function creerDepuisDossier(Dossier $dossier): self
+    public static function depuisDossier(Dossier $dossier): self
     {
         return new self(
             id: $dossier->getId(),
             reference: $dossier->getReference(),
             requerant: $dossier->getUsager()->getNomCourant(),
-            adresse: !empty($dossier->getAdresse()->getLigne1()) ? $dossier->getAdresse()->getLibelle() : null,
-            dateOperation: $dossier->getDateOperationPJ(),
+            adresse: $dossier->getBrisPorte()?->getAdresse()->getLibelle(),
+            dateOperation: $dossier->getBrisPorte()->getDateOperation(),
             datePublication: $dossier->getDateDeclaration()
         );
     }

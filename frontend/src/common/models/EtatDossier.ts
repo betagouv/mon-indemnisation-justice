@@ -1,6 +1,6 @@
+import { Expose, Transform, Type } from "class-transformer";
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
-import { Expose, Transform, Type } from "class-transformer";
 
 interface EtatInterface {
   get libelle(): string;
@@ -28,7 +28,7 @@ export class EtatDossier implements EtatInterface {
     if (!value) {
       return null;
     }
-    return typeof value === "number" ? new Date(value) : value;
+    return value instanceof Date ? value : new Date(value);
   })
   public readonly dateEntree: Date;
   @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
