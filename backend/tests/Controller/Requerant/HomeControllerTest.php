@@ -23,7 +23,7 @@ class HomeControllerTest extends WebTestCase
 
     public function testIndex()
     {
-        $requerant = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'wossewodda-3728@yopmail.com']);
+        $requerant = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
 
         $this->client->loginUser($requerant, 'requerant');
 
