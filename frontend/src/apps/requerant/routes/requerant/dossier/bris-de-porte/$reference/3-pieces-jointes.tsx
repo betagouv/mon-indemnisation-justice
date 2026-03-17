@@ -128,7 +128,7 @@ function Etape3PiecesJointes() {
           },
           {
             priority: "primary",
-            children: "Valider et passer à l'étape suivante",
+            children: "Soumettre ma demande",
             nativeButtonProps: {
               type: "submit",
             },

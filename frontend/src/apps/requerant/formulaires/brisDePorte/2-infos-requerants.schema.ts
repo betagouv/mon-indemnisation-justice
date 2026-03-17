@@ -60,14 +60,14 @@ const SchemaPersonnePhysique = z
         .string({ error: "Le numéro de téléphone est requis" })
         .min(7, { error: "Le numéro de téléphone est requis" }),
     }),
-    prenom2: z.string().optional(),
-    prenom3: z.string().optional(),
+    prenom2: z.string().nullish(),
+    prenom3: z.string().nullish(),
     adresse: z.object({
       ligne1: z
         .string({ error: "L'adresse de résidence est requise" })
         .trim()
         .min(1, { error: "L'adresse de résidence est requise" }),
-      ligne2: z.string().optional(),
+      ligne2: z.string().nullish(),
       codePostal: z
         .string({ error: "Le code postal est requis" })
         .regex(/\d{5}/, {
