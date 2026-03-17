@@ -7,7 +7,6 @@ use MonIndemnisationJustice\Entity\Agent;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -21,7 +20,6 @@ class MoiEndpoint
     public function __construct(
         protected readonly Security $security,
         private readonly NormalizerInterface $normalizer,
-        private readonly ObjectMapperInterface $mapper,
     ) {
     }
 
@@ -36,7 +34,7 @@ class MoiEndpoint
         return new JsonResponse(
             $this->normalizer->normalize(
                 [
-                    'agent' => $this->mapper->map($this->security->getUser(), AgentOutput::class),
+                    'agent' => AgentOutput::depuisAgent($this->security->getUser()),
                     'incarnePar' => $agentBetaIncarnant?->getNomComplet(true),
                 ],
                 'json'

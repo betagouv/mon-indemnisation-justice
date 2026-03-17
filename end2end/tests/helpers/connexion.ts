@@ -1,5 +1,6 @@
 import {Page} from "playwright-core";
-import {expect, Locator} from "@playwright/test";
+import {expect} from "@playwright/test";
+
 
 export const connexionAgent = async (page: Page, identifiant: string): Promise<void> => {
     await page.goto("/connexion");
@@ -37,19 +38,4 @@ export const connexionFranceConnect = async (page: Page, identifiant: string): P
     await expect(locatorBoutonConnexionRequerant).toBeEnabled();
 
     await locatorBoutonConnexionRequerant.click();
-}
-
-
-export type niveauDeTitre = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'h7';
-
-export const getTitre = (page: Page, libelle: string, tag: niveauDeTitre = "h1"): Locator => {
-    return page.locator(tag, {hasText: libelle});
-}
-
-/**
- * Récupérer le `<dd>` qui suit un `<dt>` dont le texte est donné en paramètre
- */
-export const getItemDescription = (page: Page, libelle: string): Locator => {
-
-    return page.locator(`dt:has-text("${libelle}") + dd`);
 }
