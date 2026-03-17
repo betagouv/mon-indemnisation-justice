@@ -33,7 +33,7 @@ class SecurityControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', '/connexion');
 
         $form = $crawler->selectButton('Je me connecte à mon espace')->form([
-            '_username' => 'wossewodda-3728@yopmail.com',
+            '_username' => 'raquel.randt@courriel.fr',
             '_password' => 'P4ssword',
         ]);
         $this->client->submit($form);
@@ -49,7 +49,7 @@ class SecurityControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', '/connexion');
 
         $form = $crawler->selectButton('Je me connecte à mon espace')->form([
-            '_username' => 'wossewodda-3728@yopmail.com',
+            '_username' => 'raquel.randt@courriel.fr',
             '_password' => 'motDePasseInv4lide',
         ]);
         $this->client->submit($form);

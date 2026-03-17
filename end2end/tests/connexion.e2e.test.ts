@@ -1,4 +1,4 @@
-import {test, expect} from '@playwright/test';
+import {expect, test} from '@playwright/test';
 import {connexionFranceConnect} from "./helpers";
 
 test.describe('navigation', () => {
@@ -25,7 +25,7 @@ test.describe('navigation', () => {
         await page.getByLabel("Mot de passe", {exact: true}).filter({visible: true}).fill("P4ssword");
         await boutonConnexion.click()
 
-        await expect(page).toHaveURL((url: URL) => /^\/requerant\/(mes-demandes|bris-de-porte\/declarer-un-bris-de-porte\/\d+)/.test(url.pathname));
+        await expect(page).toHaveURL((url: URL) => /^\/requerant\/(mes-demandes|dossier\/bris-de-porte\/\d+\/1-bris-porte)/.test(url.pathname));
     });
 
     test('connexion courriel ko mot de passe invalide', async ({browser}) => {

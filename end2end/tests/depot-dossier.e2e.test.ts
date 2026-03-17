@@ -1,7 +1,8 @@
-import {test, expect} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 import {fileURLToPath} from "url";
 import * as path from "node:path";
-import {getItemDescription} from "./helpers";
+import {formatYmd, hier, selectionnerBoutonRadio} from "./helpers";
+import {remplirChamp, selectionnerMenu} from "./helpers/formulaire";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -45,7 +46,7 @@ test("dépôt de dossier", async ({browser}) => {
     await page.getByText("Je me connecte à mon espace").click();
 
     await page.waitForURL(
-        "/requerant/bris-de-porte/declarer-un-bris-de-porte/*",
+        /\/requerant\/dossier\/bris-de-porte\/\d+\/1-bris-porte$/,
         {
             timeout: 30000,
         },
@@ -56,18 +57,22 @@ test("dépôt de dossier", async ({browser}) => {
     ).toBeVisible();
 
     await expect(
-        page.locator("h2", {hasText: "Données personnelles"}),
+        page.locator("h2", {hasText: "Informations relatives au bris de porte"}),
     ).toBeVisible();
 
-    /*
-      await page
-        .getByLabel("Les 10 premiers chiffres de votre numéro de sécurité sociale")
-        .fill("2790656123");
 
-       */
-    await page.getByLabel("Pays de naissance").selectOption("France");
-    //await page.getByLabel("Ville de naissance").fill("Turenne");
-    await page.getByLabel("Date de naissance").fill("1979-05-17");
+    await selectionnerBoutonRadio(page, "Je suis", "Une personne physique");
+    await selectionnerMenu(page, "Vous effectuez votre demande en qualité de ", "Propriétaire occupant");
+
+    await remplirChamp(page, "Date du bris de porte", formatYmd(hier()));
+    await remplirChamp(page, "Décrivez-nous l’intervention", "Les forces de l'ordre sont intervenues à 6h du matin et ont cassé ma porte.\nIls sont repartis aussitôt.");
+
+    await remplirChamp(page, "Adresse du logement concerné par le bris de porte", "17 rue des oliviers");
+    await remplirChamp(page, "Complément d'adresse", "Escalier B, 3è étage");
+    await remplirChamp(page, "Code postal", "13008");
+    await remplirChamp(page, "Ville", "Marseille");
+
+    await selectionnerBoutonRadio(page, "S'agit-il d'une porte blindée ?", "Oui");
 
     await expect(
         page.getByText("Valider et passer à l'étape suivante"),
@@ -79,38 +84,14 @@ test("dépôt de dossier", async ({browser}) => {
     ).toBeVisible();
 
     await expect(
-        page.locator("h2", {hasText: "Informations relatives au bris de porte"}),
+        page.locator("h2", {hasText: "Données personnelles"}),
     ).toBeVisible();
 
-    const today = new Date();
-    const yesterday: Date = new Date();
-    yesterday.setDate(today.getDate() - 1);
+    await remplirChamp(page, "Nom de naissance", "Quintana");
+    await selectionnerMenu(page, "Pays de naissance", "France");
+    //await page.getByLabel("Ville de naissance").fill("Turenne");
+    await remplirChamp(page, "Date de naissance", "1979-05-17");
 
-    await page
-        .getByLabel("Décrivez-nous l’intervention")
-        .fill(
-            "Les forces de l'ordre sont intervenues à 6h du matin et ont cassé ma porte.\nIls sont repartis aussitôt.",
-        );
-
-    await page
-        .getByLabel("Date de l'opération de police judiciaire")
-        .fill(yesterday.toISOString().split("T")[0]);
-
-    await page
-        .getByLabel("Adresse du logement concerné par le bris de porte")
-        .fill("17 rue des oliviers");
-    await page.getByLabel("Complément d'adresse").fill("Escalier B, 3è étage");
-    await page.getByLabel("Code postal").fill("13008");
-    await page.getByLabel("Ville").fill("Marseille");
-    await page
-        .locator("fieldset", {
-            has: page.getByText("S'agit-il d'une porte blindée ?"),
-        })
-        .getByLabel("Oui")
-        .check();
-    await page
-        .getByLabel("Vous effectuez votre demande en qualité de")
-        .selectOption("Propriétaire");
 
     // Laissons le temps au script de patcher
     await page.waitForTimeout(500);
@@ -126,7 +107,7 @@ test("dépôt de dossier", async ({browser}) => {
 
     await expect(
         page.locator("h2", {
-            hasText: "Documents à joindre obligatoirement à votre demande",
+            hasText: "Documents à joindre à votre demande",
         }),
     ).toBeVisible();
 
@@ -144,10 +125,12 @@ test("dépôt de dossier", async ({browser}) => {
         );
 
     await expect(
-        page.getByText("Valider et passer à l'étape suivante"),
+        page.getByText("Soumettre ma demande"),
     ).toBeEnabled();
-    await page.getByText("Valider et passer à l'étape suivante").click();
+    await page.getByText("Soumettre ma demande").click();
 
+    /*
+    L'étape 4, de vérification, est supprimée
     await expect(
         page.getByText("Déclarer un bris de porte", {exact: true}),
     ).toBeVisible();
@@ -160,6 +143,8 @@ test("dépôt de dossier", async ({browser}) => {
 
     await expect(page.getByText("Je déclare mon bris de porte")).toBeEnabled();
     await page.getByText("Je déclare mon bris de porte").click();
+
+     */
 
     await expect(page).toHaveURL("/requerant/mes-demandes");
 
