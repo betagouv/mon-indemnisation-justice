@@ -8,6 +8,7 @@ use Faker\Factory;
 use Faker\Generator;
 use MonIndemnisationJustice\Entity\Civilite;
 use MonIndemnisationJustice\Entity\Personne;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class PersonneFixture extends Fixture
@@ -16,6 +17,8 @@ class PersonneFixture extends Fixture
 
     public function __construct(
         protected readonly UserPasswordHasherInterface $passwordHasher,
+        #[Autowire(param: 'kernel.environment')]
+        public readonly string $environment,
     ) {
         $this->faker = Factory::create('fr_FR');
     }
@@ -41,7 +44,7 @@ class PersonneFixture extends Fixture
                 ->setPrenom('Raquel')
                 ->setNom('Randt')
                 ->setTelephone('0621436587')
-                ->setCourriel('wossewodda-3728@yopmail.com'),
+                ->setCourriel(!in_array($this->environment, ['test', 'ci']) ? 'wossewodda-3728@yopmail.com' : 'raquel.randt@courriel.fr'),
             'ray' => new Personne()
                 ->setCivilite(Civilite::M)
                 ->setPrenom('Ray')

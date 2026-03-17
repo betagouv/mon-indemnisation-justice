@@ -9,6 +9,7 @@ use Faker\Factory;
 use Faker\Generator;
 use MonIndemnisationJustice\Entity\Personne;
 use MonIndemnisationJustice\Entity\Usager;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UsagerFixture extends Fixture implements DependentFixtureInterface
@@ -17,6 +18,8 @@ class UsagerFixture extends Fixture implements DependentFixtureInterface
 
     public function __construct(
         protected readonly UserPasswordHasherInterface $passwordHasher,
+        #[Autowire(param: 'kernel.environment')]
+        public readonly string $environment,
     ) {
         $this->faker = Factory::create('fr_FR');
     }
@@ -35,7 +38,7 @@ class UsagerFixture extends Fixture implements DependentFixtureInterface
                 ->setPersonne(
                     $this->getReference('personne-raquel', Personne::class)
                 )
-                ->setEmail('wossewodda-3728@yopmail.com')
+                ->setEmail(!in_array($this->environment, ['test', 'ci']) ? 'wossewodda-3728@yopmail.com' : 'raquel.randt@courriel.fr')
                 ->setVerifieCourriel()
                 ->setRoles([Usager::ROLE_REQUERANT]),
             'ray' => new Usager()
