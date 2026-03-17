@@ -27,7 +27,7 @@ class AmenderDossierEndpointTest extends WebTestCase
 
     public function testAmenderDossierOk()
     {
-        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'wossewodda-3728@yopmail.com']);
+        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
         /** @var Dossier $dossier */
         $dossier = $usager->getDossiersBrisDePorte()
             ->filter(
