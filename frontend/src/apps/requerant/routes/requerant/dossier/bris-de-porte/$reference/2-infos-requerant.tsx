@@ -703,10 +703,20 @@ function Etape2InfosRequerant() {
                                   defaultValue: field.state.value,
                                 }}
                                 onSelectionne={(suggestion: Adresse) => {
+                                  field.setValue(suggestion.ligne1);
                                   field.form.setFieldValue(
-                                    "personnePhysique.adresse",
-                                    suggestion,
+                                    "personnePhysique.adresse.commune",
+                                    suggestion.commune,
                                   );
+                                  field.form.setFieldValue(
+                                    "personnePhysique.adresse.codePostal",
+                                    suggestion.codePostal,
+                                  );
+                                  field.form.validateField(
+                                    "personnePhysique.adresse",
+                                    "submit",
+                                  );
+
                                   return suggestion.ligne1;
                                 }}
                                 rafraichisseur={async (valeur: string) =>
@@ -806,7 +816,7 @@ function Etape2InfosRequerant() {
           buttons={[
             {
               priority: "secondary",
-              children: "Revenir à l'étape suivante",
+              children: "Revenir à l'étape précédente",
               nativeButtonProps: {
                 type: "button",
               },

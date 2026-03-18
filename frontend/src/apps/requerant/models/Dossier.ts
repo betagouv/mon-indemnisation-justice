@@ -1,4 +1,5 @@
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
+import UndefinedTransform from "@/common/normalisation/transformers/UndefinedTransform.ts";
 import { Expose, Transform, Type } from "class-transformer";
 import { Adresse } from "./Adresse";
 import { EtatDossier } from "./EtatDossier";
@@ -88,9 +89,11 @@ export class Dossier extends BaseDossier {
   adresse: Adresse = new Adresse();
   // `RapportAuLogement` = `QualiteRequerant`
   rapportAuLogement: RapportAuLogement;
+  @UndefinedTransform()
   descriptionRapportAuLogement?: string;
   @DateTransform(true)
   dateOperation: Date;
+  @UndefinedTransform()
   description?: string;
   estPorteBlindee: boolean = false;
   piecesJointes: PieceJointe[];
