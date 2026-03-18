@@ -1,0 +1,9 @@
+.iconeLigne {
+    line-height: inherit !important;
+    &::before {
+        --icon-size: 1rem !important;
+        line-height: inherit !important;
+        vertical-align: top;
+        margin-top: 0.3rem;
+    }
+}

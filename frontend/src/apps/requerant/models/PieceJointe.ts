@@ -4,5 +4,5 @@ export class PieceJointe {
   nom?: string;
   mime?: string;
   taille?: number;
-  type: "document" | "photo";
+  type: "document" | "photo" | string;
 }
