@@ -15,19 +15,19 @@ export const SchemaValidationBrisPorte = z
     rapportAuLogement: z.enum(RapportAuLogements, {
       error: "Veuillez indiquer votre rapport au logement",
     }),
-    descriptionRapportAuLogement: z.string().nullish(),
+    descriptionRapportAuLogement: z.string().optional(),
     dateOperation: z
       .date({ error: "Veuillez indiquer la date du bris de porte" })
       .max(new Date(+new Date().setHours(23, 59, 59, 9999)), {
         error: "L'opération ne peut avoir lieu dans le futur",
       }),
-    description: z.string().nullish(),
+    description: z.string().optional(),
     adresse: z.object({
       ligne1: z
         .string({ error: "L'adresse du logement est requise" })
         .trim()
         .min(1, { error: "L'adresse du logement est requise" }),
-      ligne2: z.string().nullish(),
+      ligne2: z.string().optional(),
       codePostal: z
         .string({ error: "Le code postal est requis" })
         .regex(/\d{5}/, { error: "Le code postal doit réunir 5 chiffres" }),

@@ -7,7 +7,7 @@ import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container";
 import {
   extraireDonneesBrisDeporte,
-  SchemaValidationBrisPorte
+  SchemaValidationBrisPorte,
 } from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
 import {
   Adresse,
@@ -16,7 +16,7 @@ import {
   getRapportAuLogementLibelle,
   RapportAuLogement,
   TypePersonneMoraleType,
-  TypesPersonneMorale
+  TypesPersonneMorale,
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
@@ -28,7 +28,12 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm, useStore } from "@tanstack/react-form";
-import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React from "react";
 
@@ -370,7 +375,15 @@ function Etape1BrisPorte() {
                             },
                           }}
                           onSelectionne={(suggestion: Adresse) => {
-                            field.form.setFieldValue("adresse", suggestion);
+                            field.setValue(suggestion.ligne1);
+                            field.form.setFieldValue(
+                              "adresse.commune",
+                              suggestion.commune,
+                            );
+                            field.form.setFieldValue(
+                              "adresse.codePostal",
+                              suggestion.codePostal,
+                            );
                             field.form.validateField("adresse", "submit");
                             return suggestion.ligne1;
                           }}
@@ -402,7 +415,7 @@ function Etape1BrisPorte() {
                           label="Complément d'adresse"
                           nativeInputProps={{
                             maxLength: 255,
-                            defaultValue: field.state.value,
+                            defaultValue: field.state.value || "",
                             onChange: (e) => field.setValue(e.target.value),
                           }}
                           champ={field}

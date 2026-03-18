@@ -1,0 +1,61 @@
+import { ModalProps } from "@codegouvfr/react-dsfr/Modal";
+import { fr } from "@codegouvfr/react-dsfr/src/fr";
+import { cx } from "@codegouvfr/react-dsfr/src/tools/cx.ts";
+import React, { ForwardedRef, forwardRef, useImperativeHandle } from "react";
+
+export type ModaleRef = {
+  ouvrir: () => void;
+  fermer: () => void;
+};
+
+export type ModaleProps = Omit<ModalProps, "size"> & { id: string };
+
+export const Modale = forwardRef<ModaleRef, ModaleProps>(
+  (
+    { children, concealingBackdrop, id, ...props }: ModaleProps,
+    ref: ForwardedRef<ModaleRef>,
+  ) => {
+    useImperativeHandle(ref, () => ({
+      ouvrir: () => {
+        window.dsfr(document.getElementById(id)).modal.disclose();
+      },
+      fermer: () => {
+        window.dsfr(document.getElementById(id)).modal.conceal();
+      },
+      ...ref,
+    }));
+
+    return (
+      <dialog
+        aria-labelledby={`fr-modal-title-${id}`}
+        id={id}
+        className={cx(fr.cx("fr-modal"))}
+        data-fr-concealing-backdrop={concealingBackdrop}
+      >
+        <div
+          className={fr.cx(
+            "fr-container",
+            "fr-container--fluid",
+            "fr-container-md",
+          )}
+        >
+          <div className={fr.cx("fr-grid-row", "fr-grid-row--center")}>
+            <div className={fr.cx("fr-modal__body")}>
+              <div className={fr.cx("fr-modal__header")}>
+                <button
+                  className={fr.cx("fr-btn--close", "fr-btn")}
+                  title="Fermer"
+                  aria-controls={id}
+                  type="button"
+                >
+                  Fermer
+                </button>
+              </div>
+              <div className={fr.cx("fr-modal__content")}>{children}</div>
+            </div>
+          </div>
+        </div>
+      </dialog>
+    );
+  },
+);
