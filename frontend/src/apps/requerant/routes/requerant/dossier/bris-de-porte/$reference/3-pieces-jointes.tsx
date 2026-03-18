@@ -1,19 +1,23 @@
+import { Modale, ModaleRef } from "@/apps/requerant/composants/dsfr/Modale.tsx";
+import { IconeLigne } from "@/apps/requerant/composants/IconeLigne.tsx";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { container } from "@/apps/requerant/container";
-import { Document } from "@/apps/requerant/dossier/components/PieceJointe/PieceJointe.tsx";
-import { Dossier } from "@/apps/requerant/models";
+import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager";
+import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/components/Loader";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import artworkOvoid from "@codegouvfr/react-dsfr/dsfr/artwork/background/ovoid.svg?url";
+import artworkDocumentAddUrl
+  from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
+import SideMenu from "@codegouvfr/react-dsfr/SideMenu";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import {
-  createFileRoute,
-  notFound,
-  NotFoundRouteProps,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
+import { plainToInstance } from "class-transformer";
 import { useInjection } from "inversify-react";
-import React from "react";
+import React, { useRef } from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes",
@@ -64,6 +68,31 @@ const CategoriesDocuments = {
     "Attestation de non prise en charge par l'assurance habitation",
 };
 
+type TypePieceJointe = keyof typeof CategoriesDocuments;
+
+type EtatTypePieceJointe = "MASQUE" | "OPTIONNEL" | "REQUIS";
+
+const documents: PieceJointe[] = [
+  plainToInstance(PieceJointe, {
+    id: 1,
+    chemin:
+      "https://sample-files.com/downloads/images/jpg/web_optimized_1200x800_97kb.jpg",
+    nom: "Acte propriété Mr DURAND Jean.pdf",
+    mime: "application/pdf",
+    taille: 3456787,
+    type: "titre_propriete",
+  }),
+  plainToInstance(PieceJointe, {
+    id: 2,
+    chemin:
+      "https://sample-files.com/downloads/images/jpg/web_optimized_1200x800_97kb.jpg",
+    nom: "IMG7654.jpg",
+    mime: "image/jpeg",
+    taille: 45678,
+    type: "photo_prejudice",
+  }),
+];
+
 function Etape3PiecesJointes() {
   const naviguer = useNavigate({
     from: Route.fullPath,
@@ -77,71 +106,266 @@ function Etape3PiecesJointes() {
   const { reference, dossier }: { reference: string; dossier: Dossier } =
     Route.useLoaderData();
 
+  const [pieceJointe, setPieceJointe] = React.useState<PieceJointe | undefined>(
+    documents.at(0),
+  );
+
+  const refModaleAjoutPieceJointe = useRef<ModaleRef>(null);
+
+  const [typePieceJointe, setTypePieceJointe] = React.useState<TypePieceJointe>(
+    "attestation_information",
+  );
+
+  console.log(artworkDocumentAddUrl);
+
   return (
     <>
       <h1>Déclarer un bris de porte</h1>
 
-      <section>
-        <Stepper
-          currentStep={3}
-          stepCount={3}
-          title={"Documents à joindre à votre demande"}
-        />
-      </section>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        className={classes.mijForm}
+      >
+        <section>
+          <Stepper
+            currentStep={3}
+            stepCount={3}
+            title={"Documents à joindre à votre demande"}
+          />
+        </section>
 
-      <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12">
-          {Object.entries(CategoriesDocuments).map(([type, libelle]) => (
-            <section className="fr-py-2w" key={type}>
-              <Document
-                documents={[]}
-                libelle={libelle}
-                estRequis={true}
-                type={type}
-                onRemoved={(document) => {
-                  console.log(document);
-                }}
-                onUploaded={(document) => console.log(document)}
-              />
-            </section>
-          ))}
+        <Modale
+          ref={refModaleAjoutPieceJointe}
+          id="modale-ajout-pieces-jointes"
+          title="Ajouter un document"
+        >
+          <div className="fr-col-12">
+            <Alert severity="info" title="Ajouter un document"></Alert>
+          </div>
+        </Modale>
+
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12">
+            <p>
+              Afin de pouvoir valider votre demande, vous devez fournir les
+              documents relatifs à votre situation.
+            </p>
+
+            <ButtonsGroup
+              inlineLayoutWhen="always"
+              alignment="right"
+              buttonsIconPosition="right"
+              buttonsSize="small"
+              buttons={[
+                {
+                  priority: "secondary",
+                  iconId: "fr-icon-add-line",
+
+                  children: "Ajouter des documents",
+                  nativeButtonProps: {
+                    type: "button",
+                  },
+                  onClick: () => refModaleAjoutPieceJointe.current?.ouvrir(),
+                },
+              ]}
+            />
+          </div>
         </div>
-      </div>
 
-      <ButtonsGroup
-        inlineLayoutWhen="always"
-        alignment="right"
-        buttonsIconPosition="right"
-        buttons={[
-          {
-            priority: "secondary",
-            children: "Revenir à l'étape suivante",
-            nativeButtonProps: {
-              type: "button",
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="container fr-col-12 fr-col-lg-3">
+            <SideMenu
+              align="left"
+              burgerMenuButtonText="Mes documents"
+              title="Mes documents"
+              items={Object.entries(CategoriesDocuments).map(
+                ([type, libelle]) => ({
+                  linkProps: {
+                    href: "#",
+                  },
+                  isActive: type === typePieceJointe,
+                  //items: [],
+                  text: (
+                    <span className="">
+                      {libelle}
+
+                      {type === "carte_identite" ? (
+                        <IconeLigne
+                          iconId="fr-icon-success-line"
+                          className=" fr-text-default--success fr-ml-1v"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <IconeLigne
+                          iconId="fr-icon-error-line"
+                          className=" fr-text-default--error fr-ml-1v"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </span>
+                  ),
+                }),
+              )}
+            />
+          </div>
+
+          <div className="fr-col-12 fr-col-lg-9">
+            <div className="fr-my-5w fr-mt-md-12w fr-mb-md-10w">
+              <div className="fr-col-12  fr-grid-row fr-grid-row--gutters fr-grid-row--middle fr-grid-row--center">
+                <div className="fr-py-0 fr-col-12 fr-col-md-6">
+                  <h3>Photo de la porte endommagée</h3>
+                  <p className="fr-text--sm fr-mb-3w">
+                    Votre dossier ne contient toujours pas de photo de la porte
+                    endommagée.
+                  </p>
+
+                  <p className="fr-text--lead fr-mb-3w">
+                    Au moins un document, photo ou fichier PDF, est requis pour
+                    mener l'instruction de votre demande d'indemnisation.
+                  </p>
+                  <p className="fr-text--sm fr-mb-5w">
+                    Vous pouvez téléverser des documents dès à présent depuis la
+                    boîte de dialogue qui s'ouvrira en cliquant sur le bouton
+                    ci-dessous :
+                  </p>
+                </div>
+                <div className="fr-col-12 fr-col-md-3 fr-col-offset-md-1 fr-px-6w fr-px-md-0 fr-py-0 fr-hidden fr-unhidden-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="fr-responsive-img fr-artwork"
+                    aria-hidden="true"
+                    width="160"
+                    height="200"
+                    viewBox="0 0 160 200"
+                    data-fr-js-ratio="true"
+                  >
+                    <use
+                      className="fr-artwork-motif"
+                      href={`${artworkOvoid}#artwork-motif`}
+                    ></use>
+                    <use
+                      className="fr-artwork-background"
+                      href={`${artworkOvoid}#artwork-background`}
+                    ></use>
+                    <g transform="translate(40, 60)">
+                      <use
+                        className="fr-artwork-decorative"
+                        href={`${artworkDocumentAddUrl}#artwork-decorative`}
+                      ></use>
+                      <use
+                        className="fr-artwork-minor"
+                        href={`${artworkDocumentAddUrl}#artwork-minor`}
+                      ></use>
+                      <use
+                        className="fr-artwork-major"
+                        href={`${artworkDocumentAddUrl}#artwork-major`}
+                      ></use>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div className="fr-col-12 fr-grid-row fr-grid-row--right">
+                <Button
+                  priority="secondary"
+                  type="button"
+                  size="small"
+                  iconId="fr-icon-add-line"
+                  iconPosition="right"
+                  onClick={() => refModaleAjoutPieceJointe.current?.ouvrir()}
+                >
+                  Ajouter une photo de la porte endommagée
+                </Button>
+              </div>
+            </div>
+
+            {/*
+            <div className="fr-grid-row">
+              <Download
+                className="fr-col-12"
+                details="Photo de la porte endommagée - PDF - 128 Ko"
+                label="IMG-1456.jpeg"
+                linkProps={{
+                  href: "https://sample-files.com/downloads/images/jpg/web_optimized_1200x800_97kb.jpg",
+                }}
+              />
+
+              <object
+                data={
+                  "https://sample-files.com/downloads/documents/pdf/sample-report.pdf"
+                }
+                type="application/pdf"
+                style={{
+                  width: "100%",
+                  aspectRatio: "210/297",
+                }}
+              ></object>
+            </div>*/}
+          </div>
+        </div>
+
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12">
+            <Alert
+              className="fr-col-12"
+              severity="error"
+              title="Des documents sont manquants"
+              closable={true}
+              description={
+                <>
+                  <p>Il manque les documents suivants :</p>
+
+                  <ul>
+                    <li>Attestation complétée par les forces de l'ordre</li>
+                    <li>
+                      Facture acquittée attestant de la réalité des travaux de
+                      remise en état à l'identique
+                    </li>
+                  </ul>
+                </>
+              }
+            />
+          </div>
+        </div>
+
+        <ButtonsGroup
+          inlineLayoutWhen="always"
+          alignment="right"
+          buttonsIconPosition="right"
+          buttons={[
+            {
+              priority: "secondary",
+              children: "Revenir à l'étape précédente",
+              nativeButtonProps: {
+                type: "button",
+              },
+              onClick: () =>
+                naviguer({
+                  from: Route.fullPath,
+                  to: "../2-infos-requerant",
+                  search: {} as any,
+                }),
             },
-            onClick: () =>
-              naviguer({
-                from: Route.fullPath,
-                to: "../2-infos-requerant",
-                search: {} as any,
-              }),
-          },
-          {
-            priority: "primary",
-            children: "Soumettre ma demande",
-            nativeButtonProps: {
-              type: "submit",
+            {
+              priority: "primary",
+              children: "Soumettre ma demande",
+              nativeButtonProps: {
+                type: "submit",
+                role: "submit",
+              },
+              onClick: async () => {
+                await dossierManager.soumettre(reference);
+                await naviguer({
+                  to: "/requerant/mes-demandes",
+                  search: {} as any,
+                });
+              },
             },
-            onClick: async () => {
-              await dossierManager.soumettre(reference);
-              await naviguer({
-                to: "/requerant/mes-demandes",
-                search: {} as any,
-              });
-            },
-          },
-        ]}
-      />
+          ]}
+        />
+      </form>
     </>
   );
 }

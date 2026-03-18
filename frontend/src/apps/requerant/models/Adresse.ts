@@ -1,5 +1,8 @@
+import UndefinedTransform from "@/common/normalisation/transformers/UndefinedTransform.ts";
+
 export class Adresse {
   ligne1: string;
+  @UndefinedTransform()
   ligne2?: string;
   codePostal: string;
   commune: string;

@@ -62,7 +62,7 @@ export const ModaleAjoutPieceJointe = React.forwardRef<
   ) => {
     // Exposer les fonctions au composant appelant
     React.useImperativeHandle(ref, () => ({
-      ouvrir: () => _modale.open(),
+      ouvrir: () => window.dsfr().modal.disclose(),
       fermer: () => _modale.close(),
     }));
 

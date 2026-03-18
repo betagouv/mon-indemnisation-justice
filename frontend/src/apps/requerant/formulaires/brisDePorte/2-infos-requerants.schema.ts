@@ -1,11 +1,4 @@
-import {
-  Civilites,
-  Commune,
-  Dossier,
-  Pays,
-  PersonneMorale,
-  PersonnePhysique,
-} from "@/apps/requerant/models";
+import { Civilites, Commune, Dossier, Pays, PersonneMorale, PersonnePhysique } from "@/apps/requerant/models";
 import { z } from "zod"; // Schema for a "personne morale" (company)
 
 // Schema for a "personne morale" (company)
@@ -60,14 +53,14 @@ const SchemaPersonnePhysique = z
         .string({ error: "Le numéro de téléphone est requis" })
         .min(7, { error: "Le numéro de téléphone est requis" }),
     }),
-    prenom2: z.string().nullish(),
-    prenom3: z.string().nullish(),
+    prenom2: z.string().optional(),
+    prenom3: z.string().optional(),
     adresse: z.object({
       ligne1: z
         .string({ error: "L'adresse de résidence est requise" })
         .trim()
         .min(1, { error: "L'adresse de résidence est requise" }),
-      ligne2: z.string().nullish(),
+      ligne2: z.string().optional(),
       codePostal: z
         .string({ error: "Le code postal est requis" })
         .regex(/\d{5}/, {
