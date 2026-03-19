@@ -1,12 +1,12 @@
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import React, { useCallback, useState } from "react";
-import { Document, DocumentType } from "@/common/models";
+import { Document } from "@/common/models";
 import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import {
   PieceJointe,
   TelechargerPieceJointe,
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { Loader } from "@/common/components/Loader.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
