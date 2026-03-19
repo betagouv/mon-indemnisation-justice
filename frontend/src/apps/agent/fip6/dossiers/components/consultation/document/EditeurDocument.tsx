@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Document } from "@/common/models";
 import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/editor";
@@ -6,7 +6,7 @@ import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/
 import { useInjection } from "inversify-react";
 import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Loader } from "@/common/components/Loader.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 export type EditeurMode = "edition" | "visualisation";

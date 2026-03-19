@@ -1,27 +1,27 @@
+import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { router } from "@/apps/agent/fip6/_init";
 import { Route } from "@/apps/agent/fip6/routes/agents/gestion";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { Administration, Agent } from "@/common/models";
-import { estCourrielValide } from "@/common/services/courriel.ts";
-import { useNavigate } from "@tanstack/react-router";
-import React, { ChangeEvent, useCallback, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useInjection } from "inversify-react";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
-import "@/style/index.css";
-import { Loader } from "@/common/components/Loader.tsx";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import {
   RoleAgent,
   TypeAdministration,
   TypeRoleAgent,
 } from "@/common/models/Agent.ts";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { Select } from "@codegouvfr/react-dsfr/Select";
+import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
+import { estCourrielValide } from "@/common/services/courriel.ts";
+import "@/style/index.css";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button, ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { AgentContext } from "@/apps/agent/_commun/contexts";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { Select } from "@codegouvfr/react-dsfr/Select";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
+import React, { ChangeEvent, useCallback, useState } from "react";
 
 const ValidationAgentLigne = ({
   agent,

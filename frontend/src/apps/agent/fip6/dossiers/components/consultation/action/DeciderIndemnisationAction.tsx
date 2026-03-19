@@ -18,7 +18,7 @@ import { useInjection } from "inversify-react";
 import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { observer } from "mobx-react-lite";
-import { Loader } from "@/common/components/Loader.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 
 const _modale = createModal({

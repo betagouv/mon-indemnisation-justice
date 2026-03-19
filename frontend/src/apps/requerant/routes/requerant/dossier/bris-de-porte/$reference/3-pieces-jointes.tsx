@@ -1,23 +1,31 @@
-import { Modale, ModaleRef } from "@/apps/requerant/composants/dsfr/Modale.tsx";
-import { IconeLigne } from "@/apps/requerant/composants/IconeLigne.tsx";
+import {
+  AjouterPiecesJointesModale,
+  AjouterPiecesJointesModaleRef,
+} from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { container } from "@/apps/requerant/container";
 import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager";
 import classes from "@/apps/requerant/style/form.module.css";
-import { Loader } from "@/common/components/Loader";
+import { Loader } from "@/common/composants/Loader";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import artworkOvoid from "@codegouvfr/react-dsfr/dsfr/artwork/background/ovoid.svg?url";
-import artworkDocumentAddUrl
-  from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
+import artworkDocumentAddUrl from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
 import SideMenu from "@codegouvfr/react-dsfr/SideMenu";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  useNavigate,
+} from "@tanstack/react-router";
+
 import { plainToInstance } from "class-transformer";
 import { useInjection } from "inversify-react";
-import React, { useRef } from "react";
+import { default as React, useRef, useState } from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes",
@@ -106,17 +114,15 @@ function Etape3PiecesJointes() {
   const { reference, dossier }: { reference: string; dossier: Dossier } =
     Route.useLoaderData();
 
-  const [pieceJointe, setPieceJointe] = React.useState<PieceJointe | undefined>(
+  const [pieceJointe, setPieceJointe] = useState<PieceJointe | undefined>(
     documents.at(0),
   );
 
-  const refModaleAjoutPieceJointe = useRef<ModaleRef>(null);
+  const refModaleAjoutPieceJointe = useRef<AjouterPiecesJointesModaleRef>(null);
 
-  const [typePieceJointe, setTypePieceJointe] = React.useState<TypePieceJointe>(
+  const [typePieceJointe, setTypePieceJointe] = useState<TypePieceJointe>(
     "attestation_information",
   );
-
-  console.log(artworkDocumentAddUrl);
 
   return (
     <>
@@ -137,15 +143,13 @@ function Etape3PiecesJointes() {
           />
         </section>
 
-        <Modale
+        <AjouterPiecesJointesModale
           ref={refModaleAjoutPieceJointe}
-          id="modale-ajout-pieces-jointes"
-          title="Ajouter un document"
-        >
-          <div className="fr-col-12">
-            <Alert severity="info" title="Ajouter un document"></Alert>
-          </div>
-        </Modale>
+          title="Ajouter des pièces jointes"
+          titleAs="h4"
+          iconId={"fr-icon-add-line"}
+          size="medium"
+        />
 
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12">
@@ -168,7 +172,9 @@ function Etape3PiecesJointes() {
                   nativeButtonProps: {
                     type: "button",
                   },
-                  onClick: () => refModaleAjoutPieceJointe.current?.ouvrir(),
+                  onClick: () => {
+                    refModaleAjoutPieceJointe.current?.ouvrir();
+                  },
                 },
               ]}
             />
@@ -189,21 +195,45 @@ function Etape3PiecesJointes() {
                   isActive: type === typePieceJointe,
                   //items: [],
                   text: (
-                    <span className="">
+                    <span className="fr-text--sm fr-text--regular">
                       {libelle}
 
                       {type === "carte_identite" ? (
-                        <IconeLigne
-                          iconId="fr-icon-success-line"
-                          className=" fr-text-default--success fr-ml-1v"
-                          aria-hidden="true"
-                        />
+                        <>
+                          <Badge
+                            severity="success"
+                            as="span"
+                            noIcon={true}
+                            className="fr-ml-1v"
+                          >
+                            2
+                          </Badge>
+                          {/*
+                          <IconeLigne
+                            iconId="fr-icon-success-line"
+                            className=" fr-text-default--success fr-ml-1v"
+                            aria-hidden="true"
+                          />
+                          */}
+                        </>
                       ) : (
-                        <IconeLigne
-                          iconId="fr-icon-error-line"
-                          className=" fr-text-default--error fr-ml-1v"
-                          aria-hidden="true"
-                        />
+                        <>
+                          <Badge
+                            severity="error"
+                            as="span"
+                            noIcon={true}
+                            className="fr-ml-1v"
+                          >
+                            0
+                          </Badge>
+                          {/*
+                          <IconeLigne
+                            iconId="fr-icon-error-line"
+                            className=" fr-text-default--error fr-ml-1v"
+                            aria-hidden="true"
+                          />
+                          */}
+                        </>
                       )}
                     </span>
                   ),
