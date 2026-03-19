@@ -4,7 +4,7 @@ import { estDossierOkBrisDePorte } from "@/apps/requerant/formulaires/brisDePort
 import { estDossierOkInfosRequerant } from "@/apps/requerant/formulaires/brisDePorte/2-infos-requerants.schema.ts";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager";
-import { Loader } from "@/common/components/Loader.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
 import {
   createFileRoute,
   notFound,
