@@ -1,5 +1,5 @@
 import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { Loader } from "@/common/components/Loader.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
@@ -30,7 +30,7 @@ const _modale = createModal({
   isOpenedByDefault: false,
 });
 
-// TODO tenter d'utiliser @/common/components/ListeEtapes.tsx;
+// TODO tenter d'utiliser @/common/composants/ListeEtapes.tsx;
 
 type IdEtape =
   | "EDITION_COURRIER"

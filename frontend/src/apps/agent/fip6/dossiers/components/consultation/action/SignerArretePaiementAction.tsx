@@ -1,4 +1,4 @@
-import { Loader } from "@/common/components/Loader.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
@@ -8,17 +8,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Agent,
   Document,
-  DocumentType,
   DossierDetail,
   EtatDossier,
   EtatDossierType,
 } from "@/common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import {
-  EditeurDocument,
-  EditeurMode,
-} from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
+import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { TelechargerPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { DocumentManagerInterface } from "@/common/services/agent/document.ts";

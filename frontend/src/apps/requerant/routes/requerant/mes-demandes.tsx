@@ -1,7 +1,7 @@
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { EtatDossierType } from "@/apps/requerant/models/EtatDossier.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
-import { Loader } from "@/common/components/Loader.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { dateSimple } from "@/common/services/date.ts";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
