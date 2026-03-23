@@ -89,7 +89,7 @@ class Dossier
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'dossiers', cascade: ['persist', 'remove'], orphanRemoval: true)]
     /** @var Collection<Document> */
-    protected Collection $documents;
+    protected Collection $piecesJointes;
     protected ?array $documentsParType = null;
 
     #[ORM\OneToOne(targetEntity: BrisPorte::class, inversedBy: 'dossier', cascade: ['persist', 'remove'])]
@@ -104,7 +104,7 @@ class Dossier
     {
         $this->brisPorte = new BrisPorte();
         $this->dateCreation = new \DateTimeImmutable();
-        $this->documents = new ArrayCollection([]);
+        $this->piecesJointes = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
     }
 
@@ -119,7 +119,7 @@ class Dossier
     #[ORM\PostLoad]
     public function onLoaded(): void
     {
-        $this->documentsParType = $this->documents->reduce(
+        $this->documentsParType = $this->piecesJointes->reduce(
             function (array $carry, Document $document) {
                 if (!isset($carry[$document->getType()->value])) {
                     $carry[$document->getType()->value] = [];
@@ -450,7 +450,7 @@ class Dossier
 
     public function ajouterDocument(Document $document): static
     {
-        $this->documents->add($document);
+        $this->piecesJointes->add($document);
         $this->documentsParType[$document->getType()->value][] = $document;
 
         return $this;
@@ -458,21 +458,21 @@ class Dossier
 
     public function supprimerDocumentsParType(DocumentType $type): void
     {
-        foreach ($this->documents->filter(fn (Document $d) => $d->getType() === $type) as $document) {
-            $this->documents->removeElement($document);
+        foreach ($this->piecesJointes->filter(fn (Document $d) => $d->getType() === $type) as $document) {
+            $this->piecesJointes->removeElement($document);
         }
 
         $this->documentsParType[$type->value] = [];
     }
 
-    public function getDocuments(): Collection
+    public function getPiecesJointes(): Collection
     {
-        return $this->documents;
+        return $this->piecesJointes;
     }
 
     public function getDocumentsATransmettre(): Collection
     {
-        return $this->documents->filter(fn (Document $document) => in_array($document->getType(), [
+        return $this->piecesJointes->filter(fn (Document $document) => in_array($document->getType(), [
             DocumentType::TYPE_COURRIER_REQUERANT,
             DocumentType::TYPE_ARRETE_PAIEMENT,
             DocumentType::TYPE_CARTE_IDENTITE,

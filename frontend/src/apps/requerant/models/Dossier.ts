@@ -1,3 +1,4 @@
+import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import UndefinedTransform from "@/common/normalisation/transformers/UndefinedTransform.ts";
 import { Expose, Transform, Type } from "class-transformer";
@@ -96,7 +97,18 @@ export class Dossier extends BaseDossier {
   @UndefinedTransform()
   description?: string;
   estPorteBlindee: boolean = false;
+  @Type(() => PieceJointe)
   piecesJointes: PieceJointe[];
+
+  public compterPiecesJointesDeType(type: TypePieceJointe): number {
+    return this.getPiecesJointesDeType(type).length;
+  }
+
+  public getPiecesJointesDeType(type: TypePieceJointe): PieceJointe[] {
+    return this.piecesJointes.filter((pieceJointe: PieceJointe) => {
+      return pieceJointe.type.equals(type);
+    });
+  }
 }
 
 export class DossierApercu extends BaseDossier {}

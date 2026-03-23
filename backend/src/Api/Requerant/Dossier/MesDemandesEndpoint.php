@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Dossier;
 
-use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\DossierDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\DossierApercuDto;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -32,7 +32,7 @@ class MesDemandesEndpoint
         return new JsonResponse(
             $this->normalizer->normalize(
                 $usager->getDossiersBrisDePorte()->map(
-                    fn (Dossier $dossier) => DossierDto::depuisDossier($dossier)
+                    fn (Dossier $dossier) => DossierApercuDto::depuisDossier($dossier)
                 )->toArray(),
             ),
             Response::HTTP_OK

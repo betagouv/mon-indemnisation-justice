@@ -68,7 +68,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
             dateOperation: $dossier->getBrisPorte()->getDateOperation(),
             typeInstitutionSecuritePublique: $dossier->getBrisPorte()->getTypeInstitutionSecuritePublique(),
             estPorteBlindee: $dossier->getBrisPorte()->estPorteBlindee(),
-            documents: $dossier->getDocuments()->map(fn (Document $document) => PieceJointeOutput::depuisDocument($document))->toArray(),
+            documents: $dossier->getPiecesJointes()->map(fn (Document $document) => PieceJointeOutput::depuisDocument($document))->toArray(),
         );
     }
 }
