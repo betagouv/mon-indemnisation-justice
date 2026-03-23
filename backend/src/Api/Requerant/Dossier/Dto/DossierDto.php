@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Dossier\Dto;
 
+use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
 use Symfony\Component\Serializer\Attribute\Context;
@@ -68,7 +69,7 @@ class DossierDto
             estPorteBlindee: $dossier->getBrisPorte()?->estPorteBlindee(),
             description: $dossier->getBrisPorte()->getDescriptionRequerant(),
             // TODO gérer ça plus tard
-            piecesJointes: [],
+            piecesJointes: $dossier->getPiecesJointes()->map(fn (Document $pieceJointe) => PieceJointeDto::depuisDocument($pieceJointe))->toArray(),
         );
     }
 }
