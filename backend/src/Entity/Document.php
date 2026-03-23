@@ -58,7 +58,7 @@ class Document
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $metaDonnees = null;
 
-    #[ORM\ManyToMany(targetEntity: Dossier::class, mappedBy: 'documents', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Dossier::class, mappedBy: 'piecesJointes', cascade: ['persist'])]
     #[Ignore]
     /** @var Collection<Dossier> */
     protected Collection $dossiers;

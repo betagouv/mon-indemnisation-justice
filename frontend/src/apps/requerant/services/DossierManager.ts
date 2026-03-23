@@ -19,7 +19,7 @@ export type DeepPartial<T> = T extends object
   : T;
 
 export interface DossierManagerInterface {
-  aDossier(reference: string): Promise<boolean>;
+  //aDossier(reference: string): Promise<boolean>;
   getDossier(reference: string): Promise<Dossier | undefined>;
 
   modifier(reference: string, modifications: DeepPartial<Dossier>): void;
@@ -47,42 +47,27 @@ type EtatSauvegardeDossier = {
  * Synchronise les dossiers du requérant avec l'API
  */
 export class ApiDossierManager implements DossierManagerInterface {
-  protected dossiers: Map<string, EtatSauvegardeDossier>;
-  constructor() {}
-
-  protected async chargerDossiers(rafraichir: boolean = false): Promise<void> {
-    if (!this.dossiers || rafraichir) {
-      const reponse = await fetch("/api/requerant/mes-demandes", {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      const data = await reponse.json();
-      const dossiers = plainToInstance(Dossier, data as any[]);
-
-      this.dossiers = new Map(
-        dossiers.map((dossier) => [
-          dossier.reference,
-          {
-            original: dossier,
-            // On clone l'objet source pour ne pas également modifier le dossier original
-            modifie: instanceToInstance(dossier),
-          },
-        ]),
-      );
-    }
-  }
-
-  async aDossier(reference: string): Promise<boolean> {
-    await this.chargerDossiers();
-
-    return this.dossiers.has(reference);
+  protected mesDossiers?: DossierApercu[];
+  protected dossiers: Map<string, EtatSauvegardeDossier | undefined>;
+  constructor() {
+    this.dossiers = new Map();
   }
 
   async getDossier(reference: string): Promise<Dossier | undefined> {
-    await this.chargerDossiers();
+    if (!this.dossiers.has(reference)) {
+      const reponse = await fetch(
+        `/api/requerant/dossier/bris-de-porte/${reference}`,
+      );
+
+      const data = await reponse.json();
+      const dossier = plainToInstance(Dossier, data);
+
+      this.dossiers.set(reference, {
+        original: dossier,
+        // On clone l'objet source pour ne pas également modifier le dossier original
+        modifie: instanceToInstance(dossier),
+      });
+    }
 
     return this.dossiers.get(reference)?.modifie;
   }
@@ -103,8 +88,6 @@ export class ApiDossierManager implements DossierManagerInterface {
   }
 
   async enregistrer(reference: string): Promise<Dossier> {
-    await this.chargerDossiers();
-
     let { original, modifie } = this.dossiers.get(
       reference,
     ) as EtatSauvegardeDossier;
@@ -140,11 +123,15 @@ export class ApiDossierManager implements DossierManagerInterface {
   }
 
   async mesDemandes(): Promise<DossierApercu[]> {
-    const reponse = await fetch("/api/requerant/mes-demandes");
+    if (!this.mesDossiers) {
+      const reponse = await fetch("/api/requerant/mes-demandes");
 
-    const data = await reponse.json();
+      const data = await reponse.json();
 
-    return plainToInstance(DossierApercu, data as any[]);
+      this.mesDossiers = plainToInstance(DossierApercu, data as any[]);
+    }
+
+    return this.mesDossiers;
   }
 
   async soumettre(reference: string): Promise<void> {
@@ -162,7 +149,10 @@ export class ApiDossierManager implements DossierManagerInterface {
       const data = await reponse.json();
       console.error(data.erreurs);
     } else {
-      await this.chargerDossiers(true);
+      // On sait qu'un dossier déposé obtient une référence, on "oublie" donc le brouillon.
+      this.dossiers.delete(reference);
+      // On vide la liste des dossiers pour forcer le rafraîchissement.
+      this.mesDossiers = undefined;
     }
   }
 }

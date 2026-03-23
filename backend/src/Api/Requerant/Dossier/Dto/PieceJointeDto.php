@@ -4,18 +4,31 @@ namespace MonIndemnisationJustice\Api\Requerant\Dossier\Dto;
 
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 
-#[Map(source: Document::class)]
 class PieceJointeDto
 {
-    public ?int $id;
-    #[Map(source: 'filename')]
-    public ?string $chemin;
-    #[Map(source: 'originalFilename')]
-    public ?string $nom;
-    public ?string $mime;
-    #[Map(source: 'size')]
-    public ?int $taille;
-    public DocumentType $type;
+    public function __construct(
+        public readonly ?int $id,
+        public string $chemin,
+        public string $url,
+        public string $nom,
+        public string $mime,
+        public int $taille,
+        public DocumentType $type,
+    ) {
+
+    }
+
+    public static function depuisDocument(Document $document): self
+    {
+        return new self(
+            id: $document->getId(),
+            chemin: $document->getFilename(),
+            url: "/requerant/document/{$document->getId()}/{$document->getFilename()}",
+            nom: $document->getOriginalFilename(),
+            mime: $document->getMime(),
+            taille: $document->getSize(),
+            type: $document->getType(),
+        );
+    }
 }
