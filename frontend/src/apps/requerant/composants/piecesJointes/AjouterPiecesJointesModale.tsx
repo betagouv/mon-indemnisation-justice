@@ -1,12 +1,22 @@
 import { PrevisualiserFichier } from "@/apps/requerant/composants/piecesJointes/PrevisualiserFichier.tsx";
-import { Modale, ModaleProps, ModaleRef } from "@/common/composants/dsfr/Modale.tsx";
+import {
+  Modale,
+  ModaleProps,
+  ModaleRef,
+} from "@/common/composants/dsfr/Modale.tsx";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { setInterval } from "node:timers";
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 export const AjouterPiecesJointesModaleEtapes = [
   "selectionner",
