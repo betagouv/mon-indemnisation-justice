@@ -1,5 +1,6 @@
 import { Dossier } from "@/apps/requerant/models";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
+import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import { differentiel } from "@/common/services";
 import {
   instanceToInstance,
@@ -18,6 +19,12 @@ export type DeepPartial<T> = T extends object
     }
   : T;
 
+export type NouvellePieceJointe = {
+  fichier: File;
+  type: TypePieceJointe;
+  contexte?: any;
+};
+
 export interface DossierManagerInterface {
   //aDossier(reference: string): Promise<boolean>;
   getDossier(reference: string): Promise<Dossier | undefined>;
@@ -25,6 +32,11 @@ export interface DossierManagerInterface {
   modifier(reference: string, modifications: DeepPartial<Dossier>): void;
 
   enregistrer(reference: string): Promise<Dossier>;
+
+  ajouterPiecesJointes(
+    reference: string,
+    piecesJointes: NouvellePieceJointe[],
+  ): Promise<void>;
 
   soumettre(reference: string): Promise<void>;
 
@@ -84,6 +96,48 @@ export class ApiDossierManager implements DossierManagerInterface {
     this.dossiers.set(reference, {
       original,
       modifie: plainToClassFromExist(modifie, modifications),
+    });
+  }
+
+  async ajouterPiecesJointes(
+    reference: string,
+    piecesJointes: NouvellePieceJointe[],
+  ): Promise<void> {
+    const payload = new FormData();
+
+    piecesJointes.forEach((fichier) => {
+      payload.append(
+        "piecesJointes[]",
+        fichier.fichier,
+        // TODO nommer le fichier selon le type et la date si blob
+        fichier.fichier.name ?? "",
+      );
+    });
+
+    payload.append(
+      "donnees",
+      JSON.stringify(
+        piecesJointes.map((p) => ({
+          type: p.type.type,
+          contexte: p.contexte,
+        })),
+      ),
+    );
+
+    const reponse = await fetch(
+      `/api/requerant/dossier/bris-de-porte/${reference}/televerser-pieces-jointes`,
+      {
+        method: "POST",
+        body: payload,
+      },
+    );
+
+    const data = await reponse.json();
+    const dossier = plainToInstance(Dossier, data);
+
+    this.dossiers.set(reference, {
+      original: dossier,
+      modifie: instanceToInstance(dossier),
     });
   }
 

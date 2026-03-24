@@ -6,17 +6,15 @@ use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\TeleverserPieceJo
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Teste le point d'entrée @TeleverserPieceJointeDeclarationBrisPorteEndpoint de l'API, qui permet à l'agent des FDO de
  * téléverser un document et l'ajouter en tant que pièce jointe d'un brouillon de déclaration.
- *
- * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\TeleverserPieceJointeDeclarationBrisPorteEndpoint
  */
+#[CoversClass(TeleverserPieceJointeDeclarationBrisPorteEndpoint::class)]
 class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 {
     /**
@@ -33,7 +31,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndp
             'POST',
             "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/piece-jointe/televerser/{$type->value}",
             files: [
-                'pieceJointe' => new UploadedFile(dirname(__FILE__) . '/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
+                'pieceJointe' => new UploadedFile(dirname(__FILE__).'/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
             ]
         );
 
@@ -67,7 +65,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndp
             'POST',
             "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/piece-jointe/televerser/{$type->value}",
             files: [
-                'pieceJointe' => new UploadedFile(dirname(__FILE__) . '/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
+                'pieceJointe' => new UploadedFile(dirname(__FILE__).'/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
             ]
         );
 
@@ -90,7 +88,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndp
             'POST',
             "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/piece-jointe/televerser/{$type->value}",
             files: [
-                'pieceJointe' => new UploadedFile(dirname(__FILE__) . '/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
+                'pieceJointe' => new UploadedFile(dirname(__FILE__).'/../../../../../ressources/pieces_jointes/photo-1.jpg', 'photo-1.jpg', 'image/jpeg'),
             ]
         );
 
