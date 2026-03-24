@@ -1,12 +1,15 @@
 import {
   AjouterPiecesJointesModale,
-  AjouterPiecesJointesModaleRef
+  AjouterPiecesJointesModaleRef,
 } from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { container } from "@/apps/requerant/container";
 import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
-import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager";
+import {
+  DossierManagerInterface,
+  NouvellePieceJointe,
+} from "@/apps/requerant/services/DossierManager";
 import classes from "@/apps/requerant/style/form.module.css";
 import { Loader } from "@/common/composants/Loader";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
@@ -15,11 +18,16 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Download from "@codegouvfr/react-dsfr/Download";
 import artworkOvoid from "@codegouvfr/react-dsfr/dsfr/artwork/background/ovoid.svg?url";
-import artworkDocumentAddUrl
-  from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
+import artworkDocumentAddUrl from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
 import SideMenu from "@codegouvfr/react-dsfr/SideMenu";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import { default as React, useRef, useState } from "react";
 
@@ -69,6 +77,8 @@ function Etape3PiecesJointes() {
   const { reference, dossier }: { reference: string; dossier: Dossier } =
     Route.useLoaderData();
 
+  const router = useRouter();
+
   const refModaleAjoutPieceJointe = useRef<AjouterPiecesJointesModaleRef>(null);
 
   const [pieceJointe, setPieceJointe] = useState<PieceJointe | undefined>(
@@ -81,6 +91,21 @@ function Etape3PiecesJointes() {
 
   return (
     <>
+      <AjouterPiecesJointesModale
+        ref={refModaleAjoutPieceJointe}
+        dossier={dossier}
+        onComplete={async (
+          piecesJointes: NouvellePieceJointe[],
+        ): Promise<void> => {
+          await dossierManager.ajouterPiecesJointes(reference, piecesJointes);
+          await router.invalidate();
+        }}
+        title="Ajouter des pièces jointes"
+        titleAs="h4"
+        iconId={"fr-icon-add-line"}
+        size="medium"
+      />
+
       <h1>Déclarer un bris de porte</h1>
 
       <form
@@ -97,14 +122,6 @@ function Etape3PiecesJointes() {
             title={"Documents à joindre à votre demande"}
           />
         </section>
-
-        <AjouterPiecesJointesModale
-          ref={refModaleAjoutPieceJointe}
-          title="Ajouter des pièces jointes"
-          titleAs="h4"
-          iconId={"fr-icon-add-line"}
-          size="medium"
-        />
 
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12">
