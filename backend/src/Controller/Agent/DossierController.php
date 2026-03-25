@@ -3,6 +3,8 @@
 namespace MonIndemnisationJustice\Controller\Agent;
 
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
@@ -12,6 +14,7 @@ use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\DossierManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -37,7 +40,9 @@ class DossierController extends AgentController
         protected readonly DocumentManager $documentManager,
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
-    ) {}
+        protected readonly LoggerInterface $logger,
+    ) {
+    }
 
     #[Route('/', name: 'app_agent_redacteur_accueil')]
     public function index(): Response
@@ -301,7 +306,13 @@ class DossierController extends AgentController
 
         /** @var Document $document */
         foreach ($dossier->getDocumentsATransmettre()->toArray() as $document) {
-            $zip->addFromString(preg_replace('#/#', '', $document->getOriginalFilename()), $this->documentManager->getContenuTexte($document));
+            try {
+                $contenu = $this->documentManager->getContenuTexte($document);
+                $zip->addFromString(preg_replace('#/#', '', $document->getOriginalFilename()), $contenu);
+            } catch (FilesystemException|UnableToReadFile $e) {
+                $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
+                // $this->documentManager->supprimer($document);
+            }
         }
 
         $zip->close();
@@ -310,8 +321,7 @@ class DossierController extends AgentController
             'Content-Type' => 'application/zip',
             'Content-Length' => filesize($zipName),
         ]))
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"))
-        ;
+            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
     }
 
     #[IsGranted(
