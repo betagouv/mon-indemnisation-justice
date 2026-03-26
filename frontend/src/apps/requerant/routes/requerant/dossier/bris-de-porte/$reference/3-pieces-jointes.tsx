@@ -5,22 +5,27 @@ import {
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { container } from "@/apps/requerant/container";
 import { Dossier, PieceJointe } from "@/apps/requerant/models";
-import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
+import {
+  PieceJointeType,
+  TypePieceJointe,
+} from "@/apps/requerant/models/TypePieceJointe.ts";
 import {
   DossierManagerInterface,
   NouvellePieceJointe,
 } from "@/apps/requerant/services/DossierManager";
 import classes from "@/apps/requerant/style/form.module.css";
+import { MiseEnAvant } from "@/common/composants/dsfr/MiseEnAvant.tsx";
 import { Loader } from "@/common/composants/Loader";
+import { fr, FrCxArg } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Download from "@codegouvfr/react-dsfr/Download";
-import artworkOvoid from "@codegouvfr/react-dsfr/dsfr/artwork/background/ovoid.svg?url";
 import artworkDocumentAddUrl from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
 import SideMenu from "@codegouvfr/react-dsfr/SideMenu";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { useForm } from "@tanstack/react-form";
 import {
   createFileRoute,
   notFound,
@@ -29,7 +34,8 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { default as React, useRef, useState } from "react";
+import { default as React, useMemo, useRef, useState } from "react";
+import { z } from "zod";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes",
@@ -65,10 +71,12 @@ export const Route = createFileRoute(
 });
 
 function Etape3PiecesJointes() {
+  // Action de navigation
   const naviguer = useNavigate({
     from: Route.fullPath,
   });
 
+  // Récupération du DossierManager, en charge des opérations sur le dossier
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
   );
@@ -77,17 +85,112 @@ function Etape3PiecesJointes() {
   const { reference, dossier }: { reference: string; dossier: Dossier } =
     Route.useLoaderData();
 
-  const router = useRouter();
+  // Récupération du routeur, uniquement pour pouvoir invalider son cache
+  const routeur = useRouter();
 
+  // La référence vers la modale d'ajout de pièce jointe
   const refModaleAjoutPieceJointe = useRef<AjouterPiecesJointesModaleRef>(null);
 
-  const [pieceJointe, setPieceJointe] = useState<PieceJointe | undefined>(
-    dossier.piecesJointes.at(0),
+  // La pièce jointe sélectionnée pour être visualisée.
+  const [pieceJointeSelectionnee, selectionnerPieceJointe] = useState<
+    PieceJointe | undefined
+  >(dossier.piecesJointes.at(0));
+
+  // Le type de pièce jointe sélectionné pour lister les pièces associées.
+  const [typePieceJointeSelectionne, selectionnerTypePieceJointe] =
+    useState<TypePieceJointe>(
+      pieceJointeSelectionnee?.type ||
+        TypePieceJointe.depuis("attestation_information"),
+    );
+
+  const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
+
+  // On génère la liste des types de pièces jointes requises pour le dossier
+  const typesPiecesJointesRequis = useMemo(
+    () =>
+      Object.values(TypePieceJointe.liste).filter((type) =>
+        type.estRequis(
+          dossier.rapportAuLogement,
+          dossier.personneMorale?.typePersonneMorale,
+          dossier.estLieDeclaration(),
+        ),
+      ),
+    [
+      dossier.rapportAuLogement,
+      dossier.personneMorale?.typePersonneMorale,
+      dossier.estLieDeclaration(),
+    ],
   );
 
-  const [typePieceJointe, setTypePieceJointe] = useState<TypePieceJointe>(
-    pieceJointe?.type || TypePieceJointe.depuis("attestation_information"),
+  // On garde un état du décompte de pièces jointes par type requis ...
+  const decomptePiecesJointes: {
+    [key in PieceJointeType]?: number;
+  } = useMemo(
+    () =>
+      Object.fromEntries(
+        typesPiecesJointesRequis.map((type) => [
+          type.type,
+          dossier.compterPiecesJointesDeType(type),
+        ]),
+      ),
+    [dossier.piecesJointes.length, typesPiecesJointesRequis],
   );
+
+  // ... et on propose une fonction de plus haut niveau par dessus
+  const decomptePiecesJointesPourType = (type: TypePieceJointe): number => {
+    return decomptePiecesJointes[type.type] || 0;
+  };
+
+  const formulaire = useForm({
+    validators: {
+      onSubmit: z.object({
+        piecesJointes: z
+          .array(z.instanceof(PieceJointe))
+          .superRefine((piecesJointes, contexte) => {
+            typesPiecesJointesRequis.forEach(
+              (typePieceJointeRequis: TypePieceJointe) => {
+                if (
+                  piecesJointes.filter((pieceJointe: PieceJointe) =>
+                    pieceJointe.type.equals(typePieceJointeRequis),
+                  ).length == 0
+                ) {
+                  contexte.addIssue({
+                    code: "custom",
+                    message: typePieceJointeRequis.type,
+                  });
+                }
+              },
+            );
+          }),
+      }),
+    },
+    defaultValues: {
+      piecesJointes: dossier.piecesJointes,
+    },
+    listeners: {},
+    onSubmit: async ({ formApi }) => {
+      if (formApi.state.isValid) {
+        // TODO soumission en cours
+        if (dossier.estBrouillon) {
+          const dossierDepose = await dossierManager.soumettre(reference);
+
+          await naviguer({
+            to: "/requerant/mes-demandes",
+            search: {
+              d: dossierDepose.reference,
+            } as any,
+          });
+        } else {
+          // Aucun enregistrement à faire ici, puisque l'étape 3 ne concerne que les pièces jointes qui sont sauvegardées
+          // à chaque opération.
+          await naviguer({
+            to: "/requerant/mes-demandes",
+            search: {} as any,
+          });
+        }
+      }
+    },
+  });
 
   return (
     <>
@@ -98,8 +201,11 @@ function Etape3PiecesJointes() {
           piecesJointes: NouvellePieceJointe[],
         ): Promise<void> => {
           await dossierManager.ajouterPiecesJointes(reference, piecesJointes);
-          await router.invalidate();
+          // On sait que le dossier a changé, il faut donc invalider le cache du
+          // routeur pour le forcer à récupérer le dossier à jour
+          await routeur.invalidate();
         }}
+        typesPiecesjointes={typesPiecesJointesRequis}
         title="Ajouter des pièces jointes"
         titleAs="h4"
         iconId={"fr-icon-add-line"}
@@ -112,6 +218,11 @@ function Etape3PiecesJointes() {
         onSubmit={async (e) => {
           e.preventDefault();
           e.stopPropagation();
+          try {
+            await formulaire.handleSubmit();
+          } catch (e) {
+            console.error(e);
+          }
         }}
         className={classes.mijForm}
       >
@@ -139,11 +250,11 @@ function Etape3PiecesJointes() {
                 {
                   priority: "secondary",
                   iconId: "fr-icon-add-line",
-
                   children: "Ajouter des documents",
                   nativeButtonProps: {
                     type: "button",
                   },
+                  disabled: sauvegardeEnCours,
                   onClick: () => {
                     refModaleAjoutPieceJointe.current?.ouvrir();
                   },
@@ -159,71 +270,78 @@ function Etape3PiecesJointes() {
               align="left"
               burgerMenuButtonText="Mes documents"
               title="Mes documents"
-              items={Object.values(TypePieceJointe.liste).map(
-                (type: TypePieceJointe) => ({
-                  linkProps: {
-                    href: `#type-piece—jointe-${type.type}`,
-                  },
-                  isActive: type.equals(typePieceJointe),
-                  text: (
-                    <span
-                      className="fr-text--sm fr-text--regular"
-                      onClick={() => {
-                        if (!dossier.compterPiecesJointesDeType(type)) {
-                          setTypePieceJointe(type);
-                          setPieceJointe(undefined);
-                        }
-                      }}
-                    >
-                      {type.libelle}
-                      <>
-                        <Badge
-                          severity={
-                            dossier.compterPiecesJointesDeType(type) > 0
-                              ? "success"
-                              : "error"
-                          }
-                          as="span"
-                          noIcon={true}
-                          className="fr-ml-1v"
-                        >
-                          {dossier.compterPiecesJointesDeType(type)}
-                        </Badge>
-                      </>
-                    </span>
-                  ),
-                  ...(dossier.compterPiecesJointesDeType(type)
-                    ? {
-                        items: dossier
-                          .getPiecesJointesDeType(type)
-                          .map((pj) => ({
-                            text: (
-                              <span
-                                onClick={() => {
-                                  setPieceJointe(pj);
-                                  setTypePieceJointe(pj.type);
-                                }}
-                              >
-                                {pj.nom}
-                              </span>
-                            ),
-                            isActive: pieceJointe?.id === pj.id,
-                            linkProps: {
-                              href: `#piece—jointe-${pj.id}`,
-                            },
-                          })),
+              items={typesPiecesJointesRequis.map((type: TypePieceJointe) => ({
+                linkProps: {
+                  href: `#type-piece—jointe-${type.type}`,
+                },
+                isActive: type.equals(typePieceJointeSelectionne),
+                text: (
+                  <span
+                    className="fr-text--sm fr-text--regular"
+                    // Si le dossier n'a aucune pièce jointe de ce type, alors le lien invite vers la section descriptive
+                    // du type
+                    onClick={() => {
+                      if (!decomptePiecesJointesPourType(type)) {
+                        selectionnerTypePieceJointe(type);
+                        selectionnerPieceJointe(undefined);
                       }
-                    : {}),
-                }),
-              )}
+                    }}
+                  >
+                    {type.libelle}
+                    <>
+                      <Badge
+                        severity={
+                          decomptePiecesJointesPourType(type) > 0
+                            ? "success"
+                            : "error"
+                        }
+                        as="span"
+                        noIcon={true}
+                        className="fr-ml-1v"
+                      >
+                        {decomptePiecesJointesPourType(type)}
+                      </Badge>
+                    </>
+                  </span>
+                ),
+
+                ...(decomptePiecesJointesPourType(type)
+                  ? {
+                      items: dossier.getPiecesJointesDeType(type).map((pj) => ({
+                        text: (
+                          <span
+                            onClick={() => {
+                              selectionnerPieceJointe(pj);
+                              //selectionnerTypePieceJointe(pj.type);
+                            }}
+                          >
+                            {pj.nom}
+                          </span>
+                        ),
+                        isActive: pieceJointeSelectionnee?.id === pj.id,
+                        linkProps: {
+                          href: `#piece—jointe-${pj.id}`,
+                        },
+                      })),
+                    }
+                  : {}),
+              }))}
             />
           </div>
 
           <div className="fr-col-12 fr-col-lg-9">
-            {!!pieceJointe ? (
+            {/* Toutes les visualisations de pièces jointes sont intégrées au DOM, mais cachée si pas actives afin
+             d'anticiper le chargement des images / PDFs */}
+            {dossier.piecesJointes.map((pieceJointe: PieceJointe) => (
               <div
+                key={`piece—jointe-${pieceJointe.id}`}
                 id={`piece—jointe-${pieceJointe.id}`}
-                className="fr-grid-row"
+                className={fr.cx([
+                  "fr-grid-row",
+                  ...(pieceJointeSelectionnee?.id === pieceJointe.id
+                    ? []
+                    : ["fr-hidden" as FrCxArg]),
+                ])}
               >
                 <Download
                   className="fr-col-12"
@@ -255,104 +373,100 @@ function Etape3PiecesJointes() {
                   />
                 )}
               </div>
-            ) : (
-              <div
-                id={`type-piece—jointe-${typePieceJointe.type}`}
-                className="fr-my-5w fr-mt-md-12w fr-mb-md-10w"
-              >
-                <div className="fr-col-12  fr-grid-row fr-grid-row--gutters fr-grid-row--middle fr-grid-row--center">
-                  <div className="fr-py-0 fr-col-12 fr-col-md-6">
-                    <h3>{typePieceJointe.libelle}</h3>
-                    <p className="fr-text--sm fr-mb-3w">
-                      Votre dossier ne contient toujours pas de{" "}
-                      {typePieceJointe.libelle}.
-                    </p>
+            ))}
 
-                    <p className="fr-text--lead fr-mb-3w">
-                      Au moins un document, photo ou fichier PDF, est requis
-                      pour mener l'instruction de votre demande d'indemnisation.
-                    </p>
-                    <p className="fr-text--sm fr-mb-5w">
-                      Vous pouvez téléverser des documents dès à présent depuis
-                      la boîte de dialogue qui s'ouvrira en cliquant sur le
-                      bouton ci-dessous :
-                    </p>
-                  </div>
-                  <div className="fr-col-12 fr-col-md-3 fr-col-offset-md-1 fr-px-6w fr-px-md-0 fr-py-0">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="fr-responsive-img fr-artwork"
-                      aria-hidden="true"
-                      width="160"
-                      height="200"
-                      viewBox="0 0 160 200"
-                      data-fr-js-ratio="true"
+            {!pieceJointeSelectionnee && (
+              <MiseEnAvant
+                id={`type-piece—jointe-${typePieceJointeSelectionne.type}`}
+                className="fr-my-5w fr-mt-md-12w fr-mb-md-10w"
+                action={
+                  <div className="fr-col-12 fr-grid-row fr-grid-row--left">
+                    <Button
+                      priority="primary"
+                      type="button"
+                      size="small"
+                      iconId="fr-icon-add-line"
+                      iconPosition="right"
+                      disabled={sauvegardeEnCours}
+                      onClick={() =>
+                        refModaleAjoutPieceJointe.current?.ouvrir(
+                          typePieceJointeSelectionne,
+                        )
+                      }
                     >
-                      <use
-                        className="fr-artwork-motif"
-                        href={`${artworkOvoid}#artwork-motif`}
-                      ></use>
-                      <use
-                        className="fr-artwork-background"
-                        href={`${artworkOvoid}#artwork-background`}
-                      ></use>
-                      <g transform="translate(40, 60)">
-                        <use
-                          className="fr-artwork-decorative"
-                          href={`${artworkDocumentAddUrl}#artwork-decorative`}
-                        ></use>
-                        <use
-                          className="fr-artwork-minor"
-                          href={`${artworkDocumentAddUrl}#artwork-minor`}
-                        ></use>
-                        <use
-                          className="fr-artwork-major"
-                          href={`${artworkDocumentAddUrl}#artwork-major`}
-                        ></use>
-                      </g>
-                    </svg>
+                      Ajouter un(e) {typePieceJointeSelectionne.libelle}
+                    </Button>
                   </div>
-                </div>
-                <div className="fr-col-12 fr-grid-row fr-grid-row--right">
-                  <Button
-                    priority="secondary"
-                    type="button"
-                    size="small"
-                    iconId="fr-icon-add-line"
-                    iconPosition="right"
-                    onClick={() => refModaleAjoutPieceJointe.current?.ouvrir()}
-                  >
-                    Ajouter un(e) {typePieceJointe.libelle}
-                  </Button>
-                </div>
-              </div>
+                }
+                pictogrammeUrl={artworkDocumentAddUrl}
+              >
+                <h3>{typePieceJointeSelectionne.libelle}</h3>
+                <p className="fr-text--sm fr-mb-3w">
+                  Votre dossier ne contient toujours pas de{" "}
+                  {typePieceJointeSelectionne.libelle}.
+                </p>
+
+                <p className="fr-text--lead fr-mb-3w">
+                  Au moins un document, photo ou fichier PDF, est requis pour
+                  mener l'instruction de votre demande d'indemnisation.
+                </p>
+                <p className="fr-text--sm fr-mb-5w">
+                  Vous pouvez téléverser des documents dès à présent depuis la
+                  boîte de dialogue qui s'ouvrira en cliquant sur le bouton
+                  ci-dessous :
+                </p>
+              </MiseEnAvant>
             )}
           </div>
         </div>
 
-        <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-12">
-            <Alert
-              className="fr-col-12"
-              severity="error"
-              title="Des documents sont manquants"
-              closable={true}
-              description={
-                <>
-                  <p>Il manque les documents suivants :</p>
+        <formulaire.Subscribe
+          selector={(state) => state.fieldMeta.piecesJointes?.errors}
+          children={(errors) => {
+            const typesPiecesJointesManquantes =
+              errors?.map((error) => TypePieceJointe.depuis(error.message)) ??
+              [];
+            return (
+              <>
+                {typesPiecesJointesManquantes.length > 0 && (
+                  <div className="fr-grid-row fr-grid-row--gutters">
+                    <div className="fr-col-12">
+                      <Alert
+                        className="fr-col-12"
+                        severity="error"
+                        title="Des documents sont manquants"
+                        closable={true}
+                        description={
+                          typesPiecesJointesManquantes.length == 1 ? (
+                            <p>
+                              Il manque les{" "}
+                              {typesPiecesJointesManquantes.at(0)?.libelle ||
+                                ""}
+                            </p>
+                          ) : (
+                            <>
+                              <p>Il manque les documents suivants :</p>
 
-                  <ul>
-                    <li>Attestation complétée par les forces de l'ordre</li>
-                    <li>
-                      Facture acquittée attestant de la réalité des travaux de
-                      remise en état à l'identique
-                    </li>
-                  </ul>
-                </>
-              }
-            />
-          </div>
-        </div>
+                              <ul>
+                                {typesPiecesJointesManquantes.map(
+                                  (typePieceJointeManquante) => (
+                                    <li key={typePieceJointeManquante.type}>
+                                      {typePieceJointeManquante.libelle}
+                                    </li>
+                                  ),
+                                )}
+                              </ul>
+                            </>
+                          )
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          }}
+        />
 
         <ButtonsGroup
           inlineLayoutWhen="always"
@@ -362,6 +476,7 @@ function Etape3PiecesJointes() {
             {
               priority: "secondary",
               children: "Revenir à l'étape précédente",
+              disabled: sauvegardeEnCours,
               nativeButtonProps: {
                 type: "button",
               },
@@ -374,17 +489,15 @@ function Etape3PiecesJointes() {
             },
             {
               priority: "primary",
-              children: "Soumettre ma demande",
+              children: sauvegardeEnCours
+                ? "Sauvegarde en cours..."
+                : dossier.estBrouillon
+                  ? "Soumettre ma demande"
+                  : "Actualiser ma demande",
+              disabled: sauvegardeEnCours,
               nativeButtonProps: {
                 type: "submit",
                 role: "submit",
-              },
-              onClick: async () => {
-                await dossierManager.soumettre(reference);
-                await naviguer({
-                  to: "/requerant/mes-demandes",
-                  search: {} as any,
-                });
               },
             },
           ]}

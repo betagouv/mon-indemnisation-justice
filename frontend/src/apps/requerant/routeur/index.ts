@@ -1,8 +1,8 @@
-import { routeTree } from "./routeur-requerant.gen";
-import { container } from "../container";
-import { createRouter } from "@tanstack/react-router";
-import { UsagerManagerInterface } from "@/apps/requerant/services/UsagerManager.ts";
 import { ContexteUsager } from "@/apps/requerant/routeur/contexte.ts";
+import { UsagerManagerInterface } from "@/apps/requerant/services/UsagerManager.ts";
+import { createRouter } from "@tanstack/react-router";
+import { container } from "../container";
+import { routeTree } from "./routeur-requerant.gen";
 
 export type ErreurResourceInconnue = {
   titre?: string;
@@ -31,6 +31,12 @@ declare module "@tanstack/react-router" {
 
   interface NotFoundErrorData {
     data: ErreurResourceInconnue | any;
+  }
+
+  interface Location {
+    state: {
+      session: any;
+    };
   }
 }
 
