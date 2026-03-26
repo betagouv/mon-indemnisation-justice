@@ -1,12 +1,12 @@
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import React, { useCallback, useState } from "react";
-import { Upload } from "@codegouvfr/react-dsfr/Upload";
-import { Select } from "@codegouvfr/react-dsfr/Select";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { useForm } from "@tanstack/react-form";
-import { Document, DocumentType } from "@/common/models";
 import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import { Document, DocumentType } from "@/common/models";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { Select } from "@codegouvfr/react-dsfr/Select";
+import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { useForm } from "@tanstack/react-form";
 import { plainToInstance } from "class-transformer";
+import React, { useCallback, useState } from "react";
 
 type MimeTypePieceJointe =
   | "application/pdf"
@@ -121,7 +121,6 @@ export const ModaleAjoutPieceJointe = React.forwardRef<
             e.preventDefault();
             e.stopPropagation();
 
-            console.log(form.state.values);
             televerser({
               type: form.state.values.type as DocumentType,
               fichier: form.state.values.fichier as File,

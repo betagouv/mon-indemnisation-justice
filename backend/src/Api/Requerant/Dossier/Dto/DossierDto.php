@@ -15,6 +15,8 @@ class DossierDto
         public ?string $reference,
         public int $usager,
         public ?EtatDossierDto $etatActuel = null,
+        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+        public ?\DateTimeImmutable $dateDepot = null,
         public ?bool $estPersonneMorale = null,
         public ?PersonnePhysiqueDto $personnePhysique = null,
         public ?PersonneMoraleDto $personneMorale = null,
@@ -54,9 +56,10 @@ class DossierDto
     public static function depuisDossier(Dossier $dossier): self
     {
         return new self(
-            reference: $dossier->getIdOuReference(),
+            reference: strval($dossier->getId()),
             usager: $dossier->getUsager()->getId(),
             etatActuel: EtatDossierDto::depuisEtatDossier($dossier->getEtatDossier()),
+            dateDepot: \DateTimeImmutable::createFromInterface($dossier->getDateDepot()),
             estPersonneMorale: $dossier->estPersonneMorale(),
             personnePhysique: PersonnePhysiqueDto::depuisPersonnePhysique($dossier->getRequerantPersonnePhysique()),
             personneMorale: PersonneMoraleDto::depuisPersonneMorale($dossier->getRequerantPersonneMorale()),
