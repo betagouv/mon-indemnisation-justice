@@ -16,10 +16,12 @@ export abstract class BaseDossier {
   @Type(() => EtatDossier)
   @Expose({ toClassOnly: true })
   etatActuel: EtatDossier;
-  @Transform(({ value }: { value: any }) =>
-    typeof value == "string" ? new Date(value) : undefined,
-  )
+  @DateTransform()
   dateDepot?: Date;
+
+  get estBrouillon(): boolean {
+    return !this.dateDepot;
+  }
 
   get estAccepte(): boolean {
     return this.etatActuel.etat.estAccepte;
@@ -99,6 +101,8 @@ export class Dossier extends BaseDossier {
   estPorteBlindee: boolean = false;
   @Type(() => PieceJointe)
   piecesJointes: PieceJointe[];
+  idTestEligibilite?: number;
+  idDeclarationFDO?: string;
 
   public compterPiecesJointesDeType(type: TypePieceJointe): number {
     return this.getPiecesJointesDeType(type).length;
@@ -108,6 +112,10 @@ export class Dossier extends BaseDossier {
     return this.piecesJointes.filter((pieceJointe: PieceJointe) => {
       return pieceJointe.type.equals(type);
     });
+  }
+
+  public estLieDeclaration(): boolean {
+    return !!this.idDeclarationFDO;
   }
 }
 

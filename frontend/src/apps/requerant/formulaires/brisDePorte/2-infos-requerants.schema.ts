@@ -1,5 +1,5 @@
 import { Civilites, Commune, Dossier, Pays, PersonneMorale, PersonnePhysique } from "@/apps/requerant/models";
-import { z } from "zod"; // Schema for a "personne morale" (company)
+import { z } from "zod";
 
 // Schema for a "personne morale" (company)
 const SchemaPersonneMorale = z.object({

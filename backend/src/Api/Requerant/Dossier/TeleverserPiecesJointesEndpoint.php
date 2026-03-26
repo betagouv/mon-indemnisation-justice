@@ -45,8 +45,8 @@ class TeleverserPiecesJointesEndpoint
             throw new BadRequestHttpException('Les nombres de pièces jointes et de types associés ne correspondent pas');
         }
 
-        foreach ($piecesJointes as $index => $piecesJointe) {
-            $this->documentManager->ajouterFichierTeleverse($dossier, $piecesJointe, DocumentType::tryFrom($donnees[$index]['type']), estAjoutRequerant: true);
+        foreach ($piecesJointes as $index => $pieceJointe) {
+            $this->documentManager->ajouterFichierTeleverse($dossier, $pieceJointe, DocumentType::tryFrom($donnees[$index]['type']), estAjoutRequerant: true);
         }
 
         return new JsonResponse(

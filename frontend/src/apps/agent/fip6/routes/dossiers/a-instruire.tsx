@@ -4,7 +4,7 @@ import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
 
 export const Route = createFileRoute("/agent/fip6/dossiers/a-instruire")({
   beforeLoad: async ({ context }: { context: AgentContext }) => {
-    console.log(context.agent.estRedacteur());
+    // TDOO: s'assurer que l'agent est rédacteur
   },
   component: ListeDossierAInstruire,
 });
