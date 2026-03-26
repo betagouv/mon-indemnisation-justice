@@ -19,7 +19,7 @@ class DossierApercuDto
     public static function depuisDossier(Dossier $dossier): self
     {
         return new self(
-            reference: $dossier->getIdOuReference(),
+            reference: strval($dossier->getId()),
             etatActuel: EtatDossierDto::depuisEtatDossier($dossier->getEtatDossier()),
             dateDepot: $dossier->getDateDepot() ? \DateTimeImmutable::createFromInterface($dossier->getDateDepot()) : null,
         );

@@ -10,12 +10,30 @@ enum DocumentType: string
     case TYPE_PV_FDO = 'pv_fdo';
     case TYPE_CARTE_IDENTITE = 'carte_identite';
     case TYPE_FACTURE = 'facture';
+    // TODO déprécier ce type de PJ
     case TYPE_PREUVE_PAIEMENT_FACTURE = 'preuve_paiement_facture';
     case TYPE_RIB = 'rib';
     case TYPE_TITRE_PROPRIETE = 'titre_propriete';
     case TYPE_CONTRAT_LOCATION = 'contrat_location';
     case TYPE_ATTESTATION_NON_PRISE_EN_CHARGE_BAILLEUR = 'non_prise_en_charge_bailleur';
     case TYPE_ATTESTATION_NON_PRISE_EN_CHARGE_ASSURANCE = 'non_prise_en_charge_assurance';
+    // Pièces jointes demandées aux personnes morales
+    case TYPE_PIECE_IDENTITE_SIGNATAIRE = 'piece_identite_signataire';
+    case TYPE_EXTRAIT_KBIS = 'extrait_kbis';
+    case TYPE_QUITTANCE_SUBROGATIVE = 'quittance_subrogative';
+    // Justificatif des pouvoirs du signataire (délégation de signature si nécessaire)
+    case TYPE_POUVOIR_SIGNATAIRE = 'pouvoir_signataire';
+
+    // Procès-verbal désignant le représentant légal (ou statuts si suffisants)
+    case TYPE_PV_ASSOCIATION_STATUTS = 'pv_association_statuts';
+    // Procès-verbal d’assemblée générale désignant le syndic
+    case TYPE_PV_AG_SYNDIC = 'pv_ag_syndic';
+
+    // Récépissé de déclaration ou extrait RNA / publication JOAFE
+    case TYPE_DECLARATION_RNA_JOAFE = 'declaration_rna_joafe';
+    case TYPE_IDENTIFICATION_ETABBLISSMENT_PUBLICTE = 'identification_etablissement_publique';
+
+    // Documents émis après la décision
     case TYPE_COURRIER_MINISTERE = 'courrier_ministere';
     // a.k.a. la déclaration d'acceptation
     case TYPE_COURRIER_REQUERANT = 'courrier_requerant';
