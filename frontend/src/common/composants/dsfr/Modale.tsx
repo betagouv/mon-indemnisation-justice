@@ -11,6 +11,7 @@ export type ModaleRef = {
 export type ModaleProps = Omit<ModalProps, "size"> & {
   id: string;
   size?: "large" | "medium" | "small" | "full";
+  onFerme?: () => void;
 };
 
 export const Modale = forwardRef<ModaleRef, ModaleProps>(
@@ -20,6 +21,7 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
       concealingBackdrop,
       id,
       size = "large",
+      onFerme,
       title,
       titleAs: TitleTag = "h1",
       iconId,
@@ -69,6 +71,7 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
                     title="Fermer"
                     aria-controls={id}
                     type="button"
+                    onClick={() => onFerme?.()}
                   >
                     Fermer
                   </button>

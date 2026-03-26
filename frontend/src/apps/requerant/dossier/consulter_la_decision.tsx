@@ -1,24 +1,19 @@
-import "reflect-metadata";
 import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import {
-  Document,
-  DocumentType,
-  DossierDetail,
-  EtatDossier,
-} from "@/common/models";
+import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
+import { Document, DossierDetail, EtatDossier } from "@/common/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import type { FrIconClassName } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import React, { RefObject, useMemo, useRef, useState } from "react";
-import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
 import ReactDOM from "react-dom/client";
-import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
-import type { FrIconClassName } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
+import "reflect-metadata";
 
 startReactDsfr({
   defaultColorScheme:
@@ -120,7 +115,6 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
           dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
           signatureModal.close();
         } else {
-          console.log(data.erreur);
           setErreurEnvoi(data.erreur);
         }
         setSauvegarderEnCours(false);

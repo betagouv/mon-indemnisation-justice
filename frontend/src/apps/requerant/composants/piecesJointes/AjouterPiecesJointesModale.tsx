@@ -79,7 +79,6 @@ const SelectionnerFichierFormulaire = ({
         e.preventDefault();
         e.stopPropagation();
         try {
-          console.log(formulaire.validate("submit"));
           await formulaire.handleSubmit();
         } catch (e) {
           console.error(e);
@@ -154,6 +153,7 @@ const SchemaValidationPrevisualisationFichiers = z.object({
 
 const PrevisualiserFichierFormulaire = ({
   pieceJointe,
+  typesPiecesJointes,
   indice,
   nbAjouts,
   pieceJointeSuivante,
@@ -161,6 +161,7 @@ const PrevisualiserFichierFormulaire = ({
   onValide,
 }: {
   pieceJointe: NouvellePieceJointe;
+  typesPiecesJointes: TypePieceJointe[];
   indice: number;
   nbAjouts: number;
   pieceJointeSuivante?: NouvellePieceJointe;
@@ -226,40 +227,6 @@ const PrevisualiserFichierFormulaire = ({
           <h5>Fichier : {pieceJointe.fichier.name}</h5>
         )}
       </div>
-      <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-lg-4 fr-col-12">
-          <formulaire.Field
-            name="type"
-            key={`piece-jointe-${indice}-${pieceJointe.fichier.name}`}
-            children={(field) => (
-              <FormSelect
-                label="Type de pièce jointe"
-                nativeSelectProps={{
-                  defaultValue: pieceJointe.type?.type ?? "",
-                  onChange: (e) => {
-                    field.setValue(
-                      TypePieceJointe.depuis(e.target.value as PieceJointeType),
-                    );
-                  },
-                }}
-                champ={field}
-                estRequis={true}
-              >
-                <option value="">Sélectionnez un type</option>
-
-                {Object.values(TypePieceJointe.liste).map((type) => (
-                  <option key={type.type} value={type.type}>
-                    {type.libelle}
-                  </option>
-                ))}
-              </FormSelect>
-            )}
-          />
-        </div>
-        <div className="fr-col-lg-8 fr-col-12">
-          <PrevisualiserFichier fichier={pieceJointe.fichier} />
-        </div>
-      </div>
 
       <div className="fr-col-12">
         <ButtonsGroup
@@ -301,12 +268,47 @@ const PrevisualiserFichierFormulaire = ({
           ]}
         />
       </div>
+
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-lg-4 fr-col-12">
+          <formulaire.Field
+            name="type"
+            key={`piece-jointe-${indice}-${pieceJointe.fichier.name}`}
+            children={(field) => (
+              <FormSelect
+                label="Type de pièce jointe"
+                nativeSelectProps={{
+                  defaultValue: pieceJointe.type?.type ?? "",
+                  onChange: (e) => {
+                    field.setValue(
+                      TypePieceJointe.depuis(e.target.value as PieceJointeType),
+                    );
+                  },
+                }}
+                champ={field}
+                estRequis={true}
+              >
+                <option value="">Sélectionnez un type</option>
+
+                {typesPiecesJointes.map((type) => (
+                  <option key={type.type} value={type.type}>
+                    {type.libelle}
+                  </option>
+                ))}
+              </FormSelect>
+            )}
+          />
+        </div>
+        <div className="fr-col-lg-8 fr-col-12">
+          <PrevisualiserFichier fichier={pieceJointe.fichier} />
+        </div>
+      </div>
     </form>
   );
 };
 
 export type AjouterPiecesJointesModaleRef = {
-  ouvrir: (etape?: AjouterPiecesJointesModaleEtape) => void;
+  ouvrir: (typePieceJointe?: TypePieceJointe) => void;
 };
 
 export type AjouterPiecesJointesModaleProps = Omit<
@@ -314,6 +316,7 @@ export type AjouterPiecesJointesModaleProps = Omit<
   "children" | "id"
 > & {
   dossier: Dossier;
+  typesPiecesjointes: TypePieceJointe[];
   onComplete: (piecesJointes: NouvellePieceJointe[]) => Promise<void>;
 };
 
@@ -322,7 +325,12 @@ export const AjouterPiecesJointesModale = forwardRef<
   AjouterPiecesJointesModaleProps
 >(
   (
-    { dossier, onComplete, ...props }: AjouterPiecesJointesModaleProps,
+    {
+      dossier,
+      typesPiecesjointes,
+      onComplete,
+      ...props
+    }: AjouterPiecesJointesModaleProps,
     ref: ForwardedRef<AjouterPiecesJointesModaleRef>,
   ) => {
     const [etape, setEtape] =
@@ -331,6 +339,11 @@ export const AjouterPiecesJointesModale = forwardRef<
     const [piecesJointes, setPiecesJointes] = useState<NouvellePieceJointe[]>(
       [],
     );
+
+    const [typePieceJointePredefini, setTypePieceJointePredefini] = useState<
+      TypePieceJointe | undefined
+    >(undefined);
+
     const [indicePieceJointePrevisualisee, setIndicePieceJointePrevisualisee] =
       useState<number>(0);
 
@@ -341,9 +354,22 @@ export const AjouterPiecesJointesModale = forwardRef<
 
     const refModale = useRef<ModaleRef>(null);
 
+    const reinitialiser = () => {
+      setPiecesJointes([]);
+      setTypePieceJointePredefini(undefined);
+      setIndicePieceJointePrevisualisee(0);
+      setEtape("selectionner");
+    };
+
+    const fermer = () => {
+      refModale.current?.fermer();
+      reinitialiser();
+    };
+
     useImperativeHandle(ref, () => ({
-      ouvrir: (etape?: AjouterPiecesJointesModaleEtape) => {
-        setEtape(etape ?? "selectionner");
+      ouvrir: (typePieceJointe?: TypePieceJointe) => {
+        setEtape("selectionner");
+        setTypePieceJointePredefini(typePieceJointe);
         refModale.current?.ouvrir();
       },
     }));
@@ -354,13 +380,21 @@ export const AjouterPiecesJointesModale = forwardRef<
         id="ajouter-pieces-jointes-modale"
         ref={refModale}
         size={etape == "selectionner" ? "medium" : "full"}
+        onFerme={() => reinitialiser()}
       >
         {etape === "selectionner" && (
           <SelectionnerFichierFormulaire
             onSelectionne={(fichiers: File[]) => {
               setPiecesJointes(
-                fichiers.map((f) => ({ fichier: f }) as NouvellePieceJointe),
+                fichiers.map(
+                  (f) =>
+                    ({
+                      fichier: f,
+                      type: typePieceJointePredefini,
+                    }) as NouvellePieceJointe,
+                ),
               );
+              setIndicePieceJointePrevisualisee(0);
               setEtape("previsualiser");
             }}
           />
@@ -368,7 +402,9 @@ export const AjouterPiecesJointesModale = forwardRef<
 
         {etape === "previsualiser" && (
           <PrevisualiserFichierFormulaire
+            key={`dossier-${dossier.reference}-nouvelle-piece-jointe-${indicePieceJointePrevisualisee}`}
             pieceJointe={pieceJointePrevisualisee}
+            typesPiecesJointes={typesPiecesjointes}
             indice={indicePieceJointePrevisualisee}
             nbAjouts={piecesJointes.length}
             onRevenir={() =>
@@ -391,7 +427,7 @@ export const AjouterPiecesJointesModale = forwardRef<
                     i === indice ? pieceJointe : pj,
                   ),
                 );
-                refModale.current?.fermer();
+                fermer();
               } else {
                 setIndicePieceJointePrevisualisee(
                   (indicePieceJointePrevisualisee) =>

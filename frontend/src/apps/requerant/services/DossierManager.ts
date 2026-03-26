@@ -2,6 +2,7 @@ import { Dossier } from "@/apps/requerant/models";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import { differentiel } from "@/common/services";
+import { data } from "autoprefixer";
 import {
   instanceToInstance,
   instanceToPlain,
@@ -38,7 +39,7 @@ export interface DossierManagerInterface {
     piecesJointes: NouvellePieceJointe[],
   ): Promise<void>;
 
-  soumettre(reference: string): Promise<void>;
+  soumettre(reference: string): Promise<Dossier>;
 
   mesDemandes(): Promise<DossierApercu[]>;
 }
@@ -188,7 +189,7 @@ export class ApiDossierManager implements DossierManagerInterface {
     return this.mesDossiers;
   }
 
-  async soumettre(reference: string): Promise<void> {
+  async soumettre(reference: string): Promise<Dossier> {
     const reponse = await fetch(
       `/api/requerant/dossier/bris-de-porte/${reference}/publier`,
       {
@@ -201,12 +202,19 @@ export class ApiDossierManager implements DossierManagerInterface {
 
     if (!reponse.ok) {
       const data = await reponse.json();
-      console.error(data.erreurs);
+      throw new Error(data.erreurs);
     } else {
       // On sait qu'un dossier déposé obtient une référence, on "oublie" donc le brouillon.
       this.dossiers.delete(reference);
+      const dossierDepose = plainToInstance(Dossier, data);
+      this.dossiers.set(dossierDepose.reference, {
+        original: dossierDepose,
+        modifie: instanceToInstance(dossierDepose),
+      });
       // On vide la liste des dossiers pour forcer le rafraîchissement.
       this.mesDossiers = undefined;
+
+      return dossierDepose;
     }
   }
 }
