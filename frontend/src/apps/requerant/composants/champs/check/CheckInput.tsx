@@ -1,6 +1,7 @@
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { type InputProps } from "@codegouvfr/react-dsfr/src/Input.tsx";
 import React, { type ReactNode } from "react";
+import { Requis } from "@/common/composants/dsfr/Requis.tsx";
 
 export type CheckInputProps = Omit<
   InputProps,
@@ -25,9 +26,7 @@ export const CheckInput = ({
       label={
         <>
           {label}
-          {estRequis && (
-            <span className="fr-text-default--error"> &#x2217;</span>
-          )}
+          {estRequis && <Requis />}
         </>
       }
       state={

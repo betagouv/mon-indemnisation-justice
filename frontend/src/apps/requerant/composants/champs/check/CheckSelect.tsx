@@ -1,6 +1,7 @@
+import type { ReactNode } from "react";
 import React from "react";
 import { Select, SelectProps } from "@codegouvfr/react-dsfr/Select";
-import type { ReactNode } from "react";
+import { Requis } from "@/common/composants/dsfr/Requis.tsx";
 
 export type CheckSelectProps = Omit<
   SelectProps,
@@ -26,9 +27,7 @@ export const CheckSelect = ({
       label={
         <>
           {label}
-          {estRequis && (
-            <span className="fr-text-default--error"> &#x2217;</span>
-          )}
+          {estRequis && <Requis />}
         </>
       }
       state={
