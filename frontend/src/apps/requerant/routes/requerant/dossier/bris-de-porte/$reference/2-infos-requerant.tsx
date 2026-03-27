@@ -142,6 +142,7 @@ function Etape2InfosRequerant() {
           e.stopPropagation();
           try {
             // Rafraîchir la validation avant la soumission
+            formulaire.validate("submit");
             await formulaire.handleSubmit();
           } catch (e) {
             console.error(e);

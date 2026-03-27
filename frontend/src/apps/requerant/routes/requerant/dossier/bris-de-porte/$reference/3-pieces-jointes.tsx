@@ -15,6 +15,7 @@ import {
 } from "@/apps/requerant/services/DossierManager";
 import classes from "@/apps/requerant/style/form.module.css";
 import { MiseEnAvant } from "@/common/composants/dsfr/MiseEnAvant.tsx";
+import { Requis } from "@/common/composants/dsfr/Requis.tsx";
 import { Loader } from "@/common/composants/Loader";
 import { fr, FrCxArg } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
@@ -100,10 +101,30 @@ function Etape3PiecesJointes() {
   const [typePieceJointeSelectionne, selectionnerTypePieceJointe] =
     useState<TypePieceJointe>(
       pieceJointeSelectionnee?.type ||
+        TypePieceJointe.depuisString(
+          document.location.hash.replace(/^#type-piece-jointe-/, ""),
+        ) ||
         TypePieceJointe.depuis("attestation_information"),
     );
 
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
+
+  // On génère la liste des types de pièces jointes demandées pour le dossier
+  const typesPiecesJointesDemandes = useMemo(
+    () =>
+      Object.values(TypePieceJointe.liste).filter((type) =>
+        type.estDemande(
+          dossier.rapportAuLogement,
+          dossier.personneMorale?.typePersonneMorale,
+          dossier.estLieDeclaration(),
+        ),
+      ),
+    [
+      dossier.rapportAuLogement,
+      dossier.personneMorale?.typePersonneMorale,
+      dossier.estLieDeclaration(),
+    ],
+  );
 
   // On génère la liste des types de pièces jointes requises pour le dossier
   const typesPiecesJointesRequis = useMemo(
@@ -122,13 +143,17 @@ function Etape3PiecesJointes() {
     ],
   );
 
+  const estRequis = (type: TypePieceJointe) => {
+    return typesPiecesJointesRequis.includes(type);
+  };
+
   // On garde un état du décompte de pièces jointes par type requis ...
   const decomptePiecesJointes: {
     [key in PieceJointeType]?: number;
   } = useMemo(
     () =>
       Object.fromEntries(
-        typesPiecesJointesRequis.map((type) => [
+        typesPiecesJointesDemandes.map((type) => [
           type.type,
           dossier.compterPiecesJointesDeType(type),
         ]),
@@ -170,9 +195,10 @@ function Etape3PiecesJointes() {
     listeners: {},
     onSubmit: async ({ formApi }) => {
       if (formApi.state.isValid) {
-        // TODO soumission en cours
         if (dossier.estBrouillon) {
+          setSauvegardeEnCours(true);
           const dossierDepose = await dossierManager.soumettre(reference);
+          setSauvegardeEnCours(false);
 
           await naviguer({
             to: "/requerant/mes-demandes",
@@ -207,7 +233,6 @@ function Etape3PiecesJointes() {
         }}
         typesPiecesjointes={typesPiecesJointesRequis}
         title="Ajouter des pièces jointes"
-        titleAs="h4"
         iconId={"fr-icon-add-line"}
         size="medium"
       />
@@ -270,62 +295,67 @@ function Etape3PiecesJointes() {
               align="left"
               burgerMenuButtonText="Mes documents"
               title="Mes documents"
-              items={typesPiecesJointesRequis.map((type: TypePieceJointe) => ({
-                linkProps: {
-                  href: `#type-piece—jointe-${type.type}`,
-                },
-                isActive: type.equals(typePieceJointeSelectionne),
-                text: (
-                  <span
-                    className="fr-text--sm fr-text--regular"
+              items={typesPiecesJointesDemandes.map(
+                (type: TypePieceJointe) => ({
+                  linkProps: {
+                    href: `#type-piece-jointe-${type.type}`,
                     // Si le dossier n'a aucune pièce jointe de ce type, alors le lien invite vers la section descriptive
                     // du type
-                    onClick={() => {
+                    onClick: () => {
                       if (!decomptePiecesJointesPourType(type)) {
                         selectionnerTypePieceJointe(type);
                         selectionnerPieceJointe(undefined);
                       }
-                    }}
-                  >
-                    {type.libelle}
-                    <>
-                      <Badge
-                        severity={
-                          decomptePiecesJointesPourType(type) > 0
-                            ? "success"
-                            : "error"
-                        }
-                        as="span"
-                        noIcon={true}
-                        className="fr-ml-1v"
-                      >
-                        {decomptePiecesJointesPourType(type)}
-                      </Badge>
-                    </>
-                  </span>
-                ),
+                    },
+                  },
+                  isActive: type.equals(typePieceJointeSelectionne),
+                  text: (
+                    <span className="fr-text--sm fr-text--regular">
+                      {type.libelle({
+                        court: true,
+                        pluriel: false,
+                        enCapitales: true,
+                        dossier: dossier,
+                      })}{" "}
+                      {estRequis(type) && <Requis />}
+                      <>
+                        <Badge
+                          severity={
+                            estRequis(type)
+                              ? decomptePiecesJointesPourType(type) > 0
+                                ? "success"
+                                : "error"
+                              : undefined
+                          }
+                          as="span"
+                          noIcon={true}
+                          className="fr-ml-1v"
+                        >
+                          {decomptePiecesJointesPourType(type)}
+                        </Badge>
+                      </>
+                    </span>
+                  ),
 
-                ...(decomptePiecesJointesPourType(type)
-                  ? {
-                      items: dossier.getPiecesJointesDeType(type).map((pj) => ({
-                        text: (
-                          <span
-                            onClick={() => {
-                              selectionnerPieceJointe(pj);
-                              //selectionnerTypePieceJointe(pj.type);
-                            }}
-                          >
-                            {pj.nom}
-                          </span>
-                        ),
-                        isActive: pieceJointeSelectionnee?.id === pj.id,
-                        linkProps: {
-                          href: `#piece—jointe-${pj.id}`,
-                        },
-                      })),
-                    }
-                  : {}),
-              }))}
+                  ...(decomptePiecesJointesPourType(type)
+                    ? {
+                        items: dossier
+                          .getPiecesJointesDeType(type)
+                          .map((pj) => ({
+                            text: <span>{pj.nom}</span>,
+                            isActive: pieceJointeSelectionnee?.id === pj.id,
+                            linkProps: {
+                              href: `#piece-jointe-${pj.id}`,
+                              onClick: () => {
+                                selectionnerPieceJointe(pj);
+                                selectionnerTypePieceJointe(pj.type);
+                              },
+                            },
+                          })),
+                      }
+                    : {}),
+                }),
+              )}
             />
           </div>
 
@@ -394,16 +424,35 @@ function Etape3PiecesJointes() {
                         )
                       }
                     >
-                      Ajouter un(e) {typePieceJointeSelectionne.libelle}
+                      Ajouter{" "}
+                      {typePieceJointeSelectionne.libelle({
+                        court: true,
+                        pluriel: true,
+                        defini: false,
+                        dossier: dossier,
+                      })}
                     </Button>
                   </div>
                 }
                 pictogrammeUrl={artworkDocumentAddUrl}
               >
-                <h3>{typePieceJointeSelectionne.libelle}</h3>
+                <h3>
+                  {typePieceJointeSelectionne.libelle({
+                    court: false,
+                    pluriel: false,
+                    dossier: dossier,
+                    enCapitales: true,
+                  })}
+                </h3>
                 <p className="fr-text--sm fr-mb-3w">
-                  Votre dossier ne contient toujours pas de{" "}
-                  {typePieceJointeSelectionne.libelle}.
+                  Votre dossier ne contient toujours pas{" "}
+                  {typePieceJointeSelectionne.libelle({
+                    court: true,
+                    pluriel: false,
+                    dossier: dossier,
+                    de: true,
+                  })}
+                  .
                 </p>
 
                 <p className="fr-text--lead fr-mb-3w">
@@ -439,9 +488,13 @@ function Etape3PiecesJointes() {
                         description={
                           typesPiecesJointesManquantes.length == 1 ? (
                             <p>
-                              Il manque les{" "}
-                              {typesPiecesJointesManquantes.at(0)?.libelle ||
-                                ""}
+                              Il manque au moins{" "}
+                              {typesPiecesJointesManquantes.at(0)?.libelle({
+                                court: true,
+                                pluriel: false,
+                                defini: false,
+                                dossier: dossier,
+                              }) || ""}
                             </p>
                           ) : (
                             <>
@@ -451,7 +504,11 @@ function Etape3PiecesJointes() {
                                 {typesPiecesJointesManquantes.map(
                                   (typePieceJointeManquante) => (
                                     <li key={typePieceJointeManquante.type}>
-                                      {typePieceJointeManquante.libelle}
+                                      {typePieceJointeManquante.libelle({
+                                        court: true,
+                                        pluriel: false,
+                                        dossier: dossier,
+                                      })}
                                     </li>
                                   ),
                                 )}

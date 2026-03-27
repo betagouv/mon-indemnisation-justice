@@ -58,6 +58,6 @@ export class PieceJointe {
   }
 
   get infoFichier(): string {
-    return `${this.type?.libelle || ""} - ${this.typeFichier?.toUpperCase()}${this.taille ? " - " + this.tailleFichier : ""}`;
+    return `${this.type?.libelle({}) || ""} - ${this.typeFichier?.toUpperCase()}${this.taille ? " - " + this.tailleFichier : ""}`;
   }
 }

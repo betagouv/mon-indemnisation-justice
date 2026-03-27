@@ -68,7 +68,6 @@ export type TypeBrisDePorte = z.infer<typeof SchemaValidationBrisPorte>;
 export const extraireDonneesBrisDeporte = (
   dossier: Dossier,
 ): TypeBrisDePorte => {
-  console.log(dossier.personneMorale?.typePersonneMorale);
   return {
     estPersonneMorale: dossier.estPersonneMorale,
     personneMorale: dossier.personneMorale?.typePersonneMorale

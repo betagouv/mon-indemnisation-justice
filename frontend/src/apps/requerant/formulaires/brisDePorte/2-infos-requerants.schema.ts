@@ -1,11 +1,5 @@
-import {
-  Civilites,
-  Commune,
-  Dossier,
-  Pays,
-  PersonneMorale,
-  PersonnePhysique,
-} from "@/apps/requerant/models";
+import { Adresse, Civilites, Commune, Dossier, Pays, PersonneMorale, PersonnePhysique } from "@/apps/requerant/models";
+import { Personne } from "@/apps/requerant/models/Personne";
 import { z } from "zod"; // Schema for a "personne morale" (company)
 
 // Schema for a "personne morale" (company)
@@ -15,30 +9,38 @@ const SchemaPersonneMorale = z.object({
     .trim()
     .min(1, { error: "La raison sociale de l'entreprise est requise" }),
   // https://annuaire-entreprises.data.gouv.fr/definitions/numero-siren
-  siren: z.string().regex(/\d{9}(\d{5})?/, {
-    error: "Le numéro de SIREN / SIRET est invalide (9 ou 14 chiffres)",
-  }),
+  siren: z
+    .string({
+      error: "Le numéro de SIREN / SIRET est invalide (9 ou 14 chiffres)",
+    })
+    .regex(/\d{9}(\d{5})?/, {
+      error: "Le numéro de SIREN / SIRET est invalide (9 ou 14 chiffres)",
+    }),
   adresse: z.object({
     ligne1: z
-      .string()
+      .string({ error: "L'adresse de la société est requise" })
       .trim()
       .min(1, { error: "L'adresse de la société est requise" }),
     ligne2: z.string().optional(),
     codePostal: z
-      .string()
+      .string({ error: "Le code postal doit réunir 5 chiffres" })
       .regex(/\d{5}/, { error: "Le code postal doit réunir 5 chiffres" }),
     commune: z
-      .string()
+      .string({ error: "Le code postal doit réunir 5 chiffres" })
       .trim()
       .min(1, { error: "La commune de la société est requise" }),
   }),
   representantLegal: z.object({
-    civilite: z.enum(Civilites),
-    nom: z.string(),
-    nomNaissance: z.string(),
-    prenom: z.string(),
-    courriel: z.email(),
-    telephone: z.string(),
+    civilite: z.enum(Civilites, { error: "La civilité est requise" }),
+    nom: z.string({ error: "Le nom est requis" }),
+    nomNaissance: z.string({ error: "Le nom de naissance est requis" }),
+    prenom: z.string({ error: "Le prénom est requis" }),
+    courriel: z.email({
+      error: "L'adresse courriel professionnelle est requise",
+    }),
+    telephone: z.string({
+      error: "Le numéro de téléphone professionnel est requis",
+    }),
   }),
 });
 
@@ -142,7 +144,12 @@ export const extraireDonneesInfosRequerant = (
   dossier.estPersonneMorale
     ? {
         estPersonneMorale: true,
-        personneMorale: { ...(dossier.personneMorale as PersonneMorale) },
+        personneMorale: {
+          ...(dossier.personneMorale as PersonneMorale),
+          representantLegal:
+            dossier.personneMorale?.representantLegal ?? new Personne(),
+          adresse: dossier.personneMorale?.adresse ?? new Adresse(),
+        },
         personnePhysique: undefined,
       }
     : {

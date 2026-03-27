@@ -2,14 +2,28 @@ import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.t
 import { FormUpload } from "@/apps/requerant/composants/champs/form/FormUpload.tsx";
 import { PrevisualiserFichier } from "@/apps/requerant/composants/piecesJointes/PrevisualiserFichier.tsx";
 import { Dossier } from "@/apps/requerant/models";
-import { PieceJointeType, TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
+import {
+  PieceJointeType,
+  TypePieceJointe,
+} from "@/apps/requerant/models/TypePieceJointe.ts";
 import { NouvellePieceJointe } from "@/apps/requerant/services/DossierManager.ts";
-import { Modale, ModaleProps, ModaleRef } from "@/common/composants/dsfr/Modale.tsx";
+import {
+  Modale,
+  ModaleProps,
+  ModaleRef,
+} from "@/common/composants/dsfr/Modale.tsx";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm } from "@tanstack/react-form";
-import React, { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { z } from "zod";
 
 export const AjouterPiecesJointesModaleEtapes = [
@@ -292,7 +306,11 @@ const PrevisualiserFichierFormulaire = ({
 
                 {typesPiecesJointes.map((type) => (
                   <option key={type.type} value={type.type}>
-                    {type.libelle}
+                    {type.libelle({
+                      court: true,
+                      pluriel: false,
+                      enCapitales: true,
+                    })}
                   </option>
                 ))}
               </FormSelect>
