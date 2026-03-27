@@ -50,6 +50,13 @@ export class Dossier extends BaseDossier {
   @DateTransform()
   dateCreation: Date;
 
+  protected _estPersonneMorale: boolean;
+
+  get estPersonneMorale(): boolean {
+    return this._estPersonneMorale;
+  }
+
+  @Expose({ toClassOnly: true })
   @Transform(({ obj, value }: { obj: any; value: any }) => {
     if (typeof value === "boolean") {
       return value;
@@ -64,13 +71,6 @@ export class Dossier extends BaseDossier {
 
     return undefined;
   })
-  @Expose({ toClassOnly: true })
-  protected _estPersonneMorale: boolean;
-
-  get estPersonneMorale(): boolean {
-    return this._estPersonneMorale;
-  }
-
   set estPersonneMorale(estPersonneMorale: boolean) {
     this._estPersonneMorale = estPersonneMorale;
 

@@ -7,7 +7,7 @@ import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container";
 import {
   extraireDonneesBrisDeporte,
-  SchemaValidationBrisPorte,
+  SchemaValidationBrisPorte
 } from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
 import {
   Adresse,
@@ -16,7 +16,7 @@ import {
   getRapportAuLogementLibelle,
   RapportAuLogement,
   TypePersonneMoraleType,
-  TypesPersonneMorale,
+  TypesPersonneMorale
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
@@ -28,12 +28,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm, useStore } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  notFound,
-  NotFoundRouteProps,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound, NotFoundRouteProps, useNavigate } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React from "react";
 
@@ -100,12 +95,14 @@ function Etape1BrisPorte() {
     },
     onSubmit: async ({ value, formApi }) => {
       // Enregistrer le brouillon...
-      await dossierManager.enregistrer(reference);
-      // ...et passer à l'étape suivante
-      await naviguer({
-        to: "../2-infos-requerant",
-        search: {} as any,
-      });
+      if (formApi.state.isValid) {
+        await dossierManager.enregistrer(reference);
+        // ...et passer à l'étape suivante
+        await naviguer({
+          to: "../2-infos-requerant",
+          search: {} as any,
+        });
+      }
     },
   });
 
@@ -290,6 +287,7 @@ function Etape1BrisPorte() {
                           estRequis={rapportAuLogement === "AUTRE"}
                           champ={field}
                           nativeInputProps={{
+                            defaultValue: field.state.value || "",
                             onChange: (e) => field.setValue(e.target.value),
                             maxLength: 255,
                           }}
@@ -480,14 +478,14 @@ function Etape1BrisPorte() {
                           {
                             label: "Oui",
                             nativeInputProps: {
-                              checked: field.state.value === true,
+                              checked: field.state.value,
                               onChange: (e) => field.setValue(true),
                             },
                           },
                           {
                             label: "Non",
                             nativeInputProps: {
-                              checked: field.state.value === false,
+                              checked: !field.state.value,
                               onChange: (e) => field.setValue(false),
                             },
                           },

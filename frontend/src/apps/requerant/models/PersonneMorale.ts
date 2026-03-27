@@ -11,6 +11,7 @@ export class PersonneMorale {
   representantLegal: Personne;
   //delegataires?: Personne[];
   //gestionnaires?: Personne[];
+  @Type(() => Adresse)
   adresse: Adresse;
   paysNaissance: never;
   communeNaissance: never;

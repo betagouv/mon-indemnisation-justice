@@ -1,5 +1,12 @@
-import { Civilites, Commune, Dossier, Pays, PersonneMorale, PersonnePhysique } from "@/apps/requerant/models";
-import { z } from "zod";
+import {
+  Civilites,
+  Commune,
+  Dossier,
+  Pays,
+  PersonneMorale,
+  PersonnePhysique,
+} from "@/apps/requerant/models";
+import { z } from "zod"; // Schema for a "personne morale" (company)
 
 // Schema for a "personne morale" (company)
 const SchemaPersonneMorale = z.object({
@@ -9,7 +16,7 @@ const SchemaPersonneMorale = z.object({
     .min(1, { error: "La raison sociale de l'entreprise est requise" }),
   // https://annuaire-entreprises.data.gouv.fr/definitions/numero-siren
   siren: z.string().regex(/\d{9}(\d{5})?/, {
-    error: "Le numéro de SIREN / SIRET est invalide",
+    error: "Le numéro de SIREN / SIRET est invalide (9 ou 14 chiffres)",
   }),
   adresse: z.object({
     ligne1: z
@@ -115,11 +122,11 @@ export const SchemaValidationInfosRequerants = z.discriminatedUnion(
     z.object({
       estPersonneMorale: z.literal(true),
       personneMorale: SchemaPersonneMorale,
-      personnePhysique: z.undefined(),
+      personnePhysique: z.any(),
     }),
     z.object({
       estPersonneMorale: z.literal(false),
-      personneMorale: z.undefined(),
+      personneMorale: z.any(),
       personnePhysique: SchemaPersonnePhysique,
     }),
   ],

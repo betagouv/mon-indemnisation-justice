@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Api\Requerant\Dossier\AmenderDossierEndpoint;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\PersonneMoraleType;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Usager;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -25,7 +26,7 @@ class AmenderDossierEndpointTest extends WebTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    public function testAmenderDossierOk()
+    public function testAmenderDossierOk(): void
     {
         $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
         /** @var Dossier $dossier */
@@ -35,7 +36,7 @@ class AmenderDossierEndpointTest extends WebTestCase
                     && EtatDossierType::DOSSIER_A_FINALISER === $d->getEtatDossier()->getEtat()
             )
             ->first();
-        $reference = $dossier->getReference() ?? $dossier->getId();
+        $reference = $dossier->getId();
         $this->client->loginUser($usager, 'requerant');
 
 
@@ -77,5 +78,53 @@ class AmenderDossierEndpointTest extends WebTestCase
         $this->assertEquals('CHIRAC', $dossier->getRequerantPersonnePhysique()->getPersonne()->getNom());
         $this->assertEquals('0621436587', $dossier->getRequerantPersonnePhysique()->getPersonne()->getTelephone());
         $this->assertIsArray($donnees['personnePhysique']);
+    }
+
+    public function testAmenderDossierChangerTypeOk(): void
+    {
+        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
+        /** @var Dossier $dossier */
+        $dossier = $usager->getDossiersBrisDePorte()
+            ->filter(
+                fn (Dossier $d) => DossierType::BRIS_PORTE === $d->getType()
+                    && EtatDossierType::DOSSIER_A_FINALISER === $d->getEtatDossier()->getEtat()
+            )
+            ->first();
+        $reference = $dossier->getId();
+        $this->client->loginUser($usager, 'requerant');
+
+
+        $this->client->request(
+            'PATCH',
+            "/api/requerant/dossier/bris-de-porte/$reference/amender",
+            content: json_encode(
+                [
+
+                    'personneMorale' => ['typePersonneMorale' => PersonneMoraleType::ASSUREUR->value],
+                    'rapportAuLogement' => 'BAILLEUR',
+                    'adresse' => [
+                        'ligne1' => '17 boulevard Pereire',
+                        'ligne2' => null,
+                        'codePostal' => '75017',
+                        'commune' => 'Paris',
+                    ],
+                    'dateOperation' => '2026-03-03',
+                ]
+            )
+        );
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $donnees = json_decode($this->client->getResponse()->getContent(), true);
+
+
+        $this->assertTrue($donnees['estPersonneMorale']);
+        $this->assertArrayHasKey('personneMorale', $donnees);
+        $this->assertArrayHasKey('typePersonneMorale', $donnees['personneMorale']);
+        $this->assertEquals(PersonneMoraleType::ASSUREUR->value, $donnees['personneMorale']['typePersonneMorale']);
+
+        $this->em->refresh($dossier);
+        $this->assertEquals('17 boulevard Pereire', $dossier->getBrisPorte()->getAdresse()->getLigne1());
+        $this->assertEquals(PersonneMoraleType::ASSUREUR, $dossier->getRequerantPersonneMorale()->getType());
     }
 }

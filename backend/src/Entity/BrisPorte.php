@@ -44,7 +44,7 @@ class BrisPorte
     #[ORM\Column(length: 20, nullable: true, enumType: TypeAttestation::class)]
     protected ?TypeAttestation $typeAttestation = null;
 
-    #[ORM\ManyToOne(cascade: ['persist', 'remove'], inversedBy: 'brisPortes')]
+    #[ORM\ManyToOne(Adresse::class, cascade: ['persist', 'remove'], inversedBy: 'brisPortes')]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     protected ?Adresse $adresse;
 

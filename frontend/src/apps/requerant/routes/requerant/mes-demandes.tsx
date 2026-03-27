@@ -181,7 +181,9 @@ function RouteComponent() {
                       },
                     }}
                   >
-                    Éditer
+                    {dossier.estBrouillon
+                      ? "Compléter ma demande"
+                      : "Modifier ma demande"}
                   </Button>
                 )}
               </div>,
