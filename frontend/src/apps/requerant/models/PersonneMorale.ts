@@ -17,6 +17,11 @@ export class PersonneMorale {
   communeNaissance: never;
   villeNaissance: never;
 
+  constructor() {
+    this.adresse = new Adresse();
+    this.representantLegal = new Personne();
+  }
+
   get estPersonneMorale(): boolean {
     return true;
   }
