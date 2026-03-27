@@ -1,5 +1,6 @@
 import { Upload, UploadProps } from "@codegouvfr/react-dsfr/Upload";
 import React, { type ReactNode } from "react";
+import { Requis } from "@/common/composants/dsfr/Requis.tsx";
 
 export type CheckUploadProps = Omit<
   UploadProps,
@@ -24,9 +25,7 @@ export const CheckUpload = ({
       label={
         <>
           {label}
-          {estRequis && (
-            <span className="fr-text-default--error"> &#x2217;</span>
-          )}
+          {estRequis && <Requis />}
         </>
       }
       state={
