@@ -8,7 +8,7 @@ export type FormSuggestedInputProps<TSuggestion extends {} = {}> = Omit<
   CheckSuggestedInputProps<TSuggestion>,
   "message" | "validation" | "estValide"
 > & {
-  champ?: TanstackFormField;
+  champ: TanstackFormField;
 };
 
 export const FormSuggestedInput = <TSuggestion extends {} = {}>({

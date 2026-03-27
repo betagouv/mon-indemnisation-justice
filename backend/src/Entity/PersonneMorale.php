@@ -21,6 +21,9 @@ class PersonneMorale
     /** @var Collection<Dossier> */
     protected Collection $dossiers;
 
+    #[ORM\Column(length: 32, enumType: PersonneMoraleType::class, options: ['default' => PersonneMoraleType::ENTREPRISE_PRIVEE])]
+    protected PersonneMoraleType $type;
+
     #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $sirenSiret = null;
@@ -29,6 +32,10 @@ class PersonneMorale
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
 
+    #[ORM\ManyToOne(Adresse::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    protected ?Adresse $adresse;
+
     #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'representant_legal_id', referencedColumnName: 'id')]
     protected ?Personne $representantLegal;
@@ -36,6 +43,18 @@ class PersonneMorale
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getType(): PersonneMoraleType
+    {
+        return $this->type;
+    }
+
+    public function setType(PersonneMoraleType $type): PersonneMorale
+    {
+        $this->type = $type;
+
+        return $this;
     }
 
     public function getSirenSiret(): ?string
@@ -58,6 +77,18 @@ class PersonneMorale
     public function setRaisonSociale(?string $raisonSociale): PersonneMorale
     {
         $this->raisonSociale = $raisonSociale;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?Adresse
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?Adresse $adresse): PersonneMorale
+    {
+        $this->adresse = $adresse;
 
         return $this;
     }

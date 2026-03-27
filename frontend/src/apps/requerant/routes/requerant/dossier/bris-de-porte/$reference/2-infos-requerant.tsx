@@ -113,12 +113,14 @@ function Etape2InfosRequerant() {
     },
     onSubmit: async ({ value, formApi }) => {
       // Enregistrer le brouillon...
-      await dossierManager.enregistrer(reference);
-      // ...et passer à l'étape suivante
-      await naviguer({
-        to: "../3-pieces-jointes",
-        search: {} as any,
-      });
+      if (formApi.state.isValid) {
+        await dossierManager.enregistrer(reference);
+        // ...et passer à l'étape suivante
+        await naviguer({
+          to: "../3-pieces-jointes",
+          search: {} as any,
+        });
+      }
     },
   });
 
@@ -140,7 +142,6 @@ function Etape2InfosRequerant() {
           e.stopPropagation();
           try {
             // Rafraîchir la validation avant la soumission
-            formulaire.validate("submit");
             await formulaire.handleSubmit();
           } catch (e) {
             console.error(e);
@@ -174,6 +175,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Raison sociale"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value || "",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -193,6 +195,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="SIREN / SIRET"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value || "",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -209,16 +212,49 @@ function Etape2InfosRequerant() {
                     <div className="fr-grid-row fr-grid-row--gutters">
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="personnePhysique.adresse.ligne1"
+                          name="personneMorale.adresse.ligne1"
                           children={(field) => {
                             return (
-                              <FormInput
+                              <FormSuggestedInput<Adresse>
                                 label="Adresse"
                                 nativeInputProps={{
-                                  placeholder: "Numéro de voie, rue",
-                                  onChange: (e) =>
-                                    field.setValue(e.target.value),
                                   maxLength: 255,
+                                  placeholder: "Numéro de voie, rue",
+                                  defaultValue: field.state.value || "",
+                                  onChange: (e) => {
+                                    field.setValue(e.target.value);
+                                  },
+                                }}
+                                onSelectionne={(suggestion: Adresse) => {
+                                  field.setValue(suggestion.ligne1);
+                                  field.form.setFieldValue(
+                                    "personneMorale.adresse.commune",
+                                    suggestion.commune,
+                                  );
+                                  field.form.setFieldValue(
+                                    "personneMorale.adresse.codePostal",
+                                    suggestion.codePostal,
+                                  );
+                                  // Comme les valeurs des 3 champs ont changé, on met à jour la validation
+                                  field.form.validateField(
+                                    "personneMorale.adresse",
+                                    "submit",
+                                  );
+                                  return suggestion.ligne1;
+                                }}
+                                rafraichisseur={async (valeur: string) =>
+                                  (
+                                    await adresseManager.suggererAdresse(valeur)
+                                  ).map((adresse: Adresse) => ({
+                                    libelle: adresse.libelle,
+                                    valeur: adresse,
+                                  }))
+                                }
+                                // Ne rafraichir la liste des suggestions que le lorsque la valeur saisie atteint au moins 5 caractères non blancs
+                                estARafraichir={(valeur: string) => {
+                                  return (
+                                    valeur.replaceAll(/\s+/g, "").length >= 5
+                                  );
                                 }}
                                 estRequis={true}
                                 champ={field}
@@ -230,13 +266,14 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-6 fr-col-12">
                         <formulaire.Field
-                          name="personnePhysique.adresse.ligne2"
+                          name="personneMorale.adresse.ligne2"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Complément d'adresse"
                                 nativeInputProps={{
                                   placeholder: "Étage, escalier",
+                                  defaultValue: field.state.value || "",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -250,13 +287,15 @@ function Etape2InfosRequerant() {
 
                       <div className="fr-col-lg-2 fr-col-4">
                         <formulaire.Field
-                          name="personnePhysique.adresse.codePostal"
+                          name="personneMorale.adresse.codePostal"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Code postal"
                                 nativeInputProps={{
-                                  // TODO charger la liste des communes
+                                  defaultValue: field.state.value || "",
+                                  onChange: (e) =>
+                                    field.setValue(e.target.value),
                                   maxLength: 5,
                                 }}
                                 estRequis={true}
@@ -268,12 +307,13 @@ function Etape2InfosRequerant() {
                       </div>
                       <div className="fr-col-lg-10 fr-col-8">
                         <formulaire.Field
-                          name="personnePhysique.adresse.commune"
+                          name="personneMorale.adresse.commune"
                           children={(field) => {
                             return (
                               <FormInput
                                 label="Ville"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value || "",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                   maxLength: 255,
@@ -318,10 +358,10 @@ function Etape2InfosRequerant() {
                           children={(field) => {
                             return (
                               <FormInput
-                                label="Prénom(s)"
+                                label="Prénom"
                                 nativeInputProps={{
                                   placeholder: "Premier prénom",
-                                  value: field.state.value,
+                                  defaultValue: field.state.value || "",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                 }}
@@ -340,6 +380,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Nom de naissance"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value || "",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                 }}
@@ -358,6 +399,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Nom d'usage"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value || "",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                 }}
@@ -376,6 +418,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Courriel professionnel"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value || "",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                 }}
@@ -394,6 +437,7 @@ function Etape2InfosRequerant() {
                               <FormInput
                                 label="Numéro de téléphone professionnel"
                                 nativeInputProps={{
+                                  defaultValue: field.state.value || "",
                                   onChange: (e) =>
                                     field.setValue(e.target.value),
                                 }}
