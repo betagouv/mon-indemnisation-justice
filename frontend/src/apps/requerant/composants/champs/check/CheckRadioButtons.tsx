@@ -1,7 +1,7 @@
 import React, { type ReactNode } from "react";
-import type { InputProps } from "@codegouvfr/react-dsfr/src/Input.tsx";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { RadioButtonsProps } from "@codegouvfr/react-dsfr/src/RadioButtons.tsx";
+import { Requis } from "@/common/composants/dsfr/Requis.tsx";
 
 export type CheckRadioButtonsProps = Omit<
   RadioButtonsProps,
@@ -25,9 +25,7 @@ export const CheckRadioButtons = ({
       legend={
         <>
           {legend}
-          {estRequis && (
-            <span className="fr-text-default--error"> &#x2217;</span>
-          )}
+          {estRequis && <Requis />}
         </>
       }
       state={
