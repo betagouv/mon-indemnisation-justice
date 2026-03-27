@@ -67,25 +67,28 @@ export type TypeBrisDePorte = z.infer<typeof SchemaValidationBrisPorte>;
 
 export const extraireDonneesBrisDeporte = (
   dossier: Dossier,
-): TypeBrisDePorte => ({
-  estPersonneMorale: dossier.estPersonneMorale,
-  personneMorale: dossier.personneMorale?.typePersonneMorale
-    ? {
-        typePersonneMorale: dossier.personneMorale.typePersonneMorale,
-      }
-    : undefined,
-  rapportAuLogement: dossier.rapportAuLogement,
-  descriptionRapportAuLogement: dossier.descriptionRapportAuLogement,
-  dateOperation: dossier.dateOperation,
-  description: dossier.description,
-  adresse: {
-    ligne1: dossier.adresse?.ligne1,
-    ligne2: dossier.adresse?.ligne2,
-    codePostal: dossier.adresse?.codePostal,
-    commune: dossier.adresse?.commune,
-  },
-  estPorteBlindee: dossier.estPorteBlindee,
-});
+): TypeBrisDePorte => {
+  console.log(dossier.personneMorale?.typePersonneMorale);
+  return {
+    estPersonneMorale: dossier.estPersonneMorale,
+    personneMorale: dossier.personneMorale?.typePersonneMorale
+      ? {
+          typePersonneMorale: dossier.personneMorale.typePersonneMorale,
+        }
+      : undefined,
+    rapportAuLogement: dossier.rapportAuLogement,
+    descriptionRapportAuLogement: dossier.descriptionRapportAuLogement,
+    dateOperation: dossier.dateOperation,
+    description: dossier.description,
+    adresse: {
+      ligne1: dossier.adresse?.ligne1,
+      ligne2: dossier.adresse?.ligne2,
+      codePostal: dossier.adresse?.codePostal,
+      commune: dossier.adresse?.commune,
+    },
+    estPorteBlindee: dossier.estPorteBlindee,
+  };
+};
 
 export const estDossierOkBrisDePorte = (dossier: Dossier): boolean =>
   SchemaValidationBrisPorte.safeParse(extraireDonneesBrisDeporte(dossier))

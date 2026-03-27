@@ -38,7 +38,7 @@ class DossierDto
     public function versDossier(Dossier $dossier): Dossier
     {
         return $dossier->setRequerant(
-            $this->estPersonneMorale && $this->personneMorale ?
+            $this->personneMorale ?
                 $this->personneMorale?->versPersonneMorale($dossier?->getRequerantPersonneMorale()) :
                 $this->personnePhysique->versPersonnePhysique($dossier?->getRequerantPersonnePhysique())
         )
@@ -48,7 +48,7 @@ class DossierDto
                     ->setPrecisionRapportAuLogement($this->descriptionRapportAuLogement)
                     ->setPorteBlindee($this->estPorteBlindee)
                     ->setDescriptionRequerant($this->description)
-                    ->setDateOperation(\DateTime::createFromInterface($this->dateOperation))
+                    ->setDateOperation($this->dateOperation ? \DateTime::createFromInterface($this->dateOperation) : null)
                     ->setAdresse($this->adresse?->versAdresse($dossier->getBrisPorte()->getAdresse()))
             );
     }
@@ -59,7 +59,7 @@ class DossierDto
             reference: strval($dossier->getId()),
             usager: $dossier->getUsager()->getId(),
             etatActuel: EtatDossierDto::depuisEtatDossier($dossier->getEtatDossier()),
-            dateDepot: \DateTimeImmutable::createFromInterface($dossier->getDateDepot()),
+            dateDepot: $dossier->getDateDepot() ? \DateTimeImmutable::createFromInterface($dossier->getDateDepot()) : null,
             estPersonneMorale: $dossier->estPersonneMorale(),
             personnePhysique: PersonnePhysiqueDto::depuisPersonnePhysique($dossier->getRequerantPersonnePhysique()),
             personneMorale: PersonneMoraleDto::depuisPersonneMorale($dossier->getRequerantPersonneMorale()),
