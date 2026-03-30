@@ -17,7 +17,9 @@ class ConnexionRequerantListener implements EventSubscriberInterface
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-    ) {}
+    )
+    {
+    }
 
     public function onSecurityInteractiveLogin(LoginSuccessEvent $event): void
     {
@@ -37,8 +39,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
                 $dossier = (new BrisPorte())
                     ->setRequerant($requerant)
                     ->setQualiteRequerant($testEligibilite->rapportAuLogement)
-                    ->setTestEligibilite($testEligibilite)
-                ;
+                    ->setTestEligibilite($testEligibilite);
                 $requerant->setNavigation(null);
 
                 $this->em->persist($requerant);
@@ -48,8 +49,10 @@ class ConnexionRequerantListener implements EventSubscriberInterface
         } else {
             // Sinon si une déclaration des FDO existe en session...
             $declarationFDO = $this->getDeclarationFDOEnCours($request, $requerant);
+            $dossier = $declarationFDO ? $this->em->getRepository(BrisPorte::class)->findOneBy(['declarationFDO' => $declarationFDO]) : null;
+
             // ... associée à aucun de ses dossiers existants...
-            if (null !== $declarationFDO && null === $declarationFDO->getDossier()) {
+            if (null !== $declarationFDO && null === $dossier) {
                 // ... alors, on crée un nouveau dossier lié à cette déclaration
                 $dossier = (new BrisPorte())
                     ->setRequerant($requerant)
@@ -62,8 +65,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
                             ->setLigne2($declarationFDO->getAdresse()->getLigne2())
                             ->setCodePostal($declarationFDO->getAdresse()->getCodePostal())
                             ->setLocalite($declarationFDO->getAdresse()->getLocalite())
-                    )
-                ;
+                    );
 
                 $requerant->setNavigation(null);
 
