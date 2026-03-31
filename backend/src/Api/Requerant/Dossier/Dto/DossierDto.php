@@ -12,6 +12,7 @@ use Symfony\Component\Uid\Uuid;
 class DossierDto
 {
     public function __construct(
+        public int $id,
         public ?string $reference,
         public int $usager,
         public ?EtatDossierDto $etatActuel = null,
@@ -56,7 +57,8 @@ class DossierDto
     public static function depuisDossier(Dossier $dossier): self
     {
         return new self(
-            reference: strval($dossier->getId()),
+            id: $dossier->getId(),
+            reference: $dossier->getReference(),
             usager: $dossier->getUsager()->getId(),
             etatActuel: EtatDossierDto::depuisEtatDossier($dossier->getEtatDossier()),
             dateDepot: $dossier->getDateDepot() ? \DateTimeImmutable::createFromInterface($dossier->getDateDepot()) : null,

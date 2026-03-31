@@ -2,8 +2,8 @@ import {
   AjouterPiecesJointesModale,
   AjouterPiecesJointesModaleRef,
 } from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
-import { container } from "@/apps/requerant/container";
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
+import { container } from "@/apps/requerant/container.ts";
 import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import {
   PieceJointeType,
@@ -16,7 +16,7 @@ import {
 import classes from "@/apps/requerant/style/form.module.css";
 import { MiseEnAvant } from "@/common/composants/dsfr/MiseEnAvant.tsx";
 import { Requis } from "@/common/composants/dsfr/Requis.tsx";
-import { Loader } from "@/common/composants/Loader";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { fr, FrCxArg } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
@@ -39,9 +39,14 @@ import { default as React, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 export const Route = createFileRoute(
-  "/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes",
+  "/requerant/dossier/bris-de-porte/$id/3-pieces-jointes",
 )({
   component: Etape3PiecesJointes,
+  shouldReload: true,
+  params: {
+    parse: ({ id }) => ({ id: parseInt(id) }),
+    stringify: ({ id }) => ({ id: id.toString() }),
+  },
   pendingComponent: Loader,
   notFoundComponent: (props: NotFoundRouteProps) => (
     <NonTrouveComposant {...props} />
@@ -49,7 +54,7 @@ export const Route = createFileRoute(
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
-      .getDossier(params.reference);
+      .getDossier(params.id);
 
     if (!dossier) {
       throw notFound({
@@ -57,8 +62,8 @@ export const Route = createFileRoute(
           titre: "Impossible de trouver le dossier",
           message: (
             <>
-              Le dossier de référence <i>${params.reference}</i>n'existe pas ou
-              ne vous est pas accessible.
+              Le dossier n°<i>${params.id}</i>n'existe pas ou ne vous est pas
+              accessible.
             </>
           ),
         },
@@ -66,9 +71,8 @@ export const Route = createFileRoute(
       });
     }
 
-    return { reference: params.reference, dossier };
+    return { dossier };
   },
-  shouldReload: true,
 });
 
 function Etape3PiecesJointes() {
@@ -83,8 +87,7 @@ function Etape3PiecesJointes() {
   );
 
   // Récupérer la référence depuis le paramètre de la route
-  const { reference, dossier }: { reference: string; dossier: Dossier } =
-    Route.useLoaderData();
+  const { dossier }: { dossier: Dossier } = Route.useLoaderData();
 
   // Récupération du routeur, uniquement pour pouvoir invalider son cache
   const routeur = useRouter();
@@ -197,7 +200,7 @@ function Etape3PiecesJointes() {
       if (formApi.state.isValid) {
         if (dossier.estBrouillon) {
           setSauvegardeEnCours(true);
-          const dossierDepose = await dossierManager.soumettre(reference);
+          const dossierDepose = await dossierManager.soumettre(dossier.id);
           setSauvegardeEnCours(false);
 
           await naviguer({
@@ -205,6 +208,16 @@ function Etape3PiecesJointes() {
             search: {
               d: dossierDepose.reference,
             } as any,
+            state: {
+              flash: {
+                type: "success",
+                titre: "Votre dossier a bien été déposé",
+                message: [
+                  "Toutes vos informations ont bien été sauvegardées. Un courriel de confirmation vous a été envoyé à l'instant.",
+                  `Votre dossier porte la référence ${dossierDepose.reference} et sera traité par un agent du bureau dans les plus brefs délais. Vous serez informés de son évolution par courriel mais pourrez aussi suivre son avancement en vous connectant à votre espace personnel.`,
+                ],
+              },
+            },
           });
         } else {
           // Aucun enregistrement à faire ici, puisque l'étape 3 ne concerne que les pièces jointes qui sont sauvegardées
@@ -226,12 +239,13 @@ function Etape3PiecesJointes() {
         onComplete={async (
           piecesJointes: NouvellePieceJointe[],
         ): Promise<void> => {
-          await dossierManager.ajouterPiecesJointes(reference, piecesJointes);
+          await dossierManager.ajouterPiecesJointes(dossier.id, piecesJointes);
+          formulaire.validate("change");
           // On sait que le dossier a changé, il faut donc invalider le cache du
           // routeur pour le forcer à récupérer le dossier à jour
           await routeur.invalidate();
         }}
-        typesPiecesjointes={typesPiecesJointesRequis}
+        typesPiecesjointes={typesPiecesJointesDemandes}
         title="Ajouter des pièces jointes"
         iconId={"fr-icon-add-line"}
         size="medium"
@@ -484,7 +498,6 @@ function Etape3PiecesJointes() {
                         className="fr-col-12"
                         severity="error"
                         title="Des documents sont manquants"
-                        closable={true}
                         description={
                           typesPiecesJointesManquantes.length == 1 ? (
                             <p>

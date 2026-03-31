@@ -11,10 +11,10 @@
 import { Route as rootRouteImport } from './../routes/__root'
 import { Route as RequerantIndexRouteImport } from './../routes/requerant/index'
 import { Route as RequerantMesDemandesRouteImport } from './../routes/requerant/mes-demandes'
-import { Route as RequerantDossierBrisDePorteReferenceIndexRouteImport } from './../routes/requerant/dossier/bris-de-porte/$reference/index'
-import { Route as RequerantDossierBrisDePorteReference3PiecesJointesRouteImport } from './../routes/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes'
-import { Route as RequerantDossierBrisDePorteReference2InfosRequerantRouteImport } from './../routes/requerant/dossier/bris-de-porte/$reference/2-infos-requerant'
-import { Route as RequerantDossierBrisDePorteReference1BrisPorteRouteImport } from './../routes/requerant/dossier/bris-de-porte/$reference/1-bris-porte'
+import { Route as RequerantDossierBrisDePorteIdIndexRouteImport } from './../routes/requerant/dossier/bris-de-porte/$id/index'
+import { Route as RequerantDossierBrisDePorteId3PiecesJointesRouteImport } from './../routes/requerant/dossier/bris-de-porte/$id/3-pieces-jointes'
+import { Route as RequerantDossierBrisDePorteId2InfosRequerantRouteImport } from './../routes/requerant/dossier/bris-de-porte/$id/2-infos-requerant'
+import { Route as RequerantDossierBrisDePorteId1BrisPorteRouteImport } from './../routes/requerant/dossier/bris-de-porte/$id/1-bris-porte'
 
 const RequerantIndexRoute = RequerantIndexRouteImport.update({
   id: '/requerant/',
@@ -26,90 +26,90 @@ const RequerantMesDemandesRoute = RequerantMesDemandesRouteImport.update({
   path: '/requerant/mes-demandes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RequerantDossierBrisDePorteReferenceIndexRoute =
-  RequerantDossierBrisDePorteReferenceIndexRouteImport.update({
-    id: '/requerant/dossier/bris-de-porte/$reference/',
-    path: '/requerant/dossier/bris-de-porte/$reference/',
+const RequerantDossierBrisDePorteIdIndexRoute =
+  RequerantDossierBrisDePorteIdIndexRouteImport.update({
+    id: '/requerant/dossier/bris-de-porte/$id/',
+    path: '/requerant/dossier/bris-de-porte/$id/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const RequerantDossierBrisDePorteReference3PiecesJointesRoute =
-  RequerantDossierBrisDePorteReference3PiecesJointesRouteImport.update({
-    id: '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes',
-    path: '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes',
+const RequerantDossierBrisDePorteId3PiecesJointesRoute =
+  RequerantDossierBrisDePorteId3PiecesJointesRouteImport.update({
+    id: '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes',
+    path: '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes',
     getParentRoute: () => rootRouteImport,
   } as any)
-const RequerantDossierBrisDePorteReference2InfosRequerantRoute =
-  RequerantDossierBrisDePorteReference2InfosRequerantRouteImport.update({
-    id: '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant',
-    path: '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant',
+const RequerantDossierBrisDePorteId2InfosRequerantRoute =
+  RequerantDossierBrisDePorteId2InfosRequerantRouteImport.update({
+    id: '/requerant/dossier/bris-de-porte/$id/2-infos-requerant',
+    path: '/requerant/dossier/bris-de-porte/$id/2-infos-requerant',
     getParentRoute: () => rootRouteImport,
   } as any)
-const RequerantDossierBrisDePorteReference1BrisPorteRoute =
-  RequerantDossierBrisDePorteReference1BrisPorteRouteImport.update({
-    id: '/requerant/dossier/bris-de-porte/$reference/1-bris-porte',
-    path: '/requerant/dossier/bris-de-porte/$reference/1-bris-porte',
+const RequerantDossierBrisDePorteId1BrisPorteRoute =
+  RequerantDossierBrisDePorteId1BrisPorteRouteImport.update({
+    id: '/requerant/dossier/bris-de-porte/$id/1-bris-porte',
+    path: '/requerant/dossier/bris-de-porte/$id/1-bris-porte',
     getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/requerant/mes-demandes': typeof RequerantMesDemandesRoute
   '/requerant': typeof RequerantIndexRoute
-  '/requerant/dossier/bris-de-porte/$reference/1-bris-porte': typeof RequerantDossierBrisDePorteReference1BrisPorteRoute
-  '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant': typeof RequerantDossierBrisDePorteReference2InfosRequerantRoute
-  '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes': typeof RequerantDossierBrisDePorteReference3PiecesJointesRoute
-  '/requerant/dossier/bris-de-porte/$reference': typeof RequerantDossierBrisDePorteReferenceIndexRoute
+  '/requerant/dossier/bris-de-porte/$id/1-bris-porte': typeof RequerantDossierBrisDePorteId1BrisPorteRoute
+  '/requerant/dossier/bris-de-porte/$id/2-infos-requerant': typeof RequerantDossierBrisDePorteId2InfosRequerantRoute
+  '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes': typeof RequerantDossierBrisDePorteId3PiecesJointesRoute
+  '/requerant/dossier/bris-de-porte/$id': typeof RequerantDossierBrisDePorteIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/requerant/mes-demandes': typeof RequerantMesDemandesRoute
   '/requerant': typeof RequerantIndexRoute
-  '/requerant/dossier/bris-de-porte/$reference/1-bris-porte': typeof RequerantDossierBrisDePorteReference1BrisPorteRoute
-  '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant': typeof RequerantDossierBrisDePorteReference2InfosRequerantRoute
-  '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes': typeof RequerantDossierBrisDePorteReference3PiecesJointesRoute
-  '/requerant/dossier/bris-de-porte/$reference': typeof RequerantDossierBrisDePorteReferenceIndexRoute
+  '/requerant/dossier/bris-de-porte/$id/1-bris-porte': typeof RequerantDossierBrisDePorteId1BrisPorteRoute
+  '/requerant/dossier/bris-de-porte/$id/2-infos-requerant': typeof RequerantDossierBrisDePorteId2InfosRequerantRoute
+  '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes': typeof RequerantDossierBrisDePorteId3PiecesJointesRoute
+  '/requerant/dossier/bris-de-porte/$id': typeof RequerantDossierBrisDePorteIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/requerant/mes-demandes': typeof RequerantMesDemandesRoute
   '/requerant/': typeof RequerantIndexRoute
-  '/requerant/dossier/bris-de-porte/$reference/1-bris-porte': typeof RequerantDossierBrisDePorteReference1BrisPorteRoute
-  '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant': typeof RequerantDossierBrisDePorteReference2InfosRequerantRoute
-  '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes': typeof RequerantDossierBrisDePorteReference3PiecesJointesRoute
-  '/requerant/dossier/bris-de-porte/$reference/': typeof RequerantDossierBrisDePorteReferenceIndexRoute
+  '/requerant/dossier/bris-de-porte/$id/1-bris-porte': typeof RequerantDossierBrisDePorteId1BrisPorteRoute
+  '/requerant/dossier/bris-de-porte/$id/2-infos-requerant': typeof RequerantDossierBrisDePorteId2InfosRequerantRoute
+  '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes': typeof RequerantDossierBrisDePorteId3PiecesJointesRoute
+  '/requerant/dossier/bris-de-porte/$id/': typeof RequerantDossierBrisDePorteIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/requerant/mes-demandes'
     | '/requerant'
-    | '/requerant/dossier/bris-de-porte/$reference/1-bris-porte'
-    | '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant'
-    | '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes'
-    | '/requerant/dossier/bris-de-porte/$reference'
+    | '/requerant/dossier/bris-de-porte/$id/1-bris-porte'
+    | '/requerant/dossier/bris-de-porte/$id/2-infos-requerant'
+    | '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes'
+    | '/requerant/dossier/bris-de-porte/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/requerant/mes-demandes'
     | '/requerant'
-    | '/requerant/dossier/bris-de-porte/$reference/1-bris-porte'
-    | '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant'
-    | '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes'
-    | '/requerant/dossier/bris-de-porte/$reference'
+    | '/requerant/dossier/bris-de-porte/$id/1-bris-porte'
+    | '/requerant/dossier/bris-de-porte/$id/2-infos-requerant'
+    | '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes'
+    | '/requerant/dossier/bris-de-porte/$id'
   id:
     | '__root__'
     | '/requerant/mes-demandes'
     | '/requerant/'
-    | '/requerant/dossier/bris-de-porte/$reference/1-bris-porte'
-    | '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant'
-    | '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes'
-    | '/requerant/dossier/bris-de-porte/$reference/'
+    | '/requerant/dossier/bris-de-porte/$id/1-bris-porte'
+    | '/requerant/dossier/bris-de-porte/$id/2-infos-requerant'
+    | '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes'
+    | '/requerant/dossier/bris-de-porte/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   RequerantMesDemandesRoute: typeof RequerantMesDemandesRoute
   RequerantIndexRoute: typeof RequerantIndexRoute
-  RequerantDossierBrisDePorteReference1BrisPorteRoute: typeof RequerantDossierBrisDePorteReference1BrisPorteRoute
-  RequerantDossierBrisDePorteReference2InfosRequerantRoute: typeof RequerantDossierBrisDePorteReference2InfosRequerantRoute
-  RequerantDossierBrisDePorteReference3PiecesJointesRoute: typeof RequerantDossierBrisDePorteReference3PiecesJointesRoute
-  RequerantDossierBrisDePorteReferenceIndexRoute: typeof RequerantDossierBrisDePorteReferenceIndexRoute
+  RequerantDossierBrisDePorteId1BrisPorteRoute: typeof RequerantDossierBrisDePorteId1BrisPorteRoute
+  RequerantDossierBrisDePorteId2InfosRequerantRoute: typeof RequerantDossierBrisDePorteId2InfosRequerantRoute
+  RequerantDossierBrisDePorteId3PiecesJointesRoute: typeof RequerantDossierBrisDePorteId3PiecesJointesRoute
+  RequerantDossierBrisDePorteIdIndexRoute: typeof RequerantDossierBrisDePorteIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -128,32 +128,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RequerantMesDemandesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/requerant/dossier/bris-de-porte/$reference/': {
-      id: '/requerant/dossier/bris-de-porte/$reference/'
-      path: '/requerant/dossier/bris-de-porte/$reference'
-      fullPath: '/requerant/dossier/bris-de-porte/$reference'
-      preLoaderRoute: typeof RequerantDossierBrisDePorteReferenceIndexRouteImport
+    '/requerant/dossier/bris-de-porte/$id/': {
+      id: '/requerant/dossier/bris-de-porte/$id/'
+      path: '/requerant/dossier/bris-de-porte/$id'
+      fullPath: '/requerant/dossier/bris-de-porte/$id'
+      preLoaderRoute: typeof RequerantDossierBrisDePorteIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes': {
-      id: '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes'
-      path: '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes'
-      fullPath: '/requerant/dossier/bris-de-porte/$reference/3-pieces-jointes'
-      preLoaderRoute: typeof RequerantDossierBrisDePorteReference3PiecesJointesRouteImport
+    '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes': {
+      id: '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes'
+      path: '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes'
+      fullPath: '/requerant/dossier/bris-de-porte/$id/3-pieces-jointes'
+      preLoaderRoute: typeof RequerantDossierBrisDePorteId3PiecesJointesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant': {
-      id: '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant'
-      path: '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant'
-      fullPath: '/requerant/dossier/bris-de-porte/$reference/2-infos-requerant'
-      preLoaderRoute: typeof RequerantDossierBrisDePorteReference2InfosRequerantRouteImport
+    '/requerant/dossier/bris-de-porte/$id/2-infos-requerant': {
+      id: '/requerant/dossier/bris-de-porte/$id/2-infos-requerant'
+      path: '/requerant/dossier/bris-de-porte/$id/2-infos-requerant'
+      fullPath: '/requerant/dossier/bris-de-porte/$id/2-infos-requerant'
+      preLoaderRoute: typeof RequerantDossierBrisDePorteId2InfosRequerantRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/requerant/dossier/bris-de-porte/$reference/1-bris-porte': {
-      id: '/requerant/dossier/bris-de-porte/$reference/1-bris-porte'
-      path: '/requerant/dossier/bris-de-porte/$reference/1-bris-porte'
-      fullPath: '/requerant/dossier/bris-de-porte/$reference/1-bris-porte'
-      preLoaderRoute: typeof RequerantDossierBrisDePorteReference1BrisPorteRouteImport
+    '/requerant/dossier/bris-de-porte/$id/1-bris-porte': {
+      id: '/requerant/dossier/bris-de-porte/$id/1-bris-porte'
+      path: '/requerant/dossier/bris-de-porte/$id/1-bris-porte'
+      fullPath: '/requerant/dossier/bris-de-porte/$id/1-bris-porte'
+      preLoaderRoute: typeof RequerantDossierBrisDePorteId1BrisPorteRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -162,14 +162,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   RequerantMesDemandesRoute: RequerantMesDemandesRoute,
   RequerantIndexRoute: RequerantIndexRoute,
-  RequerantDossierBrisDePorteReference1BrisPorteRoute:
-    RequerantDossierBrisDePorteReference1BrisPorteRoute,
-  RequerantDossierBrisDePorteReference2InfosRequerantRoute:
-    RequerantDossierBrisDePorteReference2InfosRequerantRoute,
-  RequerantDossierBrisDePorteReference3PiecesJointesRoute:
-    RequerantDossierBrisDePorteReference3PiecesJointesRoute,
-  RequerantDossierBrisDePorteReferenceIndexRoute:
-    RequerantDossierBrisDePorteReferenceIndexRoute,
+  RequerantDossierBrisDePorteId1BrisPorteRoute:
+    RequerantDossierBrisDePorteId1BrisPorteRoute,
+  RequerantDossierBrisDePorteId2InfosRequerantRoute:
+    RequerantDossierBrisDePorteId2InfosRequerantRoute,
+  RequerantDossierBrisDePorteId3PiecesJointesRoute:
+    RequerantDossierBrisDePorteId3PiecesJointesRoute,
+  RequerantDossierBrisDePorteIdIndexRoute:
+    RequerantDossierBrisDePorteIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

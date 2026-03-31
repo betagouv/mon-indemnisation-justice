@@ -12,6 +12,7 @@ export type ModaleProps = Omit<ModalProps, "size"> & {
   id: string;
   size?: "large" | "medium" | "small" | "full";
   onFerme?: () => void;
+  ouverte?: boolean;
 };
 
 export const Modale = forwardRef<ModaleRef, ModaleProps>(
@@ -22,6 +23,7 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
       id,
       size = "large",
       onFerme,
+      ouverte = false,
       title,
       titleAs: TitleTag = "h1",
       iconId,
@@ -36,70 +38,78 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
     }));
 
     return (
-      <dialog
-        aria-labelledby={`fr-modal-title-${id}`}
-        id={id}
-        className={cx(fr.cx("fr-modal"))}
-        data-fr-concealing-backdrop={concealingBackdrop}
-      >
-        <div
-          className={fr.cx(
-            "fr-container",
-            "fr-container--fluid",
-            "fr-container-md",
-          )}
+      <>
+        <button
+          data-fr-opened={ouverte ? "true" : "false"}
+          aria-controls="modal-action"
+          type="button"
+          className="fr-btn fr-hidden"
+        />
+        <dialog
+          aria-labelledby={`fr-modal-title-${id}`}
+          id={id}
+          className={cx(fr.cx("fr-modal"))}
+          data-fr-concealing-backdrop={concealingBackdrop}
         >
-          <div className={fr.cx("fr-grid-row", "fr-grid-row--center")}>
-            <div
-              className={(() => {
-                switch (size) {
-                  case "full":
-                    return fr.cx("fr-col-12");
-                  case "large":
-                    return fr.cx("fr-col-12", "fr-col-md-10", "fr-col-lg-8");
-                  case "small":
-                    return fr.cx("fr-col-12", "fr-col-md-6", "fr-col-lg-4");
-                  case "medium":
-                    return fr.cx("fr-col-12", "fr-col-md-8", "fr-col-lg-6");
-                }
-              })()}
-            >
-              <div className={fr.cx("fr-modal__body")}>
-                <div className={fr.cx("fr-modal__header")}>
-                  <button
-                    className={fr.cx("fr-btn--close", "fr-btn")}
-                    title="Fermer"
-                    aria-controls={id}
-                    type="button"
-                    onClick={() => onFerme?.()}
-                  >
-                    Fermer
-                  </button>
-                </div>
-                <div className={fr.cx("fr-modal__content")}>
-                  <TitleTag
-                    id={`fr-modal-title-${id}`}
-                    {...titleProps}
-                    className={cx(
-                      titleProps?.className,
-                      fr.cx("fr-modal__title"),
-                    )}
-                  >
-                    {iconId !== undefined && (
-                      <span
-                        className={fr.cx(iconId, "fr-fi--lg", "fr-mr-1w")}
-                        aria-hidden={true}
-                      />
-                    )}
-                    {title}
-                  </TitleTag>
-                  {children}
+          <div
+            className={fr.cx(
+              "fr-container",
+              "fr-container--fluid",
+              "fr-container-md",
+            )}
+          >
+            <div className={fr.cx("fr-grid-row", "fr-grid-row--center")}>
+              <div
+                className={(() => {
+                  switch (size) {
+                    case "full":
+                      return fr.cx("fr-col-12");
+                    case "large":
+                      return fr.cx("fr-col-12", "fr-col-md-10", "fr-col-lg-8");
+                    case "small":
+                      return fr.cx("fr-col-12", "fr-col-md-6", "fr-col-lg-4");
+                    case "medium":
+                      return fr.cx("fr-col-12", "fr-col-md-8", "fr-col-lg-6");
+                  }
+                })()}
+              >
+                <div className={fr.cx("fr-modal__body")}>
+                  <div className={fr.cx("fr-modal__header")}>
+                    <button
+                      className={fr.cx("fr-btn--close", "fr-btn")}
+                      title="Fermer"
+                      aria-controls={id}
+                      type="button"
+                      onClick={() => onFerme?.()}
+                    >
+                      Fermer
+                    </button>
+                  </div>
+                  <div className={fr.cx("fr-modal__content")}>
+                    <TitleTag
+                      id={`fr-modal-title-${id}`}
+                      {...titleProps}
+                      className={cx(
+                        titleProps?.className,
+                        fr.cx("fr-modal__title"),
+                      )}
+                    >
+                      {iconId !== undefined && (
+                        <span
+                          className={fr.cx(iconId, "fr-fi--lg", "fr-mr-1w")}
+                          aria-hidden={true}
+                        />
+                      )}
+                      {title}
+                    </TitleTag>
+                    {children}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </dialog>
+        </dialog>
+      </>
     );
   },
 );
