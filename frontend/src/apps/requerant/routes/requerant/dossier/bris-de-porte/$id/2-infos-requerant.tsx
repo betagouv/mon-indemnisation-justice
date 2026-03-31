@@ -3,7 +3,7 @@ import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx
 import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 import { FormSuggestedInput } from "@/apps/requerant/composants/champs/form/FormSuggeestedInput.tsx";
 import { PaysSelect } from "@/apps/requerant/composants/champs/PaysSelect";
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite.tsx";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
@@ -21,7 +21,7 @@ import {
 import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
-import { Loader } from "@/common/composants/Loader";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { dateChiffre } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
@@ -36,9 +36,14 @@ import { useInjection } from "inversify-react";
 import React, { useEffect, useState } from "react";
 
 export const Route = createFileRoute(
-  "/requerant/dossier/bris-de-porte/$reference/2-infos-requerant",
+  "/requerant/dossier/bris-de-porte/$id/2-infos-requerant",
 )({
   component: Etape2InfosRequerant,
+  shouldReload: true,
+  params: {
+    parse: ({ id }) => ({ id: parseInt(id) }),
+    stringify: ({ id }) => ({ id: id.toString() }),
+  },
   pendingComponent: Loader,
   notFoundComponent: (props: NotFoundRouteProps) => (
     <NonTrouveComposant {...props} />
@@ -46,7 +51,7 @@ export const Route = createFileRoute(
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
-      .getDossier(params.reference);
+      .getDossier(params.id);
 
     if (!dossier) {
       throw notFound({
@@ -54,8 +59,8 @@ export const Route = createFileRoute(
           titre: "Impossible de trouver le dossier",
           message: (
             <>
-              Le dossier de référence <i>${params.reference}</i>n'existe pas ou
-              ne vous est pas accessible.
+              Le dossier n°<i>${params.id}</i>n'existe pas ou ne vous est pas
+              accessible.
             </>
           ),
         },
@@ -63,9 +68,8 @@ export const Route = createFileRoute(
       });
     }
 
-    return { reference: params.reference, dossier };
+    return { dossier };
   },
-  shouldReload: true,
 });
 
 function Etape2InfosRequerant() {
@@ -82,8 +86,7 @@ function Etape2InfosRequerant() {
   );
 
   // Récupérer la référence depuis le paramètre de la route
-  const { reference, dossier }: { reference: string; dossier: Dossier } =
-    Route.useLoaderData();
+  const { dossier }: { dossier: Dossier } = Route.useLoaderData();
 
   const [codePostal, setCodePostal] = useState<string>(
     dossier.personnePhysique?.communeNaissance.codePostal ?? "",
@@ -94,7 +97,7 @@ function Etape2InfosRequerant() {
     if (codePostal.length === 5) {
       rafraichirListeCommunes(codePostal);
     }
-  }, [reference, codePostal]);
+  }, [dossier.id, codePostal]);
 
   const rafraichirListeCommunes = async (codePostal: string) => {
     setListeCommunes(await adresseManager.listerCommunes(codePostal));
@@ -108,13 +111,13 @@ function Etape2InfosRequerant() {
     listeners: {
       onChangeDebounceMs: 500,
       onChange: ({ formApi, fieldApi }) => {
-        dossierManager.modifier(reference, formApi.state.values);
+        dossierManager.modifier(dossier.id, formApi.state.values);
       },
     },
     onSubmit: async ({ value, formApi }) => {
       // Enregistrer le brouillon...
       if (formApi.state.isValid) {
-        await dossierManager.enregistrer(reference);
+        await dossierManager.enregistrer(dossier.id);
         // ...et passer à l'étape suivante
         await naviguer({
           to: "../3-pieces-jointes",
@@ -135,7 +138,6 @@ function Etape2InfosRequerant() {
   return (
     <>
       <h1>Déclarer un bris de porte</h1>
-
       <form
         onSubmit={async (e) => {
           e.preventDefault();
