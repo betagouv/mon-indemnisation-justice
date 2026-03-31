@@ -273,270 +273,281 @@ function Etape3PiecesJointes() {
           />
         </section>
 
-        <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-12">
+        <section>
+          <div className="fr-grid-row">
             <p>
-              Afin de pouvoir valider votre demande, vous devez fournir les
-              documents relatifs à votre situation.
+              Tous les champs marqués <Requis /> sont requis et doivent être
+              dûment renseignés.
             </p>
-
-            <ButtonsGroup
-              inlineLayoutWhen="always"
-              alignment="right"
-              buttonsIconPosition="right"
-              buttonsSize="small"
-              buttons={[
-                {
-                  priority: "secondary",
-                  iconId: "fr-icon-add-line",
-                  children: "Ajouter des documents",
-                  nativeButtonProps: {
-                    type: "button",
-                  },
-                  disabled: sauvegardeEnCours,
-                  onClick: () => {
-                    refModaleAjoutPieceJointe.current?.ouvrir();
-                  },
-                },
-              ]}
-            />
           </div>
-        </div>
+        </section>
 
-        <div id="" className="fr-grid-row fr-grid-row--gutters">
-          <div className="container fr-col-12 fr-col-lg-3">
-            <SideMenu
-              align="left"
-              burgerMenuButtonText="Mes documents"
-              title="Mes documents"
-              items={typesPiecesJointesDemandes.map(
-                (type: TypePieceJointe) => ({
-                  linkProps: {
-                    href: `#type-piece-jointe-${type.type}`,
-                    // Si le dossier n'a aucune pièce jointe de ce type, alors le lien invite vers la section descriptive
-                    // du type
+        <section>
+          <div className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-12">
+              <p>
+                Afin de pouvoir valider votre demande, vous devez fournir les
+                documents relatifs à votre situation.
+              </p>
+
+              <ButtonsGroup
+                inlineLayoutWhen="always"
+                alignment="right"
+                buttonsIconPosition="right"
+                buttonsSize="small"
+                buttons={[
+                  {
+                    priority: "secondary",
+                    iconId: "fr-icon-add-line",
+                    children: "Ajouter des documents",
+                    nativeButtonProps: {
+                      type: "button",
+                    },
+                    disabled: sauvegardeEnCours,
                     onClick: () => {
-                      if (!decomptePiecesJointesPourType(type)) {
-                        selectionnerTypePieceJointe(type);
-                        selectionnerPieceJointe(undefined);
-                      }
+                      refModaleAjoutPieceJointe.current?.ouvrir();
                     },
                   },
-                  isActive: type.equals(typePieceJointeSelectionne),
-                  text: (
-                    <span className="fr-text--sm fr-text--regular">
-                      {type.libelle({
-                        court: true,
-                        pluriel: false,
-                        enCapitales: true,
-                        dossier: dossier,
-                      })}{" "}
-                      {estRequis(type) && <Requis />}
-                      <>
-                        <Badge
-                          severity={
-                            estRequis(type)
-                              ? decomptePiecesJointesPourType(type) > 0
-                                ? "success"
-                                : "error"
-                              : undefined
-                          }
-                          as="span"
-                          noIcon={true}
-                          className="fr-ml-1v"
-                        >
-                          {decomptePiecesJointesPourType(type)}
-                        </Badge>
-                      </>
-                    </span>
-                  ),
-
-                  ...(decomptePiecesJointesPourType(type)
-                    ? {
-                        items: dossier
-                          .getPiecesJointesDeType(type)
-                          .map((pj) => ({
-                            text: <span>{pj.nom}</span>,
-                            isActive: pieceJointeSelectionnee?.id === pj.id,
-                            linkProps: {
-                              href: `#piece-jointe-${pj.id}`,
-                              onClick: () => {
-                                selectionnerPieceJointe(pj);
-                                selectionnerTypePieceJointe(pj.type);
-                              },
-                            },
-                          })),
-                      }
-                    : {}),
-                }),
-              )}
-            />
+                ]}
+              />
+            </div>
           </div>
 
-          <div className="fr-col-12 fr-col-lg-9">
-            {/* Toutes les visualisations de pièces jointes sont intégrées au DOM, mais cachée si pas actives afin
-             d'anticiper le chargement des images / PDFs */}
-            {dossier.piecesJointes.map((pieceJointe: PieceJointe) => (
-              <div
-                key={`piece—jointe-${pieceJointe.id}`}
-                id={`piece—jointe-${pieceJointe.id}`}
-                className={fr.cx([
-                  "fr-grid-row",
-                  ...(pieceJointeSelectionnee?.id === pieceJointe.id
-                    ? []
-                    : ["fr-hidden" as FrCxArg]),
-                ])}
-              >
-                <Download
-                  className="fr-col-12"
-                  details={`${pieceJointe.infoFichier}`}
-                  label={pieceJointe.nom}
-                  linkProps={{
-                    href: `${pieceJointe.url}?download`,
-                  }}
-                />
+          <div id="" className="fr-grid-row fr-grid-row--gutters">
+            <div className="container fr-col-12 fr-col-lg-3">
+              <SideMenu
+                align="left"
+                burgerMenuButtonText="Mes documents"
+                title="Mes documents"
+                items={typesPiecesJointesDemandes.map(
+                  (type: TypePieceJointe) => ({
+                    linkProps: {
+                      href: `#type-piece-jointe-${type.type}`,
+                      // Si le dossier n'a aucune pièce jointe de ce type, alors le lien invite vers la section descriptive
+                      // du type
+                      onClick: () => {
+                        if (!decomptePiecesJointesPourType(type)) {
+                          selectionnerTypePieceJointe(type);
+                          selectionnerPieceJointe(undefined);
+                        }
+                      },
+                    },
+                    isActive: type.equals(typePieceJointeSelectionne),
+                    text: (
+                      <span className="fr-text--sm fr-text--regular">
+                        {type.libelle({
+                          court: true,
+                          pluriel: false,
+                          enCapitales: true,
+                          dossier: dossier,
+                        })}{" "}
+                        {estRequis(type) && <Requis />}
+                        <>
+                          <Badge
+                            severity={
+                              estRequis(type)
+                                ? decomptePiecesJointesPourType(type) > 0
+                                  ? "success"
+                                  : "error"
+                                : undefined
+                            }
+                            as="span"
+                            noIcon={true}
+                            className="fr-ml-1v"
+                          >
+                            {decomptePiecesJointesPourType(type)}
+                          </Badge>
+                        </>
+                      </span>
+                    ),
 
-                {pieceJointe.estPDF() ? (
-                  <object
-                    data={pieceJointe.url}
-                    type="application/pdf"
-                    style={{
-                      width: "100%",
-                      aspectRatio: "210/297",
-                    }}
-                  ></object>
-                ) : (
-                  <img
-                    src={pieceJointe.url}
-                    alt={pieceJointe.nom}
-                    style={{
-                      width: "100%",
-                      maxHeight: "100vh",
-                      objectFit: "contain",
+                    ...(decomptePiecesJointesPourType(type)
+                      ? {
+                          items: dossier
+                            .getPiecesJointesDeType(type)
+                            .map((pj) => ({
+                              text: <span>{pj.nom}</span>,
+                              isActive: pieceJointeSelectionnee?.id === pj.id,
+                              linkProps: {
+                                href: `#piece-jointe-${pj.id}`,
+                                onClick: () => {
+                                  selectionnerPieceJointe(pj);
+                                  selectionnerTypePieceJointe(pj.type);
+                                },
+                              },
+                            })),
+                        }
+                      : {}),
+                  }),
+                )}
+              />
+            </div>
+
+            <div className="fr-col-12 fr-col-lg-9">
+              {/* Toutes les visualisations de pièces jointes sont intégrées au DOM, mais cachée si pas actives afin
+               d'anticiper le chargement des images / PDFs */}
+              {dossier.piecesJointes.map((pieceJointe: PieceJointe) => (
+                <div
+                  key={`piece—jointe-${pieceJointe.id}`}
+                  id={`piece—jointe-${pieceJointe.id}`}
+                  className={fr.cx([
+                    "fr-grid-row",
+                    ...(pieceJointeSelectionnee?.id === pieceJointe.id
+                      ? []
+                      : ["fr-hidden" as FrCxArg]),
+                  ])}
+                >
+                  <Download
+                    className="fr-col-12"
+                    details={`${pieceJointe.infoFichier}`}
+                    label={pieceJointe.nom}
+                    linkProps={{
+                      href: `${pieceJointe.url}?download`,
                     }}
                   />
-                )}
-              </div>
-            ))}
 
-            {!pieceJointeSelectionnee && (
-              <MiseEnAvant
-                id={`type-piece—jointe-${typePieceJointeSelectionne.type}`}
-                className="fr-my-5w fr-mt-md-12w fr-mb-md-10w"
-                action={
-                  <div className="fr-col-12 fr-grid-row fr-grid-row--left">
-                    <Button
-                      priority="primary"
-                      type="button"
-                      size="small"
-                      iconId="fr-icon-add-line"
-                      iconPosition="right"
-                      disabled={sauvegardeEnCours}
-                      onClick={() =>
-                        refModaleAjoutPieceJointe.current?.ouvrir(
-                          typePieceJointeSelectionne,
-                        )
-                      }
-                    >
-                      Ajouter{" "}
-                      {typePieceJointeSelectionne.libelle({
-                        court: true,
-                        pluriel: true,
-                        defini: false,
-                        dossier: dossier,
-                      })}
-                    </Button>
-                  </div>
-                }
-                pictogrammeUrl={artworkDocumentAddUrl}
-              >
-                <h3>
-                  {typePieceJointeSelectionne.libelle({
-                    court: false,
-                    pluriel: false,
-                    dossier: dossier,
-                    enCapitales: true,
-                  })}
-                </h3>
-                <p className="fr-text--sm fr-mb-3w">
-                  Votre dossier ne contient toujours pas{" "}
-                  {typePieceJointeSelectionne.libelle({
-                    court: true,
-                    pluriel: false,
-                    dossier: dossier,
-                    de: true,
-                  })}
-                  .
-                </p>
+                  {pieceJointe.estPDF() ? (
+                    <object
+                      data={pieceJointe.url}
+                      type="application/pdf"
+                      style={{
+                        width: "100%",
+                        aspectRatio: "210/297",
+                      }}
+                    ></object>
+                  ) : (
+                    <img
+                      src={pieceJointe.url}
+                      alt={pieceJointe.nom}
+                      style={{
+                        width: "100%",
+                        maxHeight: "100vh",
+                        objectFit: "contain",
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
 
-                <p className="fr-text--lead fr-mb-3w">
-                  Au moins un document, photo ou fichier PDF, est requis pour
-                  mener l'instruction de votre demande d'indemnisation.
-                </p>
-                <p className="fr-text--sm fr-mb-5w">
-                  Vous pouvez téléverser des documents dès à présent depuis la
-                  boîte de dialogue qui s'ouvrira en cliquant sur le bouton
-                  ci-dessous :
-                </p>
-              </MiseEnAvant>
-            )}
-          </div>
-        </div>
-
-        <formulaire.Subscribe
-          selector={(state) => state.fieldMeta.piecesJointes?.errors}
-          children={(errors) => {
-            const typesPiecesJointesManquantes =
-              errors?.map((error) => TypePieceJointe.depuis(error.message)) ??
-              [];
-            return (
-              <>
-                {typesPiecesJointesManquantes.length > 0 && (
-                  <div className="fr-grid-row fr-grid-row--gutters">
-                    <div className="fr-col-12">
-                      <Alert
-                        className="fr-col-12"
-                        severity="error"
-                        title="Des documents sont manquants"
-                        description={
-                          typesPiecesJointesManquantes.length == 1 ? (
-                            <p>
-                              Il manque au moins{" "}
-                              {typesPiecesJointesManquantes.at(0)?.libelle({
-                                court: true,
-                                pluriel: false,
-                                defini: false,
-                                dossier: dossier,
-                              }) || ""}
-                            </p>
-                          ) : (
-                            <>
-                              <p>Il manque les documents suivants :</p>
-
-                              <ul>
-                                {typesPiecesJointesManquantes.map(
-                                  (typePieceJointeManquante) => (
-                                    <li key={typePieceJointeManquante.type}>
-                                      {typePieceJointeManquante.libelle({
-                                        court: true,
-                                        pluriel: false,
-                                        dossier: dossier,
-                                      })}
-                                    </li>
-                                  ),
-                                )}
-                              </ul>
-                            </>
+              {!pieceJointeSelectionnee && (
+                <MiseEnAvant
+                  id={`type-piece—jointe-${typePieceJointeSelectionne.type}`}
+                  className="fr-my-5w fr-mt-md-12w fr-mb-md-10w"
+                  action={
+                    <div className="fr-col-12 fr-grid-row fr-grid-row--left">
+                      <Button
+                        priority="primary"
+                        type="button"
+                        size="small"
+                        iconId="fr-icon-add-line"
+                        iconPosition="right"
+                        disabled={sauvegardeEnCours}
+                        onClick={() =>
+                          refModaleAjoutPieceJointe.current?.ouvrir(
+                            typePieceJointeSelectionne,
                           )
                         }
-                      />
+                      >
+                        Ajouter{" "}
+                        {typePieceJointeSelectionne.libelle({
+                          court: true,
+                          pluriel: true,
+                          defini: false,
+                          dossier: dossier,
+                        })}
+                      </Button>
                     </div>
-                  </div>
-                )}
-              </>
-            );
-          }}
-        />
+                  }
+                  pictogrammeUrl={artworkDocumentAddUrl}
+                >
+                  <h3>
+                    {typePieceJointeSelectionne.libelle({
+                      court: false,
+                      pluriel: false,
+                      dossier: dossier,
+                      enCapitales: true,
+                    })}
+                  </h3>
+                  <p className="fr-text--sm fr-mb-3w">
+                    Votre dossier ne contient toujours pas{" "}
+                    {typePieceJointeSelectionne.libelle({
+                      court: true,
+                      pluriel: false,
+                      dossier: dossier,
+                      de: true,
+                    })}
+                    .
+                  </p>
+
+                  <p className="fr-text--lead fr-mb-3w">
+                    Au moins un document, photo ou fichier PDF, est requis pour
+                    mener l'instruction de votre demande d'indemnisation.
+                  </p>
+                  <p className="fr-text--sm fr-mb-5w">
+                    Vous pouvez téléverser des documents dès à présent depuis la
+                    boîte de dialogue qui s'ouvrira en cliquant sur le bouton
+                    ci-dessous :
+                  </p>
+                </MiseEnAvant>
+              )}
+            </div>
+          </div>
+
+          <formulaire.Subscribe
+            selector={(state) => state.fieldMeta.piecesJointes?.errors}
+            children={(errors) => {
+              const typesPiecesJointesManquantes =
+                errors?.map((error) => TypePieceJointe.depuis(error.message)) ??
+                [];
+              return (
+                <>
+                  {typesPiecesJointesManquantes.length > 0 && (
+                    <div className="fr-grid-row fr-grid-row--gutters">
+                      <div className="fr-col-12">
+                        <Alert
+                          className="fr-col-12"
+                          severity="error"
+                          title="Des documents sont manquants"
+                          description={
+                            typesPiecesJointesManquantes.length == 1 ? (
+                              <p>
+                                Il manque au moins{" "}
+                                {typesPiecesJointesManquantes.at(0)?.libelle({
+                                  court: true,
+                                  pluriel: false,
+                                  defini: false,
+                                  dossier: dossier,
+                                }) || ""}
+                              </p>
+                            ) : (
+                              <>
+                                <p>Il manque les documents suivants :</p>
+
+                                <ul>
+                                  {typesPiecesJointesManquantes.map(
+                                    (typePieceJointeManquante) => (
+                                      <li key={typePieceJointeManquante.type}>
+                                        {typePieceJointeManquante.libelle({
+                                          court: true,
+                                          pluriel: false,
+                                          dossier: dossier,
+                                        })}
+                                      </li>
+                                    ),
+                                  )}
+                                </ul>
+                              </>
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            }}
+          />
+        </section>
 
         <ButtonsGroup
           inlineLayoutWhen="always"
