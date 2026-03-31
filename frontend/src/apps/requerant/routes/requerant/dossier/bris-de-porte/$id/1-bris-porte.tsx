@@ -2,9 +2,9 @@ import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx
 import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
 import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 import { FormSuggestedInput } from "@/apps/requerant/composants/champs/form/FormSuggeestedInput.tsx";
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
-import { container } from "@/apps/requerant/container";
+import { container } from "@/apps/requerant/container.ts";
 import {
   extraireDonneesBrisDeporte,
   SchemaValidationBrisPorte
@@ -33,9 +33,14 @@ import { useInjection } from "inversify-react";
 import React from "react";
 
 export const Route = createFileRoute(
-  "/requerant/dossier/bris-de-porte/$reference/1-bris-porte",
+  "/requerant/dossier/bris-de-porte/$id/1-bris-porte",
 )({
   component: Etape1BrisPorte,
+  shouldReload: true,
+  params: {
+    parse: ({ id }) => ({ id: parseInt(id) }),
+    stringify: ({ id }) => ({ id: id.toString() }),
+  },
   pendingComponent: Loader,
   notFoundComponent: (props: NotFoundRouteProps) => (
     <NonTrouveComposant {...props} />
@@ -43,7 +48,7 @@ export const Route = createFileRoute(
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
-      .getDossier(params.reference);
+      .getDossier(params.id);
 
     if (!dossier) {
       throw notFound({
@@ -51,8 +56,8 @@ export const Route = createFileRoute(
           titre: "Impossible de trouver le dossier",
           message: (
             <>
-              Le dossier de référence <i>${params.reference}</i>n'existe pas ou
-              ne vous est pas accessible.
+              Le dossier n°<i>${params.id}</i>n'existe pas ou ne vous est pas
+              accessible.
             </>
           ),
         },
@@ -60,9 +65,8 @@ export const Route = createFileRoute(
       });
     }
 
-    return { reference: params.reference, dossier };
+    return { dossier };
   },
-  shouldReload: true,
 });
 
 function Etape1BrisPorte() {
@@ -79,8 +83,7 @@ function Etape1BrisPorte() {
   );
 
   // Récupérer la référence depuis le paramètre de la route
-  const { reference, dossier }: { reference: string; dossier: Dossier } =
-    Route.useLoaderData();
+  const { dossier }: { dossier: Dossier } = Route.useLoaderData();
 
   const formulaire = useForm({
     validators: {
@@ -90,13 +93,13 @@ function Etape1BrisPorte() {
     listeners: {
       onChangeDebounceMs: 500,
       onChange: async ({ fieldApi, formApi }) => {
-        dossierManager.modifier(reference, formApi.state.values);
+        dossierManager.modifier(dossier.id, formApi.state.values);
       },
     },
     onSubmit: async ({ value, formApi }) => {
       // Enregistrer le brouillon...
       if (formApi.state.isValid) {
-        await dossierManager.enregistrer(reference);
+        await dossierManager.enregistrer(dossier.id);
         // ...et passer à l'étape suivante
         await naviguer({
           to: "../2-infos-requerant",
@@ -121,7 +124,6 @@ function Etape1BrisPorte() {
   return (
     <>
       <h1>Déclarer un bris de porte</h1>
-
       <form
         onSubmit={async (e) => {
           e.preventDefault();

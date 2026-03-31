@@ -33,6 +33,14 @@ declare module "@tanstack/react-router" {
     data: ErreurResourceInconnue | any;
   }
 
+  interface HistoryState {
+    flash?: {
+      type: "success" | "error" | "warning" | "info";
+      titre: string;
+      message: string | string[];
+    };
+  }
+
   interface Location {
     state: {
       session: any;

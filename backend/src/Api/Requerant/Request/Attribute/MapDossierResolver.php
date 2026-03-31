@@ -9,6 +9,7 @@ use MonIndemnisationJustice\Entity\DossierType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -77,6 +78,10 @@ class MapDossierResolver implements ValueResolverInterface
             }
 
             $dossier = $this->getDossier($reference, $attribut->type);
+
+            if (null === $dossier) {
+                throw new NotFoundHttpException('Aucun dossier trouvé');
+            }
 
             yield $this->getDto($request, $dossier);
         }
