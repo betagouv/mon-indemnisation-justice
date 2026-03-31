@@ -12,7 +12,10 @@ import { Usager } from "./Usager";
 
 export abstract class BaseDossier {
   // Référence du dossier ou id du brouillon
-  reference: string;
+  @Expose({ toClassOnly: true })
+  public readonly id: number;
+  @Expose({ toClassOnly: true })
+  public readonly reference?: string;
   @Type(() => EtatDossier)
   @Expose({ toClassOnly: true })
   etatActuel: EtatDossier;
@@ -20,7 +23,7 @@ export abstract class BaseDossier {
   dateDepot?: Date;
 
   get estBrouillon(): boolean {
-    return !this.dateDepot;
+    return !this.dateDepot && !this.reference;
   }
 
   get estAccepte(): boolean {
