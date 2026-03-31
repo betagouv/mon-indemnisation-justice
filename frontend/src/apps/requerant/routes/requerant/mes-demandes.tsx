@@ -1,9 +1,10 @@
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { EtatDossierType } from "@/apps/requerant/models/EtatDossier.ts";
+import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
-import { Modale } from "@/common/composants/dsfr/Modale.tsx";
+import { Modale, ModaleRef } from "@/common/composants/dsfr/Modale.tsx";
 import { Loader } from "@/common/composants/Loader.tsx";
-import { dateSimple } from "@/common/services/date.ts";
+import { dateEtHeureSimple } from "@/common/services/date.ts";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -12,9 +13,9 @@ import type { AlertProps } from "@codegouvfr/react-dsfr/src/Alert.tsx";
 import Table from "@codegouvfr/react-dsfr/Table";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { useMemo } from "react";
+import React, { useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/requerant/mes-demandes")({
   component: RouteComponent,
@@ -64,12 +65,35 @@ function RouteComponent() {
     throwOnError: false,
   });
 
-  const { d: referenceDossierDepose } = Route.useSearch();
+  const modaleRef = useRef<ModaleRef>(null);
 
-  const dossierDepose = useMemo(
-    () => dossiers?.find((d) => d.reference === referenceDossierDepose),
-    [dossiers, referenceDossierDepose],
-  );
+  const state = useRouterState<
+    typeof RouteurRequerant,
+    {
+      flash?: {
+        type: "success" | "error" | "warning" | "info";
+        titre: string;
+        message: string;
+      };
+    }
+  >({
+    select: (s) =>
+      s.location.state as {
+        flash?: {
+          type: "success" | "error" | "warning" | "info";
+          titre: string;
+          message: string;
+        };
+      },
+    router: RouteurRequerant,
+  });
+
+  useEffect(() => {
+    if (!!state.flash && modaleRef.current) {
+      // On délaye de 250ms histoire d'être certain que la modale soit rendered
+      setTimeout(() => modaleRef.current?.ouvrir(), 250);
+    }
+  }, []);
 
   if (isPending || !dossiers) {
     return (
@@ -93,45 +117,42 @@ function RouteComponent() {
 
   return (
     <>
-      {dossierDepose && (
-        <Modale id="dossier-depose-modale" size="medium" title={""}>
-          <Alert
-            severity="success"
-            title="Votre dossier a bien été déposé"
-            description={
-              <>
-                <p>
-                  Toutes vos informations ont bien été sauvegardées. Un courriel
-                  de confirmation vous a été envoyé à l'instant.
-                </p>
-                <p>
-                  Votre dossier porte la référence {dossierDepose.reference} et
-                  sera traité par un agent du bureau dans les plus brefs délais.
-                  Vous serez informés de son évolution par courriel mais pourrez
-                  aussi suivre son avancement en vous connectant à votre espace
-                  personnel.
-                </p>
-              </>
-            }
-          />
-          <ButtonsGroup
-            inlineLayoutWhen="always"
-            alignment="left"
-            buttonsEquisized={false}
-            buttonsSize="small"
-            buttons={[
-              {
-                children: "Fermer",
-                priority: "primary",
-                onClick: () =>
-                  window
-                    .dsfr(document.getElementById("dossier-depose-modale"))
-                    .modal.conceal(),
-              },
-            ]}
-          />
-        </Modale>
-      )}
+      <Modale id="dossier-depose-modale" title="" size="medium" ref={modaleRef}>
+        {state.flash && (
+          <div className="fr-grid-row" style={{ gap: "1rem" }}>
+            <Alert
+              severity={state.flash.type}
+              title={state.flash.titre || ""}
+              description={
+                Array.isArray(state.flash.message) ? (
+                  <>
+                    {state.flash.message.map((message, index) => (
+                      <p key={index}>{message}</p>
+                    ))}
+                  </>
+                ) : (
+                  state.flash.message || ""
+                )
+              }
+            />
+            <ButtonsGroup
+              className="fr-col-12 fr-mx-0"
+              inlineLayoutWhen="always"
+              alignment="right"
+              buttonsEquisized={false}
+              buttonsSize="small"
+              buttons={[
+                {
+                  className: "fr-mx-0",
+                  children: "Fermer",
+                  priority: "primary",
+                  onClick: () => modaleRef.current?.fermer(),
+                },
+              ]}
+            />
+          </div>
+        )}
+      </Modale>
 
       <div>
         <div className="fr-grid-row">
@@ -150,7 +171,13 @@ function RouteComponent() {
               "",
             ]}
             data={dossiers.map((dossier) => [
-              dossier.estDepose ? dossier.reference : "",
+              dossier.estDepose ? (
+                <b>
+                  <pre>{dossier.reference}</pre>
+                </b>
+              ) : (
+                ""
+              ),
               <Badge severity={severiteBadgeEtat(dossier.etatActuel.etat)}>
                 {dossier.estCloture ? (
                   <Tooltip
@@ -163,7 +190,7 @@ function RouteComponent() {
                   <>{dossier.etatActuel.etat.libelle}</>
                 )}
               </Badge>,
-              dateSimple(dossier.etatActuel.date),
+              <>le {dateEtHeureSimple(dossier.etatActuel.date)}</>,
               <div className="fr-grid-row fr-grid-row--right ">
                 {dossier.estEditable && (
                   <Button
@@ -175,9 +202,9 @@ function RouteComponent() {
                     iconId={"fr-icon-ball-pen-line"}
                     size={"small"}
                     linkProps={{
-                      to: `/requerant/dossier/bris-de-porte/$reference`,
+                      to: `/requerant/dossier/bris-de-porte/$id`,
                       params: {
-                        reference: dossier.reference,
+                        id: dossier.id,
                       },
                     }}
                   >

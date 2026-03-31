@@ -3,12 +3,7 @@ import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import { differentiel } from "@/common/services";
 import { data } from "autoprefixer";
-import {
-  instanceToInstance,
-  instanceToPlain,
-  plainToClassFromExist,
-  plainToInstance,
-} from "class-transformer";
+import { instanceToInstance, instanceToPlain, plainToClassFromExist, plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
 // Source - https://stackoverflow.com/a/61132308
@@ -28,18 +23,18 @@ export type NouvellePieceJointe = {
 
 export interface DossierManagerInterface {
   //aDossier(reference: string): Promise<boolean>;
-  getDossier(reference: string): Promise<Dossier | undefined>;
+  getDossier(id: number): Promise<Dossier | undefined>;
 
-  modifier(reference: string, modifications: DeepPartial<Dossier>): void;
+  modifier(id: number, modifications: DeepPartial<Dossier>): void;
 
-  enregistrer(reference: string): Promise<Dossier>;
+  enregistrer(id: number): Promise<Dossier>;
 
   ajouterPiecesJointes(
-    reference: string,
+    id: number,
     piecesJointes: NouvellePieceJointe[],
   ): Promise<void>;
 
-  soumettre(reference: string): Promise<Dossier>;
+  soumettre(id: number): Promise<Dossier>;
 
   mesDemandes(): Promise<DossierApercu[]>;
 }
@@ -61,47 +56,45 @@ type EtatSauvegardeDossier = {
  */
 export class ApiDossierManager implements DossierManagerInterface {
   protected mesDossiers?: DossierApercu[];
-  protected dossiers: Map<string, EtatSauvegardeDossier | undefined>;
+  protected dossiers: Map<number, EtatSauvegardeDossier | undefined>;
   constructor() {
     this.dossiers = new Map();
   }
 
-  async getDossier(reference: string): Promise<Dossier | undefined> {
-    if (!this.dossiers.has(reference)) {
-      const reponse = await fetch(
-        `/api/requerant/dossier/bris-de-porte/${reference}`,
-      );
+  async getDossier(id: number): Promise<Dossier | undefined> {
+    if (!this.dossiers.has(id)) {
+      const reponse = await fetch(`/api/requerant/dossier/bris-de-porte/${id}`);
 
-      const data = await reponse.json();
-      const dossier = plainToInstance(Dossier, data);
+      if (reponse.ok) {
+        const data = await reponse.json();
+        const dossier = plainToInstance(Dossier, data);
 
-      this.dossiers.set(reference, {
-        original: dossier,
-        // On clone l'objet source pour ne pas également modifier le dossier original
-        modifie: instanceToInstance(dossier),
-      });
+        this.dossiers.set(id, {
+          original: dossier,
+          // On clone l'objet source pour ne pas également modifier le dossier original
+          modifie: instanceToInstance(dossier),
+        });
+      }
     }
 
-    return this.dossiers.get(reference)?.modifie;
+    return this.dossiers.get(id)?.modifie;
   }
 
-  modifier(reference: string, modifications: DeepPartial<Dossier>): void {
-    if (!this.dossiers.has(reference)) {
-      throw new Error(`Aucun dossier de référence ${reference}`);
+  modifier(id: number, modifications: DeepPartial<Dossier>): void {
+    if (!this.dossiers.has(id)) {
+      throw new Error(`Aucun dossier de référence ${id}`);
     }
 
-    let { original, modifie } = this.dossiers.get(
-      reference,
-    ) as EtatSauvegardeDossier;
+    let { original, modifie } = this.dossiers.get(id) as EtatSauvegardeDossier;
 
-    this.dossiers.set(reference, {
+    this.dossiers.set(id, {
       original,
       modifie: plainToClassFromExist(modifie, modifications),
     });
   }
 
   async ajouterPiecesJointes(
-    reference: string,
+    id: number,
     piecesJointes: NouvellePieceJointe[],
   ): Promise<void> {
     const payload = new FormData();
@@ -126,7 +119,7 @@ export class ApiDossierManager implements DossierManagerInterface {
     );
 
     const reponse = await fetch(
-      `/api/requerant/dossier/bris-de-porte/${reference}/televerser-pieces-jointes`,
+      `/api/requerant/dossier/bris-de-porte/${id}/televerser-pieces-jointes`,
       {
         method: "POST",
         body: payload,
@@ -136,16 +129,14 @@ export class ApiDossierManager implements DossierManagerInterface {
     const data = await reponse.json();
     const dossier = plainToInstance(Dossier, data);
 
-    this.dossiers.set(reference, {
+    this.dossiers.set(id, {
       original: dossier,
       modifie: instanceToInstance(dossier),
     });
   }
 
-  async enregistrer(reference: string): Promise<Dossier> {
-    let { original, modifie } = this.dossiers.get(
-      reference,
-    ) as EtatSauvegardeDossier;
+  async enregistrer(id: number): Promise<Dossier> {
+    let { original, modifie } = this.dossiers.get(id) as EtatSauvegardeDossier;
 
     const modificationsEnAttente = differentiel(
       instanceToPlain(original),
@@ -156,7 +147,7 @@ export class ApiDossierManager implements DossierManagerInterface {
     if (modificationsEnAttente) {
       const reponse = await fetch(
         // Vers la route `api_requerant_dossier_bris_porte_amender`
-        `/api/requerant/dossier/bris-de-porte/${reference}/amender`,
+        `/api/requerant/dossier/bris-de-porte/${id}/amender`,
         {
           method: "PATCH",
           headers: {
@@ -168,13 +159,13 @@ export class ApiDossierManager implements DossierManagerInterface {
       const data = await reponse.json();
       const dossier = plainToInstance(Dossier, data);
 
-      this.dossiers.set(reference, {
+      this.dossiers.set(id, {
         original: dossier,
         modifie: instanceToInstance(dossier),
       });
     }
 
-    return this.dossiers.get(reference)?.modifie as Dossier;
+    return this.dossiers.get(id)?.modifie as Dossier;
   }
 
   async mesDemandes(): Promise<DossierApercu[]> {
@@ -189,9 +180,9 @@ export class ApiDossierManager implements DossierManagerInterface {
     return this.mesDossiers;
   }
 
-  async soumettre(reference: string): Promise<Dossier> {
+  async soumettre(id: number): Promise<Dossier> {
     const reponse = await fetch(
-      `/api/requerant/dossier/bris-de-porte/${reference}/publier`,
+      `/api/requerant/dossier/bris-de-porte/${id}/publier`,
       {
         method: "POST",
         headers: {
@@ -204,10 +195,10 @@ export class ApiDossierManager implements DossierManagerInterface {
       const data = await reponse.json();
       throw new Error(data.erreurs);
     } else {
-      // On sait qu'un dossier déposé obtient une référence, on "oublie" donc le brouillon.
-      this.dossiers.delete(reference);
+      // On remplace le dossier brouillon par celui déposé
+      this.dossiers.delete(id);
       const dossierDepose = plainToInstance(Dossier, data);
-      this.dossiers.set(dossierDepose.reference, {
+      this.dossiers.set(dossierDepose.id, {
         original: dossierDepose,
         modifie: instanceToInstance(dossierDepose),
       });
