@@ -14,7 +14,7 @@ class PersonneMoraleDto
         public ?AdresseDto $adresse,
         public ?PersonneDto $representantLegal,
     ) {
-
+        $this->representantLegal = $this->representantLegal ?? new PersonneDto();
     }
 
     public function versPersonneMorale(?PersonneMorale $personneMorale): PersonneMorale

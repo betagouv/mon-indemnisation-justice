@@ -17,7 +17,7 @@ export const Route = createFileRoute("/requerant/")({
       return redirect<typeof RouteurRequerant>({
         to: "/requerant/dossier/bris-de-porte/$id/1-bris-porte",
         params: {
-          reference: (dossierAFinalisers.at(0) as DossierApercu).reference,
+          id: (dossierAFinalisers.at(0) as DossierApercu).id,
         },
       });
     }

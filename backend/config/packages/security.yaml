@@ -22,7 +22,7 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
     requerant:
-      pattern: ^/(requerant|connexion-requerant|connexion/usager|inscription/usager|api-v1|api/requerant)
+      pattern: ^/(bris-de-porte|requerant|connexion-requerant|connexion/usager|inscription/usager|api-v1|api/requerant)
       user_checker: MonIndemnisationJustice\Security\UsagerChecker
       lazy: true
       provider: usager_provider

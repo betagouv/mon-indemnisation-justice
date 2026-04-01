@@ -76,9 +76,13 @@ class Personne
         return $this->nom;
     }
 
-    public function setNom(?string $nom): self
+    public function setNom(?string $nom, bool $deNaissance = false): self
     {
         $this->nom = $nom;
+
+        if ($deNaissance && null === $this->nomNaissance) {
+            $this->nomNaissance = $nom;
+        }
 
         return $this;
     }

@@ -172,7 +172,7 @@ class BrisPorteRepository extends ServiceEntityRepository
             ->select('d')
             ->distinct()
             ->join('d.brisPorte', 'bp')
-            ->join('d.documents', 'dd')
+            ->join('d.piecesJointes', 'dd')
             ->where('bp.typeAttestation is null')
             ->andWhere('d.reference is not null')
             ->andWhere('dd.type = :type_document')
