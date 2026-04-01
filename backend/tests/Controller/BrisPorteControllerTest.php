@@ -81,9 +81,9 @@ class BrisPorteControllerTest extends WebTestCase
         $this->assertEquals(RapportAuLogement::PROPRIETAIRE, $testEligibilite->rapportAuLogement);
         $this->assertFalse($testEligibilite->aContacteAssurance);
         if ($aRequerant) {
-            $this->assertInstanceOf(Usager::class, $testEligibilite->requerant);
+            $this->assertInstanceOf(Usager::class, $testEligibilite->usager);
         } else {
-            $this->assertNull($testEligibilite->requerant);
+            $this->assertNull($testEligibilite->usager);
         }
 
         $this->assertTrue($testEligibilite->estEligibleExperimentation);
@@ -207,7 +207,7 @@ class BrisPorteControllerTest extends WebTestCase
         $this->initializeSession([BrisPorteController::CLEF_SESSION_PREINSCRIPTION => [
             'testEligibilite' => $testEligibilite?->id,
             'declarationErreurOperationnelle' => $declarationErreurOperationnelle?->getId(),
-            'requerant' => $testEligibilite->requerant?->getId(),
+            'requerant' => $testEligibilite->usager?->getId(),
         ]]);
     }
 
@@ -233,7 +233,7 @@ class BrisPorteControllerTest extends WebTestCase
             $test = TestEligibilite::fromArray([
                 // 'description' => 'Test complet',
                 'estVise' => true,
-                'requerant' => $em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
+                'usager' => $em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
                 'dateSoumission' => new \DateTime()->modify('-2 minutes')]);
 
             $em->persist($test);

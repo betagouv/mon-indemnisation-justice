@@ -12,9 +12,7 @@ import { Usager } from "./Usager";
 
 export abstract class BaseDossier {
   // Référence du dossier ou id du brouillon
-  @Expose({ toClassOnly: true })
   public readonly id: number;
-  @Expose({ toClassOnly: true })
   public readonly reference?: string;
   @Type(() => EtatDossier)
   @Expose({ toClassOnly: true })

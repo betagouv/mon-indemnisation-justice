@@ -89,8 +89,12 @@ export const dateSimple = function (
 };
 
 export const dateEtHeureSimple = function (
-  date: Date,
+  date?: Date,
   masquerAnneeSiCourante: boolean = false,
 ): string {
+  if (!date) {
+    return "";
+  }
+
   return `${dateSimple(date, masquerAnneeSiCourante)} à ${date.getHours()}h${String(date.getMinutes()).padStart(2, "0")}`;
 };

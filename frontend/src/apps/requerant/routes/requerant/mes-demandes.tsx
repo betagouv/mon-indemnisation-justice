@@ -15,7 +15,7 @@ import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
 export const Route = createFileRoute("/requerant/mes-demandes")({
   component: RouteComponent,
@@ -88,13 +88,6 @@ function RouteComponent() {
     router: RouteurRequerant,
   });
 
-  useEffect(() => {
-    if (!!state.flash && modaleRef.current) {
-      // On délaye de 250ms histoire d'être certain que la modale soit rendered
-      setTimeout(() => modaleRef.current?.ouvrir(), 250);
-    }
-  }, []);
-
   if (isPending || !dossiers) {
     return (
       <>
@@ -117,8 +110,14 @@ function RouteComponent() {
 
   return (
     <>
-      <Modale id="dossier-depose-modale" title="" size="medium" ref={modaleRef}>
-        {state.flash && (
+      {state.flash && (
+        <Modale
+          id="dossier-depose-modale"
+          title=""
+          size="medium"
+          ref={modaleRef}
+          ouverte={true}
+        >
           <div className="fr-grid-row" style={{ gap: "1rem" }}>
             <Alert
               severity={state.flash.type}
@@ -151,8 +150,8 @@ function RouteComponent() {
               ]}
             />
           </div>
-        )}
-      </Modale>
+        </Modale>
+      )}
 
       <div>
         <div className="fr-grid-row">

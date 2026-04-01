@@ -39,18 +39,7 @@ class ConnexionUsagerListener implements EventSubscriberInterface
             // ... associée à aucun de ses dossiers existants...
             if (null !== $testEligibilite && null === $testEligibilite->dossier) {
                 // ... alors, on initie un nouveau brouillon de dossier lié à ce test d'éligibilité
-                $dossier = Dossier::brisDePorte()
-                    ->setUsager($usager)
-                    ->setRequerant(
-                        $usager->getPersonne()->getPersonnePhysique() ??
-                        new PersonnePhysique()
-                            ->setPersonne($usager->getPersonne())
-                    )
-                    ->setBrisPorte(
-                        new BrisPorte()
-                            ->setRapportAuLogement($testEligibilite->rapportAuLogement)
-                            ->setTestEligibilite($testEligibilite)
-                    );
+                $dossier = Dossier::brisDePorteDepuisTestEligibilite($testEligibilite);
                 $this->em->persist($dossier);
                 $this->em->flush();
 

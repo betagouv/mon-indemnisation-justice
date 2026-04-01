@@ -28,7 +28,7 @@ const EspaceRequerant = () => {
           </>
         }
         homeLinkProps={{
-          to: "/",
+          href: `${window.location.origin}/`,
           title: "Accueil - Mon Indemnisation Justice",
         }}
         serviceTitle={

@@ -77,8 +77,8 @@ class DossierControllerTest extends WebTestCase
 
         $reactArguments = json_decode($this->client->getCrawler()->filter('#react-arguments')->first()->text(), true);
 
-        // $this->assertArraysAreIdenticalIgnoringOrder(
-        $this->assertEmpty(array_diff_multidimensional(
+
+        $diff = array_diff_multidimensional(
             $reactArguments['dossier'],
             [
                 'id' => $dossier->getId(),
@@ -118,12 +118,12 @@ class DossierControllerTest extends WebTestCase
                 'requerant' => [
                     'civilite' => $dossier->getRequerantPersonne()->getCivilite()->value,
                     'nom' => $dossier->getRequerantPersonne()->getNom(),
+                    'nomNaissance' => $dossier->getRequerantPersonne()->getNomNaissance(),
                     'prenoms' => [
                         $dossier->getRequerantPersonnePhysique()->getPersonne()->getPrenom(),
                         $dossier->getRequerantPersonnePhysique()->getPrenom2(),
                         $dossier->getRequerantPersonnePhysique()->getPrenom3(),
                     ],
-                    'nomNaissance' => null,
                     'courriel' => $dossier->getUsager()->getEmail(),
                     'telephone' => $dossier->getRequerantPersonnePhysique()?->getPersonne()->getTelephone(),
                     'dateNaissance' => $dossier->getRequerantPersonnePhysique()?->getDateNaissance()->format('Y-m-d H:i:s'),
@@ -135,6 +135,8 @@ class DossierControllerTest extends WebTestCase
                 'typeAttestation' => null,
                 'typeInstitutionSecuritePublique' => null,
             ]
-        ));
+        );
+
+        $this->assertEmpty($diff);
     }
 }
