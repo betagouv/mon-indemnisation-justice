@@ -597,4 +597,20 @@ class Dossier
     {
         return new self()->setType(DossierType::BRIS_PORTE);
     }
+
+    public static function brisDePorteDepuisTestEligibilite(TestEligibilite $testEligibilite): Dossier
+    {
+        return Dossier::brisDePorte()
+            ->setUsager($testEligibilite->usager)
+            ->setRequerant(
+                $testEligibilite->usager->getPersonne()->getPersonnePhysique() ??
+                new PersonnePhysique()
+                    ->setPersonne($testEligibilite->usager->getPersonne())
+            )
+            ->setBrisPorte(
+                new BrisPorte()
+                    ->setRapportAuLogement($testEligibilite->rapportAuLogement)
+                    ->setTestEligibilite($testEligibilite)
+            );
+    }
 }

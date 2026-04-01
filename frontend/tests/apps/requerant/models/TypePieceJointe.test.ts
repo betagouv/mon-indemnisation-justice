@@ -1,7 +1,4 @@
-import {
-  PieceJointeType,
-  TypePieceJointe,
-} from "@/apps/requerant/models/TypePieceJointe";
+import { PieceJointeType, TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe";
 import { describe, expect, it } from "vitest";
 
 describe("libeller un type de pièce jointe ", () => {
@@ -9,7 +6,7 @@ describe("libeller un type de pièce jointe ", () => {
     it("fonctionne", () => {
       const libelles: { [key in PieceJointeType]?: string } = {
         attestation_information:
-          "Attestation complétée par les forces de l'ordres",
+          "Attestation complétée par les forces de l'ordre",
         photo_prejudice: "Photo de la porte endommagée",
         carte_identite: "Pièce d'identité",
         facture: "Facture",
@@ -48,7 +45,7 @@ describe("libeller un type de pièce jointe ", () => {
     it("fonctionne", () => {
       const libelles: { [key in PieceJointeType]?: string } = {
         attestation_information:
-          "des attestations complétées par les forces de l'ordres",
+          "des attestations complétées par les forces de l'ordre",
         photo_prejudice: "des photos de la porte endommagée",
         carte_identite: "des copies de votre pièce d'identité recto-verso",
         facture:
@@ -78,7 +75,7 @@ describe("libeller un type de pièce jointe ", () => {
     it("fonctionne", () => {
       const libelles: { [key in PieceJointeType]?: string } = {
         attestation_information:
-          "des attestations complétées par les forces de l'ordres",
+          "des attestations complétées par les forces de l'ordre",
         photo_prejudice: "des photos de la porte endommagée",
         carte_identite: "des copies de votre pièce d'identité recto-verso",
         facture:
@@ -108,7 +105,7 @@ describe("libeller un type de pièce jointe ", () => {
     it("fonctionne", () => {
       const libelles: { [key in PieceJointeType]?: string } = {
         attestation_information:
-          "l'attestation complétée par les forces de l'ordres",
+          "l'attestation complétée par les forces de l'ordre",
         photo_prejudice: "la photo de la porte endommagée",
         carte_identite: "la pièce d'identité",
         facture: "la facture",
@@ -136,7 +133,7 @@ describe("libeller un type de pièce jointe ", () => {
     it("fonctionne", () => {
       const libelles: { [key in PieceJointeType]?: string } = {
         attestation_information:
-          "d'attestation complétée par les forces de l'ordres",
+          "d'attestation complétée par les forces de l'ordre",
         photo_prejudice: "de photo de la porte endommagée",
         carte_identite: "de pièce d'identité",
         facture: "de facture",

@@ -13,6 +13,8 @@ export const remplirChamp = async (page: Page, intitule: string, valeur: string)
     await page.getByLabel(intitule, {exact: false}).fill(valeur);
 }
 
-export const selectionnerMenu = async (page: Page, intitule: string, choix: string): Promise<void> => {
+export const selectionnerMenu = async (page: Page, intitule: string, choix: string | null | {
+    label: string
+}): Promise<void> => {
     await page.getByLabel(intitule, {exact: false}).selectOption(choix);
 }

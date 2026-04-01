@@ -35,7 +35,7 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { default as React, useMemo, useRef, useState } from "react";
+import { default as React, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 
 export const Route = createFileRoute(
@@ -169,6 +169,22 @@ function Etape3PiecesJointes() {
     return decomptePiecesJointes[type.type] || 0;
   };
 
+  useEffect(() => {
+    if (dossier.piecesJointes.length > 0) {
+      const dernierePieceJointe = dossier.piecesJointes
+        .sort(
+          (a, b) =>
+            (a.dateAjout?.getTime() || 0) - (b.dateAjout?.getTime() || 0),
+        )
+        .at(-1);
+
+      if (dernierePieceJointe) {
+        selectionnerPieceJointe(dernierePieceJointe);
+        selectionnerTypePieceJointe(dernierePieceJointe.type);
+      }
+    }
+  }, [dossier.piecesJointes.map((p) => p.id)]);
+
   const formulaire = useForm({
     validators: {
       onSubmit: z.object({
@@ -205,9 +221,7 @@ function Etape3PiecesJointes() {
 
           await naviguer({
             to: "/requerant/mes-demandes",
-            search: {
-              d: dossierDepose.reference,
-            } as any,
+            search: true,
             state: {
               flash: {
                 type: "success",
@@ -240,10 +254,11 @@ function Etape3PiecesJointes() {
           piecesJointes: NouvellePieceJointe[],
         ): Promise<void> => {
           await dossierManager.ajouterPiecesJointes(dossier.id, piecesJointes);
-          formulaire.validate("change");
           // On sait que le dossier a changé, il faut donc invalider le cache du
-          // routeur pour le forcer à récupérer le dossier à jour
+          // routeur pour le forcer à récupérer le dossier à jour.
           await routeur.invalidate();
+          // Alors on peut valider le formulaire, sur le dossier à jour
+          await formulaire.validate("submit");
         }}
         typesPiecesjointes={typesPiecesJointesDemandes}
         title="Ajouter des pièces jointes"
@@ -450,9 +465,11 @@ function Etape3PiecesJointes() {
                       >
                         Ajouter{" "}
                         {typePieceJointeSelectionne.libelle({
-                          court: true,
+                          court: false,
                           pluriel: true,
                           defini: false,
+                          de: false,
+                          titre: false,
                           dossier: dossier,
                         })}
                       </Button>
@@ -473,6 +490,8 @@ function Etape3PiecesJointes() {
                     {typePieceJointeSelectionne.libelle({
                       court: true,
                       pluriel: false,
+                      titre: false,
+                      defini: false,
                       dossier: dossier,
                       de: true,
                     })}
@@ -494,8 +513,11 @@ function Etape3PiecesJointes() {
           </div>
 
           <formulaire.Subscribe
-            selector={(state) => state.fieldMeta.piecesJointes?.errors}
-            children={(errors) => {
+            selector={(state) => ({
+              piecesJointes: state.fieldMeta.piecesJointes,
+              errors: state.fieldMeta.piecesJointes?.errors,
+            })}
+            children={({ piecesJointes, errors }) => {
               const typesPiecesJointesManquantes =
                 errors?.map((error) => TypePieceJointe.depuis(error.message)) ??
                 [];
@@ -566,6 +588,20 @@ function Etape3PiecesJointes() {
                   from: Route.fullPath,
                   to: "../2-infos-requerant",
                   search: {} as any,
+                }),
+            },
+            {
+              priority: "secondary",
+              children: "Enregistrer et revenir plus tard",
+              disabled: sauvegardeEnCours,
+              nativeButtonProps: {
+                type: "button",
+              },
+              onClick: () =>
+                naviguer({
+                  from: Route.fullPath,
+                  to: "/requerant/mes-demandes",
+                  search: true,
                 }),
             },
             {

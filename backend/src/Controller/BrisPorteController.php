@@ -6,7 +6,6 @@ namespace MonIndemnisationJustice\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Dto\Inscription;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
@@ -57,11 +56,11 @@ class BrisPorteController extends AbstractController
     #[Route('/tester-mon-eligibilite', name: 'bris_porte_tester_eligibilite', methods: ['GET', 'POST'])]
     public function testerMonEligibilite(Request $request): Response
     {
-        if ($this->getUser() instanceof Usager) {
+        $usager = $this->getUser();
+        if ($usager instanceof Usager) {
             /** @var Usager $usager */
-            $usager = $this->getUser();
             if (null !== $usager->getDernierDossier() && !$usager->getDernierDossier()->estDepose()) {
-                return $this->redirectToRoute('app_bris_porte_edit', ['id' => $usager->getDernierDossier()->getId()]);
+                return $this->redirectToRoute('requerant_react', ['extra' => "dossier/bris-de-porte/{$usager->getDernierDossier()->getId()}/"]);
             }
 
             // Sinon, on poursuit le test d'éligibilité en vue de créer un nouveau dossier.
@@ -90,22 +89,18 @@ class BrisPorteController extends AbstractController
                 $this->entityManager->persist($testEligibilite);
                 $this->entityManager->flush();
 
-                if (($usager = $this->getUser()) instanceof Usager) {
-                    $dossier = Dossier::brisDePorte()
-                        ->setUsager($usager)
-                        ->setBrisPorte(
-                            new BrisPorte()
-                                ->setTestEligibilite($testEligibilite)
-                        );
+                if ($usager instanceof Usager) {
+                    $testEligibilite->usager = $usager;
+                    $dossier = Dossier::brisDePorteDepuisTestEligibilite($testEligibilite);
 
 
                     $this->entityManager->persist($dossier);
                     $this->entityManager->flush();
 
-                    return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
+                    return $this->redirectToRoute('requerant_react', ['extra' => "dossier/bris-de-porte/{$dossier->getId()}/"]);
                 }
 
-                if (null !== $testEligibilite->requerant) {
+                if (null !== $testEligibilite->usager) {
                     return $this->redirectToRoute('bris_porte_finaliser_la_creation');
                 }
 
@@ -249,7 +244,7 @@ class BrisPorteController extends AbstractController
         $this->entityManager->persist($usager);
 
         if (null !== $testEligibilite) {
-            $testEligibilite->requerant = $usager;
+            $testEligibilite->usager = $usager;
             $this->entityManager->persist($testEligibilite);
         }
 

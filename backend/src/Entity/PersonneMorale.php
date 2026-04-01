@@ -34,11 +34,11 @@ class PersonneMorale
 
     #[ORM\ManyToOne(Adresse::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    protected ?Adresse $adresse;
+    protected ?Adresse $adresse = null;
 
     #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'representant_legal_id', referencedColumnName: 'id')]
-    protected ?Personne $representantLegal;
+    protected ?Personne $representantLegal = null;
 
     public function getId(): ?int
     {

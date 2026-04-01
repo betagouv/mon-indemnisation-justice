@@ -72,6 +72,7 @@ services:
       - REQUEST_SCHEME=https
       - FIREFOX_PATH=/usr/bin/firefox
       - INSTANCE_NUMBER=0
+      - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/dev
     restart: always
     depends_on:
       - postgres
@@ -116,6 +117,7 @@ services:
       - HTTPS=true;
       - REQUEST_SCHEME=https
       - INSTANCE_NUMBER=0
+      - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/test
     volumes:
       - .docker/php/fichiers:/app/fichiers
       - ./backend/.env.test:/app/.env.test

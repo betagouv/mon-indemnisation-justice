@@ -90,15 +90,18 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ->setAdresse(
                         new Adresse()
                             ->setLigne1('12 rue des Oliviers')
-                            ->setLocalite('Nantes')
                             ->setCodePostal('44100')
+                            ->setLocalite('Nantes')
                     )
             )
             ->setBrisPorte(
                 new BrisPorte()
-                    ->setAdresse(new Adresse()
-                        ->setLigne1('12 rue des Oliviers')
-                        ->setCodePostal('44100'))
+                    ->setAdresse(
+                        new Adresse()
+                            ->setLigne1('12 rue des Oliviers')
+                            ->setCodePostal('44100')
+                            ->setLocalite('Nantes')
+                    )
                     ->setDateOperation(new \DateTimeImmutable('-10 days'))
                     ->setRapportAuLogement(RapportAuLogement::PROPRIETAIRE)
                     ->setDescriptionRequerant('Porte fracturée tôt ce matin')
@@ -109,7 +112,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                             'estHebergeant' => false,
                             'rapportAuLogement' => RapportAuLogement::PROPRIETAIRE,
                             'aContacteAssurance' => false,
-                            'requerant' => $this->getReference('requerant-raquel', Usager::class),
+                            'usager' => $this->getReference('requerant-raquel', Usager::class),
                             'dateSoumission' => new \DateTime('-30 seconds'),
                         ])
                     )
@@ -408,7 +411,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                             array_merge(
                                 $donneesTestEligibilite,
                                 [
-                                    'requerant' => $requerant,
+                                    'usager' => $requerant,
                                     'dateSoumission' => $dateCreation,
                                 ]
                             ),
