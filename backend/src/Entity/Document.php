@@ -72,7 +72,7 @@ class Document
 
     #[Groups(['agent:detail'])]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateDerniereModification = null;
+    protected ?\DateTimeImmutable $dateDerniereModification = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['dossier:lecture', 'requerant:detail'])]
@@ -298,12 +298,12 @@ class Document
         return $this;
     }
 
-    public function getDateDerniereModification(): ?\DateTimeInterface
+    public function getDateDerniereModification(): ?\DateTimeImmutable
     {
         return $this->dateDerniereModification;
     }
 
-    public function setDateDerniereModification(?\DateTimeInterface $dateDerniereModification): Document
+    public function setDateDerniereModification(?\DateTimeImmutable $dateDerniereModification): Document
     {
         $this->dateDerniereModification = $dateDerniereModification;
 

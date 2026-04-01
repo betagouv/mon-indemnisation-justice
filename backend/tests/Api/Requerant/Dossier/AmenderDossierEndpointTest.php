@@ -99,8 +99,11 @@ class AmenderDossierEndpointTest extends WebTestCase
             "/api/requerant/dossier/bris-de-porte/$reference/amender",
             content: json_encode(
                 [
-
-                    'personneMorale' => ['typePersonneMorale' => PersonneMoraleType::ASSUREUR->value],
+                    'personneMorale' => [
+                        'typePersonneMorale' => PersonneMoraleType::ASSUREUR->value,
+                        'representantLegal' => [],
+                        'adresse' => [],
+                    ],
                     'rapportAuLogement' => 'BAILLEUR',
                     'adresse' => [
                         'ligne1' => '17 boulevard Pereire',
