@@ -1,7 +1,7 @@
 import { ModalProps } from "@codegouvfr/react-dsfr/Modal";
 import { fr } from "@codegouvfr/react-dsfr/src/fr";
 import { cx } from "@codegouvfr/react-dsfr/src/tools/cx.ts";
-import React, { ForwardedRef, forwardRef, useImperativeHandle } from "react";
+import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle } from "react";
 
 export type ModaleRef = {
   ouvrir: () => void;
@@ -32,19 +32,27 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
     }: ModaleProps,
     ref: ForwardedRef<ModaleRef>,
   ) => {
+    useEffect(() => {
+      if (ouverte) {
+        // On doit laisser le temps à la lib JS du DSFR de se charger avant de lancer l'ouvertue de la modale
+        setTimeout(
+          () => window.dsfr(document.getElementById(id)).modal.disclose(),
+          250,
+        );
+      }
+    }, []);
+
     useImperativeHandle(ref, () => ({
-      ouvrir: () => window.dsfr(document.getElementById(id)).modal.disclose(),
-      fermer: () => window.dsfr(document.getElementById(id)).modal.conceal(),
+      ouvrir: () => {
+        window.dsfr(document.getElementById(id)).modal.disclose();
+      },
+      fermer: () => {
+        window.dsfr(document.getElementById(id)).modal.conceal();
+      },
     }));
 
     return (
       <>
-        <button
-          data-fr-opened={ouverte ? "true" : "false"}
-          aria-controls="modal-action"
-          type="button"
-          className="fr-btn fr-hidden"
-        />
         <dialog
           aria-labelledby={`fr-modal-title-${id}`}
           id={id}
@@ -80,7 +88,9 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
                       title="Fermer"
                       aria-controls={id}
                       type="button"
-                      onClick={() => onFerme?.()}
+                      onClick={() => {
+                        onFerme?.();
+                      }}
                     >
                       Fermer
                     </button>

@@ -42,7 +42,7 @@ class TestEligibilite
 
     #[ORM\ManyToOne(targetEntity: Usager::class, cascade: ['persist'])]
     #[ORM\JoinColumn(unique: false, nullable: true, onDelete: 'CASCADE')]
-    public ?Usager $requerant = null;
+    public ?Usager $usager = null;
 
     #[ORM\OneToOne(targetEntity: BrisPorte::class, mappedBy: 'testEligibilite')]
     public ?BrisPorte $dossier;
@@ -80,7 +80,7 @@ class TestEligibilite
         $testEligibilite->rapportAuLogement = $values['rapportAuLogement'] ?? null;
         $testEligibilite->aContacteAssurance = $values['aContacteAssurance'] ?? null;
         $testEligibilite->aContacteBailleur = $values['aContacteBailleur'] ?? null;
-        $testEligibilite->requerant = $values['requerant'] ?? null;
+        $testEligibilite->usager = $values['usager'] ?? null;
         $testEligibilite->dateSoumission = $values['dateSoumission'] ?? null;
 
         return $testEligibilite;

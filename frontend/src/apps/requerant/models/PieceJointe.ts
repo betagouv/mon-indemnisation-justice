@@ -1,5 +1,6 @@
 import { Transform } from "class-transformer";
 import { PieceJointeType, TypePieceJointe } from "./TypePieceJointe";
+import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 
 export class PieceJointe {
   id?: number;
@@ -21,6 +22,8 @@ export class PieceJointe {
     { toPlainOnly: true },
   )
   type: TypePieceJointe;
+  @DateTransform()
+  dateAjout?: Date;
 
   get typeFichier(): string {
     switch (this.mime) {
@@ -58,6 +61,6 @@ export class PieceJointe {
   }
 
   get infoFichier(): string {
-    return `${this.type?.libelle({}) || ""} - ${this.typeFichier?.toUpperCase()}${this.taille ? " - " + this.tailleFichier : ""}`;
+    return `${this.type?.libelle({ titre: true, court: true }) || ""} - ${this.typeFichier?.toUpperCase()}${this.taille ? " - " + this.tailleFichier : ""}`;
   }
 }

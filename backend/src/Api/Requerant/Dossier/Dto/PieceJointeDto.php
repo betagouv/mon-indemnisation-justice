@@ -15,6 +15,7 @@ class PieceJointeDto
         public string $mime,
         public int $taille,
         public DocumentType $type,
+        public ?\DateTimeImmutable $dateAjout,
     ) {
 
     }
@@ -29,6 +30,7 @@ class PieceJointeDto
             mime: $document->getMime(),
             taille: $document->getSize(),
             type: $document->getType(),
+            dateAjout: $document->getDateDerniereModification(),
         );
     }
 }

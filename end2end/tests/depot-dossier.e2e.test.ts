@@ -12,6 +12,8 @@ test("dépôt de dossier", async ({browser}) => {
     await context.clearCookies();
 
     const page = await browser.newPage();
+    // Tenter de désactiver le cache https://stackoverflow.com/a/68650186/4558679
+    await page.route('**', route => route.continue());
 
     await page.goto("/connexion");
 
@@ -56,6 +58,8 @@ test("dépôt de dossier", async ({browser}) => {
         page.getByText("Déclarer un bris de porte", {exact: true}),
     ).toBeVisible();
 
+    // Étape 1 - infos relatives au bris de porte
+
     await expect(
         page.locator("h2", {hasText: "Informations relatives au bris de porte"}),
     ).toBeVisible();
@@ -79,6 +83,8 @@ test("dépôt de dossier", async ({browser}) => {
     ).toBeEnabled();
     await page.getByText("Valider et passer à l'étape suivante").click();
 
+    // Étape 2 - infos sur le requérant
+
     await expect(
         page.getByText("Déclarer un bris de porte", {exact: true}),
     ).toBeVisible();
@@ -101,6 +107,8 @@ test("dépôt de dossier", async ({browser}) => {
     ).toBeEnabled();
     await page.getByText("Valider et passer à l'étape suivante").click();
 
+    // Étape 3 - pièces jointes
+
     await expect(
         page.getByText("Déclarer un bris de porte", {exact: true}),
     ).toBeVisible();
@@ -111,23 +119,106 @@ test("dépôt de dossier", async ({browser}) => {
         }),
     ).toBeVisible();
 
-    // Select one file
-    await page
-        .getByText(/Attestation complétée par les forces de l'ordre.*/)
-        .locator("..")
-        .getByLabel("Document à téléverser")
+    // Cliquer élément menu "Attestation complétée par les forces de l'ordres" puis bouton "Ajouter attestations complétées par les forces de l'ordres"
+    await page.getByText("Photo de la porte endommagée").click();
 
+    await page.locator("button", {hasText: "Ajouter des photos de la porte endommagée"}).click();
+
+    // Sélectionner 1 fichier puis s'assurer que le type est déjà sélectionné puis valider
+    await page
+        .getByLabel("Documents à téléverser")
         .setInputFiles(
             path.join(
                 __dirname,
-                "./ressources/attestation_completee_par_les_forces_de_l_ordre.pdf",
+                "./ressources/photo-porte-2.jpeg",
             ),
         );
 
-    await expect(
-        page.getByText("Soumettre ma demande"),
-    ).toBeEnabled();
-    await page.getByText("Soumettre ma demande").click();
+    await page.locator("button", {hasText: "Prévisualiser",}).click();
+    await expect(page.locator("h5", {hasText: "Fichier : photo-porte-2.jpeg"})).toBeVisible()
+    await expect(page.getByLabel("Type de pièce jointe")).toHaveValue("photo_prejudice");
+
+    await page.locator("button", {hasText: "Téléverser ce document",}).click();
+
+
+    // Essayer de soumettre et s'assurer que l'alerte apparaît
+    const urlCourante = page.url()
+
+    await page.locator("button", {hasText: "Soumettre ma demande",}).click();
+
+    expect(page.url()).toBe(urlCourante);
+
+    await expect(page.locator("h3.fr-alert__title", {hasText: "Des documents sont manquants"})).toBeVisible();
+
+    // Cliquer sur le bouton "Ajouter des documents" et sélectionner tous les fichiers requis restants
+    await page.locator("button", {hasText: "Ajouter des documents",}).click();
+
+    await page
+        .getByLabel("Documents à téléverser")
+        .setInputFiles(
+            [
+                path.join(
+                    __dirname,
+                    "./ressources/attestation_completee_par_les_forces_de_l_ordre.pdf",
+                ),
+                path.join(
+                    __dirname,
+                    "./ressources/cni.jpg",
+                ),
+                path.join(
+                    __dirname,
+                    "./ressources/facture-1.png",
+                ),
+                path.join(
+                    __dirname,
+                    "./ressources/rib.jpg",
+                ),
+                path.join(
+                    __dirname,
+                    "./ressources/acte_de_propriete.pdf",
+                )
+            ]
+        );
+
+    await page.locator("button", {hasText: "Prévisualiser",}).click();
+
+    await expect(page.locator("h2.fr-stepper__title", {hasText: "Fichier n°1 : attestation_completee_par_les_forces_de_l_ordre.pdf"})).toBeVisible();
+    await selectionnerMenu(page, "Type de pièce jointe", {label: "Attestation complétée par les forces de l'ordre"});
+    await page.locator("button", {hasText: "Document suivant"}).click();
+
+    await expect(page.locator("h2.fr-stepper__title", {hasText: "Fichier n°2 : cni.jpg"})).toBeVisible();
+    await selectionnerMenu(page, "Type de pièce jointe", {label: "Pièce d'identité"});
+    await page.locator("button", {hasText: "Document suivant"}).click();
+
+    await expect(page.locator("h2.fr-stepper__title", {hasText: "Fichier n°3 : facture-1.png"})).toBeVisible();
+    await selectionnerMenu(page, "Type de pièce jointe", {label: "Facture"});
+    await page.locator("button", {hasText: "Document suivant"}).click();
+
+    await expect(page.locator("h2.fr-stepper__title", {hasText: "Fichier n°4 : rib.jpg"})).toBeVisible();
+    await selectionnerMenu(page, "Type de pièce jointe", {label: "RIB"});
+    await page.locator("button", {hasText: "Document suivant"}).click();
+
+    await expect(page.locator("h2.fr-stepper__title", {hasText: "Fichier n°5 : acte_de_propriete.pdf"})).toBeVisible();
+    await selectionnerMenu(page, "Type de pièce jointe", {label: "Titre de propriété"});
+    await page.locator("button", {hasText: "Téléverser ces documents"}).click();
+
+    // Attendre que le téléversement se termine
+
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator('dialog#ajouter-pieces-jointes-modale')).toBeHidden();
+
+    // Soumettre la demande et arriver sur la page des demandes
+    await page.locator("button", {hasText: "Soumettre ma demande",}).click();
+    await expect(page).toHaveURL("/requerant/mes-demandes");
+
+    // La modale de confirmation doit s'afficher
+    await expect(page.locator("h3.fr-alert__title", {hasText: "Votre dossier a bien été déposé"})).toBeVisible();
+
+    await page.locator("ul.fr-btns-group li button", {hasText: "Fermer",}).click();
+    // Laissons le temps à la modale de disparaitre
+    await page.waitForTimeout(250);
+    await expect(page.locator('dialog#dossier-depose-modale')).toBeHidden();
+
 
     /*
     L'étape 4, de vérification, est supprimée
@@ -146,7 +237,6 @@ test("dépôt de dossier", async ({browser}) => {
 
      */
 
-    await expect(page).toHaveURL("/requerant/mes-demandes");
 
     // TODO vérifier que la modale de confirmation est bien affichée
     // TODO vérifier qu'un email est bien reçu (cf. PHP) :

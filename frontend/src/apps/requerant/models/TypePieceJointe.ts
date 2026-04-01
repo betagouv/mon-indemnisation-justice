@@ -110,7 +110,7 @@ export class TypePieceJointe {
           titre,
         );
 
-        return `${article}attestation${s} complétée${s} par les forces de l'ordres`;
+        return `${article}attestation${s} complétée${s} par les forces de l'ordre`;
       },
     ),
     photo_prejudice: new TypePieceJointe("photo_prejudice", (contexte) => {
@@ -480,7 +480,7 @@ export class TypePieceJointe {
       ].includes(this.type);
     }
 
-    return this.type === "pouvoir_signataire";
+    return false;
   }
 
   /**
