@@ -4,6 +4,10 @@ import {
 } from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
+import {
+  getSchemaValidationPiecesJointes,
+  listerTypesPiecesJointesRequis,
+} from "@/apps/requerant/formulaires/brisDePorte/3-pieces-jointes.schema.ts";
 import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import {
   PieceJointeType,
@@ -36,7 +40,6 @@ import {
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import { default as React, useEffect, useMemo, useRef, useState } from "react";
-import { z } from "zod";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$id/3-pieces-jointes",
@@ -131,14 +134,7 @@ function Etape3PiecesJointes() {
 
   // On génère la liste des types de pièces jointes requises pour le dossier
   const typesPiecesJointesRequis = useMemo(
-    () =>
-      Object.values(TypePieceJointe.liste).filter((type) =>
-        type.estRequis(
-          dossier.rapportAuLogement,
-          dossier.personneMorale?.typePersonneMorale,
-          dossier.estLieDeclaration(),
-        ),
-      ),
+    () => listerTypesPiecesJointesRequis(dossier),
     [
       dossier.rapportAuLogement,
       dossier.personneMorale?.typePersonneMorale,
@@ -187,26 +183,7 @@ function Etape3PiecesJointes() {
 
   const formulaire = useForm({
     validators: {
-      onSubmit: z.object({
-        piecesJointes: z
-          .array(z.instanceof(PieceJointe))
-          .superRefine((piecesJointes, contexte) => {
-            typesPiecesJointesRequis.forEach(
-              (typePieceJointeRequis: TypePieceJointe) => {
-                if (
-                  piecesJointes.filter((pieceJointe: PieceJointe) =>
-                    pieceJointe.type.equals(typePieceJointeRequis),
-                  ).length == 0
-                ) {
-                  contexte.addIssue({
-                    code: "custom",
-                    message: typePieceJointeRequis.type,
-                  });
-                }
-              },
-            );
-          }),
-      }),
+      onSubmit: getSchemaValidationPiecesJointes(dossier),
     },
     defaultValues: {
       piecesJointes: dossier.piecesJointes,
@@ -214,33 +191,10 @@ function Etape3PiecesJointes() {
     listeners: {},
     onSubmit: async ({ formApi }) => {
       if (formApi.state.isValid) {
-        if (dossier.estBrouillon) {
-          setSauvegardeEnCours(true);
-          const dossierDepose = await dossierManager.soumettre(dossier.id);
-          setSauvegardeEnCours(false);
-
-          await naviguer({
-            to: "/requerant/mes-demandes",
-            search: true,
-            state: {
-              flash: {
-                type: "success",
-                titre: "Votre dossier a bien été déposé",
-                message: [
-                  "Toutes vos informations ont bien été sauvegardées. Un courriel de confirmation vous a été envoyé à l'instant.",
-                  `Votre dossier porte la référence ${dossierDepose.reference} et sera traité par un agent du bureau dans les plus brefs délais. Vous serez informés de son évolution par courriel mais pourrez aussi suivre son avancement en vous connectant à votre espace personnel.`,
-                ],
-              },
-            },
-          });
-        } else {
-          // Aucun enregistrement à faire ici, puisque l'étape 3 ne concerne que les pièces jointes qui sont sauvegardées
-          // à chaque opération.
-          await naviguer({
-            to: "/requerant/mes-demandes",
-            search: {} as any,
-          });
-        }
+        await naviguer({
+          to: "./4-recapitulatif",
+          search: true,
+        });
       }
     },
   });
@@ -606,12 +560,7 @@ function Etape3PiecesJointes() {
             },
             {
               priority: "primary",
-              children: sauvegardeEnCours
-                ? "Sauvegarde en cours..."
-                : dossier.estBrouillon
-                  ? "Soumettre ma demande"
-                  : "Actualiser ma demande",
-              disabled: sauvegardeEnCours,
+              children: "Valider et passer à l'étape suivante",
               nativeButtonProps: {
                 type: "submit",
                 role: "submit",
