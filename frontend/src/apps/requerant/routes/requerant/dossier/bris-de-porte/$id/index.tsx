@@ -5,6 +5,7 @@ import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { estDossierOkPiecesJointes } from "@/apps/requerant/formulaires/brisDePorte/3-pieces-jointes.schema.ts";
 
 export const Route = createFileRoute("/requerant/dossier/bris-de-porte/$id/")({
   pendingComponent: Loader,
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/requerant/dossier/bris-de-porte/$id/")({
       });
     }
 
-    if (!estDossierOkBrisDePorte(dossier)) {
+    if (dossier.estDepose || !estDossierOkBrisDePorte(dossier)) {
       return redirect<typeof RouteurRequerant>({
         to: "./1-bris-porte",
         params,
@@ -37,8 +38,14 @@ export const Route = createFileRoute("/requerant/dossier/bris-de-porte/$id/")({
       });
     }
 
+    if (!estDossierOkPiecesJointes(dossier)) {
+      redirect<typeof RouteurRequerant>({
+        to: "./3-pieces-jointes",
+        params,
+      });
+    }
     return redirect<typeof RouteurRequerant>({
-      to: "./3-pieces-jointes",
+      to: "./4-recapitulatif",
       params,
     });
   },
