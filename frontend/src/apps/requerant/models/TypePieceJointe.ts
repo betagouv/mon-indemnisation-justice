@@ -512,9 +512,14 @@ export class TypePieceJointe {
     }
 
     if (
-      ["photo_prejudice", "carte_identite", "facture", "rib", "photo"].includes(
-        this.type,
-      )
+      [
+        "photo_prejudice",
+        "carte_identite",
+        "facture",
+        "rib",
+        "photo",
+        "non_prise_en_charge_assurance",
+      ].includes(this.type)
     ) {
       return true;
     }

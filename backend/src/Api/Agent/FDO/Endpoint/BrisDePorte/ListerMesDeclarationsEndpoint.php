@@ -31,7 +31,8 @@ class ListerMesDeclarationsEndpoint
         protected readonly EntityManagerInterface $em,
         protected readonly ObjectMapperInterface $objectMapper,
         protected readonly NormalizerInterface $normalizer,
-    ) {}
+    ) {
+    }
 
     public function __invoke(Security $security): Response
     {

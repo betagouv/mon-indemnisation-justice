@@ -44,12 +44,13 @@ class SoumettreDeclarationBrisPorteEndpoint
         protected readonly DenormalizerInterface $denormalizer,
         protected readonly ValidatorInterface $validator,
         protected readonly Mailer $mailer,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
         BrouillonDeclarationFDOBrisPorte $brouillon,
-        Security $security
+        Security $security,
     ): Response {
         /** @var Agent $agent */
         $agent = $security->getUser();

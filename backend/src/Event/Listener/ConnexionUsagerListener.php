@@ -20,8 +20,9 @@ class ConnexionUsagerListener implements EventSubscriberInterface
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly NormalizerInterface $normalizer,
-    ) {
+        protected readonly NormalizerInterface    $normalizer,
+    )
+    {
     }
 
     public function onSecurityInteractiveLogin(LoginSuccessEvent $event): void
@@ -38,6 +39,10 @@ class ConnexionUsagerListener implements EventSubscriberInterface
         if (null !== ($testEligibilite = $this->getTestEligibiliteEnCours($request, $usager))) {
             // ... associée à aucun de ses dossiers existants...
             if (null !== $testEligibilite && null === $testEligibilite->dossier) {
+                if (null === $testEligibilite->usager) {
+                    $testEligibilite->usager = $usager;
+                }
+
                 // ... alors, on initie un nouveau brouillon de dossier lié à ce test d'éligibilité
                 $dossier = Dossier::brisDePorteDepuisTestEligibilite($testEligibilite);
                 $this->em->persist($dossier);

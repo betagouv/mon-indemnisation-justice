@@ -2,4 +2,6 @@
 
 namespace MonIndemnisationJustice\Event\Event;
 
-class DossierTransmisBudgetEvent extends DossierTransitionEvent {}
+class DossierTransmisBudgetEvent extends DossierTransitionEvent
+{
+}

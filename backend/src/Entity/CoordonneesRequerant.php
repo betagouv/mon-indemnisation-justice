@@ -26,7 +26,9 @@ class CoordonneesRequerant
     #[ORM\Column(length: 255)]
     protected string $courriel;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function getId(): ?int
     {

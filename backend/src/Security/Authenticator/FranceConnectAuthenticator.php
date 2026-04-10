@@ -30,19 +30,18 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
     public const LOGOUT_URL_SESSION_KEY = 'france_connect_deconnexion_url';
 
     public function __construct(
-        protected readonly HttpUtils              $httpUtils,
-        protected readonly string                 $loginPageRoute,
-        protected readonly string                 $signupCheckRoute,
-        protected readonly string                 $loginCheckRoute,
-        protected readonly string                 $loginSuccessRoute,
+        protected readonly HttpUtils $httpUtils,
+        protected readonly string $loginPageRoute,
+        protected readonly string $signupCheckRoute,
+        protected readonly string $loginCheckRoute,
+        protected readonly string $loginSuccessRoute,
         #[Autowire(service: 'oidc_client_france_connect')]
-        protected readonly OidcClient             $oidcClient,
-        protected readonly UrlGeneratorInterface  $urlGenerator,
-        protected readonly LoggerInterface        $logger,
+        protected readonly OidcClient $oidcClient,
+        protected readonly UrlGeneratorInterface $urlGenerator,
+        protected readonly LoggerInterface $logger,
         protected readonly EntityManagerInterface $em,
-        protected readonly RequerantRepository    $requerantRepository,
-    )
-    {
+        protected readonly RequerantRepository $requerantRepository,
+    ) {
     }
 
     public function supports(Request $request): ?bool

@@ -1,6 +1,7 @@
 import { PersonnePhysique } from "@/apps/requerant/models/PersonnePhysique.ts";
+import { capitaliser } from "@/common/services/divers";
 import { Exclude } from "class-transformer";
-import { Civilite } from "./Civilite.ts";
+import { Civilite, getCiviliteLibelle } from "./Civilite.ts";
 
 export class Personne {
   id: string;
@@ -14,4 +15,8 @@ export class Personne {
   telephone: string;
 
   personnePhysique?: PersonnePhysique;
+
+  public libelle(): string {
+    return `${getCiviliteLibelle(this.civilite)} ${this.prenom} ${capitaliser(this.nom)} `;
+  }
 }
