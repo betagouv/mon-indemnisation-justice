@@ -29,7 +29,7 @@ class DocumentVoter extends Voter
         return match ($attribute) {
             self::ACTION_IMPRIMER => $this->agentPeutImprimer($agent, $subject),
             self::ACTION_RENSEIGNER => $this->agentPeutRenseigner($agent),
-            default => false
+            default => false,
         };
     }
 

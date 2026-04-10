@@ -9,6 +9,7 @@ class MetadonneesAttestation
 {
     public function __construct(
         public ?TypeAttestation $typeAttestation,
-        public ?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique
-    ) {}
+        public ?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique,
+    ) {
+    }
 }
