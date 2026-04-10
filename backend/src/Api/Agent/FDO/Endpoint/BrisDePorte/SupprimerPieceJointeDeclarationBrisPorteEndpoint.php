@@ -34,7 +34,8 @@ class SupprimerPieceJointeDeclarationBrisPorteEndpoint
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
         protected readonly DenormalizerInterface $denormalizer,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]

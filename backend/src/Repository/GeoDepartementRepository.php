@@ -6,7 +6,6 @@ use MonIndemnisationJustice\Entity\GeoDepartement;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-
 /**
  * @extends ServiceEntityRepository<GeoDepartement>
  *
@@ -33,5 +32,4 @@ class GeoDepartementRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
 }

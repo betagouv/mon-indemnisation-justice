@@ -1,8 +1,12 @@
+import { PieceJointePanelNavigation } from "@/apps/requerant/composants/piecesJointes/PieceJointePanelNavigation";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
-import { Dossier } from "@/apps/requerant/models";
+import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/composants/Loader.tsx";
+import { dateSimple } from "@/common/services/date";
+import { capitaliser } from "@/common/services/divers";
+import { fr, FrCxArg } from "@codegouvfr/react-dsfr";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import {
@@ -69,6 +73,42 @@ function Etape4Recapitulatif() {
   // Récupération du routeur, uniquement pour pouvoir invalider son cache
   const routeur = useRouter();
 
+  const [afficherPiecesJointes, setAfficherPiecesJointes] =
+    useState<boolean>(false);
+
+  // La pièce jointe sélectionnée pour être visualisée.
+  const [pieceJointeSelectionnee, selectionnerPieceJointe] =
+    useState<PieceJointe>(dossier.piecesJointes.at(0) as PieceJointe);
+
+  const nomPieceJointePrecedente = (
+    dossier.piecesJointes.at(
+      dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
+    ) as PieceJointe
+  ).nom;
+  const selectionnerPieceJointePrecedente = () => {
+    selectionnerPieceJointe(
+      dossier.piecesJointes.at(
+        dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
+      ) as PieceJointe,
+    );
+  };
+
+  const selectionnerPieceJointeSuivante = () => {
+    selectionnerPieceJointe(
+      dossier.piecesJointes.at(
+        (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
+          dossier.piecesJointes.length,
+      ) as PieceJointe,
+    );
+  };
+
+  const nomPieceJointeSuivante = (
+    dossier.piecesJointes.at(
+      (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
+        dossier.piecesJointes.length,
+    ) as PieceJointe
+  ).nom;
+
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
 
   useEffect(() => {
@@ -122,52 +162,180 @@ function Etape4Recapitulatif() {
       <div className="row">
         <div className="col-12">
           <div className="fr-col-12">
-            <section className="fr-card fr-mb-5w p-4">
-              <h3 className="fr-mb-3w">Informations générales (Steps 1 & 2)</h3>
+            <section className="fr-card fr-mb-5w fr-p-5w">
+              <h4 className="fr-mb-3w">
+                Informations concernant le bris de porte
+              </h4>
               <p>
-                Ici, vous devriez afficher un résumé des informations collectées
-                aux étapes précédentes :
-                {/* Replace this with components displaying Requérant info, etc. */}
-                <ul className="list-group mt-3">
-                  <li className="list-group-item">
-                    <strong>Demandeur:</strong>{" "}
-                    {dossier.personnePhysique?.personne.prenom ||
-                      "Non renseigné"}
-                  </li>
-                  <li className="list-group-item">
-                    <strong>Objet:</strong> "Non renseigné"
-                  </li>
-                </ul>
+                Vous signalez le bris de la porte
+                {dossier.estPorteBlindee ? " blindée" : ""} du logement sis{" "}
+                {dossier.adresse.libelle}, dont vous êtes le/la{" "}
+                {dossier.rapportAuLogement.toLowerCase()}, en date du{" "}
+                {dateSimple(dossier.dateOperation)} par les forces de l'ordre.
               </p>
+
+              {dossier.description && (
+                <>
+                  <p>Vous nous avez fourni la description suivante :</p>
+                  <blockquote className="fr-citation">
+                    {dossier.description}
+                  </blockquote>
+                </>
+              )}
+
+              <ButtonsGroup
+                inlineLayoutWhen="always"
+                alignment="right"
+                buttonsIconPosition="right"
+                buttonsSize="medium"
+                buttons={[
+                  {
+                    priority: "secondary",
+                    children: "Modifier",
+                    iconId: "fr-icon-pencil-line",
+                  },
+                ]}
+              />
             </section>
 
-            {/* Summary for Step 3 */}
-            <section className="fr-card fr-mb-5w p-4 bg-light">
-              <h3 className="fr-mb-3w">Pièces Jointes (Step 3)</h3>
-              <p>
-                Votre dossier contient {dossier.piecesJointes.length} pièce(s)
-                jointe(s).
-              </p>
-              {dossier.piecesJointes.length > 0 ? (
-                <ul className="list-group">
-                  {dossier.piecesJointes.map((pj) => (
-                    <li
-                      key={pj.id}
-                      className="list-group-item d-flex justify-content-between align-items-center"
-                    >
-                      {pj.nom} (Type: {pj.type?.type || "Inconnu"})
-                      <a
-                        href={`${pj.url}?download`}
-                        className="btn btn-sm btn-outline-primary"
-                      >
-                        Télécharger
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+            <section className="fr-card fr-mb-5w fr-p-5w">
+              <h4 className="fr-mb-3w">Vos données personnelles</h4>
+              {dossier.personneMorale ? (
+                <>
+                  <p>
+                    Vous faites la demande d'indemnisation en tant que personne
+                    morale pour le/la{" "}
+                    {capitaliser(
+                      dossier.personneMorale.typePersonneMorale.toLowerCase(),
+                    )}{" "}
+                    {dossier.personneMorale.raisonSociale}, numéro{" "}
+                    {dossier.personneMorale.siren.length === 9
+                      ? "SIRET"
+                      : "SIREN"}{" "}
+                    dossier.personneMorale.siren.
+                  </p>
+
+                  <p>
+                    Vous, {dossier.personneMorale.representantLegal.libelle()},
+                    attestez en être le représentant légal ou disposer d'un
+                    mandat de signature.
+                  </p>
+                </>
               ) : (
-                <p>Aucune pièce jointe n'a été ajoutée à ce stade.</p>
+                <p>
+                  Vous, {dossier.personnePhysique?.personne.libelle()},
+                  domicilié(é) au {dossier.personnePhysique?.adresse.libelle} ,
+                  faites la demande d'indemnisation en tant que personne
+                  physique.
+                </p>
               )}
+
+              <p>
+                Vous êtes joignable pra téléphone au{" "}
+                {dossier.getRequerantPersonne()?.telephone} et par courriel à
+                l'adresse{" "}
+                <a href={`mailto:${dossier.getRequerantPersonne()?.courriel}`}>
+                  {dossier.getRequerantPersonne()?.courriel}
+                </a>
+              </p>
+
+              <ButtonsGroup
+                inlineLayoutWhen="always"
+                alignment="right"
+                buttonsIconPosition="right"
+                buttonsSize="medium"
+                buttons={[
+                  {
+                    priority: "secondary",
+                    children: "Modifier",
+                    iconId: "fr-icon-pencil-line",
+                  },
+                ]}
+              />
+            </section>
+
+            <section className="fr-card fr-mb-5w fr-p-5w">
+              <h4 className="fr-mb-3w">Pièces jointes</h4>
+              <p>Vous joignez à votre demande les pièces jointes suivantes :</p>
+
+              <div className="fr-grid-row fr-grid-row--gutters">
+                {/* Panel de navigation */}
+                <PieceJointePanelNavigation
+                  pieceJointe={pieceJointeSelectionnee}
+                  nomPieceJointePrecedente={nomPieceJointePrecedente}
+                  onSelectionPieceJointePrecedente={() =>
+                    selectionnerPieceJointePrecedente()
+                  }
+                  nomPieceJointeSuivante={nomPieceJointeSuivante}
+                  onSelectionPieceJointeSuivante={() =>
+                    selectionnerPieceJointeSuivante()
+                  }
+                />
+
+                <ButtonsGroup
+                  className="fr-col-12"
+                  inlineLayoutWhen="always"
+                  alignment="right"
+                  buttonsIconPosition="right"
+                  buttonsSize="medium"
+                  buttons={[
+                    {
+                      priority: "tertiary no outline",
+                      children: afficherPiecesJointes
+                        ? "Masquer les documents"
+                        : "Afficher les documents",
+                      iconId: afficherPiecesJointes
+                        ? "fr-icon-eye-off-line"
+                        : "fr-icon-eye-line",
+                      onClick: () => {
+                        setAfficherPiecesJointes(!afficherPiecesJointes);
+                      },
+                    },
+                    {
+                      priority: "secondary",
+                      children: "Modifier",
+                      iconId: "fr-icon-pencil-line",
+                    },
+                  ]}
+                />
+
+                {/* Toutes les visualisations de pièces jointes sont intégrées au DOM, mais cachée si pas actives afin
+                  d'anticiper le chargement des images / PDFs */}
+                {dossier.piecesJointes.map((pieceJointe: PieceJointe) => (
+                  <div
+                    key={`piece—jointe-${pieceJointe.id}`}
+                    id={`piece—jointe-${pieceJointe.id}`}
+                    className={fr.cx([
+                      "fr-col-12",
+                      ...(afficherPiecesJointes &&
+                      pieceJointeSelectionnee?.id === pieceJointe.id
+                        ? []
+                        : ["fr-hidden" as FrCxArg]),
+                    ])}
+                  >
+                    {pieceJointe.estPDF() ? (
+                      <object
+                        data={pieceJointe.url}
+                        type="application/pdf"
+                        style={{
+                          width: "100%",
+                          aspectRatio: "210/297",
+                        }}
+                      ></object>
+                    ) : (
+                      <img
+                        src={pieceJointe.url}
+                        alt={pieceJointe.nom}
+                        style={{
+                          width: "100%",
+                          maxHeight: "100vh",
+                          objectFit: "contain",
+                        }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
             </section>
           </div>
         </div>

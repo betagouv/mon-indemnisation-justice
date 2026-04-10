@@ -8,15 +8,14 @@ use MonIndemnisationJustice\Entity\Personne;
 class PersonneDto
 {
     public function __construct(
-        public ?string   $id = null,
+        public ?string $id = null,
         public ?Civilite $civilite = null,
-        public ?string   $nom = null,
-        public ?string   $nomNaissance = null,
-        public ?string   $prenom = null,
-        public ?string   $courriel = null,
-        public ?string   $telephone = null,
-    )
-    {
+        public ?string $nom = null,
+        public ?string $nomNaissance = null,
+        public ?string $prenom = null,
+        public ?string $courriel = null,
+        public ?string $telephone = null,
+    ) {
     }
 
     public function versPersonne(?Personne $personne = null): Personne

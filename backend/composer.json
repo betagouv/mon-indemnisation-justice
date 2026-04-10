@@ -101,7 +101,7 @@
     "post-update-cmd": [
       "@auto-scripts"
     ],
-    "php-cs-fixer": "php-cs-fixer --config=./.php_cs-fixer.dist.php"
+    "php-cs-fixer": "php-cs-fixer"
   },
   "conflict": {
     "symfony/symfony": "*"
