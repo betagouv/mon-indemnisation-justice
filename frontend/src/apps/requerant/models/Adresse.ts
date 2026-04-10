@@ -8,6 +8,20 @@ export class Adresse {
   commune: string;
 
   get libelle(): string {
-    return `${this.ligne1}, ${this.codePostal} ${this.commune}`;
+    let [preposition, commune] = ["à", this.commune];
+
+    // Ex : "à Le Havre" => "au Havre"
+    if (this.commune.match(/le /i)) {
+      preposition = "au";
+      commune = this.commune.replace(/le /i, "");
+    }
+
+    // Ex : "à Les Herbiers" => "aux Herbiers"
+    if (this.commune.match(/les /i)) {
+      preposition = "aux";
+      commune = this.commune.replace(/les /i, "");
+    }
+
+    return `${this.ligne1} ${preposition} ${commune.toUpperCase()} (${this.codePostal})`;
   }
 }
