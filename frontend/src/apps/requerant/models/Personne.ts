@@ -16,6 +16,10 @@ export class Personne {
 
   personnePhysique?: PersonnePhysique;
 
+  public estFeminin(): boolean {
+    return this.civilite === "MME";
+  }
+
   public libelle(): string {
     return `${getCiviliteLibelle(this.civilite)} ${this.prenom} ${capitaliser(this.nom)} `;
   }

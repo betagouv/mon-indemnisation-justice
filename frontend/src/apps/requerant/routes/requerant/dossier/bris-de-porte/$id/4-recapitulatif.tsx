@@ -1,11 +1,15 @@
 import { PieceJointePanelNavigation } from "@/apps/requerant/composants/piecesJointes/PieceJointePanelNavigation";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
-import { Dossier, PieceJointe } from "@/apps/requerant/models";
+import {
+  Dossier,
+  getRapportAuLogementLibelle,
+  PieceJointe,
+} from "@/apps/requerant/models";
+import { libellerNomTypePersonneMorale } from "@/apps/requerant/models/TypePersonneMoraleType";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { dateSimple } from "@/common/services/date";
-import { capitaliser } from "@/common/services/divers";
 import { fr, FrCxArg } from "@codegouvfr/react-dsfr";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
@@ -17,7 +21,7 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { default as React, useEffect, useState } from "react";
+import { default as React, useEffect, useMemo, useState } from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$id/4-recapitulatif",
@@ -70,6 +74,11 @@ function Etape4Recapitulatif() {
   // Récupérer les données chargées (Dossier)
   const { dossier }: { dossier: Dossier } = Route.useLoaderData();
 
+  const e = useMemo(
+    () => (dossier.getRequerantPersonne()?.estFeminin() ? "e" : ""),
+    [dossier.getRequerantPersonne()],
+  );
+
   // Récupération du routeur, uniquement pour pouvoir invalider son cache
   const routeur = useRouter();
 
@@ -117,37 +126,44 @@ function Etape4Recapitulatif() {
   }, [routeur]);
 
   const handleSubmission = async () => {
-    setSauvegardeEnCours(true);
-    try {
+    if (dossier.estBrouillon) {
       setSauvegardeEnCours(true);
-      const dossierDepose = await dossierManager.soumettre(dossier.id);
-      setSauvegardeEnCours(false);
+      try {
+        setSauvegardeEnCours(true);
+        const dossierDepose = await dossierManager.soumettre(dossier.id);
+        setSauvegardeEnCours(false);
 
+        await naviguer({
+          to: "/requerant/mes-demandes",
+          search: true,
+          state: {
+            flash: {
+              type: "success",
+              titre: "Votre dossier a bien été déposé",
+              message: [
+                "Toutes vos informations ont bien été sauvegardées. Un courriel de confirmation vous a été envoyé à l'instant.",
+                `Votre dossier porte la référence ${dossierDepose.reference} et sera traité par un agent du bureau dans les plus brefs délais. Vous serez informés de son évolution par courriel mais pourrez aussi suivre son avancement en vous connectant à votre espace personnel.`,
+              ],
+            },
+          },
+        });
+      } catch (error) {
+        console.error("Error submitting dossier:", error);
+        // Handle submission error UI
+      } finally {
+        setSauvegardeEnCours(false);
+      }
+    } else {
       await naviguer({
         to: "/requerant/mes-demandes",
         search: true,
-        state: {
-          flash: {
-            type: "success",
-            titre: "Votre dossier a bien été déposé",
-            message: [
-              "Toutes vos informations ont bien été sauvegardées. Un courriel de confirmation vous a été envoyé à l'instant.",
-              `Votre dossier porte la référence ${dossierDepose.reference} et sera traité par un agent du bureau dans les plus brefs délais. Vous serez informés de son évolution par courriel mais pourrez aussi suivre son avancement en vous connectant à votre espace personnel.`,
-            ],
-          },
-        },
       });
-    } catch (error) {
-      console.error("Error submitting dossier:", error);
-      // Handle submission error UI
-    } finally {
-      setSauvegardeEnCours(false);
     }
   };
 
   return (
     <div className="container">
-      <h1 className="fr-mb-4">Récapitulatif de votre demande</h1>
+      <h1>Déclarer un bris de porte</h1>
 
       <div className="row mb-5">
         <div className="col-12">
@@ -168,10 +184,17 @@ function Etape4Recapitulatif() {
               </h4>
               <p>
                 Vous signalez le bris de la porte
-                {dossier.estPorteBlindee ? " blindée" : ""} du logement sis{" "}
-                {dossier.adresse.libelle}, dont vous êtes le/la{" "}
-                {dossier.rapportAuLogement.toLowerCase()}, en date du{" "}
-                {dateSimple(dossier.dateOperation)} par les forces de l'ordre.
+                {dossier.estPorteBlindee ? " blindée" : ""}, par les forces de
+                l'ordre, du logement sis {dossier.adresse.libelle}
+                {dossier.rapportAuLogement !== "AUTRE" && (
+                  <>
+                    , dont vous êtes{" "}
+                    {getRapportAuLogementLibelle(
+                      dossier.rapportAuLogement,
+                    ).toLowerCase()}
+                  </>
+                )}
+                , en date du {dateSimple(dossier.dateOperation)}.
               </p>
 
               {dossier.description && (
@@ -204,9 +227,10 @@ function Etape4Recapitulatif() {
                 <>
                   <p>
                     Vous faites la demande d'indemnisation en tant que personne
-                    morale pour le/la{" "}
-                    {capitaliser(
-                      dossier.personneMorale.typePersonneMorale.toLowerCase(),
+                    morale pour{" "}
+                    {libellerNomTypePersonneMorale(
+                      dossier.personneMorale.typePersonneMorale,
+                      { defini: true },
                     )}{" "}
                     {dossier.personneMorale.raisonSociale}, numéro{" "}
                     {dossier.personneMorale.siren.length === 9
@@ -217,21 +241,23 @@ function Etape4Recapitulatif() {
 
                   <p>
                     Vous, {dossier.personneMorale.representantLegal.libelle()},
-                    attestez en être le représentant légal ou disposer d'un
-                    mandat de signature.
+                    attestez en être{" "}
+                    {dossier.getRequerantPersonne()?.estFeminin() ? "la" : "le"}{" "}
+                    représentant{e} légal{e} ou disposer d'un mandat de
+                    signature.
                   </p>
                 </>
               ) : (
                 <p>
                   Vous, {dossier.personnePhysique?.personne.libelle()},
-                  domicilié(é) au {dossier.personnePhysique?.adresse.libelle} ,
+                  domicilié{e} au {dossier.personnePhysique?.adresse.libelle} ,
                   faites la demande d'indemnisation en tant que personne
                   physique.
                 </p>
               )}
 
               <p>
-                Vous êtes joignable pra téléphone au{" "}
+                Vous êtes joignable par téléphone au{" "}
                 {dossier.getRequerantPersonne()?.telephone} et par courriel à
                 l'adresse{" "}
                 <a href={`mailto:${dossier.getRequerantPersonne()?.courriel}`}>
@@ -366,7 +392,9 @@ function Etape4Recapitulatif() {
               priority: "primary",
               children: sauvegardeEnCours
                 ? "Soumission en cours..."
-                : "Soumettre définitivement ma demande",
+                : dossier.estBrouillon
+                  ? "Soumettre ma demande"
+                  : "Modifier ma demande",
               disabled: sauvegardeEnCours,
               nativeButtonProps: {
                 type: "button",
