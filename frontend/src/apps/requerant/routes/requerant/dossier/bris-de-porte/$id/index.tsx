@@ -24,21 +24,21 @@ export const Route = createFileRoute("/requerant/dossier/bris-de-porte/$id/")({
       });
     }
 
-    if (dossier.estDepose || !estDossierOkBrisDePorte(dossier)) {
+    if (dossier.estBrouillon && !estDossierOkBrisDePorte(dossier)) {
       return redirect<typeof RouteurRequerant>({
         to: "./1-bris-porte",
         params,
       });
     }
 
-    if (!estDossierOkInfosRequerant(dossier)) {
+    if (dossier.estBrouillon && !estDossierOkInfosRequerant(dossier)) {
       return redirect<typeof RouteurRequerant>({
         to: "./2-infos-requerant",
         params,
       });
     }
 
-    if (!estDossierOkPiecesJointes(dossier)) {
+    if (dossier.estBrouillon && !estDossierOkPiecesJointes(dossier)) {
       redirect<typeof RouteurRequerant>({
         to: "./3-pieces-jointes",
         params,

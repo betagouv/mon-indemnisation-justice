@@ -89,11 +89,9 @@ export class EtatDossier {
       toClassOnly: true,
     },
   )
-  /*
   @Transform(({ value }: { value: EtatDossierType }) => value?.type, {
     toPlainOnly: true,
   })
-  */
   etat: EtatDossierType;
   @DateTransform()
   date: Date;
