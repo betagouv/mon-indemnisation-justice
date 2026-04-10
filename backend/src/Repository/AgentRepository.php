@@ -11,8 +11,8 @@ use MonIndemnisationJustice\Entity\EtatDossierType;
 /**
  * @extends ServiceEntityRepository<Agent>
  *
- * @method null|Agent find($id, $lockMode = null, $lockVersion = null)
- * @method null|Agent findOneBy(array $criteria, array $orderBy = null)
+ * @method Agent|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Agent|null findOneBy(array $criteria, array $orderBy = null)
  * @method Agent[]    findAll()
  * @method Agent[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */

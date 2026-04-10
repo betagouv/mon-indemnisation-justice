@@ -27,11 +27,10 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class EditerAgentEndpoint
 {
     public function __construct(
-        protected readonly AgentRepository       $agentRepository,
-        protected readonly NormalizerInterface   $normalizer,
+        protected readonly AgentRepository $agentRepository,
+        protected readonly NormalizerInterface $normalizer,
         protected readonly ObjectMapperInterface $mapper,
-    )
-    {
+    ) {
     }
 
     public function __invoke(#[MapRequestPayload] EditerAgentInput $input, #[MapEntity] Agent $agent)

@@ -7,7 +7,6 @@ use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,7 +42,8 @@ class EditerDeclarationBrisPorteEndpoint
         protected readonly NormalizerInterface $normalizer,
         protected readonly DenormalizerInterface $denormalizer,
         protected readonly ValidatorInterface $validator,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]

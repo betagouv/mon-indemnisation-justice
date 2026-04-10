@@ -7,14 +7,13 @@ use MonIndemnisationJustice\Entity\EtatDossier;
 class EtatDossierDto
 {
     public function __construct(
-        public EtatDossierUsager  $etat,
+        public EtatDossierUsager $etat,
         public \DateTimeImmutable $date,
         // Une référence vers l'agent
-        public ?array             $agent = null,
+        public ?array $agent = null,
         // Une référence vers l'agent
-        public ?array             $requerant = null
-    )
-    {
+        public ?array $requerant = null,
+    ) {
     }
 
     public static function depuisEtatDossier(EtatDossier $etatDossier): self

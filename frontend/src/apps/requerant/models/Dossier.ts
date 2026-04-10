@@ -1,3 +1,4 @@
+import { Personne } from "@/apps/requerant/models/Personne";
 import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import UndefinedTransform from "@/common/normalisation/transformers/UndefinedTransform.ts";
@@ -104,6 +105,12 @@ export class Dossier extends BaseDossier {
   piecesJointes: PieceJointe[];
   idTestEligibilite?: number;
   idDeclarationFDO?: string;
+
+  public getRequerantPersonne(): Personne | undefined {
+    return this.estPersonneMorale
+      ? this.personneMorale?.representantLegal
+      : this.personnePhysique?.personne;
+  }
 
   public compterPiecesJointesDeType(type: TypePieceJointe): number {
     return this.getPiecesJointesDeType(type).length;

@@ -24,7 +24,8 @@ class ListerAgentsActifsEndpoint
         private readonly AgentRepository $agentRepository,
         private readonly NormalizerInterface $normalizer,
         private readonly ObjectMapperInterface $mapper,
-    ) {}
+    ) {
+    }
 
     public function __invoke()
     {

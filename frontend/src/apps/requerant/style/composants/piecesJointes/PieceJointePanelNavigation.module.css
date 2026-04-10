@@ -1,0 +1,35 @@
+.pieceJointePanelNavigation {
+    align-content: space-between;
+}
+
+@media (max-width: 767px) {
+    .pieceJointePanelNavigation {
+        flex-direction: row;
+        align-items: center;
+
+        & > *:nth-child(2) {
+            order: 2;
+
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    .pieceJointePanelNavigation {
+        flex-direction: row;
+        align-items: center;
+
+        & > *:nth-child(1) {
+            order: 1;
+        }
+
+        & > *:nth-child(2) {
+            order: 2;
+            flex-grow: 1;
+        }
+
+        & > *:nth-child(3) {
+            order: 3;
+        }
+    }
+}

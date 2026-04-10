@@ -15,7 +15,7 @@ enum TypeAttestation: string
             self::NOUVELLE_ATTESTATION => 1,
             self::ANCIENNE_ATTESTATION => 2,
             self::COURRIER_FDO => 3,
-            self::PAS_ATTESTATION => 4
+            self::PAS_ATTESTATION => 4,
         };
     }
 

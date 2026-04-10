@@ -11,8 +11,7 @@ class AdresseDto
         public ?string $ligne2 = null,
         public ?string $codePostal = null,
         public ?string $commune = null,
-    )
-    {
+    ) {
 
     }
 

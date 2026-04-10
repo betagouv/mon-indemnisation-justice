@@ -2,4 +2,6 @@
 
 namespace MonIndemnisationJustice\Event\Event;
 
-class DossierPropositionAccepteeEvent extends DossierTransitionEvent {}
+class DossierPropositionAccepteeEvent extends DossierTransitionEvent
+{
+}

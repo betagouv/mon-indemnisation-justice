@@ -13,6 +13,7 @@ readonly class NavigationRequerant extends AbstractMetadonnees
 {
     public function __construct(
         public ?int $idTestEligibilite = null,
-        public null|string|Uuid $idDeclaration = null,
-    ) {}
+        public string|Uuid|null $idDeclaration = null,
+    ) {
+    }
 }
