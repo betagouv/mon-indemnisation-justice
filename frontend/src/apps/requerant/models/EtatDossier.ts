@@ -81,12 +81,19 @@ export type EtatDossierContexteCloture = {
 };
 
 export class EtatDossier {
-  @Transform(({ value }: { value: string }) => EtatDossierTypes[value], {
-    toClassOnly: true,
-  })
+  @Transform(
+    ({ value }: { value: string | EtatDossierType }) => {
+      return value instanceof EtatDossierType ? value : EtatDossierTypes[value];
+    },
+    {
+      toClassOnly: true,
+    },
+  )
+  /*
   @Transform(({ value }: { value: EtatDossierType }) => value?.type, {
     toPlainOnly: true,
   })
+  */
   etat: EtatDossierType;
   @DateTransform()
   date: Date;

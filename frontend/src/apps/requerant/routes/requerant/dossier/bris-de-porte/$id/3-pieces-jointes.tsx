@@ -192,7 +192,7 @@ function Etape3PiecesJointes() {
     onSubmit: async ({ formApi }) => {
       if (formApi.state.isValid) {
         await naviguer({
-          to: "./4-recapitulatif",
+          to: "../4-recapitulatif",
           search: true,
         });
       }
@@ -237,8 +237,9 @@ function Etape3PiecesJointes() {
         <section>
           <Stepper
             currentStep={3}
-            stepCount={3}
+            stepCount={4}
             title={"Documents à joindre à votre demande"}
+            nextTitle={"Récapitulatif"}
           />
         </section>
 

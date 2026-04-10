@@ -156,7 +156,7 @@ function Etape2InfosRequerant() {
         <section>
           <Stepper
             currentStep={2}
-            stepCount={3}
+            stepCount={4}
             title={"Données personnelles"}
             nextTitle={"Documents à joindre à votre demande"}
           />

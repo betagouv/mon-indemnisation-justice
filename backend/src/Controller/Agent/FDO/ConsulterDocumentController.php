@@ -28,7 +28,8 @@ class ConsulterDocumentController
     public function __construct(
         protected readonly DocumentManager $documentManager,
         protected readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     public function __invoke(#[MapEntity] Document $document, string $hash, Request $request): Response
     {

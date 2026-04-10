@@ -47,7 +47,8 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
         protected readonly DenormalizerInterface $denormalizer,
         protected readonly ValidatorInterface $validator,
         protected readonly DocumentManager $documentManager,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
@@ -56,7 +57,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
         Security $security,
         string $type,
         #[MapUploadedFile(name: 'pieceJointe')]
-        UploadedFile $fichierTeleverse
+        UploadedFile $fichierTeleverse,
     ): Response {
         if (null === ($documentType = DocumentType::tryFrom($type)) || !in_array($documentType, [DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_FDO])) {
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
