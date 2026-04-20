@@ -1,19 +1,19 @@
-import "reflect-metadata";
 import { sentryOptions } from "@/apps/sentry.ts";
 import "@/common/polyfill.ts";
+import "reflect-metadata";
 
 import "@/style/agents.css";
 
 import { ConsultationDossierApp } from "@/apps/agent/fip6/dossiers/components/ConsultationDossierApp.tsx";
-import { Agent, DossierDetail, Redacteur } from "@/common/models";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
+import { Agent, DossierDetail, Redacteur } from "@/common/models";
+import { container } from "@/common/services/agent";
+import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
+import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
 import { plainToInstance } from "class-transformer";
+import { Provider } from "inversify-react";
 import React, { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
-import { container } from "@/common/services/agent";
-import { Provider } from "inversify-react";
-import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
 
 startReactDsfr({
   defaultColorScheme:

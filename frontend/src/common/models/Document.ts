@@ -1,11 +1,7 @@
-import { estAujourdhui, memeJour } from "@/common/services/date";
-import { Transform } from "class-transformer";
-import {
-  Agent,
-  DossierDetail,
-  TypeInstitutionSecuritePublique,
-} from "@/common/models";
+import { Agent, DossierDetail, TypeInstitutionSecuritePublique } from "@/common/models";
 import { TypeAttestation } from "@/common/models/Dossier.ts";
+import { estAujourdhui } from "@/common/services/date";
+import { Transform, Type } from "class-transformer";
 
 export class DocumentType {
   private constructor(
@@ -130,6 +126,7 @@ export class Document {
   @Transform(({ value }: { value: string }): DocumentType | undefined =>
     Document.types.find((type: DocumentType) => type.type === value),
   )
+  @Type(() => DocumentType)
   public readonly type: DocumentType;
   public metaDonnees: MetaDonneesAttestation | any;
   @Transform(({ value }) => new Date(value))
