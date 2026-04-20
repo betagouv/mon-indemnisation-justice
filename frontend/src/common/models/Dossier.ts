@@ -1,5 +1,7 @@
 import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
+import { groupBy } from "lodash";
 import { action, computed, makeObservable, observable } from "mobx";
 import {
   Adresse,
@@ -10,7 +12,7 @@ import {
   Redacteur,
   Requerant,
   TestEligibilite,
-  TypeInstitutionSecuritePublique
+  TypeInstitutionSecuritePublique,
 } from ".";
 
 export type TypeAttestation =
@@ -27,6 +29,8 @@ export abstract class BaseDossier {
   @Type(() => EtatDossier)
   @Expose()
   public etat: EtatDossier;
+  @DateTransform()
+  @Type(() => Date)
   public dateDepot?: Date;
   @Expose()
   @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
@@ -160,15 +164,18 @@ export class DossierDetail extends BaseDossier {
 
   public estPorteBlindee: boolean | null;
 
-  @Transform(
-    ({ value }: { value: object }) =>
-      new Map(
-        Object.entries(value).map(([t, d]) => [
-          t,
-          plainToInstance(Document, d as Array<any>),
-        ]),
+  @Transform(({ value }: { value: any[] }) => {
+    return new Map(
+      Object.entries(
+        groupBy(
+          value.map((d) => plainToInstance(Document, d)),
+          (item) => {
+            return item.type.type;
+          },
+        ),
       ),
-  )
+    );
+  })
   public documents: Map<string, Document[]> = new Map(
     Document.types.map((type: DocumentType) => [type.type, []]),
   );
