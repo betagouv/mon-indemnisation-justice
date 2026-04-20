@@ -449,7 +449,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                   : "Lettre de décision",
                 iconId: "fr-icon-checkbox-circle-line",
                 isDefault: true,
-                content: (
+                content: dossier.getCourrierDecision() && (
                   <PieceJointe
                     pieceJointe={dossier.getCourrierDecision() as Document}
                     lienTelechargement={(document) =>
@@ -464,7 +464,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                       label: "Déclaration d'acceptation",
                       isDefault: false,
                       iconId: "fr-icon-chat-check-line" as FrIconClassName,
-                      content: (
+                      content: dossier.getDeclarationAcceptation() && (
                         <PieceJointe
                           pieceJointe={
                             dossier.getDeclarationAcceptation() as Document
