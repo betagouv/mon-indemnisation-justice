@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-import { Agent, Document } from "@/common/models";
+import { Document } from "@/common/models";
 import { fr } from "@codegouvfr/react-dsfr";
 
 export const PieceJointe = function PieceJointe({

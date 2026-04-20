@@ -1,17 +1,16 @@
+import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
 import { DossierActions } from "@/apps/agent/fip6/dossiers/components/consultation/action";
+import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/editor";
+import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier.tsx";
+import { TelechargerPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/PieceJointe.tsx";
 import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
 import { Agent, Document, DossierDetail } from "@/common/models";
+import { dateEtHeureSimple } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
-import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/editor";
-import { TelechargerPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { dateEtHeureSimple } from "@/common/services/date.ts";
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier.tsx";
-import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
 
 export const ConsultationDossierApp = observer(
   function ConsultationDossierAppComponent({
@@ -278,34 +277,45 @@ export const ConsultationDossierApp = observer(
                   {selectedTab == "declaration" && (
                     <section>
                       <h3>Déclaration d'acceptation</h3>
-                      <TelechargerPieceJointe
-                        className="fr-grid-row fr-col-12"
-                        pieceJointe={
-                          dossier.getDeclarationAcceptation() as Document
-                        }
-                      />
+                      {dossier.getDeclarationAcceptation() && (
+                        <>
+                          <TelechargerPieceJointe
+                            className="fr-grid-row fr-col-12"
+                            pieceJointe={
+                              dossier.getDeclarationAcceptation() as Document
+                            }
+                          />
 
-                      <PieceJointe
-                        className="fr-col-12"
-                        pieceJointe={
-                          dossier.getDeclarationAcceptation() as Document
-                        }
-                      />
+                          <PieceJointe
+                            className="fr-col-12"
+                            pieceJointe={
+                              dossier.getDeclarationAcceptation() as Document
+                            }
+                          />
+                        </>
+                      )}
                     </section>
                   )}
 
                   {selectedTab == "arrete" && (
                     <section>
                       <h3>Arrêté de paiement</h3>
-                      <TelechargerPieceJointe
-                        className="fr-grid-row fr-col-12"
-                        pieceJointe={dossier.getArretePaiement() as Document}
-                      />
-
-                      <PieceJointe
-                        className="fr-col-12"
-                        pieceJointe={dossier.getArretePaiement() as Document}
-                      />
+                      {dossier.getArretePaiement() && (
+                        <>
+                          <TelechargerPieceJointe
+                            className="fr-grid-row fr-col-12"
+                            pieceJointe={
+                              dossier.getArretePaiement() as Document
+                            }
+                          />
+                          <PieceJointe
+                            className="fr-col-12"
+                            pieceJointe={
+                              dossier.getArretePaiement() as Document
+                            }
+                          />
+                        </>
+                      )}
                     </section>
                   )}
                 </Tabs>
