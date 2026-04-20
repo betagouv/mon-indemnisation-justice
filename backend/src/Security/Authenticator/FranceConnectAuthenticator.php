@@ -119,7 +119,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                     $this->em->flush();
                 } else {
                     // Connexion
-                    throw new AuthenticationException('Utilisateur non reconnu');
+                    throw new AuthenticationException("Nous n'avons pas trouvé de compte inscrit sur notre plateforme depuis cet identifiant France Connect. Veuillez vous inscrire au préalable.");
                 }
             }
 
@@ -152,6 +152,8 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
+        $request->getSession()->getFlashBag()->add('erreur_identification', $exception->getMessage());
+
         return new RedirectResponse($this->urlGenerator->generate($this->loginPageRoute));
     }
 }
