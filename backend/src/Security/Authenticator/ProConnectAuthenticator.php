@@ -137,7 +137,9 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new RedirectResponse($this->urlGenerator->generate('securite_connexion', ['erreur' => $exception->getMessage()]));
+        $request->getSession()->getFlashBag()->add('erreur_identification', $exception->getMessage());
+
+        return new RedirectResponse($this->urlGenerator->generate('securite_connexion'));
     }
 
     public function start(Request $request, ?AuthenticationException $authException = null): Response

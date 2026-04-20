@@ -1,9 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { Agent, Document, DocumentType, DossierDetail } from "@/common/models";
+import { Document, DossierDetail } from "@/common/models";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { plainToInstance } from "class-transformer";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 const _modale = createModal({
@@ -16,7 +14,7 @@ const ouvrirModaleSuppressionPieceJointe = _modale.open;
 const component = function SuppressionPieceJointe({
   pieceJointe,
   dossier,
-  onSupprime = null,
+  onSupprime,
 }: {
   pieceJointe: Document;
   dossier: DossierDetail;

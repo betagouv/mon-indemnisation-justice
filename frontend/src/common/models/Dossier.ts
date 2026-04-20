@@ -7,8 +7,7 @@ import {
   Redacteur,
   Requerant,
   TestEligibilite,
-  InstitutionSecuritePublique,
-  TypeInstitutionSecuritePublique,
+  TypeInstitutionSecuritePublique
 } from ".";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
 import { action, computed, makeObservable, observable } from "mobx";

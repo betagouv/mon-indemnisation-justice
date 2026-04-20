@@ -17,8 +17,7 @@ class ConnexionRequerantListener implements EventSubscriberInterface
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-    )
-    {
+    ) {
     }
 
     public function onSecurityInteractiveLogin(LoginSuccessEvent $event): void
