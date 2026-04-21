@@ -22,6 +22,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\TooManyLoginAttemptsAuthenticationException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -43,18 +44,6 @@ class SecurityController extends AbstractController
     #[Route(path: '/connexion', name: 'securite_connexion', methods: ['GET', 'POST'])]
     public function login(Request $request): Response
     {
-        $error = $this->authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $request->query->get('courriel') ?? $this->authenticationUtils->getLastUsername();
-
-        $errorMessage = '';
-
-        if ($error instanceof TooManyLoginAttemptsAuthenticationException) {
-            $errorMessage = 'Trop de tentatives de connexion, veuillez attendre quelques minutes avant de ré-essayer';
-        }
-        if ($error && $error->getMessage()) {
-            $errorMessage = 'Identifiants invalides';
-        }
-
         if ($this->getUser() instanceof Agent) {
             return $this->redirectToRoute('agent_index');
         }
@@ -63,12 +52,25 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('requerant_home_index');
         }
 
+        $erreurConnexion = $this->authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $this->authenticationUtils->getLastUsername();
+
+        if ($erreurConnexion instanceof TooManyLoginAttemptsAuthenticationException) {
+            $errorMessage = 'Trop de tentatives de connexion, veuillez attendre quelques minutes avant de ré-essayer';
+        } elseif ($erreurConnexion instanceof BadCredentialsException) {
+            $errorMessage = 'Identifiants invalides';
+        } elseif ($erreurConnexion && $erreurConnexion->getMessage()) {
+            $errorMessage = $erreurConnexion->getMessage();
+        } else {
+            $errorMessage = $request->getSession()->getFlashBag()->get('erreur_identification', [''])[0] ?? null;
+        }
+
         return $this->render('security/connexion.html.twig', [
             'last_username' => $request->getSession()->getFlashBag()->get('connexion', [null])[0] ?? $lastUsername,
-            'error_message' => $errorMessage,
+            'error_message' => $erreurConnexion instanceof BadCredentialsException ? $errorMessage : null,
             'france_connect_url' => $this->oidcClientRequerant->buildAuthorizeUrl($request, 'securite_usager_connexion'),
             'mdp_oublie_form' => $this->createForm(MotDePasseOublieType::class, new MotDePasseOublieDto()),
-            'message_erreur_connexion' => $request->query->get('erreur'),
+            'message_erreur_connexion' => $erreurConnexion instanceof BadCredentialsException ? null : $errorMessage,
         ]);
     }
 

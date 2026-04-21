@@ -6,7 +6,7 @@
     {{ parent() }}
 
 
-    {% if message_erreur_connexion is defined and message_erreur_connexion is not null %}
+    {% if message_erreur_connexion is defined and message_erreur_connexion is not empty %}
         <dialog
                 aria-labelledby="fr-modal-flash-error"
                 role="alertdialog"
@@ -455,8 +455,7 @@
         {# Ouvrir les modales #}
         document.addEventListener("DOMContentLoaded", () => {
                 document.querySelectorAll('dialog.fr-modal[data-fr-js-opened]').forEach((modale) => {
-                    console.log(modale);
-                    window.dsfr(modale).modal.open();
+                    window.dsfr(modale).modal.disclose();
                 })
             }
         );

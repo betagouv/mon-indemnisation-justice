@@ -63,7 +63,9 @@ class Document
     /** @var Collection<BrisPorte> */
     protected Collection $dossiers;
 
-    #[ORM\ManyToMany(targetEntity: DeclarationFDOBrisPorte::class, mappedBy: 'piecesJointes', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: DeclarationFDOBrisPorte::class, cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'declaration_fdo_bris_porte_pieces_jointes')]
+    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[Ignore]
     /** @var Collection<BrisPorte> */
     protected Collection $declarations;
