@@ -7,6 +7,8 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierApercuOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierDetailOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
@@ -99,7 +101,7 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
-            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
         ], Response::HTTP_OK);
     }
 
@@ -161,7 +163,7 @@ class DossierController extends AgentController
         $this->em->persist($dossier);
         $this->em->flush();
 
-        return new JsonResponse(['etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail'])]);
+        return new JsonResponse(['etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json', ['agent:detail'])]);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
@@ -188,7 +190,7 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
-            'document' => $this->normalizer->normalize($document, 'json', ['agent:detail']),
+            'document' => $this->normalizer->normalize(PieceJointeOutput::depuisDocument($document), 'json'),
         ], Response::HTTP_OK);
     }
 
@@ -212,8 +214,8 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
-            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
-            'document' => $this->normalizer->normalize($document, 'json', ['agent:detail']),
+            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
+            'document' => $this->normalizer->normalize(PieceJointeOutput::depuisDocument($document), 'json'),
         ], Response::HTTP_OK);
     }
 
@@ -229,7 +231,7 @@ class DossierController extends AgentController
         ));
 
         return new JsonResponse([
-            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
         ], Response::HTTP_OK);
     }
 
@@ -342,7 +344,7 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
-            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
         ], Response::HTTP_OK);
     }
 
@@ -359,7 +361,7 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse([
-            'etat' => $this->normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
         ], Response::HTTP_OK);
     }
 

@@ -5,7 +5,6 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
@@ -17,7 +16,6 @@ class BrouillonDeclarationFDOBrisPorte
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(['agent:detail'])]
     protected ?Uuid $id = null;
 
     /**
@@ -25,11 +23,9 @@ class BrouillonDeclarationFDOBrisPorte
      */
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
-    #[Groups(['agent:detail'])]
     protected Agent $agent;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
-    #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateCreation;
 
     #[ORM\Column(type: Types::JSON, nullable: false)]
