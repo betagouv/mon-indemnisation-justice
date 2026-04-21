@@ -18,10 +18,10 @@ class AdresseOutput
     public static function depuisAdresse(Adresse $adresse): self
     {
         return new self(
-            $adresse->getLigne1(),
+            $adresse->getLigne1() ?? '',
             $adresse->getLigne2(),
-            $adresse->getCodePostal(),
-            $adresse->getLocalite(),
+            $adresse->getCodePostal() ?? '',
+            $adresse->getLocalite() ?? '',
         );
     }
 }

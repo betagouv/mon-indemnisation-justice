@@ -8,6 +8,7 @@ export const PieceJointeTypes = [
   "photo_prejudice",
   "carte_identite",
   "facture",
+  "preuve_paiement_facture",
   "rib",
   "titre_propriete",
   "contrat_location",
@@ -187,6 +188,10 @@ export class TypePieceJointe {
         ? `${article}facture${s}`
         : `${article}facture${s} acquittée${s} attestant de la réalité des travaux de remise en état à l'identique`;
     }),
+    preuve_paiement_facture: new TypePieceJointe(
+      "preuve_paiement_facture",
+      (contexte) => "Reçu attestant le paiement de la facture",
+    ),
     rib: new TypePieceJointe("rib", (contexte) => {
       const { court, pluriel, defini, de, titre } = {
         pluriel: false,
@@ -494,7 +499,7 @@ export class TypePieceJointe {
       return true;
     }
 
-    if (this.estEchange) {
+    if (this.estEchange || this.type == "preuve_paiement_facture") {
       return false;
     }
 
@@ -525,7 +530,7 @@ export class TypePieceJointe {
     typePersonneMorale?: TypePersonneMoraleType,
     estLieDeclaration: boolean = false,
   ): boolean {
-    if (this.estEchange) {
+    if (this.estEchange || this.type == "preuve_paiement_facture") {
       return false;
     }
 
