@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\ListerMesDeclarationsEndpoint;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -11,9 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
  * l'agent des FDO.
  *
  * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\ListerMesDeclarationsEndpoint
  */
+#[CoversClass(ListerMesDeclarationsEndpoint::class)]
 class ListerMesDeclarationsBrisPorteEndpointTest extends AbstractEndpointTestCase
 {
     /**
