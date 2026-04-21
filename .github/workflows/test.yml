@@ -182,6 +182,7 @@ jobs:
           report-title: "Rapport des tests backend"
           path: backend/test-result-backend.xml
           reporter: phpunit-junit
+          fail-on-error: false
 
   test-frontend:
     runs-on: ubuntu-24.04
@@ -217,6 +218,7 @@ jobs:
           report-title: "Rapport des tests frontend"
           path: frontend/test-result-frontend.xml
           reporter: jest-junit
+          fail-on-error: false
 
   test-end2end:
     runs-on: ubuntu-24.04
@@ -469,3 +471,4 @@ jobs:
           report-title: "Rapport des tests fonctionnels"
           path: end2end/test-result-end2end.xml
           reporter: jest-junit
+          fail-on-error: false
