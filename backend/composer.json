@@ -12,7 +12,6 @@
     "ext-openssl": "*",
     "ext-zip": "*",
     "acsiomatic/device-detector-bundle": "dev-main",
-    "api-platform/core": "^4",
     "doctrine/dbal": "^3",
     "doctrine/doctrine-bundle": "^2.12",
     "doctrine/doctrine-migrations-bundle": "^3.3",
