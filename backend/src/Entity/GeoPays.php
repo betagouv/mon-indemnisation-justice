@@ -4,7 +4,6 @@ namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Table(name: 'geo_pays')]
 #[ORM\Entity(repositoryClass: GeoPaysRepository::class)]
@@ -16,11 +15,9 @@ class GeoPays extends GeoDataEntity
 
     #[ORM\Id]
     #[ORM\Column(length: 3)]
-    #[Groups(['dossier:lecture'])]
     protected string $code;
 
     #[ORM\Column]
-    #[Groups(['dossier:lecture'])]
     protected string $nom;
 
     #[ORM\Column(length: 5, nullable: true)]

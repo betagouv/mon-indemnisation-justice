@@ -9,9 +9,6 @@ use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Event\Listener\DossierEntitylistener;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
-use MonIndemnisationJustice\Service\DateConvertisseur;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -20,20 +17,17 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 #[\AllowDynamicProperties]
 class Dossier
 {
-    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     public ?int $id = null;
 
-    #[Groups(['dossier:lecture', 'agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $reference = null;
 
     #[ORM\Column(length: 64, enumType: DossierType::class)]
     protected DossierType $type;
 
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail'])]
     #[ORM\ManyToOne(targetEntity: Usager::class, cascade: ['persist'], inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     // L'usager qui a initié la requête
@@ -52,7 +46,6 @@ class Dossier
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     protected ?PersonneMorale $requerantPersonneMorale;
 
-    #[Groups('agent:detail')]
     #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $notes = null;
 
@@ -65,7 +58,6 @@ class Dossier
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
-    #[Groups('dossier:lecture')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
     protected \DateTimeInterface $dateCreation;
 
@@ -83,7 +75,6 @@ class Dossier
     #[ORM\JoinColumn(name: 'bris_porte_id', nullable: true)]
     protected ?BrisPorte $brisPorte = null;
 
-    #[Groups('dossier:patch')]
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
 
@@ -214,13 +205,6 @@ class Dossier
         return $this;
     }
 
-    #[Groups(['agent:detail', 'agent:liste'])]
-    #[SerializedName('redacteur')]
-    public function getReferenceRedacteur(): ?int
-    {
-        return $this->redacteur?->getId();
-    }
-
     public function getRedacteur(): ?Agent
     {
         return $this->redacteur;
@@ -289,8 +273,6 @@ class Dossier
         return $this->getEtatDossier();
     }
 
-    #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
-    #[SerializedName('etat')]
     public function getEtatDossier(): ?EtatDossier
     {
         return $this->etatDossier;
@@ -368,14 +350,6 @@ class Dossier
         return null !== $this->getDateDeclaration();
     }
 
-    /**
-     * @deprecated préférer `estDepose()` à la place
-     */
-    public function estConstitue(): bool
-    {
-        return $this->estDepose();
-    }
-
     public function getDateCreation(): \DateTimeInterface
     {
         return $this->dateCreation;
@@ -400,14 +374,6 @@ class Dossier
         return $this;
     }
 
-    #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
-    #[SerializedName('dateDepot')]
-    public function getDateDepotMillis(): ?int
-    {
-        return DateConvertisseur::enMillisecondes($this->getDateDeclaration());
-    }
-
-    #[Groups('dossier:lecture')]
     public function getDateDeclaration(): ?\DateTimeInterface
     {
         return $this->getDateDepot();
@@ -510,8 +476,6 @@ class Dossier
         return $this->propositionIndemnisation;
     }
 
-    #[Groups(['agent:detail', 'requerant:detail'])]
-    #[SerializedName('montantIndemnisation')]
     public function getMontantIndemnisation(): ?float
     {
         return $this->propositionIndemnisation ? floatval($this->propositionIndemnisation) : null;

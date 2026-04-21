@@ -5,13 +5,11 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\PersonneMoraleRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Table(name: 'personnes_morales')]
 #[ORM\Entity(repositoryClass: PersonneMoraleRepository::class)]
 class PersonneMorale
 {
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
@@ -24,11 +22,9 @@ class PersonneMorale
     #[ORM\Column(length: 32, enumType: PersonneMoraleType::class, options: ['default' => PersonneMoraleType::ENTREPRISE_PRIVEE])]
     protected PersonneMoraleType $type;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $sirenSiret = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
 

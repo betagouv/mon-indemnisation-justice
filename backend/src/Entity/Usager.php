@@ -12,7 +12,6 @@ use MonIndemnisationJustice\Repository\RequerantRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: RequerantRepository::class)]
@@ -26,7 +25,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const string ROLE_REQUERANT = 'ROLE_REQUERANT';
 
-    #[Groups(['user:read', 'dossier:lecture'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
@@ -41,7 +39,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     protected bool $estVerifieCourriel = false;
 
-    #[Groups(['user:read', 'dossier:lecture'])]
     #[ORM\Column(length: 180)]
     protected ?string $email = null;
 
@@ -57,7 +54,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 12, nullable: true)]
     protected ?string $jetonVerification;
 
-    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(options: ['default' => false])]
     protected bool $isPersonneMorale = false;
 
@@ -67,7 +63,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     protected Collection $dossiers;
 
 
-    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     protected Personne $personne;
@@ -111,7 +106,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    #[Groups(['agent:detail', 'dossier:detail'])]
     #[SerializedName('courriel')]
     public function getEmail(): ?string
     {
@@ -212,7 +206,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    #[Groups(['user:read', 'dossier:lecture', 'dossier:patch'])]
     public function getEstFranceConnect(): bool
     {
         return $this->estFranceConnect();
