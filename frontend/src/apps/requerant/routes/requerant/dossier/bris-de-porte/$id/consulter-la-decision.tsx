@@ -6,10 +6,12 @@ import {
   getRapportAuLogementLibelle,
   PieceJointe,
 } from "@/apps/requerant/models";
+import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { Document } from "@/common/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { FrIconClassName } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
@@ -19,9 +21,10 @@ import {
   createFileRoute,
   notFound,
   NotFoundRouteProps,
+  useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { RefObject, useRef, useState } from "react";
+import React, { RefObject, useCallback, useRef, useState } from "react";
 
 const signatureModal = createModal({
   id: "modale-signature-dossier",
@@ -73,6 +76,9 @@ function ConsulterDecisionBrisPorte() {
     DossierManagerInterface.$,
   );
 
+  // Récupération du routeur, uniquement pour pouvoir invalider son cache
+  const routeur = useRouter<typeof RouteurRequerant>();
+
   // Récupérer la référence depuis le paramètre de la route
   const { dossier }: { dossier: Dossier } = Route.useLoaderData();
 
@@ -84,8 +90,6 @@ function ConsulterDecisionBrisPorte() {
   ];
   // Numéro de l'étape active sur le formulaire de signature
   const [etape, setEtape] = useState(0);
-
-  const [erreurEnvoi, setErreurEnvoi] = useState<string | undefined>(undefined);
 
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
@@ -104,44 +108,16 @@ function ConsulterDecisionBrisPorte() {
     (mode: boolean) => void,
   ] = useState(false);
 
-  const signerCourrier = async () => {
+  const signerCourrier = useCallback(async () => {
     if (fichierSigne) {
       setSauvegarderEnCours(true);
+      await dossierManager.accepter(dossier.id, fichierSigne);
+      routeur.invalidate();
 
-      try {
-        const response = await fetch(
-          `/requerant/bris-de-porte/${dossier.id}/accepter-la-decision.json`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-            },
-            body: (() => {
-              const data = new FormData();
-              data.append("fichierSigne", fichierSigne);
-
-              return data;
-            })(),
-          },
-        );
-
-        const data = await response.json();
-        if (response.ok) {
-          // TODO recharger avec les données du DossierManager
-          /*
-          dossier.addDocument(plainToInstance(Document, data.document));
-          dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-          */
-          signatureModal.close();
-        } else {
-          setErreurEnvoi(data.erreur);
-        }
-        setSauvegarderEnCours(false);
-      } catch (e) {
-        console.error(e);
-      }
+      signatureModal.close();
+      setSauvegarderEnCours(false);
     }
-  };
+  }, [dossier.id, fichierSigne]);
 
   return (
     <div className="fr-container">
@@ -267,7 +243,7 @@ function ConsulterDecisionBrisPorte() {
                     <a
                       className="fr-link fr-link--download"
                       download={`Lettre décision dossier ${dossier.reference}`}
-                      href={dossier.getCourrierDecision()?.url}
+                      href={dossier.getDeclarationAcceptation()?.url}
                     >
                       Télécharger le formulaire d'acceptation
                     </a>
@@ -394,13 +370,13 @@ function ConsulterDecisionBrisPorte() {
                       onChange: (e) => {
                         if (e.target.files?.length) {
                           setFichierSigne(e.target.files?.item(0) as File);
-                          setErreurEnvoi(undefined);
                         }
                       },
                     }}
                     multiple={false}
                   />
 
+                  {/*
                   {erreurEnvoi && (
                     <Alert
                       className="fr-my-2w"
@@ -410,46 +386,40 @@ function ConsulterDecisionBrisPorte() {
                       closable={true}
                     />
                   )}
+                  */}
 
-                  <ul className="fr-btns-group fr-btns-group--sm fr-btns-group--inline fr-btns-group--right fr-mt-3w">
-                    <li>
-                      <button
-                        className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-                        type="button"
-                        disabled={sauvegarderEnCours}
-                        onClick={() => {
+                  <ButtonsGroup
+                    inlineLayoutWhen="always"
+                    alignment="right"
+                    buttonsIconPosition="right"
+                    buttonsSize="small"
+                    buttons={[
+                      {
+                        children: "Annuler",
+                        priority: "tertiary no outline",
+                        disabled: sauvegarderEnCours,
+                        onClick: () => {
                           signatureModal.close();
                           setEtape(0);
-                        }}
-                      >
-                        Annuler
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="fr-btn fr-btn--sm fr-btn--secondary"
-                        type="button"
-                        onClick={() => setEtape(1)}
-                        disabled={sauvegarderEnCours}
-                      >
-                        Étape précédente
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="fr-btn fr-btn--sm fr-btn--primary"
-                        type="button"
-                        onClick={() => signerCourrier()}
-                        disabled={
+                        },
+                      },
+                      {
+                        children: "Étape précédente",
+                        priority: "secondary",
+                        disabled: sauvegarderEnCours,
+                        onClick: () => setEtape(1),
+                      },
+                      {
+                        children: "Envoyer",
+                        priority: "primary",
+                        disabled:
                           sauvegarderEnCours ||
                           !estTailleFichierOk(fichierSigne) ||
-                          !estTypeFichierOk(fichierSigne)
-                        }
-                      >
-                        Envoyer
-                      </button>
-                    </li>
-                  </ul>
+                          !estTypeFichierOk(fichierSigne),
+                        onClick: () => signerCourrier(),
+                      },
+                    ]}
+                  />
                 </div>
               </signatureModal.Component>
             </>
