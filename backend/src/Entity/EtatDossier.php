@@ -6,9 +6,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\EtatDossierRepository;
 use MonIndemnisationJustice\Service\DateConvertisseur;
-use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Serializer\Attribute\Ignore;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: EtatDossierRepository::class)]
 #[ORM\Table(name: 'dossier_etats')]
@@ -19,7 +16,6 @@ class EtatDossier
     #[ORM\Column]
     protected ?int $id = null;
 
-    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'string', nullable: false, enumType: EtatDossierType::class)]
     protected EtatDossierType $etat;
 
@@ -32,18 +28,15 @@ class EtatDossier
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
-    #[Ignore]
     protected ?Agent $agent = null;
 
     #[ORM\ManyToOne(targetEntity: Usager::class, cascade: [])]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id')]
     protected ?Usager $requerant = null;
 
-    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $contexte = null;
 
-    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     public function getId(): ?int
     {
         return $this->id;
@@ -136,8 +129,6 @@ class EtatDossier
         return EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT === $this->etat;
     }
 
-    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
-    #[SerializedName('dateEntree')]
     public function getDateEntreeTimestamp(): ?int
     {
         return DateConvertisseur::enMillisecondes($this->dateEntree);
@@ -184,21 +175,11 @@ class EtatDossier
         return $this;
     }
 
-    #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
-    #[SerializedName('redacteur')]
-    public function getReferenceAgent(): ?int
-    {
-        return $this->agent?->getId();
-    }
-
-    #[Groups(['agent:detail'])]
     public function getRequerant(): ?Usager
     {
         return $this->requerant;
     }
 
-    #[Groups(['agent:liste'])]
-    #[SerializedName('requerant')]
     public function getEstRequerant(): bool
     {
         return null !== $this->requerant;

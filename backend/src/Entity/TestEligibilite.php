@@ -4,7 +4,6 @@ namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'eligibilite_tests')]
@@ -20,23 +19,18 @@ class TestEligibilite
     #[ORM\JoinColumn(name: 'departement_code', referencedColumnName: 'code', nullable: true, onDelete: 'SET NULL')]
     public ?GeoDepartement $departement;
 
-    #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true)]
     public bool $estVise = false;
 
-    #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true, options: ['comments' => 'La personne recherchée réside ou est hébergée à cette adresse'])]
     public ?bool $estHebergeant = null;
 
-    #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'string', length: 16, nullable: true, enumType: RapportAuLogement::class)]
     public ?RapportAuLogement $rapportAuLogement = null;
 
-    #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true)]
     public ?bool $aContacteAssurance = null;
 
-    #[Groups(['agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true)]
     public ?bool $aContacteBailleur = null;
 

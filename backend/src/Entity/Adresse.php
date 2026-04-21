@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\AdresseRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AdresseRepository::class)]
 class Adresse
@@ -14,25 +13,20 @@ class Adresse
     #[ORM\JoinColumn(name: 'commune_code', referencedColumnName: 'code', nullable: true, onDelete: 'SET NULL')]
     #[ORM\ManyToOne(targetEntity: GeoCommune::class)]
     protected ?GeoCommune $commune = null;
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne1 = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ligne2 = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch', 'agent:detail', 'requerant:detail', 'agent:liste'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $localite = null;
 

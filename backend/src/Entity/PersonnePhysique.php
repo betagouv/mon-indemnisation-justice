@@ -6,17 +6,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\PersonnePhysiqueRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Attribute\Context;
-use Symfony\Component\Serializer\Attribute\SerializedName;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Table(name: 'personnes_physiques')]
 #[ORM\Entity(repositoryClass: PersonnePhysiqueRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class PersonnePhysique
 {
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
@@ -25,34 +20,25 @@ class PersonnePhysique
     #[ORM\OneToOne(targetEntity: Personne::class, inversedBy: 'personnePhysique', cascade: ['persist', 'remove'])]
     protected Personne $personne;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 13, nullable: true)]
     private ?string $numeroSecuriteSociale = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom2 = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom3 = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     protected ?Adresse $adresse;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateNaissance = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
-    // #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
-    #[SerializedName('communeNaissance')]
     #[ORM\ManyToOne(targetEntity: GeoCodePostal::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
     public ?GeoCodePostal $codePostalNaissance = null;
 
-    #[Groups(['dossier:lecture', 'dossier:patch'])]
     #[ORM\ManyToOne(targetEntity: GeoPays::class)]
     #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code')]
     protected ?GeoPays $paysNaissance = null;
@@ -185,8 +171,6 @@ class PersonnePhysique
         return $this;
     }
 
-    #[SerializedName('codePostalNaissance')]
-    #[Groups(['dossier:lecture'])]
     public function getCodePostalNaissanceCode(): ?string
     {
         return $this->codePostalNaissance?->getCodePostal();
