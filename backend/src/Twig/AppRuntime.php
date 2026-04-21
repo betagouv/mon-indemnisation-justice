@@ -2,7 +2,6 @@
 
 namespace MonIndemnisationJustice\Twig;
 
-use ApiPlatform\Metadata\UrlGeneratorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Dossier;
@@ -14,6 +13,7 @@ use Pentatrion\ViteBundle\Service\EntrypointsLookup;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\FirewallMapInterface;

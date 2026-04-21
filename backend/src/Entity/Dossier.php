@@ -2,8 +2,6 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Patch;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -15,17 +13,6 @@ use MonIndemnisationJustice\Service\DateConvertisseur;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
-#[ApiResource(
-    operations: [
-        new Patch(
-            uriTemplate: '/requerant/dossier/{id}',
-            normalizationContext: ['groups' => ['dossier:lecture'], 'skip_null_values' => false],
-            denormalizationContext: ['groups' => ['dossier:patch'], 'allow_extra_attributes' => false],
-            security: "is_granted('ROLE_REQUERANT') and object.getRequerant() == user",
-            name: 'requerant_dossier_api_patch'
-        ),
-    ]
-)]
 #[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'dossiers')]
