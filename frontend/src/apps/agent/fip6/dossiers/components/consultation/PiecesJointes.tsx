@@ -1,6 +1,6 @@
 import {
   AjoutPieceJointe,
-  PieceJointe,
+  ChampPieceJointe,
   TelechargerPieceJointe,
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { MenuPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/MenuPieceJointe";
@@ -90,7 +90,10 @@ export const PiecesJointes = ({
                   </>
                 )}
 
-                <PieceJointe pieceJointe={pieceJointe} className="fr-col-12" />
+                <ChampPieceJointe
+                  pieceJointe={pieceJointe}
+                  className="fr-col-12"
+                />
               </div>
             </>
           ) : (

@@ -23,8 +23,29 @@ export class EtatDossierType {
     public readonly libelle: string,
   ) {}
 
+  get estDepose(): boolean {
+    return this.type !== "A_COMPLETER";
+  }
+
+  get estEditable(): boolean {
+    return this.estType("A_COMPLETER", "DEPOSE", "EN_INSTRUCTION");
+  }
+
+  get estDecide(): boolean {
+    return this.estType(
+      "OK_A_ACCEPTER",
+      "OK_A_INDEMNISER",
+      "OK_INDEMNISE",
+      "KO_REJETE",
+    );
+  }
+
   get estAccepte(): boolean {
     return this.type.startsWith("OK");
+  }
+
+  get estAccepteRequerant(): boolean {
+    return this.estType("OK_A_INDEMNISER", "OK_INDEMNISE");
   }
 
   get estSigne(): boolean {
@@ -38,14 +59,6 @@ export class EtatDossierType {
 
   get estCloture(): boolean {
     return this.type == "CLOTURE";
-  }
-
-  get estDepose(): boolean {
-    return this.type !== "A_COMPLETER";
-  }
-
-  get estEditable(): boolean {
-    return this.estType("A_COMPLETER", "DEPOSE", "EN_INSTRUCTION");
   }
 
   protected estType(...types: EtatDossierTypeCode[]): boolean {
