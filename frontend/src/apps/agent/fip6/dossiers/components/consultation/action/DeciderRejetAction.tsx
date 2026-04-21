@@ -8,18 +8,18 @@ import React, {
   useState,
 } from "react";
 
-import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { useInjection } from "inversify-react";
-import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
-import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { observer } from "mobx-react-lite";
+import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { Loader } from "@/common/composants/Loader.tsx";
+import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
 import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { useInjection } from "inversify-react";
+import { observer } from "mobx-react-lite";
 
 const _modale = createModal({
   id: "modale-action-decider-rejet",
@@ -328,7 +328,9 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
                 label: "Courrier de rejet",
                 iconId: "fr-icon-close-circle-line",
                 isDefault: true,
-                content: <PieceJointe pieceJointe={courrier as Document} />,
+                content: (
+                  <ChampPieceJointe pieceJointe={courrier as Document} />
+                ),
               },
             ]}
           />

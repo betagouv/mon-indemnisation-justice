@@ -1,5 +1,8 @@
 import { Personne } from "@/apps/requerant/models/Personne";
-import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
+import {
+  PieceJointeType,
+  TypePieceJointe,
+} from "@/apps/requerant/models/TypePieceJointe.ts";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import UndefinedTransform from "@/common/normalisation/transformers/UndefinedTransform.ts";
 import { Expose, Transform, Type } from "class-transformer";
@@ -25,8 +28,16 @@ export abstract class BaseDossier {
     return !this.dateDepot && !this.reference;
   }
 
+  get estDecide(): boolean {
+    return this.etatActuel.etat.estDecide;
+  }
+
   get estAccepte(): boolean {
     return this.etatActuel.etat.estAccepte;
+  }
+
+  get estAccepteRequerant(): boolean {
+    return this.etatActuel.etat.estAccepteRequerant;
   }
 
   get estSigne(): boolean {
@@ -103,6 +114,7 @@ export class Dossier extends BaseDossier {
   estPorteBlindee: boolean = false;
   @Type(() => PieceJointe)
   piecesJointes: PieceJointe[];
+  montantIndemnisation?: number;
   idTestEligibilite?: number;
   idDeclarationFDO?: string;
 
@@ -116,7 +128,23 @@ export class Dossier extends BaseDossier {
     return this.getPiecesJointesDeType(type).length;
   }
 
-  public getPiecesJointesDeType(type: TypePieceJointe): PieceJointe[] {
+  public getPieceJointeDeType(type: PieceJointeType): PieceJointe | undefined {
+    return this.piecesJointes.find((pieceJointe: PieceJointe) =>
+      pieceJointe.type.equals(type),
+    );
+  }
+
+  public getCourrierDecision(): PieceJointe | undefined {
+    return this.getPieceJointeDeType("courrier_ministere");
+  }
+
+  public getDeclarationAcceptation(): PieceJointe | undefined {
+    return this.getPieceJointeDeType("courrier_requerant");
+  }
+
+  public getPiecesJointesDeType(
+    type: TypePieceJointe | PieceJointeType,
+  ): PieceJointe[] {
     return this.piecesJointes.filter((pieceJointe: PieceJointe) => {
       return pieceJointe.type.equals(type);
     });

@@ -80,14 +80,9 @@ class BrisPorteController extends RequerantController
     #[Route('/{id}/consulter-la-decision', name: 'requerant_dossier_consulter_decision', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function consulterDecision(#[MapEntity(id: 'id')] Dossier $dossier, NormalizerInterface $normalizer): Response
     {
-        if (!$dossier->estSigne()) {
-            return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
-        }
-
-        return $this->render('requerant/dossier/decision.html.twig', [
-            'react' => [
-                'dossier' => $normalizer->normalize($dossier, 'json', ['groups' => 'requerant:detail']),
-            ],
+        // Renvoyer vers le routeur React
+        return $this->redirectToRoute('requerant_react', [
+            'extra' => "dossier/bris-de-porte/{$dossier->getId()}/",
         ]);
     }
 

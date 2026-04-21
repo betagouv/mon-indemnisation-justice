@@ -22,6 +22,10 @@ export const PieceJointeTypes = [
   "pv_ag_syndic",
   "declaration_rna_joafe",
   "identification_etablissement_publique",
+  // Courrier d'échange requérant / Ministère
+  "courrier_ministere",
+  "courrier_requerant",
+  "arrete_paiement",
 ] as const;
 
 export type PieceJointeType = (typeof PieceJointeTypes)[number];
@@ -41,6 +45,10 @@ export class TypePieceJointe {
     protected readonly afficher: (
       contexte: ContexteAffichageTypePieceJointe,
     ) => string,
+    // Les pièces jointes de ce type sont-elles ajoutées au dossier après le dépôt, lors de la phase d'échange avec FIP6 ?
+    public readonly estEchange: boolean = false,
+    // Existe-t-il une seule pièce de ce type ? (cas des courriers d'échange)
+    public readonly estUnique: boolean = false,
   ) {}
 
   private static elements(
@@ -455,6 +463,24 @@ export class TypePieceJointe {
         return `${article}document${s} identifiant${s} la collectivité${court ? "" : " (mentionnant le SIREN)"}`;
       },
     ),
+    courrier_ministere: new TypePieceJointe(
+      "courrier_ministere",
+      (contexte) => "Lettre décision dossier",
+      true,
+      true,
+    ),
+    courrier_requerant: new TypePieceJointe(
+      "courrier_requerant",
+      (contexte) => "Déclaration d'acceptation",
+      true,
+      true,
+    ),
+    arrete_paiement: new TypePieceJointe(
+      "arrete_paiement",
+      (contexte) => "Arrêté de paiement",
+      true,
+      true,
+    ),
   };
 
   public estDemande(
@@ -466,6 +492,10 @@ export class TypePieceJointe {
       this.estRequis(rapportAuLogement, typePersonneMorale, estLieDeclaration)
     ) {
       return true;
+    }
+
+    if (this.estEchange) {
+      return false;
     }
 
     if ("attestation_information" == this.type) {
@@ -495,6 +525,10 @@ export class TypePieceJointe {
     typePersonneMorale?: TypePersonneMoraleType,
     estLieDeclaration: boolean = false,
   ): boolean {
+    if (this.estEchange) {
+      return false;
+    }
+
     if ("attestation_information" == this.type) {
       return !estLieDeclaration;
     }
@@ -590,8 +624,10 @@ export class TypePieceJointe {
     return false;
   }
 
-  public equals(other: TypePieceJointe): boolean {
-    return this.type === other.type;
+  public equals(other: TypePieceJointe | PieceJointeType): boolean {
+    return other instanceof TypePieceJointe
+      ? this.type === other.type
+      : this.type === other;
   }
 
   public static depuis(type: PieceJointeType): TypePieceJointe {
