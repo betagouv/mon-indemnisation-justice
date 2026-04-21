@@ -2,7 +2,6 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use ApiPlatform\Metadata\ApiProperty;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -54,7 +53,6 @@ class PersonnePhysique
     public ?GeoCodePostal $codePostalNaissance = null;
 
     #[Groups(['dossier:lecture', 'dossier:patch'])]
-    #[ApiProperty(readableLink: false, writableLink: false, genId: true)]
     #[ORM\ManyToOne(targetEntity: GeoPays::class)]
     #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code')]
     protected ?GeoPays $paysNaissance = null;
