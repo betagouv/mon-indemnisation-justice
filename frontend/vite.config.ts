@@ -70,20 +70,19 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
         input: {
           ...{
+            // Espace requérant
             "requerant/dossier/tester_mon_eligibilite":
               "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
             "requerant/dossier/creation_de_compte":
               "./src/apps/requerant/dossier/creation_de_compte.tsx",
-            "requerant/dossier/consulter_la_decision":
-              "./src/apps/requerant/dossier/consulter_la_decision.tsx",
             requerant: "./src/apps/requerant/requerant.tsx",
-            // Espace agent
+            // Espace agent FIP6
             "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
             "agent/dossiers/recherche":
               "./src/apps/agent/fip6/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
               "./src/apps/agent/fip6/dossiers/consultation_app.tsx",
-            // Espace FDO
+            // Espace agent FDO
             "agent/fdo": path.join(__dirname, "./src/apps/agent/fdo/fdo.tsx"),
           },
         },

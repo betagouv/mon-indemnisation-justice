@@ -3,8 +3,13 @@ import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import { differentiel } from "@/common/services";
 import { data } from "autoprefixer";
-import { instanceToInstance, instanceToPlain, plainToClassFromExist, plainToInstance } from "class-transformer";
-import { ServiceIdentifier } from "inversify";
+import {
+  instanceToInstance,
+  instanceToPlain,
+  plainToClassFromExist,
+  plainToInstance,
+} from "class-transformer";
+import { ServiceIdentifier } from "inversify"; // Source - https://stackoverflow.com/a/61132308
 
 // Source - https://stackoverflow.com/a/61132308
 // Posted by Terry, modified by community. See post 'Timeline' for change history
@@ -34,9 +39,11 @@ export interface DossierManagerInterface {
     piecesJointes: NouvellePieceJointe[],
   ): Promise<void>;
 
+  mesDemandes(): Promise<DossierApercu[]>;
+
   soumettre(id: number): Promise<Dossier>;
 
-  mesDemandes(): Promise<DossierApercu[]>;
+  accepter(id: number, declarationAcceptationSignee: File): Promise<Dossier>;
 }
 
 export namespace DossierManagerInterface {
@@ -188,6 +195,49 @@ export class ApiDossierManager implements DossierManagerInterface {
         headers: {
           Accept: "application/json",
         },
+      },
+    );
+
+    if (!reponse.ok) {
+      const data = await reponse.json();
+      throw new Error(data.erreurs);
+    } else {
+      // On remplace le dossier brouillon par celui déposé
+      this.dossiers.delete(id);
+      const dossierDepose = plainToInstance(Dossier, data);
+      this.dossiers.set(dossierDepose.id, {
+        original: dossierDepose,
+        modifie: instanceToInstance(dossierDepose),
+      });
+      // On vide la liste des dossiers pour forcer le rafraîchissement.
+      this.mesDossiers = undefined;
+
+      return dossierDepose;
+    }
+  }
+
+  async accepter(
+    id: number,
+    declarationAcceptationSignee: File,
+  ): Promise<Dossier> {
+    // TODO envoyer à la nouvelle route API
+    const reponse = await fetch(
+      // Route 'api_requerant_dossier_bris_porte_accepter_indemnistaion'
+      `/api/requerant/dossier/bris-de-porte/${id}/accepter-indemnisation`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: (() => {
+          const data = new FormData();
+          data.append(
+            "declarationAcceptationSignee",
+            declarationAcceptationSignee,
+          );
+
+          return data;
+        })(),
       },
     );
 

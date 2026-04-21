@@ -39,7 +39,7 @@ class Adresse
     /**
      * @var Collection<int, Dossier>
      */
-    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'adresse', cascade: [])]
+    #[ORM\OneToMany(targetEntity: BrisPorte::class, mappedBy: 'adresse', cascade: [])]
     private Collection $brisPortes;
 
     public function __construct()
