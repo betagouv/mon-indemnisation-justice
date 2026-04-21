@@ -8,9 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Serializer\Attribute\Ignore;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 #[ORM\Table(name: 'agents')]
@@ -44,7 +41,6 @@ class Agent implements UserInterface
 
     public const ROLE_AGENT_FORCES_DE_L_ORDRE = 'ROLE_AGENT_FORCES_DE_L_ORDRE';
 
-    #[Groups('agent:resume')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
@@ -57,24 +53,18 @@ class Agent implements UserInterface
     protected string $uid;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['agent:detail'])]
-    #[SerializedName('courriel')]
     protected string $email;
 
     #[ORM\Column(length: 16, nullable: true)]
-    #[Groups(['agent:detail'])]
     protected ?string $telephone = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['agent:detail'])]
     protected string $nom;
 
     #[ORM\Column(length: 30)]
-    #[Groups(['agent:detail'])]
     protected string $prenom;
 
     #[ORM\Column(type: 'string', nullable: true, enumType: Administration::class)]
-    #[Groups(['agent:detail'])]
     protected ?Administration $administration = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
@@ -87,12 +77,10 @@ class Agent implements UserInterface
      * @var string[] la liste des rôles assignée à l'agent
      */
     #[ORM\Column(type: 'simple_array')]
-    #[Groups(['agent:detail'])]
     protected array $roles = [];
 
     #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'redacteur', cascade: ['detach'])]
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
-    #[Ignore]
     /** @var Collection<Dossier> */
     protected Collection $dossiers;
 
@@ -434,8 +422,6 @@ class Agent implements UserInterface
         return sprintf('%s. %s', $this->prenom[0], $this->nom);
     }
 
-    #[Groups('agent:resume')]
-    #[SerializedName('nom')]
     public function getNomComplet($capital = false): ?string
     {
         return sprintf('%s %s', $this->prenom, $capital ? strtoupper(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $this->nom)) : $this->nom);

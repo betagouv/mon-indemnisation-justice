@@ -8,7 +8,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Sqids\Sqids;
-use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
@@ -28,23 +27,18 @@ class DeclarationFDOBrisPorte
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(['agent:detail'])]
     protected ?Uuid $id = null;
 
-    #[Groups(['agent:detail'])]
     #[ORM\Column(length: 6)]
     protected string $reference;
 
-    #[Groups(['agent:detail'])]
     #[ORM\Column(name: 'est_erreur', length: 6, enumType: DeclarationFDOBrisPorteErreurType::class)]
     protected DeclarationFDOBrisPorteErreurType $estErreur;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['agent:detail'])]
     protected ?string $descriptionErreur = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: false)]
-    #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateOperation;
 
     /**
@@ -52,20 +46,16 @@ class DeclarationFDOBrisPorte
      */
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[Groups(['agent:detail'])]
     protected Adresse $adresse;
 
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'procedure_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[Groups(['agent:detail'])]
     protected ProcedureJudiciaire $procedure;
 
-    #[Groups(['agent:detail'])]
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'coordonnees_requerant_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
     protected ?CoordonneesRequerant $coordonneesRequerant = null;
 
-    #[Groups(['agent:detail'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     protected ?string $precisionsRequerant = null;
 
@@ -74,15 +64,12 @@ class DeclarationFDOBrisPorte
     protected ?Dossier $dossier = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateCreation;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    #[Groups(['agent:detail'])]
     protected \DateTimeInterface $dateSoumission;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Groups(['agent:detail'])]
     protected ?\DateTimeInterface $dateSuppression = null;
 
     /**
@@ -90,14 +77,12 @@ class DeclarationFDOBrisPorte
      */
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
-    #[Groups(['agent:detail'])]
     protected Agent $agent;
 
     #[ORM\JoinTable(name: 'declaration_fdo_bris_porte_pieces_jointes')]
     #[ORM\JoinColumn(name: 'declaration_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'document', referencedColumnName: 'id')]
     #[ORM\ManyToMany(targetEntity: Document::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[Groups(['agent:detail'])]
     /** @var Collection<Document> */
     protected Collection $piecesJointes;
 
