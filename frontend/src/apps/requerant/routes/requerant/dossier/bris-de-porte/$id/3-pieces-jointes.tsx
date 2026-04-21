@@ -14,6 +14,7 @@ import {
   PieceJointeType,
   TypePieceJointe,
 } from "@/apps/requerant/models/TypePieceJointe.ts";
+import { RouteurRequerant } from "@/apps/requerant/routeur";
 import {
   DossierManagerInterface,
   NouvellePieceJointe,
@@ -35,6 +36,7 @@ import {
   createFileRoute,
   notFound,
   NotFoundRouteProps,
+  redirect,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
@@ -71,6 +73,22 @@ export const Route = createFileRoute(
           ),
         },
         throw: true,
+      });
+    }
+
+    if (dossier.estDecide) {
+      return redirect<typeof RouteurRequerant>({
+        from: Route.fullPath,
+        to: "../consulter-la-decision",
+        params,
+      });
+    }
+
+    if (dossier.estCloture) {
+      return redirect<typeof RouteurRequerant>({
+        from: Route.fullPath,
+        to: "/requerant/mes-demandes",
+        params,
       });
     }
 
