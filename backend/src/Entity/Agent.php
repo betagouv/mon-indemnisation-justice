@@ -130,7 +130,7 @@ class Agent implements UserInterface
         return $this;
     }
 
-    public function getFournisseurIdentite(): FournisseurIdentiteAgent
+    public function getFournisseurIdentite(): ?FournisseurIdentiteAgent
     {
         return $this->fournisseurIdentite;
     }

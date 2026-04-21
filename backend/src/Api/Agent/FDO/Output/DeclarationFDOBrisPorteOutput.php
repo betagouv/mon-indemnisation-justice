@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;
 
@@ -41,5 +42,12 @@ class DeclarationFDOBrisPorteOutput
 
     /** @param DocumentDto[] $piecesJointes */
     #[Map(source: 'piecesJointes.toArray')]
+    #[Ignore]
     public array $piecesJointes = [];
+
+    public static function depuisDeclarationFDO(DeclarationFDOBrisPorte $declarationFDOBrisPorte): self
+    {
+        // TODO implémenter le constructeur
+        return new self();
+    }
 }
