@@ -1,5 +1,5 @@
 import { AjoutPieceJointe } from "./AjoutPieceJointe.tsx";
-import { PieceJointe } from "./PieceJointe.tsx";
+import { ChampPieceJointe } from "./ChampPieceJointe.tsx";
 import { TelechargerPieceJointe } from "./TelechargerPieceJointe.tsx";
 
-export { AjoutPieceJointe, PieceJointe, TelechargerPieceJointe };
+export { AjoutPieceJointe, ChampPieceJointe, TelechargerPieceJointe };

@@ -27,6 +27,7 @@ class DossierDto
         // #[Map(source: 'brisPorte.dateOperation'),
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         public ?\DateTimeImmutable $dateOperation = null,
+        public ?float $montantIndemnisation = null,
         public ?int $idTestEligibilite = null,
         public ?Uuid $idDeclarationFDO = null,
         public bool $estPorteBlindee = false,
@@ -69,6 +70,7 @@ class DossierDto
             descriptionRapportAuLogement: $dossier->getBrisPorte()->getPrecisionRapportAuLogement(),
             adresse: AdresseDto::depuisAdresse($dossier->getBrisPorte()->getAdresse()),
             dateOperation: $dossier->getBrisPorte()->getDateOperation() ? \DateTimeImmutable::createFromInterface($dossier->getBrisPorte()->getDateOperation()) : null,
+            montantIndemnisation: $dossier->getMontantIndemnisation(),
             idTestEligibilite: $dossier->getBrisPorte()->getTestEligibilite()?->id,
             idDeclarationFDO: $dossier->getBrisPorte()->getDeclarationFDO()?->getId(),
             estPorteBlindee: $dossier->getBrisPorte()?->estPorteBlindee(),

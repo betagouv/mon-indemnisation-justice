@@ -1,42 +1,27 @@
-import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
-import { Document, DossierDetail, EtatDossier } from "@/common/models";
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
+import { container } from "@/apps/requerant/container.ts";
+import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe.tsx";
+import {
+  Dossier,
+  getRapportAuLogementLibelle,
+  PieceJointe,
+} from "@/apps/requerant/models";
+import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
+import { Loader } from "@/common/composants/Loader.tsx";
+import { Document } from "@/common/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import type { FrIconClassName } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
+import { FrIconClassName } from "@codegouvfr/react-dsfr/fr/generatedFromCss/classNames";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
-import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
-import { plainToInstance } from "class-transformer";
-import { observer } from "mobx-react-lite";
-import React, { RefObject, useMemo, useRef, useState } from "react";
-import ReactDOM from "react-dom/client";
-import "reflect-metadata";
-
-startReactDsfr({
-  defaultColorScheme:
-    (localStorage.getItem("scheme") as ColorScheme) ?? "system",
-});
-
-// En développement, vider la console après chaque action de HMR (Hot Module Replacement)
-if (import.meta.hot) {
-  import.meta.hot.on("vite:beforeUpdate", () => console.clear());
-}
-
-// En production, désactivation de React devtools
-if (import.meta.env.PROD) {
-  disableReactDevTools();
-}
-
-const args = JSON.parse(
-  document.getElementById("react-arguments")?.textContent ?? "",
-);
-
-const dossier = plainToInstance(DossierDetail, args.dossier, {
-  enableImplicitConversion: true,
-});
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+} from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
+import React, { RefObject, useRef, useState } from "react";
 
 const signatureModal = createModal({
   id: "modale-signature-dossier",
@@ -46,11 +31,51 @@ const signatureModal = createModal({
 const urlDocumentRequerant = (document: Document) =>
   `/requerant/document/${document.id}/${document.filename}`;
 
-const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
-  dossier,
-}: {
-  dossier: DossierDetail;
-}) {
+export const Route = createFileRoute(
+  "/requerant/dossier/bris-de-porte/$id/consulter-la-decision",
+)({
+  component: ConsulterDecisionBrisPorte,
+  shouldReload: true,
+  params: {
+    parse: ({ id }) => ({ id: parseInt(id) }),
+    stringify: ({ id }) => ({ id: id.toString() }),
+  },
+  pendingComponent: Loader,
+  notFoundComponent: (props: NotFoundRouteProps) => (
+    <NonTrouveComposant {...props} />
+  ),
+  loader: async ({ params }) => {
+    const dossier = await container
+      .get<DossierManagerInterface>(DossierManagerInterface.$)
+      .getDossier(params.id);
+
+    if (!dossier) {
+      throw notFound({
+        data: {
+          titre: "Impossible de trouver le dossier",
+          message: (
+            <>
+              Le dossier n°<i>${params.id}</i>n'existe pas ou ne vous est pas
+              accessible.
+            </>
+          ),
+        },
+        throw: true,
+      });
+    }
+
+    return { dossier };
+  },
+});
+
+function ConsulterDecisionBrisPorte() {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
+  // Récupérer la référence depuis le paramètre de la route
+  const { dossier }: { dossier: Dossier } = Route.useLoaderData();
+
   // Références vers les conteneurs DOM de chacune des étapes du formulaire de signature
   const refEtapes: RefObject<HTMLDivElement | null>[] = [
     useRef<HTMLDivElement | null>(null),
@@ -59,15 +84,6 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
   ];
   // Numéro de l'étape active sur le formulaire de signature
   const [etape, setEtape] = useState(0);
-
-  // URL du document en cours de consultation
-  const lienTelechargementDeclarationAcceptation = useMemo<string | undefined>(
-    () =>
-      dossier.getDeclarationAcceptation()
-        ? urlDocumentRequerant(dossier.getDeclarationAcceptation() as Document)
-        : undefined,
-    [dossier.id, dossier.getDeclarationAcceptation()?.fileHash],
-  );
 
   const [erreurEnvoi, setErreurEnvoi] = useState<string | undefined>(undefined);
 
@@ -111,8 +127,11 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
 
         const data = await response.json();
         if (response.ok) {
+          // TODO recharger avec les données du DossierManager
+          /*
           dossier.addDocument(plainToInstance(Document, data.document));
           dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+          */
           signatureModal.close();
         } else {
           setErreurEnvoi(data.erreur);
@@ -155,21 +174,17 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                 })
               : " à une date inconnue"}{" "}
             au logement{" "}
-            {dossier.adresse.estRenseignee() ? (
-              <>
-                situé{" "}
-                {dossier.adresse.libelle() /*13 rue des Oliviers 49000 ANGERS*/}
-              </>
-            ) : (
-              ""
-            )}
-            {dossier.testEligibilite &&
+            {dossier.adresse ? <>situé {dossier.adresse.libelle}</> : ""}
+            {dossier.rapportAuLogement &&
               `, dont vous êtes ${
-                dossier.testEligibilite.estProprietaire
-                  ? "propriétaire"
-                  : "locataire"
+                dossier.rapportAuLogement !== "AUTRE"
+                  ? getRapportAuLogementLibelle(
+                      dossier.rapportAuLogement,
+                    ).toLocaleLowerCase()
+                  : (dossier.descriptionRapportAuLogement?.toLocaleLowerCase() ??
+                    "")
               }`}
-            , a été {dossier.estAccepte() ? "acceptée" : "refusée"}.
+            , a été {dossier.estAccepte ? "acceptée" : "refusée"}.
           </p>
 
           <p>
@@ -177,7 +192,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
             cette décision.
           </p>
 
-          {dossier.estAccepte() && (
+          {dossier.estAccepte && (
             <p>
               Le montant de l'indemnisation qui vous est proposé est de{" "}
               <span className="fr-text--bold">
@@ -190,8 +205,8 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
           )}
         </div>
 
-        {dossier.estAccepte() &&
-          (dossier.estAccepteRequerant() ? (
+        {dossier.estAccepte &&
+          (dossier.estAccepteRequerant ? (
             <>
               <div className="fr-col-12 fr-my-2w">
                 <Alert
@@ -252,7 +267,7 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
                     <a
                       className="fr-link fr-link--download"
                       download={`Lettre décision dossier ${dossier.reference}`}
-                      href={lienTelechargementDeclarationAcceptation}
+                      href={dossier.getCourrierDecision()?.url}
                     >
                       Télécharger le formulaire d'acceptation
                     </a>
@@ -444,34 +459,30 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
           <Tabs
             tabs={[
               {
-                label: dossier.estAccepte()
+                label: dossier.estAccepte
                   ? "Proposition d'indemnisation"
                   : "Lettre de décision",
                 iconId: "fr-icon-checkbox-circle-line",
                 isDefault: true,
                 content: dossier.getCourrierDecision() && (
-                  <ChampPieceJointe
-                    pieceJointe={dossier.getCourrierDecision() as Document}
-                    lienTelechargement={(document) =>
-                      urlDocumentRequerant(document)
-                    }
+                  <AfficherPieceJointe
+                    pieceJointe={dossier.getCourrierDecision() as PieceJointe}
+                    telecharger={false}
                   />
                 ),
               },
-              ...(dossier.estAccepte()
+              ...(dossier.estAccepte
                 ? [
                     {
                       label: "Déclaration d'acceptation",
                       isDefault: false,
                       iconId: "fr-icon-chat-check-line" as FrIconClassName,
                       content: dossier.getDeclarationAcceptation() && (
-                        <ChampPieceJointe
+                        <AfficherPieceJointe
                           pieceJointe={
-                            dossier.getDeclarationAcceptation() as Document
+                            dossier.getDeclarationAcceptation() as PieceJointe
                           }
-                          lienTelechargement={(document) =>
-                            urlDocumentRequerant(document)
-                          }
+                          telecharger={false}
                         />
                       ),
                     },
@@ -482,17 +493,5 @@ const ConsulterDecisionApp = observer(function ConsulterDecisionApp({
         </div>
       </div>
     </div>
-  );
-});
-
-const conteneur = document.getElementById("react-app");
-
-if (conteneur) {
-  ReactDOM.createRoot(conteneur).render(
-    <React.StrictMode>
-      <>
-        <ConsulterDecisionApp dossier={dossier} />
-      </>
-    </React.StrictMode>,
   );
 }

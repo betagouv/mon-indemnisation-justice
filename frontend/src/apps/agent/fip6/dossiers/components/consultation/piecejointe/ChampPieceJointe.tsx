@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { Document } from "@/common/models";
 import { fr } from "@codegouvfr/react-dsfr";
 
-export const PieceJointe = function PieceJointe({
+export const ChampPieceJointe = function PieceJointe({
   pieceJointe,
   className,
   lienTelechargement,

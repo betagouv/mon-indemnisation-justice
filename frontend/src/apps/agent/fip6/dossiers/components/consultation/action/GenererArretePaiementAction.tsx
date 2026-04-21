@@ -1,5 +1,5 @@
 import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
+import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import {
   Agent,
   Document,
@@ -136,7 +136,7 @@ export const GenererArretePaiementModale =
               Inspectez le document de déclaration d'acceptation ci-dessous et
               vérifiez que tous les champs sont correctement remplis :
             </p>
-            <PieceJointe
+            <ChampPieceJointe
               className="fr-my-2w"
               pieceJointe={dossier.getDeclarationAcceptation() as Document}
             />
