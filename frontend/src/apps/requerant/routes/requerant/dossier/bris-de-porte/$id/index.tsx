@@ -24,6 +24,13 @@ export const Route = createFileRoute("/requerant/dossier/bris-de-porte/$id/")({
       });
     }
 
+    if (dossier.estDecide) {
+      return redirect<typeof RouteurRequerant>({
+        to: "./consulter-la-decision",
+        params,
+      });
+    }
+
     if (dossier.estBrouillon && !estDossierOkBrisDePorte(dossier)) {
       return redirect<typeof RouteurRequerant>({
         to: "./1-bris-porte",

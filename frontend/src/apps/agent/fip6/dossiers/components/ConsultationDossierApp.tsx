@@ -3,7 +3,7 @@ import { DossierActions } from "@/apps/agent/fip6/dossiers/components/consultati
 import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/editor";
 import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier.tsx";
 import { TelechargerPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/PieceJointe.tsx";
+import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/ChampPieceJointe.tsx";
 import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
 import { Agent, Document, DossierDetail } from "@/common/models";
 import { dateEtHeureSimple } from "@/common/services/date.ts";
@@ -263,7 +263,7 @@ export const ConsultationDossierApp = observer(
                             pieceJointe={courrier}
                           />
 
-                          <PieceJointe
+                          <ChampPieceJointe
                             className="fr-col-12"
                             pieceJointe={courrier}
                           />
@@ -286,7 +286,7 @@ export const ConsultationDossierApp = observer(
                             }
                           />
 
-                          <PieceJointe
+                          <ChampPieceJointe
                             className="fr-col-12"
                             pieceJointe={
                               dossier.getDeclarationAcceptation() as Document
@@ -308,7 +308,7 @@ export const ConsultationDossierApp = observer(
                               dossier.getArretePaiement() as Document
                             }
                           />
-                          <PieceJointe
+                          <ChampPieceJointe
                             className="fr-col-12"
                             pieceJointe={
                               dossier.getArretePaiement() as Document

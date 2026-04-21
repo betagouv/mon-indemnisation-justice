@@ -4,6 +4,7 @@ import {
 } from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
+import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe.tsx";
 import {
   getSchemaValidationPiecesJointes,
   listerTypesPiecesJointesRequis,
@@ -26,7 +27,6 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import Download from "@codegouvfr/react-dsfr/Download";
 import artworkDocumentAddUrl from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
 import SideMenu from "@codegouvfr/react-dsfr/SideMenu";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
@@ -367,35 +367,7 @@ function Etape3PiecesJointes() {
                       : ["fr-hidden" as FrCxArg]),
                   ])}
                 >
-                  <Download
-                    className="fr-col-12"
-                    details={`${pieceJointe.infoFichier}`}
-                    label={pieceJointe.nom}
-                    linkProps={{
-                      href: `${pieceJointe.url}?download`,
-                    }}
-                  />
-
-                  {pieceJointe.estPDF() ? (
-                    <object
-                      data={pieceJointe.url}
-                      type="application/pdf"
-                      style={{
-                        width: "100%",
-                        aspectRatio: "210/297",
-                      }}
-                    ></object>
-                  ) : (
-                    <img
-                      src={pieceJointe.url}
-                      alt={pieceJointe.nom}
-                      style={{
-                        width: "100%",
-                        maxHeight: "100vh",
-                        objectFit: "contain",
-                      }}
-                    />
-                  )}
+                  <AfficherPieceJointe pieceJointe={pieceJointe} />
                 </div>
               ))}
 
