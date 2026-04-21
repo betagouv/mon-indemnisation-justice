@@ -1,12 +1,9 @@
 import { PieceJointePanelNavigation } from "@/apps/requerant/composants/piecesJointes/PieceJointePanelNavigation";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
-import {
-  Dossier,
-  getRapportAuLogementLibelle,
-  PieceJointe,
-} from "@/apps/requerant/models";
+import { Dossier, getRapportAuLogementLibelle, PieceJointe } from "@/apps/requerant/models";
 import { libellerNomTypePersonneMorale } from "@/apps/requerant/models/TypePersonneMoraleType";
+import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { dateSimple } from "@/common/services/date";
@@ -17,8 +14,9 @@ import {
   createFileRoute,
   notFound,
   NotFoundRouteProps,
+  redirect,
   useNavigate,
-  useRouter,
+  useRouter
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import { default as React, useEffect, useMemo, useState } from "react";
@@ -53,6 +51,22 @@ export const Route = createFileRoute(
           ),
         },
         throw: true,
+      });
+    }
+
+    if (dossier.estDecide) {
+      return redirect<typeof RouteurRequerant>({
+        from: Route.fullPath,
+        to: "../consulter-la-decision",
+        params,
+      });
+    }
+
+    if (dossier.estCloture) {
+      return redirect<typeof RouteurRequerant>({
+        from: Route.fullPath,
+        to: "/requerant/mes-demandes",
+        params,
       });
     }
 
@@ -384,7 +398,7 @@ function Etape4Recapitulatif() {
               onClick: () =>
                 naviguer({
                   from: Route.fullPath,
-                  to: "/requerant/dossier/bris-de-porte/${dossier.id}/3-pieces-jointes",
+                  to: "./3-pieces-jointes",
                   search: {} as any,
                 }),
             },
