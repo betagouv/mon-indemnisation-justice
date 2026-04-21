@@ -212,6 +212,21 @@ function RouteComponent() {
                       : "Modifier ma demande"}
                   </Button>
                 )}
+                {dossier.estDecide && (
+                  <Button
+                    title="Consulter la décision"
+                    iconId={"fr-icon-eye-line"}
+                    size={"small"}
+                    linkProps={{
+                      to: `/requerant/dossier/bris-de-porte/$id`,
+                      params: {
+                        id: dossier.id,
+                      },
+                    }}
+                  >
+                    Consulter la décision
+                  </Button>
+                )}
               </div>,
             ])}
           />

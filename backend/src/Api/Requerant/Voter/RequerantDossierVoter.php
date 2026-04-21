@@ -16,6 +16,7 @@ class RequerantDossierVoter extends Voter
     public const string ACTION_DOSSIER_AMENDER = 'dossier:amender';
     public const string ACTION_DOSSIER_TELEVERSER = 'dossier:televerser';
     public const string ACTION_DOSSIER_PUBLIER = 'dossier:publier';
+    public const string ACTION_DOSSIER_ACCEPTER_INDEMNISATION = 'dossier:accepter_indemnisation';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -28,6 +29,7 @@ class RequerantDossierVoter extends Voter
                 self::ACTION_DOSSIER_AMENDER,
                 self::ACTION_DOSSIER_TELEVERSER,
                 self::ACTION_DOSSIER_PUBLIER,
+                self::ACTION_DOSSIER_ACCEPTER_INDEMNISATION,
             ]
         );
     }

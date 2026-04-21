@@ -2,12 +2,10 @@
 
 {% import "email/_macros.twig" as email %}
 
-{% set url_tableau_de_bord = %}
-
-{% block subject %}Mon Indemnisation Justice: vous avez une nouvelle proposition d'indemnisation à signer{% endblock subject %}
+{% block subject %}Mon Indemnisation Justice: vous avez une nouvelle déclaration d'acceptation à vérifier{% endblock subject %}
 
 {% block entete %}
-    <b>Mon Indemnisation Justice: vous avez une nouvelle proposition d'indemnisation à signer</b>
+    <b>Mon Indemnisation Justice: vous avez une nouvelle déclaration d'acceptation à vérifier</b>
 {% endblock entete %}
 
 
@@ -16,15 +14,16 @@
     <br/>
     <br/>
     <p>
-        {% if dossier.etatDossier.agent.NomComplet %} vient de terminer l'instruction du dossier {{ dossier.reference }}
-        avec une proposition d'indemnisation.
+        {% if dossier.usager.estFeminin() %}La requérante{% else %}Le requérant{% endif %} {{ dossier.usager.nomCourant }}
+        vient d'approuver la proposition d'indemnisation qui lui est
+        faite sur le dossier de référence {{ dossier.reference }}.
     </p>
     <p>
-        Vous pouvez voir la liste des propositions d'indemnisation à signer en cliquant sur le bouton ci-dessous :
+        Vous pouvez voir la liste des dossiers en attente de l'arrêté de paiement en cliquant sur le bouton ci-dessous :
     </p>
     <br/>
     <p>
-        {{ email.bouton("Dossiers en attente de signature de la proposition d'indemnisation", url('agent_fip6_react', {'extra': "dossiers/proposition-a-signer"})) }}
+        {{ email.bouton("Dossiers en attente de l'arrêté de paiement", url('agent_fip6_react', {'extra': "dossiers/a-verifier"})) }}
         <br/>
     </p>
     <br/>
