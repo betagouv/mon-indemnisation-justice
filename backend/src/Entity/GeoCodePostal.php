@@ -2,7 +2,6 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\GeoCodePostalRepository;
 
@@ -11,7 +10,6 @@ use MonIndemnisationJustice\Repository\GeoCodePostalRepository;
 #[ORM\Index(name: 'idx_code_postal', columns: ['code_postal'])]
 #[ORM\UniqueConstraint(name: 'unique_code_insee_postal', fields: ['codePostal', 'commune'])]
 #[ORM\HasLifecycleCallbacks]
-#[ApiResource]
 class GeoCodePostal extends GeoDataEntity
 {
     #[ORM\Id]

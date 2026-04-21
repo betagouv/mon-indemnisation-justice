@@ -2,7 +2,6 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\EtatDossierRepository;
@@ -11,9 +10,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
-#[ApiResource(
-    operations: [],
-)]
 #[ORM\Entity(repositoryClass: EtatDossierRepository::class)]
 #[ORM\Table(name: 'dossier_etats')]
 class EtatDossier
