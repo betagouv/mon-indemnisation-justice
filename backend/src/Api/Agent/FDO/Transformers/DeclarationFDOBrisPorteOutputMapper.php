@@ -15,6 +15,7 @@ class DeclarationFDOBrisPorteOutputMapper
 {
     public static function mapper(DeclarationFDOBrisPorte|DeclarationFDOBrisPorteInput $declaration, ObjectMapperInterface $mapper): DeclarationFDOBrisPorteOutput
     {
+        // TODO utiliser du mapping "manuel" comme sur les DTOs du dossier de bris de porte pour le requérant
         $output = $mapper->map($declaration, DeclarationFDOBrisPorteOutput::class);
 
         // Le mapping récursif ne fonctionnant pas, on doit "sous-mapper“ ici
