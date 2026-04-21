@@ -26,7 +26,7 @@ class HomeController extends AbstractController
     }
 
     /**
-     * Cette ancienne route était accesible depuis les emails de notifications envoyés au requérant. On assure le
+     * Cette ancienne route était accessible depuis les emails de notifications envoyés au requérant. On assure le
      * transfert tant que des usagers peuvent encore ouvrir et cliquer sur ces liens.
      */
     #[Route('/bris-de-porte/{id}/consulter-la-decision', name: 'requerant_dossier_consulter_decision', requirements: ['id' => '\d+'], methods: ['GET'])]

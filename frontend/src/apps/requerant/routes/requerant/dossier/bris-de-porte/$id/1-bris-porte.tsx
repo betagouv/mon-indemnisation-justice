@@ -19,6 +19,7 @@ import {
   TypesPersonneMorale,
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
+import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
@@ -33,6 +34,7 @@ import {
   createFileRoute,
   notFound,
   NotFoundRouteProps,
+  redirect,
   useNavigate,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
@@ -68,6 +70,22 @@ export const Route = createFileRoute(
           ),
         },
         throw: true,
+      });
+    }
+
+    if (dossier.estDecide) {
+      return redirect<typeof RouteurRequerant>({
+        from: Route.fullPath,
+        to: "../consulter-la-decision",
+        params,
+      });
+    }
+
+    if (dossier.estCloture) {
+      return redirect<typeof RouteurRequerant>({
+        from: Route.fullPath,
+        to: "/requerant/mes-demandes",
+        params,
       });
     }
 
