@@ -12,7 +12,7 @@ import {
   Redacteur,
   Requerant,
   TestEligibilite,
-  TypeInstitutionSecuritePublique,
+  TypeInstitutionSecuritePublique
 } from ".";
 
 export type TypeAttestation =
@@ -154,12 +154,7 @@ export class DossierDetail extends BaseDossier {
   @Type(() => Adresse)
   public readonly adresse: Adresse;
 
-  @Transform(({ value }) => {
-    if (!value) {
-      return null;
-    }
-    return typeof value === "number" ? new Date(value) : value;
-  })
+  @DateTransform()
   public dateOperation: Date | null;
 
   public estPorteBlindee: boolean | null;

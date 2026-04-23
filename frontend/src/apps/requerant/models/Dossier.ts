@@ -28,6 +28,18 @@ export abstract class BaseDossier {
     return !this.dateDepot && !this.reference;
   }
 
+  get estDepose(): boolean {
+    return this.etatActuel.etat.estDepose;
+  }
+
+  get estEditable(): boolean {
+    return this.etatActuel.etat.estEditable;
+  }
+
+  get estEnInstruction(): boolean {
+    return this.etatActuel.etat.estEnInstruction;
+  }
+
   get estDecide(): boolean {
     return this.etatActuel.etat.estDecide;
   }
@@ -46,14 +58,6 @@ export abstract class BaseDossier {
 
   get estCloture(): boolean {
     return this.etatActuel.etat.estCloture;
-  }
-
-  get estDepose(): boolean {
-    return this.etatActuel.etat.estDepose;
-  }
-
-  get estEditable(): boolean {
-    return this.etatActuel.etat.estEditable;
   }
 }
 
