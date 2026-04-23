@@ -111,7 +111,10 @@ function Etape1BrisPorte() {
 
   const formulaire = useForm({
     validators: {
-      onSubmit: SchemaValidationBrisPorte,
+      onSubmit:
+        dossier.estBrouillon || !dossier.estEnInstruction
+          ? SchemaValidationBrisPorte
+          : undefined,
     },
     defaultValues: extraireDonneesBrisDeporte(dossier),
     listeners: {
@@ -123,14 +126,21 @@ function Etape1BrisPorte() {
       },
     },
     onSubmit: async ({ value, formApi }) => {
-      // Enregistrer le brouillon...
-      if (formApi.state.isValid) {
-        await dossierManager.enregistrer(dossier.id);
-        // ...et passer à l'étape suivante
+      if (dossier.estEnInstruction) {
         await naviguer({
           to: "../2-infos-requerant",
           search: {} as any,
         });
+      } else {
+        // Enregistrer le brouillon...
+        if (formApi.state.isValid) {
+          await dossierManager.enregistrer(dossier.id);
+          // ...et passer à l'étape suivante
+          await naviguer({
+            to: "../2-infos-requerant",
+            search: {} as any,
+          });
+        }
       }
     },
   });
@@ -194,6 +204,7 @@ function Etape1BrisPorte() {
                       legend="Je suis"
                       champ={field}
                       estRequis={true}
+                      disabled={dossier.estEnInstruction}
                       options={[
                         {
                           label: "Une personne physique",
@@ -247,6 +258,7 @@ function Etape1BrisPorte() {
                         label="Quel type de personne morale ?"
                         hint="Ex: professionnel privé, représentant d'une association ou assureur du logement d'un particulier"
                         estRequis={true}
+                        disabled={dossier.estEnInstruction}
                         champ={field}
                         nativeSelectProps={{
                           defaultValue: field.state.value ?? "",
@@ -285,6 +297,7 @@ function Etape1BrisPorte() {
                         label="Vous effectuez votre demande en qualité de"
                         champ={field}
                         estRequis={true}
+                        disabled={dossier.estEnInstruction}
                         nativeSelectProps={{
                           defaultValue: field.state.value || "",
                           onChange: (event) => {
@@ -322,6 +335,7 @@ function Etape1BrisPorte() {
                         <FormInput
                           label="Précisez"
                           estRequis={rapportAuLogement === "AUTRE"}
+                          disabled={dossier.estEnInstruction}
                           champ={field}
                           nativeInputProps={{
                             defaultValue: field.state.value || "",
@@ -364,6 +378,7 @@ function Etape1BrisPorte() {
                             },
                           }}
                           estRequis={true}
+                          disabled={dossier.estEnInstruction}
                           champ={field}
                         />
                       );
@@ -435,6 +450,7 @@ function Etape1BrisPorte() {
                             return valeur.replaceAll(/\s+/g, "").length >= 5;
                           }}
                           estRequis={true}
+                          disabled={dossier.estEnInstruction}
                           champ={field}
                         />
                       );
@@ -454,6 +470,7 @@ function Etape1BrisPorte() {
                             onChange: (e) => field.setValue(e.target.value),
                           }}
                           champ={field}
+                          disabled={dossier.estEnInstruction}
                         />
                       );
                     }}
@@ -474,6 +491,7 @@ function Etape1BrisPorte() {
                             }}
                             estRequis={true}
                             champ={field}
+                            disabled={dossier.estEnInstruction}
                           />
                         </>
                       );
@@ -495,6 +513,7 @@ function Etape1BrisPorte() {
                             }}
                             estRequis={true}
                             champ={field}
+                            disabled={dossier.estEnInstruction}
                           />
                         </>
                       );
@@ -511,6 +530,7 @@ function Etape1BrisPorte() {
                       <RadioButtons
                         legend="S'agit-il d'une porte blindée ?"
                         orientation="horizontal"
+                        disabled={dossier.estEnInstruction}
                         options={[
                           {
                             label: "Oui",

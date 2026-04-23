@@ -44,7 +44,7 @@ class RequerantOutput
             courriel: $personne->getCourriel(),
             telephone: $personne->getTelephone(),
             dateNaissance: $personnePhysique?->getDateNaissance(),
-            communeNaissance: $personnePhysique?->getCodePostalNaissance()->getCommune()->getNom(),
+            communeNaissance: $personnePhysique?->getCodePostalNaissance()?->getCommune()->getNom(),
             villeNaissance: $personnePhysique?->getVilleNaissance(),
             paysNaissance: $personnePhysique?->getPaysNaissance()->getNom(),
             raisonSociale: $personneMorale?->getRaisonSociale(),

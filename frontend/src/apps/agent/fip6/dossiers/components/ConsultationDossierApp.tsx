@@ -113,7 +113,14 @@ export const ConsultationDossierApp = observer(
 
                 <p className="fr-my-1v">
                   {dossier.estDepose() ? (
-                    <>{dateEtHeureSimple(dossier.dateDepot as Date)}</>
+                    <>
+                      Déposé le{" "}
+                      {dateEtHeureSimple(dossier.dateDepot as Date, {
+                        masquerAnneeSiCourante: true,
+                        litterale: true,
+                        avecMinutes: true,
+                      })}
+                    </>
                   ) : (
                     <>En cours de constitution</>
                   )}{" "}
