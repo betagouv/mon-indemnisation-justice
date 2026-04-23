@@ -1,18 +1,18 @@
+import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { Agent, DossierApercu, EtatDossierType, RechercheDossier, Redacteur } from "@/common/models";
-import { observer } from "mobx-react-lite";
-import _ from "lodash";
-import React, { useState } from "react";
+import { dateEtHeureSimple, periode } from "@/common/services/date.ts";
+import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/link";
+import Pagination from "@codegouvfr/react-dsfr/Pagination";
+import { Select } from "@codegouvfr/react-dsfr/Select";
 import { useQuery } from "@tanstack/react-query";
 import { plainToInstance } from "class-transformer";
-import { Loader } from "@/common/composants/Loader.tsx";
-import Pagination from "@codegouvfr/react-dsfr/Pagination";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { Select } from "@codegouvfr/react-dsfr/Select";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
-import { dateEtHeureSimple, periode } from "@/common/services/date.ts";
-import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/link";
-import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
+import _ from "lodash";
+import { observer } from "mobx-react-lite";
+import React, { useState } from "react";
 
 type RechercheReponse = {
   resultats: DossierApercu[];
@@ -271,7 +271,7 @@ export const RechercheDossierApp = observer(({ agent }: { agent: Agent }) => {
                                           <>
                                             {dateEtHeureSimple(
                                               dossier.dateDepot,
-                                              true,
+                                              { masquerAnneeSiCourante: true },
                                             )}
                                           </>
                                         )}

@@ -31,6 +31,10 @@ export class EtatDossierType {
     return this.estType("A_COMPLETER", "DEPOSE", "EN_INSTRUCTION");
   }
 
+  get estEnInstruction(): boolean {
+    return this.type == "EN_INSTRUCTION";
+  }
+
   get estDecide(): boolean {
     return this.estType(
       "OK_A_ACCEPTER",

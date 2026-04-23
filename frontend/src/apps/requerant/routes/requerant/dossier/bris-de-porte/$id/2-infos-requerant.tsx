@@ -124,7 +124,10 @@ function Etape2InfosRequerant() {
 
   const formulaire = useForm({
     validators: {
-      onSubmit: SchemaValidationInfosRequerants,
+      onSubmit:
+        dossier.estBrouillon || !dossier.estEnInstruction
+          ? SchemaValidationInfosRequerants
+          : undefined,
     },
     defaultValues: extraireDonneesInfosRequerant(dossier),
     listeners: {
@@ -134,14 +137,21 @@ function Etape2InfosRequerant() {
       },
     },
     onSubmit: async ({ value, formApi }) => {
-      // Enregistrer le brouillon...
-      if (formApi.state.isValid) {
-        await dossierManager.enregistrer(dossier.id);
-        // ...et passer à l'étape suivante
+      if (dossier.estEnInstruction) {
         await naviguer({
           to: "../3-pieces-jointes",
           search: {} as any,
         });
+      } else {
+        // Enregistrer le brouillon...
+        if (formApi.state.isValid) {
+          await dossierManager.enregistrer(dossier.id);
+          // ...et passer à l'étape suivante
+          await naviguer({
+            to: "../3-pieces-jointes",
+            search: {} as any,
+          });
+        }
       }
     },
   });
@@ -163,7 +173,9 @@ function Etape2InfosRequerant() {
           e.stopPropagation();
           try {
             // Rafraîchir la validation avant la soumission
-            formulaire.validate("submit");
+            if (!dossier.estEnInstruction) {
+              formulaire.validate("submit");
+            }
             await formulaire.handleSubmit();
           } catch (e) {
             console.error(e);
@@ -214,6 +226,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   estRequis={true}
                                   champ={field}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -234,6 +247,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   estRequis={true}
                                   champ={field}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -292,6 +306,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   estRequis={true}
                                   champ={field}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -313,6 +328,7 @@ function Etape2InfosRequerant() {
                                     maxLength: 255,
                                   }}
                                   champ={field}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -334,6 +350,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   estRequis={true}
                                   champ={field}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -354,6 +371,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   estRequis={true}
                                   champ={field}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -381,6 +399,7 @@ function Etape2InfosRequerant() {
                                   }
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -401,6 +420,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -420,6 +440,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -439,6 +460,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -458,6 +480,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -477,6 +500,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -503,6 +527,7 @@ function Etape2InfosRequerant() {
                                     field.setValue(civilite)
                                   }
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -546,6 +571,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -566,6 +592,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -586,6 +613,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -607,6 +635,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -628,6 +657,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -656,6 +686,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -675,6 +706,7 @@ function Etape2InfosRequerant() {
                                   }
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -691,7 +723,10 @@ function Etape2InfosRequerant() {
                                   <div className="fr-col-lg-2 fr-col-4">
                                     <CodePostalInput
                                       label="Code postal"
-                                      disabled={!paysNaissance}
+                                      disabled={
+                                        !paysNaissance ||
+                                        dossier.estEnInstruction
+                                      }
                                       nativeInputProps={{
                                         defaultValue:
                                           field.state.value?.codePostal || "",
@@ -705,7 +740,10 @@ function Etape2InfosRequerant() {
                                   </div>
                                   <div className="fr-col-lg-4 fr-col-8">
                                     <FormSelect
-                                      disabled={!listeCommunes.length}
+                                      disabled={
+                                        !listeCommunes.length ||
+                                        dossier.estEnInstruction
+                                      }
                                       label="Ville de naissance"
                                       nativeSelectProps={{
                                         value: field.state.value?.id || "",
@@ -758,6 +796,7 @@ function Etape2InfosRequerant() {
                                     }}
                                     champ={field}
                                     estRequis={true}
+                                    disabled={dossier.estEnInstruction}
                                   />
                                 </div>
                               );
@@ -817,6 +856,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   estRequis={true}
                                   champ={field}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -838,6 +878,7 @@ function Etape2InfosRequerant() {
                                     maxLength: 255,
                                   }}
                                   champ={field}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -858,6 +899,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}
@@ -878,6 +920,7 @@ function Etape2InfosRequerant() {
                                   }}
                                   champ={field}
                                   estRequis={true}
+                                  disabled={dossier.estEnInstruction}
                                 />
                               );
                             }}

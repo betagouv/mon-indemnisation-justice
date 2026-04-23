@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Agent, DossierDetail } from "@/common/models";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { dateSimple } from "@/common/services/date.ts";
@@ -11,6 +11,8 @@ export const InfosDossier = ({
   dossier: DossierDetail;
   agent: Agent;
 }) => {
+  const e = useMemo(() => dossier.requerant.estFeminin(), [dossier.id]);
+
   return (
     <>
       <div className="fr-grid-column">
@@ -29,7 +31,7 @@ export const InfosDossier = ({
                 {dossier.requerant.prenoms.filter((p) => !!p).join(", ")}
               </li>
               <li>
-                <b>Né{dossier.requerant.estFeminin() ? "e" : ""}</b> le{" "}
+                <b>Né{e}</b> le{" "}
                 {dossier.requerant.dateNaissance ? (
                   <>{dateSimple(dossier.requerant.dateNaissance)}</>
                 ) : (
@@ -49,9 +51,7 @@ export const InfosDossier = ({
               </li>
               {dossier.requerant.estPersonneMorale() && (
                 <li>
-                  Représentant
-                  {dossier.requerant.estFeminin() ? "e" : ""} légal
-                  {dossier.requerant.estFeminin() ? "e" : ""} de la société{" "}
+                  Représentant{e} légal{e} de la société{" "}
                   <b>{dossier.requerant.raisonSociale}</b> (SIREN:{" "}
                   <b>{dossier.requerant.siren}</b>)
                 </li>
@@ -142,13 +142,7 @@ export const InfosDossier = ({
               <li>
                 <b>Le :</b>{" "}
                 {dossier.dateOperation ? (
-                  <>
-                    {dateSimple(dossier.dateOperation)}, à{" "}
-                    {dossier.dateOperation?.toLocaleString("fr-FR", {
-                      hour: "numeric",
-                      minute: "numeric",
-                    })}
-                  </>
+                  <>{dateSimple(dossier.dateOperation, true)}</>
                 ) : (
                   <i>non renseigné</i>
                 )}
@@ -166,8 +160,7 @@ export const InfosDossier = ({
                   <li>
                     <b>
                       Était visé
-                      {dossier.requerant.estFeminin() ? "e" : ""} par
-                      l'opération des Forces de l'ordre ?{" "}
+                      {e} par l'opération des Forces de l'ordre ?{" "}
                     </b>{" "}
                     <>{dossier.testEligibilite.estVise ? "Oui" : "Non"}</>
                   </li>

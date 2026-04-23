@@ -1,5 +1,5 @@
+import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import { Expose } from "class-transformer";
-import _ from "lodash";
 
 export type Civilite = "M" | "MME";
 
@@ -25,6 +25,7 @@ export class Requerant {
   }
 
   @Expose()
+  @DateTransform()
   get dateNaissance(): null | Date {
     return this._dateNaissance;
   }

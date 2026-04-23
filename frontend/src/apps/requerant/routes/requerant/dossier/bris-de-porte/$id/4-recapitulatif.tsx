@@ -230,6 +230,10 @@ function Etape4Recapitulatif() {
                     priority: "secondary",
                     children: "Modifier",
                     iconId: "fr-icon-pencil-line",
+                    linkProps: {
+                      from: Route.fullPath,
+                      to: "../1-bris-porte",
+                    },
                   },
                 ]}
               />
@@ -289,6 +293,10 @@ function Etape4Recapitulatif() {
                     priority: "secondary",
                     children: "Modifier",
                     iconId: "fr-icon-pencil-line",
+                    linkProps: {
+                      from: Route.fullPath,
+                      to: "../1-infos-requerant",
+                    },
                   },
                 ]}
               />
@@ -335,6 +343,10 @@ function Etape4Recapitulatif() {
                       priority: "secondary",
                       children: "Modifier",
                       iconId: "fr-icon-pencil-line",
+                      linkProps: {
+                        from: Route.fullPath,
+                        to: "../3-pieces-jointes",
+                      },
                     },
                   ]}
                 />
@@ -398,7 +410,7 @@ function Etape4Recapitulatif() {
               onClick: () =>
                 naviguer({
                   from: Route.fullPath,
-                  to: "./3-pieces-jointes",
+                  to: "../3-pieces-jointes",
                   search: {} as any,
                 }),
             },
@@ -408,7 +420,7 @@ function Etape4Recapitulatif() {
                 ? "Soumission en cours..."
                 : dossier.estBrouillon
                   ? "Soumettre ma demande"
-                  : "Modifier ma demande",
+                  : "Confirmer ma demande",
               disabled: sauvegardeEnCours,
               nativeButtonProps: {
                 type: "button",
