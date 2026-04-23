@@ -88,13 +88,57 @@ export const dateSimple = function (
   });
 };
 
-export const dateEtHeureSimple = function (
+export const heureSimple = function (
   date?: Date,
-  masquerAnneeSiCourante: boolean = false,
+  { litterale = true }: { litterale?: boolean } = { litterale: true },
 ): string {
   if (!date) {
     return "";
   }
 
-  return `${dateSimple(date, masquerAnneeSiCourante)} à ${date.getHours()}h${String(date.getMinutes()).padStart(2, "0")}`;
+  if (litterale) {
+    if (date.getHours() === 0) {
+      return "minuit";
+    } else if (date.getHours() === 12) {
+      return "midi";
+    }
+  }
+
+  return `${Number(date.getHours()).toString()}h`;
+};
+
+export const heureEtMinutesSimple = function (
+  date?: Date,
+  { litterale = true }: { litterale?: boolean } = { litterale: true },
+): string {
+  if (!date) {
+    return "";
+  }
+
+  const heure = heureSimple(date, { litterale });
+
+  return `${heure}${heure.endsWith("h") ? "" : " "}${String(date.getMinutes()).padStart(2, "0")}`;
+};
+
+export const dateEtHeureSimple = function (
+  date?: Date,
+  {
+    masquerAnneeSiCourante = false,
+    litterale = true, // Préférer minuit à `00 h`
+    avecMinutes = false,
+  }: {
+    masquerAnneeSiCourante?: boolean;
+    litterale?: boolean;
+    avecMinutes?: boolean;
+  } = {
+    masquerAnneeSiCourante: false,
+    litterale: true,
+    avecMinutes: false,
+  },
+): string {
+  if (!date) {
+    return "";
+  }
+
+  return `${dateSimple(date, masquerAnneeSiCourante)} à ${avecMinutes ? heureEtMinutesSimple(date, { litterale }) : heureSimple(date, { litterale })}`;
 };
