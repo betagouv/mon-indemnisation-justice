@@ -12,15 +12,24 @@
     Bonjour {{ declaration.coordonneesRequerant.prenom }} {{ declaration.coordonneesRequerant.nom|upper }},
     <br/>
     <br/>
-    Vous avez été invité par un agent des Forces de l'ordre à déposer votre dossier de demande d'indemnisation sur
-    l'application Mon Indemnisation Justice.
+    Un agent des Forces de l’ordre vous a invité à déposer une demande d’indemnisation à la suite d'un bris de porte sur
+    la plateforme Mon Indemnisation Justice.
     <br/>
-    Pour se faire, veuillez créer votre compte en cliquant sur le bouton ci-dessous ou en vous rendant à
-    l'adresse suivante : <a href="{{ invitation_url }}"
-                            title="Faire ma demande d'indemnisation">{{ invitation_url }}</a>
+    👉 Pour commencer votre démarche, veuillez créer votre compte et compléter votre dossier en ligne via le lien suivant :
+    <a href="{{ invitation_url }}"
+       title="Faire ma demande d'indemnisation">{{ invitation_url }}</a>
     <br/>
     <br/>
     {{ email.bouton("Faire ma demande d'indemnisation", invitation_url) }}
+    <br/>
+    <br/>
+    ⏱️ La procédure est simple et peut être réalisée en 5 minutes. Vous pourrez également enregistrer votre dossier et le
+    reprendre à tout moment.
+    <br/>
+    📎 Pensez à préparer les documents nécessaires afin de faciliter la complétion de votre demande.
+    <br/>
+    <br/>
+    En cas de difficulté, vous pourrez retrouver de l’aide directement sur la plateforme.
     <br/>
     <br/>
     Cordialement,<br/>
