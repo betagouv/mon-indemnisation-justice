@@ -37,7 +37,7 @@ export interface DossierManagerInterface {
   ajouterPiecesJointes(
     id: number,
     piecesJointes: NouvellePieceJointe[],
-  ): Promise<void>;
+  ): Promise<Dossier | undefined>;
 
   mesDemandes(): Promise<DossierApercu[]>;
 
@@ -103,7 +103,7 @@ export class ApiDossierManager implements DossierManagerInterface {
   async ajouterPiecesJointes(
     id: number,
     piecesJointes: NouvellePieceJointe[],
-  ): Promise<void> {
+  ): Promise<Dossier | undefined> {
     const payload = new FormData();
 
     piecesJointes.forEach((fichier) => {
@@ -140,6 +140,8 @@ export class ApiDossierManager implements DossierManagerInterface {
       original: dossier,
       modifie: instanceToInstance(dossier),
     });
+
+    return this.dossiers.get(id)?.modifie;
   }
 
   async enregistrer(id: number): Promise<Dossier> {
@@ -152,6 +154,7 @@ export class ApiDossierManager implements DossierManagerInterface {
 
     // On ne déclenche l'enregistrement que si des modifications sont présentes
     if (modificationsEnAttente) {
+      const { etatActuel, ...corps } = modificationsEnAttente;
       const reponse = await fetch(
         // Vers la route `api_requerant_dossier_bris_porte_amender`
         `/api/requerant/dossier/bris-de-porte/${id}/amender`,
@@ -160,7 +163,7 @@ export class ApiDossierManager implements DossierManagerInterface {
           headers: {
             Accept: "application/json",
           },
-          body: JSON.stringify(modificationsEnAttente),
+          body: JSON.stringify(corps),
         },
       );
       const data = await reponse.json();

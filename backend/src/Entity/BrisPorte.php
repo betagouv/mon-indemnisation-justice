@@ -26,8 +26,7 @@ class BrisPorte
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?TestEligibilite $testEligibilite = null;
 
-    #[ORM\OneToOne(targetEntity: DeclarationFDOBrisPorte::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'declaration_id', nullable: true, onDelete: 'SET NULL')]
+    #[ORM\OneToOne(targetEntity: DeclarationFDOBrisPorte::class, mappedBy: 'brisPorte', cascade: ['persist', 'remove'])]
     protected ?DeclarationFDOBrisPorte $declarationFDO = null;
 
     #[ORM\Column(type: 'string', length: 16, nullable: true, enumType: RapportAuLogement::class)]
@@ -186,6 +185,11 @@ class BrisPorte
         $this->adresse = $adresse;
 
         return $this;
+    }
+
+    public function getDossier(): Dossier
+    {
+        return $this->dossier;
     }
 
     public function getDateOperation(): ?\DateTimeInterface

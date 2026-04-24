@@ -255,13 +255,14 @@ export class TypePieceJointe {
     }),
     non_prise_en_charge_bailleur: new TypePieceJointe(
       "non_prise_en_charge_bailleur",
-      ({
-        court,
-        pluriel = false,
-        defini = false,
-        titre = true,
-        de = false,
-      }) => {
+      (contexte) => {
+        const { court, pluriel, defini, de, titre } = {
+          pluriel: false,
+          defini: false,
+          titre: true,
+          de: false,
+          ...contexte,
+        };
         const { s, article } = TypePieceJointe.elements(
           pluriel,
           true,

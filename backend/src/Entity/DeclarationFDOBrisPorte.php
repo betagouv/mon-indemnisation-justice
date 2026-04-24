@@ -59,9 +59,8 @@ class DeclarationFDOBrisPorte
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     protected ?string $precisionsRequerant = null;
 
-    #[ORM\OneToOne(targetEntity: Dossier::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    protected ?Dossier $dossier = null;
+    #[ORM\OneToOne(targetEntity: BrisPorte::class, inversedBy: 'declarationFDO', cascade: ['persist', 'remove'])]
+    protected ?BrisPorte $brisPorte = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     protected \DateTimeInterface $dateCreation;
@@ -184,21 +183,26 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDossier(): ?Dossier
+    public function getBrisPorte(): ?BrisPorte
     {
-        return $this->dossier;
+        return $this->brisPorte;
     }
 
-    public function setDossier(Dossier $dossier): static
+    public function setBrisPorte(?BrisPorte $brisPorte): DeclarationFDOBrisPorte
     {
-        $this->dossier = $dossier;
+        $this->brisPorte = $brisPorte;
 
         return $this;
     }
 
+    public function getDossier(): ?Dossier
+    {
+        return $this->brisPorte?->getDossier();
+    }
+
     public function estAttribue(): bool
     {
-        return null !== $this->dossier;
+        return null !== $this->brisPorte;
     }
 
     public function getAgent(): Agent

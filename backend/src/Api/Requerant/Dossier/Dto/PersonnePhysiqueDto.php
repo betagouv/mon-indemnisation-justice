@@ -32,7 +32,7 @@ class PersonnePhysiqueDto
             ->setPrenom3($this->prenom3)
             ->setAdresse($this->adresse?->versAdresse($personnePhysique?->getAdresse()))
             ->setDateNaissance($this->dateNaissance)
-            ->setPaysNaissance($this->paysNaissance?->versPays($personnePhysique?->getPaysNaissance()))
+            ->setPaysNaissance($this->paysNaissance?->versPays($personnePhysique->getPaysNaissance()))
             ->setCommuneNaissance($this->communeNaissance?->versCommune($personnePhysique?->getCodePostalNaissance()))
             ->setVilleNaissance(!is_null($this->villeNaissance) && !empty(trim($this->villeNaissance)) ? $this->villeNaissance : null);
     }
