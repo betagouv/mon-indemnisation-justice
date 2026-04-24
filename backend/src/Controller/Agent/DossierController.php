@@ -119,7 +119,7 @@ class DossierController extends AgentController
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
     #[Route('/dossier/{id}/decider.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
-    public function decider(#[MapEntity(id: 'id')] Dossier $dossier, Request $request, NormalizerInterface $normalizer): Response
+    public function decider(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
         $agent = $this->getAgent();
 
@@ -134,7 +134,7 @@ class DossierController extends AgentController
         );
 
         return new JsonResponse([
-            'etat' => $normalizer->normalize($dossier->getEtatDossier(), 'json', ['agent:detail']),
+            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
         ], Response::HTTP_OK);
     }
 
