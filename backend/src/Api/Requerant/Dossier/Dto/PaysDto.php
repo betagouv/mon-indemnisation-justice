@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Dossier\Dto;
 
+use MonIndemnisationJustice\Api\Requerant\Dossier\Normalization\EntityResolveur;
 use MonIndemnisationJustice\Entity\GeoPays;
 
 class PaysDto
@@ -14,9 +15,7 @@ class PaysDto
 
     public function versPays(?GeoPays $pays): GeoPays
     {
-        return ($pays ?? new GeoPays())
-            ->setCode($this->code)
-            ->setNom($this->nom);
+        return $this->code !== $pays?->getCode() ? EntityResolveur::resoudre(GeoPays::class, $this->code) : $pays;
     }
 
     public static function depuisPays(?GeoPays $pays): ?self

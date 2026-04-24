@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Api\Requerant\Request\Attribute;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\DossierDto;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Normalization\EntityResolveur;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DossierType;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,9 @@ class MapDossierResolver implements ValueResolverInterface
         private readonly EntityManagerInterface $em,
         private readonly DenormalizerInterface $denormalizer,
     ) {
+        // On configure le résolveur d'entité ici avec l'EntityManager pour qu'il puisse plus tard résoudre "à chaud" les
+        // entités lors de la dénormalisation.
+        EntityResolveur::configurer($em);
     }
 
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
