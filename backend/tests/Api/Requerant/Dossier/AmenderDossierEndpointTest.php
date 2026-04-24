@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Api\Requerant\Dossier\AmenderDossierEndpoint;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\PersonneMoraleType;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Usager;
@@ -60,6 +61,13 @@ class AmenderDossierEndpointTest extends WebTestCase
                             'nom' => 'CHIRAC',
                         ],
                         'villeNaissance' => 'Oran',
+                        'communeNaissance' => [
+                            'id' => $this->em->getRepository(GeoCodePostal::class)->findOneBy(['commune' => '44003'])->getId(),
+                            // Ces données doivent être ignorées pour celles associées à l'id choisi
+                            'codePostal' => '12345',
+                            'commune' => 'Nulle Part',
+                            'departement' => 'Non non',
+                        ],
                     ],
                 ]
             )
@@ -72,7 +80,7 @@ class AmenderDossierEndpointTest extends WebTestCase
         $this->em->refresh($dossier);
         $this->assertEquals('17 boulevard Pereire', $dossier->getBrisPorte()->getAdresse()->getLigne1());
         $this->assertInstanceOf(PersonnePhysique::class, $dossier->getRequerantPersonnePhysique());
-        $this->assertEquals('38053', $dossier->getRequerantPersonnePhysique()->getCodePostalNaissance()->getCommune()->getCode());
+        $this->assertEquals('44003', $dossier->getRequerantPersonnePhysique()->getCodePostalNaissance()->getCommune()->getCode());
         $this->assertEquals('Oran', $dossier->getRequerantPersonnePhysique()->getVilleNaissance());
         $this->assertEquals('Jacques', $dossier->getRequerantPersonnePhysique()->getPersonne()->getPrenom());
         $this->assertEquals('CHIRAC', $dossier->getRequerantPersonnePhysique()->getPersonne()->getNom());

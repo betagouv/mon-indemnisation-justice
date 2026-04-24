@@ -4,13 +4,11 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
 
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[Map(target: DeclarationFDOBrisPorte::class)]
 class DeclarationFDOBrisPorteInput
 {
     public Uuid $id;
@@ -29,13 +27,6 @@ class DeclarationFDOBrisPorteInput
     #[Assert\Valid]
     public ?CoordonneesRequerantInput $coordonneesRequerant = null;
 
-    #[Map(if: false)]
-    /*
-     * Puisque l'object mapper ne sait pas encore gérer le mapping récursif, les pièces jointes ne seront pas propagées
-     * vers la déclaration.
-     *
-     * /!\ il faut donc _manuellement_ mapper et ajouter les pièces jointes à la déclaration cible.
-     */
     protected array $piecesJointes = [];
 
     public function getPiecesJointes(): array
@@ -49,5 +40,25 @@ class DeclarationFDOBrisPorteInput
         $this->piecesJointes = $piecesJointes;
 
         return $this;
+    }
+
+    public function versDeclaration(DeclarationFDOBrisPorte $declarationFDOBrisPorte): DeclarationFDOBrisPorte
+    {
+        return $declarationFDOBrisPorte
+            ->setId($this->id)
+            ->setDateOperation($this->dateOperation)
+            ->setEstErreur($this->estErreur)
+            ->setDescriptionErreur($this->descriptionErreur)
+            ->setAdresse($this->adresse->versAdresse())
+            ->setProcedure($this->procedure->versProcedureJudiciaire())
+            ->setCoordonneesRequerant($this->coordonneesRequerant?->versCoordonneesRequerant())
+            ->setPrecisionsRequerant($this->precisionsRequerant)
+            ->setPiecesJointes(
+                array_map(
+                    fn (DocumentDto $documentDto) => $documentDto->versDocument(),
+                    $this->piecesJointes
+                )
+            );
+
     }
 }

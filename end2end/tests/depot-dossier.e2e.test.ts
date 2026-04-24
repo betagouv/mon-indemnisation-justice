@@ -275,7 +275,7 @@ test("dépôt de dossier", async ({browser}) => {
         .locator("ul.fr-btns-group li button", {hasText: "Fermer"})
         .click();
     // Laissons le temps à la modale de disparaitre
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(500);
     await expect(page.locator("dialog#dossier-depose-modale")).toBeHidden();
 
     /*
