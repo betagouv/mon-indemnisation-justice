@@ -63,7 +63,13 @@ class DossierController extends AgentController
                     'id' => $this->getAgent()->getId(),
                     'roles' => $this->getAgent()->getRoles(),
                 ],
-                'redacteurs' => $normalizer->normalize($this->agentRepository->getRedacteurs(), 'json', ['groups' => 'agent:resume']),
+                'redacteurs' => array_map(
+                    fn (Agent $redacteur) => [
+                        'id' => $redacteur->getId(),
+                        'nom' => $redacteur->getNomComplet(capital: true),
+                    ],
+                    $this->agentRepository->getRedacteurs(),
+                ),
             ],
         ]);
     }
@@ -79,7 +85,13 @@ class DossierController extends AgentController
                     'roles' => $this->getAgent()->getRoles(),
                 ],
                 'dossier' => $normalizer->normalize(DossierDetailOutput::creerDepuisDossier($dossier), 'json'),
-                'redacteurs' => $normalizer->normalize($this->agentRepository->getRedacteurs(), 'json', ['groups' => 'agent:resume']),
+                'redacteurs' => array_map(
+                    fn (Agent $redacteur) => [
+                        'id' => $redacteur->getId(),
+                        'nom' => $redacteur->getNomComplet(capital: true),
+                    ],
+                    $this->agentRepository->getRedacteurs(),
+                ),
             ],
         ]);
     }

@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
 use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,11 +26,17 @@ class HomeController extends AbstractController
         return $this->render('requerant/requerant.html.twig');
     }
 
+    #[Route('/deconnexion', name: 'requerant_deconnexion', methods: ['GET'], priority: 1000)]
+    public function deconnexion(Security $security): Response
+    {
+        return $security->logout(false);
+    }
+
     /**
      * Cette ancienne route était accessible depuis les emails de notifications envoyés au requérant. On assure le
      * transfert tant que des usagers peuvent encore ouvrir et cliquer sur ces liens.
      */
-    #[Route('/bris-de-porte/{id}/consulter-la-decision', name: 'requerant_dossier_consulter_decision', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/bris-de-porte/{id}/consulter-la-decision', name: 'requerant_dossier_consulter_decision', requirements: ['id' => '\d+'], methods: ['GET'], priority: 1000)]
     public function atterrissageConsulterDecision(int $id): Response
     {
         // Renvoyer vers le routeur React

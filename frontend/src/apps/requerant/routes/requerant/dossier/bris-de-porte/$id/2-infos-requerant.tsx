@@ -26,6 +26,7 @@ import { Requis } from "@/common/composants/dsfr/Requis.tsx";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { dateChiffre } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Notice from "@codegouvfr/react-dsfr/Notice";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm, useStore } from "@tanstack/react-form";
 import {
@@ -193,6 +194,18 @@ function Etape2InfosRequerant() {
         </section>
 
         <section>
+          {dossier.estEnInstruction && (
+            <div className="fr-grid-row">
+              <Notice
+                description="Cette étape est en lecture seule le dossier étant entré en instruction"
+                iconDisplayed
+                isClosable={false}
+                severity="info"
+                title="Cette étape est en lecture seule, le dossier étant entré en instruction"
+              />
+            </div>
+          )}
+
           <div className="fr-grid-row">
             <p>
               Tous les champs marqués <Requis /> sont requis et doivent être
