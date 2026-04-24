@@ -65,7 +65,6 @@ class ConnexionUsagerListener implements EventSubscriberInterface
                     )
                     ->setBrisPorte(
                         new BrisPorte()
-                            ->setDeclarationFDO($declarationFDO)
                             ->setDateOperation($declarationFDO->getDateOperation())
                             ->setAdresse(
                                 new Adresse()
@@ -76,7 +75,8 @@ class ConnexionUsagerListener implements EventSubscriberInterface
                                     ->setLocalite($declarationFDO->getAdresse()->getLocalite())
                             )
                     );
-
+                $declarationFDO->setBrisPorte($dossier->getBrisPorte());
+                $this->em->persist($declarationFDO);
                 $this->em->persist($dossier);
                 $this->em->flush();
 

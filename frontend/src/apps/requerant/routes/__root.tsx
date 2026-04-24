@@ -66,7 +66,8 @@ const EspaceRequerant = () => {
             iconId: "fr-icon-logout-box-r-line",
             text: "Déconnexion",
             linkProps: {
-              href: `${window.location.origin}/deconnexion`,
+              href: `${window.location.origin}/requerant/deconnexion`,
+              target: "_self",
             } as LinkProps,
           },
         ]}
