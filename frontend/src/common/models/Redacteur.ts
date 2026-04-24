@@ -10,12 +10,10 @@ export class Redacteur {
     return this._catalog.get(id) ?? null;
   }
 
-  public static charger(data: any): void {
-    const instance = plainToInstance(Redacteur, data);
+  public static charger(data: any[]): void {
+    const redacteurs = plainToInstance(Redacteur, data);
 
-    for (const redacteur of instance instanceof Redacteur
-      ? [instance]
-      : (instance as Redacteur[])) {
+    for (const redacteur of redacteurs) {
       this._catalog.set(redacteur.id, redacteur);
     }
   }
