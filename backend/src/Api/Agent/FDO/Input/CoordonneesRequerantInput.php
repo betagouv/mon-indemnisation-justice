@@ -4,10 +4,8 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
 
 use MonIndemnisationJustice\Entity\Civilite;
 use MonIndemnisationJustice\Entity\CoordonneesRequerant;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[Map(CoordonneesRequerant::class)]
 class CoordonneesRequerantInput
 {
     public ?Civilite $civilite = null;
@@ -19,4 +17,14 @@ class CoordonneesRequerantInput
     #[Assert\NotNull(message: "L'adresse courriel du requérant est requise")]
     #[Assert\Email(message: "L'adresse courriel du requérant est invalide")]
     public ?string $courriel = null;
+
+    public function versCoordonneesRequerant(): CoordonneesRequerant
+    {
+        return new CoordonneesRequerant()
+            ->setCivilite($this->civilite)
+            ->setNom($this->nom)
+            ->setPrenom($this->prenom)
+            ->setTelephone($this->telephone)
+            ->setCourriel($this->courriel);
+    }
 }

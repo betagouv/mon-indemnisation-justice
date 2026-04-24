@@ -41,7 +41,7 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { default as React, useEffect, useMemo, useRef, useState } from "react";
+import { default as React, useMemo, useRef, useState } from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$id/3-pieces-jointes",
@@ -183,22 +183,6 @@ function Etape3PiecesJointes() {
     return decomptePiecesJointes[type.type] || 0;
   };
 
-  useEffect(() => {
-    if (dossier.piecesJointes.length > 0) {
-      const dernierePieceJointe = dossier.piecesJointes
-        .sort(
-          (a, b) =>
-            (a.dateAjout?.getTime() || 0) - (b.dateAjout?.getTime() || 0),
-        )
-        .at(-1);
-
-      if (dernierePieceJointe) {
-        selectionnerPieceJointe(dernierePieceJointe);
-        selectionnerTypePieceJointe(dernierePieceJointe.type);
-      }
-    }
-  }, [dossier.piecesJointes.map((p) => p.id)]);
-
   const formulaire = useForm({
     validators: {
       onSubmit: getSchemaValidationPiecesJointes(dossier),
@@ -225,11 +209,30 @@ function Etape3PiecesJointes() {
         onComplete={async (
           piecesJointes: NouvellePieceJointe[],
         ): Promise<void> => {
-          await dossierManager.ajouterPiecesJointes(dossier.id, piecesJointes);
+          const dossierModifie = await dossierManager.ajouterPiecesJointes(
+            dossier.id,
+            piecesJointes,
+          );
+
+          // On sélectionne la dernière pièce jointe ajoutée
+          if (dossierModifie) {
+            const dernierePieceJointeAjoutee = dossierModifie.piecesJointes
+              .sort(
+                (a, b) =>
+                  (b.dateAjout?.getTime() || 0) - (a.dateAjout?.getTime() || 0),
+              )
+              .at(-1);
+
+            if (dernierePieceJointeAjoutee) {
+              selectionnerPieceJointe(dernierePieceJointeAjoutee);
+              selectionnerTypePieceJointe(dernierePieceJointeAjoutee.type);
+            }
+          }
           // On sait que le dossier a changé, il faut donc invalider le cache du
           // routeur pour le forcer à récupérer le dossier à jour.
           await routeur.invalidate();
-          // Alors on peut valider le formulaire, sur le dossier à jour
+
+          // Alors, on peut valider le formulaire, sur le dossier à jour
           await formulaire.validate("submit");
         }}
         typesPiecesjointes={typesPiecesJointesDemandes}
@@ -315,8 +318,8 @@ function Etape3PiecesJointes() {
                       // du type
                       onClick: () => {
                         if (!decomptePiecesJointesPourType(type)) {
-                          selectionnerTypePieceJointe(type);
                           selectionnerPieceJointe(undefined);
+                          selectionnerTypePieceJointe(type);
                         }
                       },
                     },
@@ -359,8 +362,8 @@ function Etape3PiecesJointes() {
                               linkProps: {
                                 href: `#piece-jointe-${pj.id}`,
                                 onClick: () => {
-                                  selectionnerPieceJointe(pj);
                                   selectionnerTypePieceJointe(pj.type);
+                                  selectionnerPieceJointe(pj);
                                 },
                               },
                             })),

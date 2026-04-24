@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Dossier\Dto;
 
+use MonIndemnisationJustice\Api\Requerant\Dossier\Normalization\EntityResolveur;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 
 class CommuneDto
@@ -17,8 +18,7 @@ class CommuneDto
 
     public function versCommune(?GeoCodePostal $commune): ?GeoCodePostal
     {
-        return ($commune ?? new GeoCodePostal())
-            ->setCodePostal($this->codePostal);
+        return $this->id !== $commune?->getId() ? EntityResolveur::resoudre(GeoCodePostal::class, $this->id) : $commune;
     }
 
     public static function depuisCommune(?GeoCodePostal $geoCodePostal): ?self

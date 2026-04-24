@@ -19,7 +19,6 @@ export abstract class BaseDossier {
   public readonly id: number;
   public readonly reference?: string;
   @Type(() => EtatDossier)
-  @Expose({ toClassOnly: true })
   etatActuel: EtatDossier;
   @DateTransform()
   dateDepot?: Date;

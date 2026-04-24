@@ -39,7 +39,7 @@ class PersonnePhysique
     #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
     public ?GeoCodePostal $codePostalNaissance = null;
 
-    #[ORM\ManyToOne(targetEntity: GeoPays::class)]
+    #[ORM\ManyToOne(targetEntity: GeoPays::class, cascade: ['persist', 'remove'], inversedBy: 'personnesPhysiques')]
     #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code')]
     protected ?GeoPays $paysNaissance = null;
 

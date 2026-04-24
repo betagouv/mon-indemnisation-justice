@@ -20,9 +20,8 @@ class ConnexionUsagerListener implements EventSubscriberInterface
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly NormalizerInterface    $normalizer,
-    )
-    {
+        protected readonly NormalizerInterface $normalizer,
+    ) {
     }
 
     public function onSecurityInteractiveLogin(LoginSuccessEvent $event): void
@@ -53,10 +52,9 @@ class ConnexionUsagerListener implements EventSubscriberInterface
         } else {
             // Sinon si une déclaration des FDO existe en session...
             $declarationFDO = $this->getDeclarationFDOEnCours($request, $usager);
-            $dossier = $declarationFDO ? $this->em->getRepository(Dossier::class)->findOneBy(['declarationFDO' => $declarationFDO]) : null;
 
             // ... associée à aucun de ses dossiers existants...
-            if (null !== $declarationFDO && null === $dossier) {
+            if (null !== $declarationFDO && null === $declarationFDO->getDossier()) {
                 // ... alors, on crée un nouveau dossier lié à cette déclaration
                 $dossier = Dossier::brisDePorte()
                     ->setUsager($usager)
@@ -67,7 +65,8 @@ class ConnexionUsagerListener implements EventSubscriberInterface
                     )
                     ->setBrisPorte(
                         new BrisPorte()
-                            ->setTestEligibilite($testEligibilite)
+                            ->setDeclarationFDO($declarationFDO)
+                            ->setDateOperation($declarationFDO->getDateOperation())
                             ->setAdresse(
                                 new Adresse()
                                     // On recopie les valeurs de l'adresse de la déclaration pour permettre au requérant de modifier
