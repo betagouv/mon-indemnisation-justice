@@ -28,7 +28,7 @@ const getLibelleTypePersonneMorale = (type: TypePersonneMoraleType): string =>
 
 const libellerNomTypePersonneMorale = (
   type: TypePersonneMoraleType,
-  options: { defini: boolean },
+  { defini }: { defini: boolean },
 ): string => {
   switch (type) {
     case "ASSOCIATION":

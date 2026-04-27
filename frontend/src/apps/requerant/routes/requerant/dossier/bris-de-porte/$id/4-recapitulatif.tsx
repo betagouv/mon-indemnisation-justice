@@ -254,7 +254,7 @@ function Etape4Recapitulatif() {
                     {dossier.personneMorale.siren.length === 9
                       ? "SIRET"
                       : "SIREN"}{" "}
-                    dossier.personneMorale.siren.
+                    {dossier.personneMorale.siren}
                   </p>
 
                   <p>
