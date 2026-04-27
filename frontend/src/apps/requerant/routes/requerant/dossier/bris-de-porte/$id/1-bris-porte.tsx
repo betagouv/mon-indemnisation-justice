@@ -36,10 +36,11 @@ import {
   notFound,
   NotFoundRouteProps,
   redirect,
+  useBlocker,
   useNavigate,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React from "react";
+import React, { useState } from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$id/1-bris-porte",
@@ -110,6 +111,9 @@ function Etape1BrisPorte() {
   // Récupérer la référence depuis le paramètre de la route
   const { dossier }: { dossier: Dossier } = Route.useLoaderData();
 
+  const [changementsEnAttente, setChangementsEnAttente] =
+    useState<boolean>(false);
+
   const formulaire = useForm({
     validators: {
       onSubmit:
@@ -120,7 +124,8 @@ function Etape1BrisPorte() {
     defaultValues: extraireDonneesBrisDeporte(dossier),
     listeners: {
       onChangeDebounceMs: 500,
-      onChange: async ({ fieldApi, formApi }) => {
+      onChange: async ({ formApi }) => {
+        setChangementsEnAttente(formApi.state.isDirty);
         if (dossier.id) {
           dossierManager.modifier(dossier.id, formApi.state.values);
         }
@@ -143,6 +148,23 @@ function Etape1BrisPorte() {
           });
         }
       }
+    },
+  });
+
+  // Prévenir la fermeture de page lorsque des changements sont en attente
+  useBlocker({
+    shouldBlockFn: ({ next, current, action }) => {
+      // Ignore hot reloads when in dev
+      if (import.meta.env.DEV && next.fullPath == current.fullPath) {
+        return false;
+      }
+
+      if (!!next || !changementsEnAttente) return false;
+
+      const autoriserLaFermeture = confirm(
+        "Des modifications sont en attente sur votre dossier. En quittant cette page, vous risquez de les perdre, êtes-vous sûr ?",
+      );
+      return !autoriserLaFermeture;
     },
   });
 

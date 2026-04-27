@@ -4,14 +4,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { InputProps } from "@codegouvfr/react-dsfr/src/Input.tsx";
 import * as Sentry from "@sentry/browser";
 import { debounce } from "lodash";
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  FocusEventHandler,
-  ReactNode,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, ChangeEventHandler, FocusEventHandler, ReactNode, useMemo, useRef, useState } from "react";
 
 /**
  * La suggestion est affichée dans un menu déroulant par son libellé, mais est
@@ -104,6 +97,7 @@ export const BaseSuggestedInput = <TSuggestion extends {} = {}>({
 
   // Référence vers le conteneur HTML
   const refConteneur = useRef<HTMLDivElement>(null!);
+
   // État de l'activité du champ `input`, basé sur les évènements `onFocus` et `onBlur`
   const [estChampActif, setChampActif] = useState(false);
 
@@ -119,10 +113,10 @@ export const BaseSuggestedInput = <TSuggestion extends {} = {}>({
     setAfficherSuggestions(!!correspondances.length);
   };
 
-  // Fonction _debounced_ qui calcule les suggestions correspondantes
-  const calculerCorrespondances = rafraichisseur
-    ? debounce(
-        async (valeur: string) => {
+  // Fonction _débouncée_ de rafraichissement des suggestions dans le menu déroulant
+  const rafraichir = useMemo(() => {
+    return !!rafraichisseur
+      ? debounce(async (valeur: string) => {
           try {
             const correspondances = await rafraichisseur(valeur);
             rafraichirMenu(correspondances);
@@ -130,11 +124,9 @@ export const BaseSuggestedInput = <TSuggestion extends {} = {}>({
             if (import.meta.env.DEV) console.log(e);
             Sentry.captureException(e);
           }
-        },
-        rafraichisseurDebounceMs || 500,
-        { trailing: true },
-      )
-    : undefined;
+        }, rafraichisseurDebounceMs || 500)
+      : undefined;
+  }, [!rafraichisseur, rafraichisseurDebounceMs]);
 
   // Est-ce que les suggestions doivent être affichées
   const [afficherSuggestions, setAfficherSuggestions] = useState(false);
@@ -148,13 +140,14 @@ export const BaseSuggestedInput = <TSuggestion extends {} = {}>({
 
   // Réagir au changement de valeur du champ texte
   const handleInputChange = async (valeur: string) => {
-    if (!!calculerCorrespondances) {
+    if (!!rafraichir) {
       /** On ne déclenche le rafraichissement que selon la décision de la fonction
        * `estARafraichir` sur la valeur actuelle du champ, si elle est définie,
        * automatiquement sinon.
        */
+      rafraichir.cancel();
       if (!estARafraichir || estARafraichir(valeur)) {
-        calculerCorrespondances(valeur);
+        rafraichir(valeur);
       }
     } else {
       rafraichirMenu(

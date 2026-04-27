@@ -1,7 +1,4 @@
-import {
-  BaseSuggestedInput,
-  BaseSuggestedInputProps,
-} from "@/apps/requerant/composants/SuggestedInput.tsx";
+import BaseSuggestedInput, { BaseSuggestedInputProps } from "@/apps/requerant/composants/SuggestedInput.tsx";
 import React from "react";
 import { CheckInput, CheckInputProps } from "./CheckInput.tsx";
 
