@@ -36,11 +36,11 @@ class PersonnePhysique
     private ?\DateTimeInterface $dateNaissance = null;
 
     #[ORM\ManyToOne(targetEntity: GeoCodePostal::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     public ?GeoCodePostal $codePostalNaissance = null;
 
-    #[ORM\ManyToOne(targetEntity: GeoPays::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code')]
+    #[ORM\ManyToOne(targetEntity: GeoPays::class)]
+    #[ORM\JoinColumn(name: 'pays_naissance', referencedColumnName: 'code', onDelete: 'SET NULL')]
     protected ?GeoPays $paysNaissance = null;
 
     #[ORM\Column(type: Types::STRING, nullable: true)]
