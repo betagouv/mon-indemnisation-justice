@@ -59,7 +59,6 @@ class ConnexionUsagerListener implements EventSubscriberInterface
                 $dossier = Dossier::brisDePorte()
                     ->setUsager($usager)
                     ->setRequerant(
-                        $usager->getPersonne()->getPersonnePhysique() ??
                         new PersonnePhysique()
                             ->setPersonne($usager->getPersonne())
                     )
