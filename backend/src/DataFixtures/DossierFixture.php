@@ -19,6 +19,7 @@ use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\GeoCommune;
 use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\GeoPays;
+use MonIndemnisationJustice\Entity\PersonneMorale;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TestEligibilite;
@@ -122,6 +123,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $manager->persist($dossierAFinaliser);
 
+
         $dossierAFinaliser2 = $this->creerDossier(
             $this->getReference('requerant-saint-malo', Usager::class),
             [
@@ -135,9 +137,8 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             adresse: new Adresse()
                 ->setLigne1('15 allée de la Criée')
                 ->setCodePostal('35430')
-                ->setLocalite('Saint-Suliac')
-        )->setRequerant(
-            new PersonnePhysique()
+                ->setLocalite('Saint-Suliac'),
+            requerant: new PersonnePhysique()
                 ->setPersonne($this->getReference('requerant-saint-malo', Usager::class)->getPersonne())
         );
 
@@ -154,7 +155,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ->setAdresse(
                         new Adresse()
                             ->setCommune($this->getReference('commune-melun', GeoCommune::class))
-                            ->setCodePostal('77000')
+                            ->setCodePostal($this->faker->postcode())
                             ->setLigne1($this->faker->streetAddress())
                             ->setLocalite($this->faker->city())
                     )
@@ -163,7 +164,22 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     )
                     ->setRapportAuLogement(RapportAuLogement::BAILLEUR)
             )
-            ->setUsager($this->getReference('requerant-melun', Usager::class));
+            ->setUsager($this->getReference('requerant-melun', Usager::class))
+            ->setRequerant(
+                new PersonnePhysique()
+                    ->setPersonne(
+                        $this->getReference('requerant-melun', Usager::class)->getPersonne()
+                    )
+                    ->setDateNaissance($this->faker->dateTimeBetween('-70 years', '-18 years'))
+                    ->setCommuneNaissance($this->getReference('code-postal-38300', GeoCodePostal::class))
+                    ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
+                    ->setAdresse(
+                        new Adresse()
+                            ->setCodePostal($this->faker->postcode())
+                            ->setLigne1($this->faker->streetAddress())
+                            ->setLocalite($this->faker->city())
+                    )
+            );
 
 
         $dossierAAttribuer->setHistoriqueEtats([
@@ -275,6 +291,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $manager->persist($dossierRejetASigner);
 
+
         $dossierPropositionASigner = $this->creerDossier(
             $this->getReference('requerant-aix-en-provence', Usager::class),
             [
@@ -290,6 +307,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $this->addReference('dossier-a-signer-aix-en-provence', $dossierPropositionASigner);
 
         $manager->persist($dossierPropositionASigner);
+
 
         $dossierAVerifier = $this->creerDossier(
             $this->getReference('requerant-melun', Usager::class),
@@ -340,6 +358,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $manager->persist($dossierArreteASigner);
 
+
         $dossierATransmettre = $this->creerDossier(
             $this->getReference('requerant-ancenis', Usager::class),
             [
@@ -356,6 +375,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $this->addReference('dossier-a-transmettre-ancenis', $dossierATransmettre);
 
         $manager->persist($dossierATransmettre);
+
 
         $dossierEnAttenteIndemnisation = $this->creerDossier(
             $this->getReference('requerant-istres', Usager::class),
@@ -375,6 +395,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $manager->persist($dossierEnAttenteIndemnisation);
 
+
         $manager->flush();
     }
 
@@ -393,12 +414,13 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
     }
 
     protected function creerDossier(
-        Usager $requerant,
+        Usager $deposant,
         array $donneesTestEligibilite,
         \DateTimeInterface $dateCreation,
         EtatDossierType $etatActuel,
         ?Adresse $adresse = null,
         ?Agent $redacteur = null,
+        PersonnePhysique|PersonneMorale|null $requerant = null,
     ): Dossier {
         $dossier = Dossier::brisDePorte()
             ->setBrisPorte(
@@ -411,14 +433,27 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                             array_merge(
                                 $donneesTestEligibilite,
                                 [
-                                    'usager' => $requerant,
+                                    'usager' => $deposant,
                                     'dateSoumission' => $dateCreation,
                                 ]
                             ),
                         )
                     )
             )
-            ->setUsager($requerant)
+            ->setRequerant(
+                $requerant ?? new PersonnePhysique()
+                ->setPersonne($deposant->getPersonne())
+                ->setDateNaissance($this->faker->dateTimeBetween('-70 years', '-18 years'))
+                ->setPrenom2($this->faker->firstNameFemale)
+                ->setPrenom3($this->faker->firstNameFemale)
+                ->setAdresse(
+                    new Adresse()
+                        ->setLigne1($this->faker->streetAddress())
+                        ->setCodePostal($this->faker->postcode())
+                        ->setLocalite($this->faker->city()),
+                )
+            )
+            ->setUsager($deposant)
             ->setRedacteur($redacteur)
             ->setDateCreation($dateCreation);
 

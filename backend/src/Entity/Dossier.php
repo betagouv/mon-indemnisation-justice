@@ -554,7 +554,6 @@ class Dossier
         return Dossier::brisDePorte()
             ->setUsager($testEligibilite->usager)
             ->setRequerant(
-                $testEligibilite->usager->getPersonne()->getPersonnePhysique() ??
                 new PersonnePhysique()
                     ->setPersonne($testEligibilite->usager->getPersonne())
             )

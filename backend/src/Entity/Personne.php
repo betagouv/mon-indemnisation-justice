@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
@@ -18,7 +19,6 @@ class Personne
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
     protected ?Civilite $civilite = null;
 
-
     #[ORM\Column(length: 255, nullable: true)]
     protected ?string $prenom = null;
 
@@ -34,8 +34,8 @@ class Personne
     #[ORM\Column(length: 255, nullable: true)]
     protected ?string $telephone = null;
 
-    #[ORM\OneToOne(targetEntity: PersonnePhysique::class, mappedBy: 'personne', cascade: ['persist', 'remove'])]
-    protected ?PersonnePhysique $personnePhysique = null;
+    #[ORM\OneToMany(targetEntity: PersonnePhysique::class, mappedBy: 'personne', cascade: ['persist', 'remove'])]
+    protected ?Collection $personnePhysiques;
 
     public function getId(): ?Uuid
     {
@@ -162,15 +162,8 @@ class Personne
         return $this;
     }
 
-    public function getPersonnePhysique(): ?PersonnePhysique
+    public function getPersonnePhysiques(): ?Collection
     {
-        return $this->personnePhysique;
-    }
-
-    public function setPersonnePhysique(PersonnePhysique $personnePhysique = new PersonnePhysique()): self
-    {
-        $this->personnePhysique = $personnePhysique->setPersonne($this);
-
-        return $this;
+        return $this->personnePhysiques;
     }
 }
