@@ -12,13 +12,17 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\GeoCommune;
 use MonIndemnisationJustice\Entity\GeoDepartement;
-use MonIndemnisationJustice\Entity\QualiteRequerant;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\GeoPays;
+use MonIndemnisationJustice\Entity\PersonnePhysique;
+use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
@@ -32,19 +36,18 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
     protected string $dossierTeleversement;
     protected Filesystem $filesystem;
 
-    /** @var BrisPorte[] */
+    /** @var Dossier[] */
     private static $REGISTRE_DOSSIERS = [];
 
     public function __construct(
         protected readonly UserPasswordHasherInterface $passwordHasher,
         #[Autowire(param: 'kernel.project_dir')]
-        protected readonly string                      $kernelDirectory,
-        protected readonly DocumentManager             $documentManager,
-    )
-    {
+        protected readonly string $kernelDirectory,
+        protected readonly DocumentManager $documentManager,
+    ) {
         $this->faker = Factory::create('fr_FR');
-        $this->dossierTeleversement = $this->kernelDirectory . '/fichiers/test/';
-        $this->dossierRessources = $this->kernelDirectory . '/tests/ressources/';
+        $this->dossierTeleversement = $this->kernelDirectory.'/fichiers/test/';
+        $this->dossierRessources = $this->kernelDirectory.'/tests/ressources/';
         $this->filesystem = new Filesystem();
     }
 
@@ -53,39 +56,66 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         return [
             GeoFixtures::class,
             AgentFixture::class,
-            RequerantFixture::class,
+            UsagerFixture::class,
             TestEligibiliteFixture::class,
         ];
     }
 
     public function load(ObjectManager $manager): void
     {
-        $finder = new Finder();
-        $finder->files()->in($this->dossierTeleversement);
+        if ($this->filesystem->exists($this->dossierTeleversement)) {
+            $finder = new Finder();
 
-        if ($finder->hasResults()) {
-            foreach ($finder as $fichier) {
-                $this->filesystem->remove($fichier);
+
+            $finder->files()->in($this->dossierTeleversement);
+
+            if ($finder->hasResults()) {
+                foreach ($finder as $fichier) {
+                    $this->filesystem->remove($fichier);
+                }
             }
         }
 
         // Dossiers
-        $dossierAFinaliser = (new BrisPorte())
-            ->setRequerant($this->getReference('requerant-raquel', Requerant::class))
-            ->setAdresse((new Adresse())
-                ->setLigne1('12 rue des Oliviers')
-                ->setCodePostal('44100'))
-            ->setDescriptionRequerant('Porte fracturée tôt ce matin')
-            ->setTestEligibilite(
-                TestEligibilite::fromArray([
-                    'departement' => $this->getReference('departement-bouches-du-rhone', GeoDepartement::class),
-                    'estVise' => false,
-                    'estHebergeant' => false,
-                    'rapportAuLogement' => QualiteRequerant::PRO,
-                    'aContacteAssurance' => false,
-                    'requerant' => $this->getReference('requerant-raquel', Requerant::class),
-                    'dateSoumission' => new \DateTime('-30 seconds'),
-                ])
+        $dossierAFinaliser = Dossier::brisDePorte()
+            ->setUsager($this->getReference('requerant-raquel', Usager::class))
+            ->setRequerant(
+                new PersonnePhysique()
+                    ->setPersonne(
+                        $this->getReference('requerant-raquel', Usager::class)->getPersonne()
+                    )
+                    ->setDateNaissance(new \DateTime('1979-05-17'))
+                    ->setCommuneNaissance($this->getReference('code-postal-38300', GeoCodePostal::class))
+                    ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
+                    ->setAdresse(
+                        new Adresse()
+                            ->setLigne1('12 rue des Oliviers')
+                            ->setCodePostal('44100')
+                            ->setLocalite('Nantes')
+                    )
+            )
+            ->setBrisPorte(
+                new BrisPorte()
+                    ->setAdresse(
+                        new Adresse()
+                            ->setLigne1('12 rue des Oliviers')
+                            ->setCodePostal('44100')
+                            ->setLocalite('Nantes')
+                    )
+                    ->setDateOperation(new \DateTimeImmutable('-10 days'))
+                    ->setRapportAuLogement(RapportAuLogement::PROPRIETAIRE)
+                    ->setDescriptionRequerant('Porte fracturée tôt ce matin')
+                    ->setTestEligibilite(
+                        TestEligibilite::fromArray([
+                            'departement' => $this->getReference('departement-bouches-du-rhone', GeoDepartement::class),
+                            'estVise' => false,
+                            'estHebergeant' => false,
+                            'rapportAuLogement' => RapportAuLogement::PROPRIETAIRE,
+                            'aContacteAssurance' => false,
+                            'usager' => $this->getReference('requerant-raquel', Usager::class),
+                            'dateSoumission' => new \DateTime('-30 seconds'),
+                        ])
+                    )
             );
 
         $this->addReference('dossier-a-finaliser-nantes', $dossierAFinaliser);
@@ -93,51 +123,62 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $manager->persist($dossierAFinaliser);
 
         $dossierAFinaliser2 = $this->creerDossier(
-            $this->getReference('requerant-saint-malo', Requerant::class),
+            $this->getReference('requerant-saint-malo', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOCATAIRE,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => false,
             ],
             new \DateTimeImmutable('-15 days'),
             EtatDossierType::DOSSIER_A_FINALISER,
+            adresse: new Adresse()
+                ->setLigne1('15 allée de la Criée')
+                ->setCodePostal('35430')
+                ->setLocalite('Saint-Suliac')
+        )->setRequerant(
+            new PersonnePhysique()
+                ->setPersonne($this->getReference('requerant-saint-malo', Usager::class)->getPersonne())
         );
 
         $this->addReference('dossier-a-finaliser-saint-malo', $dossierAFinaliser2);
 
         $manager->persist($dossierAFinaliser2);
 
-        $dossierAAttribuer = (new BrisPorte())
+        $dossierAAttribuer = Dossier::brisDePorte()
             ->setReference('BRI/20250410/001')
             ->setDateDepot(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-04-10'))
-            ->setDateOperationPJ($this->faker->dateTimeBetween('-100 days', 'now'))
-            ->setRequerant($this->getReference('requerant-melun', Requerant::class))
-            ->setAdresse(
-                (new Adresse())
-                    ->setCommune($this->getReference('commune-melun', GeoCommune::class))
-                    ->setCodePostal('77000')
-                    ->setLigne1($this->faker->streetAddress())
-                    ->setLocalite($this->faker->city())
+            ->setBrisPorte(
+                new BrisPorte()
+                    ->setDateOperation($this->faker->dateTimeBetween('-100 days', 'now'))
+                    ->setAdresse(
+                        new Adresse()
+                            ->setCommune($this->getReference('commune-melun', GeoCommune::class))
+                            ->setCodePostal('77000')
+                            ->setLigne1($this->faker->streetAddress())
+                            ->setLocalite($this->faker->city())
+                    )
+                    ->setTestEligibilite(
+                        $this->getReference('test-eligibilite-melun', TestEligibilite::class)
+                    )
+                    ->setRapportAuLogement(RapportAuLogement::BAILLEUR)
             )
-            ->setTestEligibilite(
-                $this->getReference('test-eligibilite-melun', TestEligibilite::class)
-            )
-            ->setQualiteRequerant(QualiteRequerant::BAI);
+            ->setUsager($this->getReference('requerant-melun', Usager::class));
+
 
         $dossierAAttribuer->setHistoriqueEtats([
-            (new EtatDossier())
+            new EtatDossier()
                 ->setEtat(EtatDossierType::DOSSIER_A_FINALISER)
                 ->setDateEntree(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-04-10'))
-                ->setRequerant($this->getReference('requerant-melun', Requerant::class)),
-            (new EtatDossier())
+                ->setRequerant($this->getReference('requerant-melun', Usager::class)),
+            new EtatDossier()
                 ->setEtat(EtatDossierType::DOSSIER_A_ATTRIBUER)
                 ->setDateEntree(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-04-10'))
-                ->setRequerant($this->getReference('requerant-melun', Requerant::class)),
+                ->setRequerant($this->getReference('requerant-melun', Usager::class)),
         ]);
 
         $dossierAAttribuer->ajouterDocument(
-            (new Document())
+            new Document()
                 ->setFilename('dd84b8ed97fd350cf29bbb229a1f330cb9d89f69e47832e51b18abbcffe425e6.pdf')
                 ->setOriginalFilename('Attestation POLICE')
                 ->setSize(428116)
@@ -151,47 +192,67 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $this->addReference('dossier-a-attribuer-melun', $dossierAAttribuer);
 
         $dossierAInstruire = $this->creerDossier(
-            $this->getReference('requerant-melun', Requerant::class),
+            $this->getReference('requerant-melun', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::BAI,
+                'rapportAuLogement' => RapportAuLogement::BAILLEUR,
                 'estVise' => true,
             ],
             new \DateTimeImmutable('-18 days'),
             EtatDossierType::DOSSIER_A_INSTRUIRE,
-            redacteur: $this->getReference('agent-redacteur', Agent::class)
+            adresse: new Adresse()
+                ->setLigne1($this->faker->streetAddress())
+                ->setCodePostal($this->faker->postcode())
+                ->setLocalite($this->faker->city()),
+            redacteur: $this->getReference('agent-redacteur', Agent::class),
         )->ajouterDocument($this->creerDocumentDepuisRessource('pieces_jointes/Facture 1.png', DocumentType::TYPE_FACTURE, true));
 
         $this->addReference('dossier-en-instruction-melun', $dossierAInstruire);
 
         $manager->persist($dossierAInstruire);
 
-        $dossierEnInstruction = new BrisPorte()
+        $dossierEnInstruction = Dossier::brisDePorte()
             ->setReference('BRI/20250103/001')
             ->setDateDepot(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-01-03'))
-            ->setRequerant($this->getReference('requerant-ray', Requerant::class))
-            ->setAdresse(
-                $this->getReference('requerant-ray', Requerant::class)->getAdresse()
+            ->setUsager($this->getReference('requerant-ray', Usager::class))
+            ->setRequerant(
+                new PersonnePhysique()
+                    ->setPersonne(
+                        $this->getReference('requerant-ray', Usager::class)->getPersonne()
+                    )
+                    ->setDateNaissance(new \DateTime('1983-11-23'))
+                    ->setCommuneNaissance($this->getReference('code-postal-35500', GeoCodePostal::class))
+                    ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
             )
-            ->setRedacteur($this->getReference('agent-redacteur', Agent::class))
-            ->setTestEligibilite(
-                $this->getReference('test-eligibilite-ray-keran', TestEligibilite::class)
+            ->setBrisPorte(
+                new BrisPorte()
+                    ->setAdresse(
+                        new Adresse()
+                            ->setLigne1($this->faker->streetAddress())
+                            ->setLocalite($this->faker->city())
+                            ->setCodePostal('77000')
+                    )
+                    ->setTestEligibilite(
+                        $this->getReference('test-eligibilite-ray-keran', TestEligibilite::class)
+                    )
+                    ->setRapportAuLogement(RapportAuLogement::LOCATAIRE)
             )
-            ->setQualiteRequerant(QualiteRequerant::LOC);
+            ->setRedacteur($this->getReference('agent-redacteur', Agent::class));
+
 
         $dossierEnInstruction->setHistoriqueEtats([
-            (new EtatDossier())
+            new EtatDossier()
                 ->setEtat(EtatDossierType::DOSSIER_A_FINALISER)
                 ->setDateEntree(new \DateTimeImmutable('-7 days'))
-                ->setRequerant($this->getReference('requerant-ray', Requerant::class)),
-            (new EtatDossier())
+                ->setRequerant($this->getReference('requerant-ray', Usager::class)),
+            new EtatDossier()
                 ->setEtat(EtatDossierType::DOSSIER_A_ATTRIBUER)
                 ->setDateEntree(new \DateTimeImmutable('-6 days'))
-                ->setRequerant($this->getReference('requerant-ray', Requerant::class)),
-            (new EtatDossier())
+                ->setRequerant($this->getReference('requerant-ray', Usager::class)),
+            new EtatDossier()
                 ->setEtat(EtatDossierType::DOSSIER_A_INSTRUIRE)
                 ->setDateEntree(new \DateTimeImmutable('-5 days'))
                 ->setAgent($this->getReference('agent-attributeur', Agent::class)),
-            (new EtatDossier())
+            new EtatDossier()
                 ->setEtat(EtatDossierType::DOSSIER_EN_INSTRUCTION)
                 ->setDateEntree(new \DateTimeImmutable('-4 days'))
                 ->setAgent($this->getReference('agent-redacteur', Agent::class)),
@@ -200,9 +261,9 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $manager->persist($dossierEnInstruction);
 
         $dossierRejetASigner = $this->creerDossier(
-            $this->getReference('requerant-saint-malo', Requerant::class),
+            $this->getReference('requerant-saint-malo', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::PRO,
+                'rapportAuLogement' => RapportAuLogement::PROPRIETAIRE,
                 'estVise' => true,
             ],
             new \DateTimeImmutable('-35 days'),
@@ -215,9 +276,9 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $manager->persist($dossierRejetASigner);
 
         $dossierPropositionASigner = $this->creerDossier(
-            $this->getReference('requerant-aix-en-provence', Requerant::class),
+            $this->getReference('requerant-aix-en-provence', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOCATAIRE,
                 'estVise' => false,
                 'estHebergeant' => true,
             ],
@@ -231,9 +292,9 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $manager->persist($dossierPropositionASigner);
 
         $dossierAVerifier = $this->creerDossier(
-            $this->getReference('requerant-melun', Requerant::class),
+            $this->getReference('requerant-melun', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOCATAIRE,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => true,
@@ -241,17 +302,31 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ],
             new \DateTimeImmutable('-35 days'),
             EtatDossierType::DOSSIER_OK_A_VERIFIER,
+            adresse: new Adresse()
+                ->setLigne1($this->faker->streetAddress())
+                ->setCodePostal($this->faker->postcode())
+                ->setLocalite($this->faker->city()),
             redacteur: $this->getReference('agent-redacteur', Agent::class)
-        )->setPropositionIndemnisation('2031');
+        )
+            ->setRequerant(
+                new PersonnePhysique()
+                    ->setPersonne(
+                        $this->getReference('requerant-melun', Usager::class)->getPersonne()
+                    )
+                    // ->setDateNaissance($this->faker->dateTimeBetween('-60 years', '-18 years'))
+                    ->setCommuneNaissance($this->getReference('code-postal-77000', GeoCodePostal::class))
+                    ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
+            )
+            ->setPropositionIndemnisation('2031');
 
         $this->addReference('dossier-a-verifier-melun', $dossierAVerifier);
 
         $manager->persist($dossierAVerifier);
 
         $dossierArreteASigner = $this->creerDossier(
-            $this->getReference('requerant-saint-malo', Requerant::class),
+            $this->getReference('requerant-saint-malo', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::BAI,
+                'rapportAuLogement' => RapportAuLogement::BAILLEUR,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => true,
@@ -266,9 +341,9 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $manager->persist($dossierArreteASigner);
 
         $dossierATransmettre = $this->creerDossier(
-            $this->getReference('requerant-ancenis', Requerant::class),
+            $this->getReference('requerant-ancenis', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::BAI,
+                'rapportAuLogement' => RapportAuLogement::BAILLEUR,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => true,
@@ -283,9 +358,9 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $manager->persist($dossierATransmettre);
 
         $dossierEnAttenteIndemnisation = $this->creerDossier(
-            $this->getReference('requerant-istres', Requerant::class),
+            $this->getReference('requerant-istres', Usager::class),
             [
-                'rapportAuLogement' => QualiteRequerant::LOC,
+                'rapportAuLogement' => RapportAuLogement::LOCATAIRE,
                 'estVise' => false,
                 'estHebergeant' => false,
                 'aContacteAssurance' => true,
@@ -317,38 +392,47 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         return [$etat];
     }
 
-    protected function creerDossier(Requerant $requerant, array $donneesTestEligibilite, \DateTimeInterface $dateCreation, EtatDossierType $etatActuel, ?Adresse $adresse = null, ?Agent $redacteur = null): BrisPorte
-    {
-        $dossier = (new BrisPorte())
-            ->setDateOperationPJ($this->faker->dateTimeBetween('-100 days', 'now'))
-            ->setRequerant($requerant)
-            ->setRedacteur($redacteur)
-            ->setDateCreation($dateCreation)
-            ->setAdresse($adresse ?? $requerant->getAdresse());
-
-        $dossier
-            ->setTestEligibilite(
-                TestEligibilite::fromArray(
-                    array_merge(
-                        $donneesTestEligibilite,
-                        [
-                            'requerant' => $dossier->getRequerant(),
-                            'dateSoumission' => $dossier->getDateCreation(),
-                        ]
-                    ),
-                )
+    protected function creerDossier(
+        Usager $requerant,
+        array $donneesTestEligibilite,
+        \DateTimeInterface $dateCreation,
+        EtatDossierType $etatActuel,
+        ?Adresse $adresse = null,
+        ?Agent $redacteur = null,
+    ): Dossier {
+        $dossier = Dossier::brisDePorte()
+            ->setBrisPorte(
+                new BrisPorte()
+                    ->setDateOperation($this->faker->dateTimeBetween('-100 days', 'now'))
+                    ->setAdresse($adresse)
+                    ->setRapportAuLogement($donneesTestEligibilite['rapportAuLogement'])
+                    ->setTestEligibilite(
+                        TestEligibilite::fromArray(
+                            array_merge(
+                                $donneesTestEligibilite,
+                                [
+                                    'usager' => $requerant,
+                                    'dateSoumission' => $dateCreation,
+                                ]
+                            ),
+                        )
+                    )
             )
-            ->setQualiteRequerant($dossier->getTestEligibilite()->rapportAuLogement);
+            ->setUsager($requerant)
+            ->setRedacteur($redacteur)
+            ->setDateCreation($dateCreation);
+
+        $historique = [];
 
         foreach (self::historiqueTheorique($etatActuel) as $etat) {
-            $historique[] = (new EtatDossier())
+            $historique[] = new EtatDossier()
                 ->setEtat($etat)
                 ->setDateEntree(
                     empty($historique)
                         ? $dossier->getDateCreation()
                         : (clone($historique[count($historique) - 1])->getDate())->modify(sprintf('+ %d minutes', random_int(10, 3 * 24 * 60)))
                 )
-                ->setRequerant(in_array($etat, [EtatDossierType::DOSSIER_A_FINALISER, EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_OK_A_VERIFIER]) ? $dossier->getRequerant() : null)
+                ->setRequerant(in_array($etat, [EtatDossierType::DOSSIER_A_FINALISER, EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_OK_A_VERIFIER]) ? $dossier->getUsager() : null)
                 ->setAgent($this->getAgentPourEtat($dossier, $etat));
         }
 
@@ -370,13 +454,13 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         return $dossier;
     }
 
-    protected function getAgentPourEtat(BrisPorte $dossier, EtatDossierType $etat): ?Agent
+    protected function getAgentPourEtat(Dossier $dossier, EtatDossierType $etat): ?Agent
     {
         return match ($etat) {
             EtatDossierType::DOSSIER_A_INSTRUIRE => $this->getReference('agent-attributeur', Agent::class),
             EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER, EtatDossierType::DOSSIER_OK_VERIFIE => $dossier->getRedacteur(),
             EtatDossierType::DOSSIER_KO_REJETE, EtatDossierType::DOSSIER_OK_A_APPROUVER, EtatDossierType::DOSSIER_OK_A_INDEMNISER => $this->getReference('agent-validateur', Agent::class),
-            default => null
+            default => null,
         };
     }
 
@@ -387,10 +471,10 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
     private function creerDocumentDepuisRessource(string $chemin, DocumentType $type, ?bool $estAjoutRequerant = true): Document
     {
-        $cheminFichier = $this->dossierRessources . $chemin;
+        $cheminFichier = $this->dossierRessources.$chemin;
 
         return $this->documentManager->enregistrerDocument(
-            (new Document())
+            new Document()
                 ->setOriginalFilename(basename($cheminFichier))
                 ->setAjoutRequerant($estAjoutRequerant)
                 ->setType($type)

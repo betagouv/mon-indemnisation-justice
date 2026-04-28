@@ -1,5 +1,5 @@
 import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { Loader } from "@/common/components/Loader.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
@@ -12,25 +12,25 @@ import React, {
   useState,
 } from "react";
 
-import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
-import { observer } from "mobx-react-lite";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { plainToInstance } from "class-transformer";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { TelechargerPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
-import { proxy, useSnapshot } from "valtio";
-import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
+import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
-import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { plainToInstance } from "class-transformer";
+import { observer } from "mobx-react-lite";
+import { proxy, useSnapshot } from "valtio";
 
 const _modale = createModal({
   id: "modale-action-confirmation",
   isOpenedByDefault: false,
 });
 
-// TODO tenter d'utiliser @/common/components/ListeEtapes.tsx;
+// TODO tenter d'utiliser @/common/composants/ListeEtapes.tsx;
 
 type IdEtape =
   | "EDITION_COURRIER"
@@ -675,7 +675,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                   iconId: "fr-icon-checkbox-circle-line",
                   isDefault: true,
                   content: (
-                    <PieceJointe
+                    <ChampPieceJointe
                       pieceJointe={dossier.getCourrierDecision() as Document}
                     />
                   ),
@@ -684,7 +684,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                   label: "Déclaration d'acceptation",
                   iconId: "fr-icon-chat-check-line",
                   content: (
-                    <PieceJointe
+                    <ChampPieceJointe
                       pieceJointe={
                         dossier.getDeclarationAcceptation() as Document
                       }
@@ -694,7 +694,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
               ]}
             />
           ) : (
-            <PieceJointe
+            <ChampPieceJointe
               className="fr-my-3w"
               pieceJointe={dossier.getCourrierDecision() as Document}
             />

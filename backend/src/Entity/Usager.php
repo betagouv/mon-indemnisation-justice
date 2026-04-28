@@ -1,0 +1,314 @@
+<?php
+
+namespace MonIndemnisationJustice\Entity;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
+use MonIndemnisationJustice\Repository\RequerantRepository;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\SerializedName;
+
+#[ORM\Entity(repositoryClass: RequerantRepository::class)]
+#[ORM\Table(name: 'usagers')]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SUB', fields: ['sub'])]
+#[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[\AllowDynamicProperties]
+class Usager implements UserInterface, PasswordAuthenticatedUserInterface
+{
+    public const string ROLE_REQUERANT = 'ROLE_REQUERANT';
+
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column]
+    protected ?int $id = null;
+
+    #[ORM\Column(nullable: true)]
+    protected ?string $password = null;
+
+    #[ORM\Column(nullable: true)]
+    protected ?string $sub = null;
+
+    #[ORM\Column(type: 'boolean')]
+    protected bool $estVerifieCourriel = false;
+
+    #[ORM\Column(length: 180)]
+    protected ?string $email = null;
+
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column(type: 'simple_array')]
+    protected array $roles = [self::ROLE_REQUERANT];
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
+    protected \DateTimeInterface $dateInscription;
+
+    #[ORM\Column(type: 'string', length: 12, nullable: true)]
+    protected ?string $jetonVerification;
+
+    #[ORM\Column(options: ['default' => false])]
+    protected bool $isPersonneMorale = false;
+
+    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'usager', cascade: ['remove'])]
+    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    /** @var Collection<Dossier> */
+    protected Collection $dossiers;
+
+
+    #[ORM\OneToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    protected Personne $personne;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    protected ?array $navigation = null;
+
+    public function __construct()
+    {
+        $this->dossiers = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->personne->__toString();
+    }
+
+    public function getNomCourant(bool $civilite = false, bool $capital = false): string
+    {
+        return $this->personne->getNomCourant($civilite, $capital);
+    }
+
+    public function getNomComplet(): string
+    {
+        return $this->personne->getNomComplet();
+    }
+
+    #[ORM\PrePersist]
+    public function onPrePersist(PrePersistEventArgs $args): void
+    {
+        $this->dateInscription = new \DateTime();
+    }
+
+    public function getPId(): ?int
+    {
+        return $this->getId();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    #[SerializedName('courriel')]
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function estFeminin(): bool
+    {
+        return $this->personne->estFeminin();
+    }
+
+    public function getPlaintextRole(): string
+    {
+        return '';
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->getRoles());
+    }
+
+    public function addRole(string $role): self
+    {
+        if (self::ROLE_REQUERANT === $role
+            && !in_array($role, $this->roles)
+        ) {
+            $this->roles[] = $role;
+        }
+
+        return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @return list<string>
+     *
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getSub(): ?string
+    {
+        return $this->sub;
+    }
+
+    public function setSub(?string $sub): Usager
+    {
+        $this->sub = $sub;
+
+        return $this;
+    }
+
+    public function getEstFranceConnect(): bool
+    {
+        return $this->estFranceConnect();
+    }
+
+    public function estFranceConnect(): bool
+    {
+        return null !== $this->sub;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->email;
+    }
+
+    public function getDateInscription(): ?\DateTimeInterface
+    {
+        return $this->dateInscription;
+    }
+
+    public function getJetonVerification(): ?string
+    {
+        return $this->jetonVerification;
+    }
+
+    public function supprimerJetonVerification(): self
+    {
+        $this->jetonVerification = null;
+
+        return $this;
+    }
+
+    public function genererJetonVerification(): void
+    {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $this->jetonVerification = '';
+
+        for ($i = 0; $i < 12; ++$i) {
+            $this->jetonVerification .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        }
+    }
+
+    public function estVerifieCourriel(): bool
+    {
+        return $this->estVerifieCourriel;
+    }
+
+    public function setVerifieCourriel(): static
+    {
+        $this->jetonVerification = null;
+        $this->estVerifieCourriel = true;
+
+        return $this;
+    }
+
+    public function getPersonne(): Personne
+    {
+        return $this->personne;
+    }
+
+    public function setPersonne(Personne $personne): Usager
+    {
+        $this->personne = $personne;
+
+        return $this;
+    }
+
+    public function getDernierDossier(): ?Dossier
+    {
+        return $this->dossiers->isEmpty() ? null : $this->dossiers->last();
+    }
+
+    /**
+     * @return Dossier[]|Collection
+     */
+    public function getDossiersBrisDePorte(): array|Collection
+    {
+        return $this->dossiers->filter(fn (Dossier $dossier) => DossierType::BRIS_PORTE === $dossier->getType());
+    }
+
+    public function nbDossiersEnAttente(): int
+    {
+        return $this->dossiers->filter(fn (Dossier $dossier) => !$dossier->estDepose())->count();
+    }
+
+    public function getNavigation(): ?NavigationRequerant
+    {
+        return null !== $this->navigation ? NavigationRequerant::depuisArray($this->navigation ?? []) : null;
+    }
+
+    public function setNavigation(array|NavigationRequerant|null $navigation): Usager
+    {
+        $this->navigation = $navigation instanceof NavigationRequerant ? $navigation->versArray() : $navigation;
+
+        return $this;
+    }
+}

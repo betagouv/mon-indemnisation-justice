@@ -34,7 +34,8 @@ class InitierDeclarationBrisPorteEndpoint
         protected readonly NormalizerInterface $normalizer,
         protected readonly DenormalizerInterface $denormalizer,
         protected readonly Mailer $mailer,
-    ) {}
+    ) {
+    }
 
     public function __invoke(Security $security): Response
     {

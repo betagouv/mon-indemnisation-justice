@@ -1,6 +1,6 @@
 import {
   AjoutPieceJointe,
-  PieceJointe,
+  ChampPieceJointe,
   TelechargerPieceJointe,
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { MenuPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/MenuPieceJointe";
@@ -8,9 +8,9 @@ import {
   ouvrirModaleSuppressionPieceJointe,
   SuppressionPieceJointe,
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/SuppressionPieceJointe";
+import { Agent, Document, DossierDetail } from "@/common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import React, { ReactNode, useCallback, useState } from "react";
-import { Agent, Document, DossierDetail } from "@/common/models";
 
 export const PiecesJointes = ({
   dossier,
@@ -19,8 +19,6 @@ export const PiecesJointes = ({
   dossier: DossierDetail;
   agent: Agent;
 }): ReactNode => {
-  console.log(dossier.declarationFDO?.piecesJointes);
-
   const selectionnerPremierePieceJointe = useCallback(
     () =>
       dossier.piecesJointes.at(0) ??
@@ -92,7 +90,10 @@ export const PiecesJointes = ({
                   </>
                 )}
 
-                <PieceJointe pieceJointe={pieceJointe} className="fr-col-12" />
+                <ChampPieceJointe
+                  pieceJointe={pieceJointe}
+                  className="fr-col-12"
+                />
               </div>
             </>
           ) : (

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Tests\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * @covers \MonIndemnisationJustice\Controller\SecurityController
- *
  * @internal
  */
+#[CoversClass(\MonIndemnisationJustice\Controller\SecurityController::class)]
 class SecurityControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;

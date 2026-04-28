@@ -1,24 +1,5 @@
-import { useForm } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  redirect,
-  useNavigate,
-  useRouter,
-} from "@tanstack/react-router";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import React, { useRef } from "react";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { z } from "zod";
-import { useInjection } from "inversify-react";
-import {
-  DeclarationFDOBrisPorte,
-  Procedure,
-} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
-import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import {
   ModaleAjoutPieceJointe,
   ModaleAjoutPieceJointeRef,
@@ -27,8 +8,27 @@ import {
   ModalePrevisualiserPieceJointe,
   ModalePrevisualiserPieceJointeRef,
 } from "@/apps/agent/fdo/components/ModalePrévisualiserPieceJointe.tsx";
+import {
+  DeclarationFDOBrisPorte,
+  Procedure,
+} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 import { Document } from "@/common/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { useForm } from "@tanstack/react-form";
+import {
+  createFileRoute,
+  redirect,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
+import React, { useRef } from "react";
+import { z } from "zod";
 
 export const Route = createFileRoute(
   "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
@@ -112,7 +112,6 @@ function Page() {
     useRef<ModalePrevisualiserPieceJointeRef>(null);
 
   // TODO: gérer les pièces jointes dans un state "façade" qui peut-être modifiable
-
   const form = useForm({
     defaultValues: {
       procedure: {
@@ -143,6 +142,7 @@ function Page() {
       await naviguer({
         to: "/agent/fdo/bris-de-porte/$reference/3-usager",
         params: { reference } as any,
+        search: {} as any,
       });
     },
   });
@@ -416,6 +416,7 @@ function Page() {
                     params: {
                       reference,
                     } as any,
+                    search: {} as any,
                   }),
               },
               {

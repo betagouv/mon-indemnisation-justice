@@ -2,27 +2,22 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\GeoPaysRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Table(name: 'geo_pays')]
 #[ORM\Entity(repositoryClass: GeoPaysRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Index(name: 'idx_pays_code_insee', columns: ['code_insee'])]
-#[ApiResource(uriTemplate: '/geo-pays/{code}', operations: [])]
 class GeoPays extends GeoDataEntity
 {
     public const CODE_INSEE_FRANCE = '99100';
 
     #[ORM\Id]
     #[ORM\Column(length: 3)]
-    #[Groups(['dossier:lecture'])]
     protected string $code;
 
     #[ORM\Column]
-    #[Groups(['dossier:lecture'])]
     protected string $nom;
 
     #[ORM\Column(length: 5, nullable: true)]

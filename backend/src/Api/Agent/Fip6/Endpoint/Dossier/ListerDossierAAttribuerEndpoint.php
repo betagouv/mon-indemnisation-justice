@@ -5,7 +5,7 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierAAttribuerOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,21 +24,19 @@ class ListerDossierAAttribuerEndpoint
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
         protected readonly NormalizerInterface $normalizer,
-    ) {}
+    ) {
+    }
 
     public function __invoke(): Response
     {
-        $dossiers = $this->entityManager->getRepository(BrisPorte::class)->listerDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
+        $dossiers = $this->entityManager
+            ->getRepository(Dossier::class)
+            ->listerDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
 
         return new JsonResponse(
             $this->normalizer->normalize(
                 array_map(
-                    /* Pas réussi à utiliser l'ObjectMapper ici : il se plaint de ne pas trouver les champs
-                    `dateValidation` et `agentValidateur` dans la classe source, ce qui est tout de même ballot pour un
-                    mapper ... Et je n'ai pas non plus réussi à utiliser des _arrow function_ en guise de callable
-                    transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
-                    */
-                    fn (BrisPorte $dossier) => DossierAAttribuerOutput::creerDepuisDossier($dossier),
+                    fn (Dossier $dossier) => DossierAAttribuerOutput::depuisDossier($dossier),
                     $dossiers
                 ),
                 'json'

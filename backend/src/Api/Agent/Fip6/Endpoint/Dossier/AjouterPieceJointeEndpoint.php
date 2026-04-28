@@ -3,10 +3,10 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DocumentOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -31,14 +31,15 @@ class AjouterPieceJointeEndpoint
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
         protected readonly ObjectMapperInterface $objectMapper,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'id')]
-        BrisPorte $dossier,
+        Dossier $dossier,
         string $type,
         #[MapUploadedFile(name: 'pieceJointe')]
-        UploadedFile $pieceJointe
+        UploadedFile $pieceJointe,
     ): Response {
         if (null === ($documentType = DocumentType::tryFrom($type)) || in_array($documentType, [DocumentType::TYPE_COURRIER_MINISTERE, DocumentType::TYPE_ARRETE_PAIEMENT])) {
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
@@ -51,7 +52,7 @@ class AjouterPieceJointeEndpoint
 
         return new JsonResponse(
             $this->normalizer->normalize(
-                $this->objectMapper->map($document, DocumentOutput::class),
+                $this->objectMapper->map($document, PieceJointeOutput::class),
                 'json'
             ),
             Response::HTTP_OK

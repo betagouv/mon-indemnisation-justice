@@ -2,10 +2,10 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DocumentOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,25 +21,23 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class GenererCourrierPropositionIndemnisationEndpoint
 {
     public function __construct(
-        protected readonly DocumentManager       $documentManager,
-        protected readonly NormalizerInterface   $normalizer,
+        protected readonly DocumentManager $documentManager,
+        protected readonly NormalizerInterface $normalizer,
         protected readonly ObjectMapperInterface $objectMapper,
-    )
-    {
+    ) {
     }
 
     public function __invoke(
         #[MapEntity]
-        BrisPorte                                    $dossier,
+        Dossier $dossier,
         #[MapRequestPayload]
         GenererCourrierPropositionIndemnisationInput $input,
-    )
-    {
+    ) {
         $courrier = $this->documentManager->generer($dossier, DocumentType::TYPE_COURRIER_MINISTERE, montantIndemnisation: $input->montantIndemnisation);
 
         return new JsonResponse(
             ['document' => $this->normalizer->normalize(
-                $this->objectMapper->map($courrier, DocumentOutput::class),
+                $this->objectMapper->map($courrier, PieceJointeOutput::class),
                 'json'
             )],
             Response::HTTP_CREATED

@@ -80,20 +80,25 @@ class GeoFixtures extends Fixture
                 ->setCode('13')
                 ->setNom('Bouches-du-Rhône')
                 ->setDeploye(true),
-            'seine-et-marne' => (new GeoDepartement())
+            'seine-et-marne' => new GeoDepartement()
                 ->setRegion($this->getReference('region-idf', GeoRegion::class))
                 ->setCode('77')
                 ->setNom('Seine-et-Marne')
                 ->setDeploye(true),
-            'ille-et-vilaine' => (new GeoDepartement())
+            'ille-et-vilaine' => new GeoDepartement()
                 ->setRegion($this->getReference('region-bretagne', GeoRegion::class))
                 ->setCode('35')
                 ->setNom('Ille-et-Vilaine')
                 ->setDeploye(true),
-            'loire-atlantique' => (new GeoDepartement())
+            'loire-atlantique' => new GeoDepartement()
                 ->setRegion($this->getReference('region-pdl', GeoRegion::class))
                 ->setCode('44')
                 ->setNom('Loire-Atlantique')
+                ->setDeploye(false),
+            'paris' => new GeoDepartement()
+                ->setRegion($this->getReference('region-idf', GeoRegion::class))
+                ->setCode('75')
+                ->setNom('Paris')
                 ->setDeploye(false),
         ] as $reference => $departement) {
             $manager->persist($departement);

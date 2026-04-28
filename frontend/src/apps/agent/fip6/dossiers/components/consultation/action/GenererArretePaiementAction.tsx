@@ -1,8 +1,5 @@
 import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { plainToInstance } from "class-transformer";
-import React, { useCallback, useEffect, useState } from "react";
+import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import {
   Agent,
   Document,
@@ -10,10 +7,13 @@ import {
   DossierDetail,
   EtatDossier,
 } from "@/common/models";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { useInjection } from "inversify-react";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { plainToInstance } from "class-transformer";
+import { useInjection } from "inversify-react";
+import React, { useCallback, useEffect, useState } from "react";
 
 const _modale = createModal({
   id: "modale-action-verifier-acceptation",
@@ -78,7 +78,6 @@ export const GenererArretePaiementModale =
         etatValidation.action === "generation" &&
         !dossier.getArretePaiement()
       ) {
-        console.log("Re-génération de l'arrêté en cours...");
         genererArretePaiement();
       }
     }, [dossier.id]);
@@ -137,7 +136,7 @@ export const GenererArretePaiementModale =
               Inspectez le document de déclaration d'acceptation ci-dessous et
               vérifiez que tous les champs sont correctement remplis :
             </p>
-            <PieceJointe
+            <ChampPieceJointe
               className="fr-my-2w"
               pieceJointe={dossier.getDeclarationAcceptation() as Document}
             />

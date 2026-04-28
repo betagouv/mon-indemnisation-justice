@@ -1,22 +1,22 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useCallback, useRef, useState } from "react";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import "./liste/dossier-liste-element.css";
-import { plainToInstance } from "class-transformer";
-import { DossierACategoriser } from "./liste/DossierACategoriser.ts";
-import { dateChiffre, dateSimple } from "@/common/services/date.ts";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
+import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import {
   Document,
   InstitutionSecuritePublique,
   TypeInstitutionSecuritePublique,
 } from "@/common/models";
-import { Select } from "@codegouvfr/react-dsfr/Select";
-import { libellesTypeAttestation } from "@/common/models/TypeAttestation.ts";
-import { TypeAttestation } from "@/common/models/Dossier.ts";
 import { MetaDonneesAttestation } from "@/common/models/Document.ts";
+import { TypeAttestation } from "@/common/models/Dossier.ts";
+import { libellesTypeAttestation } from "@/common/models/TypeAttestation.ts";
+import { dateChiffre, dateSimple } from "@/common/services/date.ts";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import { Select } from "@codegouvfr/react-dsfr/Select";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { plainToInstance } from "class-transformer";
+import React, { useCallback, useRef, useState } from "react";
+import "./liste/dossier-liste-element.css";
+import { DossierACategoriser } from "./liste/DossierACategoriser.ts";
 
 export function FormulaireCategorisationAttestation({
   pieceJointe,
@@ -74,7 +74,7 @@ export function FormulaireCategorisationAttestation({
   return (
     <div className="fr-grid-row fr-grid-row--gutters">
       <div className="fr-col-9">
-        <PieceJointe pieceJointe={pieceJointe} />
+        <ChampPieceJointe pieceJointe={pieceJointe} />
       </div>
 
       <div className="fr-col-3">

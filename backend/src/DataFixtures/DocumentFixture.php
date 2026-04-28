@@ -10,7 +10,9 @@ use MonIndemnisationJustice\Service\DocumentManager;
 
 class DocumentFixture extends Fixture
 {
-    public function __construct(protected readonly DocumentManager $documentManager) {}
+    public function __construct(protected readonly DocumentManager $documentManager)
+    {
+    }
 
     public function load(ObjectManager $manager): void
     {

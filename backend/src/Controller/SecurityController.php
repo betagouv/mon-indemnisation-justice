@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Dto\ModificationMotDePasse;
 use MonIndemnisationJustice\Dto\MotDePasseOublieDto;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
 use MonIndemnisationJustice\Forms\MotDePasseOublieType;
 use MonIndemnisationJustice\Repository\RequerantRepository;
@@ -48,7 +48,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('agent_index');
         }
 
-        if ($this->getUser() instanceof Requerant) {
+        if ($this->getUser() instanceof Usager) {
             return $this->redirectToRoute('requerant_home_index');
         }
 
@@ -141,7 +141,7 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $requerant = $this->em->getRepository(Requerant::class)->findOneBy([
+                $requerant = $this->em->getRepository(Usager::class)->findOneBy([
                     'email' => $form->getData()->email,
                     'estVerifieCourriel' => true,
                 ]);
@@ -176,7 +176,7 @@ class SecurityController extends AbstractController
     #[Route(path: '/connexion/changer-mon-mot-de-passe/{jeton}', name: 'securite_connexion_changer_mdp', methods: ['GET', 'POST'])]
     public function reset_password(Request $request, string $jeton): Response
     {
-        /** @var Requerant $requerant */
+        /** @var Usager $requerant */
         $requerant = $this->requerantRepository->findOneBy(['jetonVerification' => $jeton]);
         if (null === $requerant) {
             return $this->redirectToRoute('securite_connexion');

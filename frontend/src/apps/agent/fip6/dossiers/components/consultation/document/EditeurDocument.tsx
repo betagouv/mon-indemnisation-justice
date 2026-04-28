@@ -1,13 +1,13 @@
-import React, { useState, useCallback, useEffect } from "react";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Document } from "@/common/models";
 import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/editor";
-import { PieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { useInjection } from "inversify-react";
+import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
+import { Loader } from "@/common/composants/Loader.tsx";
+import { Document } from "@/common/models";
 import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
-import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Loader } from "@/common/components/Loader.tsx";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { useInjection } from "inversify-react";
+import React, { useCallback, useEffect, useState } from "react";
 
 export type EditeurMode = "edition" | "visualisation";
 
@@ -229,7 +229,7 @@ export const EditeurDocument = function EditeurDocumentComponent({
             {impressionEnCours ? (
               <Loader />
             ) : (
-              <PieceJointe pieceJointe={document} />
+              <ChampPieceJointe pieceJointe={document} />
             )}
           </>
         )}

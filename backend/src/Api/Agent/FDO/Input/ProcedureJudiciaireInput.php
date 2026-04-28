@@ -3,10 +3,8 @@
 namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
 
 use MonIndemnisationJustice\Entity\ProcedureJudiciaire;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[Map(target: ProcedureJudiciaire::class)]
 class ProcedureJudiciaireInput
 {
     #[Assert\NotNull(message: 'Le numéro de procédure est requis')]
@@ -18,4 +16,14 @@ class ProcedureJudiciaireInput
     public ?string $telephone = null;
     public ?string $juridictionOuParquet = null;
     public ?string $nomMagistrat = null;
+
+    public function versProcedureJudiciaire(): ProcedureJudiciaire
+    {
+        return new ProcedureJudiciaire()
+            ->setNumeroProcedure($this->numeroProcedure)
+            ->setServiceEnqueteur($this->serviceEnqueteur)
+            ->setTelephone($this->telephone)
+            ->setJuridictionOuParquet($this->juridictionOuParquet)
+            ->setNomMagistrat($this->nomMagistrat);
+    }
 }

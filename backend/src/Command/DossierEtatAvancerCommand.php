@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Command;
 
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
@@ -36,14 +37,13 @@ class DossierEtatAvancerCommand extends Command
         $this
             ->addArgument('id', InputArgument::REQUIRED)
             ->addOption('contexte', 'c', InputOption::VALUE_REQUIRED, 'Le contexte, en JSON')
-            ->addOption('fichier', 'f', InputOption::VALUE_REQUIRED, "Le chemin ou l'URL vers le fichier à ajouter")
-        ;
+            ->addOption('fichier', 'f', InputOption::VALUE_REQUIRED, "Le chemin ou l'URL vers le fichier à ajouter");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $id = $input->getArgument('id');
-        $dossier = $this->dossierRepository->getByIdOuReference($id);
+        $dossier = $this->dossierRepository->getByIdOuReference($id, DossierType::BRIS_PORTE);
 
         if (null == $dossier) {
             throw new \LogicException("Aucun dossier trouve pour l'id {$id}");
@@ -68,29 +68,29 @@ class DossierEtatAvancerCommand extends Command
     /**
      * Détermine l'agent qui fait l'action en fonction de l'état initial du dossier.
      */
-    protected function getAgentPourAction(BrisPorte $dossier): ?Agent
+    protected function getAgentPourAction(Dossier $dossier): ?Agent
     {
         return match ($dossier->getEtatDossier()->getEtat()) {
             EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_EN_INSTRUCTION, EtatDossierType::DOSSIER_OK_A_VERIFIER => $dossier->getRedacteur(),
             EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER, EtatDossierType::DOSSIER_OK_VERIFIE => $this->agentRepository->getValidateur(),
             EtatDossierType::DOSSIER_A_ATTRIBUER => $this->agentRepository->getAtributeur(),
             EtatDossierType::DOSSIER_OK_A_INDEMNISER, EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT => $this->agentRepository->getAgentLiaison(),
-            default => null
+            default => null,
         };
     }
 
     /**
      * Détermine le type de fichier attendu en fonction de l'état initial du dossier.
      *
-     * @return null|Agent
+     * @return Agent|null
      */
-    protected function getTypeFichierPourAction(BrisPorte $dossier): ?DocumentType
+    protected function getTypeFichierPourAction(Dossier $dossier): ?DocumentType
     {
         return match ($dossier->getEtatDossier()->getEtat()) {
             EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER => DocumentType::TYPE_COURRIER_MINISTERE,
             EtatDossierType::DOSSIER_OK_A_APPROUVER => DocumentType::TYPE_COURRIER_REQUERANT,
             EtatDossierType::DOSSIER_OK_A_VERIFIER => DocumentType::TYPE_ARRETE_PAIEMENT,
-            default => null
+            default => null,
         };
     }
 }

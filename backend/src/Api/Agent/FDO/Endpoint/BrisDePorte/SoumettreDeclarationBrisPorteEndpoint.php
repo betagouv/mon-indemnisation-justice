@@ -4,13 +4,11 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
-use MonIndemnisationJustice\Api\Agent\FDO\Input\DocumentDto;
 use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationFDOBrisPorteOutputMapper;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
-use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -44,12 +42,13 @@ class SoumettreDeclarationBrisPorteEndpoint
         protected readonly DenormalizerInterface $denormalizer,
         protected readonly ValidatorInterface $validator,
         protected readonly Mailer $mailer,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
         BrouillonDeclarationFDOBrisPorte $brouillon,
-        Security $security
+        Security $security,
     ): Response {
         /** @var Agent $agent */
         $agent = $security->getUser();
@@ -77,18 +76,12 @@ class SoumettreDeclarationBrisPorteEndpoint
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        /** @var DeclarationFDOBrisPorte $declaration */
-        $declaration = $this->objectMapper->map(
-            $input,
-            (new DeclarationFDOBrisPorte())
-                ->setId($brouillon->getId())
-                ->setDateCreation($brouillon->getDateCreation())
-                ->setAgent($agent)
-                ->setPiecesJointes(array_map(
-                    fn (DocumentDto $pieceJointe) => $this->objectMapper->map($pieceJointe, Document::class),
-                    $input->getPiecesJointes()
-                ))
-        );
+        $declaration =
+            $input->versDeclaration(
+                new DeclarationFDOBrisPorte()
+                    ->setDateCreation($brouillon->getDateCreation())
+                    ->setAgent($agent)
+            );
 
         $this->em->persist($declaration);
         $this->em->remove($brouillon);
@@ -104,8 +97,7 @@ class SoumettreDeclarationBrisPorteEndpoint
                 ->htmlTemplate('email/invitation_a_deposer.html.twig', [
                     'declaration' => $declaration,
                 ])
-                ->send()
-            ;
+                ->send();
         }
 
         return new JsonResponse(

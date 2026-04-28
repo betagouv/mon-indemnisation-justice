@@ -10,7 +10,6 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Metadonnees\MetadonneesAttestation;
 use MonIndemnisationJustice\Repository\DocumentRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
@@ -30,10 +29,8 @@ class Document
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column]
-    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     protected ?int $id = null;
 
-    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(nullable: true)]
     protected ?string $mime = null;
 
@@ -47,46 +44,34 @@ class Document
      * Sinon automatique, ex: arrêté de paiement post acceptation.
      * */
     #[ORM\Column(nullable: true)]
-    #[Groups(['agent:detail'])]
     protected ?bool $estAjoutRequerant = null;
 
-    #[Groups(['agent:detail'])]
     #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $corps = null;
 
-    #[Groups(['agent:detail'])]
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $metaDonnees = null;
 
-    #[ORM\ManyToMany(targetEntity: BrisPorte::class, mappedBy: 'documents', cascade: ['persist'])]
-    #[Ignore]
-    /** @var Collection<BrisPorte> */
+    #[ORM\ManyToMany(targetEntity: Dossier::class, mappedBy: 'piecesJointes', cascade: ['persist'])]
+    /** @var Collection<Dossier> */
     protected Collection $dossiers;
 
-    #[ORM\ManyToMany(targetEntity: DeclarationFDOBrisPorte::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'declaration_fdo_bris_porte_pieces_jointes')]
-    #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    #[Ignore]
-    /** @var Collection<BrisPorte> */
+    #[ORM\ManyToMany(targetEntity: DeclarationFDOBrisPorte::class, mappedBy: 'piecesJointes', cascade: ['persist'])]
+    /** @var Collection<Dossier> */
     protected Collection $declarations;
 
-    #[Groups(['agent:detail'])]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateDerniereModification = null;
+    protected ?\DateTimeImmutable $dateDerniereModification = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['dossier:lecture', 'requerant:detail'])]
     private ?string $filename = null;
 
-    #[Groups(['dossier:lecture', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(length: 40, enumType: DocumentType::class)]
     private DocumentType $type;
 
-    #[Groups(['dossier:lecture', 'agent:detail'])]
     #[ORM\Column(nullable: true)]
     private ?int $size = null;
 
-    #[Groups(['dossier:lecture', 'requerant:detail', 'agent:detail'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $originalFilename = null;
 
@@ -170,7 +155,7 @@ class Document
         return $this;
     }
 
-    public function ajouterAuDossier(BrisPorte $dossier): static
+    public function ajouterAuDossier(Dossier $dossier): static
     {
         $dossier->ajouterDocument($this);
         $this->dossiers->add($dossier);
@@ -179,7 +164,7 @@ class Document
     }
 
     /**
-     * @return Collection<BrisPorte>
+     * @return Collection<Dossier>
      */
     public function getDossiers(): Collection
     {
@@ -187,7 +172,7 @@ class Document
     }
 
     #[Ignore]
-    public function getDossier(): ?BrisPorte
+    public function getDossier(): ?Dossier
     {
         return $this->dossiers->first();
     }
@@ -255,7 +240,6 @@ class Document
         return $this->setValidation(false, $agent);
     }
 
-    #[Groups(['agent:detail', 'requerant:detail'])]
     public function getFileHash(): string
     {
         return md5($this->filename);
@@ -298,12 +282,12 @@ class Document
         return $this;
     }
 
-    public function getDateDerniereModification(): ?\DateTimeInterface
+    public function getDateDerniereModification(): ?\DateTimeImmutable
     {
         return $this->dateDerniereModification;
     }
 
-    public function setDateDerniereModification(?\DateTimeInterface $dateDerniereModification): Document
+    public function setDateDerniereModification(?\DateTimeImmutable $dateDerniereModification): Document
     {
         $this->dateDerniereModification = $dateDerniereModification;
 
