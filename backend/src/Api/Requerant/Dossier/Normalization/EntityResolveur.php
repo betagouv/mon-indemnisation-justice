@@ -13,7 +13,7 @@ class EntityResolveur
         self::$em = $em;
     }
 
-    public static function resoudre(string $class, mixed $id): object
+    public static function resoudre(string $class, mixed $id): ?object
     {
         if (null === self::$em) {
             throw new \RuntimeException("Impossible de résoudre l'entité $class d'id $id : la connexion n'est pas initiée");
