@@ -7,7 +7,6 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Voter\AgentVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -23,7 +22,6 @@ class ListerAgentsActifsEndpoint
     public function __construct(
         private readonly AgentRepository $agentRepository,
         private readonly NormalizerInterface $normalizer,
-        private readonly ObjectMapperInterface $mapper,
     ) {
     }
 
@@ -32,7 +30,7 @@ class ListerAgentsActifsEndpoint
         return new JsonResponse(
             $this->normalizer->normalize(
                 array_map(
-                    fn (Agent $agent) => $this->mapper->map($agent, AgentOutput::class),
+                    fn (Agent $agent) => AgentOutput::depuisAgent($agent),
                     $this->agentRepository->getActifs(),
                 ),
                 'json'
