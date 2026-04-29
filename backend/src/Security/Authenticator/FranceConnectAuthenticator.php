@@ -96,7 +96,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                                 ->setNomNaissance($userInfo['family_name'] ?? '')
                                 ->setPrenom($prenoms[0] ?? null)
                                 ->setCourriel($userInfo['email'] ?? null)
-                                ->setPersonnePhysique(
+                                ->ajouterPersonnePhysique(
                                     new PersonnePhysique()
                                         ->setPrenom2($prenoms[1] ?? null)
                                         ->setPrenom3($prenoms[2] ?? null)

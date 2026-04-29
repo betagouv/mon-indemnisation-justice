@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -36,6 +37,11 @@ class Personne
 
     #[ORM\OneToMany(targetEntity: PersonnePhysique::class, mappedBy: 'personne', cascade: ['persist', 'remove'])]
     protected ?Collection $personnePhysiques;
+
+    public function __construct()
+    {
+        $this->personnePhysiques = new ArrayCollection();
+    }
 
     public function getId(): ?Uuid
     {
@@ -165,5 +171,12 @@ class Personne
     public function getPersonnePhysiques(): ?Collection
     {
         return $this->personnePhysiques;
+    }
+
+    public function ajouterPersonnePhysique(PersonnePhysique $personnePhysiques): Personne
+    {
+        $this->personnePhysiques->add($personnePhysiques);
+
+        return $this;
     }
 }

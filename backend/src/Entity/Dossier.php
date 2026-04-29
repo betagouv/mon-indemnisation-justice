@@ -554,6 +554,9 @@ class Dossier
         return Dossier::brisDePorte()
             ->setUsager($testEligibilite->usager)
             ->setRequerant(
+
+                // Si l'usager a déjà une personne physique associée, on utilise celle-ci
+                $testEligibilite->usager->getPersonne()->getPersonnePhysiques()?->first() ??
                 new PersonnePhysique()
                     ->setPersonne($testEligibilite->usager->getPersonne())
             )
