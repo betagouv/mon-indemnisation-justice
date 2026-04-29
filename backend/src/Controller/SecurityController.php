@@ -10,10 +10,10 @@ use MonIndemnisationJustice\Entity\Requerant;
 use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
 use MonIndemnisationJustice\Forms\MotDePasseOublieType;
 use MonIndemnisationJustice\Repository\RequerantRepository;
-use MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\TooManyLoginAttemptsAuthenticationException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -103,12 +102,13 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/deconnexion/usager', name: 'securite_usager_deconnexion', methods: ['GET'])]
-    public function deconnexionFranceConnect(Request $request, TokenStorageInterface $tokenStorage, FranceConnectAuthenticator $authenticator): Response
+    public function deconnexionFranceConnect(Security $security): Response
     {
-        $authenticator->logout($request);
-        $tokenStorage->setToken(null);
+        if ($security->getUser()) {
+            $security->logout(false);
+        }
 
-        return $this->redirectToRoute('app_logout');
+        return $this->redirectToRoute('securite_connexion');
     }
 
     #[Route('/agent/connexion', name: 'agent_securite_connexion', methods: ['GET'])]
