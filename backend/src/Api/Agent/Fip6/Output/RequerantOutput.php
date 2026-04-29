@@ -26,6 +26,7 @@ class RequerantOutput
         public ?string $paysNaissance,
         public ?string $raisonSociale,
         public ?string $siren,
+        public ?string $typePersonneMorale,
     ) {
     }
 
@@ -49,6 +50,7 @@ class RequerantOutput
             paysNaissance: $personnePhysique?->getPaysNaissance()->getNom(),
             raisonSociale: $personneMorale?->getRaisonSociale(),
             siren: $personneMorale?->getSirenSiret(),
+            typePersonneMorale: $personneMorale?->getType()->value,
         );
     }
 }

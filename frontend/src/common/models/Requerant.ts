@@ -1,5 +1,7 @@
+import { TypePersonneMoraleType } from "@/apps/requerant/models";
+import { TypesPersonneMorale } from "@/common/models/TypePersonneMorale";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
-import { Expose } from "class-transformer";
+import { Expose, Transform } from "class-transformer";
 
 export type Civilite = "M" | "MME";
 
@@ -13,6 +15,10 @@ export class Requerant {
   protected _dateNaissance: Date | null;
   public readonly communeNaissance: string | null;
   public readonly paysNaissance: string | null;
+  @Transform(({ value }) =>
+    TypesPersonneMorale.includes(value) ? value : undefined,
+  )
+  public readonly typePersonneMorale?: TypePersonneMoraleType;
   public readonly raisonSociale: string | null;
   public readonly siren: string | null;
 
