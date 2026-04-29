@@ -131,6 +131,7 @@ class DossierControllerTest extends WebTestCase
                     'paysNaissance' => $dossier->getRequerantPersonnePhysique()?->getPaysNaissance()?->getNom(),
                     'raisonSociale' => $dossier->getRequerantPersonneMorale()?->getRaisonSociale(),
                     'siren' => $dossier->getRequerantPersonneMorale()?->getSirenSiret(),
+                    'typePersonneMorale' => $dossier->getRequerantPersonneMorale()?->getType()?->value,
                 ],
                 'typeAttestation' => null,
                 'typeInstitutionSecuritePublique' => null,

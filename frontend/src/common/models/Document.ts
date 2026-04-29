@@ -1,4 +1,8 @@
-import { Agent, DossierDetail, TypeInstitutionSecuritePublique } from "@/common/models";
+import {
+  Agent,
+  DossierDetail,
+  TypeInstitutionSecuritePublique,
+} from "@/common/models";
 import { TypeAttestation } from "@/common/models/Dossier.ts";
 import { estAujourdhui } from "@/common/services/date";
 import { Transform, Type } from "class-transformer";
@@ -86,6 +90,43 @@ export class DocumentType {
     "non_prise_en_charge_bailleur",
     "Attestation de non prise en charge par le bailleur",
   );
+
+  // Pièces jointes demandées aux personnes morales
+  public static readonly TYPE_PIECE_IDENTITE_SIGNATAIRE = new DocumentType(
+    "piece_identite_signataire",
+    "Pièce d'identité du signataire",
+  );
+  public static readonly TYPE_EXTRAIT_KBIS = new DocumentType(
+    "extrait_kbis",
+    "",
+  );
+  public static readonly TYPE_QUITTANCE_SUBROGATIVE = new DocumentType(
+    "quittance_subrogative",
+    "Quittance subrogative",
+  );
+  public static readonly TYPE_POUVOIR_SIGNATAIRE = new DocumentType(
+    "pouvoir_signataire",
+    "Justificatif des pouvoirs du signataire",
+  );
+  public static readonly TYPE_PV_ASSOCIATION_STATUTS = new DocumentType(
+    "pv_association_statuts",
+    "Procès verbal désignant désignant le représentant légal",
+  );
+  public static readonly TYPE_PV_AG_SYNDIC = new DocumentType(
+    "pv_ag_syndic",
+    "",
+  );
+  public static readonly TYPE_DECLARATION_RNA_JOAFE = new DocumentType(
+    "declaration_rna_joafe",
+    "Récépissé de déclaration RNA$ / publication JOAFE",
+  );
+  public static readonly TYPE_IDENTIFICATION_ETABLISSEMENT_PUBLIQUE =
+    new DocumentType(
+      "identification_etablissement_publique",
+      "Document identifiant la collectivité",
+    );
+
+  // Courrier d'échange entre le requérant et le Ministère
 
   public static readonly TYPE_COURRIER_MINISTERE = new DocumentType(
     "courrier_ministere",
@@ -198,6 +239,14 @@ export class Document {
     DocumentType.TYPE_CONTRAT_LOCATION,
     DocumentType.TYPE_NON_PRISE_EN_CHARGE_ASSURANCE,
     DocumentType.TYPE_NON_PRISE_EN_CHARGE_BAILLEUR,
+    DocumentType.TYPE_PIECE_IDENTITE_SIGNATAIRE,
+    DocumentType.TYPE_EXTRAIT_KBIS,
+    DocumentType.TYPE_QUITTANCE_SUBROGATIVE,
+    DocumentType.TYPE_POUVOIR_SIGNATAIRE,
+    DocumentType.TYPE_PV_ASSOCIATION_STATUTS,
+    DocumentType.TYPE_PV_AG_SYNDIC,
+    DocumentType.TYPE_DECLARATION_RNA_JOAFE,
+    DocumentType.TYPE_IDENTIFICATION_ETABLISSEMENT_PUBLIQUE,
     DocumentType.TYPE_COURRIER_MINISTERE,
     DocumentType.TYPE_COURRIER_REQUERANT,
     DocumentType.TYPE_ARRETE_PAIEMENT,
@@ -214,6 +263,14 @@ export class Document {
     DocumentType.TYPE_CONTRAT_LOCATION,
     DocumentType.TYPE_NON_PRISE_EN_CHARGE_ASSURANCE,
     DocumentType.TYPE_NON_PRISE_EN_CHARGE_BAILLEUR,
+    DocumentType.TYPE_PIECE_IDENTITE_SIGNATAIRE,
+    DocumentType.TYPE_EXTRAIT_KBIS,
+    DocumentType.TYPE_QUITTANCE_SUBROGATIVE,
+    DocumentType.TYPE_POUVOIR_SIGNATAIRE,
+    DocumentType.TYPE_PV_ASSOCIATION_STATUTS,
+    DocumentType.TYPE_PV_AG_SYNDIC,
+    DocumentType.TYPE_DECLARATION_RNA_JOAFE,
+    DocumentType.TYPE_IDENTIFICATION_ETABLISSEMENT_PUBLIQUE,
   ];
 
   public static typesFDO: DocumentType[] = [

@@ -336,10 +336,10 @@ class DossierController extends AgentController
 
         $zip->close();
 
-        return (new BinaryFileResponse($zipName, headers: [
+        return new BinaryFileResponse($zipName, headers: [
             'Content-Type' => 'application/zip',
             'Content-Length' => filesize($zipName),
-        ]))
+        ])
             ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
     }
 

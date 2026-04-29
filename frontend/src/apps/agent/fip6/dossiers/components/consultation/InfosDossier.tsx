@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
 import { Agent, DossierDetail } from "@/common/models";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import { libellerNomTypePersonneMorale } from "@/common/models/TypePersonneMorale";
 import { dateSimple } from "@/common/services/date.ts";
 import { capitaliser } from "@/common/services/divers.ts";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import React, { useMemo } from "react";
 
 export const InfosDossier = ({
   dossier,
@@ -51,7 +52,13 @@ export const InfosDossier = ({
               </li>
               {dossier.requerant.estPersonneMorale() && (
                 <li>
-                  Représentant{e} légal{e} de la société{" "}
+                  Représentant{e} légal{e} de{" "}
+                  {dossier.requerant.typePersonneMorale
+                    ? libellerNomTypePersonneMorale(
+                        dossier.requerant.typePersonneMorale,
+                        { defini: true },
+                      )
+                    : "la société"}{" "}
                   <b>{dossier.requerant.raisonSociale}</b> (SIREN:{" "}
                   <b>{dossier.requerant.siren}</b>)
                 </li>
