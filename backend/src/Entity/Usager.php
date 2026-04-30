@@ -8,13 +8,13 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
-use MonIndemnisationJustice\Repository\RequerantRepository;
+use MonIndemnisationJustice\Repository\UsagerRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
-#[ORM\Entity(repositoryClass: RequerantRepository::class)]
+#[ORM\Entity(repositoryClass: UsagerRepository::class)]
 #[ORM\Table(name: 'usagers')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_SUB', fields: ['sub'])]
