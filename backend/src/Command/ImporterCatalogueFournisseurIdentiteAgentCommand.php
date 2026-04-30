@@ -27,8 +27,7 @@ class ImporterCatalogueFournisseurIdentiteAgentCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('path', InputArgument::REQUIRED)
-        ;
+            ->addArgument('path', InputArgument::REQUIRED);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -55,8 +54,7 @@ class ImporterCatalogueFournisseurIdentiteAgentCommand extends Command
                             ->setActif(in_array(strtolower($actif), ['oui', 'true', 1]))
                             ->setUrlDecouverte($urlDecouverte)
                             ->setReseauInterne(FournisseurIdentiteAgent::RESEAU_INTERNE === $reseau)
-                            ->setDomaines(array_map('trim', explode(',', $listeFQDNs)))
-                        ;
+                            ->setDomaines(array_map('trim', explode(',', $listeFQDNs)));
                         $this->em->persist($fournisseurIdentite);
                     }
                 }
