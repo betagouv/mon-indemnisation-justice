@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -118,8 +119,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                     $this->em->persist($requerant);
                     $this->em->flush();
                 } else {
-                    // Connexion
-                    throw new AuthenticationException("Nous n'avons pas trouvé de compte inscrit sur notre plateforme depuis cet identifiant France Connect. Veuillez vous inscrire au préalable.");
+                    throw new CustomUserMessageAuthenticationException("Nous n'avons trouvé aucun compte enregistré sur notre plateforme depuis cet identifiant France Connect. Veuillez vous inscrire au préalable.");
                 }
             }
 
@@ -129,7 +129,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
         } catch (AuthenticationException $e) {
             $this->logger->error($e->getMessage(), $e->getMessageData());
 
-            throw $e;
+            throw new CustomUserMessageAuthenticationException($e->getMessage());
         }
     }
 
