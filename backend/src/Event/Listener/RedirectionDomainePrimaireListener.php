@@ -32,8 +32,7 @@ class RedirectionDomainePrimaireListener implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event): void
     {
         if (!empty($this->domainePrimaire)) {
-            if ($event->getRequest()->getHost() !== $this->domainePrimaire) {
-                $this->logger->warning("Redirection depuis {$event->getRequest()->getUri()}");
+            if (null !== $event->getRequest()->getHost() && $event->getRequest()->getHost() !== $this->domainePrimaire) {
                 $event->setResponse(new RedirectResponse('https://'.$this->domainePrimaire.$event->getRequest()->getRequestUri(), 301));
             }
         }
