@@ -9,6 +9,7 @@ node_modules/
 /playwright/.cache/
 
 # Au cas où
+.env
 .env.dev
 .env.prod
 .env.test

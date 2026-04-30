@@ -3,6 +3,7 @@ import { UsagerManagerInterface } from "@/apps/requerant/services/UsagerManager.
 import { createRouter } from "@tanstack/react-router";
 import { container } from "../container";
 import { routeTree } from "./routeur-requerant.gen";
+import { Crisp } from "crisp-sdk-web";
 
 export type ErreurResourceInconnue = {
   titre?: string;
@@ -21,6 +22,13 @@ await container
       defaultStaleTime: 5000,
       scrollRestoration: true,
       context,
+    });
+    Crisp.user.setEmail(context.usager.courriel);
+    Crisp.user.setPhone(context.usager.telephone);
+    Crisp.user.setNickname(context.usager.courriel);
+
+    Crisp.session.setData({
+      usager_id: context.usager.id,
     });
   });
 
