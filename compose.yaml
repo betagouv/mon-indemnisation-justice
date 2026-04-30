@@ -149,6 +149,8 @@ services:
       - ./frontend:/app
       # Dossier à ne pas partager entre guest et host
       - /app/node_modules
+    environment:
+      VITE_CRISP_WEBSITE_ID: ${VITE_CRISP_WEBSITE_ID:-}
     ports:
       - "5173:5173"
     healthcheck:

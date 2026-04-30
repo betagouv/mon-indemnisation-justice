@@ -12,7 +12,6 @@ use MonIndemnisationJustice\Repository\UsagerRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 
 #[ORM\Entity(repositoryClass: UsagerRepository::class)]
 #[ORM\Table(name: 'usagers')]
@@ -106,7 +105,6 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    #[SerializedName('courriel')]
     public function getEmail(): ?string
     {
         return $this->email;
