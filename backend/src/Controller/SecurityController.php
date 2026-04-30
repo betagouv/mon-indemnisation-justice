@@ -9,7 +9,7 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Forms\ModificationMotDePasseType;
 use MonIndemnisationJustice\Forms\MotDePasseOublieType;
-use MonIndemnisationJustice\Repository\RequerantRepository;
+use MonIndemnisationJustice\Repository\UsagerRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,7 +34,7 @@ class SecurityController extends AbstractController
         protected AuthenticationUtils $authenticationUtils,
         protected Mailer $mailer,
         protected EntityManagerInterface $em,
-        protected readonly RequerantRepository $requerantRepository,
+        protected readonly UsagerRepository $requerantRepository,
         #[Autowire(service: 'oidc_client_france_connect')]
         protected readonly OidcClient $oidcClientRequerant,
     ) {

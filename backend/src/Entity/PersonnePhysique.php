@@ -17,7 +17,7 @@ class PersonnePhysique
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'], inversedBy: 'personnePhysiques')]
+    #[ORM\ManyToOne(targetEntity: Personne::class, cascade: ['persist', 'remove'], inversedBy: 'personnesPhysiques')]
     /**
      * Afin de garantir la pérennité des données, on crée une personne physique différente pour chaque dossier, quand bien
      * même la personne physique est la même. Ainsi, le moindre changement sur un second dossier n'altèrera pas le dossier

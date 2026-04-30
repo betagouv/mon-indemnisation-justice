@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method Usager[]    findAll()
  * @method Usager[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RequerantRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class UsagerRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
     public function __construct(ManagerRegistry $registry)
     {

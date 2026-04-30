@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Validation\Validator;
 
-use MonIndemnisationJustice\Repository\RequerantRepository;
+use MonIndemnisationJustice\Repository\UsagerRepository;
 use MonIndemnisationJustice\Validation\Constraint\UniqueRequerantCourriel;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
@@ -11,7 +11,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 class UniqueRequerantCourrielValidator extends ConstraintValidator
 {
     public function __construct(
-        protected readonly RequerantRepository $requerantRepository,
+        protected readonly UsagerRepository $requerantRepository,
     ) {
     }
 

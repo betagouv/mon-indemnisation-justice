@@ -36,11 +36,11 @@ class Personne
     protected ?string $telephone = null;
 
     #[ORM\OneToMany(targetEntity: PersonnePhysique::class, mappedBy: 'personne', cascade: ['persist', 'remove'])]
-    protected ?Collection $personnePhysiques;
+    protected ?Collection $personnesPhysiques;
 
     public function __construct()
     {
-        $this->personnePhysiques = new ArrayCollection();
+        $this->personnesPhysiques = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -168,14 +168,14 @@ class Personne
         return $this;
     }
 
-    public function getPersonnePhysiques(): ?Collection
+    public function getPersonnesPhysiques(): ?Collection
     {
-        return $this->personnePhysiques;
+        return $this->personnesPhysiques;
     }
 
-    public function ajouterPersonnePhysique(PersonnePhysique $personnePhysiques): Personne
+    public function ajouterPersonnePhysique(PersonnePhysique $personnePhysique): Personne
     {
-        $this->personnePhysiques->add($personnePhysiques);
+        $this->personnesPhysiques->add($personnePhysique->setPersonne($this));
 
         return $this;
     }

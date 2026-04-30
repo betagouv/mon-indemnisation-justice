@@ -9,7 +9,7 @@ use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\Personne;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Usager;
-use MonIndemnisationJustice\Repository\RequerantRepository;
+use MonIndemnisationJustice\Repository\UsagerRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -41,7 +41,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected readonly LoggerInterface $logger,
         protected readonly EntityManagerInterface $em,
-        protected readonly RequerantRepository $requerantRepository,
+        protected readonly UsagerRepository $usagerRepository,
     ) {
     }
 
@@ -69,9 +69,9 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
             // User info
             $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
 
-            $requerant = $this->requerantRepository->findByEmailOrSub($userInfo['email'] ?? null, $userInfo['sub'] ?? null);
+            $usager = $this->usagerRepository->findByEmailOrSub($userInfo['email'] ?? null, $userInfo['sub'] ?? null);
 
-            if (null === $requerant) {
+            if (null === $usager) {
                 if ($this->httpUtils->checkRequestPath($request, $this->signupCheckRoute)) {
                     // Inscription
                     $prenoms = $userInfo['given_name_array'] ?? explode(' ', $userInfo['given_name']);
@@ -85,7 +85,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                     /** @var GeoCodePostal $codePostalNaissance */
                     $codePostalNaissance = null !== ($codeCommuneNaissance = $userInfo['birthplace']) ? $this->em->getRepository(GeoCodePostal::class)->identifier($codeCommuneNaissance) : null;
 
-                    $requerant = new Usager()
+                    $usager = new Usager()
                         ->setSub($userInfo['sub'])
                         ->setEmail($userInfo['email'] ?? null)
                         ->setVerifieCourriel()
@@ -107,7 +107,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                         );
 
 
-                    $this->em->persist($requerant);
+                    $this->em->persist($usager);
                     $this->em->flush();
                 } else {
                     throw new CustomUserMessageAuthenticationException("Nous n'avons trouvé aucun compte enregistré sur notre plateforme depuis cet identifiant France Connect. Veuillez vous inscrire au préalable.");
@@ -116,7 +116,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
             $request->getSession()->set(self::LOGOUT_URL_SESSION_KEY, $this->oidcClient->buildLogoutUrl($request, $idToken));
 
-            return new SelfValidatingPassport(new UserBadge($requerant->getUserIdentifier()));
+            return new SelfValidatingPassport(new UserBadge($usager->getUserIdentifier()));
         } catch (AuthenticationException $e) {
             $this->logger->error($e->getMessage(), $e->getMessageData());
 
