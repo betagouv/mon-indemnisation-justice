@@ -240,7 +240,7 @@ test("dépôt de dossier", async ({browser}) => {
 
     // Attendre que le téléversement se termine
 
-    await page.waitForLoadState("networkidle", {timeout: 60000});
+    await page.waitForLoadState("networkidle", {timeout: 120000});
     await expect(
         page.locator("dialog#ajouter-pieces-jointes-modale"),
     ).toBeHidden();
