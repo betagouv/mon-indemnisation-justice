@@ -1,3 +1,8 @@
+import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
+import { Expose, plainToInstance, Transform, Type } from "class-transformer";
+import { groupBy } from "lodash";
+import { action, computed, makeObservable, observable } from "mobx";
 import {
   Adresse,
   Document,
@@ -9,9 +14,6 @@ import {
   TestEligibilite,
   TypeInstitutionSecuritePublique
 } from ".";
-import { Expose, plainToInstance, Transform, Type } from "class-transformer";
-import { action, computed, makeObservable, observable } from "mobx";
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 
 export type TypeAttestation =
   | "NOUVELLE_ATTESTATION"
@@ -25,24 +27,17 @@ export abstract class BaseDossier {
   public montantIndemnisation?: number;
 
   @Type(() => EtatDossier)
+  @Expose()
   public etat: EtatDossier;
-  protected _dateDepot: Date | null;
+  @DateTransform()
+  @Type(() => Date)
+  public dateDepot?: Date;
   @Expose()
   @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
   public redacteur: Redacteur | null = null;
   public typeAttestation?: TypeAttestation;
   public qualiteRequerant?: string;
   public readonly estEligible: boolean;
-  public readonly issuDeclarationFDO: boolean;
-
-  @Expose()
-  get dateDepot(): null | Date {
-    return this._dateDepot;
-  }
-
-  set dateDepot(value: Date | number) {
-    this._dateDepot = typeof value === "number" ? new Date(value) : value;
-  }
 
   public estAAttribuer(): boolean {
     return this.etat.etat.egal(EtatDossierType.A_ATTRIBUER);
@@ -133,6 +128,7 @@ export abstract class BaseDossier {
 }
 
 export class DossierApercu extends BaseDossier {
+  public readonly issuDeclarationFDO: boolean;
   public readonly requerant: string; // Prénom NOM
   public readonly adresse: string;
 }
@@ -158,25 +154,23 @@ export class DossierDetail extends BaseDossier {
   @Type(() => Adresse)
   public readonly adresse: Adresse;
 
-  @Transform(({ value }) => {
-    if (!value) {
-      return null;
-    }
-    return typeof value === "number" ? new Date(value) : value;
-  })
+  @DateTransform()
   public dateOperation: Date | null;
 
   public estPorteBlindee: boolean | null;
 
-  @Transform(
-    ({ value }: { value: object }) =>
-      new Map(
-        Object.entries(value).map(([t, d]) => [
-          t,
-          plainToInstance(Document, d as Array<any>),
-        ]),
+  @Transform(({ value }: { value: any[] }) => {
+    return new Map(
+      Object.entries(
+        groupBy(
+          value.map((d) => plainToInstance(Document, d)),
+          (item) => {
+            return item.type.type;
+          },
+        ),
       ),
-  )
+    );
+  })
   public documents: Map<string, Document[]> = new Map(
     Document.types.map((type: DocumentType) => [type.type, []]),
   );

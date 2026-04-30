@@ -1,4 +1,4 @@
-{% set libelle = dossier.requerant.isPersonneMorale ? 'la société ' ~ dossier.requerant.personneMorale.raisonSociale : dossier.requerant.nomComplet %}
+{% set libelle = dossier.estPersonneMorale ? 'la société ' ~ dossier.requerantPersonneMorale.raisonSociale : dossier.requerantPersonnePhysique?.personne.nomComplet %}
 
 <h3>Arrêté</h3>
 
@@ -9,8 +9,8 @@
 </p>
 <p>
     Vu la demande de {{ libelle }} aux fins d’indemnisation du préjudice subi en raison de la
-    détérioration de la porte d’entrée du logement situé à {{ dossier.adresse.localite|upper }}
-    {% if dossier.adresse.codeDepartemental %}({{ dossier.adresse.codeDepartemental }}){% endif %} reçue
+    détérioration de la porte d’entrée du logement situé à {{ dossier.brisPorte.adresse.localite|upper }}
+    {% if dossier.brisPorte.adresse.codeDepartemental %}({{ dossier.brisPorte.adresse.codeDepartemental }}){% endif %} reçue
     le {{ dossier.dateDepot|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }};
 </p>
 <p>
@@ -22,21 +22,21 @@
 </p>
 <p>
     Vu la déclaration d’acceptation
-    de {{ libelle }}{% if dossier.requerant.isPersonneMorale %}, représentée par {{ dossier.requerant.nomComplet }}, {% endif %}
+    de {{ libelle }}{% if dossier.estPersonneMorale %}, représentée par {{ dossier.requerantPersonneMorale.representantLegal.nomComplet }}, {% endif %}
     en date
     du {{ dossier.dateSignatureRequerant|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
     ;
 </p>
 <p>
     Considérant que le préjudice matériel subi par {{ libelle }}, relatif à la détérioration de la
-    porte d’entrée du logement sis {{ dossier.adresse.ligne1 }}
-    à {{ dossier.adresse.localite|default }} {% if dossier.adresse.codeDepartemental %}({{ dossier.adresse.codeDepartemental }}){% endif %}
+    porte d’entrée du logement sis {{ dossier.brisPorte.adresse.ligne1 }}
+    à {{ dossier.brisPorte.adresse.localite|default }} {% if dossier.brisPorte.adresse.codeDepartemental %}({{ dossier.brisPorte.adresse.codeDepartemental }}){% endif %}
     ,
     résulte d’une opération de police judiciaire menée
-    le {{ dossier.dateOperationPJ|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }};
+    le {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }};
 </p>
 
-<p>Considérant que la responsabilité de l’État est engagée à l’égard de {{ dossier.requerant.nomComplet }} sur le
+<p>Considérant que la responsabilité de l’État est engagée à l’égard de {{ dossier.requerantPersonne.nomComplet }} sur le
     fondement de la rupture d’égalité devant les charges publiques ;
 </p>
 

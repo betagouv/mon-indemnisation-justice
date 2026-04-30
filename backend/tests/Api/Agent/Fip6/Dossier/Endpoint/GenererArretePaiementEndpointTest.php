@@ -3,19 +3,17 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererArretePaiementEndpoint;
-use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Teste le point d'entrée @GenererArretePaiementEndpoint de l'API, permettant de générer l'arrêté de paiement d'un
  * dossier.
- *
- * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\GenererArretePaiementEndpoint
  */
+#[CoversClass(GenererArretePaiementEndpoint::class)]
 class GenererArretePaiementEndpointTest extends APIEndpointTestCase
 {
     /**
@@ -39,7 +37,7 @@ class GenererArretePaiementEndpointTest extends APIEndpointTestCase
         $this->assertEquals(DocumentType::TYPE_ARRETE_PAIEMENT->value, $output->document->type);
     }
 
-    protected function genererArretePaiement(BrisPorte $dossier): void
+    protected function genererArretePaiement(Dossier $dossier): void
     {
         $this->apiPost([], ['id' => $dossier->getId()]);
     }

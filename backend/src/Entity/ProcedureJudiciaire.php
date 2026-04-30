@@ -3,7 +3,6 @@
 namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
@@ -16,20 +15,15 @@ class ProcedureJudiciaire
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     protected ?Uuid $id = null;
     #[ORM\Column]
-    #[Groups(['agent:detail'])]
     protected string $numeroProcedure;
     #[ORM\Column]
-    #[Groups(['agent:detail'])]
     protected string $serviceEnqueteur;
 
     #[ORM\Column(length: 20)]
-    #[\Symfony\Component\Serializer\Attribute\Groups(['agent:detail'])]
     protected string $telephone;
     #[ORM\Column(nullable: true)]
-    #[Groups(['agent:detail'])]
     protected ?string $juridictionOuParquet = null;
     #[ORM\Column(nullable: true)]
-    #[Groups(['agent:detail'])]
     protected ?string $nomMagistrat = null;
 
     public function getId(): Uuid

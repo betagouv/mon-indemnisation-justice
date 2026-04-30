@@ -1,4 +1,4 @@
-{% if dossier.requerant.isPersonneMorale %}
+{% if dossier.estPersonneMorale %}
     {% include 'courrier/decision/propositionIndemnisation/_pi_corps_personne_morale.html.twig' %}
 {% else %}
     {% include 'courrier/decision/propositionIndemnisation/_pi_corps_personne_physique.html.twig' %}

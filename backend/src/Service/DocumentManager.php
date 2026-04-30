@@ -7,7 +7,7 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToWriteFile;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use Ramsey\Uuid\Uuid;
@@ -21,19 +21,18 @@ class DocumentManager
 {
     public function __construct(
         #[Target('default.storage')]
-        protected readonly FilesystemOperator     $storage,
+        protected readonly FilesystemOperator $storage,
         protected readonly EntityManagerInterface $em,
-        protected readonly ImprimanteCourrier     $imprimanteCourrier,
-        protected readonly Environment            $twig,
-    )
-    {
+        protected readonly ImprimanteCourrier $imprimanteCourrier,
+        protected readonly Environment $twig,
+    ) {
     }
 
-    public function ajouterFichierLocal(BrisPorte $dossier, string $cheminOuURL, DocumentType $type, bool $estAjoutRequerant = true): void
+    public function ajouterFichierLocal(Dossier $dossier, string $cheminOuURL, DocumentType $type, bool $estAjoutRequerant = true): void
     {
         $contenu = file_get_contents($cheminOuURL);
         if (filter_var($cheminOuURL, FILTER_VALIDATE_URL)) {
-            $cheminFichier = Path::normalize(sys_get_temp_dir() . '/' . Uuid::uuid4()->toString());
+            $cheminFichier = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
             file_put_contents($cheminFichier, $contenu);
         } else {
             $cheminFichier = $cheminOuURL;
@@ -54,7 +53,7 @@ class DocumentManager
         );
     }
 
-    public function ajouterFichierTeleverse(BrisPorte $dossier, UploadedFile $fichierTeleverse, DocumentType $type, bool $estAjoutRequerant = true): Document
+    public function ajouterFichierTeleverse(Dossier $dossier, UploadedFile $fichierTeleverse, DocumentType $type, bool $estAjoutRequerant = true): Document
     {
         return $this->ajouterDocument(
             $dossier,
@@ -68,7 +67,7 @@ class DocumentManager
         );
     }
 
-    public function ajouterDocument(BrisPorte $dossier, Document $document, string $contenu, string $extension): Document
+    public function ajouterDocument(Dossier $dossier, Document $document, string $contenu, string $extension): Document
     {
         $document = $this->enregistrerDocument($document, $contenu);
 
@@ -126,7 +125,7 @@ class DocumentManager
         return $this->storage->read($document->getFilename());
     }
 
-    public function genererCorps(BrisPorte $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?string $motifRejet = null): string
+    public function genererCorps(Dossier $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?string $motifRejet = null): string
     {
         return $this->twig->render(
             $type->getGabaritCorps(),
@@ -141,7 +140,7 @@ class DocumentManager
         );
     }
 
-    public function generer(BrisPorte $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?string $motifRejet = null): Document
+    public function generer(Dossier $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?string $motifRejet = null): Document
     {
         if (!$type->estEditableAgent()) {
             throw new \LogicException("Les documents de type '$type->value' ne sont pas éditables");
@@ -175,7 +174,7 @@ class DocumentManager
         return pathinfo($cheminFichier, PATHINFO_EXTENSION) ?? match ($mime = $this->calculerTypeMime($cheminFichier)) {
             'application/pdf' => 'pdf',
             'image/jpeg', 'image/png', 'image/gif', 'image/webp' => preg_replace('image/', '', $mime),
-            default => 'txt'
+            default => 'txt',
         };
     }
 }

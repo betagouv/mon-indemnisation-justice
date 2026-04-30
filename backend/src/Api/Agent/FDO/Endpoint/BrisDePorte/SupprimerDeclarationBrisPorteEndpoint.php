@@ -26,7 +26,8 @@ class SupprimerDeclarationBrisPorteEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]

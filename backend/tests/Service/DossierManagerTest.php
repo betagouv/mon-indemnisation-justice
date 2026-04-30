@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Tests\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\BrisPorteRepository;
 use MonIndemnisationJustice\Service\DossierManager;
@@ -48,7 +48,7 @@ class DossierManagerTest extends WebTestCase
 
     public function testAnnulerOk(): void
     {
-        /** @var BrisPorte $dossierOkASigner */
+        /** @var Dossier $dossierOkASigner */
         $dossierOkASigner = $this->dossierRepository->listerDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER)[0];
         $nbEtats = $dossierOkASigner->getHistoriqueEtats()->count();
         $this->dossierManager->annuler($dossierOkASigner);
@@ -61,7 +61,7 @@ class DossierManagerTest extends WebTestCase
 
     public function testRevenirOk(): void
     {
-        /** @var BrisPorte $dossierOkASigner */
+        /** @var Dossier $dossierOkASigner */
         $dossierOkASigner = $this->dossierRepository->listerDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER)[0];
         $nbEtats = $dossierOkASigner->getHistoriqueEtats()->count();
         $this->dossierManager->revenir($dossierOkASigner, 2);
@@ -86,7 +86,7 @@ class DossierManagerTest extends WebTestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Impossible de revenir plus de 1 état(s) en arrière');
 
-        /** @var BrisPorte $dossierOkASigner */
+        /** @var Dossier $dossierOkASigner */
         $dossierAAttribuer = $this->dossierRepository->listerDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER)[0];
         $this->dossierManager->revenir($dossierAAttribuer, 2);
     }

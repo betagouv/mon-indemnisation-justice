@@ -1,6 +1,6 @@
+import { Expose, Transform, Type } from "class-transformer";
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
-import { Expose, Transform, Type } from "class-transformer";
 
 interface EtatInterface {
   get libelle(): string;
@@ -18,57 +18,6 @@ interface EtatInterface {
   estRejete(): boolean;
 
   estCloture(): boolean;
-}
-
-export class EtatDossier implements EtatInterface {
-  public readonly id: number;
-  @Transform(({ value }: { value: string }) => EtatDossierType.resoudre(value))
-  public readonly etat: EtatDossierType;
-  @Transform(({ value }) => {
-    if (!value) {
-      return null;
-    }
-    return typeof value === "number" ? new Date(value) : value;
-  })
-  public readonly dateEntree: Date;
-  @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
-  public readonly redacteur: Redacteur | null = null;
-  @Expose()
-  @Type(() => Requerant)
-  public readonly requerant: boolean;
-  public readonly contexte: any | null = null;
-
-  get libelle(): string {
-    return this.etat.libelle;
-  }
-
-  estASigner(): boolean {
-    return this.etat.estASigner();
-  }
-
-  estAccepte(): boolean {
-    return this.etat.estAccepte();
-  }
-
-  estAccepteRequerant(): boolean {
-    return this.etat.estAccepteRequerant();
-  }
-
-  estDecide(): boolean {
-    return this.etat.estDecide();
-  }
-
-  estIndemnise(): boolean {
-    return this.etat.estIndemnise();
-  }
-
-  estRejete(): boolean {
-    return this.etat.estRejete();
-  }
-
-  estCloture(): boolean {
-    return this.etat.estCloture();
-  }
 }
 
 export class EtatDossierType implements EtatInterface {
@@ -207,10 +156,61 @@ export class EtatDossierType implements EtatInterface {
   }
 
   public static resoudre(id: string): null | EtatDossierType {
-    return this._catalog.find((e) => e.id == id) ?? null;
+    return this._catalog?.find((e) => e.id == id) ?? null;
   }
 
   public egal(etat: EtatDossierType): boolean {
     return this.id === etat.id;
+  }
+}
+
+export class EtatDossier implements EtatInterface {
+  public readonly id: number;
+  @Transform(({ value }: { value: string }) => EtatDossierType.resoudre(value))
+  public readonly etat: EtatDossierType;
+  @Transform(({ value }) => {
+    if (!value) {
+      return null;
+    }
+    return value instanceof Date ? value : new Date(value);
+  })
+  public readonly dateEntree: Date;
+  @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
+  public readonly redacteur: Redacteur | null = null;
+  @Expose()
+  @Type(() => Requerant)
+  public readonly requerant: boolean;
+  public readonly contexte: any | null = null;
+
+  get libelle(): string {
+    return this.etat.libelle;
+  }
+
+  estASigner(): boolean {
+    return this.etat.estASigner();
+  }
+
+  estAccepte(): boolean {
+    return this.etat.estAccepte();
+  }
+
+  estAccepteRequerant(): boolean {
+    return this.etat.estAccepteRequerant();
+  }
+
+  estDecide(): boolean {
+    return this.etat.estDecide();
+  }
+
+  estIndemnise(): boolean {
+    return this.etat.estIndemnise();
+  }
+
+  estRejete(): boolean {
+    return this.etat.estRejete();
+  }
+
+  estCloture(): boolean {
+    return this.etat.estCloture();
   }
 }

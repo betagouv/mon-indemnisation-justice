@@ -10,7 +10,7 @@
 
 
 {% block contenu %}
-    Bonjour {{ dossier.requerant.nomCourant(true, true) }},
+    Bonjour {{ dossier.usager.nomCourant(true, true) }},
     <br/>
     <br/>
     <p>
@@ -18,7 +18,7 @@
     </p>
     <p>
         Un collaborateur en assure l’instruction. Vous serez prochainement
-        informé{{ dossier.requerant.estFeminin() ? 'e' : '' }}
+        informé{{ dossier.usager.estFeminin() ? 'e' : '' }}
         de la décision prise par nos services.
     </p>
     <p>

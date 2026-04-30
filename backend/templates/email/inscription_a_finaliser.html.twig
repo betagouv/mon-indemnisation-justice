@@ -2,14 +2,14 @@
 
 {% import "email/_macros.twig" as email %}
 
-{% set activation_url = url('app_verify_email', {'jeton': requerant.jetonVerification }) %}
+{% set activation_url = url('app_verify_email', {'jeton': usager.jetonVerification }) %}
 
 {% block entete %}
     <b>Votre inscription : activez votre compte</b>
 {% endblock entete %}
 
 {% block contenu %}
-    Bonjour {{ requerant.nomCourant }},
+    Bonjour {{ usager.nomCourant }},
     <br/>
     <br/>
     Nous vous confirmons votre inscription sur l'application Mon Indemnisation Justice.

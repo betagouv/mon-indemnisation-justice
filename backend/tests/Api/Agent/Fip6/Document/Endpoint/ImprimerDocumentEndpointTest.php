@@ -4,7 +4,7 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Document\Endpoint;
 
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrisPorte;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 
 /**
@@ -31,7 +31,7 @@ class ImprimerDocumentEndpointTest extends AbstractEndpointTestCase
         /** @var Agent $agent */
         $agent = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'redacteur@justice.gouv.fr']);
 
-        $dossier = $this->em->getRepository(BrisPorte::class)->findOneBy([
+        $dossier = $this->em->getRepository(Dossier::class)->findOneBy([
             'reference' => 'BRI/20250103/001',
         ]);
         $document = $dossier->getOrCreatePropositionIndemnisation();

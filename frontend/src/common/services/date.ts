@@ -5,17 +5,11 @@ export const hier = (): Date => dateIlYaNJours(1);
 export const estAujourdhui = (a: Date): boolean => memeJour(a, aujourdhui());
 
 export const dateIlYaNJours = (n: number, debut?: Date) => {
-  debut = debut || new Date();
-  debut.setDate(debut.getDate() + n);
-
-  return new Date(-debut.setHours(0, 0, 0, 0) + n * 24 * 60 * 60 * 1000);
+  return new Date((debut || new Date()).getTime() - n * 24 * 60 * 60 * 1000);
 };
 
 export const dateDansNJours = (n: number, debut?: Date) => {
-  debut = debut || new Date();
-  debut.setDate(debut.getDate() + n);
-
-  return new Date(+debut.setHours(0, 0, 0, 0) + n * 24 * 60 * 60 * 1000);
+  return new Date((debut || new Date()).getTime() + n * 24 * 60 * 60 * 1000);
 };
 
 export const memeJour = (a: Date, b: Date): boolean => {
@@ -94,9 +88,57 @@ export const dateSimple = function (
   });
 };
 
-export const dateEtHeureSimple = function (
-  date: Date,
-  masquerAnneeSiCourante: boolean = false,
+export const heureSimple = function (
+  date?: Date,
+  { litterale = true }: { litterale?: boolean } = { litterale: true },
 ): string {
-  return `${dateSimple(date, masquerAnneeSiCourante)} à ${date.getHours()}h${String(date.getMinutes()).padStart(2, "0")}`;
+  if (!date) {
+    return "";
+  }
+
+  if (litterale) {
+    if (date.getHours() === 0) {
+      return "minuit";
+    } else if (date.getHours() === 12) {
+      return "midi";
+    }
+  }
+
+  return `${Number(date.getHours()).toString()}h`;
+};
+
+export const heureEtMinutesSimple = function (
+  date?: Date,
+  { litterale = true }: { litterale?: boolean } = { litterale: true },
+): string {
+  if (!date) {
+    return "";
+  }
+
+  const heure = heureSimple(date, { litterale });
+
+  return `${heure}${heure.endsWith("h") ? "" : " "}${String(date.getMinutes()).padStart(2, "0")}`;
+};
+
+export const dateEtHeureSimple = function (
+  date?: Date,
+  {
+    masquerAnneeSiCourante = false,
+    litterale = true, // Préférer minuit à `00 h`
+    avecMinutes = false,
+  }: {
+    masquerAnneeSiCourante?: boolean;
+    litterale?: boolean;
+    avecMinutes?: boolean;
+  } = {
+    masquerAnneeSiCourante: false,
+    litterale: true,
+    avecMinutes: false,
+  },
+): string {
+  if (!date) {
+    return "";
+  }
+
+  return `${dateSimple(date, masquerAnneeSiCourante)} à ${avecMinutes ? heureEtMinutesSimple(date, { litterale }) : heureSimple(date, { litterale })}`;
 };

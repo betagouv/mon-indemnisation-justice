@@ -3,11 +3,9 @@
 namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'coordonnees_requerant')]
-#[Groups(['agent:detail'])]
 class CoordonneesRequerant
 {
     #[ORM\Id]
@@ -26,7 +24,9 @@ class CoordonneesRequerant
     #[ORM\Column(length: 255)]
     protected string $courriel;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function getId(): ?int
     {

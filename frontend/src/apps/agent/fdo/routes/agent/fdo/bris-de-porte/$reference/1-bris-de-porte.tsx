@@ -1,28 +1,28 @@
+import { container } from "@/apps/agent/fdo/_init/_container.ts";
+import { RouteurFDO } from "@/apps/agent/fdo/_init/_router.ts";
+import {
+  Adresse,
+  DeclarationFDOBrisPorte,
+  DeclarationFDOBrisPorteErreurTypes,
+} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 import { dateChiffre } from "@/common/services/date.ts";
+import "@/style/index.css";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Input } from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { useForm } from "@tanstack/react-form";
-import React, { ChangeEvent } from "react";
 import {
   createFileRoute,
   Link,
   redirect,
   useNavigate,
 } from "@tanstack/react-router";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { z } from "zod";
-import "@/style/index.css";
-import {
-  DeclarationFDOBrisPorte,
-  Adresse,
-  DeclarationFDOBrisPorteErreurTypes,
-} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
-import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import { useInjection } from "inversify-react";
-import { router } from "@/apps/agent/fdo/_init/_router.ts";
-import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
+import React, { ChangeEvent } from "react";
+import { z } from "zod";
 
 export const Route = createFileRoute(
   "/agent/fdo/bris-de-porte/$reference/1-bris-de-porte",
@@ -83,7 +83,7 @@ const Page = () => {
   const { declaration }: { declaration: DeclarationFDOBrisPorte } =
     Route.useLoaderData();
 
-  const naviguer = useNavigate<typeof router>({
+  const naviguer = useNavigate<typeof RouteurFDO>({
     from: Route.fullPath,
   });
 
@@ -121,6 +121,7 @@ const Page = () => {
       await naviguer({
         to: "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
         params: { reference: declaration.id } as any,
+        search: {} as any,
       });
     },
   });
@@ -268,8 +269,13 @@ const Page = () => {
                   disabled={declaration.estSoumise()}
                   nativeInputProps={{
                     value: dateChiffre(field.state.value),
-                    onChange: (e) =>
-                      field.handleChange(new Date(e.target.value)),
+                    onChange: (e) => {
+                      const date = new Date(e.target.value);
+
+                      if (!isNaN(date.getTime()) && isFinite(date.getTime())) {
+                        field.handleChange(date);
+                      }
+                    },
                     type: "date",
                     autoFocus: true,
                   }}

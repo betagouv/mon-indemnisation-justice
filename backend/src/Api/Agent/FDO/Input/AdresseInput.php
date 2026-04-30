@@ -3,10 +3,8 @@
 namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
 
 use MonIndemnisationJustice\Entity\Adresse;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[Map(target: Adresse::class)]
 class AdresseInput
 {
     #[Assert\NotNull(message: "L'adresse est requise")]
@@ -19,4 +17,13 @@ class AdresseInput
     #[Assert\NotNull(message: 'La ville est requise')]
     #[Assert\NotBlank(message: 'La ville est requise')]
     public ?string $localite = null;
+
+    public function versAdresse(): Adresse
+    {
+        return new Adresse()
+            ->setLigne1($this->ligne1)
+            ->setLigne2($this->ligne2)
+            ->setCodePostal($this->codePostal)
+            ->setLocalite($this->localite);
+    }
 }

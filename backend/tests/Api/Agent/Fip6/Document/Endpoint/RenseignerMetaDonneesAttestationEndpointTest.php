@@ -7,15 +7,13 @@ use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\TypeAttestation;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Teste le point d'entrée @RenseignerMetaDonneesAttestationEndpoint de l'API, permettant de renseigner les métadonnées
  * d'une pièce jointe d'attestation.
- *
- * @internal
- *
- * @coversNothing
  */
+#[CoversClass(RenseignerMetaDonneesAttestationEndpoint::class)]
 class RenseignerMetaDonneesAttestationEndpointTest extends APIEndpointTestCase
 {
     /**

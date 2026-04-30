@@ -23,13 +23,12 @@ class ImprimanteCourrier
     protected readonly string $binDirectory;
 
     public function __construct(
-        protected readonly Environment        $twig,
+        protected readonly Environment $twig,
         #[Autowire(param: 'kernel.project_dir')]
-        string                                $projectDirectory,
+        string $projectDirectory,
         #[Target('default.storage')]
         protected readonly FilesystemOperator $storage,
-    )
-    {
+    ) {
         $this->filesystem = new Filesystem();
         $this->projectDirectory = $projectDirectory;
         $this->binDirectory = "{$projectDirectory}/bin";
@@ -38,7 +37,7 @@ class ImprimanteCourrier
     public function imprimerDocument(Document $document): Document
     {
         // Création d'un préfixe de chemin temporaire, dédié à la génération des documents HTML et PDF
-        $path = Path::normalize(sys_get_temp_dir() . '/' . Uuid::uuid4()->toString());
+        $path = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
 
         $this->filesystem->mkdir($path);
 
@@ -49,10 +48,10 @@ class ImprimanteCourrier
             $this->filesystem->dumpFile($fichierHtml, $this->twig->render($document->getType()->getGabarit(), [
                 'dossier' => $document->getDossier(),
                 'corps' => $document->getCorps(),
-                //'contexte' => $document->getMetaDonnees() ?? [],
+                // 'contexte' => $document->getMetaDonnees() ?? [],
             ]));
 
-            $impression = new Process([$this->binDirectory . '/print.js', $fichierHtml, $fichierPdf], $this->projectDirectory);
+            $impression = new Process([$this->binDirectory.'/print.js', $fichierHtml, $fichierPdf], $this->projectDirectory);
 
             $impression->run();
 
@@ -65,7 +64,7 @@ class ImprimanteCourrier
                 throw new \LogicException("Le fichier '{$fichierPdf}' n'a pas été créé");
             }
 
-            $destination = hash('sha256', file_get_contents($fichierPdf)) . '.pdf';
+            $destination = hash('sha256', file_get_contents($fichierPdf)).'.pdf';
 
             $this->storage->write($destination, file_get_contents($fichierPdf));
 

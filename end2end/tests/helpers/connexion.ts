@@ -1,0 +1,41 @@
+import {Page} from "playwright-core";
+import {expect} from "@playwright/test";
+
+
+export const connexionAgent = async (page: Page, identifiant: string): Promise<void> => {
+    await page.goto("/connexion");
+
+    const locatorBoutonProConnect = page.locator("a.fr-btn, button", {
+        hasText: new RegExp("S’identifier.*avec.*ProConnect", "su"),
+    });
+
+    await expect(locatorBoutonProConnect).toBeVisible();
+    await locatorBoutonProConnect.click({timeout: 1000});
+
+    const locatorBoutonConnexionRedacteur = page
+        .locator("div.card", {hasText: identifiant})
+        .getByText("Connecter");
+
+    await expect(locatorBoutonConnexionRedacteur).toBeEnabled();
+
+    await locatorBoutonConnexionRedacteur.click();
+}
+
+export const connexionFranceConnect = async (page: Page, identifiant: string): Promise<void> => {
+    await page.goto("/connexion");
+
+    const locatorBoutonFranceConnect = page.locator("button.fr-btn, button", {
+        hasText: new RegExp("S’identifier.*avec.*FranceConnect", "su"),
+    });
+
+    await expect(locatorBoutonFranceConnect).toBeVisible();
+    await locatorBoutonFranceConnect.click({timeout: 1000});
+
+    const locatorBoutonConnexionRequerant = page
+        .locator("div.card", {hasText: identifiant})
+        .getByText("Connecter");
+
+    await expect(locatorBoutonConnexionRequerant).toBeEnabled();
+
+    await locatorBoutonConnexionRequerant.click();
+}

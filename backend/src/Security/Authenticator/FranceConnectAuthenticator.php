@@ -6,9 +6,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Civilite;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\GeoPays;
+use MonIndemnisationJustice\Entity\Personne;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
-use MonIndemnisationJustice\Entity\Requerant;
-use MonIndemnisationJustice\Repository\RequerantRepository;
+use MonIndemnisationJustice\Entity\Usager;
+use MonIndemnisationJustice\Repository\UsagerRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -40,7 +41,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected readonly LoggerInterface $logger,
         protected readonly EntityManagerInterface $em,
-        protected readonly RequerantRepository $requerantRepository,
+        protected readonly UsagerRepository $usagerRepository,
     ) {
     }
 
@@ -68,55 +69,45 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
             // User info
             $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
 
-            $requerant = $this->requerantRepository->findByEmailOrSub($userInfo['email'] ?? null, $userInfo['sub'] ?? null);
+            $usager = $this->usagerRepository->findByEmailOrSub($userInfo['email'] ?? null, $userInfo['sub'] ?? null);
 
-            if (null === $requerant) {
+            if (null === $usager) {
                 if ($this->httpUtils->checkRequestPath($request, $this->signupCheckRoute)) {
                     // Inscription
                     $prenoms = $userInfo['given_name_array'] ?? explode(' ', $userInfo['given_name']);
 
-                    $requerant = (new Requerant())
+                    /** @var GeoPays $paysNaissance */
+                    $paysNaissance = null !== ($codePaysNaissance = $userInfo['birthcountry']) ? $paysNaissance = $this->em->getRepository(GeoPays::class)->findOneBy(
+                        [
+                            'codeInsee' => $codePaysNaissance]
+                    ) : null;
+
+                    /** @var GeoCodePostal $codePostalNaissance */
+                    $codePostalNaissance = null !== ($codeCommuneNaissance = $userInfo['birthplace']) ? $this->em->getRepository(GeoCodePostal::class)->identifier($codeCommuneNaissance) : null;
+
+                    $usager = new Usager()
                         ->setSub($userInfo['sub'])
                         ->setEmail($userInfo['email'] ?? null)
                         ->setVerifieCourriel()
-                        ->setPersonnePhysique(
-                            (new PersonnePhysique())
+                        ->setPersonne(
+                            new Personne()
                                 ->setCivilite('male' === $userInfo['gender'] ? Civilite::M : Civilite::MME)
                                 ->setNom($userInfo['family_name'] ?? '')
                                 ->setNomNaissance($userInfo['family_name'] ?? '')
-                                ->setPrenom1($prenoms[0] ?? null)
-                                ->setPrenom2($prenoms[1] ?? null)
-                                ->setPrenom3($prenoms[2] ?? null)
-                                ->setDateNaissance(new \DateTime($userInfo['birthdate'] ?? ''))
-                                ->setEmail($userInfo['email'] ?? null)
+                                ->setPrenom($prenoms[0] ?? null)
+                                ->setCourriel($userInfo['email'] ?? null)
+                                ->ajouterPersonnePhysique(
+                                    new PersonnePhysique()
+                                        ->setPrenom2($prenoms[1] ?? null)
+                                        ->setPrenom3($prenoms[2] ?? null)
+                                        ->setDateNaissance(($dateNaissance = \DateTime::createFromFormat('Y-m-d', $userInfo['birthdate'])) ? $dateNaissance : null)
+                                        ->setPaysNaissance($paysNaissance)
+                                        ->setCommuneNaissance($codePostalNaissance)
+                                )
                         );
 
-                    // Récupération du pays de naissance
-                    if (null !== ($codePaysNaissance = $userInfo['birthcountry'])) {
-                        /** @var GeoPays $paysNaissance */
-                        $paysNaissance = $this->em->getRepository(GeoPays::class)->findOneBy(
-                            [
-                                'codeInsee' => $codePaysNaissance]
-                        );
 
-                        if (null !== $paysNaissance) {
-                            $requerant->getPersonnePhysique()->setPaysNaissance($paysNaissance);
-                        }
-                    }
-
-                    // Récupération de la commune de naissance
-                    if (null !== ($codeCommuneNaissance = $userInfo['birthplace'])) {
-                        /** @var GeoCodePostal $codePostalNaissance */
-                        $codePostalNaissance = $this->em->getRepository(GeoCodePostal::class)->identifier($codeCommuneNaissance);
-
-                        if (null !== $codePostalNaissance) {
-                            $requerant->getPersonnePhysique()
-                                ->setCommuneNaissance($codePostalNaissance)
-                                ->setPaysNaissance($this->em->getRepository(GeoPays::class)->getFrance());
-                        }
-                    }
-
-                    $this->em->persist($requerant);
+                    $this->em->persist($usager);
                     $this->em->flush();
                 } else {
                     throw new CustomUserMessageAuthenticationException("Nous n'avons trouvé aucun compte enregistré sur notre plateforme depuis cet identifiant France Connect. Veuillez vous inscrire au préalable.");
@@ -125,7 +116,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
             $request->getSession()->set(self::LOGOUT_URL_SESSION_KEY, $this->oidcClient->buildLogoutUrl($request, $idToken));
 
-            return new SelfValidatingPassport(new UserBadge($requerant->getUserIdentifier()));
+            return new SelfValidatingPassport(new UserBadge($usager->getUserIdentifier()));
         } catch (AuthenticationException $e) {
             $this->logger->error($e->getMessage(), $e->getMessageData());
 

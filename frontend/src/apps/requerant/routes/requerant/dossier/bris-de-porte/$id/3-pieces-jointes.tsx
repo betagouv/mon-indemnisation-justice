@@ -1,0 +1,568 @@
+import {
+  AjouterPiecesJointesModale,
+  AjouterPiecesJointesModaleRef,
+} from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
+import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
+import { container } from "@/apps/requerant/container.ts";
+import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe.tsx";
+import {
+  getSchemaValidationPiecesJointes,
+  listerTypesPiecesJointesRequis,
+} from "@/apps/requerant/formulaires/brisDePorte/3-pieces-jointes.schema.ts";
+import { Dossier, PieceJointe } from "@/apps/requerant/models";
+import {
+  PieceJointeType,
+  TypePieceJointe,
+} from "@/apps/requerant/models/TypePieceJointe.ts";
+import { RouteurRequerant } from "@/apps/requerant/routeur";
+import {
+  DossierManagerInterface,
+  NouvellePieceJointe,
+} from "@/apps/requerant/services/DossierManager";
+import classes from "@/apps/requerant/style/form.module.css";
+import { MiseEnAvant } from "@/common/composants/dsfr/MiseEnAvant.tsx";
+import { Requis } from "@/common/composants/dsfr/Requis.tsx";
+import { Loader } from "@/common/composants/Loader.tsx";
+import { fr, FrCxArg } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import Badge from "@codegouvfr/react-dsfr/Badge";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import artworkDocumentAddUrl from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
+import SideMenu from "@codegouvfr/react-dsfr/SideMenu";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { useForm } from "@tanstack/react-form";
+import {
+  createFileRoute,
+  notFound,
+  NotFoundRouteProps,
+  redirect,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
+import { default as React, useMemo, useRef, useState } from "react";
+
+export const Route = createFileRoute(
+  "/requerant/dossier/bris-de-porte/$id/3-pieces-jointes",
+)({
+  component: Etape3PiecesJointes,
+  shouldReload: true,
+  params: {
+    parse: ({ id }) => ({ id: parseInt(id) }),
+    stringify: ({ id }) => ({ id: id.toString() }),
+  },
+  pendingComponent: Loader,
+  notFoundComponent: (props: NotFoundRouteProps) => (
+    <NonTrouveComposant {...props} />
+  ),
+  loader: async ({ params }) => {
+    const dossier = await container
+      .get<DossierManagerInterface>(DossierManagerInterface.$)
+      .getDossier(params.id);
+
+    if (!dossier) {
+      throw notFound({
+        data: {
+          titre: "Impossible de trouver le dossier",
+          message: (
+            <>
+              Le dossier n°<i>${params.id}</i>n'existe pas ou ne vous est pas
+              accessible.
+            </>
+          ),
+        },
+        throw: true,
+      });
+    }
+
+    if (dossier.estDecide) {
+      return redirect<typeof RouteurRequerant>({
+        from: Route.fullPath,
+        to: "../consulter-la-decision",
+        params,
+      });
+    }
+
+    if (dossier.estCloture) {
+      return redirect<typeof RouteurRequerant>({
+        from: Route.fullPath,
+        to: "/requerant/mes-demandes",
+        params,
+      });
+    }
+
+    return { dossier };
+  },
+});
+
+function Etape3PiecesJointes() {
+  // Action de navigation
+  const naviguer = useNavigate({
+    from: Route.fullPath,
+  });
+
+  // Récupération du DossierManager, en charge des opérations sur le dossier
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
+  // Récupérer la référence depuis le paramètre de la route
+  const { dossier }: { dossier: Dossier } = Route.useLoaderData();
+
+  // Récupération du routeur, uniquement pour pouvoir invalider son cache
+  const routeur = useRouter();
+
+  // La référence vers la modale d'ajout de pièce jointe
+  const refModaleAjoutPieceJointe = useRef<AjouterPiecesJointesModaleRef>(null);
+
+  // La pièce jointe sélectionnée pour être visualisée.
+  const [pieceJointeSelectionnee, selectionnerPieceJointe] = useState<
+    PieceJointe | undefined
+  >(dossier.piecesJointes.at(0));
+
+  // Le type de pièce jointe sélectionné pour lister les pièces associées.
+  const [typePieceJointeSelectionne, selectionnerTypePieceJointe] =
+    useState<TypePieceJointe>(
+      pieceJointeSelectionnee?.type ||
+        TypePieceJointe.depuisString(
+          document.location.hash.replace(/^#type-piece-jointe-/, ""),
+        ) ||
+        TypePieceJointe.depuis("attestation_information"),
+    );
+
+  const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
+
+  // On génère la liste des types de pièces jointes demandées pour le dossier
+  const typesPiecesJointesDemandes = useMemo(
+    () =>
+      Object.values(TypePieceJointe.liste).filter((type) =>
+        type.estDemande(
+          dossier.rapportAuLogement,
+          dossier.personneMorale?.typePersonneMorale,
+          dossier.estLieDeclaration(),
+        ),
+      ),
+    [
+      dossier.rapportAuLogement,
+      dossier.personneMorale?.typePersonneMorale,
+      dossier.estLieDeclaration(),
+    ],
+  );
+
+  // On génère la liste des types de pièces jointes requises pour le dossier
+  const typesPiecesJointesRequis = useMemo(
+    () => listerTypesPiecesJointesRequis(dossier),
+    [
+      dossier.rapportAuLogement,
+      dossier.personneMorale?.typePersonneMorale,
+      dossier.estLieDeclaration(),
+    ],
+  );
+
+  const estRequis = (type: TypePieceJointe) => {
+    return typesPiecesJointesRequis.includes(type);
+  };
+
+  // On garde un état du décompte de pièces jointes par type requis ...
+  const decomptePiecesJointes: {
+    [key in PieceJointeType]?: number;
+  } = useMemo(
+    () =>
+      Object.fromEntries(
+        typesPiecesJointesDemandes.map((type) => [
+          type.type,
+          dossier.compterPiecesJointesDeType(type),
+        ]),
+      ),
+    [dossier.piecesJointes.length, typesPiecesJointesRequis],
+  );
+
+  // ... et on propose une fonction de plus haut niveau par dessus
+  const decomptePiecesJointesPourType = (type: TypePieceJointe): number => {
+    return decomptePiecesJointes[type.type] || 0;
+  };
+
+  const formulaire = useForm({
+    validators: {
+      onSubmit: getSchemaValidationPiecesJointes(dossier),
+    },
+    defaultValues: {
+      piecesJointes: dossier.piecesJointes,
+    },
+    listeners: {},
+    onSubmit: async ({ formApi }) => {
+      if (formApi.state.isValid) {
+        await naviguer({
+          to: "../4-recapitulatif",
+          search: true,
+        });
+      }
+    },
+  });
+
+  return (
+    <>
+      <AjouterPiecesJointesModale
+        ref={refModaleAjoutPieceJointe}
+        dossier={dossier}
+        onComplete={async (
+          piecesJointes: NouvellePieceJointe[],
+        ): Promise<void> => {
+          const dossierModifie = await dossierManager.ajouterPiecesJointes(
+            dossier.id,
+            piecesJointes,
+          );
+
+          // On sélectionne la dernière pièce jointe ajoutée
+          if (dossierModifie) {
+            const dernierePieceJointeAjoutee = dossierModifie.piecesJointes
+              .sort(
+                (a, b) =>
+                  (b.dateAjout?.getTime() || 0) - (a.dateAjout?.getTime() || 0),
+              )
+              .at(-1);
+
+            if (dernierePieceJointeAjoutee) {
+              selectionnerPieceJointe(dernierePieceJointeAjoutee);
+              selectionnerTypePieceJointe(dernierePieceJointeAjoutee.type);
+            }
+          }
+          // On sait que le dossier a changé, il faut donc invalider le cache du
+          // routeur pour le forcer à récupérer le dossier à jour.
+          await routeur.invalidate();
+
+          // Alors, on peut valider le formulaire, sur le dossier à jour
+          await formulaire.validate("submit");
+        }}
+        typesPiecesjointes={typesPiecesJointesDemandes}
+        title="Ajouter des pièces jointes"
+        iconId={"fr-icon-add-line"}
+        size="medium"
+      />
+
+      <h1>Déclarer un bris de porte</h1>
+
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          try {
+            await formulaire.handleSubmit();
+          } catch (e) {
+            console.error(e);
+          }
+        }}
+        className={classes.mijForm}
+      >
+        <section>
+          <Stepper
+            currentStep={3}
+            stepCount={4}
+            title={"Documents à joindre à votre demande"}
+            nextTitle={"Récapitulatif"}
+          />
+        </section>
+
+        <section>
+          <div className="fr-grid-row">
+            <p>
+              Tous les champs marqués <Requis /> sont requis et doivent être
+              dûment renseignés.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <div className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-12">
+              <p>
+                Afin de pouvoir valider votre demande, vous devez fournir les
+                documents relatifs à votre situation.
+              </p>
+
+              <ButtonsGroup
+                inlineLayoutWhen="always"
+                alignment="right"
+                buttonsIconPosition="right"
+                buttonsSize="small"
+                buttons={[
+                  {
+                    priority: "secondary",
+                    iconId: "fr-icon-add-line",
+                    children: "Ajouter des documents",
+                    nativeButtonProps: {
+                      type: "button",
+                    },
+                    disabled: sauvegardeEnCours,
+                    onClick: () => {
+                      refModaleAjoutPieceJointe.current?.ouvrir();
+                    },
+                  },
+                ]}
+              />
+            </div>
+          </div>
+
+          <div id="" className="fr-grid-row fr-grid-row--gutters">
+            <div className="container fr-col-12 fr-col-lg-3">
+              <SideMenu
+                align="left"
+                burgerMenuButtonText="Mes documents"
+                title="Mes documents"
+                items={typesPiecesJointesDemandes.map(
+                  (type: TypePieceJointe) => ({
+                    linkProps: {
+                      href: `#type-piece-jointe-${type.type}`,
+                      // Si le dossier n'a aucune pièce jointe de ce type, alors le lien invite vers la section descriptive
+                      // du type
+                      onClick: () => {
+                        if (!decomptePiecesJointesPourType(type)) {
+                          selectionnerPieceJointe(undefined);
+                          selectionnerTypePieceJointe(type);
+                        }
+                      },
+                    },
+                    isActive: type.equals(typePieceJointeSelectionne),
+                    text: (
+                      <span className="fr-text--sm fr-text--regular">
+                        {type.libelle({
+                          court: true,
+                          pluriel: false,
+                          enCapitales: true,
+                          dossier: dossier,
+                        })}{" "}
+                        {estRequis(type) && <Requis />}
+                        <>
+                          <Badge
+                            severity={
+                              estRequis(type)
+                                ? decomptePiecesJointesPourType(type) > 0
+                                  ? "success"
+                                  : "error"
+                                : undefined
+                            }
+                            as="span"
+                            noIcon={true}
+                            className="fr-ml-1v"
+                          >
+                            {decomptePiecesJointesPourType(type)}
+                          </Badge>
+                        </>
+                      </span>
+                    ),
+
+                    ...(decomptePiecesJointesPourType(type)
+                      ? {
+                          items: dossier
+                            .getPiecesJointesDeType(type)
+                            .map((pj) => ({
+                              text: <span>{pj.nom}</span>,
+                              isActive: pieceJointeSelectionnee?.id === pj.id,
+                              linkProps: {
+                                href: `#piece-jointe-${pj.id}`,
+                                onClick: () => {
+                                  selectionnerTypePieceJointe(pj.type);
+                                  selectionnerPieceJointe(pj);
+                                },
+                              },
+                            })),
+                        }
+                      : {}),
+                  }),
+                )}
+              />
+            </div>
+
+            <div className="fr-col-12 fr-col-lg-9">
+              {/* Toutes les visualisations de pièces jointes sont intégrées au DOM, mais cachée si pas actives afin
+               d'anticiper le chargement des images / PDFs */}
+              {dossier.piecesJointes.map((pieceJointe: PieceJointe) => (
+                <div
+                  key={`piece—jointe-${pieceJointe.id}`}
+                  id={`piece—jointe-${pieceJointe.id}`}
+                  className={fr.cx([
+                    "fr-grid-row",
+                    ...(pieceJointeSelectionnee?.id === pieceJointe.id
+                      ? []
+                      : ["fr-hidden" as FrCxArg]),
+                  ])}
+                >
+                  <AfficherPieceJointe pieceJointe={pieceJointe} />
+                </div>
+              ))}
+
+              {!pieceJointeSelectionnee && (
+                <MiseEnAvant
+                  id={`type-piece—jointe-${typePieceJointeSelectionne.type}`}
+                  className="fr-my-5w fr-mt-md-12w fr-mb-md-10w"
+                  action={
+                    <div className="fr-col-12 fr-grid-row fr-grid-row--left">
+                      <Button
+                        priority="primary"
+                        type="button"
+                        size="small"
+                        iconId="fr-icon-add-line"
+                        iconPosition="right"
+                        disabled={sauvegardeEnCours}
+                        onClick={() =>
+                          refModaleAjoutPieceJointe.current?.ouvrir(
+                            typePieceJointeSelectionne,
+                          )
+                        }
+                      >
+                        Ajouter{" "}
+                        {typePieceJointeSelectionne.libelle({
+                          court: false,
+                          pluriel: true,
+                          defini: false,
+                          de: false,
+                          titre: false,
+                          dossier: dossier,
+                        })}
+                      </Button>
+                    </div>
+                  }
+                  pictogrammeUrl={artworkDocumentAddUrl}
+                >
+                  <h3>
+                    {typePieceJointeSelectionne.libelle({
+                      court: false,
+                      pluriel: false,
+                      dossier: dossier,
+                      enCapitales: true,
+                    })}
+                  </h3>
+                  <p className="fr-text--sm fr-mb-3w">
+                    Votre dossier ne contient toujours pas{" "}
+                    {typePieceJointeSelectionne.libelle({
+                      court: true,
+                      pluriel: false,
+                      titre: false,
+                      defini: false,
+                      dossier: dossier,
+                      de: true,
+                    })}
+                    .
+                  </p>
+
+                  <p className="fr-text--lead fr-mb-3w">
+                    Au moins un document, photo ou fichier PDF, est requis pour
+                    mener l'instruction de votre demande d'indemnisation.
+                  </p>
+                  <p className="fr-text--sm fr-mb-5w">
+                    Vous pouvez téléverser des documents dès à présent depuis la
+                    boîte de dialogue qui s'ouvrira en cliquant sur le bouton
+                    ci-dessous :
+                  </p>
+                </MiseEnAvant>
+              )}
+            </div>
+          </div>
+
+          <formulaire.Subscribe
+            selector={(state) => ({
+              piecesJointes: state.fieldMeta.piecesJointes,
+              errors: state.fieldMeta.piecesJointes?.errors,
+            })}
+            children={({ piecesJointes, errors }) => {
+              const typesPiecesJointesManquantes =
+                errors?.map((error) => TypePieceJointe.depuis(error.message)) ??
+                [];
+              return (
+                <>
+                  {typesPiecesJointesManquantes.length > 0 && (
+                    <div className="fr-grid-row fr-grid-row--gutters">
+                      <div className="fr-col-12">
+                        <Alert
+                          className="fr-col-12"
+                          severity="error"
+                          title="Des documents sont manquants"
+                          description={
+                            typesPiecesJointesManquantes.length == 1 ? (
+                              <p>
+                                Il manque au moins{" "}
+                                {typesPiecesJointesManquantes.at(0)?.libelle({
+                                  court: true,
+                                  pluriel: false,
+                                  defini: false,
+                                  dossier: dossier,
+                                }) || ""}
+                              </p>
+                            ) : (
+                              <>
+                                <p>Il manque les documents suivants :</p>
+
+                                <ul>
+                                  {typesPiecesJointesManquantes.map(
+                                    (typePieceJointeManquante) => (
+                                      <li key={typePieceJointeManquante.type}>
+                                        {typePieceJointeManquante.libelle({
+                                          court: true,
+                                          pluriel: false,
+                                          dossier: dossier,
+                                        })}
+                                      </li>
+                                    ),
+                                  )}
+                                </ul>
+                              </>
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            }}
+          />
+        </section>
+
+        <ButtonsGroup
+          inlineLayoutWhen="always"
+          alignment="right"
+          buttonsIconPosition="right"
+          buttons={[
+            {
+              priority: "secondary",
+              children: "Revenir à l'étape précédente",
+              disabled: sauvegardeEnCours,
+              nativeButtonProps: {
+                type: "button",
+              },
+              onClick: () =>
+                naviguer({
+                  from: Route.fullPath,
+                  to: "../2-infos-requerant",
+                  search: {} as any,
+                }),
+            },
+            {
+              priority: "secondary",
+              children: "Enregistrer et revenir plus tard",
+              disabled: sauvegardeEnCours,
+              nativeButtonProps: {
+                type: "button",
+              },
+              onClick: () =>
+                naviguer({
+                  from: Route.fullPath,
+                  to: "/requerant/mes-demandes",
+                  search: true,
+                }),
+            },
+            {
+              priority: "primary",
+              children: "Valider et passer à l'étape suivante",
+              nativeButtonProps: {
+                type: "submit",
+                role: "submit",
+              },
+            },
+          ]}
+        />
+      </form>
+    </>
+  );
+}

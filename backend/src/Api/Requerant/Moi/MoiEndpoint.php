@@ -1,0 +1,53 @@
+<?php
+
+namespace MonIndemnisationJustice\Api\Requerant\Moi;
+
+use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\UsagerDto;
+use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\Usager;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+
+/**
+ * Route API qui retourne les informations sur l'agent actuellement connecté.
+ */
+#[Route('/api/requerant/moi', name: 'api_requerant_moi', methods: ['GET'])]
+#[IsGranted(Usager::ROLE_REQUERANT, message: 'Accès réservé aux requérants', statusCode: Response::HTTP_FORBIDDEN)]
+class MoiEndpoint
+{
+    public function __construct(
+        private readonly NormalizerInterface $normalizer,
+    ) {
+    }
+
+    public function __invoke(Security $security): Response
+    {
+        $usager = $security->getUser();
+
+        if (!$usager instanceof Usager) {
+            throw new UnauthorizedHttpException('Service réservé aux requérants');
+        }
+
+        /** @var Agent $agentBetaIncarnant */
+        $agentBetaIncarnant = null;
+        if ($security->getToken() instanceof SwitchUserToken) {
+            $agentBetaIncarnant = $security->getToken()->getOriginalToken()->getUser();
+        }
+
+        return new JsonResponse(
+            $this->normalizer->normalize(
+                [
+                    'usager' => UsagerDto::depuisUsager($usager),
+                    'incarnePar' => $agentBetaIncarnant?->getNomComplet(true),
+                ],
+                'json',
+            )
+        );
+    }
+}

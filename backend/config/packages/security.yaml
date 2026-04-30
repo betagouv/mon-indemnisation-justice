@@ -5,9 +5,9 @@ security:
   # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
   providers:
     # used to reload user from session & other features (e.g. switch_user)
-    app_requerant_provider:
+    usager_provider:
       entity:
-        class: MonIndemnisationJustice\Entity\Requerant
+        class: MonIndemnisationJustice\Entity\Usager
         property: email
     agent_provider:
       id: MonIndemnisationJustice\Security\Provider\AgentProvider
@@ -22,10 +22,10 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
     requerant:
-      pattern: ^/(requerant|connexion-requerant|connexion/usager|inscription/usager|api-v1)
-      user_checker: MonIndemnisationJustice\Security\RequerantChecker
+      pattern: ^/(bris-de-porte|requerant|connexion-requerant|connexion/usager|inscription/usager|api-v1|api/requerant)
+      user_checker: MonIndemnisationJustice\Security\UsagerChecker
       lazy: true
-      provider: app_requerant_provider
+      provider: usager_provider
       form_login:
         login_path: securite_connexion
         check_path: securite_connexion_requerant
@@ -58,6 +58,7 @@ security:
   access_control:
     - { path: ^/requerant/, roles: ROLE_REQUERANT }
     #- { path: ^/agent/connexion, role: PUBLIC_ACCESS }
+    - { path: ^/api/requerant, roles: ROLE_REQUERANT }
     - { path: ^/(agent|api/agent), roles: ROLE_AGENT }
 
 when@test:

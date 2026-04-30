@@ -4,40 +4,44 @@ namespace MonIndemnisationJustice\Controller\Requerant;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController as PublicBrisPorteController;
-use MonIndemnisationJustice\Entity\BrisPorte;
-use MonIndemnisationJustice\Entity\Requerant;
+use MonIndemnisationJustice\Entity\Usager;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted(Requerant::ROLE_REQUERANT)]
+#[IsGranted(Usager::ROLE_REQUERANT)]
 #[Route('/requerant')]
-class HomeController extends RequerantController
+class HomeController extends AbstractController
 {
     #[Route('', name: 'requerant_home_index')]
+    #[Route('/{extra?}', name: 'requerant_react', requirements: ['extra' => '.*'])]
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         // Suppression du contexte de session lié à l'inscription, s'il y en a un
         $request->getSession()->remove(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION);
 
-        $requerant = $this->getRequerant();
-
-        // Rediriger vers un dossier à finaliser en priorité, s'il y en a un
-        if (null !== ($dossier = $requerant->getDossiers()->findFirst(fn (int $indice, BrisPorte $dossier) => !$dossier->estDepose()))) {
-            return $this->redirectToRoute('app_bris_porte_edit', ['id' => $dossier->getId()]);
-        }
-
-        return $this->redirectToRoute('requerant_home_dossiers');
+        return $this->render('requerant/requerant.html.twig');
     }
 
-    #[Route('/mes-demandes', name: 'requerant_home_dossiers')]
-    public function mesDemandes(Request $request, EntityManagerInterface $em): Response
+    #[Route('/deconnexion', name: 'requerant_deconnexion', methods: ['GET'], priority: 1000)]
+    public function deconnexion(Security $security): Response
     {
-        $requerant = $this->getRequerant();
+        return $security->logout(false);
+    }
 
-        return $this->render('requerant/default/index.html.twig', [
-            'dossiers' => $requerant->getDossiers(),
+    /**
+     * Cette ancienne route était accessible depuis les emails de notifications envoyés au requérant. On assure le
+     * transfert tant que des usagers peuvent encore ouvrir et cliquer sur ces liens.
+     */
+    #[Route('/bris-de-porte/{id}/consulter-la-decision', name: 'requerant_dossier_consulter_decision', requirements: ['id' => '\d+'], methods: ['GET'], priority: 1000)]
+    public function atterrissageConsulterDecision(int $id): Response
+    {
+        // Renvoyer vers le routeur React
+        return $this->redirectToRoute('requerant_react', [
+            'extra' => "dossier/bris-de-porte/$id/",
         ]);
     }
 }

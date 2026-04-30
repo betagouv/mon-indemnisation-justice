@@ -2,18 +2,11 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Repository\EtatDossierRepository;
 use MonIndemnisationJustice\Service\DateConvertisseur;
-use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Serializer\Attribute\Ignore;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 
-#[ApiResource(
-    operations: [],
-)]
 #[ORM\Entity(repositoryClass: EtatDossierRepository::class)]
 #[ORM\Table(name: 'dossier_etats')]
 class EtatDossier
@@ -23,31 +16,27 @@ class EtatDossier
     #[ORM\Column]
     protected ?int $id = null;
 
-    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'string', nullable: false, enumType: EtatDossierType::class)]
     protected EtatDossierType $etat;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, name: 'date')]
+    #[ORM\Column(name: 'date', type: Types::DATETIME_IMMUTABLE)]
     protected \DateTimeImmutable $dateEntree;
 
-    #[ORM\ManyToOne(targetEntity: BrisPorte::class, inversedBy: 'historiqueEtats')]
+    #[ORM\ManyToOne(targetEntity: Dossier::class, inversedBy: 'historiqueEtats')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    protected ?BrisPorte $dossier;
+    protected ?Dossier $dossier;
 
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(name: 'agent_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
-    #[Ignore]
-    protected ?Agent $agent;
+    protected ?Agent $agent = null;
 
-    #[ORM\ManyToOne(targetEntity: Requerant::class, cascade: [])]
+    #[ORM\ManyToOne(targetEntity: Usager::class, cascade: [])]
     #[ORM\JoinColumn(name: 'requerant_id', referencedColumnName: 'id')]
-    protected ?Requerant $requerant = null;
+    protected ?Usager $requerant = null;
 
-    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $contexte = null;
 
-    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
     public function getId(): ?int
     {
         return $this->id;
@@ -140,16 +129,19 @@ class EtatDossier
         return EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT === $this->etat;
     }
 
-    #[Groups(['agent:liste', 'agent:detail', 'requerant:detail'])]
-    #[SerializedName('dateEntree')]
     public function getDateEntreeTimestamp(): ?int
     {
         return DateConvertisseur::enMillisecondes($this->dateEntree);
     }
 
-    public function getDate(): \DateTimeImmutable
+    public function getDateEntree(): \DateTimeImmutable
     {
         return $this->dateEntree;
+    }
+
+    public function getDate(): \DateTimeImmutable
+    {
+        return $this->getDateEntree();
     }
 
     public function setDateEntree(\DateTimeImmutable $dateEntree): EtatDossier
@@ -159,23 +151,16 @@ class EtatDossier
         return $this;
     }
 
-    public function getDossier(): BrisPorte
+    public function getDossier(): Dossier
     {
         return $this->dossier;
     }
 
-    public function setDossier(?BrisPorte $dossier): EtatDossier
+    public function setDossier(?Dossier $dossier): EtatDossier
     {
         $this->dossier = $dossier;
 
         return $this;
-    }
-
-    #[Groups(['agent:detail'])]
-    #[SerializedName('redacteur')]
-    public function getAgentId(): ?int
-    {
-        return $this->agent?->getId();
     }
 
     public function getAgent(): ?Agent
@@ -190,27 +175,17 @@ class EtatDossier
         return $this;
     }
 
-    #[Groups(['agent:detail', 'agent:liste', 'requerant:detail'])]
-    #[SerializedName('redacteur')]
-    public function getReferenceAgent(): ?int
-    {
-        return $this->agent?->getId();
-    }
-
-    #[Groups(['agent:detail'])]
-    public function getRequerant(): ?Requerant
+    public function getRequerant(): ?Usager
     {
         return $this->requerant;
     }
 
-    #[Groups(['agent:liste'])]
-    #[SerializedName('requerant')]
     public function getEstRequerant(): bool
     {
         return null !== $this->requerant;
     }
 
-    public function setRequerant(?Requerant $requerant): EtatDossier
+    public function setRequerant(?Usager $requerant): EtatDossier
     {
         $this->requerant = $requerant;
 
@@ -232,7 +207,7 @@ class EtatDossier
         return $this->contexte = array_merge_recursive($this->contexte, $contexte);
     }
 
-    final public static function creer(BrisPorte $dossier, EtatDossierType $etat, ?array $contexte = null): static
+    final public static function creer(Dossier $dossier, EtatDossierType $etat, ?array $contexte = null): static
     {
         $nouvelEtat = (new self());
         $nouvelEtat->dossier = $dossier;
@@ -243,15 +218,15 @@ class EtatDossier
         return $nouvelEtat;
     }
 
-    public static function creerRequerant(BrisPorte $dossier, EtatDossierType $etat, ?array $contexte = null): static
+    public static function creerRequerant(Dossier $dossier, EtatDossierType $etat, ?array $contexte = null): static
     {
         $nouvelEtat = self::creer($dossier, $etat, $contexte);
-        $nouvelEtat->requerant = $dossier->getRequerant();
+        $nouvelEtat->requerant = $dossier->getUsager();
 
         return $nouvelEtat;
     }
 
-    public static function creerAgent(BrisPorte $dossier, EtatDossierType $etat, Agent $agent, ?array $contexte = null): static
+    public static function creerAgent(Dossier $dossier, EtatDossierType $etat, Agent $agent, ?array $contexte = null): static
     {
         $nouvelEtat = self::creer($dossier, $etat, $contexte);
         $nouvelEtat->agent = $agent;

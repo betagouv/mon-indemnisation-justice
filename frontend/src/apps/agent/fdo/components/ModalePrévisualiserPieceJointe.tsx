@@ -1,15 +1,15 @@
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import React, { useCallback, useState } from "react";
-import { Document, DocumentType } from "@/common/models";
 import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
 import {
-  PieceJointe,
+  ChampPieceJointe,
   TelechargerPieceJointe,
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { Loader } from "@/common/components/Loader.tsx";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Loader } from "@/common/composants/Loader.tsx";
+import { Document } from "@/common/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import React, { useCallback, useState } from "react";
 
 const _modale = createModal({
   id: "modale-previsualiser-piece-jointe-declaration-bris-porte",
@@ -117,7 +117,7 @@ export const ModalePrevisualiserPieceJointe = React.forwardRef<
                     pieceJointe={pieceJointe}
                     className="fr-my-1w"
                   />
-                  <PieceJointe
+                  <ChampPieceJointe
                     className="fr-my-1w"
                     pieceJointe={pieceJointe}
                     lienTelechargement={`/agent/fdo/document/${pieceJointe.id}/${pieceJointe.fileHash}`}
