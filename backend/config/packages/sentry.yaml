@@ -1,24 +1,19 @@
-when@prod: &prod
-  sentry:
-    # See https://docs.sentry.io/platforms/php/guides/symfony/configuration/
-    dsn: '%env(default::SENTRY_DSN)%'
-    options:
-      environment: "%kernel.environment%"
-      ignore_exceptions:
-        - 'Symfony\Component\ErrorHandler\Error\FatalError'
-        - 'Symfony\Component\Debug\Exception\FatalErrorException'
-        - 'Symfony\Component\HttpKernel\Exception\HttpException'
-        - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
-        - 'Symfony\Component\Console\Exception\CommandNotFoundException'
-      send-default-pii: true
-      enable_logs: true
-
-when@develop: *prod
-
-when@dev: *prod
-
+sentry:
+  # See https://docs.sentry.io/platforms/php/guides/symfony/configuration/
+  dsn: '%env(default::SENTRY_DSN)%'
+  options:
+    environment: "%kernel.environment%"
+    ignore_exceptions:
+      - 'Symfony\Component\ErrorHandler\Error\FatalError'
+      - 'Symfony\Component\Debug\Exception\FatalErrorException'
+      - 'Symfony\Component\HttpKernel\Exception\HttpException'
+      - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
+      - 'Symfony\Component\Console\Exception\CommandNotFoundException'
+    send-default-pii: true
+    enable_logs: true
 
 services:
   Sentry\SentryBundle\Monolog\LogsHandler:
     arguments:
-      - !php/const Monolog\Logger::INFO
+      - !php/const Monolog\Logger::WARNING
+
