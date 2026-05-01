@@ -173,6 +173,11 @@ class Personne
         return $this->personnesPhysiques;
     }
 
+    public function getPersonnePhysique(): ?PersonnePhysique
+    {
+        return $this->personnesPhysiques->first() instanceof PersonnePhysique ? $this->personnesPhysiques->first() : null;
+    }
+
     public function ajouterPersonnePhysique(PersonnePhysique $personnePhysique): Personne
     {
         $this->personnesPhysiques->add($personnePhysique->setPersonne($this));

@@ -556,7 +556,7 @@ class Dossier
             ->setRequerant(
 
                 // Si l'usager a déjà une personne physique associée, on utilise celle-ci
-                $testEligibilite->usager->getPersonne()->getPersonnesPhysiques()?->first() ??
+                $testEligibilite->usager->getPersonne()->getPersonnePhysique() ??
                 new PersonnePhysique()
                     ->setPersonne($testEligibilite->usager->getPersonne())
             )
