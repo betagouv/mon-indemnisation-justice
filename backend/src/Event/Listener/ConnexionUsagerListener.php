@@ -60,7 +60,7 @@ class ConnexionUsagerListener implements EventSubscriberInterface
                     ->setUsager($usager)
                     ->setRequerant(
                         // Si l'usager a déjà une personne physique associée, on utilise celle-ci
-                        $usager->getPersonne()->getPersonnesPhysiques()?->first() ??
+                        $usager->getPersonne()->getPersonnePhysique() ??
                         new PersonnePhysique()
                             ->setPersonne($usager->getPersonne())
                     )
