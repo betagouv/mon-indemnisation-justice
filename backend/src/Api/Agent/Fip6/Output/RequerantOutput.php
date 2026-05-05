@@ -19,7 +19,7 @@ class RequerantOutput
         public string $courriel,
         public ?string $telephone,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-        public ?\DateTime $dateNaissance,
+        public ?\DateTimeImmutable $dateNaissance,
         public ?string $communeNaissance,
         #[Ignore]
         public ?string $villeNaissance,

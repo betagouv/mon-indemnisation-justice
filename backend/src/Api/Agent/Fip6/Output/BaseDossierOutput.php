@@ -10,13 +10,13 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 readonly class BaseDossierOutput
 {
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    public ?\DateTime $dateDepot;
+    public ?\DateTimeImmutable $dateDepot;
 
     public function __construct(
         public int $id,
         public ?string $reference,
         public EtatDossierOutput $etat,
-        ?\DateTime $dateDepot,
+        ?\DateTimeImmutable $dateDepot,
         public ?string $montantIndemnisation,
         public ?int $redacteur,
         public ?TypeAttestation $typeAttestation,

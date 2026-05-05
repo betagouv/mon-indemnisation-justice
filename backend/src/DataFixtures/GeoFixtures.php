@@ -25,15 +25,15 @@ class GeoFixtures extends Fixture
     protected function chargerPays(ObjectManager $manager): void
     {
         foreach ([
-            'france' => (new GeoPays())
+            'france' => new GeoPays()
                 ->setCode('FRA')
                 ->setCodeInsee(GeoPays::CODE_INSEE_FRANCE)
                 ->setNom('France'),
-            'belgique' => (new GeoPays())
+            'belgique' => new GeoPays()
                 ->setCode('BEL')
                 ->setCodeInsee('99131')
                 ->setNom('Belgique'),
-            'maroc' => (new GeoPays())
+            'maroc' => new GeoPays()
                 ->setCode('MAR')
                 ->setCodeInsee('99350')
                 ->setNom('Maroc'),
@@ -143,25 +143,25 @@ class GeoFixtures extends Fixture
         }
 
         foreach ([
-            '38300' => (new GeoCodePostal())
+            '38300' => new GeoCodePostal()
                 ->setCommune($this->getReference('commune-bourgoin', GeoCommune::class))
                 ->setCodePostal('38300'),
-            '35500' => (new GeoCodePostal())
+            '35500' => new GeoCodePostal()
                 ->setCommune($this->getReference('commune-vitre', GeoCommune::class))
                 ->setCodePostal('35500'),
-            '77000' => (new GeoCodePostal())
+            '77000' => new GeoCodePostal()
                 ->setCommune($this->getReference('commune-melun', GeoCommune::class))
                 ->setCodePostal('77000'),
-            '13290' => (new GeoCodePostal())
+            '13290' => new GeoCodePostal()
                 ->setCommune($this->getReference('commune-aix-en-provence', GeoCommune::class))
                 ->setCodePostal('13290'),
-            '35400' => (new GeoCodePostal())
+            '35400' => new GeoCodePostal()
                 ->setCommune($this->getReference('commune-saint-malo', GeoCommune::class))
                 ->setCodePostal('35400'),
-            '44150' => (new GeoCodePostal())
+            '44150' => new GeoCodePostal()
                 ->setCommune($this->getReference('commune-ancenis', GeoCommune::class))
                 ->setCodePostal('44150'),
-            '13800' => (new GeoCodePostal())
+            '13800' => new GeoCodePostal()
                 ->setCommune($this->getReference('commune-istres', GeoCommune::class))
                 ->setCodePostal('13800'),
         ] as $reference => $codePostal) {

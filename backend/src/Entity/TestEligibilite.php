@@ -47,14 +47,14 @@ class TestEligibilite
     #[ORM\Column(options: ['default' => true])]
     public bool $estIssuAttestation = false;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    public ?\DateTimeInterface $dateSoumission = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    public ?\DateTimeImmutable $dateSoumission = null;
 
     #[ORM\PrePersist]
     public function prePersist()
     {
         if (null === $this->dateSoumission) {
-            $this->dateSoumission = new \DateTime();
+            $this->dateSoumission = new \DateTimeImmutable();
         }
     }
 

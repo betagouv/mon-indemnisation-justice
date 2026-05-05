@@ -85,7 +85,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ->setPersonne(
                         $this->getReference('requerant-raquel', Usager::class)->getPersonne()
                     )
-                    ->setDateNaissance(new \DateTime('1979-05-17'))
+                    ->setDateNaissance(new \DateTimeImmutable('1979-05-17'))
                     ->setCommuneNaissance($this->getReference('code-postal-38300', GeoCodePostal::class))
                     ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
                     ->setAdresse(
@@ -114,7 +114,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                             'rapportAuLogement' => RapportAuLogement::PROPRIETAIRE,
                             'aContacteAssurance' => false,
                             'usager' => $this->getReference('requerant-raquel', Usager::class),
-                            'dateSoumission' => new \DateTime('-30 seconds'),
+                            'dateSoumission' => new \DateTimeImmutable('-30 seconds'),
                         ])
                     )
             );
@@ -151,7 +151,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setDateDepot(\DateTimeImmutable::createFromFormat('Y-m-d', '2025-04-10'))
             ->setBrisPorte(
                 new BrisPorte()
-                    ->setDateOperation($this->faker->dateTimeBetween('-100 days', 'now'))
+                    ->setDateOperation(\DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-100 days', 'now')))
                     ->setAdresse(
                         new Adresse()
                             ->setCommune($this->getReference('commune-melun', GeoCommune::class))
@@ -170,7 +170,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ->setPersonne(
                         $this->getReference('requerant-melun', Usager::class)->getPersonne()
                     )
-                    ->setDateNaissance($this->faker->dateTimeBetween('-70 years', '-18 years'))
+                    ->setDateNaissance(\DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-70 years', '-18 years')))
                     ->setCommuneNaissance($this->getReference('code-postal-38300', GeoCodePostal::class))
                     ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
                     ->setAdresse(
@@ -235,7 +235,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ->setPersonne(
                         $this->getReference('requerant-ray', Usager::class)->getPersonne()
                     )
-                    ->setDateNaissance(new \DateTime('1983-11-23'))
+                    ->setDateNaissance(new \DateTimeImmutable('1983-11-23'))
                     ->setCommuneNaissance($this->getReference('code-postal-35500', GeoCodePostal::class))
                     ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
             )
@@ -416,7 +416,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
     protected function creerDossier(
         Usager $deposant,
         array $donneesTestEligibilite,
-        \DateTimeInterface $dateCreation,
+        \DateTimeImmutable $dateCreation,
         EtatDossierType $etatActuel,
         ?Adresse $adresse = null,
         ?Agent $redacteur = null,
@@ -425,7 +425,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $dossier = Dossier::brisDePorte()
             ->setBrisPorte(
                 new BrisPorte()
-                    ->setDateOperation($this->faker->dateTimeBetween('-100 days', 'now'))
+                    ->setDateOperation(\DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-100 days', 'now')))
                     ->setAdresse($adresse)
                     ->setRapportAuLogement($donneesTestEligibilite['rapportAuLogement'])
                     ->setTestEligibilite(
@@ -443,7 +443,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ->setRequerant(
                 $requerant ?? new PersonnePhysique()
                 ->setPersonne($deposant->getPersonne())
-                ->setDateNaissance($this->faker->dateTimeBetween('-70 years', '-18 years'))
+                ->setDateNaissance(\DateTimeImmutable::createFromMutable($this->faker->dateTimeBetween('-70 years', '-18 years')))
                 ->setPrenom2($this->faker->firstNameFemale)
                 ->setPrenom3($this->faker->firstNameFemale)
                 ->setAdresse(

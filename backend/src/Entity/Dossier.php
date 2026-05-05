@@ -58,11 +58,11 @@ class Dossier
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
-    protected \DateTimeInterface $dateCreation;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
+    protected \DateTimeImmutable $dateCreation;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateDepot = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    protected ?\DateTimeImmutable $dateDepot = null;
 
     #[ORM\JoinTable(name: 'document_dossiers')]
     #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -355,36 +355,36 @@ class Dossier
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): static
+    public function setDateCreation(\DateTimeImmutable $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
 
         return $this;
     }
 
-    public function getDateDepot(): ?\DateTimeInterface
+    public function getDateDepot(): ?\DateTimeImmutable
     {
         return $this->dateDepot;
     }
 
-    public function setDateDepot(\DateTimeInterface $dateDepot): Dossier
+    public function setDateDepot(\DateTimeImmutable $dateDepot): Dossier
     {
         $this->dateDepot = $dateDepot;
 
         return $this;
     }
 
-    public function getDateDeclaration(): ?\DateTimeInterface
+    public function getDateDeclaration(): ?\DateTimeImmutable
     {
         return $this->getDateDepot();
     }
 
-    public function getDateSignatureAgent(): ?\DateTimeInterface
+    public function getDateSignatureAgent(): ?\DateTimeImmutable
     {
         return $this->getDateEtat(EtatDossierType::DOSSIER_OK_A_APPROUVER);
     }
 
-    public function getDateSignatureRequerant(): ?\DateTimeInterface
+    public function getDateSignatureRequerant(): ?\DateTimeImmutable
     {
         return $this->getDateEtat(EtatDossierType::DOSSIER_OK_A_VERIFIER);
     }
@@ -536,7 +536,7 @@ class Dossier
         return $this;
     }
 
-    protected function getDateEtat(EtatDossierType $etat): ?\DateTimeInterface
+    protected function getDateEtat(EtatDossierType $etat): ?\DateTimeImmutable
     {
         return $this->historiqueEtats
             ->findFirst(

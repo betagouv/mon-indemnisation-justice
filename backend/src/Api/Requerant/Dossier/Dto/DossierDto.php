@@ -50,7 +50,7 @@ class DossierDto
                     ->setPrecisionRapportAuLogement($this->descriptionRapportAuLogement)
                     ->setPorteBlindee($this->estPorteBlindee)
                     ->setDescriptionRequerant($this->description)
-                    ->setDateOperation($this->dateOperation ? \DateTime::createFromInterface($this->dateOperation) : null)
+                    ->setDateOperation($this->dateOperation ? \DateTimeImmutable::createFromInterface($this->dateOperation) : null)
                     ->setAdresse($this->adresse?->versAdresse($dossier->getBrisPorte()->getAdresse()))
             );
     }

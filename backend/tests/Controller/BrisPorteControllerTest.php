@@ -49,6 +49,7 @@ class BrisPorteControllerTest extends WebTestCase
 
         $this->client->request('GET', '/bris-de-porte/tester-mon-eligibilite');
 
+
         $this->assertTrue($this->client->getResponse()->isSuccessful());
         $reactArgs = json_decode($this->client->getCrawler()->filter('#react-arguments')->first()->innerText());
 
@@ -234,7 +235,7 @@ class BrisPorteControllerTest extends WebTestCase
                 // 'description' => 'Test complet',
                 'estVise' => true,
                 'usager' => $em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
-                'dateSoumission' => new \DateTime()->modify('-2 minutes')]);
+                'dateSoumission' => new \DateTimeImmutable()->modify('-2 minutes')]);
 
             $em->persist($test);
             $em->flush();
@@ -249,7 +250,7 @@ class BrisPorteControllerTest extends WebTestCase
             $test = TestEligibilite::fromArray([
                 // 'description' => 'Test incomplet',
                 'estVise' => true,
-                'dateSoumission' => new \DateTime()->modify('-2 minutes')]);
+                'dateSoumission' => new \DateTimeImmutable()->modify('-2 minutes')]);
 
             $em->persist($test);
             $em->flush();
