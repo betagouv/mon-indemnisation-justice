@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class GeoDataEntity
 {
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false, insertable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    protected \DateTimeInterface $dateDerniereMaj;
+    protected \DateTimeImmutable $dateDerniereMaj;
 
     #[ORM\Column(nullable: false, options: ['default' => true])]
     protected bool $estActif = true;
@@ -18,12 +18,12 @@ abstract class GeoDataEntity
     #[ORM\PrePersist]
     public function onPersist(PrePersistEventArgs $args): void
     {
-        $this->dateDerniereMaj = new \DateTime();
+        $this->dateDerniereMaj = new \DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
     public function onUpdate(PreUpdateEventArgs $args): void
     {
-        $this->dateDerniereMaj = new \DateTime();
+        $this->dateDerniereMaj = new \DateTimeImmutable();
     }
 }

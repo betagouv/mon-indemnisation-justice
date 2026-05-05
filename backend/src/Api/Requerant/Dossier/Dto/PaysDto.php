@@ -13,7 +13,7 @@ class PaysDto
     ) {
     }
 
-    public function versPays(?GeoPays $pays): GeoPays
+    public function versPays(?GeoPays $pays): ?GeoPays
     {
         return $this->code !== $pays?->getCode() ? EntityResolveur::resoudre(GeoPays::class, $this->code) : $pays;
     }
