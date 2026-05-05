@@ -17,5 +17,5 @@ class RenseignerMetaDonneesAttestationInput
     #[Assert\Choice(callback: [TypeInstitutionSecuritePublique::class, 'cases'])]
     public ?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique = null;
 
-    public ?\DateTimeInterface $dateOperation = null;
+    public ?\DateTimeImmutable $dateOperation = null;
 }

@@ -9,9 +9,9 @@ class UsagerDto
     public function __construct(
         public int $id,
         public string $courriel,
-        public ?string $telephone = null,
         public string $nom,
         public PersonneDto $personne,
+        public ?string $telephone = null,
     ) {
     }
 
@@ -20,9 +20,9 @@ class UsagerDto
         return new self(
             id: $usager->getId(),
             courriel: $usager->getEmail(),
-            telephone: $usager->getPersonne()->getTelephone(),
             nom: $usager->getNomCourant(capital: true),
             personne: PersonneDto::depuisPersonne($usager->getPersonne()),
+            telephone: $usager->getPersonne()->getTelephone(),
         );
     }
 }

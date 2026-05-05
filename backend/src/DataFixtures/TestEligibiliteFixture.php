@@ -31,7 +31,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
                 'aContacteAssurance' => false,
                 'aContacteBailleur' => false,
                 'usager' => $this->getReference('requerant-ray', Usager::class),
-                'dateSoumission' => new \DateTime('-7 days'),
+                'dateSoumission' => new \DateTimeImmutable('-7 days'),
             ]),
             'melun' => TestEligibilite::fromArray([
                 'estVise' => false,
@@ -39,7 +39,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
                 'rapportAuLogement' => RapportAuLogement::BAILLEUR,
                 'aContacteAssurance' => false,
                 'usager' => $this->getReference('requerant-melun', Usager::class),
-                'dateSoumission' => \DateTime::createFromFormat('Y-m-d H:i:s', '2025-04-10 13:51:27'),
+                'dateSoumission' => \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', '2025-04-10 13:51:27'),
             ]),
         ] as $reference => $testEligibilite) {
             $manager->persist($testEligibilite);

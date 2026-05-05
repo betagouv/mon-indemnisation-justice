@@ -39,7 +39,7 @@ class DeclarationFDOBrisPorte
     protected ?string $descriptionErreur = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: false)]
-    protected \DateTimeInterface $dateOperation;
+    protected \DateTimeImmutable $dateOperation;
 
     /**
      * @var Adresse l'adresse du logement dans laquelle
@@ -147,12 +147,12 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateOperation(): \DateTimeInterface
+    public function getDateOperation(): \DateTimeImmutable
     {
         return $this->dateOperation;
     }
 
-    public function setDateOperation(\DateTimeInterface $dateOperation): static
+    public function setDateOperation(\DateTimeImmutable $dateOperation): static
     {
         $this->dateOperation = $dateOperation;
 
