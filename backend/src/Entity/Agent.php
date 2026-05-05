@@ -43,7 +43,7 @@ class Agent implements UserInterface
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     protected ?int $id;
 
     #[ORM\Column(nullable: false)]
@@ -434,7 +434,7 @@ class Agent implements UserInterface
 
     public function setCree(): static
     {
-        $this->dateCreation = new \DateTime();
+        $this->dateCreation = new \DateTimeImmutable();
 
         return $this;
     }

@@ -63,13 +63,13 @@ class DeclarationFDOBrisPorte
     protected ?BrisPorte $brisPorte = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    protected \DateTimeInterface $dateCreation;
+    protected \DateTimeImmutable $dateCreation;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    protected \DateTimeInterface $dateSoumission;
+    protected \DateTimeImmutable $dateSoumission;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateSuppression = null;
+    protected ?\DateTimeImmutable $dateSuppression = null;
 
     /**
      * @var Agent l'agent des FDO déclarant
@@ -217,24 +217,24 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateCreation(): \DateTimeInterface
+    public function getDateCreation(): \DateTimeImmutable
     {
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): static
+    public function setDateCreation(\DateTimeImmutable $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
 
         return $this;
     }
 
-    public function getDateSoumission(): \DateTimeInterface
+    public function getDateSoumission(): \DateTimeImmutable
     {
         return $this->dateSoumission;
     }
 
-    public function setDateSoumission(\DateTimeInterface $dateSoumission): static
+    public function setDateSoumission(\DateTimeImmutable $dateSoumission): static
     {
         $this->dateSoumission = $dateSoumission;
 
@@ -265,12 +265,12 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateSuppression(): \DateTimeInterface
+    public function getDateSuppression(): \DateTimeImmutable
     {
         return $this->dateSuppression;
     }
 
-    public function setDateSuppression(\DateTimeInterface $dateSuppression): DeclarationFDOBrisPorte
+    public function setDateSuppression(\DateTimeImmutable $dateSuppression): DeclarationFDOBrisPorte
     {
         $this->dateSuppression = $dateSuppression;
 

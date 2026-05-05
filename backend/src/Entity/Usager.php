@@ -47,8 +47,8 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'simple_array')]
     protected array $roles = [self::ROLE_REQUERANT];
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: false)]
-    protected \DateTimeInterface $dateInscription;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
+    protected \DateTimeImmutable $dateInscription;
 
     #[ORM\Column(type: 'string', length: 12, nullable: true)]
     protected ?string $jetonVerification;
@@ -92,7 +92,7 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
     {
-        $this->dateInscription = new \DateTime();
+        $this->dateInscription = new \DateTimeImmutable();
     }
 
     public function getPId(): ?int

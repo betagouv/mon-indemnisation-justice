@@ -148,7 +148,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         $brouillon = $this->creerBrouillon($policier, [
             'estErreur' => 'DOUTE',
-            'dateOperation' => (new \DateTime())->sub(\DateInterval::createFromDateString('6 days'))->format('Y-m-d'),
+            'dateOperation' => new \DateTimeImmutable()->sub(\DateInterval::createFromDateString('6 days'))->format('Y-m-d'),
             'descriptionErreur' => 'Cassé la porte',
             'adresse' => [
                 'ligne1' => '127 boulevard des Fleurs',
@@ -187,7 +187,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         $brouillon = $this->creerBrouillon($gendarme, [
             'estErreur' => 'DOUTE',
-            'dateOperation' => (new \DateTime())->sub(\DateInterval::createFromDateString('6 days'))->format('Y-m-d'),
+            'dateOperation' => new \DateTimeImmutable()->sub(\DateInterval::createFromDateString('6 days'))->format('Y-m-d'),
             'descriptionErreur' => 'Trompé de porte',
             'adresse' => [
                 'ligne1' => '127 boulevard des Fleurs',
@@ -231,7 +231,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         $brouillon = $this->creerBrouillon($gendarme, [
             'estErreur' => 'DOUTE',
-            'dateOperation' => (new \DateTime())->sub(\DateInterval::createFromDateString('6 days'))->format('Y-m-d'),
+            'dateOperation' => new \DateTimeImmutable()->sub(\DateInterval::createFromDateString('6 days'))->format('Y-m-d'),
             'descriptionErreur' => 'Trompé de porte',
             'adresse' => [
                 'ligne1' => '127 boulevard des Fleurs',
@@ -300,8 +300,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     {
         $brouillon = (new BrouillonDeclarationFDOBrisPorte())
             ->setAgent($agent)
-            ->setDonnees($donnees)
-        ;
+            ->setDonnees($donnees);
 
         $this->em->persist($brouillon);
         $this->em->flush();

@@ -17,6 +17,11 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 #[\AllowDynamicProperties]
 class Document
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column]
+    protected ?int $id = null;
+
     #[ORM\Column(nullable: true)]
     public ?bool $estValide = null;
 
@@ -26,10 +31,7 @@ class Document
     #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     public ?Agent $validateur = null;
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[ORM\Column]
-    protected ?int $id = null;
+
 
     #[ORM\Column(nullable: true)]
     protected ?string $mime = null;
