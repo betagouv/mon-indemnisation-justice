@@ -47,7 +47,7 @@ class RequerantOutput
             dateNaissance: $personnePhysique?->getDateNaissance(),
             communeNaissance: $personnePhysique?->getCodePostalNaissance()?->getCommune()->getNom(),
             villeNaissance: $personnePhysique?->getVilleNaissance(),
-            paysNaissance: $personnePhysique?->getPaysNaissance()->getNom(),
+            paysNaissance: $personnePhysique?->getPaysNaissance()?->getNom(),
             raisonSociale: $personneMorale?->getRaisonSociale(),
             siren: $personneMorale?->getSirenSiret(),
             typePersonneMorale: $personneMorale?->getType()->value,
