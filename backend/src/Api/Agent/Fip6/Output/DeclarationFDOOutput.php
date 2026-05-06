@@ -18,7 +18,7 @@ class DeclarationFDOOutput
         public readonly AdresseOutput $adresse,
         public readonly AgentOutput $agent,
         public readonly bool $enPresenceRequerant,
-        public readonly string $precisionsRequerant,
+        public readonly ?string $precisionsRequerant,
         public readonly CoordonneesRequerantOutput $coordonneesRequerant,
         public readonly ProcedureJudiciaireOutput $procedure,
         /** @var PieceJointeOutput[] $piecesJointes */
