@@ -46,7 +46,7 @@ class PublierBrouillonEndpoint
             );
         }
 
-        $this->dossierManager->avancer($dossier);
+        $dossier = $this->dossierManager->avancer($dossier);
 
         return new JsonResponse(
             $this->normalizer->normalize(DossierDto::depuisDossier($dossier), 'json'),

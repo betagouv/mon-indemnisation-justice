@@ -155,8 +155,9 @@ function Etape4Recapitulatif() {
               type: "success",
               titre: "Votre dossier a bien été déposé",
               message: [
+                // TODO : convertir en HTML pour ensuite purifier avec `dompurify` https://www.npmjs.com/package/dompurify
                 "Toutes vos informations ont bien été sauvegardées. Un courriel de confirmation vous a été envoyé à l'instant.",
-                `Votre dossier porte la référence ${dossierDepose.reference} et sera traité par un agent du bureau dans les plus brefs délais. Vous serez informés de son évolution par courriel mais pourrez aussi suivre son avancement en vous connectant à votre espace personnel.`,
+                `Votre dossier porte la référence ${dossierDepose.reference} et sera traité par un agent du bureau dans les plus brefs délais. Vous serez informés de son évolution par courriel, mais pourrez aussi suivre son avancement en vous connectant à votre espace personnel.`,
               ],
             },
           },

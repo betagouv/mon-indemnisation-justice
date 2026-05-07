@@ -201,8 +201,8 @@ export class ApiDossierManager implements DossierManagerInterface {
       },
     );
 
+    const data = await reponse.json();
     if (!reponse.ok) {
-      const data = await reponse.json();
       throw new Error(data.erreurs);
     } else {
       // On remplace le dossier brouillon par celui déposé

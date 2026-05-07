@@ -145,8 +145,11 @@ class OidcClient
             ]);
         } catch (RequestException $e) {
             $context = json_decode($e->getResponse()->getBody()->getContents());
+            if (null !== $context) {
+                throw new AuthenticationException("{$context->error} - {$context->error_description}", previous: $e);
+            }
 
-            throw new AuthenticationException("{$context->error} - {$context->error_description}", previous: $e);
+            throw new AuthenticationException('Authorization failed.', previous: $e);
         } catch (GuzzleException $e) {
             throw new AuthenticationException('Authorization failed.', previous: $e);
         }
