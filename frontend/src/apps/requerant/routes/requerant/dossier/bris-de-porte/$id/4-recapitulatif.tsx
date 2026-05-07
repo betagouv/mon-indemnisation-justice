@@ -296,7 +296,7 @@ function Etape4Recapitulatif() {
                     iconId: "fr-icon-pencil-line",
                     linkProps: {
                       from: Route.fullPath,
-                      to: "../1-infos-requerant",
+                      to: "../2-infos-requerant",
                     },
                   },
                 ]}
