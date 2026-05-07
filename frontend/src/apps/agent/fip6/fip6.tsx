@@ -1,21 +1,22 @@
 import "@/apps/_init.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { JSX, StrictMode } from "react";
 import {
   createRouter,
   LinkProps,
   RouterProvider,
 } from "@tanstack/react-router";
+import React, { JSX, StrictMode } from "react";
 
 import { routeTree } from "@/apps/agent/fip6/routeur/routeur-fip6.gen.ts";
 import { container } from "@/common/services/agent";
-import ReactDOM from "react-dom/client";
-import { Provider } from "inversify-react";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
+import { Provider } from "inversify-react";
+import ReactDOM from "react-dom/client";
 
+import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
-import { AgentContext } from "@/apps/agent/_commun/contexts";
+import * as Sentry from "@sentry/browser";
 
 startReactDsfr({
   defaultColorScheme:
@@ -43,6 +44,12 @@ await container
   .get(AgentManagerInterface.$)
   .moi()
   .then((context: AgentContext) => {
+    Sentry.setTag("app", "fip6");
+    Sentry.setUser({
+      id: context.agent.id,
+      email: context.agent.courriel,
+      username: context.agent.nomComplet(),
+    });
     RouteurFIP6 = createRouter({
       routeTree,
       defaultPreload: "intent",

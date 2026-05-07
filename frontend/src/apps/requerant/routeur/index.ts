@@ -1,9 +1,10 @@
 import { ContexteUsager } from "@/apps/requerant/routeur/contexte.ts";
 import { UsagerManagerInterface } from "@/apps/requerant/services/UsagerManager.ts";
+import * as Sentry from "@sentry/browser";
 import { createRouter } from "@tanstack/react-router";
+import { Crisp } from "crisp-sdk-web";
 import { container } from "../container";
 import { routeTree } from "./routeur-requerant.gen";
-import { Crisp } from "crisp-sdk-web";
 
 export type ErreurResourceInconnue = {
   titre?: string;
@@ -16,6 +17,12 @@ await container
   .get(UsagerManagerInterface.$)
   .moi()
   .then((context: ContexteUsager) => {
+    Sentry.setTag("app", "requerant");
+    Sentry.setUser({
+      id: context.usager.id,
+      email: context.usager.courriel,
+      username: context.usager.nom,
+    });
     RouteurRequerant = createRouter({
       routeTree,
       defaultPreload: "intent",
