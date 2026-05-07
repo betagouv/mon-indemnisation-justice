@@ -18,7 +18,7 @@ readonly class DossierApercuOutput extends BaseDossierOutput
         int $id,
         ?string $reference,
         EtatDossierOutput $etat,
-        ?\DateTime $dateDepot,
+        ?\DateTimeImmutable $dateDepot,
         ?string $montantIndemnisation,
         ?int $redacteur,
         ?TypeAttestation $typeAttestation,

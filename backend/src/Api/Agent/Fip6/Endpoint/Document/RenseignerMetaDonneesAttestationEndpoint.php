@@ -35,6 +35,7 @@ class RenseignerMetaDonneesAttestationEndpoint
             return new JsonResponse(['erreur' => "Ce document n'est pas une attestation"], Response::HTTP_BAD_REQUEST);
         }
 
+        /** @var MetadonneesAttestation $metaDonnees */
         $metaDonnees = $this->objectMapper->map($input, MetadonneesAttestation::class);
         $document->setMetaDonneesAttestation($metaDonnees);
         $this->em->persist($document);

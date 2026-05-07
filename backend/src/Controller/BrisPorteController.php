@@ -84,7 +84,7 @@ class BrisPorteController extends AbstractController
                 $testEligibilite = $form->getData();
 
                 $testEligibilite->estEligibleExperimentation = true;
-                $testEligibilite->dateSoumission = new \DateTime();
+                $testEligibilite->dateSoumission = new \DateTimeImmutable();
 
                 $this->entityManager->persist($testEligibilite);
                 $this->entityManager->flush();

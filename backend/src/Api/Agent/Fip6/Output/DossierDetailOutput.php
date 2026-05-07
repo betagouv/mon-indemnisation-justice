@@ -14,7 +14,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
         int $id,
         ?string $reference,
         EtatDossierOutput $etat,
-        ?\DateTime $dateDepot,
+        ?\DateTimeImmutable $dateDepot,
         ?string $montantIndemnisation,
         ?int $redacteur,
         ?TypeAttestation $typeAttestation,
@@ -28,7 +28,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
         public ?DeclarationFDOOutput $declarationFDO,
         public ?string $descriptionRequerant,
         public ?string $notes,
-        public ?\DateTime $dateOperation,
+        public ?\DateTimeImmutable $dateOperation,
         public ?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique,
         public bool $estPorteBlindee = false,
         /** @var PieceJointeOutput[] */

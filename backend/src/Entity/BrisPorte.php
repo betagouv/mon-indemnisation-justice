@@ -26,7 +26,7 @@ class BrisPorte
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?TestEligibilite $testEligibilite = null;
 
-    #[ORM\OneToOne(targetEntity: DeclarationFDOBrisPorte::class, mappedBy: 'brisPorte', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: DeclarationFDOBrisPorte::class, mappedBy: 'brisPorte', cascade: ['persist'])]
     protected ?DeclarationFDOBrisPorte $declarationFDO = null;
 
     #[ORM\Column(type: 'string', length: 16, nullable: true, enumType: RapportAuLogement::class)]
@@ -48,8 +48,8 @@ class BrisPorte
     protected ?Adresse $adresse;
 
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateOperation = null;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    protected ?\DateTimeImmutable $dateOperation = null;
 
 
     #[ORM\Column(options: ['default' => false])]
@@ -192,12 +192,12 @@ class BrisPorte
         return $this->dossier;
     }
 
-    public function getDateOperation(): ?\DateTimeInterface
+    public function getDateOperation(): ?\DateTimeImmutable
     {
         return $this->dateOperation;
     }
 
-    public function setDateOperation(?\DateTimeInterface $dateOperation): self
+    public function setDateOperation(?\DateTimeImmutable $dateOperation): self
     {
         $this->dateOperation = $dateOperation;
 

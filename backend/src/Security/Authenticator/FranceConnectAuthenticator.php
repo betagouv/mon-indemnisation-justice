@@ -100,7 +100,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                                     new PersonnePhysique()
                                         ->setPrenom2($prenoms[1] ?? null)
                                         ->setPrenom3($prenoms[2] ?? null)
-                                        ->setDateNaissance(($dateNaissance = \DateTime::createFromFormat('Y-m-d', $userInfo['birthdate'])) ? $dateNaissance : null)
+                                        ->setDateNaissance(($dateNaissance = \DateTimeImmutable::createFromFormat('Y-m-d', $userInfo['birthdate'])) ? $dateNaissance : null)
                                         ->setPaysNaissance($paysNaissance)
                                         ->setCommuneNaissance($codePostalNaissance)
                                 )

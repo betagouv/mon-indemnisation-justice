@@ -26,7 +26,7 @@ class BrouillonDeclarationFDOBrisPorte
     protected Agent $agent;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
-    protected \DateTimeInterface $dateCreation;
+    protected \DateTimeImmutable $dateCreation;
 
     #[ORM\Column(type: Types::JSON, nullable: false)]
     protected array $donnees = [];
@@ -71,12 +71,12 @@ class BrouillonDeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateCreation(): \DateTimeInterface
+    public function getDateCreation(): \DateTimeImmutable
     {
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): BrouillonDeclarationFDOBrisPorte
+    public function setDateCreation(\DateTimeImmutable $dateCreation): BrouillonDeclarationFDOBrisPorte
     {
         $this->dateCreation = $dateCreation;
 

@@ -10,11 +10,11 @@ class DeclarationFDOOutput
 {
     public function __construct(
         public readonly string $id,
-        public readonly \DateTime $dateCreation,
+        public readonly \DateTimeImmutable $dateCreation,
         public readonly DeclarationFDOBrisPorteErreurType $estErreur,
         public readonly ?string $descriptionErreur,
-        public readonly \DateTime $dateOperation,
-        public readonly \DateTime $dateSoumission,
+        public readonly \DateTimeImmutable $dateOperation,
+        public readonly \DateTimeImmutable $dateSoumission,
         public readonly AdresseOutput $adresse,
         public readonly AgentOutput $agent,
         public readonly bool $enPresenceRequerant,
@@ -35,11 +35,11 @@ class DeclarationFDOOutput
 
         return new self(
             id: $declarationFDOBrisPorte->getId()->toString(),
-            dateCreation: \DateTime::createFromInterface($declarationFDOBrisPorte->getDateCreation()),
+            dateCreation: $declarationFDOBrisPorte->getDateCreation(),
             estErreur: $declarationFDOBrisPorte->getEstErreur(),
             descriptionErreur: $declarationFDOBrisPorte->getDescriptionErreur(),
-            dateOperation: \DateTime::createFromInterface($declarationFDOBrisPorte->getDateOperation()),
-            dateSoumission: \DateTime::createFromInterface($declarationFDOBrisPorte->getDateSoumission()),
+            dateOperation: $declarationFDOBrisPorte->getDateOperation(),
+            dateSoumission: $declarationFDOBrisPorte->getDateSoumission(),
             adresse: AdresseOutput::depuisAdresse($declarationFDOBrisPorte->getAdresse()),
             agent: AgentOutput::depuisAgent($declarationFDOBrisPorte->getAgent()),
             enPresenceRequerant: null !== $declarationFDOBrisPorte->getCoordonneesRequerant(),

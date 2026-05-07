@@ -37,8 +37,8 @@ class PersonnePhysique
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     protected ?Adresse $adresse;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateNaissance = null;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $dateNaissance = null;
 
     #[ORM\ManyToOne(targetEntity: GeoCodePostal::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'code_postal_naissance_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
@@ -205,12 +205,12 @@ class PersonnePhysique
         return $this;
     }
 
-    public function getDateNaissance(): ?\DateTimeInterface
+    public function getDateNaissance(): ?\DateTimeImmutable
     {
         return $this->dateNaissance;
     }
 
-    public function setDateNaissance(?\DateTimeInterface $dateNaissance): static
+    public function setDateNaissance(?\DateTimeImmutable $dateNaissance): static
     {
         $this->dateNaissance = $dateNaissance;
 
