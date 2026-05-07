@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/api/requerant/dossier/bris-de-porte/{reference}/amender', name: 'api_requerant_dossier_bris_porte_amender', methods: ['PATCH'])]
-#[IsGranted(RequerantDossierVoter::ACTION_DOSSIER_AMENDER, 'dossier', message: 'Seul le requerant peut amender son dossier', statusCode: Response::HTTP_FORBIDDEN)]
+#[IsGranted(RequerantDossierVoter::ACTION_DOSSIER_AMENDER, 'dossier', message: 'Seul le requérant peut amender son dossier', statusCode: Response::HTTP_FORBIDDEN)]
 class AmenderDossierEndpoint
 {
     public function __construct(

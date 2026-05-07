@@ -10,14 +10,14 @@
 
 
 {% block contenu %}
-    Bonjour {{ dossier.usager.nomCourant(true, true) }},
+    <p>
+        Référence du dossier à rappeler dans toutes vos correspondances : {{ dossier.reference }}
+    </p>
     <br/>
+    <p>
+        Bonjour {{ dossier.usager.nomCourant(true, true) }},
+    </p>
     <br/>
-    <ul>
-        <li>
-            Référence du dossier à rappeler dans toutes vos correspondances : {{ dossier.reference }}
-        </li>
-    </ul>
     <br/>
     <p>
         Vous avez déclaré un bris de porte ce jour.
