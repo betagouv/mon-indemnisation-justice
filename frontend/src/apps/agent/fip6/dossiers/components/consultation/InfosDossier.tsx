@@ -1,5 +1,4 @@
 import { Agent, DossierDetail } from "@/common/models";
-import { libellerNomTypePersonneMorale } from "@/common/models/TypePersonneMorale";
 import { dateSimple } from "@/common/services/date.ts";
 import { capitaliser } from "@/common/services/divers.ts";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -53,16 +52,17 @@ export const InfosDossier = ({
               {dossier.requerant.estPersonneMorale() && (
                 <li>
                   Représentant{e} légal{e} de{" "}
-                  {dossier.requerant.typePersonneMorale
-                    ? libellerNomTypePersonneMorale(
-                        dossier.requerant.typePersonneMorale,
-                        { defini: true },
-                      )
-                    : "la société"}{" "}
                   <b>{dossier.requerant.raisonSociale}</b> (SIREN:{" "}
                   <b>{dossier.requerant.siren}</b>)
                 </li>
               )}
+              {dossier.requerant.estPersonneMorale() &&
+                dossier.requerant.typePersonneMorale && (
+                  <li>
+                    Type de personne morale:{" "}
+                    <b>{dossier.requerant.typePersonneMorale}</b>)
+                  </li>
+                )}
               <li>
                 <b>Adresse courriel: </b>{" "}
                 {dossier.enAttenteInstruction() &&
