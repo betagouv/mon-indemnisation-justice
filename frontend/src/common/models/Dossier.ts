@@ -17,6 +17,7 @@ import {
 
 export type TypeAttestation =
   | "NOUVELLE_ATTESTATION"
+  | "AVIS_INTERVENTION"
   | "ANCIENNE_ATTESTATION"
   | "COURRIER_FDO"
   | "PAS_ATTESTATION";
