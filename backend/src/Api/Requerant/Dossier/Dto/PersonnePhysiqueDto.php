@@ -46,7 +46,7 @@ class PersonnePhysiqueDto
         return new self(
             personne: PersonneDto::depuisPersonne($personnePhysique->getPersonne()),
             prenom2: $personnePhysique->getPrenom2(),
-            prenom3: $personnePhysique->getPrenom2(),
+            prenom3: $personnePhysique->getPrenom3(),
             adresse: AdresseDto::depuisAdresse($personnePhysique->getAdresse()),
             dateNaissance: $personnePhysique->getDateNaissance() ? \DateTimeImmutable::createFromInterface($personnePhysique->getDateNaissance()) : null,
             paysNaissance: PaysDto::depuisPays($personnePhysique->getPaysNaissance()),

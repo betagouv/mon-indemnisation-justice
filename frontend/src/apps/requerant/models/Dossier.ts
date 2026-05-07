@@ -1,11 +1,8 @@
 import { Personne } from "@/apps/requerant/models/Personne";
-import {
-  PieceJointeType,
-  TypePieceJointe,
-} from "@/apps/requerant/models/TypePieceJointe.ts";
+import { PieceJointeType, TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import UndefinedTransform from "@/common/normalisation/transformers/UndefinedTransform.ts";
-import { Expose, Transform, Type } from "class-transformer";
+import { Type } from "class-transformer";
 import { Adresse } from "./Adresse";
 import { EtatDossier } from "./EtatDossier";
 import { PersonneMorale } from "./PersonneMorale";
@@ -66,38 +63,7 @@ export class Dossier extends BaseDossier {
   @DateTransform()
   dateCreation: Date;
 
-  protected _estPersonneMorale: boolean;
-
-  get estPersonneMorale(): boolean {
-    return this._estPersonneMorale;
-  }
-
-  @Expose({ toClassOnly: true })
-  @Transform(({ obj, value }: { obj: any; value: any }) => {
-    if (typeof value === "boolean") {
-      return value;
-    }
-
-    if ("personneMorale" in obj && !!obj.personneMorale) {
-      return true;
-    }
-    if ("personnePhysique" in obj && !!obj.personnePhysique) {
-      return false;
-    }
-
-    return undefined;
-  })
-  set estPersonneMorale(estPersonneMorale: boolean) {
-    this._estPersonneMorale = estPersonneMorale;
-
-    if (this.estPersonneMorale && !this.personneMorale) {
-      this.personneMorale = new PersonneMorale();
-    }
-
-    if (!this.estPersonneMorale && !this.personnePhysique) {
-      this.personnePhysique = new PersonnePhysique();
-    }
-  }
+  estPersonneMorale: boolean = false;
 
   // '`Requerant` = `PersonnePhysique` | `PersonneMorale`
   @Type(() => PersonnePhysique)
