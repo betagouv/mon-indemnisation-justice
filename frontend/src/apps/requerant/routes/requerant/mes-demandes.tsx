@@ -180,7 +180,14 @@ function RouteComponent() {
               <Badge severity={severiteBadgeEtat(dossier.etatActuel.etat)}>
                 {dossier.estCloture ? (
                   <Tooltip
-                    title={dossier.etatActuel.contexte?.explication}
+                    style={{
+                      textTransform: "initial",
+                      fontWeight: "initial",
+                    }}
+                    title={
+                      dossier.etatActuel.contexte?.explication ??
+                      "Dossier clôturé"
+                    }
                     kind="hover"
                   >
                     {dossier.etatActuel.etat.libelle}
