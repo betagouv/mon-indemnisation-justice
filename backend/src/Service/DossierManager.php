@@ -29,7 +29,7 @@ class DossierManager
         $this->dossierRepository->save($dossier);
     }
 
-    public function avancer(Dossier $dossier, ?Agent $agent = null, ?array $contexte = null): void
+    public function avancer(Dossier $dossier, ?Agent $agent = null, ?array $contexte = null): Dossier
     {
         /** @var EtatDossierType $etat */
         $etat = $dossier->getEtatDossier()->getEtat()->etatSuivant($contexte ?? []);
@@ -42,6 +42,8 @@ class DossierManager
         );
 
         $this->dossierRepository->save($dossier);
+
+        return $dossier;
     }
 
     /**

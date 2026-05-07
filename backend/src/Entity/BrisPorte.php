@@ -26,7 +26,7 @@ class BrisPorte
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     protected ?TestEligibilite $testEligibilite = null;
 
-    #[ORM\OneToOne(targetEntity: DeclarationFDOBrisPorte::class, mappedBy: 'brisPorte', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: DeclarationFDOBrisPorte::class, mappedBy: 'brisPorte', cascade: ['persist'])]
     protected ?DeclarationFDOBrisPorte $declarationFDO = null;
 
     #[ORM\Column(type: 'string', length: 16, nullable: true, enumType: RapportAuLogement::class)]
