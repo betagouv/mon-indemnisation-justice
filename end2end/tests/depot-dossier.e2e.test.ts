@@ -240,10 +240,7 @@ test("dépôt de dossier", async ({browser}) => {
 
     // Attendre que le téléversement se termine
 
-    await page.waitForLoadState("networkidle", {timeout: 120000});
-    await expect(
-        page.locator("dialog#ajouter-pieces-jointes-modale"),
-    ).toBeHidden();
+    await page.waitForSelector("dialog#ajouter-pieces-jointes-modale", {state: "hidden"});
 
     await page
         .locator("button", {hasText: "Valider et passer à l'étape suivante"})
@@ -275,8 +272,7 @@ test("dépôt de dossier", async ({browser}) => {
         .locator("ul.fr-btns-group li button", {hasText: "Fermer"})
         .click();
     // Laissons le temps à la modale de disparaitre
-    await page.waitForTimeout(1000);
-    await expect(page.locator("dialog#dossier-depose-modale")).toBeHidden();
+    await page.waitForSelector("dialog#dossier-depose-modale", {state: "hidden"});
 
     /*
         L'étape 4, de vérification, est supprimée

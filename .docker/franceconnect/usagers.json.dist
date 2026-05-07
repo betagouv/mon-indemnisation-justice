@@ -25,7 +25,7 @@
         "gender": "male",
         "given_name": "Jean Jacques Pierre",
         "given_name_array": [
-            "Jean", "Jacques, ","Pierre"
+            "Jean", "Jacques","Pierre"
         ],
         "family_name": "MICHON",
         "phone_number": "123456789",

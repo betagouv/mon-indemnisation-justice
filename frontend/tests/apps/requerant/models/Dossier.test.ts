@@ -86,7 +86,7 @@ describe("la dénormalisation d'un dossier ", () => {
       expect(donnees.etatActuel.etat).toBe("A_COMPLETER");
       expect(donnees.etatActuel.date).toBe("2026-01-28T12:34:56.789Z");
       expect(donnees.dateOperation).toBe("2026-01-28");
-      expect(donnees.estPersonneMorale).toBeUndefined();
+      expect(donnees.estPersonneMorale).toBe(false);
     });
   });
 
@@ -100,6 +100,7 @@ describe("la dénormalisation d'un dossier ", () => {
           date: "2026-01-28T12:34:56.789Z",
           requerant: 1,
         },
+        estPersonneMorale: true,
         personneMorale: {
           id: 2,
           raisonSociale: "SCI Les oiseaux",
@@ -168,7 +169,7 @@ describe("la dénormalisation d'un dossier ", () => {
       expect(donnees.etatActuel.etat).toBe("A_COMPLETER");
       expect(donnees.etatActuel.date).toBe("2026-01-28T12:34:56.789Z");
       expect(donnees.dateOperation).toBe("2026-01-28");
-      expect(donnees.estPersonneMorale).toBeUndefined();
+      expect(donnees.estPersonneMorale).toBe(true);
     });
   });
 });

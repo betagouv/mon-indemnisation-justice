@@ -46,6 +46,9 @@ class Dossier
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     protected ?PersonneMorale $requerantPersonneMorale;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    protected bool $estPersonneMorale = false;
+
     #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $notes = null;
 
@@ -128,15 +131,16 @@ class Dossier
 
     public function estPersonneMorale(): ?bool
     {
-        if (null !== $this->requerantPersonneMorale) {
-            return true;
+        return $this->estPersonneMorale;
+    }
+
+    public function setPersonneMorale(?bool $estPersonneMorale = false): self
+    {
+        if (null !== $estPersonneMorale) {
+            $this->estPersonneMorale = $estPersonneMorale;
         }
 
-        if (null !== $this->requerantPersonnePhysique) {
-            return false;
-        }
-
-        return null;
+        return $this;
     }
 
     public function getRequerantPersonneMorale(): ?PersonneMorale
