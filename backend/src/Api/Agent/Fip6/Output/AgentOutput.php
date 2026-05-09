@@ -4,23 +4,18 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Output;
 
 use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Agent;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 
-#[Map(source: Agent::class)]
 class AgentOutput
 {
     public function __construct(
         public readonly int $id,
         public readonly string $nom,
         public readonly string $prenom,
-        // #[ readonlyMap(source: 'email')]
         public readonly string $courriel,
         public readonly string $identifiant,
-        // #[ readonlyMap(source: 'administration.value')]
         public readonly Administration $administration,
         public readonly array $roles,
-        // #[ readonlyMap(source: 'dateCreation')]
-        public readonly ?\DateTimeInterface $dateCreation = null,
+        public readonly ?\DateTimeImmutable $dateCreation = null,
     ) {
 
     }

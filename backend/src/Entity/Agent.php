@@ -93,8 +93,8 @@ class Agent implements UserInterface
     #[ORM\JoinColumn(name: 'fournisseur_identite_uid', referencedColumnName: 'uid')]
     protected ?FournisseurIdentiteAgent $fournisseurIdentite = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    protected ?\DateTimeInterface $dateCreation = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    protected ?\DateTimeImmutable $dateCreation = null;
 
     public function __toString(): string
     {
@@ -427,7 +427,7 @@ class Agent implements UserInterface
         return sprintf('%s %s', $this->prenom, $capital ? strtoupper(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $this->nom)) : $this->nom);
     }
 
-    public function getDateCreation(): ?\DateTimeInterface
+    public function getDateCreation(): ?\DateTimeImmutable
     {
         return $this->dateCreation;
     }
