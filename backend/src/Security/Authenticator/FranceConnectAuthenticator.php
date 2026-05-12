@@ -68,8 +68,9 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
             // User info
             $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
+            $courriel = strtolower($userInfo['email'] ?? '');
 
-            $usager = $this->usagerRepository->findByEmailOrSub($userInfo['email'] ?? null, $userInfo['sub'] ?? null);
+            $usager = $this->usagerRepository->findByEmailOrSub($courriel, $userInfo['sub'] ?? null);
 
             if (null === $usager) {
                 if ($this->httpUtils->checkRequestPath($request, $this->signupCheckRoute)) {
@@ -87,7 +88,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
                     $usager = new Usager()
                         ->setSub($userInfo['sub'])
-                        ->setEmail($userInfo['email'] ?? null)
+                        ->setEmail($courriel)
                         ->setVerifieCourriel()
                         ->setPersonne(
                             new Personne()
@@ -95,7 +96,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                                 ->setNom($userInfo['family_name'] ?? '')
                                 ->setNomNaissance($userInfo['family_name'] ?? '')
                                 ->setPrenom($prenoms[0] ?? null)
-                                ->setCourriel($userInfo['email'] ?? null)
+                                ->setCourriel($courriel)
                                 ->ajouterPersonnePhysique(
                                     new PersonnePhysique()
                                         ->setPrenom2($prenoms[1] ?? null)
