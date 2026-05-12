@@ -40,7 +40,7 @@ test("dépôt de dossier", async ({browser}) => {
     await page
         .getByLabel("Adresse courriel")
         .filter({visible: true})
-        .fill("raquel.randt@courriel.fr");
+        .fill("Raquel.randt@courriel.fr");
     await page.getByLabel("Mot de passe").first().fill("P4ssword");
 
     await expect(page.getByText("Je me connecte à mon espace")).toBeEnabled();
@@ -299,7 +299,7 @@ test("dépôt de dossier", async ({browser}) => {
           // S'assurer que le requérant a bien reçu un email
           $response = $this->mailerClient->get('/api/v1/search', [
               'query' => [
-                  'query' => 'to:raquel.randt@courriel.fr subject:"Votre déclaration de bris de porte a bien été prise en compte"',
+                  'query' => 'to:Raquel.randt@courriel.fr subject:"Votre déclaration de bris de porte a bien été prise en compte"',
               ],
           ]);
           $result = json_decode($response->getBody()->getContents(), true);

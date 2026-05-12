@@ -21,7 +21,7 @@ test.describe('navigation', () => {
         const boutonConnexion = page.locator("a.fr-btn, button", {hasText: "Je me connecte à mon espace"});
         await expect(boutonConnexion).toBeVisible();
 
-        await page.getByLabel("Adresse courriel").filter({visible: true}).fill("raquel.randt@courriel.fr");
+        await page.getByLabel("Adresse courriel").filter({visible: true}).fill("Raquel.randt@courriel.fr");
         await page.getByLabel("Mot de passe", {exact: true}).filter({visible: true}).fill("P4ssword");
         await boutonConnexion.click()
 

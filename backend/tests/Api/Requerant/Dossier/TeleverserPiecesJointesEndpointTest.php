@@ -28,7 +28,7 @@ class TeleverserPiecesJointesEndpointTest extends WebTestCase
 
     public function testTeleverserPiecesJointesOk()
     {
-        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
+        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'Raquel.randt@courriel.fr']);
         /** @var Dossier $dossier */
         $dossier = $usager->getDossiersBrisDePorte()
             ->filter(

@@ -9,6 +9,7 @@ use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TestEligibilite;
 use MonIndemnisationJustice\Entity\Usager;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -16,9 +17,8 @@ use Symfony\Component\BrowserKit\Cookie;
 
 /**
  * @internal
- *
- * @covers \MonIndemnisationJustice\Controller\BrisPorteController
  */
+#[CoversClass(BrisPorteController::class)]
 class BrisPorteControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
@@ -234,7 +234,7 @@ class BrisPorteControllerTest extends WebTestCase
             $test = TestEligibilite::fromArray([
                 // 'description' => 'Test complet',
                 'estVise' => true,
-                'usager' => $em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
+                'usager' => $em->getRepository(Usager::class)->findOneBy(['email' => 'Raquel.randt@courriel.fr']),
                 'dateSoumission' => new \DateTimeImmutable()->modify('-2 minutes')]);
 
             $em->persist($test);

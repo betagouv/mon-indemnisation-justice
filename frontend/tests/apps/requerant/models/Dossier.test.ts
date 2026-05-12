@@ -111,7 +111,7 @@ describe("la dénormalisation d'un dossier ", () => {
             nom: "Randt",
             nomNaissance: "",
             prenom: "Raquel",
-            courriel: "raquel.randt@courriel.fr",
+            courriel: "Raquel.randt@courriel.fr",
             telephone: "0621436587",
           },
           adresse: {
