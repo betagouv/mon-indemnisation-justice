@@ -17,7 +17,7 @@ export const BadgesDossier = ({
         listStylePosition: "outside",
       }}
     >
-      {dossier.issuDeclarationFDO ? (
+      {dossier.estIssuDeclarationFDO() ? (
         <li style={inline ? { display: "inline", marginRight: ".5vw" } : {}}>
           <Badge severity="new" as="span" small={true}>
             Déclaration FDO
