@@ -38,7 +38,7 @@ class UsagerFixture extends Fixture implements DependentFixtureInterface
                 ->setPersonne(
                     $this->getReference('personne-raquel', Personne::class)
                 )
-                ->setEmail(!in_array($this->environment, ['test', 'ci']) ? 'wossewodda-3728@yopmail.com' : 'raquel.randt@courriel.fr')
+                ->setEmail(!in_array($this->environment, ['test', 'ci']) ? 'wossewodda-3728@yopmail.com' : 'Raquel.randt@courriel.fr')
                 ->setVerifieCourriel()
                 ->setRoles([Usager::ROLE_REQUERANT]),
             'ray' => new Usager()
