@@ -12,7 +12,7 @@ import {
   Redacteur,
   Requerant,
   TestEligibilite,
-  TypeInstitutionSecuritePublique
+  TypeInstitutionSecuritePublique,
 } from ".";
 
 export type TypeAttestation =
@@ -39,6 +39,8 @@ export abstract class BaseDossier {
   public typeAttestation?: TypeAttestation;
   public qualiteRequerant?: string;
   public readonly estEligible: boolean;
+
+  abstract estIssuDeclarationFDO(): boolean;
 
   public estAAttribuer(): boolean {
     return this.etat.etat.egal(EtatDossierType.A_ATTRIBUER);
@@ -132,6 +134,10 @@ export class DossierApercu extends BaseDossier {
   public readonly issuDeclarationFDO: boolean;
   public readonly requerant: string; // Prénom NOM
   public readonly adresse: string;
+
+  estIssuDeclarationFDO(): boolean {
+    return this.issuDeclarationFDO;
+  }
 }
 
 export class DossierDetail extends BaseDossier {
@@ -194,6 +200,10 @@ export class DossierDetail extends BaseDossier {
       notes: observable,
       annoter: action,
     });
+  }
+
+  estIssuDeclarationFDO(): boolean {
+    return !!this.declarationFDO?.id;
   }
 
   annoter(notes: string): void {
