@@ -76,8 +76,8 @@ const RaisonsCloture: Map<string, RaisonCloture> = new Map<
       libelle: "Dossier abandonné",
       motif: "Doublon abandonné lors de l'instruction",
       explication: [
-        "Votre dossier de demande d'indemnisation est dans l'attente d'une ou plusieurs pièces complémentaires depuis au moins 30 jours.",
-        "Faute de retour de votre part, le dossier est désormais clos et ne recevra plus de mise à jour à l'avenir.",
+        "Votre dossier sur Mon Indemnisation Justice est sans activité depuis 30 jours et est désormais clôturé automatiquement.",
+        "Cela ne nécessite pas d'action de votre part.",
       ],
     } as RaisonCloture,
   ],
