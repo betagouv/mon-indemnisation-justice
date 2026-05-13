@@ -120,9 +120,38 @@ enum EtatDossierType: string
         };
     }
 
+    /**
+     * Un dossier est clôturable s'il est déposé et non encore décidé ni terminé (ni clôturé ni refusé ni indemnisé).
+     */
+    public function estCloturable(): bool
+    {
+        return in_array(
+            $this,
+            [
+                self::DOSSIER_A_ATTRIBUER,
+                self::DOSSIER_A_INSTRUIRE,
+                self::DOSSIER_EN_INSTRUCTION,
+                self::DOSSIER_OK_A_SIGNER,
+                self::DOSSIER_KO_A_SIGNER]
+        );
+    }
+
+    /**
+     * Un dossier est éditable, par le requérant, s'il est en cours de constitution ou déposé, mais pas encore décidé.
+     */
     public function estEditable(): bool
     {
-        return in_array($this, [self::DOSSIER_A_FINALISER, self::DOSSIER_A_ATTRIBUER, self::DOSSIER_A_INSTRUIRE, self::DOSSIER_EN_INSTRUCTION, self::DOSSIER_OK_A_SIGNER, self::DOSSIER_KO_A_SIGNER]);
+        return in_array(
+            $this,
+            [
+                self::DOSSIER_A_FINALISER,
+                self::DOSSIER_A_ATTRIBUER,
+                self::DOSSIER_A_INSTRUIRE,
+                self::DOSSIER_EN_INSTRUCTION,
+                self::DOSSIER_OK_A_SIGNER,
+                self::DOSSIER_KO_A_SIGNER,
+            ]
+        );
     }
 
     public function estAAttribuer(): bool

@@ -10,29 +10,28 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DossierVoter extends Voter
 {
-    public const ACTION_ATTRIBUER = 'dossier:attribuer';
-    public const ACTION_INSTRUIRE = 'dossier:instruire';
+    public const string ACTION_ATTRIBUER = 'dossier:attribuer';
+    public const string ACTION_INSTRUIRE = 'dossier:instruire';
+    public const string ACTION_CLOTURER = 'dossier:cloturer';
+    public const string ACTION_AJOUTER_PIECE_JOINTE = 'dossier:ajouter-piece-jointe';
+    public const string ACTION_GENERER_DOCUMENT = 'dossier:generer-document';
 
-    public const ACTION_AJOUTER_PIECE_JOINTE = 'dossier:ajouter-piece-jointe';
-    public const ACTION_GENERER_DOCUMENT = 'dossier:generer-document';
-
-    public const ACTION_LISTER_A_CATEGORISER = 'dossier:lister:a-categoriser';
-    public const ACTION_LISTER_A_ATTRIBUER = 'dossier:lister:a-attribuer';
-    public const ACTION_LISTER_A_INSTRUIRE = 'dossier:lister:a-instruire';
-
-    public const ACTION_LISTER_REJET_A_SIGNER = 'dossier:lister:rejet-a-signer';
-    public const ACTION_LISTER_PROPOSITION_A_SIGNER = 'dossier:lister:proposition-a-signer';
-
-    public const ACTION_LISTER_A_VERIFIER = 'dossier:lister:a-verifier';
-    public const ACTION_LISTER_ARRETE_A_SIGNER = 'dossier:lister:arrete-a-signer';
-    public const ACTION_LISTER_A_TRANSMETTRE = 'dossier:lister:a-transmettre';
-    public const ACTION_LISTER_EN_ATTENTE_INDEMNISATION = 'dossier:lister:a-transmettre';
+    public const string ACTION_LISTER_A_CATEGORISER = 'dossier:lister:a-categoriser';
+    public const string ACTION_LISTER_A_ATTRIBUER = 'dossier:lister:a-attribuer';
+    public const string ACTION_LISTER_A_INSTRUIRE = 'dossier:lister:a-instruire';
+    public const string ACTION_LISTER_REJET_A_SIGNER = 'dossier:lister:rejet-a-signer';
+    public const string ACTION_LISTER_PROPOSITION_A_SIGNER = 'dossier:lister:proposition-a-signer';
+    public const string ACTION_LISTER_A_VERIFIER = 'dossier:lister:a-verifier';
+    public const string ACTION_LISTER_ARRETE_A_SIGNER = 'dossier:lister:arrete-a-signer';
+    public const string ACTION_LISTER_A_TRANSMETTRE = 'dossier:lister:a-transmettre';
+    public const string ACTION_LISTER_EN_ATTENTE_INDEMNISATION = 'dossier:lister:a-transmettre';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [
             self::ACTION_ATTRIBUER,
             self::ACTION_INSTRUIRE,
+            self::ACTION_CLOTURER,
             self::ACTION_AJOUTER_PIECE_JOINTE,
             self::ACTION_GENERER_DOCUMENT,
             self::ACTION_LISTER_A_CATEGORISER,
@@ -61,6 +60,7 @@ class DossierVoter extends Voter
             self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent, $subject),
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
+            self::ACTION_CLOTURER => $this->agentPeutCloturer($agent, $subject),
             self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
             self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
             default => false,
@@ -80,6 +80,11 @@ class DossierVoter extends Voter
     protected function agentPeutInstruire(Agent $agent, Dossier $dossier): bool
     {
         return $agent->estRedacteur() && $agent->instruit($dossier);
+    }
+
+    protected function agentPeutCloturer(Agent $agent, Dossier $dossier): bool
+    {
+        return $agent->aRole(Agent::ROLE_AGENT_ATTRIBUTEUR) || $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR) || $agent->instruit($dossier);
     }
 
     protected function agentPeutGenererDocument(Agent $agent, Dossier $dossier): bool

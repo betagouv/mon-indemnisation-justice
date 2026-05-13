@@ -15,7 +15,7 @@ use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\DossierRepository;
 use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\DossierManager;
 use Psr\Log\LoggerInterface;
@@ -38,7 +38,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class DossierController extends AgentController
 {
     public function __construct(
-        protected readonly BrisPorteRepository $dossierRepository,
+        protected readonly DossierRepository $dossierRepository,
         protected readonly AgentRepository $agentRepository,
         protected readonly DossierManager $dossierManager,
         protected readonly DocumentManager $documentManager,
@@ -94,27 +94,6 @@ class DossierController extends AgentController
                 ),
             ],
         ]);
-    }
-
-    // TODO créer un voter https://symfony.com/doc/current/security/voters.html
-    #[IsGranted(
-        attribute: new Expression('is_granted("ROLE_AGENT_ATTRIBUTEUR") or is_granted("ROLE_AGENT_VALIDATEUR") or user.instruit(subject["dossier"])'),
-        subject: [
-            'dossier' => new Expression('args["dossier"]'),
-        ]
-    )]
-    #[Route('/dossier/{id}/cloturer.json', name: 'agent_redacteur_marquer_doublon_papier_dossier', methods: ['POST'])]
-    public function cloturer(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        $dossier->changerStatut(EtatDossierType::DOSSIER_CLOTURE, agent: $this->getAgent(), contexte: [
-            'motif' => $request->getPayload()->get('motif'),
-            'explication' => $request->getPayload()->get('explication'),
-        ]);
-        $this->dossierRepository->save($dossier);
-
-        return new JsonResponse([
-            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
-        ], Response::HTTP_OK);
     }
 
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]

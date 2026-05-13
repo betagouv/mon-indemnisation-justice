@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Tests\Repository;
 
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\DossierRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
@@ -21,8 +21,8 @@ class BrisPorteRepositoryTest extends WebTestCase
 
         $container = static::getContainer();
 
-        /** @var BrisPorteRepository $dossierRepository */
-        $dossierRepository = $container->get(BrisPorteRepository::class);
+        /** @var DossierRepository $dossierRepository */
+        $dossierRepository = $container->get(DossierRepository::class);
         $dossiersAAttribuer = $dossierRepository->listerDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
 
         $this->assertCount(1, $dossiersAAttribuer);

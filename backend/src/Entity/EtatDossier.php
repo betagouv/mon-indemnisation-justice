@@ -84,6 +84,11 @@ class EtatDossier
         return $this->etat->estEditable();
     }
 
+    public function estCloturable(): bool
+    {
+        return $this->etat->estCloturable();
+    }
+
     public function estAAttribuer(): bool
     {
         return $this->etat->estAAttribuer();

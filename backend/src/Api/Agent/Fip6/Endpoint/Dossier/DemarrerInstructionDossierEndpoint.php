@@ -7,7 +7,7 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\DossierRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,7 +25,7 @@ class DemarrerInstructionDossierEndpoint
         protected readonly NormalizerInterface $normalizer,
         protected readonly ObjectMapperInterface $objectMapper,
         protected readonly AgentRepository $agentRepository,
-        protected readonly BrisPorteRepository $dossierRepository,
+        protected readonly DossierRepository $dossierRepository,
     ) {
     }
 

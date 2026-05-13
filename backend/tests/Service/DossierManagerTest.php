@@ -5,7 +5,7 @@ namespace MonIndemnisationJustice\Tests\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\DossierRepository;
 use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class DossierManagerTest extends WebTestCase
 {
     protected EntityManagerInterface $em;
-    protected BrisPorteRepository $dossierRepository;
+    protected DossierRepository $dossierRepository;
     protected DossierManager $dossierManager;
 
     public function setUp(): void
@@ -27,7 +27,7 @@ class DossierManagerTest extends WebTestCase
         $container = static::getContainer();
 
         $this->em = $container->get(EntityManagerInterface::class);
-        $this->dossierRepository = $container->get(BrisPorteRepository::class);
+        $this->dossierRepository = $container->get(DossierRepository::class);
         $this->dossierManager = $container->get(DossierManager::class);
     }
 
