@@ -6,7 +6,7 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\DossierRepository;
 
 /**
  * Service qui assure les opérations essentielles autour du dossier, notamment la gestion de l'état.
@@ -14,7 +14,7 @@ use MonIndemnisationJustice\Repository\BrisPorteRepository;
 class DossierManager
 {
     public function __construct(
-        protected readonly BrisPorteRepository $dossierRepository,
+        protected readonly DossierRepository $dossierRepository,
         protected readonly AgentRepository $agentRepository,
     ) {
     }
