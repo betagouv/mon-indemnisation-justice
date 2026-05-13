@@ -10,7 +10,7 @@ use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\DossierRepository;
 use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -24,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DossierEtatAvancerCommand extends Command
 {
     public function __construct(
-        protected readonly BrisPorteRepository $dossierRepository,
+        protected readonly DossierRepository $dossierRepository,
         protected readonly DossierManager $dossierManager,
         protected readonly AgentRepository $agentRepository,
         protected readonly DocumentManager $documentManager,

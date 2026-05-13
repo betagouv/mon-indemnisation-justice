@@ -8,9 +8,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Event\Listener\DossierEntitylistener;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\DossierRepository;
 
-#[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
+#[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'dossiers')]
 #[ORM\EntityListeners([DossierEntitylistener::class])]
@@ -307,6 +307,11 @@ class Dossier
     public function estEditable(): bool
     {
         return $this->etatDossier->estEditable();
+    }
+
+    public function estCloturable(): bool
+    {
+        return $this->etatDossier->estCloturable();
     }
 
     public function estAAttribuer(): bool

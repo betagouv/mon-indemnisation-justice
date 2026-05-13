@@ -6,7 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\DossierRepository;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[AsEntityListener(Dossier::class)]
@@ -14,7 +14,7 @@ class DossierEntitylistener
 {
     public function __construct(
         protected readonly EventDispatcherInterface $eventDispatcher,
-        protected readonly BrisPorteRepository $brisPorteRepository,
+        protected readonly DossierRepository $brisPorteRepository,
     ) {
     }
 

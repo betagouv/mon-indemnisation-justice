@@ -60,7 +60,7 @@ export const InfosDossier = ({
                 dossier.requerant.typePersonneMorale && (
                   <li>
                     Type de personne morale:{" "}
-                    <b>{dossier.requerant.typePersonneMorale}</b>)
+                    <b>{dossier.requerant.typePersonneMorale}</b>
                   </li>
                 )}
               <li>

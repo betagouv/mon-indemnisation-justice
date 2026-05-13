@@ -1,14 +1,9 @@
+import { Agent, BaseDossier, DossierDetail, EtatDossier } from "@/common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { plainToInstance } from "class-transformer";
-import React, { ChangeEvent, useState } from "react";
-import {
-  Agent,
-  BaseDossier,
-  DossierDetail,
-  EtatDossier,
-} from "@/common/models";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
+import React, { ChangeEvent, useState } from "react";
 
 const _modale = createModal({
   id: "modale-action-cloturer",
@@ -25,7 +20,7 @@ const cloturer = async ({
   explication: string;
 }): Promise<null | EtatDossier> => {
   const response = await fetch(
-    `/agent/redacteur/dossier/${dossier.id}/cloturer.json`,
+    `/api/agent/fip6/dossier/${dossier.id}/cloturer`,
     {
       method: "POST",
       headers: {
@@ -57,7 +52,7 @@ interface EtatCloture {
 interface RaisonCloture {
   libelle: string;
   motif: string;
-  explication: string;
+  explication: string | Array<string>;
 }
 
 const RaisonsCloture: Map<string, RaisonCloture> = new Map<
@@ -69,8 +64,21 @@ const RaisonsCloture: Map<string, RaisonCloture> = new Map<
     {
       libelle: "Doublon papier",
       motif: "Doublon d'un dossier déposé en version papier",
-      explication:
-        "Un exemplaire de ce dossier a déjà été déposé par voie postale auparavant. Le traitement continuera en dehors de la plateforme, si bien que le dossier initié en ligne est désormais clos et ne recevra plus de mise à jour à l'avenir.",
+      explication: [
+        "Un exemplaire de ce dossier a déjà été déposé par voie postale auparavant.",
+        "Le traitement continuera en dehors de la plateforme, si bien que le dossier initié en ligne est désormais clos et ne recevra plus de mise à jour à l'avenir.",
+      ],
+    } as RaisonCloture,
+  ],
+  [
+    "abandon-en-instruction",
+    {
+      libelle: "Dossier abandonné",
+      motif: "Doublon abandonné lors de l'instruction",
+      explication: [
+        "Votre dossier sur Mon Indemnisation Justice est sans activité depuis 30 jours et est désormais clôturé automatiquement.",
+        "Cela ne nécessite pas d'action de votre part.",
+      ],
     } as RaisonCloture,
   ],
   [
@@ -91,7 +99,7 @@ const estCloturable = ({
   agent: Agent;
 }) =>
   dossier.estCloturable() &&
-  (agent.estAttributeur() || agent.instruit(dossier));
+  (agent.estAttributeur() || agent.estValidateur() || agent.instruit(dossier));
 
 export const CloturerModale = observer(function CloturerActionModale({
   dossier,
@@ -110,7 +118,9 @@ export const CloturerModale = observer(function CloturerActionModale({
     setEtatCloture({
       ...etatCloture,
       motif: modele.motif,
-      explication: modele.explication,
+      explication: Array.isArray(modele.explication)
+        ? modele.explication.join("\n\n")
+        : modele.explication,
     } as EtatCloture);
 
   const setAction = (action?: ActionCloture) =>
@@ -156,7 +166,9 @@ export const CloturerModale = observer(function CloturerActionModale({
                 id="dossier-cloture-preselection"
                 defaultValue={""}
                 onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  selectionModele(RaisonsCloture.get(e.target.value))
+                  selectionModele(
+                    RaisonsCloture.get(e.target.value) as RaisonCloture,
+                  )
                 }
               >
                 <option value="" disabled hidden>
@@ -228,7 +240,11 @@ export const CloturerModale = observer(function CloturerActionModale({
                 <textarea
                   className="fr-input"
                   aria-describedby="dossier-cloture-explication-message"
-                  defaultValue={etatCloture.explication}
+                  defaultValue={
+                    Array.isArray(etatCloture.explication)
+                      ? etatCloture.explication
+                      : [etatCloture.explication].join("\n\n")
+                  }
                   disabled={etatCloture.action === "sauvegarde"}
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                     setEtatCloture({
@@ -237,7 +253,7 @@ export const CloturerModale = observer(function CloturerActionModale({
                     })
                   }
                   id="dossier-cloture-explication"
-                  rows={5}
+                  rows={10}
                 ></textarea>
                 {!etatCloture.explication && (
                   <div
@@ -304,9 +320,10 @@ export const CloturerModale = observer(function CloturerActionModale({
                     !etatCloture.explication ||
                     etatCloture.action === "sauvegarde"
                   }
-                  onClick={() =>
-                    valider(etatCloture.motif, etatCloture.explication)
-                  }
+                  onClick={async () => {
+                    if (etatCloture.motif && etatCloture.explication)
+                      await valider(etatCloture.motif, etatCloture.explication);
+                  }}
                 >
                   Valider la clôture
                 </button>

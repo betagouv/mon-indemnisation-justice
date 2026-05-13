@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\AjouterPieceJointeEn
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
@@ -17,9 +18,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * attributeur d'ajouter une pièce jointe à un dossier.
  *
  * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\AjouterPieceJointeEndpoint
  */
+#[CoversClass(AjouterPieceJointeEndpoint::class)]
 class AjouterPieceJointeEndpointTest extends APIEndpointTestCase
 {
     protected KernelBrowser $client;

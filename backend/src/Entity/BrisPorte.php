@@ -4,12 +4,12 @@ namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use MonIndemnisationJustice\Repository\BrisPorteRepository;
+use MonIndemnisationJustice\Repository\DossierRepository;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity(repositoryClass: BrisPorteRepository::class)]
+#[ORM\Entity(repositoryClass: DossierRepository::class)]
 #[ORM\Table(name: 'bris_porte')]
 class BrisPorte
 {

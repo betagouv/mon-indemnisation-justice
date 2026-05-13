@@ -19,7 +19,7 @@ use MonIndemnisationJustice\Entity\EtatDossierType;
  * @method Dossier[]    findAll()
  * @method Dossier[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class BrisPorteRepository extends ServiceEntityRepository
+class DossierRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
