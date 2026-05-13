@@ -234,7 +234,7 @@ class BrisPorteControllerTest extends WebTestCase
             $test = TestEligibilite::fromArray([
                 // 'description' => 'Test complet',
                 'estVise' => true,
-                'usager' => $em->getRepository(Usager::class)->findOneBy(['email' => 'Raquel.randt@courriel.fr']),
+                'usager' => $em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
                 'dateSoumission' => new \DateTimeImmutable()->modify('-2 minutes')]);
 
             $em->persist($test);

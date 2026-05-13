@@ -6,9 +6,7 @@ security:
   providers:
     # used to reload user from session & other features (e.g. switch_user)
     usager_provider:
-      entity:
-        class: MonIndemnisationJustice\Entity\Usager
-        property: email
+      id: MonIndemnisationJustice\Security\Provider\UsagerProvider
     agent_provider:
       id: MonIndemnisationJustice\Security\Provider\AgentProvider
   role_hierarchy:

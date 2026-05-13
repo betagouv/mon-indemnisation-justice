@@ -29,7 +29,7 @@ class AmenderDossierEndpointTest extends WebTestCase
 
     public function testAmenderDossierOk(): void
     {
-        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'Raquel.randt@courriel.fr']);
+        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
         /** @var Dossier $dossier */
         $dossier = $usager->getDossiersBrisDePorte()
             ->filter(
@@ -90,7 +90,7 @@ class AmenderDossierEndpointTest extends WebTestCase
 
     public function testAmenderDossierChangerTypeOk(): void
     {
-        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'Raquel.randt@courriel.fr']);
+        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
         /** @var Dossier $dossier */
         $dossier = $usager->getDossiersBrisDePorte()
             ->filter(
