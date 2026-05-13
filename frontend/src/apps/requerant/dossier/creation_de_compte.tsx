@@ -1,15 +1,15 @@
-import "reflect-metadata";
 import {
   Civilite,
   Inscription,
 } from "@/apps/requerant/dossier/models/Inscription";
 import FranceConnectButton from "@codegouvfr/react-dsfr/FranceConnectButton";
 import { instanceToPlain, plainToInstance } from "class-transformer";
-import { validate } from "class-validator";
+import { validate, ValidationError } from "class-validator";
 import _ from "lodash";
 import { autorun, observable, ObservableMap } from "mobx";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
+import "reflect-metadata";
 // En attente de React 19
 //import { useFormStatus } from "react-dom";
 import ReactDOM from "react-dom/client";
@@ -30,13 +30,15 @@ const inscription = plainToInstance(Inscription, args.inscription);
 let erreurs = observable.map<string, string>([]);
 
 autorun(async (i) => {
-  const err = await validate(inscription);
-  erreurs.replace(
-    err.map((error) => [
-      error.property.replace(/^_/, ""),
-      Object.values(error.constraints).at(0),
-    ]),
-  );
+  validate(inscription).then((err) => {
+    erreurs.clear();
+    err.forEach((value: ValidationError) =>
+      erreurs.set(
+        value.property.replace(/^_/, ""),
+        Object.values<string>(value.constraints || []).at(0) as string,
+      ),
+    );
+  });
 });
 
 const CreationDeCompteApp = observer(function CreationDeCompteApp({
@@ -294,17 +296,18 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                                 onChange={(e) =>
                                   _.debounce(
                                     () =>
-                                      (inscription.courriel = e.target.value),
+                                      (inscription.courriel =
+                                        e.target.value?.toLowerCase()),
                                     350,
                                   )()
                                 }
                               />
-                              {erreurs.has("courriel") && (
+                              {erreurs?.has("courriel") && (
                                 <p
                                   id="inscription-champs-courriel-error"
                                   className="fr-error-text"
                                 >
-                                  {erreurs.get("courriel")}
+                                  {erreurs?.get("courriel")}
                                 </p>
                               )}
                             </div>
@@ -467,7 +470,9 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                             <button
                               className="fr-btn"
                               type="submit"
-                              disabled={erreurs.size > 0 || sauvegardeEnCours}
+                              disabled={
+                                (erreurs?.size || 0) > 0 || sauvegardeEnCours
+                              }
                               onClick={async (e) => {
                                 e.preventDefault();
                                 await creerLeCompte();

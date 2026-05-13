@@ -45,7 +45,7 @@ class PersonneFixture extends Fixture
                 ->setNom('Randt')
                 ->setNomNaissance('Quella')
                 ->setTelephone('0621436587')
-                ->setCourriel(!in_array($this->environment, ['test', 'ci']) ? 'wossewodda-3728@yopmail.com' : 'raquel.randt@courriel.fr'),
+                ->setCourriel(!in_array($this->environment, ['test', 'ci']) ? 'wossewodda-3728@yopmail.com' : 'Raquel.randt@courriel.fr'),
             'ray' => new Personne()
                 ->setCivilite(Civilite::M)
                 ->setPrenom('Ray')
