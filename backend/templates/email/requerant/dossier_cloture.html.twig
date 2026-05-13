@@ -14,13 +14,17 @@
         vient d'être clôturé par un agent pour la raison suivante :
     </p>
     <blockquote>
-        {{ dossier.explicationCloture }}
+        {{ dossier.explicationCloture|nl2br }}
     </blockquote>
     <br/>
     <p>
         Vous ne recevrez donc plus de notification concernant ce dossier. Si vous souhaitez contester cette décision,
         nous vous invitons à prendre contact auprès du bureau du précontentieux à l'adresse <a
                 href="mailto:{{ precontentieux_courriel_equipe }}">{{ precontentieux_courriel_equipe }}</a>.
+    </p>
+    <br/>
+    <p>
+        Veuillez ne pas répondre à cet e-mail. Les messages reçus à cette adresse ne sont pas lus et ne reçoivent donc aucune réponse.
     </p>
     <br/>
     Cordialement,<br/>
