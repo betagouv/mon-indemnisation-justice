@@ -21,4 +21,13 @@ class EntityResolveur
 
         return self::$em->getRepository($class)->find($id);
     }
+
+    public static function resoudreListe(string $class, array $ids): array
+    {
+        if (null === self::$em) {
+            throw new \RuntimeException("Impossible de résoudre la liste d'entités $class d'id : la connexion n'est pas initiée");
+        }
+
+        return sizeof($ids) > 0 ? self::$em->getRepository($class)->findBy($ids) : [];
+    }
 }
