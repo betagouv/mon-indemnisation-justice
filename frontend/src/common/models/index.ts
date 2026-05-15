@@ -1,17 +1,17 @@
 import "reflect-metadata";
 import { Adresse } from "./Adresse";
-import { Agent, Administration } from "./Agent";
+import { Administration, Agent } from "./Agent";
 import { Document, DocumentType } from "./Document";
-import { BaseDossier, DossierDetail, DossierApercu } from "./Dossier";
+import { BaseDossier, DossierApercu, DossierDetail } from "./Dossier";
 import { EtatDossier, EtatDossierType } from "./EtatDossier";
+import {
+  InstitutionSecuritePublique,
+  type TypeFDO,
+} from "./InstitutionSecuritePublique";
 import { RechercheDossier } from "./RechercheDossier";
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
 import { TestEligibilite } from "./TestEligibilite";
-import {
-  InstitutionSecuritePublique,
-  type TypeInstitutionSecuritePublique,
-} from "./InstitutionSecuritePublique";
 
 export {
   Administration,
@@ -19,15 +19,15 @@ export {
   Agent,
   BaseDossier,
   Document,
+  DocumentType,
   DossierApercu,
   DossierDetail,
-  DocumentType,
   EtatDossier,
   EtatDossierType,
+  InstitutionSecuritePublique,
   RechercheDossier,
   Redacteur,
   Requerant,
   TestEligibilite,
-  InstitutionSecuritePublique,
-  TypeInstitutionSecuritePublique,
+  TypeFDO,
 };

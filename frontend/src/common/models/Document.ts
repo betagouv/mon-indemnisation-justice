@@ -1,8 +1,4 @@
-import {
-  Agent,
-  DossierDetail,
-  TypeInstitutionSecuritePublique,
-} from "@/common/models";
+import { Agent, DossierDetail, TypeFDO } from "@/common/models";
 import { TypeAttestation } from "@/common/models/Dossier.ts";
 import { estAujourdhui } from "@/common/services/date";
 import { Transform, Type } from "class-transformer";
@@ -150,7 +146,7 @@ export class DocumentType {
 
 export interface MetaDonneesAttestation {
   typeAttestation?: TypeAttestation;
-  typeInstitutionSecuritePublique?: TypeInstitutionSecuritePublique;
+  typeAdministration?: TypeFDO;
   dateOperation?: Date;
 }
 
