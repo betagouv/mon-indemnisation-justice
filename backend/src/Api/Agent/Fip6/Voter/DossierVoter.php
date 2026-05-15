@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DossierVoter extends Voter
 {
+    public const string ACTION_RECHERCHER = 'dossier:rechercher';
     public const string ACTION_ATTRIBUER = 'dossier:attribuer';
     public const string ACTION_INSTRUIRE = 'dossier:instruire';
     public const string ACTION_CLOTURER = 'dossier:cloturer';
@@ -29,6 +30,7 @@ class DossierVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [
+            self::ACTION_RECHERCHER,
             self::ACTION_ATTRIBUER,
             self::ACTION_INSTRUIRE,
             self::ACTION_CLOTURER,
@@ -57,6 +59,7 @@ class DossierVoter extends Voter
         $agent = $token->getUser();
 
         return match ($attribute) {
+            self::ACTION_RECHERCHER, => $this->agentPeutRechercher($agent),
             self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent, $subject),
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
@@ -65,6 +68,11 @@ class DossierVoter extends Voter
             self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
             default => false,
         };
+    }
+
+    protected function agentPeutRechercher(Agent $agent): bool
+    {
+        return $agent->aRole(Agent::ROLE_AGENT_DOSSIER);
     }
 
     protected function agentPeutAjouterPieceJointe(Agent $agent, Dossier $dossier): bool
