@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -66,7 +67,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
             $administration = $estAutoPromuMJ ? $this->administrationRepository->find(AdministrationType::MINISTERE_JUSTICE) : $this->administrationRepository->findBySiret($userInfo['siret']);
 
             if (null === $administration) {
-                throw new AuthenticationException("Cet espace est réservé aux agents des Forces de l'ordre ou du Ministère de la Justice");
+                throw new CustomUserMessageAuthenticationException("Cet espace est réservé aux agents des Forces de l'ordre ou du Ministère de la Justice");
             }
 
             $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);

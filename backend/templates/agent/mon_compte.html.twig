@@ -44,7 +44,7 @@
                                         Nom
                                     </label>
                                     <input id="mon-nom" class="fr-input" type="text" disabled
-                                           value="{{ app.user.nom }}">
+                                           value="{{ app.user.nom }}" />
                                 </div>
                             </div>
                             <div class="fr-fieldset__element">
@@ -89,7 +89,7 @@
                                     Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
                                     guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
                                 </p>
-                                {% if app.user.administration.type.value == 'PP' %}
+                                {% elseif app.user.administration.type.value == 'PP' %}
                                 <p>
                                     Vous êtes actuellement rattaché à la <b>Préfecture de Police</b>.
                                 </p>
