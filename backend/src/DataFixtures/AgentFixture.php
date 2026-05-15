@@ -4,15 +4,27 @@ namespace MonIndemnisationJustice\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use MonIndemnisationJustice\Entity\Administration;
+use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\Agent;
 
-class AgentFixture extends Fixture implements FixtureGroupInterface
+class AgentFixture extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
     public static function getGroups(): array
     {
         return ['develop'];
+    }
+
+    public function getDependencies(): array
+    {
+        return [AdministrationFixture::class];
+    }
+
+    protected function getAdministration(AdministrationType $type): Administration
+    {
+        return $this->getReference("administration-$type->value", Administration::class);
     }
 
     public function load(ObjectManager $manager): void
@@ -23,7 +35,7 @@ class AgentFixture extends Fixture implements FixtureGroupInterface
                 ->setEmail('redacteur@justice.gouv.fr')
                 ->setPrenom('Red')
                 ->setNom('Acteur')
-                ->setAdministration(Administration::MINISTERE_JUSTICE)
+                ->setAdministration($this->getAdministration(AdministrationType::MINISTERE_JUSTICE))
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_REDACTEUR, Agent::ROLE_AGENT_DOSSIER])
                 ->setUid('1234')
                 ->setValide(),
@@ -32,7 +44,7 @@ class AgentFixture extends Fixture implements FixtureGroupInterface
                 ->setEmail('validateur@justice.gouv.fr')
                 ->setPrenom('Walid')
                 ->setNom('Hateur')
-                ->setAdministration(Administration::MINISTERE_JUSTICE)
+                ->setAdministration($this->getAdministration(AdministrationType::MINISTERE_JUSTICE))
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_VALIDATEUR, Agent::ROLE_AGENT_DOSSIER])
                 ->setUid('551')->setValide(),
             'attributeur' => (new Agent())
@@ -40,7 +52,7 @@ class AgentFixture extends Fixture implements FixtureGroupInterface
                 ->setEmail('attributeur@justice.gouv.fr')
                 ->setPrenom('Hat')
                 ->setNom('Tributeur')
-                ->setAdministration(Administration::MINISTERE_JUSTICE)
+                ->setAdministration($this->getAdministration(AdministrationType::MINISTERE_JUSTICE))
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_ATTRIBUTEUR, Agent::ROLE_AGENT_DOSSIER])
                 ->setUid('7301')
                 ->setValide(),
@@ -49,7 +61,7 @@ class AgentFixture extends Fixture implements FixtureGroupInterface
                 ->setEmail('liaison@justice.gouv.fr')
                 ->setPrenom('Lison')
                 ->setNom('Bude-Jay')
-                ->setAdministration(Administration::MINISTERE_JUSTICE)
+                ->setAdministration($this->getAdministration(AdministrationType::MINISTERE_JUSTICE))
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_LIAISON_BUDGET])
                 ->setUid('119')
                 ->setValide(),
@@ -58,7 +70,7 @@ class AgentFixture extends Fixture implements FixtureGroupInterface
                 ->setEmail('gestion@justice.gouv.fr')
                 ->setPrenom('Jess')
                 ->setNom('Thion-Hajan')
-                ->setAdministration(Administration::MINISTERE_JUSTICE)
+                ->setAdministration($this->getAdministration(AdministrationType::MINISTERE_JUSTICE))
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_GESTION_PERSONNEL])
                 ->setUid('6540')
                 ->setValide(),
@@ -67,7 +79,7 @@ class AgentFixture extends Fixture implements FixtureGroupInterface
                 ->setEmail('betagouv@justice.gouv.fr')
                 ->setPrenom('Betta')
                 ->setNom('Gouve')
-                ->setAdministration(Administration::MINISTERE_JUSTICE)
+                ->setAdministration($this->getAdministration(AdministrationType::MINISTERE_JUSTICE))
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_BETAGOUV, Agent::ROLE_AGENT_DOSSIER])
                 ->setUid('1337')
                 ->setValide(),
@@ -76,14 +88,14 @@ class AgentFixture extends Fixture implements FixtureGroupInterface
                 ->setEmail('reda.k-theur@justice.gouv.fr')
                 ->setPrenom('Reda')
                 ->setNom("K'Theur")
-                ->setAdministration(Administration::MINISTERE_JUSTICE)
+                ->setAdministration($this->getAdministration(AdministrationType::MINISTERE_JUSTICE))
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_REDACTEUR, Agent::ROLE_AGENT_DOSSIER])
                 ->setUid('2345')
                 ->setValide(),
             'policier' => (new Agent())
                 ->setIdentifiant('e316bde4-3d37-4ed8-9001-c40d9b07fe06')
                 ->setEmail('policier@interieur.gouv.fr')
-                ->setAdministration(Administration::POLICE_NATIONALE)
+                ->setAdministration($this->getAdministration(AdministrationType::POLICE_NATIONALE))
                 ->setPrenom('Paul')
                 ->setNom('Issié')
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
@@ -92,7 +104,7 @@ class AgentFixture extends Fixture implements FixtureGroupInterface
             'gendarme' => (new Agent())
                 ->setIdentifiant('c7f94b68-89c9-4df4-ac44-1d127937dd63')
                 ->setEmail('gendarme@gendarmerie.interieur.gouv.fr')
-                ->setAdministration(Administration::GENDARMERIE_NATIONALE)
+                ->setAdministration($this->getAdministration(AdministrationType::GENDARMERIE_NATIONALE))
                 ->setPrenom('Jean')
                 ->setNom("d'Harme")
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])

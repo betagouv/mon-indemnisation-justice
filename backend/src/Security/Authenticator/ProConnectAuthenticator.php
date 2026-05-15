@@ -2,10 +2,10 @@
 
 namespace MonIndemnisationJustice\Security\Authenticator;
 
-use MonIndemnisationJustice\Entity\Administration;
+use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Repository\AdministrationRepository;
 use MonIndemnisationJustice\Repository\AgentRepository;
-use MonIndemnisationJustice\Repository\FournisseurIdentiteAgentRepository;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -29,7 +29,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
         #[Autowire(service: 'oidc_client_pro_connect')]
         protected readonly OidcClient $oidcClient,
         protected readonly AgentRepository $agentRepository,
-        protected readonly FournisseurIdentiteAgentRepository $fournisseurIdentiteAgentRepository,
+        protected readonly AdministrationRepository $administrationRepository,
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected readonly LoggerInterface $logger,
         /** @var array $autoPromotionHashes liste de _hashes_ d'adresses courriel pour lesquelles le rôle
@@ -59,42 +59,48 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
 
             // User info
             $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
-            $fournisseurIdentite = $this->fournisseurIdentiteAgentRepository->find($userInfo['idp_id']);
-            $autoPromotion = in_array(sha1($userInfo['email']), $this->autoPromotionHashes ?? []);
+            // Cas spécifiques aux agents de l'équipe Beta : bien que liés à une autre administration (DINUM https://annuaire-entreprises.data.gouv.fr/etablissement/13002526500013)
+            // si le sha1 de l'adresse courriel apparaît dans les listes des _hashes_ à auto-promouvoir, on les affecte
+            // directement au Ministère de la Justice
+            $estAutoPromuMJ = in_array(sha1($userInfo['email']), $this->autoPromotionHashes ?? []);
+            $administration = $estAutoPromuMJ ? $this->administrationRepository->find(AdministrationType::MINISTERE_JUSTICE) : $this->administrationRepository->findBySiret($userInfo['siret']);
+
+            if (null === $administration) {
+                throw new AuthenticationException("Cet espace est réservé aux agents des Forces de l'ordre ou du Ministère de la Justice");
+            }
 
             $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);
 
             if (null === $agent) {
-                if (null === $fournisseurIdentite?->getAdministration() && !$autoPromotion) {
-                    throw new AuthenticationException("Cet espace est réservé aux agents des Forces de l'ordre ou du Ministère de la Justice");
-                }
-
+                // Création de compte
                 $agent = ($this->agentRepository->findOneBy(['email' => $userInfo['email']]) ?? new Agent())
                     ->setIdentifiant($userInfo['sub'])
                     ->setEmail($userInfo['email'])
                     ->setPrenom($userInfo['given_name'])
                     ->setNom($userInfo['usual_name'])
+                    ->setAdministration($administration)
                     ->addRole(Agent::ROLE_AGENT)
                     ->setUid($userInfo['uid'])
                     ->setCree()
-                    ->setFournisseurIdentite($fournisseurIdentite)
                     ->setDonnesAuthentification($userInfo);
 
-                if ($autoPromotion) {
+                if ($estAutoPromuMJ) {
                     $agent
                         ->addRole(Agent::ROLE_AGENT_DOSSIER)
                         ->addRole(Agent::ROLE_AGENT_GESTION_PERSONNEL)
                         ->addRole(Agent::ROLE_AGENT_REDACTEUR)
                         ->addRole(Agent::ROLE_AGENT_BETAGOUV)
-                        ->setAdministration(Administration::MINISTERE_JUSTICE)
                         ->setValide();
                 }
             } else {
-                $agent->setEmail($userInfo['email'])
+                // Connexion à un compte déjà existant
+                $agent
+                    ->setAdministration($administration)
+                    ->setEmail($userInfo['email'])
                     ->setPrenom($userInfo['given_name'])
                     ->setNom($userInfo['usual_name']);
 
-                if ($autoPromotion) {
+                if ($estAutoPromuMJ) {
                     $agent->addRole(Agent::ROLE_AGENT_BETAGOUV);
                 }
 

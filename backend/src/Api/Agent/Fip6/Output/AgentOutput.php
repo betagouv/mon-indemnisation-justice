@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Output;
 
-use MonIndemnisationJustice\Entity\Administration;
+use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\Agent;
 
 class AgentOutput
@@ -13,7 +13,7 @@ class AgentOutput
         public readonly string $prenom,
         public readonly string $courriel,
         public readonly string $identifiant,
-        public readonly Administration $administration,
+        public readonly AdministrationType $administration,
         public readonly array $roles,
         public readonly ?\DateTimeImmutable $dateCreation = null,
     ) {
@@ -32,7 +32,7 @@ class AgentOutput
             prenom: $agent->getPrenom(),
             courriel: $agent->getEmail(),
             identifiant: $agent->getIdentifiant(),
-            administration: $agent->getAdministration(),
+            administration: $agent->getAdministration()->getType(),
             roles: $agent->getRoles(),
             dateCreation: $agent->getDateCreation(),
         );

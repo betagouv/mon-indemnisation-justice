@@ -37,8 +37,8 @@ class BrisPorte
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     protected ?string $descriptionRequerant;
 
-    #[ORM\Column(length: 2, nullable: true, enumType: TypeInstitutionSecuritePublique::class)]
-    protected ?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique = null;
+    #[ORM\Column(length: 2, nullable: true, enumType: AdministrationType::class)]
+    protected ?AdministrationType $typeAdministration = null;
 
     #[ORM\Column(length: 20, nullable: true, enumType: TypeAttestation::class)]
     protected ?TypeAttestation $typeAttestation = null;
@@ -125,14 +125,14 @@ class BrisPorte
         return $this;
     }
 
-    public function getTypeInstitutionSecuritePublique(): ?TypeInstitutionSecuritePublique
+    public function getTypeInstitutionSecuritePublique(): ?AdministrationType
     {
-        return $this->typeInstitutionSecuritePublique;
+        return $this->typeAdministration;
     }
 
-    public function setTypeInstitutionSecuritePublique(?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique): self
+    public function setTypeInstitutionSecuritePublique(?AdministrationType $typeAdministration): self
     {
-        $this->typeInstitutionSecuritePublique = $typeInstitutionSecuritePublique;
+        $this->typeAdministration = $typeAdministration;
 
         return $this;
     }
@@ -162,16 +162,16 @@ class BrisPorte
             fn (?TypeAttestation $cumul, TypeAttestation $typeAttestation) => $typeAttestation->getPrioritaire($cumul)
         );
 
-        $typeInstitutionSecuritePublique = current(array_filter(
+        $typeAdministration = current(array_filter(
             array_map(
-                fn (Document $document) => $document->getMetaDonneesAttestation()?->typeInstitutionSecuritePublique,
+                fn (Document $document) => $document->getMetaDonneesAttestation()?->typeAdministration,
                 $this->dossier->getDocumentsParType(DocumentType::TYPE_ATTESTATION_INFORMATION)
             ),
-            fn (?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique) => null !== $typeInstitutionSecuritePublique
+            fn (?AdministrationType $typeAdministration) => null !== $typeAdministration
         )) ?? null;
 
-        if (false !== $typeInstitutionSecuritePublique) {
-            $this->typeInstitutionSecuritePublique = $typeInstitutionSecuritePublique;
+        if (false !== $typeAdministration) {
+            $this->typeAdministration = $typeAdministration;
         }
     }
 

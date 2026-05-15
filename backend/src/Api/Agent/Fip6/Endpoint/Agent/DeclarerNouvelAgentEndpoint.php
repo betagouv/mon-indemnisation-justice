@@ -2,9 +2,11 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Agent;
 
+use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\AgentOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\AgentVoter;
-use MonIndemnisationJustice\Repository\AgentRepository;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Normalization\EntityResolveur;
+use MonIndemnisationJustice\Entity\Agent;
 use Ramsey\Uuid\Rfc4122\UuidV4;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,17 +27,18 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class DeclarerNouvelAgentEndpoint
 {
     public function __construct(
-        protected readonly AgentRepository $agentRepository,
+        protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
     ) {
     }
 
     public function __invoke(#[MapRequestPayload] EditerAgentInput $input)
     {
+        EntityResolveur::configurer($this->em);
         $agent = $input->versAgent()
             ->setIdentifiant(UuidV4::uuid1(time()));
 
-        $this->agentRepository->save($agent);
+        $this->em->getRepository(Agent::class)->save($agent);
 
         return new JsonResponse(
             $this->normalizer->normalize(

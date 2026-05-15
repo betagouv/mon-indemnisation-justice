@@ -3,18 +3,31 @@
 namespace MonIndemnisationJustice\Api\Agent\FDO\Output;
 
 use MonIndemnisationJustice\Entity\Agent;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 
-#[Map(source: Agent::class)]
-class AgentOutput
+readonly class AgentOutput
 {
-    public int $id;
-    public string $prenom;
-    public string $nom;
-    #[Map(source: 'email')]
-    public string $courriel;
-    public ?string $telephone = null;
-    public array $roles = [];
-    #[Map(source: 'administration.value')]
-    public string $administration;
+    public function __construct(
+        int $id,
+        string $prenom,
+        string $nom,
+        string $courriel,
+        string $administration,
+        ?string $telephone = null,
+        array $roles = [],
+    ) {
+
+    }
+
+    public static function depuisAgent(Agent $agent): self
+    {
+        return new self(
+            id: $agent->getId(),
+            prenom: $agent->getPrenom(),
+            nom: $agent->getNom(),
+            courriel: $agent->getEmail(),
+            administration: $agent->getAdministration()->getType()->value,
+            telephone: $agent->getTelephone(),
+            roles: $agent->getRoles()
+        );
+    }
 }

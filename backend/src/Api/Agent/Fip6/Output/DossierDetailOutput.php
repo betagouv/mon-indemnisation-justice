@@ -2,11 +2,11 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Output;
 
+use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TypeAttestation;
-use MonIndemnisationJustice\Entity\TypeInstitutionSecuritePublique;
 
 readonly class DossierDetailOutput extends BaseDossierOutput
 {
@@ -29,7 +29,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
         public ?string $descriptionRequerant,
         public ?string $notes,
         public ?\DateTimeImmutable $dateOperation,
-        public ?TypeInstitutionSecuritePublique $typeInstitutionSecuritePublique,
+        public ?AdministrationType $typeAdministration,
         public bool $estPorteBlindee = false,
         /** @var PieceJointeOutput[] */
         public array $documents = [],
@@ -66,7 +66,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
             descriptionRequerant: $dossier->getBrisPorte()->getDescriptionRequerant(),
             notes: $dossier->getNotes(),
             dateOperation: $dossier->getBrisPorte()->getDateOperation(),
-            typeInstitutionSecuritePublique: $dossier->getBrisPorte()->getTypeInstitutionSecuritePublique(),
+            typeAdministration: $dossier->getBrisPorte()->getTypeInstitutionSecuritePublique(),
             estPorteBlindee: $dossier->getBrisPorte()->estPorteBlindee(),
             documents: $dossier->getPiecesJointes()->map(fn (Document $document) => PieceJointeOutput::depuisDocument($document))->toArray(),
         );

@@ -2,92 +2,57 @@
 
 namespace MonIndemnisationJustice\Entity;
 
-enum Administration: string
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\AdministrationRepository;
+
+#[ORM\Entity(repositoryClass: AdministrationRepository::class)]
+#[ORM\Table(name: 'administrations')]
+class Administration
 {
-    case MINISTERE_JUSTICE = 'MJ';
-    case POLICE_NATIONALE = 'PN';
-    case PREFECTURE_DE_POLICE = 'PP';
-    case GENDARMERIE_NATIONALE = 'GN';
+    #[ORM\Id]
+    #[ORM\Column(name: 'code', type: 'string', length: '2', enumType: AdministrationType::class)]
+    protected AdministrationType $type;
 
-    public function estRattachee(array $domaines): bool
+    #[ORM\Column(name: 'siret', length: 14)]
+    protected string $siret;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    protected ?\DateTimeImmutable $dateIntegration = null;
+
+    public function getType(): AdministrationType
     {
-        return match ($this) {
-            self::MINISTERE_JUSTICE => in_array('justice.gouv.fr', $domaines),
-            self::POLICE_NATIONALE => in_array('interieur.gouv.fr', $domaines),
-            self::GENDARMERIE_NATIONALE => in_array('gendarmerie.interieur.gouv.fr', $domaines),
-        };
+        return $this->type;
     }
 
-    public function getLibelle(): string
+    public function setType(AdministrationType $type): Administration
     {
-        return match ($this) {
-            self::MINISTERE_JUSTICE => 'Ministère de la Justice',
-            self::POLICE_NATIONALE => 'Police Nationale',
-            self::GENDARMERIE_NATIONALE => 'Gendarmerie Nationale',
-        };
+        $this->type = $type;
+
+        return $this;
     }
 
-    public function estLibelleFeminin(): bool
+    public function getSiret(): string
     {
-        return match ($this) {
-            self::MINISTERE_JUSTICE => false,
-            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => true,
-        };
+        return $this->siret;
     }
 
-    public function getRolesEligibles(): array
+    public function setSiret(string $siret): Administration
     {
-        return match ($this) {
-            self::MINISTERE_JUSTICE => [
-                Agent::ROLE_AGENT_REDACTEUR,
-                Agent::ROLE_AGENT_DOSSIER,
-                Agent::ROLE_AGENT_ATTRIBUTEUR,
-                Agent::ROLE_AGENT_VALIDATEUR,
-                Agent::ROLE_AGENT_GESTION_PERSONNEL,
-                Agent::ROLE_AGENT_LIAISON_BUDGET,
-            ],
-            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
-        };
+        $this->siret = $siret;
+
+        return $this;
     }
 
-    /**
-     * Indique si un compte agent relié à cette administration est automatiquement validé. Et donc ne nécessité pas de
-     * validation de la part d'un agent disposant du rôle `ROLE_AGENT_GESTION_PERSONNEL`.
-     */
-    public function estAutoValide(): bool
+    public function getDateIntegration(): ?\DateTimeImmutable
     {
-        return !empty($this->getRolesAutomatiques());
+        return $this->dateIntegration;
     }
 
-    public function estFDO(): bool
+    public function setDateIntegration(\DateTimeImmutable $dateIntegration): Administration
     {
-        return self::POLICE_NATIONALE === $this || self::GENDARMERIE_NATIONALE === $this;
-    }
+        $this->dateIntegration = $dateIntegration;
 
-    public function estMinistereJustice(): bool
-    {
-        return self::MINISTERE_JUSTICE === $this;
-    }
-
-    /**
-     * Liste des rôles automatiquement octroyés à la première connexion.
-     */
-    public function getRolesAutomatiques(): array
-    {
-        return match ($this) {
-            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
-            default => [],
-        };
-    }
-
-    public static function fromDomaines(array $domaines): ?Administration
-    {
-        foreach (self::cases() as $administration) {
-            if ($administration->estRattachee($domaines)) {
-                return $administration;
-            }
-        }
-
-        return null;
+        return $this;
     }
 }

@@ -19,7 +19,7 @@ class DeclarationFDOBrisPorteOutputMapper
         $output = $mapper->map($declaration, DeclarationFDOBrisPorteOutput::class);
 
         // Le mapping récursif ne fonctionnant pas, on doit "sous-mapper“ ici
-        $output->agent = $mapper->map($declaration->getAgent(), AgentOutput::class);
+        $output->agent = AgentOutput::depuisAgent($declaration->getAgent());
         $output->adresse = $mapper->map($declaration->getAdresse(), AdresseOutput::class);
         $output->procedure = $mapper->map($declaration->getProcedure(), ProcedureJudiciaireOutput::class);
 
