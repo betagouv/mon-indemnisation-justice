@@ -67,7 +67,7 @@ enum AdministrationType: string
 
     public function estFDO(): bool
     {
-        return self::POLICE_NATIONALE === $this || self::GENDARMERIE_NATIONALE === $this;
+        return in_array($this, [self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE, self::PREFECTURE_DE_POLICE]);
     }
 
     public function estMinistereJustice(): bool
@@ -81,7 +81,7 @@ enum AdministrationType: string
     public function getRolesAutomatiques(): array
     {
         return match ($this) {
-            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
+            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE, self::PREFECTURE_DE_POLICE => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
             default => [],
         };
     }

@@ -1,8 +1,8 @@
 import { RouteurFDO } from "@/apps/agent/fdo/_init/_router.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Card from "@codegouvfr/react-dsfr/Card";
-import React from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import React from "react";
 
 export const Route = createFileRoute("/agent/fdo/")({
   component: RouteComponent,
@@ -44,6 +44,7 @@ function RouteComponent() {
                   onClick: () =>
                     naviguer({
                       to: "/agent/fdo/bris-de-porte/nouvelle-declaration",
+                      search: {} as any,
                     }),
                 },
               ]}

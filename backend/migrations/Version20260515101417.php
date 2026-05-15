@@ -37,6 +37,7 @@ SQL
 
         $this->addSql('DROP TABLE institutions_securite_publique');
         $this->addSql('ALTER TABLE agents ADD administration_code VARCHAR(2) DEFAULT NULL');
+        $this->addSql('UPDATE agents SET administration_code = SUBSTR(administration, 1, 2) WHERE length(administration) >= 2');
         $this->addSql('ALTER TABLE agents DROP administration');
         $this->addSql('ALTER TABLE agents DROP administration_siret');
         $this->addSql('ALTER TABLE agents ADD CONSTRAINT FK_9596AB6EFB4274AB FOREIGN KEY (administration_code) REFERENCES administrations (code) ON DELETE SET NULL NOT DEFERRABLE');

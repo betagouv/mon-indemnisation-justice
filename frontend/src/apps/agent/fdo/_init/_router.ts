@@ -1,9 +1,9 @@
+import { AgentContext } from "@/apps/agent/_commun/contexts";
+import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
+import * as Sentry from "@sentry/browser";
+import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "../routeur/routeur-fdo.gen.ts";
 import { container } from "./_container.ts";
-import { createRouter } from "@tanstack/react-router";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
-import { AgentContext } from "@/apps/agent/_commun/contexts";
-import * as Sentry from "@sentry/browser";
 
 // Création du router Tanstack
 
