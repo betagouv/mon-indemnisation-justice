@@ -1,11 +1,17 @@
+import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { Administration, Agent } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent";
-import { ServiceIdentifier } from "inversify";
 import { plainToInstance } from "class-transformer";
-import { AgentContext } from "@/apps/agent/_commun/contexts";
+import { ServiceIdentifier } from "inversify";
 
+export type Redacteur = {
+  id: number;
+  nom: string;
+};
 export interface AgentManagerInterface {
   moi(): Promise<AgentContext>;
+
+  redacteurs(): Promise<Redacteur[]>;
 
   // TODO: changer ça pour pouvoir patcher (utiliser Partial<{}>)
   editerAgent({
@@ -48,6 +54,14 @@ export class APIAgentManager implements AgentManagerInterface {
     }
 
     return this._contexteNavigation;
+  }
+
+  async redacteurs(): Promise<Redacteur[]> {
+    const reponse = await fetch("/api/agent/fip6/agents/redacteurs");
+
+    const data = await reponse.json();
+
+    return data as Redacteur[];
   }
 
   async editerAgent({

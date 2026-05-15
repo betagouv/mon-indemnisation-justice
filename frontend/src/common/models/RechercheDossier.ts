@@ -1,6 +1,7 @@
-import { EtatDossierType, Redacteur } from "@/common/models";
-import { action, computed, makeObservable, observable } from "mobx";
-import { parseInt } from "lodash";
+import {EtatDossierType} from "@/common/models";
+import {Redacteur} from "@/common/services/agent/agent.ts";
+import {parseInt} from "lodash";
+import {action, computed, makeObservable, observable} from "mobx";
 
 /**
  * Représente les critères de filtre sur la recherche de dossier en cours.
@@ -181,11 +182,7 @@ export class RechercheDossier {
     const query = new URLSearchParams(window.location.search);
 
     return new RechercheDossier(
-      query.has("a")
-        ? (query.get("a") || "")
-            .split("|")
-            .map((a) => (a == "_" ? null : Redacteur.resoudre(parseInt(a))))
-        : [],
+      [],
       query.has("e")
         ? (query.get("e") || "")
             .split("|")
