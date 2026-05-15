@@ -6,6 +6,7 @@ enum Administration: string
 {
     case MINISTERE_JUSTICE = 'MJ';
     case POLICE_NATIONALE = 'PN';
+    case PREFECTURE_DE_POLICE = 'PP';
     case GENDARMERIE_NATIONALE = 'GN';
 
     public function estRattachee(array $domaines): bool
