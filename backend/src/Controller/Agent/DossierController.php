@@ -55,8 +55,18 @@ class DossierController extends AgentController
     }
 
     #[Route('/dossiers', name: 'agent_redacteur_dossiers')]
-    public function dossiers(NormalizerInterface $normalizer): Response
+    public function dossiers(Request $request): Response
     {
+        /** @var Agent $agent */
+        $agent = $request->getUser();
+        $this->logger->warning("Consultation de l'ancienne route de la recherche dossier", [
+            'agent' => $agent?->getId(),
+        ]);
+
+        return $this->redirectToRoute('agent_fip6_react', ['extra' => 'dossiers']);
+
+
+        /*
         return $this->render('agent/dossier/recherche_dossiers.html.twig', [
             'react' => [
                 'agent' => [
@@ -72,6 +82,7 @@ class DossierController extends AgentController
                 ),
             ],
         ]);
+        */
     }
 
     #[Route('/dossier/{id}', name: 'agent_redacteur_consulter_dossier')]
