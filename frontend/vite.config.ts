@@ -39,6 +39,14 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         target: "react",
         autoCodeSplitting: true,
         generatedRouteTree:
+          "./src/apps/visiteur/routeur/routeur-visiteur.gen.ts",
+        routesDirectory: "./src/apps/visiteur/routes/",
+      }),
+      /** Here  */
+      tanstackRouter({
+        target: "react",
+        autoCodeSplitting: true,
+        generatedRouteTree:
           "./src/apps/requerant/routeur/routeur-requerant.gen.ts",
         routesDirectory: "./src/apps/requerant/routes/",
       }),
@@ -93,6 +101,8 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       // Voir https://rolldown.rs/reference/
       rolldownOptions: {
         input: {
+          // Espace visiteur
+          visiteur: "./src/apps/visiteur/visiteur.tsx",
           // Espace requérant
           "requerant/dossier/tester_mon_eligibilite":
             "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
@@ -101,9 +111,17 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
           requerant: "./src/apps/requerant/requerant.tsx",
           // Espace agent FIP6
           "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
+          "agent/dossiers/recherche":
+            "./src/apps/agent/fip6/dossiers/recherche_app.tsx",
+          "agent/dossiers/consulter":
+            "./src/apps/agent/fip6/dossiers/consultation_app.tsx",
           // Espace agent FDO
           "agent/fdo": path.join(__dirname, "./src/apps/agent/fdo/fdo.tsx"),
         },
+        output: {
+          manualChunks: {
+            models: ["@/common/models"],
+          },
       },
     },
     server: {
