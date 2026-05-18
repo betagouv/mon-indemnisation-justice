@@ -12,7 +12,7 @@ import {
   Redacteur,
   Requerant,
   TestEligibilite,
-  TypeInstitutionSecuritePublique,
+  TypeFDO,
 } from ".";
 
 export type TypeAttestation =
@@ -182,7 +182,7 @@ export class DossierDetail extends BaseDossier {
     Document.types.map((type: DocumentType) => [type.type, []]),
   );
 
-  public typeInstitutionSecuritePublique?: TypeInstitutionSecuritePublique;
+  public typeInstitutionSecuritePublique?: TypeFDO;
 
   constructor() {
     super();

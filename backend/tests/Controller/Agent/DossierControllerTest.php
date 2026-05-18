@@ -134,7 +134,7 @@ class DossierControllerTest extends WebTestCase
                     'typePersonneMorale' => $dossier->getRequerantPersonneMorale()?->getType()?->value,
                 ],
                 'typeAttestation' => null,
-                'typeInstitutionSecuritePublique' => null,
+                'typeAdministration' => null,
             ]
         );
 

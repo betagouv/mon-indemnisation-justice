@@ -73,8 +73,8 @@ const RaisonsCloture: Map<string, RaisonCloture> = new Map<
   [
     "abandon-en-instruction",
     {
-      libelle: "Dossier abandonné",
-      motif: "Doublon abandonné lors de l'instruction",
+      libelle: "Dossier incomplet",
+      motif: "Doublon incomplet",
       explication: [
         "Votre dossier sur Mon Indemnisation Justice est sans activité depuis 30 jours et est désormais clôturé automatiquement.",
         "Cela ne nécessite pas d'action de votre part.",

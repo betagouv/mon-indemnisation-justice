@@ -265,7 +265,7 @@ class Document
     {
         return new MetadonneesAttestation(
             typeAttestation: null !== ($typeAttestation = $this->getMetaDonnee('typeAttestation')) ? TypeAttestation::tryFrom($typeAttestation) : null,
-            typeInstitutionSecuritePublique: null !== ($typeInstitutionSecuritePublique = $this->getMetaDonnee('typeInstitutionSecuritePublique')) ? TypeInstitutionSecuritePublique::tryFrom($typeInstitutionSecuritePublique) : null
+            typeAdministration: null !== ($typeAdministration = $this->getMetaDonnee('typeAdministration')) ? AdministrationType::tryFrom($typeAdministration) : null
         );
     }
 
@@ -273,7 +273,7 @@ class Document
     {
         return $this->setMetaDonnees([
             'typeAttestation' => $metaDonnees->typeAttestation?->value ?? null,
-            'typeInstitutionSecuritePublique' => $metaDonnees->typeInstitutionSecuritePublique?->value ?? null,
+            'typeAdministration' => $metaDonnees->typeAdministration?->value ?? null,
         ], $merge);
     }
 

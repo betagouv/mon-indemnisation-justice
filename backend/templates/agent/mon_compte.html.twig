@@ -44,7 +44,7 @@
                                         Nom
                                     </label>
                                     <input id="mon-nom" class="fr-input" type="text" disabled
-                                           value="{{ app.user.nom }}">
+                                           value="{{ app.user.nom }}" />
                                 </div>
                             </div>
                             <div class="fr-fieldset__element">
@@ -80,7 +80,7 @@
                                 votre accès avec les permissions requises.
                             </p>
                             {% else %}
-                                {% if app.user.administration.value == 'PN' %}
+                                {% if app.user.administration.type.value == 'PN' %}
                                 <p>
                                     Vous êtes actuellement rattaché à la <b>Police Nationale</b>.
                                 </p>
@@ -89,7 +89,16 @@
                                     Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
                                     guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
                                 </p>
-                                {% elseif app.user.administration.value == 'GN' %}
+                                {% elseif app.user.administration.type.value == 'PP' %}
+                                <p>
+                                    Vous êtes actuellement rattaché à la <b>Préfecture de Police</b>.
+                                </p>
+
+                                <p>
+                                    Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
+                                    guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
+                                </p>
+                                {% elseif app.user.administration.type.value == 'GN' %}
                                 <p>
                                     Vous êtes actuellement rattaché à la <b>Gendarmerie Nationale</b>.
                                 </p>
@@ -98,7 +107,7 @@
                                     Vous pourrez bientôt retrouver ici les attestations à remettre aux usagers ainsi qu'un
                                     guide détaillant les bonnes pratiques à respecter en cas d'erreur de porte.
                                 </p>
-                                {% elseif app.user.administration.value == 'MJ' %}
+                                {% elseif app.user.administration.type.value == 'MJ' %}
                                     <p>
                                         Vous êtes actuellement rattaché au <b>Ministère de la Justice</b>.
                                     </p>

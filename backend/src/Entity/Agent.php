@@ -17,29 +17,29 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class Agent implements UserInterface
 {
     // Le role ROLE_AGENT est donné à chaque agent de la fonction publique
-    public const ROLE_AGENT = 'ROLE_AGENT';
-    public const ROLE_AGENT_BETAGOUV = 'ROLE_AGENT_BETAGOUV';
+    public const string ROLE_AGENT = 'ROLE_AGENT';
+    public const string ROLE_AGENT_BETAGOUV = 'ROLE_AGENT_BETAGOUV';
     // Le role ROLE_AGENT_DOSSIER permet de chercher et consulter un dossier
-    public const ROLE_AGENT_DOSSIER = 'ROLE_AGENT_DOSSIER';
+    public const string ROLE_AGENT_DOSSIER = 'ROLE_AGENT_DOSSIER';
 
     // Le role ROLE_AGENT_REDACTEUR est donné au rédacteur du pôle précontentieux
-    public const ROLE_AGENT_REDACTEUR = 'ROLE_AGENT_REDACTEUR';
+    public const string ROLE_AGENT_REDACTEUR = 'ROLE_AGENT_REDACTEUR';
     // Le rôle ROLE_AGENT_GESTION_PERSONNEL peut ajouter ou activer / désactiver un compte rédacteur
-    public const ROLE_AGENT_GESTION_PERSONNEL = 'ROLE_AGENT_GESTION_PERSONNEL';
+    public const string ROLE_AGENT_GESTION_PERSONNEL = 'ROLE_AGENT_GESTION_PERSONNEL';
 
     // Le rôle ROLE_AGENT_VALIDATEUR est donné à la cheffe du pôle précontentieux : elle valide la décision prise sur
     // un dossier d'indemnisation et signe la lettre qui l'officialise.
-    public const ROLE_AGENT_VALIDATEUR = 'ROLE_AGENT_VALIDATEUR';
+    public const string ROLE_AGENT_VALIDATEUR = 'ROLE_AGENT_VALIDATEUR';
 
-    public const ROLE_AGENT_ATTRIBUTEUR = 'ROLE_AGENT_ATTRIBUTEUR';
+    public const string ROLE_AGENT_ATTRIBUTEUR = 'ROLE_AGENT_ATTRIBUTEUR';
 
     // Le rôle ROLE_AGENT_LIAISON_BUDGET est attribué à l'agent en charge de la liaison avec le bureau du budget
     // (envoi de l'arrêté de paiement et autres documents légaux ainsi que notification des versements effectués).
-    public const ROLE_AGENT_LIAISON_BUDGET = 'ROLE_AGENT_LIAISON_BUDGET';
+    public const string ROLE_AGENT_LIAISON_BUDGET = 'ROLE_AGENT_LIAISON_BUDGET';
 
-    public const ROLE_AGENT_BUREAU_BUDGET = 'ROLE_AGENT_BUREAU_BUDGET';
+    public const string ROLE_AGENT_BUREAU_BUDGET = 'ROLE_AGENT_BUREAU_BUDGET';
 
-    public const ROLE_AGENT_FORCES_DE_L_ORDRE = 'ROLE_AGENT_FORCES_DE_L_ORDRE';
+    public const string ROLE_AGENT_FORCES_DE_L_ORDRE = 'ROLE_AGENT_FORCES_DE_L_ORDRE';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -64,11 +64,13 @@ class Agent implements UserInterface
     #[ORM\Column(length: 30)]
     protected string $prenom;
 
-    #[ORM\Column(type: 'string', nullable: true, enumType: Administration::class)]
+
+    #[ORM\ManyToOne(targetEntity: Administration::class, cascade: [])]
+    #[ORM\JoinColumn(name: 'administration_code', referencedColumnName: 'code', nullable: true, onDelete: 'SET NULL')]
     protected ?Administration $administration = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    protected ?string $donnesAuthentification;
+    protected ?string $donneesAuthentification;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     protected bool $estValide = false;
@@ -83,15 +85,6 @@ class Agent implements UserInterface
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
     /** @var Collection<Dossier> */
     protected Collection $dossiers;
-
-    /**
-     * Correspond à la propriété `idp_id` de ProConnect.
-     *
-     * La liste des organisations est définie ici https://grist.numerique.gouv.fr/o/docs/3kQ829mp7bTy/AgentConnect-Configuration-des-Fournisseurs-dIdentite
-     */
-    #[ORM\ManyToOne(targetEntity: FournisseurIdentiteAgent::class)]
-    #[ORM\JoinColumn(name: 'fournisseur_identite_uid', referencedColumnName: 'uid')]
-    protected ?FournisseurIdentiteAgent $fournisseurIdentite = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     protected ?\DateTimeImmutable $dateCreation = null;
@@ -130,24 +123,6 @@ class Agent implements UserInterface
         return $this;
     }
 
-    public function getFournisseurIdentite(): ?FournisseurIdentiteAgent
-    {
-        return $this->fournisseurIdentite;
-    }
-
-    public function setFournisseurIdentite(?FournisseurIdentiteAgent $fournisseurIdentite): Agent
-    {
-        if (null !== $fournisseurIdentite) {
-            $this->fournisseurIdentite = $fournisseurIdentite;
-
-            if ($this->fournisseurIdentite->getAdministration()) {
-                $this->setAdministration($this->fournisseurIdentite->getAdministration());
-            }
-        }
-
-        return $this;
-    }
-
     public function getEmail(): string
     {
         return $this->email;
@@ -168,6 +143,18 @@ class Agent implements UserInterface
     public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getSiret(): ?string
+    {
+        return $this->siret;
+    }
+
+    public function setSiret(?string $siret): static
+    {
+        $this->siret = $siret;
 
         return $this;
     }
@@ -195,7 +182,7 @@ class Agent implements UserInterface
             return null;
         }
 
-        if (Administration::MINISTERE_JUSTICE !== $this->administration) {
+        if (AdministrationType::MINISTERE_JUSTICE !== $this->administration) {
             return "Forces de l'ordre";
         }
 
@@ -314,25 +301,25 @@ class Agent implements UserInterface
 
     public function estFDO(): bool
     {
-        return $this->administration->estFDO();
+        return $this->administration->getType()->estFDO();
     }
 
     public function estMinistereJustice(): bool
     {
-        return $this->administration->estMinistereJustice();
+        return $this->administration->getType()->estMinistereJustice();
     }
 
-    public function setAdministration(?Administration $administration): Agent
+    public function setAdministration(Administration $administration): Agent
     {
-        if (null !== $administration) {
-            $this->administration = $administration;
 
-            foreach ($this->administration->getRolesAutomatiques() as $role) {
-                $this->addRole($role);
-            }
+        $this->administration = $administration;
 
-            $this->setValide($this->administration->estAutoValide());
+        foreach ($this->administration->getType()->getRolesAutomatiques() as $role) {
+            $this->addRole($role);
         }
+
+        $this->setValide($this->administration->getType()->estAutoValide());
+
 
         return $this;
     }

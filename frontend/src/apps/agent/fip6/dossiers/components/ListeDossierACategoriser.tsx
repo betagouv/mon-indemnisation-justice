@@ -2,7 +2,7 @@ import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consulta
 import {
   Document,
   InstitutionSecuritePublique,
-  TypeInstitutionSecuritePublique,
+  TypeFDO,
 } from "@/common/models";
 import { MetaDonneesAttestation } from "@/common/models/Document.ts";
 import { TypeAttestation } from "@/common/models/Dossier.ts";
@@ -29,7 +29,7 @@ export function FormulaireCategorisationAttestation({
 }) {
   const [metaDonnees, setMetaDonnees] = useState<MetaDonneesAttestation>({
     typeAttestation: undefined,
-    typeInstitutionSecuritePublique: undefined,
+    typeAdministration: undefined,
     ...(pieceJointe.metaDonnees as MetaDonneesAttestation),
     dateOperation: dateOperation,
   });
@@ -49,8 +49,7 @@ export function FormulaireCategorisationAttestation({
           },
           body: JSON.stringify({
             typeAttestation: metaDonnees.typeAttestation,
-            typeInstitutionSecuritePublique:
-              metaDonnees.typeInstitutionSecuritePublique,
+            typeAdministration: metaDonnees.typeAdministration,
             ...(metaDonnees.dateOperation
               ? { dateOperation: metaDonnees.dateOperation }
               : {}),
@@ -63,7 +62,7 @@ export function FormulaireCategorisationAttestation({
         setSauvegardeEnCours(false);
         setMetaDonnees({
           typeAttestation: undefined,
-          typeInstitutionSecuritePublique: undefined,
+          typeAdministration: undefined,
         });
         suivant();
       }
@@ -121,13 +120,11 @@ export function FormulaireCategorisationAttestation({
           label="Type de forces de l'ordre"
           className="fr-col-12"
           nativeSelectProps={{
-            value: metaDonnees.typeInstitutionSecuritePublique || "",
+            value: metaDonnees.typeAdministration || "",
             onChange: (event) => {
               setMetaDonnees({
                 ...metaDonnees,
-                typeInstitutionSecuritePublique:
-                  (event.target.value as TypeInstitutionSecuritePublique) ||
-                  null,
+                typeAdministration: (event.target.value as TypeFDO) || null,
               });
             },
           }}

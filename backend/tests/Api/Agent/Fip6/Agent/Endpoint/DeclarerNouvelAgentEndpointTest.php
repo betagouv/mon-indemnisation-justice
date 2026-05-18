@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Agent\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Agent\DeclarerNouvelAgentEndpoint;
-use MonIndemnisationJustice\Entity\Administration;
+use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -23,7 +23,7 @@ class DeclarerNouvelAgentEndpointTest extends AbstractEndpointTestCase
             'prenom' => 'Pau',
             'nom' => 'Lee-Sillez',
             'courriel' => 'pau.lee-sillez@interieur.gouv.fr',
-            'administration' => Administration::POLICE_NATIONALE->value,
+            'administration' => AdministrationType::POLICE_NATIONALE->value,
             'roles' => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
         ]);
 
