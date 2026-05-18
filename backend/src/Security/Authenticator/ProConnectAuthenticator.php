@@ -83,7 +83,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
                     ->addRole(Agent::ROLE_AGENT)
                     ->setUid($userInfo['uid'])
                     ->setCree()
-                    ->setDonnesAuthentification($userInfo);
+                    ->setDonneesAuthentification($userInfo);
 
                 if ($estAutoPromuMJ) {
                     $agent
@@ -109,10 +109,10 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
                 // supplémentaires https://partenaires.proconnect.gouv.fr/docs/fournisseur-service/custom-scope
                 if (
                     isset($userInfo['custom'])
-                    && null !== ($donneesAuthentification = $agent->getDonnesAuthentification())
+                    && null !== ($donneesAuthentification = $agent->getDonneesAuthentification())
                     && !isset($donneesAuthentification['custom'])
                 ) {
-                    $agent->setDonnesAuthentification(
+                    $agent->setDonneesAuthentification(
                         array_merge(
                             $donneesAuthentification,
                             $userInfo
