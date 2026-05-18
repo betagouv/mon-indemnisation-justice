@@ -36,6 +36,14 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         target: "react",
         autoCodeSplitting: true,
         generatedRouteTree:
+          "./src/apps/visiteur/routeur/routeur-visiteur.gen.ts",
+        routesDirectory: "./src/apps/visiteur/routes/",
+      }),
+      /** Here  */
+      tanstackRouter({
+        target: "react",
+        autoCodeSplitting: true,
+        generatedRouteTree:
           "./src/apps/requerant/routeur/routeur-requerant.gen.ts",
         routesDirectory: "./src/apps/requerant/routes/",
       }),
@@ -70,6 +78,8 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
         input: {
           ...{
+            // Espace visiteur
+            visiteur: "./src/apps/visiteur/visiteur.tsx",
             // Espace requérant
             "requerant/dossier/tester_mon_eligibilite":
               "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
