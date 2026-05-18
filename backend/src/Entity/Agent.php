@@ -350,13 +350,13 @@ class Agent implements UserInterface
 
     public function getDonnesAuthentification(): ?array
     {
-        return $this->donnesAuthentification ? json_decode($this->donnesAuthentification, true) : null;
+        return $this->donneesAuthentification ? json_decode($this->donneesAuthentification, true) : null;
     }
 
-    public function setDonnesAuthentification(array|string|null $donnesAuthentification): Agent
+    public function setDonneesAuthentification(array|string|null $donneesAuthentification): Agent
     {
-        if (null !== $donnesAuthentification) {
-            $this->donnesAuthentification = (is_array($donnesAuthentification) ? (json_encode($donnesAuthentification) ?? '') : $donnesAuthentification);
+        if (null !== $donneesAuthentification) {
+            $this->donneesAuthentification = (is_array($donneesAuthentification) ? (json_encode($donneesAuthentification) ?? '') : $donneesAuthentification);
         }
 
         return $this;
