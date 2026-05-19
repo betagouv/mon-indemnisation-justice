@@ -8,7 +8,7 @@ use MonIndemnisationJustice\Entity\TestEligibilite;
 class TestEligibiliteOutput
 {
     public function __construct(
-        public RapportAuLogement $rapportAuLogement,
+        public ?RapportAuLogement $rapportAuLogement,
         public bool $estVise,
         public ?bool $estHebergeant = null,
         public ?bool $aContacteAssurance = null,
