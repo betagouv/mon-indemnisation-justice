@@ -17,7 +17,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import Pagination from "@codegouvfr/react-dsfr/Pagination";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { plainToInstance } from "class-transformer";
 import _ from "lodash";
 import React, { useMemo, useState } from "react";
@@ -449,10 +449,12 @@ function RouteComponent() {
 
                                       <td className="fr-col-1">
                                         <div className="fr-btns-group fr-btns-group--right">
-                                          <a
+                                          <Link
                                             className="fr-btn fr-btn--tertiary fr-icon-eye-line fr-btn--sm"
-                                            href={`/agent/redacteur/dossier/${dossier.id}`}
-                                          ></a>
+                                            from={Route.fullPath}
+                                            to={"/agent/fip6/dossier/$id"}
+                                            params={{ id: dossier.id }}
+                                          ></Link>
                                         </div>
                                       </td>
                                     </tr>

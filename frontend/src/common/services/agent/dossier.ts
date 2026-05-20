@@ -1,8 +1,10 @@
-import { BaseDossier, Document, DocumentType } from "@/common/models";
-import { ServiceIdentifier } from "inversify";
+import { BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
 import { plainToInstance } from "class-transformer";
+import { ServiceIdentifier } from "inversify";
 
 export interface DossierManagerInterface {
+  consulter(id: number): Promise<DossierDetail>;
+
   ajouterPieceJointe(
     dossier: BaseDossier,
     type: DocumentType,
@@ -17,6 +19,18 @@ export namespace DossierManagerInterface {
 }
 
 export class APIDossierManager implements DossierManagerInterface {
+  async consulter(id: number): Promise<DossierDetail> {
+    const reponse = await fetch(`/api/agent/fip6/dossier/${id}`);
+
+    if (!reponse.ok) {
+      throw new Error(`Failed to fetch dossier: ${reponse.status}`);
+    }
+
+    const data = await reponse.json();
+
+    return plainToInstance(DossierDetail, data);
+  }
+
   async ajouterPieceJointe(
     dossier: BaseDossier,
     type: DocumentType,

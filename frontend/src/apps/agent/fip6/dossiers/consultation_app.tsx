@@ -6,7 +6,7 @@ import "@/style/agents.css";
 
 import { ConsultationDossierApp } from "@/apps/agent/fip6/dossiers/components/ConsultationDossierApp.tsx";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools.js";
-import { Agent, DossierDetail, Redacteur } from "@/common/models";
+import { Agent, DossierDetail } from "@/common/models";
 import { container } from "@/common/services/agent";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
@@ -33,8 +33,6 @@ if (import.meta.env.PROD) {
 const args = JSON.parse(
   document.getElementById("react-arguments")?.textContent ?? "",
 );
-
-Redacteur.charger(args.redacteurs ?? []);
 
 const agent = plainToInstance(Agent, args.agent);
 
