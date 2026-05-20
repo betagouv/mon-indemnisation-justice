@@ -16,7 +16,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
         EtatDossierOutput $etat,
         ?\DateTimeImmutable $dateDepot,
         ?string $montantIndemnisation,
-        ?int $redacteur,
+        ?RedacteurOutput $redacteur,
         ?TypeAttestation $typeAttestation,
         // TODO renommer en front également
         ?RapportAuLogement $qualiteRequerant,
@@ -55,7 +55,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
             etat: EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()),
             dateDepot: $dossier->getDateDepot(),
             montantIndemnisation: $dossier->getMontantIndemnisation(),
-            redacteur: $dossier->getRedacteur()?->getId(),
+            redacteur: $dossier->getRedacteur() ? RedacteurOutput::depuisAgent($dossier->getRedacteur()) : null,
             typeAttestation: $dossier->getBrisPorte()->getTypeAttestation(),
             qualiteRequerant: $dossier->getBrisPorte()->getRapportAuLogement(),
             estEligible: $dossier->getBrisPorte()->getTestEligibilite()?->estEligible(),
