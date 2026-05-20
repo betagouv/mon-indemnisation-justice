@@ -2,7 +2,7 @@
 
 {% import "email/_macros.twig" as email %}
 
-{% set consultation_url = url('agent_redacteur_consulter_dossier', {'id': dossier.id, '_fragment': 'courrier'}) %}
+{% set consultation_url = url('agent_fip6_react', {'extra': 'dossier/' ~ dossier.id, '_fragment': 'courrier'}) %}
 
 {% block subject %}Dossier {{ dossier.reference }}: {% if dossier.usager.estFeminin() %}la requérante{% else %}le requérant{% endif %} a approuvé l'indemnisation{% endblock subject %}
 
