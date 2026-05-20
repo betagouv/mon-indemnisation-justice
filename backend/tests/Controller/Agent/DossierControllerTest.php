@@ -31,7 +31,7 @@ class DossierControllerTest extends WebTestCase
 
         $this->client->loginUser($agent, 'agent');
 
-        // Visite de la page de détail du dossier pour le rédacteur (route "agent_redacteur_consulter_dossier", DossierController::consulterDossier)
+        // TODO: tester la route API à la place
         $this->client->request('GET', "/agent/redacteur/dossier/{$dossier->getId()}");
 
         $reactArguments = json_decode($this->client->getCrawler()->filter('#react-arguments')->first()->text(), true);

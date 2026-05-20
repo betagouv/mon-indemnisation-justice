@@ -48,6 +48,10 @@ class Adresse
 
     public function getLibelle(): string
     {
+        if (empty($this->getLigne1()) && empty($this->getCodePostal()) && empty($this->getLocalite())) {
+            return '';
+        }
+
         return "{$this->getLigne1()} {$this->getCodePostal()} {$this->getLocalite()}";
     }
 

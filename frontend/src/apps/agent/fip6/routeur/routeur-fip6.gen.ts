@@ -20,6 +20,7 @@ import { Route as AgentFip6DossiersAInstruireRouteImport } from './../routes/dos
 import { Route as AgentFip6DossiersACategoriserRouteImport } from './../routes/dossiers/a-categoriser'
 import { Route as AgentFip6DossiersAAttribuerRouteImport } from './../routes/dossiers/a-attribuer'
 import { Route as AgentFip6AgentsGestionRouteImport } from './../routes/agents/gestion'
+import { Route as AgentFip6DossierIdIndexRouteImport } from './../routes/dossier/$id/index'
 
 const AgentFip6DossiersIndexRoute = AgentFip6DossiersIndexRouteImport.update({
   id: '/agent/fip6/dossiers/',
@@ -85,6 +86,11 @@ const AgentFip6AgentsGestionRoute = AgentFip6AgentsGestionRouteImport.update({
   path: '/agent/fip6/agents/gestion',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentFip6DossierIdIndexRoute = AgentFip6DossierIdIndexRouteImport.update({
+  id: '/agent/fip6/dossier/$id/',
+  path: '/agent/fip6/dossier/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/agent/fip6/agents/gestion': typeof AgentFip6AgentsGestionRoute
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/agent/fip6/dossiers/proposition-a-signer': typeof AgentFip6DossiersPropositionASignerRoute
   '/agent/fip6/dossiers/rejet-a-signer': typeof AgentFip6DossiersRejetASignerRoute
   '/agent/fip6/dossiers': typeof AgentFip6DossiersIndexRoute
+  '/agent/fip6/dossier/$id': typeof AgentFip6DossierIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/agent/fip6/agents/gestion': typeof AgentFip6AgentsGestionRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/agent/fip6/dossiers/proposition-a-signer': typeof AgentFip6DossiersPropositionASignerRoute
   '/agent/fip6/dossiers/rejet-a-signer': typeof AgentFip6DossiersRejetASignerRoute
   '/agent/fip6/dossiers': typeof AgentFip6DossiersIndexRoute
+  '/agent/fip6/dossier/$id': typeof AgentFip6DossierIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/agent/fip6/dossiers/proposition-a-signer': typeof AgentFip6DossiersPropositionASignerRoute
   '/agent/fip6/dossiers/rejet-a-signer': typeof AgentFip6DossiersRejetASignerRoute
   '/agent/fip6/dossiers/': typeof AgentFip6DossiersIndexRoute
+  '/agent/fip6/dossier/$id/': typeof AgentFip6DossierIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/agent/fip6/dossiers/proposition-a-signer'
     | '/agent/fip6/dossiers/rejet-a-signer'
     | '/agent/fip6/dossiers'
+    | '/agent/fip6/dossier/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/agent/fip6/agents/gestion'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/agent/fip6/dossiers/proposition-a-signer'
     | '/agent/fip6/dossiers/rejet-a-signer'
     | '/agent/fip6/dossiers'
+    | '/agent/fip6/dossier/$id'
   id:
     | '__root__'
     | '/agent/fip6/agents/gestion'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/agent/fip6/dossiers/proposition-a-signer'
     | '/agent/fip6/dossiers/rejet-a-signer'
     | '/agent/fip6/dossiers/'
+    | '/agent/fip6/dossier/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -180,6 +192,7 @@ export interface RootRouteChildren {
   AgentFip6DossiersPropositionASignerRoute: typeof AgentFip6DossiersPropositionASignerRoute
   AgentFip6DossiersRejetASignerRoute: typeof AgentFip6DossiersRejetASignerRoute
   AgentFip6DossiersIndexRoute: typeof AgentFip6DossiersIndexRoute
+  AgentFip6DossierIdIndexRoute: typeof AgentFip6DossierIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -261,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentFip6AgentsGestionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agent/fip6/dossier/$id/': {
+      id: '/agent/fip6/dossier/$id/'
+      path: '/agent/fip6/dossier/$id'
+      fullPath: '/agent/fip6/dossier/$id'
+      preLoaderRoute: typeof AgentFip6DossierIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -278,6 +298,7 @@ const rootRouteChildren: RootRouteChildren = {
     AgentFip6DossiersPropositionASignerRoute,
   AgentFip6DossiersRejetASignerRoute: AgentFip6DossiersRejetASignerRoute,
   AgentFip6DossiersIndexRoute: AgentFip6DossiersIndexRoute,
+  AgentFip6DossierIdIndexRoute: AgentFip6DossierIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
