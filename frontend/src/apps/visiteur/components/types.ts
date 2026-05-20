@@ -36,6 +36,7 @@ export type ReponsesEligibilite = {
 
 export type StepProps = {
   reponses: ReponsesEligibilite;
-  set: <K extends keyof ReponsesEligibilite>(key: K, val: ReponsesEligibilite[K]) => void;
-  togglePiece: (val: PieceProcedure) => void;
+  onPrecedent: () => void;
+  onSuivant: (valeurs: Partial<ReponsesEligibilite>) => void;
+  isLastStep: boolean;
 };

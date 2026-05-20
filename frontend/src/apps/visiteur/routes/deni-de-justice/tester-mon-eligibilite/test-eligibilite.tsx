@@ -8,7 +8,7 @@ function TestEligibiliteRoute() {
   return (
     <TestEligibilite
       onPrecedent={() => navigate({ to: "/deni-de-justice/tester-mon-eligibilite/" })}
-      onCommencer={() => navigate({ to: "/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite" })}
+      onCommencer={() => navigate({ to: "/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/1" as any })}
     />
   );
 }

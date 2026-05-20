@@ -13,6 +13,7 @@ import { Route as DeniDeJusticeTesterMonEligibiliteIndexRouteImport } from './..
 import { Route as DeniDeJusticeTesterMonEligibiliteTestEligibiliteRouteImport } from './../routes/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
 import { Route as DeniDeJusticeTesterMonEligibiliteResultatRouteImport } from './../routes/deni-de-justice/tester-mon-eligibilite/resultat'
 import { Route as DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteImport } from './../routes/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
+import { Route as DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRouteImport } from './../routes/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape'
 
 const DeniDeJusticeTesterMonEligibiliteIndexRoute =
   DeniDeJusticeTesterMonEligibiliteIndexRouteImport.update({
@@ -38,25 +39,35 @@ const DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute =
     path: '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRoute =
+  DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRouteImport.update({
+    id: '/$etape',
+    path: '/$etape',
+    getParentRoute: () =>
+      DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute
+  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteWithChildren
   '/deni-de-justice/tester-mon-eligibilite/resultat': typeof DeniDeJusticeTesterMonEligibiliteResultatRoute
   '/deni-de-justice/tester-mon-eligibilite/test-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute
   '/deni-de-justice/tester-mon-eligibilite/': typeof DeniDeJusticeTesterMonEligibiliteIndexRoute
+  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRoute
 }
 export interface FileRoutesByTo {
-  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute
+  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteWithChildren
   '/deni-de-justice/tester-mon-eligibilite/resultat': typeof DeniDeJusticeTesterMonEligibiliteResultatRoute
   '/deni-de-justice/tester-mon-eligibilite/test-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute
   '/deni-de-justice/tester-mon-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteIndexRoute
+  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute
+  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteWithChildren
   '/deni-de-justice/tester-mon-eligibilite/resultat': typeof DeniDeJusticeTesterMonEligibiliteResultatRoute
   '/deni-de-justice/tester-mon-eligibilite/test-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute
   '/deni-de-justice/tester-mon-eligibilite/': typeof DeniDeJusticeTesterMonEligibiliteIndexRoute
+  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -65,22 +76,25 @@ export interface FileRouteTypes {
     | '/deni-de-justice/tester-mon-eligibilite/resultat'
     | '/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
     | '/deni-de-justice/tester-mon-eligibilite/'
+    | '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
     | '/deni-de-justice/tester-mon-eligibilite/resultat'
     | '/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
     | '/deni-de-justice/tester-mon-eligibilite'
+    | '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape'
   id:
     | '__root__'
     | '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
     | '/deni-de-justice/tester-mon-eligibilite/resultat'
     | '/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
     | '/deni-de-justice/tester-mon-eligibilite/'
+    | '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute: typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute
+  DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute: typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteWithChildren
   DeniDeJusticeTesterMonEligibiliteResultatRoute: typeof DeniDeJusticeTesterMonEligibiliteResultatRoute
   DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute: typeof DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute
   DeniDeJusticeTesterMonEligibiliteIndexRoute: typeof DeniDeJusticeTesterMonEligibiliteIndexRoute
@@ -116,12 +130,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape': {
+      id: '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape'
+      path: '/$etape'
+      fullPath: '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape'
+      preLoaderRoute: typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRouteImport
+      parentRoute: typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute
+    }
   }
 }
 
+interface DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteChildren {
+  DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRoute: typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRoute
+}
+
+const DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteChildren: DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteChildren =
+  {
+    DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRoute:
+      DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteEtapeRoute,
+  }
+
+const DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteWithChildren =
+  DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute._addFileChildren(
+    DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute:
-    DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute,
+    DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteWithChildren,
   DeniDeJusticeTesterMonEligibiliteResultatRoute:
     DeniDeJusticeTesterMonEligibiliteResultatRoute,
   DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute:
