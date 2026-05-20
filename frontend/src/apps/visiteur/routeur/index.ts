@@ -12,10 +12,10 @@ const RouteurVisiteur = createRouter({
 
 // Paths valides de l'app visiteur — sert à typer useVisiteurNavigate
 export type VisiteurPath =
-  | "/visiteur/"
-  | "/visiteur/test-eligibilite"
-  | "/visiteur/etapes-eligibilite"
-  | "/visiteur/resultat";
+  | "/deni-de-justice/tester-mon-eligibilite/"
+  | "/deni-de-justice/tester-mon-eligibilite/test-eligibilite"
+  | "/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite"
+  | "/deni-de-justice/tester-mon-eligibilite/resultat";
 
 // Le routeur visiteur n'est pas enregistré dans le Register global de TanStack Router
 // (le routeur requerant y est déjà). Sans enregistrement, les search params sont inférés
