@@ -5,7 +5,6 @@ namespace MonIndemnisationJustice\Controller\Agent;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\UnableToReadFile;
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierApercuOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierDetailOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
@@ -216,57 +215,6 @@ class DossierController extends AgentController
         return new JsonResponse([
             'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
         ], Response::HTTP_OK);
-    }
-
-    #[Route('/dossiers.json', name: 'agent_redacteur_dossiers_json', methods: ['GET'])]
-    public function dossiersJson(Request $request, NormalizerInterface $normalizer): Response
-    {
-        $taille = 20;
-        $page = $request->query->getInt('p', 1);
-        $paginator = $this->dossierRepository->rechercheDossiers(
-            page: $page,
-            taille: $taille,
-            etats: $request->query->has('e')
-                ? array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e'))
-                : [
-                    // EtatDossierType::DOSSIER_CLOTURE,
-                    // EtatDossierType::DOSSIER_A_FINALISER,
-                    EtatDossierType::DOSSIER_A_ATTRIBUER,
-                    EtatDossierType::DOSSIER_A_INSTRUIRE,
-                    EtatDossierType::DOSSIER_EN_INSTRUCTION,
-                    EtatDossierType::DOSSIER_OK_A_SIGNER,
-                    EtatDossierType::DOSSIER_OK_A_APPROUVER,
-                    EtatDossierType::DOSSIER_OK_A_VERIFIER,
-                    EtatDossierType::DOSSIER_OK_A_INDEMNISER,
-                    EtatDossierType::DOSSIER_OK_INDEMNISE,
-                    EtatDossierType::DOSSIER_KO_A_SIGNER,
-                    EtatDossierType::DOSSIER_KO_REJETE,
-                ],
-            attributaires: count($ids = array_filter(
-                self::extraireCritereRecherche($request, 'a'),
-                fn ($a) => is_numeric($a)
-            )) > 0 ? $this->agentRepository->findBy(['id' => $ids]) : [],
-            filtres: self::extraireCritereRecherche($request, 'r'),
-            nonAttribue: in_array('_', self::extraireCritereRecherche($request, 'a'))
-        );
-
-
-        return new JsonResponse(
-            [
-                'page' => $page,
-                'taille' => $taille,
-                'total' => $paginator->count(),
-                'resultats' => $normalizer->normalize(
-                    array_map(
-                        fn (Dossier $dossier) => DossierApercuOutput::creerDepuisDossier($dossier),
-                        iterator_to_array(
-                            $paginator->getIterator()
-                        ) ?? [],
-                    ),
-                    'json'
-                ),
-            ]
-        );
     }
 
     #[Route('/dossier/{id}/annoter.json', name: 'agent_redacteur_annoter_dossier', methods: ['POST'])]
