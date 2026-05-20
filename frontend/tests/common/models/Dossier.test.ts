@@ -4,11 +4,12 @@ import "reflect-metadata";
 import { plainToInstance } from "class-transformer";
 import { expect, test } from "vitest";
 
-Redacteur.charger([{ id: 3, nom: "Red ACTEUR" }]);
-
 test("désérialisation du dossier", () => {
   const dossier = plainToInstance(DossierApercu, {
-    redacteur: 3,
+    redacteur: {
+      id: 3,
+      nom: "Red ACTEUR",
+    },
   });
   expect(dossier).toBeInstanceOf(DossierApercu);
   expect(dossier.redacteur).toBeInstanceOf(Redacteur);
