@@ -1,7 +1,11 @@
-import { Input } from "@codegouvfr/react-dsfr/Input";
+import React from "react";
+import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 import { calculerPrescription } from "../eligibilite.utils";
+import { SchemaEtapeDateDecision } from "../formulaires/eligibilite.schemas";
 import type { StepProps } from "../types";
+import { NavButtons } from "./NavButtons";
 
 const ReferenceJuridique = (
   <div
@@ -16,19 +20,31 @@ const ReferenceJuridique = (
   </div>
 );
 
-const ExemplePrescription = (
-  <div className="fr-callout fr-mb-3w">
-    <p className="fr-text--sm fr-mb-0">
-      Décision rendue le 15 mars 2021 → délai du 1er janvier 2022 au 31 décembre 2025. Au
-      1er janvier 2026, l'action est prescrite.
-    </p>
-  </div>
-);
+function ExemplePrescription() {
+  const annee = new Date().getFullYear() - 3;
+  return (
+    <div className="fr-callout fr-mb-3w">
+      <p className="fr-text--sm fr-mb-0">
+        Décision rendue le 15 mars {annee} → délai du 1er janvier {annee + 1} au 31 décembre{" "}
+        {annee + 4}. Au 1er janvier {annee + 5}, l'action est prescrite.
+      </p>
+    </div>
+  );
+}
 
-export function StepDateDecision({ reponses, set }: StepProps) {
-  const prescription = reponses.dateDecision
-    ? calculerPrescription(reponses.dateDecision)
-    : null;
+export function StepDateDecision({ reponses, onPrecedent, onSuivant, isLastStep }: StepProps) {
+  const formulaire = useForm({
+    validators: { onSubmit: SchemaEtapeDateDecision },
+    defaultValues: { dateDecision: reponses.dateDecision ?? "" },
+    onSubmit: async ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        onSuivant({ dateDecision: value.dateDecision });
+      }
+    },
+  });
+
+  const dateDecision = useStore(formulaire.store, (state) => state.values.dateDecision);
+  const prescription = dateDecision ? calculerPrescription(dateDecision) : null;
 
   return (
     <>
@@ -37,32 +53,44 @@ export function StepDateDecision({ reponses, set }: StepProps) {
         l'année suivant celle de la décision pour agir.
       </p>
       {ReferenceJuridique}
-      {ExemplePrescription}
-      <div style={{ width: "25%" }}>
-        <Input
-          label="Date de la décision"
-          hintText="Indiquez la date de la dernière décision de justice rendue dans votre affaire."
-          nativeInputProps={{
-            type: "date",
-            value: reponses.dateDecision ?? "",
-            onChange: (e) => set("dateDecision", e.target.value || undefined),
-          }}
-        />
-      </div>
-      {prescription && (
-        <Alert
-          className="fr-mt-2w"
-          severity={prescription.rempli ? "success" : "error"}
-          title={prescription.rempli ? "Vous êtes dans les délais" : "Critère non rempli"}
-          description={
-            prescription.rempli
-              ? `Votre demande est recevable jusqu'au ${prescription.expiration?.toLocaleDateString("fr-FR")}.`
-              : prescription.expiration
-                ? `Votre demande est prescrite depuis le ${prescription.expiration.toLocaleDateString("fr-FR")}. L'action en responsabilité de l'État ne peut plus être engagée passé le délai de 4 ans.`
-                : "Date invalide. Veuillez vérifier la date saisie."
-          }
-        />
-      )}
+      <ExemplePrescription />
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          formulaire.validate("submit");
+          await formulaire.handleSubmit();
+        }}
+      >
+        <div className="fr-grid-row">
+          <div className="fr-col-12 fr-col-lg-3">
+            <formulaire.Field
+              name="dateDecision"
+              children={(field) => (
+                <FormInput
+                  label="Date de la décision"
+                  hintText="Indiquez la date de la dernière décision de justice rendue dans votre affaire."
+                  champ={field}
+                  nativeInputProps={{
+                    type: "date",
+                    value: field.state.value,
+                    onChange: (e) => field.handleChange(e.target.value),
+                  }}
+                />
+              )}
+            />
+          </div>
+        </div>
+        {prescription?.rempli && (
+          <Alert
+            className="fr-mt-2w"
+            severity="success"
+            title="Vous êtes dans les délais"
+            description={`Votre demande est recevable jusqu'au ${prescription.expiration?.toLocaleDateString("fr-FR")}.`}
+          />
+        )}
+        <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} />
+      </form>
     </>
   );
 }
