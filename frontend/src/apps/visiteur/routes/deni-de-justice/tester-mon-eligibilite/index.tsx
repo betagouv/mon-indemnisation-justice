@@ -6,10 +6,12 @@ import * as React from "react";
 function AccueilVisiteur() {
   const navigate = useVisiteurNavigate();
   return (
-    <DeclarerDeniDeJustice onNext={() => navigate({ to: "/visiteur/test-eligibilite" })} />
+    <DeclarerDeniDeJustice
+      onNext={() => navigate({ to: "/deni-de-justice/tester-mon-eligibilite/test-eligibilite" })}
+    />
   );
 }
 
-export const Route = createFileRoute("/visiteur/")({
+export const Route = createFileRoute("/deni-de-justice/tester-mon-eligibilite/")({
   component: AccueilVisiteur,
 });
