@@ -64,25 +64,6 @@ class DossierController extends AgentController
         ]);
 
         return $this->redirectToRoute('agent_fip6_react', ['extra' => 'dossiers']);
-
-
-        /*
-        return $this->render('agent/dossier/recherche_dossiers.html.twig', [
-            'react' => [
-                'agent' => [
-                    'id' => $this->getAgent()->getId(),
-                    'roles' => $this->getAgent()->getRoles(),
-                ],
-                'redacteurs' => array_map(
-                    fn (Agent $redacteur) => [
-                        'id' => $redacteur->getId(),
-                        'nom' => $redacteur->getNomComplet(capital: true),
-                    ],
-                    $this->agentRepository->getRedacteurs(),
-                ),
-            ],
-        ]);
-        */
     }
 
     #[Route('/dossier/{id}', name: 'agent_redacteur_consulter_dossier')]

@@ -55,10 +55,10 @@ class RechercherDossiersInput
      */
     public function attributaires(): array
     {
-        return EntityResolveur::resoudreListe(Agent::class, array_filter(
+        return EntityResolveur::resoudreListe(Agent::class, ['id' => array_filter(
             self::extraireCritereRecherche($this->a),
             fn ($a) => is_numeric($a)
-        ));
+        )]);
     }
 
     public function nonAttribue(): bool
