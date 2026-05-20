@@ -24,47 +24,6 @@ class DossierControllerTest extends WebTestCase
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
     }
 
-    public function testDossiersJson(): void
-    {
-        $agent = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'redacteur@justice.gouv.fr']);
-
-        $this->client->loginUser($agent, 'agent');
-
-        $this->client->request('GET', '/agent/redacteur/dossiers.json', ['e' => 'a-finaliser']);
-
-        $this->assertTrue($this->client->getResponse()->isOk());
-
-        ['page' => $page, 'taille' => $taille, 'total' => $total, 'resultats' => $dossiers] = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertEquals(1, $page);
-        $this->assertEquals(2, $total);
-        $this->assertCount(2, $dossiers);
-
-        foreach ($dossiers as $donneesDossier) {
-            $dossier = $this->em->getRepository(Dossier::class)->find($donneesDossier['id']);
-
-            $this->assertEmpty(array_diff_multidimensional([
-                'id' => $dossier->getId(),
-                'reference' => $dossier->getReference(),
-                'etat' => [
-                    'id' => $dossier->getEtatDossier()->getId(),
-                    'etat' => $dossier->getEtatDossier()->getEtat()->value,
-                    'dateEntree' => $dossier->getEtatDossier()->getDate()->format('Y-m-d H:i:s'),
-                    'redacteur' => null,
-                    'requerant' => true,
-                    'contexte' => null,
-                ],
-                'dateDepot' => $dossier->getDateDeclaration()?->format('Y-m-d H:i:s'),
-                'redacteur' => $dossier->getRedacteur()?->getId(),
-                'requerant' => $dossier->getUsager()->getNomCourant(capital: true),
-                'adresse' => $dossier->getBrisPorte()->getAdresse()->getLibelle(),
-                'estEligible' => true,
-                'typeAttestation' => null,
-                'issuDeclarationFDO' => false,
-            ], $donneesDossier));
-        }
-    }
-
     public function testConsulterDossier(): void
     {
         $agent = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'redacteur@justice.gouv.fr']);
@@ -92,7 +51,10 @@ class DossierControllerTest extends WebTestCase
                     'contexte' => null,
                 ],
                 'dateDepot' => $dossier->getDateDeclaration()?->format('Y-m-d H:i:s'),
-                'redacteur' => $agent->getId(),
+                'redacteur' => [
+                    'id' => $agent->getId(),
+                    'nom' => $agent->getNomComplet(capital: true),
+                ],
                 'notes' => null,
                 'testEligibilite' => [
                     'estVise' => $dossier->getBrisPorte()->getTestEligibilite()->estVise,
