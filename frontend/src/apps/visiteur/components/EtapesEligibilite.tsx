@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "./Layout";
-import { PieceProcedure, type ReponsesEligibilite } from "./types";
-import { STEPS, NavButtons } from "./steps";
+import { type ReponsesEligibilite } from "./types";
+import { STEPS } from "./steps";
 
 export type { ReponsesEligibilite } from "./types";
 
@@ -19,25 +19,16 @@ export const EtapesEligibilite = ({ onPrecedent, onTerminer }: Props) => {
   const [etape, setEtape] = useState(1);
   const [reponses, setReponses] = useState<ReponsesEligibilite>({ piecesProc: [] });
 
-  const set = <K extends keyof ReponsesEligibilite>(key: K, val: ReponsesEligibilite[K]) =>
-    setReponses((prev) => ({ ...prev, [key]: val }));
-
-  const togglePiece = (val: PieceProcedure) =>
-    setReponses((prev) => ({
-      ...prev,
-      piecesProc: prev.piecesProc.includes(val)
-        ? prev.piecesProc.filter((v) => v !== val)
-        : [...prev.piecesProc, val],
-    }));
+  const suivant = (partial: Partial<ReponsesEligibilite>) => {
+    const nouvellesReponses = { ...reponses, ...partial };
+    setReponses(nouvellesReponses);
+    if (etape < STEP_COUNT) setEtape((e) => e + 1);
+    else onTerminer(nouvellesReponses);
+  };
 
   const precedent = () => {
     if (etape === 1) onPrecedent();
     else setEtape((e) => e - 1);
-  };
-
-  const suivant = () => {
-    if (etape < STEP_COUNT) setEtape((e) => e + 1);
-    else onTerminer(reponses);
   };
 
   const step = STEPS[etape - 1];
@@ -68,11 +59,10 @@ export const EtapesEligibilite = ({ onPrecedent, onTerminer }: Props) => {
         title={step.title}
         nextTitle={etape < STEP_COUNT ? STEPS[etape].title : undefined}
       />
-      <StepComponent reponses={reponses} set={set} togglePiece={togglePiece} />
-      <NavButtons
+      <StepComponent
+        reponses={reponses}
         onPrecedent={precedent}
         onSuivant={suivant}
-        canContinue={step.canContinue(reponses)}
         isLastStep={etape === STEP_COUNT}
       />
     </Layout>

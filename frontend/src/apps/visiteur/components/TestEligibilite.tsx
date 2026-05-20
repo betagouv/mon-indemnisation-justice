@@ -5,7 +5,7 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Layout } from "./Layout";
-import { TOTAL_STEPS } from "./EtapesEligibilite";
+import { TOTAL_STEPS } from "./steps";
 
 type Props = {
   onPrecedent: () => void;
