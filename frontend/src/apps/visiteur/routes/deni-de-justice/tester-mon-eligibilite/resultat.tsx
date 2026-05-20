@@ -10,7 +10,7 @@ function ResultatEligibiliteRoute() {
 
   React.useEffect(() => {
     if (!reponses) {
-      navigate({ to: "/visiteur/test-eligibilite" });
+      navigate({ to: "/deni-de-justice/tester-mon-eligibilite/test-eligibilite" });
     }
   }, [reponses, navigate]);
 
@@ -19,15 +19,15 @@ function ResultatEligibiliteRoute() {
   return (
     <ResultatEligibilite
       reponses={reponses}
-      onRecommencer={() => navigate({ to: "/visiteur/test-eligibilite" })}
+      onRecommencer={() => navigate({ to: "/deni-de-justice/tester-mon-eligibilite/test-eligibilite" })}
       onDeposerDossier={() => {
         window.location.href = REQUERANT_URL;
       }}
-      onPrecedent={() => navigate({ to: "/visiteur/" })}
+      onPrecedent={() => navigate({ to: "/deni-de-justice/tester-mon-eligibilite/" })}
     />
   );
 }
 
-export const Route = createFileRoute("/visiteur/resultat")({
+export const Route = createFileRoute("/deni-de-justice/tester-mon-eligibilite/resultat")({
   component: ResultatEligibiliteRoute,
 });

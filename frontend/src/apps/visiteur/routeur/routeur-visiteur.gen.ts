@@ -9,118 +9,125 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './../routes/__root'
-import { Route as VisiteurIndexRouteImport } from './../routes/visiteur/index'
-import { Route as VisiteurTestEligibiliteRouteImport } from './../routes/visiteur/test-eligibilite'
-import { Route as VisiteurResultatRouteImport } from './../routes/visiteur/resultat'
-import { Route as VisiteurEtapesEligibiliteRouteImport } from './../routes/visiteur/etapes-eligibilite'
+import { Route as DeniDeJusticeTesterMonEligibiliteIndexRouteImport } from './../routes/deni-de-justice/tester-mon-eligibilite/index'
+import { Route as DeniDeJusticeTesterMonEligibiliteTestEligibiliteRouteImport } from './../routes/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
+import { Route as DeniDeJusticeTesterMonEligibiliteResultatRouteImport } from './../routes/deni-de-justice/tester-mon-eligibilite/resultat'
+import { Route as DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteImport } from './../routes/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
 
-const VisiteurIndexRoute = VisiteurIndexRouteImport.update({
-  id: '/visiteur/',
-  path: '/visiteur/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VisiteurTestEligibiliteRoute = VisiteurTestEligibiliteRouteImport.update({
-  id: '/visiteur/test-eligibilite',
-  path: '/visiteur/test-eligibilite',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VisiteurResultatRoute = VisiteurResultatRouteImport.update({
-  id: '/visiteur/resultat',
-  path: '/visiteur/resultat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VisiteurEtapesEligibiliteRoute =
-  VisiteurEtapesEligibiliteRouteImport.update({
-    id: '/visiteur/etapes-eligibilite',
-    path: '/visiteur/etapes-eligibilite',
+const DeniDeJusticeTesterMonEligibiliteIndexRoute =
+  DeniDeJusticeTesterMonEligibiliteIndexRouteImport.update({
+    id: '/deni-de-justice/tester-mon-eligibilite/',
+    path: '/deni-de-justice/tester-mon-eligibilite/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute =
+  DeniDeJusticeTesterMonEligibiliteTestEligibiliteRouteImport.update({
+    id: '/deni-de-justice/tester-mon-eligibilite/test-eligibilite',
+    path: '/deni-de-justice/tester-mon-eligibilite/test-eligibilite',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DeniDeJusticeTesterMonEligibiliteResultatRoute =
+  DeniDeJusticeTesterMonEligibiliteResultatRouteImport.update({
+    id: '/deni-de-justice/tester-mon-eligibilite/resultat',
+    path: '/deni-de-justice/tester-mon-eligibilite/resultat',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute =
+  DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteImport.update({
+    id: '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite',
+    path: '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite',
     getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/visiteur/etapes-eligibilite': typeof VisiteurEtapesEligibiliteRoute
-  '/visiteur/resultat': typeof VisiteurResultatRoute
-  '/visiteur/test-eligibilite': typeof VisiteurTestEligibiliteRoute
-  '/visiteur': typeof VisiteurIndexRoute
+  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute
+  '/deni-de-justice/tester-mon-eligibilite/resultat': typeof DeniDeJusticeTesterMonEligibiliteResultatRoute
+  '/deni-de-justice/tester-mon-eligibilite/test-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute
+  '/deni-de-justice/tester-mon-eligibilite/': typeof DeniDeJusticeTesterMonEligibiliteIndexRoute
 }
 export interface FileRoutesByTo {
-  '/visiteur/etapes-eligibilite': typeof VisiteurEtapesEligibiliteRoute
-  '/visiteur/resultat': typeof VisiteurResultatRoute
-  '/visiteur/test-eligibilite': typeof VisiteurTestEligibiliteRoute
-  '/visiteur': typeof VisiteurIndexRoute
+  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute
+  '/deni-de-justice/tester-mon-eligibilite/resultat': typeof DeniDeJusticeTesterMonEligibiliteResultatRoute
+  '/deni-de-justice/tester-mon-eligibilite/test-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute
+  '/deni-de-justice/tester-mon-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/visiteur/etapes-eligibilite': typeof VisiteurEtapesEligibiliteRoute
-  '/visiteur/resultat': typeof VisiteurResultatRoute
-  '/visiteur/test-eligibilite': typeof VisiteurTestEligibiliteRoute
-  '/visiteur/': typeof VisiteurIndexRoute
+  '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute
+  '/deni-de-justice/tester-mon-eligibilite/resultat': typeof DeniDeJusticeTesterMonEligibiliteResultatRoute
+  '/deni-de-justice/tester-mon-eligibilite/test-eligibilite': typeof DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute
+  '/deni-de-justice/tester-mon-eligibilite/': typeof DeniDeJusticeTesterMonEligibiliteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/visiteur/etapes-eligibilite'
-    | '/visiteur/resultat'
-    | '/visiteur/test-eligibilite'
-    | '/visiteur'
+    | '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
+    | '/deni-de-justice/tester-mon-eligibilite/resultat'
+    | '/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
+    | '/deni-de-justice/tester-mon-eligibilite/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/visiteur/etapes-eligibilite'
-    | '/visiteur/resultat'
-    | '/visiteur/test-eligibilite'
-    | '/visiteur'
+    | '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
+    | '/deni-de-justice/tester-mon-eligibilite/resultat'
+    | '/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
+    | '/deni-de-justice/tester-mon-eligibilite'
   id:
     | '__root__'
-    | '/visiteur/etapes-eligibilite'
-    | '/visiteur/resultat'
-    | '/visiteur/test-eligibilite'
-    | '/visiteur/'
+    | '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
+    | '/deni-de-justice/tester-mon-eligibilite/resultat'
+    | '/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
+    | '/deni-de-justice/tester-mon-eligibilite/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  VisiteurEtapesEligibiliteRoute: typeof VisiteurEtapesEligibiliteRoute
-  VisiteurResultatRoute: typeof VisiteurResultatRoute
-  VisiteurTestEligibiliteRoute: typeof VisiteurTestEligibiliteRoute
-  VisiteurIndexRoute: typeof VisiteurIndexRoute
+  DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute: typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute
+  DeniDeJusticeTesterMonEligibiliteResultatRoute: typeof DeniDeJusticeTesterMonEligibiliteResultatRoute
+  DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute: typeof DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute
+  DeniDeJusticeTesterMonEligibiliteIndexRoute: typeof DeniDeJusticeTesterMonEligibiliteIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/visiteur/': {
-      id: '/visiteur/'
-      path: '/visiteur'
-      fullPath: '/visiteur'
-      preLoaderRoute: typeof VisiteurIndexRouteImport
+    '/deni-de-justice/tester-mon-eligibilite/': {
+      id: '/deni-de-justice/tester-mon-eligibilite/'
+      path: '/deni-de-justice/tester-mon-eligibilite'
+      fullPath: '/deni-de-justice/tester-mon-eligibilite/'
+      preLoaderRoute: typeof DeniDeJusticeTesterMonEligibiliteIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/visiteur/test-eligibilite': {
-      id: '/visiteur/test-eligibilite'
-      path: '/visiteur/test-eligibilite'
-      fullPath: '/visiteur/test-eligibilite'
-      preLoaderRoute: typeof VisiteurTestEligibiliteRouteImport
+    '/deni-de-justice/tester-mon-eligibilite/test-eligibilite': {
+      id: '/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
+      path: '/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
+      fullPath: '/deni-de-justice/tester-mon-eligibilite/test-eligibilite'
+      preLoaderRoute: typeof DeniDeJusticeTesterMonEligibiliteTestEligibiliteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/visiteur/resultat': {
-      id: '/visiteur/resultat'
-      path: '/visiteur/resultat'
-      fullPath: '/visiteur/resultat'
-      preLoaderRoute: typeof VisiteurResultatRouteImport
+    '/deni-de-justice/tester-mon-eligibilite/resultat': {
+      id: '/deni-de-justice/tester-mon-eligibilite/resultat'
+      path: '/deni-de-justice/tester-mon-eligibilite/resultat'
+      fullPath: '/deni-de-justice/tester-mon-eligibilite/resultat'
+      preLoaderRoute: typeof DeniDeJusticeTesterMonEligibiliteResultatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/visiteur/etapes-eligibilite': {
-      id: '/visiteur/etapes-eligibilite'
-      path: '/visiteur/etapes-eligibilite'
-      fullPath: '/visiteur/etapes-eligibilite'
-      preLoaderRoute: typeof VisiteurEtapesEligibiliteRouteImport
+    '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite': {
+      id: '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
+      path: '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
+      fullPath: '/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite'
+      preLoaderRoute: typeof DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  VisiteurEtapesEligibiliteRoute: VisiteurEtapesEligibiliteRoute,
-  VisiteurResultatRoute: VisiteurResultatRoute,
-  VisiteurTestEligibiliteRoute: VisiteurTestEligibiliteRoute,
-  VisiteurIndexRoute: VisiteurIndexRoute,
+  DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute:
+    DeniDeJusticeTesterMonEligibiliteEtapesEligibiliteRoute,
+  DeniDeJusticeTesterMonEligibiliteResultatRoute:
+    DeniDeJusticeTesterMonEligibiliteResultatRoute,
+  DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute:
+    DeniDeJusticeTesterMonEligibiliteTestEligibiliteRoute,
+  DeniDeJusticeTesterMonEligibiliteIndexRoute:
+    DeniDeJusticeTesterMonEligibiliteIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

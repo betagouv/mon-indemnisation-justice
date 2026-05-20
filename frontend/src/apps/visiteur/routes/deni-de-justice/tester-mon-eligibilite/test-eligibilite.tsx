@@ -7,12 +7,12 @@ function TestEligibiliteRoute() {
   const navigate = useVisiteurNavigate();
   return (
     <TestEligibilite
-      onPrecedent={() => navigate({ to: "/visiteur/" })}
-      onCommencer={() => navigate({ to: "/visiteur/etapes-eligibilite" })}
+      onPrecedent={() => navigate({ to: "/deni-de-justice/tester-mon-eligibilite/" })}
+      onCommencer={() => navigate({ to: "/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite" })}
     />
   );
 }
 
-export const Route = createFileRoute("/visiteur/test-eligibilite")({
+export const Route = createFileRoute("/deni-de-justice/tester-mon-eligibilite/test-eligibilite")({
   component: TestEligibiliteRoute,
 });
