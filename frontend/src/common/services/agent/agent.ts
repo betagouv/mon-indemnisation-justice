@@ -1,13 +1,9 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { Administration, Agent } from "@/common/models";
+import { Administration, Agent, Redacteur } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
-export type Redacteur = {
-  id: number;
-  nom: string;
-};
 export interface AgentManagerInterface {
   moi(): Promise<AgentContext>;
 

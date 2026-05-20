@@ -2,8 +2,13 @@ import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { container } from "@/apps/agent/fdo/_init";
 import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
 import { Loader } from "@/common/composants/Loader.tsx";
-import { Agent, DossierApercu, EtatDossierType } from "@/common/models";
-import { AgentManagerInterface, Redacteur } from "@/common/services/agent/agent.ts";
+import {
+  Agent,
+  DossierApercu,
+  EtatDossierType,
+  Redacteur,
+} from "@/common/models";
+import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import { dateEtHeureSimple, periode } from "@/common/services/date.ts";
 import "@/style/agents.css";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
@@ -15,7 +20,63 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { plainToInstance } from "class-transformer";
 import _ from "lodash";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
+
+type RechercheRequete = {
+  etatsDossier: EtatDossierType[];
+  attributaires: Redacteur[];
+  inclureDossierNonAttribue: boolean;
+  // Recherche textuelle libre
+  recherche: string;
+  page: number;
+};
+
+/**
+ * Convertit une requête de recherche en paramètres d'URL, en excluant les valeurs non définies.
+ *
+ * @param requete RechercheRequete
+ *
+ * @returns Record<string, string>
+ */
+const requeteVersParametres = (
+  requete: RechercheRequete,
+): Record<string, string> => {
+  return Object.fromEntries(
+    Object.entries({
+      p: requete.page.toString(),
+      a:
+        requete.attributaires.length > 0
+          ? requete.attributaires.map((a) => a.id).join("|")
+          : undefined,
+      e: requete.etatsDossier.length
+        ? requete.etatsDossier.map((e: EtatDossierType) => e.slug).join("|")
+        : undefined,
+      r: !!requete.recherche ? requete.recherche : undefined,
+    })
+      .filter(([_, value]) => typeof value === "string")
+      .map(([key, value]) => [key, value as string]),
+  );
+};
+
+/**
+ * Convertit une requête de recherche en requête GET.
+ *
+ * @param requete RechercheRequete
+ *
+ * @returns string
+ */
+const requeteVersUrl = (requete: RechercheRequete): string => {
+  return Object.entries(requeteVersParametres(requete))
+    .map(([key, value]) => `${key}=${value}`)
+    .join("&");
+};
+
+type RechercheReponse = {
+  resultats: DossierApercu[];
+  taille: number;
+  total: number;
+  page: number;
+};
 
 export const Route = createFileRoute("/agent/fip6/dossiers/")({
   loader: async ({ context }: { context: AgentContext }) => ({
@@ -51,39 +112,8 @@ export const Route = createFileRoute("/agent/fip6/dossiers/")({
   component: RouteComponent,
 });
 
-type RechercheRequete = {
-  etatsDossier: EtatDossierType[];
-  attributaires: Redacteur[];
-  inclureDossierNonAttribue: boolean;
-  motsClefs: string;
-  page: number;
-};
-
-const requeteVersUrl = (requete: RechercheRequete): string => {
-  return Object.entries({
-    p: requete.page.toString(),
-    a:
-      requete.attributaires.length > 0
-        ? requete.attributaires.map((a) => a.id).join("|")
-        : undefined,
-    e: requete.etatsDossier.length
-      ? requete.etatsDossier.map((e: EtatDossierType) => e.slug).join("|")
-      : undefined,
-    r: !!requete.motsClefs ? requete.motsClefs : undefined,
-  })
-    .filter(([_, value]) => value !== undefined)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-};
-
-type RechercheReponse = {
-  resultats: DossierApercu[];
-  taille: number;
-  total: number;
-  page: number;
-};
-
 function RouteComponent() {
+  // Fonction de navigation à partir de cette route
   const naviguer = useNavigate({
     from: Route.fullPath,
   });
@@ -105,6 +135,7 @@ function RouteComponent() {
     r?: string;
   } = Route.useSearch();
 
+  // L'état de la requête de recherche de dossiers, calculée à partir des paramères GET
   const requete: RechercheRequete = useMemo<RechercheRequete>(() => {
     const etats = e?.split("|");
     const attributaires = a?.split("|").map((id) => parseInt(id));
@@ -132,35 +163,12 @@ function RouteComponent() {
           )
         : [],
       inclureDossierNonAttribue: !!a?.split("|").find((v) => v === "_"),
-      motsClefs: r ?? "",
+      recherche: r ?? "",
       page: p,
     };
   }, [p, e, a, r]);
 
-  const construireParametres = useCallback(
-    ({
-      p,
-      e,
-      a,
-      r,
-    }: {
-      p?: number;
-      e?: EtatDossierType[];
-      a?: Redacteur[];
-      r?: string;
-    }) => ({
-      p: p ?? requete.page,
-      e: (e || requete.etatsDossier).map((e) => e.slug).join("|"),
-      a: (a || requete.attributaires)
-        .map((a) => a.id.toString())
-        .concat(...(requete.inclureDossierNonAttribue ? ["_"] : []))
-        .join("|"),
-      r: r || requete.motsClefs,
-    }),
-    // TODO filtrer les paramètres "vides" pour les retirer de l'URL
-    [requete],
-  );
-
+  //
   const [afficherCriteres, setAfficherCriteres] = useState(false);
 
   //const queryClient = useQueryClient();
@@ -205,23 +213,14 @@ function RouteComponent() {
                   nativeInputProps={{
                     type: "search",
                     placeholder: "Paul, 75001 PARIS, GARNIER, ...",
-                    defaultValue: requete.motsClefs,
-                    onChange: _.debounce((e) => {
-                      naviguer({
+                    defaultValue: requete.recherche,
+                    onChange: _.debounce(async (e) => {
+                      await naviguer({
                         to: Route.fullPath,
-                        search: {
-                          p: requete.page.toString(),
-                          a: requete.attributaires
-                            .map((a) => a.id.toString())
-                            .concat(
-                              ...(requete.inclureDossierNonAttribue
-                                ? ["_"]
-                                : []),
-                            )
-                            .join("|"),
-                          e: requete.etatsDossier.map((e) => e.slug).join("|"),
-                          r: e.target.value,
-                        } as any,
+                        search: requeteVersParametres({
+                          ...requete,
+                          recherche: e.target.value as string,
+                        }) as any,
                       });
                     }, 500),
                   }}
@@ -236,13 +235,14 @@ function RouteComponent() {
                   nativeSelectProps={{
                     multiple: true,
                     size: EtatDossierType.liste.length,
-                    defaultValue: requete.etatsDossier.map((etat) => etat.id),
+                    defaultValue: requete.etatsDossier.map((etat) => etat.slug),
 
                     onChange: async (event) => {
                       await naviguer({
                         to: Route.fullPath,
-                        search: construireParametres({
-                          e: requete.etatsDossier.filter((e) =>
+                        search: requeteVersParametres({
+                          ...requete,
+                          etatsDossier: EtatDossierType.liste.filter((e) =>
                             Array.from(event.target.selectedOptions)
                               .map((option) => option.value)
                               .includes(e.slug),
@@ -273,7 +273,15 @@ function RouteComponent() {
                       ),
                       nativeInputProps: {
                         value: "",
-                        onChange: (e) => console.log(e.target.value),
+                        onChange: async (e) => {
+                          await naviguer({
+                            to: Route.fullPath,
+                            search: requeteVersParametres({
+                              ...requete,
+                              inclureDossierNonAttribue: e.target.checked,
+                            }) as any,
+                          });
+                        },
                         checked: requete.inclureDossierNonAttribue,
                       },
                     },
@@ -281,8 +289,19 @@ function RouteComponent() {
                       label:
                         agent.id === redacteur.id ? <b>Moi</b> : redacteur.nom,
                       nativeInputProps: {
-                        onChange: (event) =>
-                          console.log(redacteur.id, event.target.checked),
+                        onChange: async (e) => {
+                          await naviguer({
+                            to: Route.fullPath,
+                            search: requeteVersParametres({
+                              ...requete,
+                              attributaires: requete.attributaires
+                                .filter((a) => a.id !== redacteur.id)
+                                .concat(
+                                  ...(e.target.checked ? [redacteur] : []),
+                                ),
+                            }) as any,
+                          });
+                        },
                         checked: requete.attributaires.includes(redacteur),
                       },
                     })),
@@ -317,7 +336,10 @@ function RouteComponent() {
                     getPageLinkProps={(pageNumber: number) => ({
                       from: Route.fullPath,
                       to: Route.fullPath,
-                      search: construireParametres({ p: pageNumber }),
+                      search: requeteVersParametres({
+                        ...requete,
+                        page: pageNumber,
+                      }),
                       "aria-current":
                         requete.page === pageNumber ? "true" : undefined,
                     })}
@@ -462,7 +484,10 @@ function RouteComponent() {
                     getPageLinkProps={(pageNumber: number) => ({
                       from: Route.fullPath,
                       to: Route.fullPath,
-                      search: construireParametres({ p: pageNumber }),
+                      search: requeteVersParametres({
+                        ...requete,
+                        page: pageNumber,
+                      }),
                       "aria-current":
                         requete.page === pageNumber ? "true" : undefined,
                     })}
