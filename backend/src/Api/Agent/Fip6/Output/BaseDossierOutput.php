@@ -18,7 +18,7 @@ readonly class BaseDossierOutput
         public EtatDossierOutput $etat,
         ?\DateTimeImmutable $dateDepot,
         public ?string $montantIndemnisation,
-        public ?int $redacteur,
+        public ?RedacteurOutput $redacteur,
         public ?TypeAttestation $typeAttestation,
         // TODO renommer en front également
         public ?RapportAuLogement $qualiteRequerant,

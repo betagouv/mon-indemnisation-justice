@@ -175,8 +175,9 @@ export class EtatDossier implements EtatInterface {
     return value instanceof Date ? value : new Date(value);
   })
   public readonly dateEntree: Date;
-  @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
-  public readonly redacteur: Redacteur | null = null;
+  @Type(() => Redacteur)
+  @Expose()
+  public readonly redacteur?: Redacteur;
   @Expose()
   @Type(() => Requerant)
   public readonly requerant: boolean;

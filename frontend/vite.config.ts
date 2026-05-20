@@ -78,8 +78,6 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
             requerant: "./src/apps/requerant/requerant.tsx",
             // Espace agent FIP6
             "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
-            "agent/dossiers/recherche":
-              "./src/apps/agent/fip6/dossiers/recherche_app.tsx",
             "agent/dossiers/consulter":
               "./src/apps/agent/fip6/dossiers/consultation_app.tsx",
             // Espace agent FDO
