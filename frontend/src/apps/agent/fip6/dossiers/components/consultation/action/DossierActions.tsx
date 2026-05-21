@@ -6,49 +6,51 @@ import {
   deciderRejetBoutons,
   DeciderRejetModale,
 } from "@/apps/agent/fip6/dossiers/components/consultation/action/DeciderRejetAction.tsx";
-import {
-  attribuerBoutons,
-  AttribuerModale as AttribuerActionModale,
-} from "./AttributionAction.tsx";
-import {
-  signerArretePaiementBoutons,
-  SignerArretePaiementModale,
-} from "./SignerArretePaiementAction.tsx";
-import {
-  cloturerBoutons,
-  CloturerModale as CloturerActionModale,
-} from "./CloturerAction.tsx";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import React from "react";
-import { Agent, DossierDetail } from "@/common/models";
-import {
-  signerCourrierBoutons,
-  SignerCourrierModale,
-} from "@/apps/agent/fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
-import {
-  genererArretePaiementBoutons,
-  GenererArretePaiementModale,
-} from "@/apps/agent/fip6/dossiers/components/consultation/action/GenererArretePaiementAction.tsx";
+import { demarrerInstructionBoutons } from "@/apps/agent/fip6/dossiers/components/consultation/action/DemarrerInstructionAction.tsx";
 import {
   EnvoyerPourIndemnisationActionModale,
   envoyerPourIndemnisationBoutons,
 } from "@/apps/agent/fip6/dossiers/components/consultation/action/EnvoyerPourIndemnisationActionModale.tsx";
 import {
+  genererArretePaiementBoutons,
+  GenererArretePaiementModale,
+} from "@/apps/agent/fip6/dossiers/components/consultation/action/GenererArretePaiementAction.tsx";
+import {
   MarquerIndemniseActionModale,
   marquerIndemniseBoutons,
 } from "@/apps/agent/fip6/dossiers/components/consultation/action/MarquerIndemniseActionModale.tsx";
-import { demarrerInstructionBoutons } from "@/apps/agent/fip6/dossiers/components/consultation/action/DemarrerInstructionAction.tsx";
+import {
+  signerCourrierBoutons,
+  SignerCourrierModale,
+} from "@/apps/agent/fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
+import { Agent, DossierDetail, Redacteur } from "@/common/models";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import React from "react";
+import {
+  attribuerBoutons,
+  AttribuerModale as AttribuerActionModale,
+} from "./AttributionAction.tsx";
+import {
+  cloturerBoutons,
+  CloturerModale as CloturerActionModale,
+} from "./CloturerAction.tsx";
+import {
+  signerArretePaiementBoutons,
+  SignerArretePaiementModale,
+} from "./SignerArretePaiementAction.tsx";
 
 export const DossierActions = function DossierActionBar({
   dossier,
   agent,
+  redacteurs,
   onDecide,
   onEdite,
   onSigne,
 }: {
   dossier: DossierDetail;
   agent: Agent;
+  redacteurs: Redacteur[];
   onDecide?: () => void;
   onEdite?: () => void;
   onSigne?: () => void;
@@ -64,7 +66,7 @@ export const DossierActions = function DossierActionBar({
         buttons={
           [
             ...cloturerBoutons({ dossier, agent }),
-            ...attribuerBoutons({ dossier, agent }),
+            ...attribuerBoutons({ dossier, agent, redacteurs }),
             ...demarrerInstructionBoutons({ dossier, agent }),
             ...deciderRejetBoutons({
               dossier,
@@ -85,7 +87,11 @@ export const DossierActions = function DossierActionBar({
 
       {/** Modales d'action sur le dossier */}
       <CloturerActionModale dossier={dossier} agent={agent} />
-      <AttribuerActionModale dossier={dossier} agent={agent} />
+      <AttribuerActionModale
+        dossier={dossier}
+        agent={agent}
+        redacteurs={redacteurs}
+      />
       <DeciderRejetModale dossier={dossier} agent={agent} onDecide={onDecide} />
       <DeciderIndemnisationModale
         key={dossier.id}
