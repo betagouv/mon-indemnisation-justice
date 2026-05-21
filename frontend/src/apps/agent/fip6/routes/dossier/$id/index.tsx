@@ -5,15 +5,17 @@ import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/
 import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier";
 import {
   ChampPieceJointe,
-  TelechargerPieceJointe,
+  TelechargerPieceJointe
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
-import { Agent, Document, DossierDetail } from "@/common/models";
+import { Agent, Document, DossierDetail, Redacteur } from "@/common/models";
+import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import { DossierManagerInterface } from "@/common/services/agent/dossier";
 import { dateEtHeureSimple } from "@/common/services/date";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { createFileRoute, notFound } from "@tanstack/react-router";
+import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 
 export const Route = createFileRoute("/agent/fip6/dossier/$id/")({
@@ -42,14 +44,29 @@ export const Route = createFileRoute("/agent/fip6/dossier/$id/")({
       });
     }
 
-    return { dossier, agent: context.agent };
+    return {
+      dossier,
+      agent: context.agent,
+      redacteurs: await container.get(AgentManagerInterface.$).redacteurs(),
+    };
   },
 });
 
-function ConsulterDossier() {
-  const { dossier, agent }: { dossier: DossierDetail; agent: Agent } =
-    Route.useLoaderData();
-
+/** Tant que le modèle de données repose sur des instances de classe mises à jour
+ * et rendues réactives via `mobx`, on doit déléguer le rendering à un _high order
+ * component_ observable.
+ *
+ * @constructor
+ */
+const ConsultationDossier = observer(function ConsultationDossier({
+  dossier,
+  agent,
+  redacteurs,
+}: {
+  dossier: DossierDetail;
+  agent: Agent;
+  redacteurs: Redacteur[];
+}) {
   // Référence vers l'onglet ouvert
   const [selectedTab, selectTab] = useState(
     window.location.hash?.replace(/^#/, "") || "infos",
@@ -188,6 +205,7 @@ function ConsulterDossier() {
               <DossierActions
                 dossier={dossier}
                 agent={agent}
+                redacteurs={redacteurs}
                 onDecide={() => ouvrirSectionCourrier()}
                 onEdite={() => ouvrirSectionCourrier()}
                 onSigne={() => ouvrirSectionCourrier()}
@@ -357,6 +375,25 @@ function ConsulterDossier() {
           </div>
         </div>
       </div>
+    </>
+  );
+});
+
+function ConsulterDossier() {
+  const {
+    dossier,
+    agent,
+    redacteurs,
+  }: { dossier: DossierDetail; agent: Agent; redacteurs: Redacteur[] } =
+    Route.useLoaderData();
+
+  return (
+    <>
+      <ConsultationDossier
+        dossier={dossier}
+        agent={agent}
+        redacteurs={redacteurs}
+      />
     </>
   );
 }

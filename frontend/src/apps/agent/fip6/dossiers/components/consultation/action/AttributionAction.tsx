@@ -1,12 +1,12 @@
 "use client";
 
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { observer } from "mobx-react-lite";
-import React, { useCallback, useState } from "react";
 import { Agent, DossierDetail, EtatDossier, Redacteur } from "@/common/models";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { plainToInstance } from "class-transformer";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { observer } from "mobx-react-lite";
+import React, { useCallback, useState } from "react";
 
 const _modale = createModal({
   id: "modale-action-attribution",
@@ -47,22 +47,26 @@ const attribuer = async ({
 const estAAttribuer = ({
   dossier,
   agent,
+  redacteurs,
 }: {
   dossier: DossierDetail;
   agent: Agent;
+  redacteurs: Redacteur[];
 }) => agent.estAttributeur() && dossier.estAAttribuer();
 
 export const AttribuerModale = observer(function AttribuerActionModale({
   dossier,
   agent,
+  redacteurs,
 }: {
   dossier: DossierDetail;
   agent: Agent;
+  redacteurs: Redacteur[];
 }) {
   // Représente le rédacteur à attribuer, présentement en cours de sélection dans le menu déroulant
   const [attributaire, setAttributaire]: [
-    Redacteur | null,
-    (redacteur: Redacteur | null) => void,
+    Redacteur | undefined,
+    (redacteur: Redacteur | undefined) => void,
   ] = useState(dossier.redacteur);
 
   // Indique si l'attribution du rédacteur est activée (= clic sur l'icône "crayon" à côté du rédacteur attribué, seulement octroyé aux agents attributeur)
@@ -78,7 +82,7 @@ export const AttribuerModale = observer(function AttribuerActionModale({
   ] = useState(false);
 
   const valider = useCallback(async () => {
-    if (attributaire && !attributaire.equals(dossier.redacteur)) {
+    if (!!attributaire && attributaire?.id != dossier.redacteur?.id) {
       setSauvegarderEnCours(true);
       const succes = await attribuer({ dossier, attributaire });
 
@@ -86,12 +90,12 @@ export const AttribuerModale = observer(function AttribuerActionModale({
         dossier.attribuer(attributaire);
       }
 
-      setAttributaire(null);
+      setAttributaire(undefined);
       setAttributionEnCours(false);
     }
   }, [dossier, attributaire]);
 
-  return estAAttribuer({ dossier, agent }) ? (
+  return estAAttribuer({ dossier, agent, redacteurs }) ? (
     <_modale.Component title="Attribuer le dossier">
       <>
         <div className="fr-select-group fr-col-12 fr-mb-0">
@@ -105,13 +109,17 @@ export const AttribuerModale = observer(function AttribuerActionModale({
             defaultValue={attributaire?.id || ""}
             onChange={(e) => {
               !!e.target.value &&
-                setAttributaire(Redacteur.resoudre(parseInt(e.target.value)));
+                setAttributaire(
+                  redacteurs.find(
+                    (redacteur) => redacteur.id === parseInt(e.target.value),
+                  ),
+                );
             }}
           >
             <option value="" disabled hidden>
               Sélectionnez un rédacteur
             </option>
-            {Redacteur.catalog().map((redacteur: Redacteur) => (
+            {redacteurs.map((redacteur: Redacteur) => (
               <option value={redacteur.id} key={redacteur.id}>
                 {redacteur.nom}
               </option>
@@ -150,11 +158,13 @@ export const AttribuerModale = observer(function AttribuerActionModale({
 export const attribuerBoutons = ({
   dossier,
   agent,
+  redacteurs,
 }: {
   dossier: DossierDetail;
   agent: Agent;
+  redacteurs: Redacteur[];
 }): ButtonProps[] => {
-  return estAAttribuer({ dossier, agent })
+  return estAAttribuer({ dossier, agent, redacteurs })
     ? [
         {
           children: "Attribuer",
