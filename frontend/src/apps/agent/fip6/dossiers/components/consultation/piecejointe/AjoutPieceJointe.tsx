@@ -1,19 +1,11 @@
-import React, {
-  ClipboardEvent,
-  FormEvent,
-  useCallback,
-  useRef,
-  useState,
-} from "react";
+import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier.ts";
 import { Agent, Document, DocumentType, DossierDetail } from "@/common/models";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { plainToInstance } from "class-transformer";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Select } from "@codegouvfr/react-dsfr/Select";
-import { Input } from "@codegouvfr/react-dsfr/Input";
+import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { useInjection } from "inversify-react";
-import { DossierManagerInterface } from "@/common/services/agent/dossier.ts";
+import React, { useCallback, useRef, useState } from "react";
 
 const _modale = createModal({
   id: "modale-ajouter-piece-jointe",

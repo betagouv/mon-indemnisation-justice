@@ -1,7 +1,19 @@
-import { APIDeclarationManager, DeclarationManagerInterface } from "@/apps/agent/fdo/services/declaration.ts";
-import { AgentManagerInterface, APIAgentManager } from "@/common/services/agent/agent.ts";
-import { APIDocumentManager, DocumentManagerInterface } from "@/common/services/agent/document.ts";
-import { APIDossierManager, DossierManagerInterface } from "@/common/services/agent/dossier.ts";
+import {
+  APIDeclarationManager,
+  DeclarationManagerInterface,
+} from "@/apps/agent/fdo/services/declaration.ts";
+import {
+  APIDossierManager,
+  DossierManagerInterface,
+} from "@/apps/agent/fip6/services/dossier.ts";
+import {
+  AgentManagerInterface,
+  APIAgentManager,
+} from "@/common/services/agent/agent.ts";
+import {
+  APIDocumentManager,
+  DocumentManagerInterface,
+} from "@/common/services/agent/document.ts";
 import { Container } from "inversify";
 
 const container: Container = new Container();

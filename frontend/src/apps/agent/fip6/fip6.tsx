@@ -29,8 +29,7 @@ declare module "@codegouvfr/react-dsfr/spa" {
   }
 }
 
-const root = ReactDOM.createRoot(document.getElementById("react-app")!);
-root.render(
+ReactDOM.createRoot(document.body).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <Provider container={container}>
