@@ -5,12 +5,12 @@ import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/
 import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier";
 import {
   ChampPieceJointe,
-  TelechargerPieceJointe
+  TelechargerPieceJointe,
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
 import { Agent, Document, DossierDetail, Redacteur } from "@/common/models";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
-import { DossierManagerInterface } from "@/common/services/agent/dossier";
+import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
 import { dateEtHeureSimple } from "@/common/services/date";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
