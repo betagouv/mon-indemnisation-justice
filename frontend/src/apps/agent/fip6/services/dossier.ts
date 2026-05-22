@@ -1,8 +1,24 @@
+import { queryClient } from "@/apps/agent/fip6/query.ts";
 import { BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
+export type ListeDossier =
+  | "a-categoriser"
+  | "a-attribuer"
+  | "a-instruire"
+  | "rejet-a-signer"
+  | "proposition-a-signer"
+  | "a-verifier"
+  | "arrete-a-signer"
+  | "a-transmettre"
+  | "en-attente-indemnisation";
+
+export type CompteurDossiers = Record<ListeDossier, number>;
+
 export interface DossierManagerInterface {
+  compteursDossiers(): Promise<CompteurDossiers>;
+
   consulter(id: number): Promise<DossierDetail>;
 
   ajouterPieceJointe(
@@ -19,6 +35,28 @@ export namespace DossierManagerInterface {
 }
 
 export class APIDossierManager implements DossierManagerInterface {
+  compteursDossiers(): Promise<CompteurDossiers> {
+    return queryClient.fetchQuery({
+      queryKey: ["DossierManagerInterface", "compteursDossiers"],
+      queryFn: (): Promise<CompteurDossiers> =>
+        // TODO changer pour un appel XHR à l'API idoine (à créer)
+        new Promise((resolve, reject) =>
+          resolve({
+            "a-categoriser": 1,
+            "a-attribuer": 2,
+            "a-instruire": 3,
+            "rejet-a-signer": 4,
+            "proposition-a-signer": 5,
+            "a-verifier": 6,
+            "arrete-a-signer": 7,
+            "a-transmettre": 8,
+            "en-attente-indemnisation": 9,
+          }),
+        ),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+  }
+
   async consulter(id: number): Promise<DossierDetail> {
     const reponse = await fetch(`/api/agent/fip6/dossier/${id}`);
 
