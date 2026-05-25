@@ -5,7 +5,7 @@ import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { fr } from "@codegouvfr/react-dsfr";
 
-export const Route = createFileRoute("/agent/fdo/foire-aux-questions")({
+export const Route = createFileRoute("/foire-aux-questions")({
   component: () => (
     <div>
       <h1 className="fr-my-2w">Foire aux questions</h1>

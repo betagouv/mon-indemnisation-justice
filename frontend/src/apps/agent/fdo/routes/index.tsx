@@ -1,10 +1,10 @@
-import { RouteurFDO } from "@/apps/agent/fdo/_init/_router.ts";
+import { RouteurFDO } from "@/apps/agent/fdo/routeur";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Card from "@codegouvfr/react-dsfr/Card";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import React from "react";
 
-export const Route = createFileRoute("/agent/fdo/")({
+export const Route = createFileRoute("/")({
   component: RouteComponent,
 });
 
@@ -43,7 +43,7 @@ function RouteComponent() {
                   className: "fr-m-0",
                   onClick: () =>
                     naviguer({
-                      to: "/agent/fdo/bris-de-porte/nouvelle-declaration",
+                      to: "/bris-de-porte/nouvelle-declaration",
                       search: {} as any,
                     }),
                 },
@@ -72,7 +72,7 @@ function RouteComponent() {
 
           <div className="fr-col-12 fr-grid-row fr-grid-row--right">
             <Link
-              to="/agent/fdo/foire-aux-questions"
+              to="/foire-aux-questions"
               hash="question-quand-remettre-attestation"
               className="fr-link fr-icon-arrow-right-line fr-link--icon-right fr-text--sm"
             >
@@ -99,7 +99,7 @@ function RouteComponent() {
           title="Réquisitionner un serrurier"
           titleAs={"h5"}
           linkProps={{
-            to: "/agent/fdo/requisition-serrurier",
+            to: "/requisition-serrurier",
           }}
           enlargeLink
           horizontal={false}
@@ -112,7 +112,7 @@ function RouteComponent() {
           title="Mes déclarations"
           titleAs={"h5"}
           linkProps={{
-            to: "/agent/fdo/bris-de-porte/mes-declarations",
+            to: "/bris-de-porte/mes-declarations",
           }}
           enlargeLink
           horizontal={false}
@@ -136,7 +136,7 @@ function RouteComponent() {
           title="Foire aux questions"
           titleAs={"h5"}
           linkProps={{
-            to: "/agent/fdo/foire-aux-questions",
+            to: "/foire-aux-questions",
           }}
           enlargeLink
           horizontal={false}
@@ -149,7 +149,7 @@ function RouteComponent() {
           title="Mes documents"
           titleAs={"h5"}
           linkProps={{
-            to: "/agent/fdo/les-documents",
+            to: "/les-documents",
           }}
           enlargeLink
           horizontal={false}

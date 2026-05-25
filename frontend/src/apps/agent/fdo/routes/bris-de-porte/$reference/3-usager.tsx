@@ -1,26 +1,24 @@
-import { useForm } from "@tanstack/react-form";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import React, { ChangeEvent, useState } from "react";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { z } from "zod";
+import { container } from "@/apps/agent/fdo/container.ts";
 import {
   Civilite,
   CoordonneesRequerant,
   DeclarationFDOBrisPorte,
 } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
-import { container } from "@/apps/agent/fdo/_init/_container.ts";
-import { RouteurFDO } from "@/apps/agent/fdo/_init/_router.ts";
-import { useInjection } from "inversify-react";
-import { Select } from "@codegouvfr/react-dsfr/Select";
+import { RouteurFDO } from "@/apps/agent/fdo/routeur";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Input } from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import { Select } from "@codegouvfr/react-dsfr/Select";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { useForm } from "@tanstack/react-form";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
+import React, { ChangeEvent, useState } from "react";
+import { z } from "zod";
 
-export const Route = createFileRoute(
-  "/agent/fdo/bris-de-porte/$reference/3-usager",
-)({
+export const Route = createFileRoute("/bris-de-porte/$reference/3-usager")({
   beforeLoad: ({ params }) => {
     if (
       !container
@@ -28,7 +26,7 @@ export const Route = createFileRoute(
         .aDeclaration(params.reference)
     ) {
       throw redirect({
-        to: "/agent/fdo/bris-de-porte/mes-declarations",
+        to: "/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -48,7 +46,7 @@ export const Route = createFileRoute(
 
     if (!declaration) {
       throw redirect({
-        to: "/agent/fdo/bris-de-porte/mes-declarations",
+        to: "/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -148,7 +146,7 @@ function Page() {
 
         await declarationManager.soumettre(declaration);
         await naviguer({
-          to: "/agent/fdo/bris-de-porte/mes-declarations",
+          to: "/bris-de-porte/mes-declarations",
         });
       } catch (e) {
         alert(e);
@@ -458,7 +456,7 @@ function Page() {
               iconPosition: "left",
               onClick: () =>
                 naviguer({
-                  to: "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
+                  to: "/bris-de-porte/$reference/2-service-enqueteur",
                   params: {
                     reference,
                   } as any,
@@ -490,7 +488,7 @@ function Page() {
                     className: "fr-mr-0",
                     onClick: () =>
                       naviguer({
-                        to: "/agent/fdo/bris-de-porte/mes-declarations",
+                        to: "/bris-de-porte/mes-declarations",
                         params: {
                           reference,
                         } as any,

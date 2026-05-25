@@ -2,7 +2,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/agent/fdo/requisition-serrurier")({
+export const Route = createFileRoute("/requisition-serrurier")({
   component: () => (
     <div>
       <h1>Réquisition d’un serrurier</h1>
