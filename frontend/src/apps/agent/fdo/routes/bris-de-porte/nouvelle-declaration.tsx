@@ -1,10 +1,8 @@
-import { redirect, createFileRoute } from "@tanstack/react-router";
-import { container } from "@/apps/agent/fdo/_init/_container";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { container } from "@/apps/agent/fdo/container";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
-export const Route = createFileRoute(
-  "/agent/fdo/bris-de-porte/nouvelle-declaration",
-)({
+export const Route = createFileRoute("/bris-de-porte/nouvelle-declaration")({
   beforeLoad: async ({ cause }) => {
     if (cause === "enter") {
       const brouillon = await container
@@ -12,7 +10,7 @@ export const Route = createFileRoute(
         .nouvelleDeclaration();
 
       throw redirect({
-        to: "/agent/fdo/bris-de-porte/$reference",
+        to: "/bris-de-porte/$reference",
         params: {
           reference: brouillon.reference,
         },

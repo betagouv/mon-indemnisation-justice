@@ -1,5 +1,5 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { container } from "@/apps/agent/fdo/_init";
+import { container } from "@/apps/agent/fip6/container";
 import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
 import { Loader } from "@/common/composants/Loader.tsx";
 import {
@@ -81,7 +81,7 @@ type RechercheReponse = {
   page: number;
 };
 
-export const Route = createFileRoute("/agent/fip6/dossiers/")({
+export const Route = createFileRoute("/dossiers/")({
   loader: async ({ context }: { context: AgentContext }) => ({
     agent: context.agent,
     // TODO transformer par un appel API
@@ -454,7 +454,7 @@ function RouteComponent() {
                                           <Link
                                             className="fr-btn fr-btn--tertiary fr-icon-eye-line fr-btn--sm"
                                             from={Route.fullPath}
-                                            to={"/agent/fip6/dossier/$id"}
+                                            to={"/dossier/$id"}
                                             params={{ id: dossier.id }}
                                           ></Link>
                                         </div>

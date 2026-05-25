@@ -1,22 +1,20 @@
-import React from "react";
+import { container } from "@/apps/agent/fdo/container.ts";
+import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
+import { dateSimple } from "@/common/services/date.ts";
+import Badge from "@codegouvfr/react-dsfr/Badge";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Table from "@codegouvfr/react-dsfr/Table";
 import {
   createFileRoute,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
-import Table from "@codegouvfr/react-dsfr/Table";
 import { useInjection } from "inversify-react";
-import { container } from "@/apps/agent/fdo/_init/_container.ts";
-import { dateDansNJours, dateSimple } from "@/common/services/date.ts";
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
+import React from "react";
 
-export const Route = createFileRoute(
-  "/agent/fdo/bris-de-porte/mes-declarations",
-)({
+export const Route = createFileRoute("/bris-de-porte/mes-declarations")({
   loader: async ({ params }) => {
     return {
       declarations: await container
@@ -89,7 +87,7 @@ const Page = () => {
                     nativeButtonProps: {
                       onClick: () =>
                         naviguer({
-                          to: "/agent/fdo/bris-de-porte/$reference",
+                          to: "/bris-de-porte/$reference",
                           params: {
                             reference: declaration.reference,
                           } as any,

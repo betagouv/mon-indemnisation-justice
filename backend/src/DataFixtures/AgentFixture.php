@@ -62,7 +62,7 @@ class AgentFixture extends Fixture implements FixtureGroupInterface, DependentFi
                 ->setPrenom('Lison')
                 ->setNom('Bude-Jay')
                 ->setAdministration($this->getAdministration(AdministrationType::MINISTERE_JUSTICE))
-                ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_LIAISON_BUDGET])
+                ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_LIAISON_BUDGET, Agent::ROLE_AGENT_DOSSIER])
                 ->setUid('119')
                 ->setValide(),
             'gestion' => new Agent()

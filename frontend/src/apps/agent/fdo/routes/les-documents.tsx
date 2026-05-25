@@ -2,13 +2,16 @@ import Download from "@codegouvfr/react-dsfr/Download";
 import React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import { router as RouteurFDO } from "@/apps/agent/fdo/_init";
+import { RouteurFDO } from "@/apps/agent/fdo/routeur";
 import urlAvisIntervention from "@/apps/agent/fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte.pdf";
-import urlGuideRemiseAvis from "@/apps/agent/fdo/fichiers/documents/guide-de-remise-de-l-avis-d-intervention-apres-un-bris-de-porte.pdf";
-import urlGuideDeclaration from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre.pdf";
-import urlGuideDeclarationPN from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre-pn.pdf";
+import urlGuideRemiseAvis
+  from "@/apps/agent/fdo/fichiers/documents/guide-de-remise-de-l-avis-d-intervention-apres-un-bris-de-porte.pdf";
+import urlGuideDeclaration
+  from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre.pdf";
+import urlGuideDeclarationPN
+  from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre-pn.pdf";
 
-export const Route = createFileRoute("/agent/fdo/les-documents")({
+export const Route = createFileRoute("/les-documents")({
   component: () => {
     const { agent } = Route.useRouteContext<typeof RouteurFDO>();
 
@@ -38,8 +41,8 @@ export const Route = createFileRoute("/agent/fdo/les-documents")({
                     label="Avis d’intervention à remettre à l’usager"
                     details={""}
                     linkProps={{
-                      to: `${window.location.origin}${urlAvisIntervention}`,
-                      replace: true,
+                      href: `${window.location.origin}${urlAvisIntervention}`,
+                      target: "_self",
                       download: true,
                     }}
                   />
@@ -63,8 +66,8 @@ export const Route = createFileRoute("/agent/fdo/les-documents")({
                     label="Guide de remise de l’avis d’intervention après un bris de porte"
                     details={""}
                     linkProps={{
-                      to: `${window.location.origin}${urlGuideRemiseAvis}`,
-                      replace: true,
+                      href: `${window.location.origin}${urlGuideRemiseAvis}`,
+                      target: "_self",
                       download: true,
                     }}
                   />
@@ -88,8 +91,8 @@ export const Route = createFileRoute("/agent/fdo/les-documents")({
                     label="Guide de déclaration en ligne d'un bris de porte"
                     details={""}
                     linkProps={{
-                      to: `${window.location.origin}${agent.administration.type === "PN" ? urlGuideDeclarationPN : urlGuideDeclaration}`,
-                      replace: true,
+                      href: `${window.location.origin}${agent.administration.type === "PN" ? urlGuideDeclarationPN : urlGuideDeclaration}`,
+                      target: "_self",
                       download: true,
                     }}
                   />
