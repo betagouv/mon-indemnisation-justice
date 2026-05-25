@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Twig;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator;
+use MonIndemnisationJustice\Service\MontantAfficheur;
 use Pentatrion\ViteBundle\Exception\EntrypointNotFoundException;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -27,6 +28,7 @@ class AppRuntime implements RuntimeExtensionInterface
         protected readonly FranceConnectAuthenticator $franceConnectAuthenticator,
         protected readonly FirewallMapInterface $firewallMap,
         protected readonly Security $security,
+        protected readonly MontantAfficheur $montantAfficheur,
     ) {
         $this->publicDirectory = "{$projectDirectory}/public";
     }
@@ -40,14 +42,10 @@ class AppRuntime implements RuntimeExtensionInterface
         return $this->router->generate('securite_usager_deconnexion');
     }
 
-    public function montantLitteral(float $amount, string $locale = 'fr'): string
+    public function montantLitteral(float $amount): string
     {
-        $t = new \NumberFormatter($locale, \NumberFormatter::SPELLOUT);
-        $numberParsing = explode('.', number_format(round($amount, 2, PHP_ROUND_HALF_DOWN), 2, '.', ''));
-        $_1 = $t->format($numberParsing[0]);
-        $_2 = $t->format($numberParsing[1]);
+        return $this->montantAfficheur->afficherMontantLitteral($amount);
 
-        return str_replace(['$1', '$2', '$3'], [$_1, $_2, $numberParsing[1] > 1 ? 's' : ''], '$1 euros et $2 centime$3');
     }
 
     public function estViteServerActif(): bool
