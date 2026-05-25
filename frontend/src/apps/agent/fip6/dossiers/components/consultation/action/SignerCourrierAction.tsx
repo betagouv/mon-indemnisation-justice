@@ -333,6 +333,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
           : "fr-icon-close-circle-line"
       }
       size="large"
+      concealingBackdrop={false}
     >
       <Stepper
         currentStep={rangEtape(dossier, etatSignature.etape)}
