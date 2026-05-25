@@ -10,7 +10,7 @@ import {
   type LinkProps,
   NotFoundRouteProps,
   Outlet,
-  useLoaderData,
+  useLoaderData
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
@@ -86,6 +86,7 @@ const EspaceRequerant = () => {
         termsLinkProps={
           {
             href: `${window.location.origin}/mentions-legales`,
+            target: "_self",
           } as LinkProps
         }
       />

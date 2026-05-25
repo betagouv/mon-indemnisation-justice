@@ -1,4 +1,4 @@
-import {test, expect} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 import {connexionAgent, getTitre} from "../../helpers";
 
 test("lister dossiers à transmettre au bureau du budget", async ({
@@ -11,7 +11,7 @@ test("lister dossiers à transmettre au bureau du budget", async ({
 
     try {
         await connexionAgent(page, "Liaison budget");
-        await page.waitForURL("/agent/mon-compte");
+        await page.waitForURL((url) => url.pathname.startsWith("/agent/fip6/dossiers"));
 
         await expect(getTitre(page, "Mon compte")).toBeVisible();
 

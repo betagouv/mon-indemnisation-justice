@@ -1,10 +1,10 @@
-import { container } from "@/apps/agent/fdo/_init/_container.ts";
-import { RouteurFDO } from "@/apps/agent/fdo/_init/_router.ts";
+import { container } from "@/apps/agent/fdo/container.ts";
 import {
   Adresse,
   DeclarationFDOBrisPorte,
   DeclarationFDOBrisPorteErreurTypes,
 } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import { RouteurFDO } from "@/apps/agent/fdo/routeur";
 import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 import { dateChiffre } from "@/common/services/date.ts";
 import "@/style/index.css";
@@ -25,7 +25,7 @@ import React, { ChangeEvent } from "react";
 import { z } from "zod";
 
 export const Route = createFileRoute(
-  "/agent/fdo/bris-de-porte/$reference/1-bris-de-porte",
+  "/bris-de-porte/$reference/1-bris-de-porte",
 )({
   beforeLoad: async ({ params }) => {
     if (
@@ -34,7 +34,7 @@ export const Route = createFileRoute(
         .aDeclaration(params.reference))
     ) {
       throw redirect({
-        to: "/agent/fdo/bris-de-porte/mes-declarations",
+        to: "/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -119,7 +119,7 @@ const Page = () => {
     },
     onSubmit: async ({ value }) => {
       await naviguer({
-        to: "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
+        to: "/bris-de-porte/$reference/2-service-enqueteur",
         params: { reference: declaration.id } as any,
         search: {} as any,
       });
@@ -211,7 +211,7 @@ const Page = () => {
                           Vous avez un doute sur la situation? Vous ne savez pas
                           s'il s’agit d’une erreur opérationnelle ? Vous pouvez
                           consulter{" "}
-                          <Link to={"/agent/fdo/foire-aux-questions"}>
+                          <Link to={"/foire-aux-questions"}>
                             la foire aux questions
                           </Link>
                           . Le Bureau du précontentieux se chargera d'instruire

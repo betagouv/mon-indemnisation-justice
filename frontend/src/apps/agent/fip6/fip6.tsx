@@ -1,20 +1,21 @@
 import "@/apps/_init.ts";
-import { queryClient } from "@/apps/agent/fip6/query";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { LinkProps, RouterProvider } from "@tanstack/react-router";
+import { Link, LinkProps, RouterProvider } from "@tanstack/react-router";
 import React, { JSX, StrictMode } from "react";
+import { queryClient } from "./query";
 
-import { container } from "@/apps/agent/fip6/container";
+import { container } from "./container";
 
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
 import { Provider } from "inversify-react";
 import ReactDOM from "react-dom/client";
-import { RouteurFIP6 } from "@/apps/agent/fip6/routeur";
+import { RouteurFIP6 } from "./routeur";
 
 startReactDsfr({
   defaultColorScheme:
     (localStorage.getItem("scheme") as ColorScheme) ?? "system",
+  Link,
 });
 
 declare global {
