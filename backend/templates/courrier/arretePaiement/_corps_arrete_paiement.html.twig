@@ -9,7 +9,7 @@
 </p>
 <p>
     Vu la demande de {{ libelle }} aux fins d’indemnisation du préjudice subi en raison de la
-    détérioration de la porte d’entrée du logement situé à {{ dossier.brisPorte.adresse.localite|upper }}
+    détérioration de la porte d’entrée du logement situé {{ dossier.brisPorte.adresse.ligne1 }} à {{ dossier.brisPorte.adresse.localite|upper }}
     {% if dossier.brisPorte.adresse.codeDepartemental %}({{ dossier.brisPorte.adresse.codeDepartemental }}){% endif %} reçue
     le {{ dossier.dateDepot|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }};
 </p>
@@ -30,8 +30,7 @@
 <p>
     Considérant que le préjudice matériel subi par {{ libelle }}, relatif à la détérioration de la
     porte d’entrée du logement sis {{ dossier.brisPorte.adresse.ligne1 }}
-    à {{ dossier.brisPorte.adresse.localite|default }} {% if dossier.brisPorte.adresse.codeDepartemental %}({{ dossier.brisPorte.adresse.codeDepartemental }}){% endif %}
-    ,
+    à {{ dossier.brisPorte.adresse.localite|default }} {% if dossier.brisPorte.adresse.codeDepartemental %}({{ dossier.brisPorte.adresse.codeDepartemental }}){% endif %},
     résulte d’une opération de police judiciaire menée
     le {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }};
 </p>
