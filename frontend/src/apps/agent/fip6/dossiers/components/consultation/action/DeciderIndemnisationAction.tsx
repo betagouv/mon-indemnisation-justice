@@ -231,6 +231,7 @@ export const DeciderIndemnisationModale = observer(
         title=" Accepter la demande d'indemnisation"
         iconId="fr-icon-checkbox-circle-line"
         size="large"
+        concealingBackdrop={false}
       >
         <Stepper
           currentStep={Etapes.rang(etape)}

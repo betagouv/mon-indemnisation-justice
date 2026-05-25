@@ -129,6 +129,7 @@ export const GenererArretePaiementModale =
         title="Vérifier la déclaration d'acceptation"
         size="large"
         iconId="fr-icon-search-line"
+        concealingBackdrop={false}
       >
         {etatValidation.action === "verification" && (
           <>
