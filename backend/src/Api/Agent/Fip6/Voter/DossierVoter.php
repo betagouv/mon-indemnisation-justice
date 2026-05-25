@@ -12,6 +12,7 @@ class DossierVoter extends Voter
 {
     public const string ACTION_CONSULTER = 'dossier:consulter';
     public const string ACTION_RECHERCHER = 'dossier:rechercher';
+    public const string ACTION_DECOMPTER = 'dossier:decompter';
     public const string ACTION_ATTRIBUER = 'dossier:attribuer';
     public const string ACTION_INSTRUIRE = 'dossier:instruire';
     public const string ACTION_CLOTURER = 'dossier:cloturer';
@@ -33,6 +34,7 @@ class DossierVoter extends Voter
         return in_array($attribute, [
             self::ACTION_CONSULTER,
             self::ACTION_RECHERCHER,
+            self::ACTION_DECOMPTER,
             self::ACTION_ATTRIBUER,
             self::ACTION_INSTRUIRE,
             self::ACTION_CLOTURER,
@@ -66,6 +68,7 @@ class DossierVoter extends Voter
 
         return match ($attribute) {
             self::ACTION_CONSULTER, => $this->agentPeutConsulter($agent, $subject),
+            self::ACTION_DECOMPTER, => $agent->aRole(Agent::ROLE_AGENT_DOSSIER),
             self::ACTION_RECHERCHER, => $this->agentPeutRechercher($agent),
             self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent, $subject),
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
