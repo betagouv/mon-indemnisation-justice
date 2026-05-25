@@ -45,8 +45,11 @@ const requeteVersParametres = (
     Object.entries({
       p: requete.page.toString(),
       a:
-        requete.attributaires.length > 0
-          ? requete.attributaires.map((a) => a.id).join("|")
+        requete.attributaires.length > 0 || requete.inclureDossierNonAttribue
+          ? requete.attributaires
+              .map((a) => a.id.toString())
+              .concat(...(requete.inclureDossierNonAttribue ? ["_"] : []))
+              .join("|")
           : undefined,
       e: requete.etatsDossier.length
         ? requete.etatsDossier.map((e: EtatDossierType) => e.slug).join("|")
@@ -171,7 +174,6 @@ function RouteComponent() {
   //
   const [afficherCriteres, setAfficherCriteres] = useState(false);
 
-  //const queryClient = useQueryClient();
   const {
     isPending,
     error,
