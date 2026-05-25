@@ -60,13 +60,7 @@
 </head>
 <body>
 {% block header %}
-    {% if app.user|est_requerant %}
-        {% include('requerant/_header.html.twig') %}
-    {% elseif app.user|est_agent %}
-        {% include('agent/_header.html.twig') %}
-    {% else %}
-        {% include('_header.html.twig') %}
-    {% endif %}
+    {% include('_header.html.twig') %}
 {% endblock header %}
 
 {# Fil d'ariane: à intégrer #}

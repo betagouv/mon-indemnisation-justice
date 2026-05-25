@@ -1,5 +1,10 @@
 import { queryClient } from "@/apps/agent/fip6/query.ts";
-import { BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
+import {
+  BaseDossier,
+  Document,
+  DocumentType,
+  DossierDetail,
+} from "@/common/models";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
@@ -38,21 +43,15 @@ export class APIDossierManager implements DossierManagerInterface {
   compteursDossiers(): Promise<CompteurDossiers> {
     return queryClient.fetchQuery({
       queryKey: ["DossierManagerInterface", "compteursDossiers"],
-      queryFn: (): Promise<CompteurDossiers> =>
-        // TODO changer pour un appel XHR à l'API idoine (à créer)
-        new Promise((resolve, reject) =>
-          resolve({
-            "a-categoriser": 1,
-            "a-attribuer": 2,
-            "a-instruire": 3,
-            "rejet-a-signer": 4,
-            "proposition-a-signer": 5,
-            "a-verifier": 6,
-            "arrete-a-signer": 7,
-            "a-transmettre": 8,
-            "en-attente-indemnisation": 9,
-          }),
-        ),
+      queryFn: async (): Promise<CompteurDossiers> => {
+        const reponse = await fetch("/api/agent/fip6/decompter-dossiers");
+        if (!reponse.ok) {
+          throw new Error(
+            `Failed to fetch compteurs dossiers: ${reponse.status}`,
+          );
+        }
+        return (await reponse.json()) as CompteurDossiers;
+      },
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
   }

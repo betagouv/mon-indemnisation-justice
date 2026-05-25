@@ -59,7 +59,15 @@ const EspaceRedacteur = () => {
 
     if (agent.aRole(RoleAgent.DOSSIER)) {
       liens.push({
-        text: "Rechercher un dossier",
+        text: (
+          <>
+            Rechercher un dossier
+            <span
+              className="fr-icon fr-icon--sm fr-icon-search-line fr-ml-1w"
+              aria-hidden="true"
+            ></span>
+          </>
+        ),
         linkProps: {
           to: "/agent/fip6/dossiers",
         },
