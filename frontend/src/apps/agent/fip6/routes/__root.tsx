@@ -69,7 +69,7 @@ const EspaceRedacteur = () => {
           </>
         ),
         linkProps: {
-          to: "/agent/fip6/dossiers",
+          to: "/dossiers",
         },
       });
     }
@@ -104,7 +104,7 @@ const EspaceRedacteur = () => {
                     </>
                   ),
                   linkProps: {
-                    to: "/agent/fip6/dossiers/a-categoriser",
+                    to: "/dossiers/a-categoriser",
                   },
                 },
               ]
@@ -125,7 +125,7 @@ const EspaceRedacteur = () => {
                     </>
                   ),
                   linkProps: {
-                    to: "/agent/fip6/dossiers/a-attribuer",
+                    to: "/dossiers/a-attribuer",
                   },
                 },
               ]
@@ -146,7 +146,7 @@ const EspaceRedacteur = () => {
                     </>
                   ),
                   linkProps: {
-                    to: "/agent/fip6/dossiers/a-instruire",
+                    to: "/dossiers/a-instruire",
                   },
                 },
               ]
@@ -167,7 +167,7 @@ const EspaceRedacteur = () => {
                     </>
                   ),
                   linkProps: {
-                    to: "/agent/fip6/dossiers/rejet-a-signer",
+                    to: "/dossiers/rejet-a-signer",
                   },
                 },
                 {
@@ -183,7 +183,7 @@ const EspaceRedacteur = () => {
                     </>
                   ),
                   linkProps: {
-                    to: "/agent/fip6/dossiers/proposition-a-signer",
+                    to: "/dossiers/proposition-a-signer",
                   },
                 },
               ]
@@ -205,7 +205,7 @@ const EspaceRedacteur = () => {
                     </>
                   ),
                   linkProps: {
-                    to: "/agent/fip6/dossiers/a-verifier",
+                    to: "/dossiers/a-verifier",
                   },
                 },
               ]
@@ -226,7 +226,7 @@ const EspaceRedacteur = () => {
                     </>
                   ),
                   linkProps: {
-                    to: "/agent/fip6/dossiers/arrete-a-signer",
+                    to: "/dossiers/arrete-a-signer",
                   },
                 },
               ]
@@ -247,7 +247,7 @@ const EspaceRedacteur = () => {
                     </>
                   ),
                   linkProps: {
-                    to: "/agent/fip6/dossiers/a-transmettre",
+                    to: "/dossiers/a-transmettre",
                   },
                 },
                 {
@@ -263,7 +263,7 @@ const EspaceRedacteur = () => {
                     </>
                   ),
                   linkProps: {
-                    to: "/agent/fip6/dossiers/en-attente-indemnisation",
+                    to: "/dossiers/en-attente-indemnisation",
                   },
                 },
               ]
@@ -275,7 +275,7 @@ const EspaceRedacteur = () => {
       liens.push({
         text: "Gestion des agents",
         linkProps: {
-          to: "/agent/fip6/agents/gestion",
+          to: "/agents/gestion",
         },
       });
     }
@@ -286,9 +286,7 @@ const EspaceRedacteur = () => {
       liens.push({
         text: "Mon compte",
         linkProps: {
-          // TODO à déplacer vers React
-          href: `${document.location.origin}/agent/mon-compte`,
-          target: "_self",
+          to: "/mon-compte",
         },
       });
     }
@@ -342,9 +340,7 @@ const EspaceRedacteur = () => {
               contexte.agent.nomComplet()
             ),
             linkProps: {
-              // TODO à déplacer vers React
-              href: `${document.location.origin}/agent/mon-compte`,
-              target: "_self",
+              to: "/mon-compte",
             },
           },
           {
@@ -356,7 +352,7 @@ const EspaceRedacteur = () => {
             ),
             linkProps: {
               href: contexte.incarnePar
-                ? `${window.location.origin}/agent/fip6/agents/gestion?_switch_user=_exit`
+                ? `${window.location.origin}/agents/gestion?_switch_user=_exit`
                 : `${window.location.origin}/agent/deconnexion`,
               target: "_self",
             } as LinkProps,

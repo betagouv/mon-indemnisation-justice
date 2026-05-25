@@ -120,7 +120,7 @@ export const ModalePrevisualiserPieceJointe = React.forwardRef<
                   <ChampPieceJointe
                     className="fr-my-1w"
                     pieceJointe={pieceJointe}
-                    lienTelechargement={`/agent/fdo/document/${pieceJointe.id}/${pieceJointe.fileHash}`}
+                    lienTelechargement={`/document/${pieceJointe.id}/${pieceJointe.fileHash}`}
                   />
                 </>
               )

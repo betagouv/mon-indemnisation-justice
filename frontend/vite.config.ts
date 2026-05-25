@@ -19,19 +19,21 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       },
     },
     plugins: [
+      // Espace rédacteur (FIP6)
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
-        virtualRouteConfig: "./src/apps/agent/fip6/routeur/routeur-fip6.ts",
         generatedRouteTree: "./src/apps/agent/fip6/routeur/routeur-fip6.gen.ts",
         routesDirectory: "./src/apps/agent/fip6/routes/",
       }),
+      // Espace Forces de l'ordre (FDO)
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
         generatedRouteTree: "./src/apps/agent/fdo/routeur/routeur-fdo.gen.ts",
         routesDirectory: "./src/apps/agent/fdo/routes/",
       }),
+      // Espace requérant
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,

@@ -22,16 +22,6 @@ class IndexController extends AgentController
             return $this->redirectToRoute('agent_fdo_react');
         }
 
-        if ($agent->hasRole(Agent::ROLE_AGENT_DOSSIER)) {
-            return $this->redirectToRoute('app_agent_redacteur_accueil');
-        }
-
-        return $this->redirectToRoute('agent_mon_compte');
-    }
-
-    #[Route('/mon-compte', name: 'agent_mon_compte', methods: ['GET'])]
-    public function monCompte(): Response
-    {
-        return $this->render('agent/mon_compte.html.twig');
+        return $this->redirectToRoute('agent_fip6_react');
     }
 }

@@ -18,7 +18,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 
-export const Route = createFileRoute("/agent/fip6/dossier/$id/")({
+export const Route = createFileRoute("/dossier/$id/")({
   component: ConsulterDossier,
   params: {
     parse: ({ id }) => ({ id: parseInt(id) }),

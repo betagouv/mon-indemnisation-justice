@@ -1,5 +1,4 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { container } from "@/apps/agent/fdo/_init/_container.ts";
 import {
   ModaleAjoutPieceJointe,
   ModaleAjoutPieceJointeRef,
@@ -8,6 +7,7 @@ import {
   ModalePrevisualiserPieceJointe,
   ModalePrevisualiserPieceJointeRef,
 } from "@/apps/agent/fdo/components/ModalePrévisualiserPieceJointe.tsx";
+import { container } from "@/apps/agent/fdo/container.ts";
 import {
   DeclarationFDOBrisPorte,
   Procedure,
@@ -31,7 +31,7 @@ import React, { useRef } from "react";
 import { z } from "zod";
 
 export const Route = createFileRoute(
-  "/agent/fdo/bris-de-porte/$reference/2-service-enqueteur",
+  "/bris-de-porte/$reference/2-service-enqueteur",
 )({
   beforeLoad: ({ params }) => {
     if (
@@ -40,7 +40,7 @@ export const Route = createFileRoute(
         .aDeclaration(params.reference)
     ) {
       throw redirect({
-        to: "/agent/fdo/bris-de-porte/mes-declarations",
+        to: "/bris-de-porte/mes-declarations",
         replace: true,
         params,
       });
@@ -140,7 +140,7 @@ function Page() {
     onSubmit: async ({ value }) => {
       // TODO
       await naviguer({
-        to: "/agent/fdo/bris-de-porte/$reference/3-usager",
+        to: "/bris-de-porte/$reference/3-usager",
         params: { reference } as any,
         search: {} as any,
       });
@@ -412,7 +412,7 @@ function Page() {
                 iconPosition: "left",
                 onClick: () =>
                   naviguer({
-                    to: "/agent/fdo/bris-de-porte/$reference/1-bris-de-porte",
+                    to: "/bris-de-porte/$reference/1-bris-de-porte",
                     params: {
                       reference,
                     } as any,
