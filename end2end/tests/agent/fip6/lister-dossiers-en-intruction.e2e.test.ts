@@ -13,7 +13,7 @@ test("lister dossier à instruire", async ({browser}) => {
 
         await expect(getTitre(page, "Les dossiers")).toBeVisible();
 
-        await page.goto("/agent/fip6/dossiers/a-instruire");
+        await page.goto("/agent/fip6/dossiers/en-instruction");
 
         await expect(
             page.locator("H1", {hasText: "Dossiers à instruire"}),

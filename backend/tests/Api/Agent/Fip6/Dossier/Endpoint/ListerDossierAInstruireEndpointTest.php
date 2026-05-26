@@ -25,7 +25,7 @@ class ListerDossierAInstruireEndpointTest extends APIEndpointTestCase
         /** @var array $output */
         $output = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertCount(2, $output);
+        $this->assertCount(1, $output);
     }
 
     protected function getApiRoute(): string

@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierAInstruireOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierEnInstructionOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Dossier;
@@ -15,11 +15,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Route API qui retourne à un agent rédacteur la liste de ses dossiers à instruire.
+ * Route API qui retourne à un agent rédacteur la liste de ses dossiers en cours d'instruction.
  */
-#[Route('/api/agent/fip6/dossiers/liste/a-instruire', name: 'api_agent_dossiers_liste_a_instruire', methods: ['GET'])]
+#[Route('/api/agent/fip6/dossiers/liste/en-instruction', name: 'api_agent_dossiers_liste_en_instruction', methods: ['GET'])]
 #[IsGranted(DossierVoter::ACTION_LISTER_A_INSTRUIRE)]
-class ListerDossierAInstruireEndpoint
+class ListerDossierEnInstructionEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
@@ -35,8 +35,8 @@ class ListerDossierAInstruireEndpoint
         return new JsonResponse(
             $this->normalizer->normalize(
                 array_map(
-                    fn (Dossier $dossier) => DossierAInstruireOutput::creerDepuisDossier($dossier),
-                    array_values($agent->getDossiersAInstruire())
+                    fn (Dossier $dossier) => DossierEnInstructionOutput::creerDepuisDossier($dossier),
+                    array_values($agent->getDossiersEnInstruction())
                 ),
                 'json',
             )

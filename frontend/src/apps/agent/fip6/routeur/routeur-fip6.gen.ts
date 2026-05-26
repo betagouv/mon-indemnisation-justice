@@ -15,6 +15,7 @@ import { Route as DossiersIndexRouteImport } from './../routes/dossiers/index'
 import { Route as DossierIndexRouteImport } from './../routes/dossier/index'
 import { Route as DossiersRejetASignerRouteImport } from './../routes/dossiers/rejet-a-signer'
 import { Route as DossiersPropositionASignerRouteImport } from './../routes/dossiers/proposition-a-signer'
+import { Route as DossiersEnInstructionRouteImport } from './../routes/dossiers/en-instruction'
 import { Route as DossiersEnAttenteIndemnisationRouteImport } from './../routes/dossiers/en-attente-indemnisation'
 import { Route as DossiersArreteASignerRouteImport } from './../routes/dossiers/arrete-a-signer'
 import { Route as DossiersAVerifierRouteImport } from './../routes/dossiers/a-verifier'
@@ -56,6 +57,11 @@ const DossiersPropositionASignerRoute =
     path: '/dossiers/proposition-a-signer',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DossiersEnInstructionRoute = DossiersEnInstructionRouteImport.update({
+  id: '/dossiers/en-instruction',
+  path: '/dossiers/en-instruction',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DossiersEnAttenteIndemnisationRoute =
   DossiersEnAttenteIndemnisationRouteImport.update({
     id: '/dossiers/en-attente-indemnisation',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/dossiers/a-verifier': typeof DossiersAVerifierRoute
   '/dossiers/arrete-a-signer': typeof DossiersArreteASignerRoute
   '/dossiers/en-attente-indemnisation': typeof DossiersEnAttenteIndemnisationRoute
+  '/dossiers/en-instruction': typeof DossiersEnInstructionRoute
   '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
   '/dossier': typeof DossierIndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/dossiers/a-verifier': typeof DossiersAVerifierRoute
   '/dossiers/arrete-a-signer': typeof DossiersArreteASignerRoute
   '/dossiers/en-attente-indemnisation': typeof DossiersEnAttenteIndemnisationRoute
+  '/dossiers/en-instruction': typeof DossiersEnInstructionRoute
   '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
   '/dossier': typeof DossierIndexRoute
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/dossiers/a-verifier': typeof DossiersAVerifierRoute
   '/dossiers/arrete-a-signer': typeof DossiersArreteASignerRoute
   '/dossiers/en-attente-indemnisation': typeof DossiersEnAttenteIndemnisationRoute
+  '/dossiers/en-instruction': typeof DossiersEnInstructionRoute
   '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
   '/dossier/': typeof DossierIndexRoute
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/dossiers/a-verifier'
     | '/dossiers/arrete-a-signer'
     | '/dossiers/en-attente-indemnisation'
+    | '/dossiers/en-instruction'
     | '/dossiers/proposition-a-signer'
     | '/dossiers/rejet-a-signer'
     | '/dossier'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/dossiers/a-verifier'
     | '/dossiers/arrete-a-signer'
     | '/dossiers/en-attente-indemnisation'
+    | '/dossiers/en-instruction'
     | '/dossiers/proposition-a-signer'
     | '/dossiers/rejet-a-signer'
     | '/dossier'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/dossiers/a-verifier'
     | '/dossiers/arrete-a-signer'
     | '/dossiers/en-attente-indemnisation'
+    | '/dossiers/en-instruction'
     | '/dossiers/proposition-a-signer'
     | '/dossiers/rejet-a-signer'
     | '/dossier/'
@@ -220,6 +232,7 @@ export interface RootRouteChildren {
   DossiersAVerifierRoute: typeof DossiersAVerifierRoute
   DossiersArreteASignerRoute: typeof DossiersArreteASignerRoute
   DossiersEnAttenteIndemnisationRoute: typeof DossiersEnAttenteIndemnisationRoute
+  DossiersEnInstructionRoute: typeof DossiersEnInstructionRoute
   DossiersPropositionASignerRoute: typeof DossiersPropositionASignerRoute
   DossiersRejetASignerRoute: typeof DossiersRejetASignerRoute
   DossierIndexRoute: typeof DossierIndexRoute
@@ -269,6 +282,13 @@ declare module '@tanstack/react-router' {
       path: '/dossiers/proposition-a-signer'
       fullPath: '/dossiers/proposition-a-signer'
       preLoaderRoute: typeof DossiersPropositionASignerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/en-instruction': {
+      id: '/dossiers/en-instruction'
+      path: '/dossiers/en-instruction'
+      fullPath: '/dossiers/en-instruction'
+      preLoaderRoute: typeof DossiersEnInstructionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dossiers/en-attente-indemnisation': {
@@ -348,6 +368,7 @@ const rootRouteChildren: RootRouteChildren = {
   DossiersAVerifierRoute: DossiersAVerifierRoute,
   DossiersArreteASignerRoute: DossiersArreteASignerRoute,
   DossiersEnAttenteIndemnisationRoute: DossiersEnAttenteIndemnisationRoute,
+  DossiersEnInstructionRoute: DossiersEnInstructionRoute,
   DossiersPropositionASignerRoute: DossiersPropositionASignerRoute,
   DossiersRejetASignerRoute: DossiersRejetASignerRoute,
   DossierIndexRoute: DossierIndexRoute,

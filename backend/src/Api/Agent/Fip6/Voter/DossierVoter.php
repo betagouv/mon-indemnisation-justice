@@ -22,6 +22,7 @@ class DossierVoter extends Voter
     public const string ACTION_LISTER_A_CATEGORISER = 'dossier:lister:a-categoriser';
     public const string ACTION_LISTER_A_ATTRIBUER = 'dossier:lister:a-attribuer';
     public const string ACTION_LISTER_A_INSTRUIRE = 'dossier:lister:a-instruire';
+    public const string ACTION_LISTER_EN_INSTRUCTION = 'dossier:lister:en-instruction';
     public const string ACTION_LISTER_REJET_A_SIGNER = 'dossier:lister:rejet-a-signer';
     public const string ACTION_LISTER_PROPOSITION_A_SIGNER = 'dossier:lister:proposition-a-signer';
     public const string ACTION_LISTER_A_VERIFIER = 'dossier:lister:a-verifier';
@@ -43,6 +44,7 @@ class DossierVoter extends Voter
             self::ACTION_LISTER_A_CATEGORISER,
             self::ACTION_LISTER_A_ATTRIBUER,
             self::ACTION_LISTER_A_INSTRUIRE,
+            self::ACTION_LISTER_EN_INSTRUCTION,
             self::ACTION_LISTER_REJET_A_SIGNER,
             self::ACTION_LISTER_PROPOSITION_A_SIGNER,
             self::ACTION_LISTER_ARRETE_A_SIGNER,
@@ -75,7 +77,7 @@ class DossierVoter extends Voter
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
             self::ACTION_CLOTURER => $this->agentPeutCloturer($agent, $subject),
             self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
-            self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
+            self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_EN_INSTRUCTION, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
             default => false,
         };
     }
@@ -120,7 +122,7 @@ class DossierVoter extends Voter
         return match ($action) {
             self::ACTION_LISTER_A_CATEGORISER => $agent->aRole(Agent::ROLE_AGENT_BETAGOUV),
             self::ACTION_LISTER_A_ATTRIBUER => $agent->aRole(Agent::ROLE_AGENT_ATTRIBUTEUR),
-            self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_A_VERIFIER => $agent->aRole(Agent::ROLE_AGENT_REDACTEUR),
+            self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_EN_INSTRUCTION, self::ACTION_LISTER_A_VERIFIER => $agent->aRole(Agent::ROLE_AGENT_REDACTEUR),
             self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_ARRETE_A_SIGNER => $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR),
             self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET),
             default => false,
