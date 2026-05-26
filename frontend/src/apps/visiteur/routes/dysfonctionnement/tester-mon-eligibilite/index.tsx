@@ -1,14 +1,13 @@
-import React from "react";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
-import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Layout } from "./Layout";
+import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
+import { Layout } from "@/apps/visiteur/components/Layout";
+import { useVisiteurNavigate } from "@/apps/visiteur/routeur";
+import { createFileRoute } from "@tanstack/react-router";
+import * as React from "react";
 
-type Props = {
-  onNext?: () => void;
-};
-
-export const DeclarerDeniDeJustice = ({ onNext }: Props) => {
+function AccueilVisiteur() {
+  const navigate = useVisiteurNavigate();
   return (
     <Layout>
       <Breadcrumb
@@ -113,10 +112,17 @@ export const DeclarerDeniDeJustice = ({ onNext }: Props) => {
       </CallOut>
 
       <div className="fr-mt-3w fr-grid-row fr-grid-row--center">
-        <Button size="large" onClick={onNext}>
+        <Button
+          size="large"
+          onClick={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite" })}
+        >
           Tester mon éligibilité à l'indemnisation
         </Button>
       </div>
     </Layout>
   );
-};
+}
+
+export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/")({
+  component: AccueilVisiteur,
+});

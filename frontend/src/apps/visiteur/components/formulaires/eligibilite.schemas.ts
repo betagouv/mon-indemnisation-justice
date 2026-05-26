@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ActionContentieuse, PieceProcedure, PreuvesDiligences, TypeDecision } from "../types";
-import { calculerPrescription } from "../eligibilite.utils";
+import { calculerPrescription } from "@/apps/visiteur/services/prescription";
 
 const valeursTypeDecision = [
   TypeDecision.JugementPremiereInstance,
@@ -28,7 +28,7 @@ export const SchemaEtapeDateDecision = z
   })
   .superRefine((donnees, contexte) => {
     if (!donnees.dateDecision) return;
-    const prescription = calculerPrescription(donnees.dateDecision);
+    const prescription = calculerPrescription(new Date(donnees.dateDecision));
     if (!prescription.rempli) {
       contexte.addIssue({
         code: "custom",
