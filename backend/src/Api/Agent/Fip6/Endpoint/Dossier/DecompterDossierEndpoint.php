@@ -40,6 +40,7 @@ class DecompterDossierEndpoint
 
         if ($agent->estRedacteur()) {
             $decomptes['a-instruire'] = $agent->nbDossiersAInstruire();
+            $decomptes['en-instruction'] = $agent->nbDossiersEnInstruction();
             $decomptes['a-verifier'] = $agent->nbDossiersAVerifier();
         }
 

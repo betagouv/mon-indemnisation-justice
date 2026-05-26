@@ -130,7 +130,7 @@ const EspaceRedacteur = () => {
                 },
               ]
             : []),
-          // Liste des dossiers à instruire (si REDACTEUR)
+          // Liste des dossiers en instruction / à instruire (si REDACTEUR)
           ...(agent.aRole(RoleAgent.REDACTEUR)
             ? [
                 {
@@ -147,6 +147,22 @@ const EspaceRedacteur = () => {
                   ),
                   linkProps: {
                     to: "/dossiers/a-instruire",
+                  },
+                },
+                {
+                  text: (
+                    <>
+                      En cours d'instruction
+                      <Badge
+                        as={"p"}
+                        small={true}
+                        className={"fr-badge--blue-ecume"}
+                        children={compteurDossiers["en-instruction"]}
+                      />
+                    </>
+                  ),
+                  linkProps: {
+                    to: "/dossiers/en-instruction",
                   },
                 },
               ]
