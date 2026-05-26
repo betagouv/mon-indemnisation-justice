@@ -1,21 +1,16 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { validerParametres } from "@/apps/agent/fip6/composants/routes/RechercherRoute.tsx";
+import { RechercherRoute, validerParametres } from "@/apps/agent/fip6/composants/routes/RechercherRoute.tsx";
 import { container } from "@/apps/agent/fip6/container";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import "@/style/agents.css";
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import React from "react";
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/dossiers/")({
+export const Route = createFileRoute("/dossiers/rechercher")({
   loader: async ({ context }: { context: AgentContext }) => ({
     agent: context.agent,
     // TODO transformer par un appel API
     redacteurs: await container.get(AgentManagerInterface.$).redacteurs(),
   }),
   validateSearch: validerParametres,
-  component: IndexDossiers,
+  component: RechercherRoute,
 });
-
-function IndexDossiers() {
-  return <Navigate to="/dossiers/rechercher" search={{} as any} />;
-}

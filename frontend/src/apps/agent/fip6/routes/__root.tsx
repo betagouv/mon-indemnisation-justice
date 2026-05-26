@@ -57,6 +57,15 @@ const EspaceRedacteur = () => {
 
     const liens: NavItem[] = [];
 
+    if (agent.aRole(RoleAgent.REDACTEUR)) {
+      liens.push({
+        text: <>Mes dossiers</>,
+        linkProps: {
+          to: "/dossiers/mes-dossiers",
+        },
+      });
+    }
+
     if (agent.aRole(RoleAgent.DOSSIER)) {
       liens.push({
         text: (
