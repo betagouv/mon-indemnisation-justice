@@ -20,7 +20,9 @@ export const memeJour = (a: Date, b: Date): boolean => {
   );
 };
 
-export const periode = (de: Date, a: Date = new Date()): string => {
+export const periode = (de: Date, a: Date | undefined = undefined): string => {
+  a = a ?? new Date();
+
   // Différence en secondes
   let diff = (a.getTime() - de.getTime()) / 1000;
 

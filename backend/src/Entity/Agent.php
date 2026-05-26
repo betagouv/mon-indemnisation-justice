@@ -258,6 +258,14 @@ class Agent implements UserInterface
         return $this;
     }
 
+    /**
+     * @return Dossier[]
+     */
+    protected function getDossiersParEtatActuel(EtatDossierType $etatActuel): array
+    {
+        return $this->dossiers->filter(fn (Dossier $dossier) => $dossier->getEtatDossier()->getEtat() === $etatActuel)->toArray();
+    }
+
     public function nbDossiersAInstruire(): int
     {
         return count($this->getDossiersAInstruire());
@@ -268,7 +276,20 @@ class Agent implements UserInterface
      */
     public function getDossiersAInstruire(): array
     {
-        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (Dossier $dossier) => in_array($dossier->getEtatDossier()->getEtat(), [EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_EN_INSTRUCTION]))->toArray() : [];
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_A_INSTRUIRE) : [];
+    }
+
+    public function nbDossiersEnInstruction(): int
+    {
+        return count($this->getDossiersEnInstruction());
+    }
+
+    /**
+     * @return Dossier[]
+     */
+    public function getDossiersEnInstruction(): array
+    {
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_EN_INSTRUCTION) : [];
     }
 
     public function nbDossiersAVerifier(): int
@@ -281,7 +302,7 @@ class Agent implements UserInterface
      */
     public function getDossiersAVerifier(): array
     {
-        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->dossiers->filter(fn (Dossier $dossier) => EtatDossierType::DOSSIER_OK_A_VERIFIER === $dossier->getEtatDossier()->getEtat())->toArray() : [];
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_OK_A_VERIFIER) : [];
     }
 
     /**

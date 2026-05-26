@@ -1,10 +1,5 @@
 import { queryClient } from "@/apps/agent/fip6/query.ts";
-import {
-  BaseDossier,
-  Document,
-  DocumentType,
-  DossierDetail,
-} from "@/common/models";
+import { BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
@@ -12,6 +7,7 @@ export type ListeDossier =
   | "a-categoriser"
   | "a-attribuer"
   | "a-instruire"
+  | "en-instruction"
   | "rejet-a-signer"
   | "proposition-a-signer"
   | "a-verifier"

@@ -6,7 +6,7 @@ use MonIndemnisationJustice\Entity\Dossier;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
-class DossierAInstruireOutput
+class DossierEnInstructionOutput
 {
     public function __construct(
         public readonly int $id,
@@ -14,9 +14,11 @@ class DossierAInstruireOutput
         public readonly string $requerant,
         public readonly string $adresse,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        public readonly \DateTimeInterface $dateOperation,
+        public readonly ?\DateTimeInterface $dateOperation,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         public readonly \DateTimeInterface $datePublication,
+        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
+        public readonly \DateTimeInterface $dateDebutInstruction,
     ) {
     }
 
@@ -28,7 +30,8 @@ class DossierAInstruireOutput
             requerant: $dossier->getUsager()->getNomCourant(),
             adresse: $dossier->getBrisPorte()->getAdresse()->getLibelle(),
             dateOperation: $dossier->getBrisPorte()->getDateOperation(),
-            datePublication: $dossier->getDateDeclaration()
+            datePublication: $dossier->getDateDeclaration(),
+            dateDebutInstruction: $dossier->getEtatDossier()->getDate(),
         );
     }
 }
