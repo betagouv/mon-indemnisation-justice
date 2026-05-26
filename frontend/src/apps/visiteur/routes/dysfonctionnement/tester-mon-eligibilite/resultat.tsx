@@ -1,22 +1,17 @@
-import React from "react";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Layout } from "./Layout";
+import { Layout } from "@/apps/visiteur/components/Layout";
+import { calculerPrescription } from "@/apps/visiteur/services/prescription";
 import {
   ActionContentieuse,
   PreuvesDiligences,
-  type ReponsesEligibilite,
   TypeDecision,
-} from "./types";
-import { calculerPrescription } from "./eligibilite.utils";
-
-type Props = {
-  reponses: ReponsesEligibilite;
-  onRecommencer: () => void;
-  onDeposerDossier: () => void;
-  onPrecedent: () => void;
-};
+  type ReponsesEligibilite,
+} from "@/apps/visiteur/components/types";
+import { REQUERANT_URL, useVisiteurNavigate } from "@/apps/visiteur/routeur";
+import { createFileRoute, redirect, useLocation } from "@tanstack/react-router";
+import * as React from "react";
 
 type Critere = {
   label: string;
@@ -25,7 +20,7 @@ type Critere = {
 };
 
 const buildCriteres = (reponses: ReponsesEligibilite): Critere[] => {
-  const prescription = calculerPrescription(reponses.dateDecision);
+  const prescription = calculerPrescription(reponses.dateDecision ? new Date(reponses.dateDecision) : undefined);
   return [
     {
       label: "Date de la décision",
@@ -77,12 +72,10 @@ const buildCriteres = (reponses: ReponsesEligibilite): Critere[] => {
   ];
 };
 
-export const ResultatEligibilite = ({
-  reponses,
-  onRecommencer,
-  onDeposerDossier,
-  onPrecedent,
-}: Props) => {
+function ResultatEligibiliteRoute() {
+  const navigate = useVisiteurNavigate();
+  const { state } = useLocation();
+  const reponses = state.reponses!;
   const criteres = buildCriteres(reponses);
   const eligible = criteres.every((c) => c.rempli);
 
@@ -98,7 +91,7 @@ export const ResultatEligibilite = ({
               href: "#",
               onClick: (e) => {
                 e.preventDefault();
-                onPrecedent();
+                navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" });
               },
             },
           },
@@ -172,12 +165,21 @@ export const ResultatEligibilite = ({
           priority="tertiary no outline"
           iconId="fr-icon-arrow-left-line"
           iconPosition="left"
-          onClick={onRecommencer}
+          onClick={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite" })}
         >
           Recommencer le test
         </Button>
-        <Button onClick={onDeposerDossier}>Déposer un dossier</Button>
+        <Button onClick={() => { window.location.href = REQUERANT_URL; }}>Déposer un dossier</Button>
       </div>
     </Layout>
   );
-};
+}
+
+export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/resultat")({
+  component: ResultatEligibiliteRoute,
+  beforeLoad: ({ location }) => {
+    if (!location.state?.reponses) {
+      throw redirect({ to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite" } as any);
+    }
+  },
+});

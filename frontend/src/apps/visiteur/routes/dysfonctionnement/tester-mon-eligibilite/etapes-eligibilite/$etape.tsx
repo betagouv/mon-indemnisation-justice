@@ -6,7 +6,7 @@ import { Layout } from "@/apps/visiteur/components/Layout";
 import { STEPS, STEP_COUNT, TOTAL_STEPS } from "@/apps/visiteur/components/steps";
 import type { ReponsesEligibilite } from "@/apps/visiteur/components/types";
 
-const BASE = "/deni-de-justice/tester-mon-eligibilite";
+const BASE = "/dysfonctionnement/tester-mon-eligibilite";
 
 function EtapeEligibiliteRoute() {
   const { etape } = Route.useParams();
@@ -74,14 +74,14 @@ function EtapeEligibiliteRoute() {
 }
 
 export const Route = createFileRoute(
-  "/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/$etape",
+  "/dysfonctionnement/tester-mon-eligibilite/etapes-eligibilite/$etape",
 )({
   component: EtapeEligibiliteRoute,
   beforeLoad: ({ params }) => {
     const etapeNum = parseInt(params.etape, 10);
     if (isNaN(etapeNum) || etapeNum < 1 || etapeNum > STEP_COUNT) {
       throw redirect({
-        to: "/deni-de-justice/tester-mon-eligibilite/etapes-eligibilite/1",
+        to: "/dysfonctionnement/tester-mon-eligibilite/etapes-eligibilite/1",
       } as any);
     }
   },

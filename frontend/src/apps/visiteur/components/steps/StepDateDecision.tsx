@@ -2,7 +2,7 @@ import React from "react";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
-import { calculerPrescription } from "../eligibilite.utils";
+import { calculerPrescription } from "@/apps/visiteur/services/prescription";
 import { SchemaEtapeDateDecision } from "../formulaires/eligibilite.schemas";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
@@ -44,7 +44,7 @@ export function StepDateDecision({ reponses, onPrecedent, onSuivant, isLastStep 
   });
 
   const dateDecision = useStore(formulaire.store, (state) => state.values.dateDecision);
-  const prescription = dateDecision ? calculerPrescription(dateDecision) : null;
+  const prescription = calculerPrescription(dateDecision ? new Date(dateDecision) : undefined);
 
   return (
     <>
@@ -86,7 +86,7 @@ export function StepDateDecision({ reponses, onPrecedent, onSuivant, isLastStep 
             className="fr-mt-2w"
             severity="success"
             title="Vous êtes dans les délais"
-            description={`Votre demande est recevable jusqu'au ${prescription.expiration?.toLocaleDateString("fr-FR")}.`}
+            description={prescription.detail}
           />
         )}
         <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} />

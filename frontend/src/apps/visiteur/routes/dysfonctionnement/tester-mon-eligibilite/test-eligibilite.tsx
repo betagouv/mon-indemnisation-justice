@@ -1,18 +1,16 @@
-import React, { useState } from "react";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Layout } from "./Layout";
-import { TOTAL_STEPS } from "./steps";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { Layout } from "@/apps/visiteur/components/Layout";
+import { TOTAL_STEPS } from "@/apps/visiteur/components/steps";
+import { useVisiteurNavigate } from "@/apps/visiteur/routeur";
+import { createFileRoute } from "@tanstack/react-router";
+import React, { useState } from "react";
 
-type Props = {
-  onPrecedent: () => void;
-  onCommencer: () => void;
-};
-
-export const TestEligibilite = ({ onPrecedent, onCommencer }: Props) => {
+function TestEligibiliteRoute() {
+  const navigate = useVisiteurNavigate();
   const [procedureTerminee, setProcedureTerminee] = useState<boolean | undefined>(undefined);
   const [submitted, setSubmitted] = useState(false);
 
@@ -30,7 +28,7 @@ export const TestEligibilite = ({ onPrecedent, onCommencer }: Props) => {
               href: "#",
               onClick: (e) => {
                 e.preventDefault();
-                onPrecedent();
+                navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" });
               },
             },
           },
@@ -65,7 +63,9 @@ export const TestEligibilite = ({ onPrecedent, onCommencer }: Props) => {
               </>
             }
           />
-          <Button onClick={onPrecedent}>Retour à l'accueil</Button>
+          <Button onClick={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}>
+            Retour à l'accueil
+          </Button>
         </>
       ) : (
         <>
@@ -103,8 +103,11 @@ export const TestEligibilite = ({ onPrecedent, onCommencer }: Props) => {
             className="fr-mt-2w"
             disabled={procedureTerminee === undefined}
             onClick={() => {
-              if (procedureTerminee) onCommencer();
-              else setSubmitted(true);
+              if (procedureTerminee) {
+                navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/etapes-eligibilite/1" as any });
+              } else {
+                setSubmitted(true);
+              }
             }}
           >
             Suivant
@@ -113,4 +116,8 @@ export const TestEligibilite = ({ onPrecedent, onCommencer }: Props) => {
       )}
     </Layout>
   );
-};
+}
+
+export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/test-eligibilite")({
+  component: TestEligibiliteRoute,
+});

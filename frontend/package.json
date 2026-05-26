@@ -7,10 +7,7 @@
     "prebuild": "react-dsfr update-icons",
     "dev": "vite --base=/preview",
     "build": "vite build",
-    "test": "vitest run",
-    "prestorybook": "kill-port 6006 || true",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "test": "vitest run"
   },
   "dependencies": {
     "@codegouvfr/react-dsfr": "^1.32.0",
@@ -55,8 +52,6 @@
     "@eslint/css": "^0.11.1",
     "@eslint/json": "^0.13.2",
     "@playwright/test": "^1.52.0",
-    "@storybook/react": "^10.3.6",
-    "@storybook/react-vite": "^10.3.6",
     "@types/lodash": "^4.17.24",
     "@types/node": "^24.1.0",
     "@types/react": "^19.2.14",
@@ -66,10 +61,8 @@
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.4.0",
     "jiti": "^2.6.0",
-    "kill-port": "^2.0.1",
     "prettier": "3.5.1",
     "prettier-plugin-organize-imports": "^4.3.0",
-    "storybook": "^10.3.6",
     "stylelint": "^16.14.1",
     "stylelint-config-standard": "^38.0.0",
     "typescript": "^5.9.3",
