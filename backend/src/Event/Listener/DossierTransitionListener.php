@@ -131,7 +131,7 @@ class DossierTransitionListener
             ->htmlTemplate('email/agent/fip6/dossier_proposition_acceptee.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
-            ]);
+            ])->send();
     }
 
     public function dossierArreteEdite(DossierArreteEditeEvent $evenement): void
