@@ -1,7 +1,12 @@
 import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
 import { Route } from "@/apps/agent/fip6/routes/dossiers";
 import { Loader } from "@/common/composants/Loader.tsx";
-import { Agent, DossierApercu, EtatDossierType, Redacteur } from "@/common/models";
+import {
+  Agent,
+  DossierApercu,
+  EtatDossierType,
+  Redacteur,
+} from "@/common/models";
 import { dateEtHeureSimple, periode } from "@/common/services/date.ts";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
@@ -308,6 +313,7 @@ export const RechercherDossierPage = ({
                   />
                 </div>
               )}
+              {/* TODO convertir en un composant réutilisable avec l'usage de https://components.react-dsfr.codegouv.studio/?path=/docs/components-table--default */}
               <div className="fr-col-12 fr-my-1w">
                 <div className="fr-table fr-m-0">
                   {isPending ? (
@@ -323,7 +329,7 @@ export const RechercherDossierPage = ({
                                   Référence / état
                                 </th>
                                 <th scope="col" className="fr-col-4">
-                                  Idéntité et adresse du requérant
+                                  Identité et adresse du requérant
                                 </th>
                                 <th scope="col" className="fr-col-3">
                                   Déposé le

@@ -19,7 +19,6 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 #[IsGranted(DossierVoter::ACTION_RECHERCHER, message: 'Seul un agent habilité peut rechercher des dossiers', statusCode: Response::HTTP_FORBIDDEN)]
 class RechercherDossiersEndpoint
 {
-    // TODO testez-moi
     public function __invoke(
         #[MapQueryString] RechercherDossiersInput $input,
         DossierRepository $dossierRepository,

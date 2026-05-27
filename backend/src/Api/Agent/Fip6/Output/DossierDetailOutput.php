@@ -21,6 +21,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
         // TODO renommer en front également
         ?RapportAuLogement $qualiteRequerant,
         ?bool $estEligible,
+        public UsagerOutput $usager,
         public RequerantOutput $requerant,
         public AdresseOutput $adresse,
         // TODO implémenter
@@ -59,6 +60,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
             typeAttestation: $dossier->getBrisPorte()->getTypeAttestation(),
             qualiteRequerant: $dossier->getBrisPorte()->getRapportAuLogement(),
             estEligible: $dossier->getBrisPorte()->getTestEligibilite()?->estEligible(),
+            usager: UsagerOutput::depuisUsager($dossier->getUsager()),
             requerant: RequerantOutput::depuisRequerant($dossier->estPersonneMorale() ? $dossier->getRequerantPersonneMorale() : $dossier->getRequerantPersonnePhysique()),
             adresse: AdresseOutput::depuisAdresse($dossier->getBrisPorte()->getAdresse()),
             testEligibilite: TestEligibiliteOutput::depuisTestEligibilite($dossier->getBrisPorte()->getTestEligibilite()),

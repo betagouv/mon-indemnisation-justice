@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Agent\Fip6\Agent\Endpoint;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Agent\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Agent\ListerRedacteurEndpoint;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;

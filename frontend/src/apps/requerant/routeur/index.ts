@@ -36,6 +36,8 @@ await container
 
     Crisp.session.setData({
       usager_id: context.usager.id,
+      // Route vers @./../routes/dossiers/usager/$uid.tsx
+      url_dossier: `${window.location.origin}/agent/fip6/dossiers/usager/${context.usager.id}`,
     });
   });
 
