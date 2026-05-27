@@ -1,6 +1,6 @@
 <?php
 
-namespace Service;
+namespace MonIndemnisationJustice\Tests\Service;
 
 use MonIndemnisationJustice\Service\MontantAfficheur;
 use PHPUnit\Framework\Attributes\CoversClass;
