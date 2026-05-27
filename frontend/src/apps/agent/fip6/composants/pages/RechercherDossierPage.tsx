@@ -1,25 +1,21 @@
 import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
 import { Route } from "@/apps/agent/fip6/routes/dossiers";
 import { Loader } from "@/common/composants/Loader.tsx";
-import {
-  Agent,
-  DossierApercu,
-  EtatDossierType,
-  Redacteur,
-} from "@/common/models";
+import { Agent, DossierApercu, EtatDossierType, Redacteur } from "@/common/models";
 import { dateEtHeureSimple, periode } from "@/common/services/date.ts";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import Pagination from "@codegouvfr/react-dsfr/Pagination";
 import { Select } from "@codegouvfr/react-dsfr/Select";
+import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { plainToInstance } from "class-transformer";
 import _ from "lodash";
 import React, { useMemo, useState } from "react";
 
-type RechercheRequete = {
+export type RechercheRequete = {
   etatsDossier: EtatDossierType[];
   attributaires: Redacteur[];
   inclureDossierNonAttribue: boolean;
@@ -70,14 +66,14 @@ export const validerParametres = (
  *
  * @returns Record<string, string>
  */
-const requeteVersParametres = (
+export const requeteVersParametres = (
   requete: RechercheRequete,
 ): Record<string, string> => {
   return Object.fromEntries(
     Object.entries({
-      p: requete.page.toString(),
+      p: requete.page?.toString(),
       a:
-        requete.attributaires.length > 0 || requete.inclureDossierNonAttribue
+        requete.attributaires?.length > 0 || requete.inclureDossierNonAttribue
           ? requete.attributaires
               .map((a) => a.id.toString())
               .concat(...(requete.inclureDossierNonAttribue ? ["_"] : []))
@@ -106,72 +102,42 @@ const requeteVersUrl = (requete: RechercheRequete): string => {
     .join("&");
 };
 
-export const RechercherRoute = () => {
+export const RechercherDossierPage = ({
+  agent,
+  redacteurs,
+  requete,
+  construireLien,
+  activerFiltreAttributaires = true,
+}: {
+  agent: Agent;
+  redacteurs: Redacteur[];
+  requete: RechercheRequete;
+  construireLien: ({
+    changement,
+  }: {
+    changement: Partial<RechercheRequete>;
+  }) => RegisteredLinkProps;
+  activerFiltreAttributaires?: boolean;
+}) => {
   // Fonction de navigation à partir de cette route
   const naviguer = useNavigate();
 
-  // Récupérer l'agent actuellement connecté
-  const { agent, redacteurs }: { agent: Agent; redacteurs: Redacteur[] } =
-    Route.useLoaderData();
-
-  // Récupérer les paramètres de recherche
-  const {
-    p,
-    a,
-    e,
-    r,
-  }: {
-    p: number;
-    a?: string;
-    e?: string;
-    r?: string;
-  } = Route.useSearch();
-
-  // L'état de la requête de recherche de dossiers, calculée à partir des paramères GET
-  const requete: RechercheRequete = useMemo<RechercheRequete>(() => {
-    const etats = e?.split("|");
-    const attributaires = a?.split("|").map((id) => parseInt(id));
-
-    return {
-      etatsDossier: etats
-        ? EtatDossierType.liste.filter((e) => etats.includes(e.slug))
-        : [
-            EtatDossierType.A_ATTRIBUER,
-            EtatDossierType.A_INSTRUIRE,
-            EtatDossierType.EN_INSTRUCTION,
-            EtatDossierType.OK_A_SIGNER,
-            EtatDossierType.OK_A_APPROUVER,
-            EtatDossierType.OK_A_VERIFIER,
-            EtatDossierType.OK_VERIFIE,
-            EtatDossierType.OK_A_INDEMNISER,
-            EtatDossierType.OK_EN_ATTENTE_PAIEMENT,
-            EtatDossierType.OK_INDEMNISE,
-            EtatDossierType.KO_A_SIGNER,
-            EtatDossierType.KO_REJETE,
-          ],
-      attributaires: attributaires
-        ? redacteurs.filter((redacteur: Redacteur) =>
-            attributaires.includes(redacteur.id),
-          )
-        : [],
-      inclureDossierNonAttribue: !!a?.split("|").find((v) => v === "_"),
-      recherche: r ?? "",
-      page: p,
-    };
-  }, [p, e, a, r]);
-
-  //
+  // Afficher les critères de recherche ou non
   const [afficherCriteres, setAfficherCriteres] = useState(false);
 
+  // Traduire la requête de recherche en paramètres d'URL
+  const urlParametres = useMemo(() => requeteVersUrl(requete), [requete]);
+
+  // Requête de récupération des dossiers
   const {
     isPending,
     error,
     data: reponse,
   } = useQuery<RechercheReponse>({
-    queryKey: ["recherche-dossiers", requeteVersUrl(requete)],
+    queryKey: ["recherche-dossiers", urlParametres],
     queryFn: async () => {
       const reponse = await fetch(
-        `/api/agent/fip6/dossiers/rechercher?${requeteVersUrl(requete)}`,
+        `/api/agent/fip6/dossiers/rechercher?${urlParametres}`,
       );
       const data = await reponse.json();
 
@@ -206,13 +172,13 @@ export const RechercherRoute = () => {
                     placeholder: "Paul, 75001 PARIS, GARNIER, ...",
                     defaultValue: requete.recherche,
                     onChange: _.debounce(async (e) => {
-                      await naviguer({
-                        to: Route.fullPath,
-                        search: requeteVersParametres({
-                          ...requete,
-                          recherche: e.target.value as string,
-                        }) as any,
-                      });
+                      await naviguer(
+                        construireLien({
+                          changement: {
+                            recherche: e.target.value as string,
+                          },
+                        }),
+                      );
                     }, 500),
                   }}
                 />
@@ -229,17 +195,17 @@ export const RechercherRoute = () => {
                     defaultValue: requete.etatsDossier.map((etat) => etat.slug),
 
                     onChange: async (event) => {
-                      await naviguer({
-                        to: Route.fullPath,
-                        search: requeteVersParametres({
-                          ...requete,
-                          etatsDossier: EtatDossierType.liste.filter((e) =>
-                            Array.from(event.target.selectedOptions)
-                              .map((option) => option.value)
-                              .includes(e.slug),
-                          ),
-                        }) as any,
-                      });
+                      await naviguer(
+                        construireLien({
+                          changement: {
+                            etatsDossier: EtatDossierType.liste.filter((e) =>
+                              Array.from(event.target.selectedOptions)
+                                .map((option) => option.value)
+                                .includes(e.slug),
+                            ),
+                          },
+                        }),
+                      );
                     },
                   }}
                 >
@@ -251,55 +217,61 @@ export const RechercherRoute = () => {
                 </Select>
               </div>
 
-              <div className="fr-col-4">
-                <Checkbox
-                  legend="Rédacteur attribué"
-                  hintText="&zwnj;"
-                  options={[
-                    {
-                      label: (
-                        <>
-                          Aucun <i className="fr-mx-1v">(non attribué)</i>
-                        </>
-                      ),
-                      nativeInputProps: {
-                        value: "",
-                        onChange: async (e) => {
-                          await naviguer({
-                            to: Route.fullPath,
-                            search: requeteVersParametres({
-                              ...requete,
-                              inclureDossierNonAttribue: e.target.checked,
-                            }) as any,
-                          });
+              {activerFiltreAttributaires && (
+                <div className="fr-col-4">
+                  <Checkbox
+                    legend="Rédacteur attribué"
+                    hintText="&zwnj;"
+                    options={[
+                      {
+                        label: (
+                          <>
+                            Aucun <i className="fr-mx-1v">(non attribué)</i>
+                          </>
+                        ),
+                        nativeInputProps: {
+                          value: "",
+                          onChange: async (e) => {
+                            await naviguer(
+                              construireLien({
+                                changement: {
+                                  inclureDossierNonAttribue: e.target.checked,
+                                },
+                              }),
+                            );
+                          },
+                          checked: requete.inclureDossierNonAttribue,
                         },
-                        checked: requete.inclureDossierNonAttribue,
                       },
-                    },
-                    ...(redacteurs || []).map((redacteur) => ({
-                      label:
-                        agent.id === redacteur.id ? <b>Moi</b> : redacteur.nom,
-                      nativeInputProps: {
-                        onChange: async (e) => {
-                          await naviguer({
-                            to: Route.fullPath,
-                            search: requeteVersParametres({
-                              ...requete,
-                              attributaires: requete.attributaires
-                                .filter((a) => a.id !== redacteur.id)
-                                .concat(
-                                  ...(e.target.checked ? [redacteur] : []),
-                                ),
-                            }) as any,
-                          });
+                      ...(redacteurs || []).map((redacteur) => ({
+                        label:
+                          agent.id === redacteur.id ? (
+                            <b>Moi</b>
+                          ) : (
+                            redacteur.nom
+                          ),
+                        nativeInputProps: {
+                          onChange: async (e) => {
+                            await naviguer(
+                              construireLien({
+                                changement: {
+                                  attributaires: requete.attributaires
+                                    .filter((a) => a.id !== redacteur.id)
+                                    .concat(
+                                      ...(e.target.checked ? [redacteur] : []),
+                                    ),
+                                },
+                              }),
+                            );
+                          },
+                          checked: requete.attributaires.includes(redacteur),
                         },
-                        checked: requete.attributaires.includes(redacteur),
-                      },
-                    })),
-                  ]}
-                  state="default"
-                />
-              </div>
+                      })),
+                    ]}
+                    state="default"
+                  />
+                </div>
+              )}
             </div>
           </Accordion>
 
@@ -325,11 +297,10 @@ export const RechercherRoute = () => {
                     defaultPage={requete.page}
                     showFirstLast={true}
                     getPageLinkProps={(pageNumber: number) => ({
-                      from: Route.fullPath,
-                      to: Route.fullPath,
-                      search: requeteVersParametres({
-                        ...requete,
-                        page: pageNumber,
+                      ...construireLien({
+                        changement: {
+                          page: pageNumber,
+                        },
                       }),
                       "aria-current":
                         requete.page === pageNumber ? "true" : undefined,
@@ -475,11 +446,10 @@ export const RechercherRoute = () => {
                     defaultPage={requete.page}
                     showFirstLast={true}
                     getPageLinkProps={(pageNumber: number) => ({
-                      from: Route.fullPath,
-                      to: Route.fullPath,
-                      search: requeteVersParametres({
-                        ...requete,
-                        page: pageNumber,
+                      ...construireLien({
+                        changement: {
+                          page: pageNumber,
+                        },
                       }),
                       "aria-current":
                         requete.page === pageNumber ? "true" : undefined,

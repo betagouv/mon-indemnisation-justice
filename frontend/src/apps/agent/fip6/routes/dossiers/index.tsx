@@ -1,18 +1,8 @@
-import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { validerParametres } from "@/apps/agent/fip6/composants/routes/RechercherRoute.tsx";
-import { container } from "@/apps/agent/fip6/container";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import "@/style/agents.css";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import React from "react";
 
 export const Route = createFileRoute("/dossiers/")({
-  loader: async ({ context }: { context: AgentContext }) => ({
-    agent: context.agent,
-    // TODO transformer par un appel API
-    redacteurs: await container.get(AgentManagerInterface.$).redacteurs(),
-  }),
-  validateSearch: validerParametres,
   component: IndexDossiers,
 });
 
