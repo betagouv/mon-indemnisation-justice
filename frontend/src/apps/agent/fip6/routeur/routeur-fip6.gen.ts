@@ -27,6 +27,7 @@ import { Route as DossiersACategoriserRouteImport } from './../routes/dossiers/a
 import { Route as DossiersAAttribuerRouteImport } from './../routes/dossiers/a-attribuer'
 import { Route as AgentsGestionRouteImport } from './../routes/agents/gestion'
 import { Route as DossierIdIndexRouteImport } from './../routes/dossier/$id/index'
+import { Route as DossiersUsagerIdRouteImport } from './../routes/dossiers/usager/$id'
 
 const MonCompteRoute = MonCompteRouteImport.update({
   id: '/mon-compte',
@@ -120,6 +121,11 @@ const DossierIdIndexRoute = DossierIdIndexRouteImport.update({
   path: '/dossier/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DossiersUsagerIdRoute = DossiersUsagerIdRouteImport.update({
+  id: '/dossiers/usager/$id',
+  path: '/dossiers/usager/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
   '/dossier': typeof DossierIndexRoute
   '/dossiers': typeof DossiersIndexRoute
+  '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
   '/dossier/$id': typeof DossierIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
   '/dossier': typeof DossierIndexRoute
   '/dossiers': typeof DossiersIndexRoute
+  '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
   '/dossier/$id': typeof DossierIdIndexRoute
 }
 export interface FileRoutesById {
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
   '/dossier/': typeof DossierIndexRoute
   '/dossiers/': typeof DossiersIndexRoute
+  '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
   '/dossier/$id/': typeof DossierIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/dossiers/rejet-a-signer'
     | '/dossier'
     | '/dossiers'
+    | '/dossiers/usager/$id'
     | '/dossier/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/dossiers/rejet-a-signer'
     | '/dossier'
     | '/dossiers'
+    | '/dossiers/usager/$id'
     | '/dossier/$id'
   id:
     | '__root__'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/dossiers/rejet-a-signer'
     | '/dossier/'
     | '/dossiers/'
+    | '/dossiers/usager/$id'
     | '/dossier/$id/'
   fileRoutesById: FileRoutesById
 }
@@ -263,6 +275,7 @@ export interface RootRouteChildren {
   DossiersRejetASignerRoute: typeof DossiersRejetASignerRoute
   DossierIndexRoute: typeof DossierIndexRoute
   DossiersIndexRoute: typeof DossiersIndexRoute
+  DossiersUsagerIdRoute: typeof DossiersUsagerIdRoute
   DossierIdIndexRoute: typeof DossierIdIndexRoute
 }
 
@@ -394,6 +407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DossierIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dossiers/usager/$id': {
+      id: '/dossiers/usager/$id'
+      path: '/dossiers/usager/$id'
+      fullPath: '/dossiers/usager/$id'
+      preLoaderRoute: typeof DossiersUsagerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -415,6 +435,7 @@ const rootRouteChildren: RootRouteChildren = {
   DossiersRejetASignerRoute: DossiersRejetASignerRoute,
   DossierIndexRoute: DossierIndexRoute,
   DossiersIndexRoute: DossiersIndexRoute,
+  DossiersUsagerIdRoute: DossiersUsagerIdRoute,
   DossierIdIndexRoute: DossierIdIndexRoute,
 }
 export const routeTree = rootRouteImport

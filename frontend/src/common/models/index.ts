@@ -12,6 +12,7 @@ import {
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
 import { TestEligibilite } from "./TestEligibilite";
+import { Usager } from "./Usager";
 
 export {
   Administration,
@@ -29,4 +30,5 @@ export {
   Requerant,
   TestEligibilite,
   TypeFDO,
+  Usager,
 };

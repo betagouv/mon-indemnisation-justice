@@ -13,6 +13,7 @@ import {
   Requerant,
   TestEligibilite,
   TypeFDO,
+  Usager
 } from ".";
 
 export type TypeAttestation =
@@ -141,6 +142,9 @@ export class DossierApercu extends BaseDossier {
 }
 
 export class DossierDetail extends BaseDossier {
+  @Expose()
+  @Type(() => Usager)
+  public readonly usager: Usager;
   @Expose()
   @Type(() => Requerant)
   public readonly requerant: Requerant;

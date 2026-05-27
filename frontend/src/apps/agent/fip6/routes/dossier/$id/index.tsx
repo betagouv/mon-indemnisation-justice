@@ -5,16 +5,16 @@ import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/
 import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier";
 import {
   ChampPieceJointe,
-  TelechargerPieceJointe,
+  TelechargerPieceJointe
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
+import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
 import { Agent, Document, DossierDetail, Redacteur } from "@/common/models";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
-import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
 import { dateEtHeureSimple } from "@/common/services/date";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 
@@ -172,7 +172,13 @@ const ConsultationDossier = observer(function ConsultationDossier({
                 ) : (
                   <>En cours de constitution</>
                 )}{" "}
-                par <u>{dossier.requerant.nomSimple()}</u>
+                par{" "}
+                <Link
+                  to={"/dossiers/usager/$id"}
+                  params={{ id: dossier.usager.id.toString() }}
+                >
+                  {dossier.usager.nomSimple()}
+                </Link>
               </p>
 
               <div className="fr-my-1v">

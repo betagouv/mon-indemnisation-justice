@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Api\Agent\Fip6\Dossier\Endpoint;
+namespace MonIndemnisationJustice\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\RechercherDossiersEndpoint;
 use MonIndemnisationJustice\Entity\Dossier;
