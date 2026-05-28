@@ -1,3 +1,5 @@
+export const TOTAL_STEPS = 6;
+
 export { NavButtons } from "./NavButtons";
 export { StepDateDecision } from "./StepDateDecision";
 export { StepActionContentieuse } from "./StepActionContentieuse";

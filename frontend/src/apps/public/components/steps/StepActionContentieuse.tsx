@@ -22,7 +22,6 @@ export function StepActionContentieuse({ onPrecedent, onSuivant, isLastStep }: S
       onSubmit={async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        formulaire.validate("submit");
         await formulaire.handleSubmit();
       }}
     >

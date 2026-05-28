@@ -58,7 +58,6 @@ export function StepDateDecision({ onPrecedent, onSuivant, isLastStep }: StepPro
         onSubmit={async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          formulaire.validate("submit");
           await formulaire.handleSubmit();
         }}
       >

@@ -4,7 +4,7 @@ import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
 import { Layout } from "@/apps/public/components/Layout";
 import { usePublicNavigate } from "@/apps/public/routeur";
 import { createFileRoute } from "@tanstack/react-router";
-import * as React from "react";
+import React from "react";
 
 function AccueilVisiteur() {
   const navigate = usePublicNavigate();

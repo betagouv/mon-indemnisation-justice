@@ -5,10 +5,9 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "@/apps/public/components/Layout";
 import { usePublicNavigate } from "@/apps/public/routeur";
+import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
-
-const TOTAL_STEPS = 6;
 
 function TestEligibiliteRoute() {
   const navigate = usePublicNavigate();

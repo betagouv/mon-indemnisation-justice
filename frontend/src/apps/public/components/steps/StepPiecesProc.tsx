@@ -22,7 +22,6 @@ export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep }: StepProps
       onSubmit={async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        formulaire.validate("submit");
         await formulaire.handleSubmit();
       }}
     >
