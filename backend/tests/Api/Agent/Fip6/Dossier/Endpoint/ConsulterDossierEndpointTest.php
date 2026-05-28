@@ -40,6 +40,11 @@ class ConsulterDossierEndpointTest extends AbstractEndpointTestCase
                 'id' => $dossier->getRedacteur()->getId(),
                 'nom' => $dossier->getRedacteur()->getNomComplet(capital: true),
             ] : null,
+            'usager' => ['id' => $dossier->getUsager()->getId(),
+                'civilite' => $dossier->getUsager()->getPersonne()->getCivilite()->value,
+                'nom' => $dossier->getUsager()->getPersonne()->getNom(),
+                'prenom' => $dossier->getUsager()->getPersonne()->getPrenom(),
+            ],
             'notes' => null,
             'testEligibilite' => [
                 'estVise' => $dossier->getBrisPorte()->getTestEligibilite()->estVise,
