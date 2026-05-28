@@ -3,7 +3,6 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Layout } from "@/apps/public/components/Layout";
 import { REQUERANT_URL } from "@/apps/public/routeur";
 import { createFileRoute } from "@tanstack/react-router";
-import * as React from "react";
 
 type Critere = {
   label: string;

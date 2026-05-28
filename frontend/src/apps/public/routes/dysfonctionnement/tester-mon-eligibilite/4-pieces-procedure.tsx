@@ -1,12 +1,12 @@
 import React from "react";
 import { usePublicNavigate } from "@/apps/public/routeur";
+import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { createFileRoute } from "@tanstack/react-router";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "@/apps/public/components/Layout";
 import { StepPiecesProc } from "@/apps/public/components/steps/StepPiecesProc";
 
-const TOTAL_STEPS = 6;
 
 function PiecesProcedureRoute() {
   const navigate = usePublicNavigate();
@@ -19,13 +19,7 @@ function PiecesProcedureRoute() {
         segments={[
           {
             label: "Déclarer un déni de justice",
-            linkProps: {
-              href: "#",
-              onClick: (e) => {
-                e.preventDefault();
-                navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" });
-              },
-            },
+            linkProps: { to: "/dysfonctionnement/tester-mon-eligibilite/" },
           },
         ]}
       />
