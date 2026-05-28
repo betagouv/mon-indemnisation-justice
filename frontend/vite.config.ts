@@ -38,9 +38,8 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
-        generatedRouteTree:
-          "./src/apps/visiteur/routeur/routeur-visiteur.gen.ts",
-        routesDirectory: "./src/apps/visiteur/routes/",
+        generatedRouteTree: "./src/apps/public/routeur/routeur-public.gen.ts",
+        routesDirectory: "./src/apps/public/routes/",
       }),
       /** Here  */
       tanstackRouter({
@@ -101,8 +100,8 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       // Voir https://rolldown.rs/reference/
       rolldownOptions: {
         input: {
-          // Espace visiteur
-          visiteur: "./src/apps/visiteur/visiteur.tsx",
+          // Espace public
+          public: "./src/apps/public/public.tsx",
           // Espace requérant
           "requerant/dossier/tester_mon_eligibilite":
             "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
@@ -122,6 +121,7 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
           manualChunks: {
             models: ["@/common/models"],
           },
+        },
       },
     },
     server: {
