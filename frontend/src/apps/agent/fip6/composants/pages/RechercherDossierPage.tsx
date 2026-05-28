@@ -1,5 +1,4 @@
-import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
-import { Route } from "@/apps/agent/fip6/routes/dossiers";
+import { ListeDossiers } from "@/apps/agent/fip6/composants/dossiers/ListeDossiers.tsx";
 import { Loader } from "@/common/composants/Loader.tsx";
 import {
   Agent,
@@ -7,7 +6,6 @@ import {
   EtatDossierType,
   Redacteur,
 } from "@/common/models";
-import { dateEtHeureSimple, periode } from "@/common/services/date.ts";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -15,7 +13,7 @@ import Pagination from "@codegouvfr/react-dsfr/Pagination";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link.tsx";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { plainToInstance } from "class-transformer";
 import _ from "lodash";
 import React, { useMemo, useState } from "react";
@@ -315,135 +313,11 @@ export const RechercherDossierPage = ({
               )}
               {/* TODO convertir en un composant réutilisable avec l'usage de https://components.react-dsfr.codegouv.studio/?path=/docs/components-table--default */}
               <div className="fr-col-12 fr-my-1w">
-                <div className="fr-table fr-m-0">
-                  {isPending ? (
-                    <Loader />
-                  ) : (
-                    <div className="fr-table__wrapper">
-                      <div className="fr-table__container">
-                        <div className="fr-table__content">
-                          <table data-testid="tableau-dossiers-resultats">
-                            <thead>
-                              <tr>
-                                <th scope="col" className="fr-col-2">
-                                  Référence / état
-                                </th>
-                                <th scope="col" className="fr-col-4">
-                                  Identité et adresse du requérant
-                                </th>
-                                <th scope="col" className="fr-col-3">
-                                  Déposé le
-                                </th>
-                                <th scope="col" className="fr-col-2">
-                                  Attribué à
-                                </th>
-                                <th scope="col" className="fr-col-1">
-                                  <span className="fr-hidden">Action</span>
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {reponse.resultats.length > 0 ? (
-                                reponse.resultats.map(
-                                  (dossier: DossierApercu) => (
-                                    <tr key={dossier.id}>
-                                      <td className="fr-col-2">
-                                        <span className="fr-text--lg fr-text--bold">
-                                          {dossier.reference}
-                                        </span>
-                                        <br />
-                                        <p
-                                          className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.etat.slug} fr-mb-1v`}
-                                          {...(dossier.etat.estCloture()
-                                            ? {
-                                                "aria-describedby": `tooltip-etat-dossier-${dossier.id}`,
-                                              }
-                                            : {})}
-                                        >
-                                          {dossier.etat.libelle}
-                                        </p>
-                                        {dossier.etat.estCloture() && (
-                                          <span
-                                            className="fr-tooltip fr-placement"
-                                            id={`tooltip-etat-dossier-${dossier.id}`}
-                                            role="tooltip"
-                                          >
-                                            {dossier.etat.contexte
-                                              ?.motifRejet || (
-                                              <i>Aucun motif</i>
-                                            )}
-                                          </span>
-                                        )}
-                                        <br />
-                                        depuis{" "}
-                                        {periode(dossier.etat.dateEntree)}
-                                      </td>
-                                      <td
-                                        className="fr-col-4"
-                                        style={{
-                                          wordWrap: "break-word",
-                                          whiteSpace: "pre-wrap",
-                                        }}
-                                      >
-                                        <span className="fr-text--lg fr-text--bold">
-                                          {dossier.requerant}
-                                        </span>
-                                        <br />
-                                        <p>{dossier.adresse}</p>
-                                      </td>
-                                      <td
-                                        className="fr-col-2"
-                                        style={{ overflow: "hidden" }}
-                                      >
-                                        {dossier.dateDepot && (
-                                          <>
-                                            {dateEtHeureSimple(
-                                              dossier.dateDepot,
-                                              { masquerAnneeSiCourante: true },
-                                            )}
-                                          </>
-                                        )}
-                                        <BadgesDossier dossier={dossier} />
-                                      </td>
-                                      <td className="fr-col-2">
-                                        {dossier.redacteur ? (
-                                          <span className="fr-text--bold">
-                                            {dossier.redacteur.nom}
-                                          </span>
-                                        ) : (
-                                          <i>non attribué</i>
-                                        )}
-                                      </td>
-
-                                      <td className="fr-col-1">
-                                        <div className="fr-btns-group fr-btns-group--right">
-                                          <Link
-                                            className="fr-btn fr-btn--tertiary fr-icon-eye-line fr-btn--sm"
-                                            from={Route.fullPath}
-                                            to={"/dossier/$id"}
-                                            params={{ id: dossier.id }}
-                                          ></Link>
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  ),
-                                )
-                              ) : (
-                                <tr>
-                                  <td colSpan={5}>
-                                    <p className="fr-p-2w">
-                                      Aucun dossier correspondant
-                                    </p>
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {isPending ? (
+                  <Loader />
+                ) : (
+                  <ListeDossiers dossiers={reponse.resultats} />
+                )}
               </div>
               {!isPending && (
                 <div className="fr-col-12 fr-mt-2w">
