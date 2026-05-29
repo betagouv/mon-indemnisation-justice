@@ -10,6 +10,9 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DossierVoter extends Voter
 {
+    public const string ACTION_CONSULTER = 'dossier:consulter';
+    public const string ACTION_RECHERCHER = 'dossier:rechercher';
+    public const string ACTION_DECOMPTER = 'dossier:decompter';
     public const string ACTION_ATTRIBUER = 'dossier:attribuer';
     public const string ACTION_INSTRUIRE = 'dossier:instruire';
     public const string ACTION_CLOTURER = 'dossier:cloturer';
@@ -19,6 +22,7 @@ class DossierVoter extends Voter
     public const string ACTION_LISTER_A_CATEGORISER = 'dossier:lister:a-categoriser';
     public const string ACTION_LISTER_A_ATTRIBUER = 'dossier:lister:a-attribuer';
     public const string ACTION_LISTER_A_INSTRUIRE = 'dossier:lister:a-instruire';
+    public const string ACTION_LISTER_EN_INSTRUCTION = 'dossier:lister:en-instruction';
     public const string ACTION_LISTER_REJET_A_SIGNER = 'dossier:lister:rejet-a-signer';
     public const string ACTION_LISTER_PROPOSITION_A_SIGNER = 'dossier:lister:proposition-a-signer';
     public const string ACTION_LISTER_A_VERIFIER = 'dossier:lister:a-verifier';
@@ -29,6 +33,9 @@ class DossierVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [
+            self::ACTION_CONSULTER,
+            self::ACTION_RECHERCHER,
+            self::ACTION_DECOMPTER,
             self::ACTION_ATTRIBUER,
             self::ACTION_INSTRUIRE,
             self::ACTION_CLOTURER,
@@ -37,6 +44,7 @@ class DossierVoter extends Voter
             self::ACTION_LISTER_A_CATEGORISER,
             self::ACTION_LISTER_A_ATTRIBUER,
             self::ACTION_LISTER_A_INSTRUIRE,
+            self::ACTION_LISTER_EN_INSTRUCTION,
             self::ACTION_LISTER_REJET_A_SIGNER,
             self::ACTION_LISTER_PROPOSITION_A_SIGNER,
             self::ACTION_LISTER_ARRETE_A_SIGNER,
@@ -56,15 +64,32 @@ class DossierVoter extends Voter
         /** @var Agent $agent */
         $agent = $token->getUser();
 
+        if (!$agent->estMinistereJustice()) {
+            return false;
+        }
+
         return match ($attribute) {
+            self::ACTION_CONSULTER, => $this->agentPeutConsulter($agent, $subject),
+            self::ACTION_DECOMPTER, => $agent->aRole(Agent::ROLE_AGENT_DOSSIER),
+            self::ACTION_RECHERCHER, => $this->agentPeutRechercher($agent),
             self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent, $subject),
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
             self::ACTION_CLOTURER => $this->agentPeutCloturer($agent, $subject),
             self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
-            self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
+            self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_EN_INSTRUCTION, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
             default => false,
         };
+    }
+
+    protected function agentPeutConsulter(Agent $agent, Dossier $dossier): bool
+    {
+        return $agent->aRole(Agent::ROLE_AGENT_DOSSIER);
+    }
+
+    protected function agentPeutRechercher(Agent $agent): bool
+    {
+        return $agent->aRole(Agent::ROLE_AGENT_DOSSIER);
     }
 
     protected function agentPeutAjouterPieceJointe(Agent $agent, Dossier $dossier): bool
@@ -97,7 +122,7 @@ class DossierVoter extends Voter
         return match ($action) {
             self::ACTION_LISTER_A_CATEGORISER => $agent->aRole(Agent::ROLE_AGENT_BETAGOUV),
             self::ACTION_LISTER_A_ATTRIBUER => $agent->aRole(Agent::ROLE_AGENT_ATTRIBUTEUR),
-            self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_A_VERIFIER => $agent->aRole(Agent::ROLE_AGENT_REDACTEUR),
+            self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_EN_INSTRUCTION, self::ACTION_LISTER_A_VERIFIER => $agent->aRole(Agent::ROLE_AGENT_REDACTEUR),
             self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_ARRETE_A_SIGNER => $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR),
             self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET),
             default => false,

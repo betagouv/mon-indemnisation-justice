@@ -1,4 +1,4 @@
-import {test, expect} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 import {connexionAgent, getTitre} from "../../helpers";
 
 test("lister dossiers dont le courrier de rejet est à signer", async ({
@@ -11,7 +11,7 @@ test("lister dossiers dont le courrier de rejet est à signer", async ({
 
     try {
         await connexionAgent(page, "Validateur");
-        await page.waitForURL("/agent/redacteur/dossiers");
+        await page.waitForURL((url) => url.pathname.startsWith("/agent/fip6/dossiers"));
 
         await expect(getTitre(page, "Les dossiers")).toBeVisible();
 

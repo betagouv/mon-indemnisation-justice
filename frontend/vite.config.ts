@@ -19,19 +19,21 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       },
     },
     plugins: [
+      // Espace rédacteur (FIP6)
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
-        virtualRouteConfig: "./src/apps/agent/fip6/routeur/routeur-fip6.ts",
         generatedRouteTree: "./src/apps/agent/fip6/routeur/routeur-fip6.gen.ts",
         routesDirectory: "./src/apps/agent/fip6/routes/",
       }),
+      // Espace Forces de l'ordre (FDO)
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
         generatedRouteTree: "./src/apps/agent/fdo/routeur/routeur-fdo.gen.ts",
         routesDirectory: "./src/apps/agent/fdo/routes/",
       }),
+      // Espace requérant
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
@@ -78,10 +80,6 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
             requerant: "./src/apps/requerant/requerant.tsx",
             // Espace agent FIP6
             "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
-            "agent/dossiers/recherche":
-              "./src/apps/agent/fip6/dossiers/recherche_app.tsx",
-            "agent/dossiers/consulter":
-              "./src/apps/agent/fip6/dossiers/consultation_app.tsx",
             // Espace agent FDO
             "agent/fdo": path.join(__dirname, "./src/apps/agent/fdo/fdo.tsx"),
           },

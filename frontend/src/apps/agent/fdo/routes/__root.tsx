@@ -4,13 +4,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
-import {
-  createRootRouteWithContext,
-  type LinkProps,
-  Outlet,
-  redirect,
-  useLoaderData,
-} from "@tanstack/react-router";
+import { createRootRouteWithContext, type LinkProps, Outlet, redirect, useLoaderData } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
 
@@ -51,7 +45,7 @@ const EspaceFDO = () => {
           {
             text: "Accueil",
             linkProps: {
-              to: "/agent/fdo",
+              to: "/",
               activeOptions: { exact: true },
             },
           },
@@ -61,15 +55,17 @@ const EspaceFDO = () => {
               {
                 text: "Mes déclarations",
                 linkProps: {
-                  to: "/agent/fdo/bris-de-porte/mes-declarations",
+                  to: "/bris-de-porte/mes-declarations",
                   activeOptions: { exact: true },
                 },
               },
               {
                 text: "Nouvelle déclaration",
                 linkProps: {
-                  to: "/agent/fdo/bris-de-porte/nouvelle-declaration",
-                  activeOptions: { exact: false },
+                  to: "/bris-de-porte/nouvelle-declaration",
+                  activeOptions: {
+                    exact: false,
+                  },
                 },
               },
             ],
@@ -77,14 +73,14 @@ const EspaceFDO = () => {
           {
             text: "Réquisition d'un serrurier",
             linkProps: {
-              to: "/agent/fdo/requisition-serrurier",
+              to: "/requisition-serrurier",
               activeOptions: { exact: false },
             },
           },
           {
             text: "Foire aux questions",
             linkProps: {
-              to: "/agent/fdo/foire-aux-questions",
+              to: "/foire-aux-questions",
               activeOptions: { exact: true },
             },
           },
@@ -102,7 +98,9 @@ const EspaceFDO = () => {
             ) : (
               contexte.agent.nomComplet()
             ),
-            linkProps: {},
+            linkProps: {
+              to: "/mon-compte",
+            },
           },
           {
             iconId: "fr-icon-logout-box-r-line",
@@ -133,6 +131,7 @@ const EspaceFDO = () => {
         termsLinkProps={
           {
             href: `${window.location.origin}/mentions-legales`,
+            target: "_self",
           } as LinkProps
         }
       />

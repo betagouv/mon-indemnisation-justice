@@ -8,10 +8,11 @@ import {
   InstitutionSecuritePublique,
   type TypeFDO,
 } from "./InstitutionSecuritePublique";
-import { RechercheDossier } from "./RechercheDossier";
+
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
 import { TestEligibilite } from "./TestEligibilite";
+import { Usager } from "./Usager";
 
 export {
   Administration,
@@ -25,9 +26,9 @@ export {
   EtatDossier,
   EtatDossierType,
   InstitutionSecuritePublique,
-  RechercheDossier,
   Redacteur,
   Requerant,
   TestEligibilite,
   TypeFDO,
+  Usager,
 };

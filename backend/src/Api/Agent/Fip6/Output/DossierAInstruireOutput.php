@@ -15,6 +15,8 @@ class DossierAInstruireOutput
         public readonly string $adresse,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         public readonly \DateTimeInterface $dateOperation,
+        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
+        public readonly \DateTimeInterface $datePublication,
     ) {
     }
 
@@ -24,8 +26,9 @@ class DossierAInstruireOutput
             id: $dossier->getId(),
             reference: $dossier->getReference(),
             requerant: $dossier->getUsager()->getNomCourant(),
-            adresse: $dossier->getAdresse()->getLibelle(),
-            dateOperation: $dossier->getDateOperationPJ()
+            adresse: $dossier->getBrisPorte()->getAdresse()->getLibelle(),
+            dateOperation: $dossier->getBrisPorte()->getDateOperation(),
+            datePublication: $dossier->getDateDeclaration()
         );
     }
 }

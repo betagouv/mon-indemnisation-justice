@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierAAttribuerOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierAInstruireOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Dossier;
@@ -35,7 +35,7 @@ class ListerDossierAInstruireEndpoint
         return new JsonResponse(
             $this->normalizer->normalize(
                 array_map(
-                    fn (Dossier $dossier) => DossierAAttribuerOutput::depuisDossier($dossier),
+                    fn (Dossier $dossier) => DossierAInstruireOutput::creerDepuisDossier($dossier),
                     array_values($agent->getDossiersAInstruire())
                 ),
                 'json',

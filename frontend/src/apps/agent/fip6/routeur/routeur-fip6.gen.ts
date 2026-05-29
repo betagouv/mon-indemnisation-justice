@@ -8,255 +8,435 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './../routes/root-fip6'
-import { Route as AgentFip6DossiersRejetASignerRouteImport } from './../routes/dossiers/rejet-a-signer'
-import { Route as AgentFip6DossiersPropositionASignerRouteImport } from './../routes/dossiers/proposition-a-signer'
-import { Route as AgentFip6DossiersEnAttenteIndemnisationRouteImport } from './../routes/dossiers/en-attente-indemnisation'
-import { Route as AgentFip6DossiersArreteASignerRouteImport } from './../routes/dossiers/arrete-a-signer'
-import { Route as AgentFip6DossiersAVerifierRouteImport } from './../routes/dossiers/a-verifier'
-import { Route as AgentFip6DossiersATransmettreRouteImport } from './../routes/dossiers/a-transmettre'
-import { Route as AgentFip6DossiersAInstruireRouteImport } from './../routes/dossiers/a-instruire'
-import { Route as AgentFip6DossiersACategoriserRouteImport } from './../routes/dossiers/a-categoriser'
-import { Route as AgentFip6DossiersAAttribuerRouteImport } from './../routes/dossiers/a-attribuer'
-import { Route as AgentFip6AgentsGestionRouteImport } from './../routes/agents/gestion'
+import { Route as rootRouteImport } from './../routes/__root'
+import { Route as MonCompteRouteImport } from './../routes/mon-compte'
+import { Route as IndexRouteImport } from './../routes/index'
+import { Route as DossiersIndexRouteImport } from './../routes/dossiers/index'
+import { Route as DossierIndexRouteImport } from './../routes/dossier/index'
+import { Route as DossiersRejetASignerRouteImport } from './../routes/dossiers/rejet-a-signer'
+import { Route as DossiersRechercherRouteImport } from './../routes/dossiers/rechercher'
+import { Route as DossiersPropositionASignerRouteImport } from './../routes/dossiers/proposition-a-signer'
+import { Route as DossiersMesDossiersRouteImport } from './../routes/dossiers/mes-dossiers'
+import { Route as DossiersEnInstructionRouteImport } from './../routes/dossiers/en-instruction'
+import { Route as DossiersEnAttenteIndemnisationRouteImport } from './../routes/dossiers/en-attente-indemnisation'
+import { Route as DossiersArreteASignerRouteImport } from './../routes/dossiers/arrete-a-signer'
+import { Route as DossiersAVerifierRouteImport } from './../routes/dossiers/a-verifier'
+import { Route as DossiersATransmettreRouteImport } from './../routes/dossiers/a-transmettre'
+import { Route as DossiersAInstruireRouteImport } from './../routes/dossiers/a-instruire'
+import { Route as DossiersACategoriserRouteImport } from './../routes/dossiers/a-categoriser'
+import { Route as DossiersAAttribuerRouteImport } from './../routes/dossiers/a-attribuer'
+import { Route as AgentsGestionRouteImport } from './../routes/agents/gestion'
+import { Route as DossierIdIndexRouteImport } from './../routes/dossier/$id/index'
+import { Route as DossiersUsagerIdRouteImport } from './../routes/dossiers/usager/$id'
 
-const AgentFip6DossiersRejetASignerRoute =
-  AgentFip6DossiersRejetASignerRouteImport.update({
-    id: '/agent/fip6/dossiers/rejet-a-signer',
-    path: '/agent/fip6/dossiers/rejet-a-signer',
+const MonCompteRoute = MonCompteRouteImport.update({
+  id: '/mon-compte',
+  path: '/mon-compte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersIndexRoute = DossiersIndexRouteImport.update({
+  id: '/dossiers/',
+  path: '/dossiers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossierIndexRoute = DossierIndexRouteImport.update({
+  id: '/dossier/',
+  path: '/dossier/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersRejetASignerRoute = DossiersRejetASignerRouteImport.update({
+  id: '/dossiers/rejet-a-signer',
+  path: '/dossiers/rejet-a-signer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersRechercherRoute = DossiersRechercherRouteImport.update({
+  id: '/dossiers/rechercher',
+  path: '/dossiers/rechercher',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersPropositionASignerRoute =
+  DossiersPropositionASignerRouteImport.update({
+    id: '/dossiers/proposition-a-signer',
+    path: '/dossiers/proposition-a-signer',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AgentFip6DossiersPropositionASignerRoute =
-  AgentFip6DossiersPropositionASignerRouteImport.update({
-    id: '/agent/fip6/dossiers/proposition-a-signer',
-    path: '/agent/fip6/dossiers/proposition-a-signer',
+const DossiersMesDossiersRoute = DossiersMesDossiersRouteImport.update({
+  id: '/dossiers/mes-dossiers',
+  path: '/dossiers/mes-dossiers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersEnInstructionRoute = DossiersEnInstructionRouteImport.update({
+  id: '/dossiers/en-instruction',
+  path: '/dossiers/en-instruction',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersEnAttenteIndemnisationRoute =
+  DossiersEnAttenteIndemnisationRouteImport.update({
+    id: '/dossiers/en-attente-indemnisation',
+    path: '/dossiers/en-attente-indemnisation',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AgentFip6DossiersEnAttenteIndemnisationRoute =
-  AgentFip6DossiersEnAttenteIndemnisationRouteImport.update({
-    id: '/agent/fip6/dossiers/en-attente-indemnisation',
-    path: '/agent/fip6/dossiers/en-attente-indemnisation',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AgentFip6DossiersArreteASignerRoute =
-  AgentFip6DossiersArreteASignerRouteImport.update({
-    id: '/agent/fip6/dossiers/arrete-a-signer',
-    path: '/agent/fip6/dossiers/arrete-a-signer',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AgentFip6DossiersAVerifierRoute =
-  AgentFip6DossiersAVerifierRouteImport.update({
-    id: '/agent/fip6/dossiers/a-verifier',
-    path: '/agent/fip6/dossiers/a-verifier',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AgentFip6DossiersATransmettreRoute =
-  AgentFip6DossiersATransmettreRouteImport.update({
-    id: '/agent/fip6/dossiers/a-transmettre',
-    path: '/agent/fip6/dossiers/a-transmettre',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AgentFip6DossiersAInstruireRoute =
-  AgentFip6DossiersAInstruireRouteImport.update({
-    id: '/agent/fip6/dossiers/a-instruire',
-    path: '/agent/fip6/dossiers/a-instruire',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AgentFip6DossiersACategoriserRoute =
-  AgentFip6DossiersACategoriserRouteImport.update({
-    id: '/agent/fip6/dossiers/a-categoriser',
-    path: '/agent/fip6/dossiers/a-categoriser',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AgentFip6DossiersAAttribuerRoute =
-  AgentFip6DossiersAAttribuerRouteImport.update({
-    id: '/agent/fip6/dossiers/a-attribuer',
-    path: '/agent/fip6/dossiers/a-attribuer',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AgentFip6AgentsGestionRoute = AgentFip6AgentsGestionRouteImport.update({
-  id: '/agent/fip6/agents/gestion',
-  path: '/agent/fip6/agents/gestion',
+const DossiersArreteASignerRoute = DossiersArreteASignerRouteImport.update({
+  id: '/dossiers/arrete-a-signer',
+  path: '/dossiers/arrete-a-signer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersAVerifierRoute = DossiersAVerifierRouteImport.update({
+  id: '/dossiers/a-verifier',
+  path: '/dossiers/a-verifier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersATransmettreRoute = DossiersATransmettreRouteImport.update({
+  id: '/dossiers/a-transmettre',
+  path: '/dossiers/a-transmettre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersAInstruireRoute = DossiersAInstruireRouteImport.update({
+  id: '/dossiers/a-instruire',
+  path: '/dossiers/a-instruire',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersACategoriserRoute = DossiersACategoriserRouteImport.update({
+  id: '/dossiers/a-categoriser',
+  path: '/dossiers/a-categoriser',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersAAttribuerRoute = DossiersAAttribuerRouteImport.update({
+  id: '/dossiers/a-attribuer',
+  path: '/dossiers/a-attribuer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsGestionRoute = AgentsGestionRouteImport.update({
+  id: '/agents/gestion',
+  path: '/agents/gestion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossierIdIndexRoute = DossierIdIndexRouteImport.update({
+  id: '/dossier/$id/',
+  path: '/dossier/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersUsagerIdRoute = DossiersUsagerIdRouteImport.update({
+  id: '/dossiers/usager/$id',
+  path: '/dossiers/usager/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/agent/fip6/agents/gestion': typeof AgentFip6AgentsGestionRoute
-  '/agent/fip6/dossiers/a-attribuer': typeof AgentFip6DossiersAAttribuerRoute
-  '/agent/fip6/dossiers/a-categoriser': typeof AgentFip6DossiersACategoriserRoute
-  '/agent/fip6/dossiers/a-instruire': typeof AgentFip6DossiersAInstruireRoute
-  '/agent/fip6/dossiers/a-transmettre': typeof AgentFip6DossiersATransmettreRoute
-  '/agent/fip6/dossiers/a-verifier': typeof AgentFip6DossiersAVerifierRoute
-  '/agent/fip6/dossiers/arrete-a-signer': typeof AgentFip6DossiersArreteASignerRoute
-  '/agent/fip6/dossiers/en-attente-indemnisation': typeof AgentFip6DossiersEnAttenteIndemnisationRoute
-  '/agent/fip6/dossiers/proposition-a-signer': typeof AgentFip6DossiersPropositionASignerRoute
-  '/agent/fip6/dossiers/rejet-a-signer': typeof AgentFip6DossiersRejetASignerRoute
+  '/': typeof IndexRoute
+  '/mon-compte': typeof MonCompteRoute
+  '/agents/gestion': typeof AgentsGestionRoute
+  '/dossiers/a-attribuer': typeof DossiersAAttribuerRoute
+  '/dossiers/a-categoriser': typeof DossiersACategoriserRoute
+  '/dossiers/a-instruire': typeof DossiersAInstruireRoute
+  '/dossiers/a-transmettre': typeof DossiersATransmettreRoute
+  '/dossiers/a-verifier': typeof DossiersAVerifierRoute
+  '/dossiers/arrete-a-signer': typeof DossiersArreteASignerRoute
+  '/dossiers/en-attente-indemnisation': typeof DossiersEnAttenteIndemnisationRoute
+  '/dossiers/en-instruction': typeof DossiersEnInstructionRoute
+  '/dossiers/mes-dossiers': typeof DossiersMesDossiersRoute
+  '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
+  '/dossiers/rechercher': typeof DossiersRechercherRoute
+  '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
+  '/dossier': typeof DossierIndexRoute
+  '/dossiers': typeof DossiersIndexRoute
+  '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
+  '/dossier/$id': typeof DossierIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/agent/fip6/agents/gestion': typeof AgentFip6AgentsGestionRoute
-  '/agent/fip6/dossiers/a-attribuer': typeof AgentFip6DossiersAAttribuerRoute
-  '/agent/fip6/dossiers/a-categoriser': typeof AgentFip6DossiersACategoriserRoute
-  '/agent/fip6/dossiers/a-instruire': typeof AgentFip6DossiersAInstruireRoute
-  '/agent/fip6/dossiers/a-transmettre': typeof AgentFip6DossiersATransmettreRoute
-  '/agent/fip6/dossiers/a-verifier': typeof AgentFip6DossiersAVerifierRoute
-  '/agent/fip6/dossiers/arrete-a-signer': typeof AgentFip6DossiersArreteASignerRoute
-  '/agent/fip6/dossiers/en-attente-indemnisation': typeof AgentFip6DossiersEnAttenteIndemnisationRoute
-  '/agent/fip6/dossiers/proposition-a-signer': typeof AgentFip6DossiersPropositionASignerRoute
-  '/agent/fip6/dossiers/rejet-a-signer': typeof AgentFip6DossiersRejetASignerRoute
+  '/': typeof IndexRoute
+  '/mon-compte': typeof MonCompteRoute
+  '/agents/gestion': typeof AgentsGestionRoute
+  '/dossiers/a-attribuer': typeof DossiersAAttribuerRoute
+  '/dossiers/a-categoriser': typeof DossiersACategoriserRoute
+  '/dossiers/a-instruire': typeof DossiersAInstruireRoute
+  '/dossiers/a-transmettre': typeof DossiersATransmettreRoute
+  '/dossiers/a-verifier': typeof DossiersAVerifierRoute
+  '/dossiers/arrete-a-signer': typeof DossiersArreteASignerRoute
+  '/dossiers/en-attente-indemnisation': typeof DossiersEnAttenteIndemnisationRoute
+  '/dossiers/en-instruction': typeof DossiersEnInstructionRoute
+  '/dossiers/mes-dossiers': typeof DossiersMesDossiersRoute
+  '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
+  '/dossiers/rechercher': typeof DossiersRechercherRoute
+  '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
+  '/dossier': typeof DossierIndexRoute
+  '/dossiers': typeof DossiersIndexRoute
+  '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
+  '/dossier/$id': typeof DossierIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/agent/fip6/agents/gestion': typeof AgentFip6AgentsGestionRoute
-  '/agent/fip6/dossiers/a-attribuer': typeof AgentFip6DossiersAAttribuerRoute
-  '/agent/fip6/dossiers/a-categoriser': typeof AgentFip6DossiersACategoriserRoute
-  '/agent/fip6/dossiers/a-instruire': typeof AgentFip6DossiersAInstruireRoute
-  '/agent/fip6/dossiers/a-transmettre': typeof AgentFip6DossiersATransmettreRoute
-  '/agent/fip6/dossiers/a-verifier': typeof AgentFip6DossiersAVerifierRoute
-  '/agent/fip6/dossiers/arrete-a-signer': typeof AgentFip6DossiersArreteASignerRoute
-  '/agent/fip6/dossiers/en-attente-indemnisation': typeof AgentFip6DossiersEnAttenteIndemnisationRoute
-  '/agent/fip6/dossiers/proposition-a-signer': typeof AgentFip6DossiersPropositionASignerRoute
-  '/agent/fip6/dossiers/rejet-a-signer': typeof AgentFip6DossiersRejetASignerRoute
+  '/': typeof IndexRoute
+  '/mon-compte': typeof MonCompteRoute
+  '/agents/gestion': typeof AgentsGestionRoute
+  '/dossiers/a-attribuer': typeof DossiersAAttribuerRoute
+  '/dossiers/a-categoriser': typeof DossiersACategoriserRoute
+  '/dossiers/a-instruire': typeof DossiersAInstruireRoute
+  '/dossiers/a-transmettre': typeof DossiersATransmettreRoute
+  '/dossiers/a-verifier': typeof DossiersAVerifierRoute
+  '/dossiers/arrete-a-signer': typeof DossiersArreteASignerRoute
+  '/dossiers/en-attente-indemnisation': typeof DossiersEnAttenteIndemnisationRoute
+  '/dossiers/en-instruction': typeof DossiersEnInstructionRoute
+  '/dossiers/mes-dossiers': typeof DossiersMesDossiersRoute
+  '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
+  '/dossiers/rechercher': typeof DossiersRechercherRoute
+  '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
+  '/dossier/': typeof DossierIndexRoute
+  '/dossiers/': typeof DossiersIndexRoute
+  '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
+  '/dossier/$id/': typeof DossierIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/agent/fip6/agents/gestion'
-    | '/agent/fip6/dossiers/a-attribuer'
-    | '/agent/fip6/dossiers/a-categoriser'
-    | '/agent/fip6/dossiers/a-instruire'
-    | '/agent/fip6/dossiers/a-transmettre'
-    | '/agent/fip6/dossiers/a-verifier'
-    | '/agent/fip6/dossiers/arrete-a-signer'
-    | '/agent/fip6/dossiers/en-attente-indemnisation'
-    | '/agent/fip6/dossiers/proposition-a-signer'
-    | '/agent/fip6/dossiers/rejet-a-signer'
+    | '/'
+    | '/mon-compte'
+    | '/agents/gestion'
+    | '/dossiers/a-attribuer'
+    | '/dossiers/a-categoriser'
+    | '/dossiers/a-instruire'
+    | '/dossiers/a-transmettre'
+    | '/dossiers/a-verifier'
+    | '/dossiers/arrete-a-signer'
+    | '/dossiers/en-attente-indemnisation'
+    | '/dossiers/en-instruction'
+    | '/dossiers/mes-dossiers'
+    | '/dossiers/proposition-a-signer'
+    | '/dossiers/rechercher'
+    | '/dossiers/rejet-a-signer'
+    | '/dossier'
+    | '/dossiers'
+    | '/dossiers/usager/$id'
+    | '/dossier/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/agent/fip6/agents/gestion'
-    | '/agent/fip6/dossiers/a-attribuer'
-    | '/agent/fip6/dossiers/a-categoriser'
-    | '/agent/fip6/dossiers/a-instruire'
-    | '/agent/fip6/dossiers/a-transmettre'
-    | '/agent/fip6/dossiers/a-verifier'
-    | '/agent/fip6/dossiers/arrete-a-signer'
-    | '/agent/fip6/dossiers/en-attente-indemnisation'
-    | '/agent/fip6/dossiers/proposition-a-signer'
-    | '/agent/fip6/dossiers/rejet-a-signer'
+    | '/'
+    | '/mon-compte'
+    | '/agents/gestion'
+    | '/dossiers/a-attribuer'
+    | '/dossiers/a-categoriser'
+    | '/dossiers/a-instruire'
+    | '/dossiers/a-transmettre'
+    | '/dossiers/a-verifier'
+    | '/dossiers/arrete-a-signer'
+    | '/dossiers/en-attente-indemnisation'
+    | '/dossiers/en-instruction'
+    | '/dossiers/mes-dossiers'
+    | '/dossiers/proposition-a-signer'
+    | '/dossiers/rechercher'
+    | '/dossiers/rejet-a-signer'
+    | '/dossier'
+    | '/dossiers'
+    | '/dossiers/usager/$id'
+    | '/dossier/$id'
   id:
     | '__root__'
-    | '/agent/fip6/agents/gestion'
-    | '/agent/fip6/dossiers/a-attribuer'
-    | '/agent/fip6/dossiers/a-categoriser'
-    | '/agent/fip6/dossiers/a-instruire'
-    | '/agent/fip6/dossiers/a-transmettre'
-    | '/agent/fip6/dossiers/a-verifier'
-    | '/agent/fip6/dossiers/arrete-a-signer'
-    | '/agent/fip6/dossiers/en-attente-indemnisation'
-    | '/agent/fip6/dossiers/proposition-a-signer'
-    | '/agent/fip6/dossiers/rejet-a-signer'
+    | '/'
+    | '/mon-compte'
+    | '/agents/gestion'
+    | '/dossiers/a-attribuer'
+    | '/dossiers/a-categoriser'
+    | '/dossiers/a-instruire'
+    | '/dossiers/a-transmettre'
+    | '/dossiers/a-verifier'
+    | '/dossiers/arrete-a-signer'
+    | '/dossiers/en-attente-indemnisation'
+    | '/dossiers/en-instruction'
+    | '/dossiers/mes-dossiers'
+    | '/dossiers/proposition-a-signer'
+    | '/dossiers/rechercher'
+    | '/dossiers/rejet-a-signer'
+    | '/dossier/'
+    | '/dossiers/'
+    | '/dossiers/usager/$id'
+    | '/dossier/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AgentFip6AgentsGestionRoute: typeof AgentFip6AgentsGestionRoute
-  AgentFip6DossiersAAttribuerRoute: typeof AgentFip6DossiersAAttribuerRoute
-  AgentFip6DossiersACategoriserRoute: typeof AgentFip6DossiersACategoriserRoute
-  AgentFip6DossiersAInstruireRoute: typeof AgentFip6DossiersAInstruireRoute
-  AgentFip6DossiersATransmettreRoute: typeof AgentFip6DossiersATransmettreRoute
-  AgentFip6DossiersAVerifierRoute: typeof AgentFip6DossiersAVerifierRoute
-  AgentFip6DossiersArreteASignerRoute: typeof AgentFip6DossiersArreteASignerRoute
-  AgentFip6DossiersEnAttenteIndemnisationRoute: typeof AgentFip6DossiersEnAttenteIndemnisationRoute
-  AgentFip6DossiersPropositionASignerRoute: typeof AgentFip6DossiersPropositionASignerRoute
-  AgentFip6DossiersRejetASignerRoute: typeof AgentFip6DossiersRejetASignerRoute
+  IndexRoute: typeof IndexRoute
+  MonCompteRoute: typeof MonCompteRoute
+  AgentsGestionRoute: typeof AgentsGestionRoute
+  DossiersAAttribuerRoute: typeof DossiersAAttribuerRoute
+  DossiersACategoriserRoute: typeof DossiersACategoriserRoute
+  DossiersAInstruireRoute: typeof DossiersAInstruireRoute
+  DossiersATransmettreRoute: typeof DossiersATransmettreRoute
+  DossiersAVerifierRoute: typeof DossiersAVerifierRoute
+  DossiersArreteASignerRoute: typeof DossiersArreteASignerRoute
+  DossiersEnAttenteIndemnisationRoute: typeof DossiersEnAttenteIndemnisationRoute
+  DossiersEnInstructionRoute: typeof DossiersEnInstructionRoute
+  DossiersMesDossiersRoute: typeof DossiersMesDossiersRoute
+  DossiersPropositionASignerRoute: typeof DossiersPropositionASignerRoute
+  DossiersRechercherRoute: typeof DossiersRechercherRoute
+  DossiersRejetASignerRoute: typeof DossiersRejetASignerRoute
+  DossierIndexRoute: typeof DossierIndexRoute
+  DossiersIndexRoute: typeof DossiersIndexRoute
+  DossiersUsagerIdRoute: typeof DossiersUsagerIdRoute
+  DossierIdIndexRoute: typeof DossierIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/agent/fip6/dossiers/rejet-a-signer': {
-      id: '/agent/fip6/dossiers/rejet-a-signer'
-      path: '/agent/fip6/dossiers/rejet-a-signer'
-      fullPath: '/agent/fip6/dossiers/rejet-a-signer'
-      preLoaderRoute: typeof AgentFip6DossiersRejetASignerRouteImport
+    '/mon-compte': {
+      id: '/mon-compte'
+      path: '/mon-compte'
+      fullPath: '/mon-compte'
+      preLoaderRoute: typeof MonCompteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fip6/dossiers/proposition-a-signer': {
-      id: '/agent/fip6/dossiers/proposition-a-signer'
-      path: '/agent/fip6/dossiers/proposition-a-signer'
-      fullPath: '/agent/fip6/dossiers/proposition-a-signer'
-      preLoaderRoute: typeof AgentFip6DossiersPropositionASignerRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fip6/dossiers/en-attente-indemnisation': {
-      id: '/agent/fip6/dossiers/en-attente-indemnisation'
-      path: '/agent/fip6/dossiers/en-attente-indemnisation'
-      fullPath: '/agent/fip6/dossiers/en-attente-indemnisation'
-      preLoaderRoute: typeof AgentFip6DossiersEnAttenteIndemnisationRouteImport
+    '/dossiers/': {
+      id: '/dossiers/'
+      path: '/dossiers'
+      fullPath: '/dossiers'
+      preLoaderRoute: typeof DossiersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fip6/dossiers/arrete-a-signer': {
-      id: '/agent/fip6/dossiers/arrete-a-signer'
-      path: '/agent/fip6/dossiers/arrete-a-signer'
-      fullPath: '/agent/fip6/dossiers/arrete-a-signer'
-      preLoaderRoute: typeof AgentFip6DossiersArreteASignerRouteImport
+    '/dossier/': {
+      id: '/dossier/'
+      path: '/dossier'
+      fullPath: '/dossier'
+      preLoaderRoute: typeof DossierIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fip6/dossiers/a-verifier': {
-      id: '/agent/fip6/dossiers/a-verifier'
-      path: '/agent/fip6/dossiers/a-verifier'
-      fullPath: '/agent/fip6/dossiers/a-verifier'
-      preLoaderRoute: typeof AgentFip6DossiersAVerifierRouteImport
+    '/dossiers/rejet-a-signer': {
+      id: '/dossiers/rejet-a-signer'
+      path: '/dossiers/rejet-a-signer'
+      fullPath: '/dossiers/rejet-a-signer'
+      preLoaderRoute: typeof DossiersRejetASignerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fip6/dossiers/a-transmettre': {
-      id: '/agent/fip6/dossiers/a-transmettre'
-      path: '/agent/fip6/dossiers/a-transmettre'
-      fullPath: '/agent/fip6/dossiers/a-transmettre'
-      preLoaderRoute: typeof AgentFip6DossiersATransmettreRouteImport
+    '/dossiers/rechercher': {
+      id: '/dossiers/rechercher'
+      path: '/dossiers/rechercher'
+      fullPath: '/dossiers/rechercher'
+      preLoaderRoute: typeof DossiersRechercherRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fip6/dossiers/a-instruire': {
-      id: '/agent/fip6/dossiers/a-instruire'
-      path: '/agent/fip6/dossiers/a-instruire'
-      fullPath: '/agent/fip6/dossiers/a-instruire'
-      preLoaderRoute: typeof AgentFip6DossiersAInstruireRouteImport
+    '/dossiers/proposition-a-signer': {
+      id: '/dossiers/proposition-a-signer'
+      path: '/dossiers/proposition-a-signer'
+      fullPath: '/dossiers/proposition-a-signer'
+      preLoaderRoute: typeof DossiersPropositionASignerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fip6/dossiers/a-categoriser': {
-      id: '/agent/fip6/dossiers/a-categoriser'
-      path: '/agent/fip6/dossiers/a-categoriser'
-      fullPath: '/agent/fip6/dossiers/a-categoriser'
-      preLoaderRoute: typeof AgentFip6DossiersACategoriserRouteImport
+    '/dossiers/mes-dossiers': {
+      id: '/dossiers/mes-dossiers'
+      path: '/dossiers/mes-dossiers'
+      fullPath: '/dossiers/mes-dossiers'
+      preLoaderRoute: typeof DossiersMesDossiersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fip6/dossiers/a-attribuer': {
-      id: '/agent/fip6/dossiers/a-attribuer'
-      path: '/agent/fip6/dossiers/a-attribuer'
-      fullPath: '/agent/fip6/dossiers/a-attribuer'
-      preLoaderRoute: typeof AgentFip6DossiersAAttribuerRouteImport
+    '/dossiers/en-instruction': {
+      id: '/dossiers/en-instruction'
+      path: '/dossiers/en-instruction'
+      fullPath: '/dossiers/en-instruction'
+      preLoaderRoute: typeof DossiersEnInstructionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agent/fip6/agents/gestion': {
-      id: '/agent/fip6/agents/gestion'
-      path: '/agent/fip6/agents/gestion'
-      fullPath: '/agent/fip6/agents/gestion'
-      preLoaderRoute: typeof AgentFip6AgentsGestionRouteImport
+    '/dossiers/en-attente-indemnisation': {
+      id: '/dossiers/en-attente-indemnisation'
+      path: '/dossiers/en-attente-indemnisation'
+      fullPath: '/dossiers/en-attente-indemnisation'
+      preLoaderRoute: typeof DossiersEnAttenteIndemnisationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/arrete-a-signer': {
+      id: '/dossiers/arrete-a-signer'
+      path: '/dossiers/arrete-a-signer'
+      fullPath: '/dossiers/arrete-a-signer'
+      preLoaderRoute: typeof DossiersArreteASignerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/a-verifier': {
+      id: '/dossiers/a-verifier'
+      path: '/dossiers/a-verifier'
+      fullPath: '/dossiers/a-verifier'
+      preLoaderRoute: typeof DossiersAVerifierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/a-transmettre': {
+      id: '/dossiers/a-transmettre'
+      path: '/dossiers/a-transmettre'
+      fullPath: '/dossiers/a-transmettre'
+      preLoaderRoute: typeof DossiersATransmettreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/a-instruire': {
+      id: '/dossiers/a-instruire'
+      path: '/dossiers/a-instruire'
+      fullPath: '/dossiers/a-instruire'
+      preLoaderRoute: typeof DossiersAInstruireRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/a-categoriser': {
+      id: '/dossiers/a-categoriser'
+      path: '/dossiers/a-categoriser'
+      fullPath: '/dossiers/a-categoriser'
+      preLoaderRoute: typeof DossiersACategoriserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/a-attribuer': {
+      id: '/dossiers/a-attribuer'
+      path: '/dossiers/a-attribuer'
+      fullPath: '/dossiers/a-attribuer'
+      preLoaderRoute: typeof DossiersAAttribuerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents/gestion': {
+      id: '/agents/gestion'
+      path: '/agents/gestion'
+      fullPath: '/agents/gestion'
+      preLoaderRoute: typeof AgentsGestionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossier/$id/': {
+      id: '/dossier/$id/'
+      path: '/dossier/$id'
+      fullPath: '/dossier/$id'
+      preLoaderRoute: typeof DossierIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/usager/$id': {
+      id: '/dossiers/usager/$id'
+      path: '/dossiers/usager/$id'
+      fullPath: '/dossiers/usager/$id'
+      preLoaderRoute: typeof DossiersUsagerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  AgentFip6AgentsGestionRoute: AgentFip6AgentsGestionRoute,
-  AgentFip6DossiersAAttribuerRoute: AgentFip6DossiersAAttribuerRoute,
-  AgentFip6DossiersACategoriserRoute: AgentFip6DossiersACategoriserRoute,
-  AgentFip6DossiersAInstruireRoute: AgentFip6DossiersAInstruireRoute,
-  AgentFip6DossiersATransmettreRoute: AgentFip6DossiersATransmettreRoute,
-  AgentFip6DossiersAVerifierRoute: AgentFip6DossiersAVerifierRoute,
-  AgentFip6DossiersArreteASignerRoute: AgentFip6DossiersArreteASignerRoute,
-  AgentFip6DossiersEnAttenteIndemnisationRoute:
-    AgentFip6DossiersEnAttenteIndemnisationRoute,
-  AgentFip6DossiersPropositionASignerRoute:
-    AgentFip6DossiersPropositionASignerRoute,
-  AgentFip6DossiersRejetASignerRoute: AgentFip6DossiersRejetASignerRoute,
+  IndexRoute: IndexRoute,
+  MonCompteRoute: MonCompteRoute,
+  AgentsGestionRoute: AgentsGestionRoute,
+  DossiersAAttribuerRoute: DossiersAAttribuerRoute,
+  DossiersACategoriserRoute: DossiersACategoriserRoute,
+  DossiersAInstruireRoute: DossiersAInstruireRoute,
+  DossiersATransmettreRoute: DossiersATransmettreRoute,
+  DossiersAVerifierRoute: DossiersAVerifierRoute,
+  DossiersArreteASignerRoute: DossiersArreteASignerRoute,
+  DossiersEnAttenteIndemnisationRoute: DossiersEnAttenteIndemnisationRoute,
+  DossiersEnInstructionRoute: DossiersEnInstructionRoute,
+  DossiersMesDossiersRoute: DossiersMesDossiersRoute,
+  DossiersPropositionASignerRoute: DossiersPropositionASignerRoute,
+  DossiersRechercherRoute: DossiersRechercherRoute,
+  DossiersRejetASignerRoute: DossiersRejetASignerRoute,
+  DossierIndexRoute: DossierIndexRoute,
+  DossiersIndexRoute: DossiersIndexRoute,
+  DossiersUsagerIdRoute: DossiersUsagerIdRoute,
+  DossierIdIndexRoute: DossierIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
