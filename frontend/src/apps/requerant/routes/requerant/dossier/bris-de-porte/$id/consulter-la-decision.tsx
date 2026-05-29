@@ -1,11 +1,7 @@
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe.tsx";
-import {
-  Dossier,
-  getRapportAuLogementLibelle,
-  PieceJointe,
-} from "@/apps/requerant/models";
+import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/composants/Loader.tsx";
@@ -17,12 +13,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
-import {
-  createFileRoute,
-  notFound,
-  NotFoundRouteProps,
-  useRouter,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound, NotFoundRouteProps, useRouter } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React, { RefObject, useCallback, useRef, useState } from "react";
 
@@ -125,58 +116,39 @@ function ConsulterDecisionBrisPorte() {
         <div className="fr-col-12">
           <h1>Votre demande d'indemnisation</h1>
 
-          <p>
-            La demande d'indemnisation
-            {dossier.dateDepot && (
-              <>
-                {" "}
-                que vous avez initiée le
-                {dossier.dateDepot.toLocaleString("fr-FR", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}{" "}
-              </>
-            )}
-            , concernant un bris de porte survenu{" "}
-            {dossier.dateOperation
-              ? "le " +
-                dossier.dateOperation.toLocaleString("fr-FR", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })
-              : " à une date inconnue"}{" "}
-            au logement{" "}
-            {dossier.adresse ? <>situé {dossier.adresse.libelle}</> : ""}
-            {dossier.rapportAuLogement &&
-              `, dont vous êtes ${
-                dossier.rapportAuLogement !== "AUTRE"
-                  ? getRapportAuLogementLibelle(
-                      dossier.rapportAuLogement,
-                    ).toLocaleLowerCase()
-                  : (dossier.descriptionRapportAuLogement?.toLocaleLowerCase() ??
-                    "")
-              }`}
-            , a été {dossier.estAccepte ? "acceptée" : "refusée"}.
-          </p>
-
-          <p>
-            Vous trouverez ci-dessous le courrier expliquant les motivations de
-            cette décision.
-          </p>
-
-          {dossier.estAccepte && (
+          {dossier.estAccepte ? (
+            <>
+              <p>
+                La demande d’indemnisation {dossier.reference} a obtenu une
+                décision favorable ci-jointe.
+              </p>
+              <p>
+                Le{" "}
+                <span className="fr-text--bold">
+                  montant de l’indemnisation proposé
+                </span>
+                est de{" "}
+                <span className="fr-text--bold">
+                  {(dossier.montantIndemnisation as number).toLocaleString()}
+                </span>
+                . Pour{" "}
+                <span className="fr-text--bold">accepter la proposition</span>{" "}
+                et
+                <span className="fr-text--bold">déclencher le versement</span>,
+                veuillez cliquer sur le bouton{" "}
+                <span className="fr-text--bold">
+                  « Accepter la proposition »
+                </span>
+                , ensuite{" "}
+                <span className="fr-text--bold">signer et téléverser</span> la
+                déclaration d’acceptation ci-jointe en suivant les instructions.
+              </p>
+            </>
+          ) : (
             <p>
-              Le montant de l'indemnisation qui vous est proposé est de{" "}
-              <span className="fr-text--bold">
-                {(dossier.montantIndemnisation as number).toLocaleString()} €
-              </span>
-              . Pour accepter la proposition et déclencher le versement de cette
-              somme, il vous faut signer le document et nous le retourner en
-              cliquant sur le bouton "Accepter la proposition".
+              La demande d’indemnisation {dossier.reference} a fait l’objet
+              d’une décision défavorable. La motivation de notre refus est
+              précisée dans le courrier de rejet ci-joint.
             </p>
           )}
         </div>
@@ -431,7 +403,7 @@ function ConsulterDecisionBrisPorte() {
               {
                 label: dossier.estAccepte
                   ? "Proposition d'indemnisation"
-                  : "Lettre de décision",
+                  : "Courrier de rejet",
                 iconId: "fr-icon-checkbox-circle-line",
                 isDefault: true,
                 content: dossier.getCourrierDecision() && (
