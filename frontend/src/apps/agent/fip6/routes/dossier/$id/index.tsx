@@ -164,7 +164,7 @@ const ConsultationDossier = observer(function ConsultationDossier({
                   <>
                     Déposé le{" "}
                     {dateEtHeureSimple(dossier.dateDepot as Date, {
-                      masquerAnneeSiCourante: true,
+                      masquerAnneeSiCourante: false,
                       litterale: true,
                       avecMinutes: true,
                     })}
