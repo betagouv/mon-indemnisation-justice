@@ -1,5 +1,5 @@
-<script>var global = window</script>
-<script type="module">
+<script nonce="{{ csp_nonce('mij-script') }}">var global = window</script>
+<script type="module" nonce="{{ csp_nonce('mij-script') }}">
     import RefreshRuntime from "/preview/@react-refresh"
 
     RefreshRuntime.injectIntoGlobalHook(window)
