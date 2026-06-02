@@ -47,6 +47,7 @@ class DecompterDossierEndpoint
         if ($agent->aRole(Agent::ROLE_AGENT_VALIDATEUR)) {
             $decomptes['rejet-a-signer'] = $dossierRepository->compterDossierParEtat(EtatDossierType::DOSSIER_KO_A_SIGNER);
             $decomptes['proposition-a-signer'] = $dossierRepository->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER);
+            $decomptes['arrete-a-signer'] = $dossierRepository->compterDossierParEtat(EtatDossierType::DOSSIER_OK_VERIFIE);
         }
 
         if ($agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET)) {
