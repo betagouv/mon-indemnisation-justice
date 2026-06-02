@@ -1,7 +1,7 @@
 import { dateSimple } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { plainToInstance } from "class-transformer";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./liste/dossier-liste-element.css";
 import { DossierATransmettre } from "./liste/DossierATransmettre.ts";
 
@@ -18,11 +18,6 @@ function DossierATransmettreLigne({
 }: {
   dossier: DossierATransmettre;
 }) {
-  const telechargerDocumentsURL = useMemo<string>(
-    () => `/agent/redacteur/${dossier.id}/documents-a-transmettre`,
-    [dossier.id],
-  );
-
   return (
     <div className="fr-grid-row mij-dossier-liste-element">
       <div className="fr-col-3">
@@ -57,7 +52,8 @@ function DossierATransmettreLigne({
               children: "Télécharger",
               className: "fr-mb-0",
               linkProps: {
-                href: telechargerDocumentsURL,
+                href: `${window.location.origin}/agent/redacteur/${dossier.id}/documents-a-transmettre`,
+                target: "_self",
               },
             },
             {
