@@ -13,9 +13,17 @@ import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
 import { Crisp } from "crisp-sdk-web";
 
+let theme: ColorScheme | "system" = "system";
+try {
+  theme = localStorage.getItem("scheme") as ColorScheme;
+} catch (error) {
+  // Firefox: "The operation is insecure"
+  // Chrome: "Failed to read the 'localStorage' property from 'Window'"
+  theme = "system";
+}
+
 startReactDsfr({
-  defaultColorScheme:
-    (localStorage.getItem("scheme") as ColorScheme) ?? "system",
+  defaultColorScheme: theme,
   Link,
 });
 
