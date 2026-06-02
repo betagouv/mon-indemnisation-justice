@@ -149,7 +149,7 @@ export const InfosDossier = ({
               <li>
                 <b>Le :</b>{" "}
                 {dossier.dateOperation ? (
-                  <>{dateSimple(dossier.dateOperation, true)}</>
+                  <>{dateSimple(dossier.dateOperation, false)}</>
                 ) : (
                   <i>non renseigné</i>
                 )}
