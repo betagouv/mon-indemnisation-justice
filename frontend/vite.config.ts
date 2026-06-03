@@ -68,26 +68,19 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       sourcemap: true,
       minify: mode === "production",
       emptyOutDir: false,
-      rollupOptions: {
-        // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
+      // Voir https://rolldown.rs/reference/
+      rolldownOptions: {
         input: {
-          ...{
-            // Espace requérant
-            "requerant/dossier/tester_mon_eligibilite":
-              "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
-            "requerant/dossier/creation_de_compte":
-              "./src/apps/requerant/dossier/creation_de_compte.tsx",
-            requerant: "./src/apps/requerant/requerant.tsx",
-            // Espace agent FIP6
-            "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
-            // Espace agent FDO
-            "agent/fdo": path.join(__dirname, "./src/apps/agent/fdo/fdo.tsx"),
-          },
-        },
-        output: {
-          manualChunks: {
-            models: ["@/common/models"],
-          },
+          // Espace requérant
+          "requerant/dossier/tester_mon_eligibilite":
+            "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
+          "requerant/dossier/creation_de_compte":
+            "./src/apps/requerant/dossier/creation_de_compte.tsx",
+          requerant: "./src/apps/requerant/requerant.tsx",
+          // Espace agent FIP6
+          "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
+          // Espace agent FDO
+          "agent/fdo": path.join(__dirname, "./src/apps/agent/fdo/fdo.tsx"),
         },
       },
     },

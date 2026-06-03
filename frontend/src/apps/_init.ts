@@ -1,12 +1,16 @@
-import "es-iterator-helpers/auto";
-import * as Sentry from "@sentry/react";
-import { RootOptions } from "react-dom/client";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools";
+import * as Sentry from "@sentry/react";
+import "es-iterator-helpers/auto";
+import { RootOptions } from "react-dom/client";
+import { z } from "zod";
 
 // En développement, vider la console après chaque action de HMR (Hot Module Replacement)
 if (import.meta.hot) {
   import.meta.hot.on("vite:beforeUpdate", () => console.clear());
 }
+
+// Désactiver le "unsafe eval" de zod qui lève une erreur CSP (https://github.com/colinhacks/zod/issues/5414)
+z.config({ jitless: true });
 
 // En production, désactivation de React devtools
 if (import.meta.env.PROD) {
