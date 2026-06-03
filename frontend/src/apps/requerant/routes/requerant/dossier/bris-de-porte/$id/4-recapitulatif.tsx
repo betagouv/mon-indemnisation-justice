@@ -102,11 +102,12 @@ function Etape4Recapitulatif() {
   const [pieceJointeSelectionnee, selectionnerPieceJointe] =
     useState<PieceJointe>(dossier.piecesJointes.at(0) as PieceJointe);
 
-  const nomPieceJointePrecedente = (
-    dossier.piecesJointes.at(
-      dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
-    ) as PieceJointe
-  ).nom;
+  const nomPieceJointePrecedente =
+    (
+      dossier.piecesJointes.at(
+        dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
+      ) as PieceJointe
+    ).nom || "";
   const selectionnerPieceJointePrecedente = () => {
     selectionnerPieceJointe(
       dossier.piecesJointes.at(
@@ -124,12 +125,13 @@ function Etape4Recapitulatif() {
     );
   };
 
-  const nomPieceJointeSuivante = (
-    dossier.piecesJointes.at(
-      (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
-        dossier.piecesJointes.length,
-    ) as PieceJointe
-  ).nom;
+  const nomPieceJointeSuivante =
+    (
+      dossier.piecesJointes.at(
+        (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
+          dossier.piecesJointes.length,
+      ) as PieceJointe
+    )?.nom || "";
 
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
 
