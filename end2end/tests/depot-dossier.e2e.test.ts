@@ -181,6 +181,7 @@ test("dépôt de dossier", async ({browser}) => {
             path.join(__dirname, "./ressources/rib.jpg"),
             path.join(__dirname, "./ressources/acte_de_propriete.pdf"),
             path.join(__dirname, "./ressources/sample-4.pdf"),
+            path.join(__dirname, "./ressources/releve_bancaire_2.png"),
         ]);
 
     await page.locator("button", {hasText: "Prévisualiser"}).click();
@@ -236,6 +237,19 @@ test("dépôt de dossier", async ({browser}) => {
     await selectionnerMenu(page, "Type de pièce jointe", {
         label: "Attestation de non prise en charge par l'assurance",
     });
+
+    await page.locator("button", {hasText: "Document suivant"}).click();
+
+
+    await expect(
+        page.locator("h2.fr-stepper__title", {
+            hasText: "Fichier n°7 : releve_bancaire_2.png",
+        }),
+    ).toBeVisible();
+    await selectionnerMenu(page, "Type de pièce jointe", {
+        label: "Reçu de paiement",
+    });
+
     await page.locator("button", {hasText: "Téléverser ces documents"}).click();
 
     // Attendre que le téléversement se termine

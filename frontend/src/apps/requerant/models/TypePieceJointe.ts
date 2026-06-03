@@ -190,7 +190,26 @@ export class TypePieceJointe {
     }),
     preuve_paiement_facture: new TypePieceJointe(
       "preuve_paiement_facture",
-      (contexte) => "Reçu attestant le paiement de la facture",
+      (contexte) => {
+        const { court, pluriel, defini, de, titre } = {
+          pluriel: false,
+          defini: false,
+          titre: true,
+          de: false,
+          ...contexte,
+        };
+        const { s, article } = TypePieceJointe.elements(
+          pluriel,
+          false,
+          false,
+          defini,
+          de,
+          titre,
+        );
+        return court
+          ? `${article}reçu${s} de paiement`
+          : `${article}reçu${s} attestant${s} le paiement de la facture`;
+      },
     ),
     rib: new TypePieceJointe("rib", (contexte) => {
       const { court, pluriel, defini, de, titre } = {
@@ -500,7 +519,7 @@ export class TypePieceJointe {
       return true;
     }
 
-    if (this.estEchange || this.type == "preuve_paiement_facture") {
+    if (this.estEchange) {
       return false;
     }
 
@@ -531,7 +550,7 @@ export class TypePieceJointe {
     typePersonneMorale?: TypePersonneMoraleType,
     estLieDeclaration: boolean = false,
   ): boolean {
-    if (this.estEchange || this.type == "preuve_paiement_facture") {
+    if (this.estEchange) {
       return false;
     }
 
@@ -556,6 +575,7 @@ export class TypePieceJointe {
         "photo_prejudice",
         "carte_identite",
         "facture",
+        "preuve_paiement_facture",
         "rib",
         "photo",
         "non_prise_en_charge_assurance",

@@ -32,12 +32,11 @@ await container
     });
     Crisp.user.setEmail(context.usager.courriel);
     Crisp.user.setPhone(context.usager.telephone);
-    Crisp.user.setNickname(context.usager.courriel);
+    Crisp.user.setNickname(context.usager.nom);
 
     Crisp.session.setData({
-      usager_id: context.usager.id,
       // Route vers @./../routes/dossiers/usager/$uid.tsx
-      url_dossier: `${window.location.origin}/agent/fip6/dossiers/usager/${context.usager.id}`,
+      Dossiers: `${window.location.origin}/agent/fip6/dossiers/usager/${context.usager.id}`,
     });
   });
 

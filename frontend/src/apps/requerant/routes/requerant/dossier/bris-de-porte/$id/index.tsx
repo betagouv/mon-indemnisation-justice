@@ -46,7 +46,7 @@ export const Route = createFileRoute("/requerant/dossier/bris-de-porte/$id/")({
     }
 
     if (dossier.estBrouillon && !estDossierOkPiecesJointes(dossier)) {
-      redirect<typeof RouteurRequerant>({
+      return redirect<typeof RouteurRequerant>({
         to: "./3-pieces-jointes",
         params,
       });

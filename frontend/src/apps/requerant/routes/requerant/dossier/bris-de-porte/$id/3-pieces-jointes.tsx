@@ -195,7 +195,7 @@ function Etape3PiecesJointes() {
       if (formApi.state.isValid) {
         await naviguer({
           to: "../4-recapitulatif",
-          search: true,
+          search: {} as any,
         });
       }
     },
