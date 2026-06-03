@@ -1,6 +1,7 @@
 import { PieceJointePanelNavigation } from "@/apps/requerant/composants/piecesJointes/PieceJointePanelNavigation";
 import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
+import { estDossierOkPiecesJointes } from "@/apps/requerant/formulaires/brisDePorte/3-pieces-jointes.schema.ts";
 import { Dossier, getLibelleTypePersonneMorale, PieceJointe, TypePersonneMoraleType } from "@/apps/requerant/models";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
@@ -69,6 +70,13 @@ export const Route = createFileRoute(
       });
     }
 
+    if (dossier.estBrouillon && !estDossierOkPiecesJointes(dossier)) {
+      return redirect<typeof RouteurRequerant>({
+        to: "../3-pieces-jointes",
+        params,
+      });
+    }
+
     return { dossier };
   },
 });
@@ -102,11 +110,12 @@ function Etape4Recapitulatif() {
   const [pieceJointeSelectionnee, selectionnerPieceJointe] =
     useState<PieceJointe>(dossier.piecesJointes.at(0) as PieceJointe);
 
-  const nomPieceJointePrecedente = (
-    dossier.piecesJointes.at(
-      dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
-    ) as PieceJointe
-  ).nom;
+  const nomPieceJointePrecedente =
+    (
+      dossier.piecesJointes.at(
+        dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
+      ) as PieceJointe
+    ).nom || "";
   const selectionnerPieceJointePrecedente = () => {
     selectionnerPieceJointe(
       dossier.piecesJointes.at(
@@ -124,12 +133,13 @@ function Etape4Recapitulatif() {
     );
   };
 
-  const nomPieceJointeSuivante = (
-    dossier.piecesJointes.at(
-      (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
-        dossier.piecesJointes.length,
-    ) as PieceJointe
-  ).nom;
+  const nomPieceJointeSuivante =
+    (
+      dossier.piecesJointes.at(
+        (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
+          dossier.piecesJointes.length,
+      ) as PieceJointe
+    )?.nom || "";
 
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
 
