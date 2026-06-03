@@ -12,10 +12,8 @@ export const PrevisualiserFichier = ({ fichier }: { fichier: File }) => {
     if (fichier) {
       setLectureEnCours(true);
       setUrlFichier(undefined);
-      contenuFichier(fichier).then((urlLue) => {
-        setLectureEnCours(false);
-        setUrlFichier(urlLue);
-      });
+      setUrlFichier(contenuFichier(fichier));
+      setLectureEnCours(false);
     }
   }, [fichier]);
 
