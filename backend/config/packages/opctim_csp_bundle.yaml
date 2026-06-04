@@ -24,6 +24,7 @@ opctim_csp_bundle:
       - 'data:'
     style-src:
       - "'self'"
+      - 'client.crisp.chat'
       - "'unsafe-inline'"
 
 # For different set-ups in the dev environment
