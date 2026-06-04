@@ -12,6 +12,7 @@ import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
 import { Crisp } from "crisp-sdk-web";
+import { CacheBuster } from "react-cache-refresh";
 
 let theme: ColorScheme | "system" = "system";
 try {
@@ -46,10 +47,18 @@ declare module "@codegouvfr/react-dsfr/spa" {
 const root = ReactDOM.createRoot(document.body);
 root.render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Provider container={container}>
-        <RouterProvider router={RouteurRequerant} />
-      </Provider>
-    </QueryClientProvider>
+    <CacheBuster
+      currentAppVersion={import.meta.env.VITE_MIJ_VERSION || "dev"}
+      // TODO créer un spinner pleine page avec texte https://cssloaders.github.io/
+      loadingComponent={<div>Chargement en cours...</div>}
+      hideConsoleLogs={import.meta.env.PROD}
+      metaJsonPath={"/meta/version.json"}
+    >
+      <QueryClientProvider client={queryClient}>
+        <Provider container={container}>
+          <RouterProvider router={RouteurRequerant} />
+        </Provider>
+      </QueryClientProvider>
+    </CacheBuster>
   </StrictMode>,
 );
