@@ -1,4 +1,3 @@
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { ContexteUsager } from "@/apps/requerant/routeur/contexte.ts";
 import "@/style/index.css";
 import Badge from "@codegouvfr/react-dsfr/Badge";
@@ -8,9 +7,8 @@ import { Header } from "@codegouvfr/react-dsfr/Header";
 import {
   createRootRouteWithContext,
   type LinkProps,
-  NotFoundRouteProps,
   Outlet,
-  useLoaderData
+  useLoaderData,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
@@ -104,9 +102,7 @@ export const Route = createRootRouteWithContext<ContexteUsager>()({
   },
   loader: async ({ context }) => ({ contexte: context }),
   component: () => <EspaceRequerant />,
-  notFoundComponent: (props: NotFoundRouteProps) => (
-    <NonTrouveComposant {...props} />
-  ),
+
   scripts: () =>
     import.meta.env.DEV
       ? [

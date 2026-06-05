@@ -1,4 +1,3 @@
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe.tsx";
 import { Dossier, PieceJointe } from "@/apps/requerant/models";
@@ -13,7 +12,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
-import { createFileRoute, notFound, NotFoundRouteProps, useRouter } from "@tanstack/react-router";
+import { createFileRoute, notFound, useRouter } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React, { RefObject, useCallback, useRef, useState } from "react";
 
@@ -35,9 +34,6 @@ export const Route = createFileRoute(
     stringify: ({ id }) => ({ id: id.toString() }),
   },
   pendingComponent: Loader,
-  notFoundComponent: (props: NotFoundRouteProps) => (
-    <NonTrouveComposant {...props} />
-  ),
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)

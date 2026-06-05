@@ -2,12 +2,11 @@ import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx
 import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
 import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 import { FormSuggestedInput } from "@/apps/requerant/composants/champs/form/FormSuggeestedInput.tsx";
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import {
   extraireDonneesBrisDeporte,
-  SchemaValidationBrisPorte
+  SchemaValidationBrisPorte,
 } from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
 import {
   Adresse,
@@ -16,7 +15,7 @@ import {
   getRapportAuLogementLibelle,
   RapportAuLogement,
   TypePersonneMoraleType,
-  TypesPersonneMorale
+  TypesPersonneMorale,
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
@@ -34,10 +33,9 @@ import { useForm, useStore } from "@tanstack/react-form";
 import {
   createFileRoute,
   notFound,
-  NotFoundRouteProps,
   redirect,
   useBlocker,
-  useNavigate
+  useNavigate,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React, { useState } from "react";
@@ -52,9 +50,6 @@ export const Route = createFileRoute(
     stringify: ({ id }) => ({ id: id.toString() }),
   },
   pendingComponent: Loader,
-  notFoundComponent: (props: NotFoundRouteProps) => (
-    <NonTrouveComposant {...props} />
-  ),
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)

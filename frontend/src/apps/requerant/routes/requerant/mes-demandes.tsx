@@ -62,7 +62,7 @@ function RouteComponent() {
     },
     retry: false,
     retryDelay: 0,
-    throwOnError: false,
+    throwOnError: true,
   });
 
   const modaleRef = useRef<ModaleRef>(null);
