@@ -1,5 +1,6 @@
 /// <reference types="./types" />
 
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import legacy from "@vitejs/plugin-legacy";
 import { default as react } from "@vitejs/plugin-react";
@@ -54,12 +55,34 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         stimulus: false,
       }),
       react(),
+      sentryVitePlugin({
+        org: "betagouv",
+        project: "mon-indemnisation-justice",
+        url: process.env.VITE_SENTRY_URL || "",
+        authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
+        release: {
+          name: process.env.VITE_MIJ_VERSION || "dev",
+        },
+        sourcemaps: {
+          // As you're enabling client source maps, you probably want to delete them after they're uploaded to Sentry.
+          // Set the appropriate glob pattern for your output folder - some glob examples below:
+          filesToDeleteAfterUpload: [
+            "./**/*.map",
+            ".*/**/public/**/*.map",
+            "./dist/**/client/**/*.map",
+            "./build/**/client/**/*.map",
+          ],
+        },
+      }),
     ],
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     }, // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
+    oxc: {
+      target: "esnext",
+    },
     assetsInclude: ["*.pdf"],
     build: {
       target: "esnext",
