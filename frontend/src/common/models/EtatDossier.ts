@@ -129,10 +129,12 @@ export class EtatDossierType implements EtatInterface {
 
   public estAccepteRequerant(): boolean {
     return [
-      EtatDossierType.OK_A_VERIFIER.id,
-      EtatDossierType.OK_A_INDEMNISER.id,
-      EtatDossierType.OK_INDEMNISE.id,
-    ].includes(this.id);
+      EtatDossierType.OK_A_VERIFIER,
+      EtatDossierType.OK_VERIFIE,
+      EtatDossierType.OK_A_INDEMNISER,
+      EtatDossierType.OK_EN_ATTENTE_PAIEMENT,
+      EtatDossierType.OK_INDEMNISE,
+    ].includes(this);
   }
 
   public estIndemnise(): boolean {

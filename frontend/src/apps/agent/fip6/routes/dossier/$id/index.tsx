@@ -5,7 +5,7 @@ import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/
 import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier";
 import {
   ChampPieceJointe,
-  TelechargerPieceJointe
+  TelechargerPieceJointe,
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
 import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
@@ -336,28 +336,24 @@ const ConsultationDossier = observer(function ConsultationDossier({
                   </section>
                 )}
 
-                {selectedTab == "declaration" && (
-                  <section>
-                    <h3>Déclaration d'acceptation</h3>
-                    {dossier.getDeclarationAcceptation() && (
-                      <>
-                        <TelechargerPieceJointe
-                          className="fr-grid-row fr-col-12"
-                          pieceJointe={
-                            dossier.getDeclarationAcceptation() as Document
-                          }
-                        />
-
-                        <ChampPieceJointe
-                          className="fr-col-12"
-                          pieceJointe={
-                            dossier.getDeclarationAcceptation() as Document
-                          }
-                        />
-                      </>
-                    )}
-                  </section>
-                )}
+                {selectedTab == "declaration" &&
+                  dossier.estAccepteRequerant() && (
+                    <section>
+                      <h3>Déclaration d'acceptation</h3>
+                      <TelechargerPieceJointe
+                        className="fr-grid-row fr-col-12"
+                        pieceJointe={
+                          dossier.getDeclarationAcceptation() as Document
+                        }
+                      />
+                      <ChampPieceJointe
+                        className="fr-col-12"
+                        pieceJointe={
+                          dossier.getDeclarationAcceptation() as Document
+                        }
+                      />
+                    </section>
+                  )}
 
                 {selectedTab == "arrete" && (
                   <section>
