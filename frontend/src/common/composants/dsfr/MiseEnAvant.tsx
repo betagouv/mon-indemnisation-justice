@@ -6,7 +6,7 @@ export type MiseEnAvantProps = {
   className?: string;
   pictogrammeUrl: string;
   children: ReactNode;
-  action: ReactNode;
+  action?: ReactNode;
 };
 
 export const MiseEnAvant = ({
@@ -55,9 +55,11 @@ export const MiseEnAvant = ({
             </g>
           </svg>
         </div>
-        <div className="fr-py-0 fr-col-12 fr-col-md-10 fr-col-offset-md-1">
-          {action}
-        </div>
+        {action && (
+          <div className="fr-py-0 fr-col-12 fr-col-md-10 fr-col-offset-md-1">
+            {action}
+          </div>
+        )}
       </div>
     </div>
   );

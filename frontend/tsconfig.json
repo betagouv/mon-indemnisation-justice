@@ -28,6 +28,7 @@
     }
   },
   "include": [
+    "vite.config.ts",
     "src/common/**/*",
     "src/style/**/*",
     "src/apps/_init.ts",
