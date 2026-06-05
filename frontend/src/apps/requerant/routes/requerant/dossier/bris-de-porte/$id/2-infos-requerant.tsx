@@ -3,7 +3,6 @@ import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx
 import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
 import { FormSuggestedInput } from "@/apps/requerant/composants/champs/form/FormSuggeestedInput.tsx";
 import { PaysSelect } from "@/apps/requerant/composants/champs/PaysSelect";
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite.tsx";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
@@ -32,7 +31,6 @@ import { useForm, useStore } from "@tanstack/react-form";
 import {
   createFileRoute,
   notFound,
-  NotFoundRouteProps,
   redirect,
   useNavigate,
 } from "@tanstack/react-router";
@@ -49,9 +47,6 @@ export const Route = createFileRoute(
     stringify: ({ id }) => ({ id: id.toString() }),
   },
   pendingComponent: Loader,
-  notFoundComponent: (props: NotFoundRouteProps) => (
-    <NonTrouveComposant {...props} />
-  ),
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)

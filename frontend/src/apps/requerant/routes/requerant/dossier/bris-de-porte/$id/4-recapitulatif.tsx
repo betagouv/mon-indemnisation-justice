@@ -1,7 +1,11 @@
 import { PieceJointePanelNavigation } from "@/apps/requerant/composants/piecesJointes/PieceJointePanelNavigation";
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
-import { Dossier, getLibelleTypePersonneMorale, PieceJointe, TypePersonneMoraleType } from "@/apps/requerant/models";
+import {
+  Dossier,
+  getLibelleTypePersonneMorale,
+  PieceJointe,
+  TypePersonneMoraleType,
+} from "@/apps/requerant/models";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/composants/Loader.tsx";
@@ -12,10 +16,9 @@ import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import {
   createFileRoute,
   notFound,
-  NotFoundRouteProps,
   redirect,
   useNavigate,
-  useRouter
+  useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import { default as React, useEffect, useMemo, useState } from "react";
@@ -30,9 +33,6 @@ export const Route = createFileRoute(
     stringify: ({ id }) => ({ id: id.toString() }),
   },
   pendingComponent: Loader,
-  notFoundComponent: (props: NotFoundRouteProps) => (
-    <NonTrouveComposant {...props} />
-  ),
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)

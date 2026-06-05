@@ -2,7 +2,6 @@ import {
   AjouterPiecesJointesModale,
   AjouterPiecesJointesModaleRef,
 } from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe.tsx";
 import {
@@ -35,7 +34,6 @@ import { useForm } from "@tanstack/react-form";
 import {
   createFileRoute,
   notFound,
-  NotFoundRouteProps,
   redirect,
   useNavigate,
   useRouter,
@@ -53,9 +51,6 @@ export const Route = createFileRoute(
     stringify: ({ id }) => ({ id: id.toString() }),
   },
   pendingComponent: Loader,
-  notFoundComponent: (props: NotFoundRouteProps) => (
-    <NonTrouveComposant {...props} />
-  ),
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
