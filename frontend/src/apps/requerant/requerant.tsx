@@ -6,6 +6,7 @@ import { ErreurComposant } from "@/common/composants/erreur/ErreurComposant";
 import { NonTrouveComposant } from "@/common/composants/erreur/NonTrouveComposant";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import * as Sentry from "@sentry/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Link, LinkProps, RouterProvider } from "@tanstack/react-router";
 import React, { JSX, StrictMode } from "react";
@@ -47,7 +48,12 @@ declare module "@codegouvfr/react-dsfr/spa" {
   }
 }
 
-const root = ReactDOM.createRoot(document.body);
+const root = ReactDOM.createRoot(document.body, {
+  // Error reporting: captures all errors
+  onUncaughtError: Sentry.reactErrorHandler(),
+  onCaughtError: Sentry.reactErrorHandler(),
+  onRecoverableError: Sentry.reactErrorHandler(),
+});
 root.render(
   <StrictMode>
     <CacheBuster
@@ -84,7 +90,6 @@ root.render(
                     alignment="center"
                     buttonsIconPosition="left"
                     buttonsEquisized={false}
-
                     buttons={[
                       {
                         children: "Revenir à la liste de mes demandes",
