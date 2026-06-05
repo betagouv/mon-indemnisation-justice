@@ -60,7 +60,6 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     }, // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
-    esbuild: false,
     assetsInclude: ["*.pdf"],
     build: {
       target: "esnext",
