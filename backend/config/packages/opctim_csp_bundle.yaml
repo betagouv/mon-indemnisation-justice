@@ -7,6 +7,10 @@ opctim_csp_bundle:
       - "'self'"
       - 'data:'
       - 'https:'
+      - 'stats.beta.gouv.fr'
+      - 'sentry.incubateur.net'
+      - 'client.crisp.chat'
+      - 'client.relay.crisp.chat'
     base-uri:
       - "'self'"
     object-src:
@@ -26,9 +30,7 @@ opctim_csp_bundle:
       - "'self'"
       - 'client.crisp.chat'
       - "'unsafe-inline'"
-    connect-src:
-      - "'self'"
-      - 'client.relay.crisp.chat'
+
 
 # For different set-ups in the dev environment
 when@dev:
