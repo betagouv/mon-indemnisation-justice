@@ -83,8 +83,8 @@
 {% endblock %}
 
 {% block dsfrjs %}
-    <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
-    <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
+    <script type="module" nonce="{{ csp_nonce('mij-script') }}" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
+    <script type="text/javascript" nonce="{{ csp_nonce('mij-script') }}" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
 {% endblock dsfrjs %}
 
 {# Sentry browser #}
