@@ -3,7 +3,7 @@ opctim_csp_bundle:
   always_add: [ ]
 
   directives:
-    default-src:
+    default-src: &default-src
       - "'self'"
       - 'data:'
       - 'https:'
@@ -30,6 +30,15 @@ opctim_csp_bundle:
       - "'self'"
       - 'client.crisp.chat'
       - "'unsafe-inline'"
+    connect-src:
+      - "'self'"
+      - 'data:'
+      - 'https:'
+      - 'stats.beta.gouv.fr'
+      - 'sentry.incubateur.net'
+      - 'client.crisp.chat'
+      - 'client.relay.crisp.chat'
+      - 'wss:'
 
 
 # For different set-ups in the dev environment
