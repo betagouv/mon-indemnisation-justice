@@ -1,13 +1,9 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { router } from "@/apps/agent/fip6/_init";
 import { Route } from "@/apps/agent/fip6/routes/agents/gestion";
+import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { Administration, Agent } from "@/common/models";
-import {
-  RoleAgent,
-  TypeAdministration,
-  TypeRoleAgent,
-} from "@/common/models/Agent.ts";
+import { RoleAgent, TypeAdministration, TypeRoleAgent } from "@/common/models/Agent.ts";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import { estCourrielValide } from "@/common/services/courriel.ts";
 import "@/style/index.css";
@@ -421,7 +417,7 @@ const modaleEditionAgent = createModal({
 
 export const ValidationAgentApp = () => {
   const { context }: { context: AgentContext } = Route.useLoaderData();
-  const naviguer = useNavigate<typeof router>({
+  const naviguer = useNavigate<typeof RouteurRequerant>({
     from: Route.fullPath,
   });
 

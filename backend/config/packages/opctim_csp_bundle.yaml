@@ -27,6 +27,7 @@ opctim_csp_bundle:
       - 'client.crisp.chat'
       - "'unsafe-inline'"
     connect-src:
+      - "'self'"
       - 'client.relay.crisp.chat'
 
 # For different set-ups in the dev environment
