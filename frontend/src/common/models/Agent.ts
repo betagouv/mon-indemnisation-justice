@@ -80,7 +80,7 @@ export class RoleAgent {
   }
 }
 
-export type TypeAdministration = "MJ" | "GN" | "PN" | "PP";
+export type TypeAdministration = "MJ" | "GN" | "PN" | "PP" | "MI";
 
 export class Administration {
   public static MJ: Administration = new Administration(
@@ -102,6 +102,11 @@ export class Administration {
     "PP",
     "Préfecture de Police",
     true,
+  );
+
+  public static MI: Administration = new Administration(
+    "MI",
+    "Ministère de l'Intérieur'",
   );
 
   protected constructor(
@@ -127,14 +132,14 @@ export class Administration {
   }
 
   public static liste(): Administration[] {
-    return [this.MJ, this.GN, this.PN, this.PP];
+    return [this.MJ, this.GN, this.PN, this.PP, this.MI];
   }
 
   public static pourCourriel(courriel: string): Administration[] {
     const domaine = courriel.split("@").at(1);
 
     if (domaine === "interieur.gouv.fr") {
-      return [this.PN, this.GN, this.PP];
+      return [this.PN, this.GN, this.PP, this.MI];
     }
 
     if (domaine === "justice.gouv.fr") {
@@ -229,9 +234,12 @@ export class Agent {
   }
 
   public estFDO(): boolean {
-    return [Administration.GN, Administration.PN, Administration.PP].includes(
-      this.administration,
-    );
+    return [
+      Administration.GN,
+      Administration.PN,
+      Administration.PP,
+      Administration.MI,
+    ].includes(this.administration);
   }
 
   public estMinistere(): boolean {
