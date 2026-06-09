@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Entity;
 enum AdministrationType: string
 {
     case MINISTERE_JUSTICE = 'MJ';
+    case MINISTERE_INTERIEUR = 'MI';
     case POLICE_NATIONALE = 'PN';
     case PREFECTURE_DE_POLICE = 'PP';
     case GENDARMERIE_NATIONALE = 'GN';
@@ -14,6 +15,7 @@ enum AdministrationType: string
     public const string SIRET_PN = '12001501100014';
     public const string SIRET_PP = '17750151700011';
     public const string SIRET_GN = '15700001900461';
+    public const string SIRET_MI = '11001401600015';
 
     public function estRattachee(array $domaines): bool
     {
@@ -30,14 +32,16 @@ enum AdministrationType: string
             self::MINISTERE_JUSTICE => 'Ministère de la Justice',
             self::POLICE_NATIONALE => 'Police Nationale',
             self::GENDARMERIE_NATIONALE => 'Gendarmerie Nationale',
+            self::PREFECTURE_DE_POLICE => 'Préfecture de Police',
+            self::MINISTERE_INTERIEUR => "Ministère de l'intérieur",
         };
     }
 
     public function estLibelleFeminin(): bool
     {
         return match ($this) {
-            self::MINISTERE_JUSTICE => false,
-            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => true,
+            self::MINISTERE_JUSTICE, self::MINISTERE_INTERIEUR => false,
+            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE, self::PREFECTURE_DE_POLICE => true,
         };
     }
 
@@ -52,7 +56,7 @@ enum AdministrationType: string
                 Agent::ROLE_AGENT_GESTION_PERSONNEL,
                 Agent::ROLE_AGENT_LIAISON_BUDGET,
             ],
-            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
+            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE, self::PREFECTURE_DE_POLICE, self::MINISTERE_INTERIEUR => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
         };
     }
 
@@ -67,7 +71,7 @@ enum AdministrationType: string
 
     public function estFDO(): bool
     {
-        return in_array($this, [self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE, self::PREFECTURE_DE_POLICE]);
+        return in_array($this, [self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE, self::PREFECTURE_DE_POLICE, self::MINISTERE_INTERIEUR]);
     }
 
     public function estMinistereJustice(): bool
@@ -81,7 +85,7 @@ enum AdministrationType: string
     public function getRolesAutomatiques(): array
     {
         return match ($this) {
-            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE, self::PREFECTURE_DE_POLICE => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
+            self::POLICE_NATIONALE, self::GENDARMERIE_NATIONALE, self::PREFECTURE_DE_POLICE, self::MINISTERE_INTERIEUR => [Agent::ROLE_AGENT_FORCES_DE_L_ORDRE],
             default => [],
         };
     }

@@ -1,19 +1,24 @@
-import Download from "@codegouvfr/react-dsfr/Download";
-import React from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import { RouteurFDO } from "@/apps/agent/fdo/routeur";
 import urlAvisIntervention from "@/apps/agent/fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte.pdf";
-import urlGuideRemiseAvis
-  from "@/apps/agent/fdo/fichiers/documents/guide-de-remise-de-l-avis-d-intervention-apres-un-bris-de-porte.pdf";
-import urlGuideDeclaration
-  from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre.pdf";
 import urlGuideDeclarationPN
   from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre-pn.pdf";
+import urlGuideDeclaration
+  from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre.pdf";
+import urlGuideRemiseAvis
+  from "@/apps/agent/fdo/fichiers/documents/guide-de-remise-de-l-avis-d-intervention-apres-un-bris-de-porte.pdf";
+import { RouteurFDO } from "@/apps/agent/fdo/routeur";
+import Download from "@codegouvfr/react-dsfr/Download";
+import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { createFileRoute } from "@tanstack/react-router";
+import React, { useMemo } from "react";
 
 export const Route = createFileRoute("/les-documents")({
   component: () => {
     const { agent } = Route.useRouteContext<typeof RouteurFDO>();
+
+    const estPN = useMemo(
+      () => ["PN", "MI"].includes(agent.administration.type),
+      [agent],
+    );
 
     return (
       <div>
@@ -91,7 +96,7 @@ export const Route = createFileRoute("/les-documents")({
                     label="Guide de déclaration en ligne d'un bris de porte"
                     details={""}
                     linkProps={{
-                      href: `${window.location.origin}${agent.administration.type === "PN" ? urlGuideDeclarationPN : urlGuideDeclaration}`,
+                      href: `${window.location.origin}${estPN ? urlGuideDeclarationPN : urlGuideDeclaration}`,
                       target: "_self",
                       download: true,
                     }}
@@ -99,11 +104,7 @@ export const Route = createFileRoute("/les-documents")({
 
                   <div className="fr-grid-row fr-col-12">
                     <object
-                      data={
-                        agent.administration.type === "PN"
-                          ? urlGuideDeclarationPN
-                          : urlGuideDeclaration
-                      }
+                      data={estPN ? urlGuideDeclarationPN : urlGuideDeclaration}
                       type="application/pdf"
                       style={{ width: "100%", aspectRatio: "210/297" }}
                     ></object>

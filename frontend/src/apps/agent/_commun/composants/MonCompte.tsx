@@ -83,19 +83,25 @@ export const MonCompte = ({ agent }: { agent: Agent }) => {
                   Vous êtes actuellement rattaché à la <b>Police Nationale</b>.
                 </p>
               )}
-              {agent.administration.type === "PN" && (
+              {agent.administration.type === "PP" && (
                 <p>
                   Vous êtes actuellement rattaché à la{" "}
                   <b>Préfecture de Police</b>.
                 </p>
               )}
-              {agent.administration.type === "PN" && (
+              {agent.administration.type === "GN" && (
                 <p>
                   Vous êtes actuellement rattaché à la{" "}
                   <b>Gendarmerie Nationale</b>.
                 </p>
               )}
-              {agent.administration.type === "PN" && (
+              {agent.administration.type === "MI" && (
+                <p>
+                  Vous êtes actuellement rattaché au{" "}
+                  <b>Ministère de l'Intérieur'</b>.
+                </p>
+              )}
+              {agent.administration.type === "MJ" && (
                 <p>
                   Vous êtes actuellement rattaché au{" "}
                   <b>Ministère de la Justice</b>.
