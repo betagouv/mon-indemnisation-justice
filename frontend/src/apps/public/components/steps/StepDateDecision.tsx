@@ -3,6 +3,7 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
 import { calculerPrescription } from "@/apps/public/services/prescription";
+import { saveCritere, criterePrescription } from "@/apps/public/services/eligibiliteStore";
 import { SchemaEtapeDateDecision } from "../formulaires/eligibilite.schemas";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
@@ -36,8 +37,11 @@ export function StepDateDecision({ onPrecedent, onSuivant, isLastStep }: StepPro
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeDateDecision },
     defaultValues: { dateDecision: "" },
-    onSubmit: async ({ formApi }) => {
+    onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
+        const critere = criterePrescription(new Date(value.dateDecision));
+        if (!critere.rempli) return;
+        saveCritere("prescription", critere);
         onSuivant();
       }
     },
@@ -80,15 +84,19 @@ export function StepDateDecision({ onPrecedent, onSuivant, isLastStep }: StepPro
             />
           </div>
         </div>
-        {prescription?.rempli && (
+        {dateDecision && (
           <Alert
             className="fr-mt-2w"
-            severity="success"
-            title="Vous êtes dans les délais"
+            severity={prescription.rempli ? "success" : "error"}
+            title={prescription.rempli ? "Vous êtes dans les délais" : "Délai de prescription dépassé"}
             description={prescription.detail}
           />
         )}
-        <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} />
+        <NavButtons
+          onPrecedent={onPrecedent}
+          isLastStep={isLastStep}
+          peutContinuer={!dateDecision || prescription.rempli}
+        />
       </form>
     </>
   );

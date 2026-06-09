@@ -2,6 +2,7 @@ import React from "react";
 import { useForm } from "@tanstack/react-form";
 import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
 import { SchemaEtapeDiligences } from "../formulaires/eligibilite.schemas";
+import { saveCritere, critereDiligences } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
 
@@ -9,8 +10,9 @@ export function StepDiligences({ onPrecedent, onSuivant, isLastStep }: StepProps
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeDiligences },
     defaultValues: { preuvesDiligences: undefined } as { preuvesDiligences?: boolean },
-    onSubmit: async ({ formApi }) => {
+    onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
+        saveCritere("diligences", critereDiligences(value.preuvesDiligences!));
         onSuivant();
       }
     },

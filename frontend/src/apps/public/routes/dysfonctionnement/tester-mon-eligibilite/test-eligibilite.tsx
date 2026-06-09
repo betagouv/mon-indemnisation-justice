@@ -8,6 +8,7 @@ import { usePublicNavigate } from "@/apps/public/routeur";
 import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
+import { saveCritere, critereProcedureTerminee } from "@/apps/public/services/eligibiliteStore";
 
 function TestEligibiliteRoute() {
   const navigate = usePublicNavigate();
@@ -98,6 +99,7 @@ function TestEligibiliteRoute() {
             disabled={procedureTerminee === undefined}
             onClick={() => {
               if (procedureTerminee) {
+                saveCritere("procedureTerminee", critereProcedureTerminee());
                 navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/1-date-decision" });
               } else {
                 setSubmitted(true);
