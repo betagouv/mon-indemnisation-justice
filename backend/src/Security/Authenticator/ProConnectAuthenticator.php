@@ -67,7 +67,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
             $administration = $estAutoPromuMJ ? $this->administrationRepository->find(AdministrationType::MINISTERE_JUSTICE) : $this->administrationRepository->findBySiret($userInfo['siret']);
 
             if (null === $administration) {
-                throw new CustomUserMessageAuthenticationException("Cet espace est réservé aux agents des Forces de l'ordre ou du Ministère de la Justice");
+                throw new CustomUserMessageAuthenticationException("Cet espace est réservé aux agents des Forces de l'ordre ou du Ministère de la Justice", $userInfo);
             }
 
             $agent = $this->agentRepository->findOneBy(['identifiant' => $userInfo['sub']]);
