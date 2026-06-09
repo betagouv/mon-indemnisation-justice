@@ -1,26 +1,35 @@
 import React from "react";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 
 type NavButtonsProps = {
   onPrecedent: () => void;
-  isLastStep: boolean;
+  isLastStep?: boolean;
+  peutContinuer?: boolean;
 };
 
-export function NavButtons({ onPrecedent, isLastStep }: NavButtonsProps) {
+export function NavButtons({ onPrecedent, isLastStep, peutContinuer = true }: NavButtonsProps) {
   return (
-    <div className="fr-mt-3w fr-btns-group fr-btns-group--inline">
-      <Button
-        priority="tertiary no outline"
-        iconId="fr-icon-arrow-left-line"
-        iconPosition="left"
-        nativeButtonProps={{ type: "button" }}
-        onClick={onPrecedent}
-      >
-        Retour
-      </Button>
-      <Button nativeButtonProps={{ type: "submit" }}>
-        {isLastStep ? "Voir le résultat" : "Continuer"}
-      </Button>
-    </div>
+    <ButtonsGroup
+      className="fr-mt-3w"
+      inlineLayoutWhen="always"
+      buttons={[
+        {
+          priority: "tertiary no outline",
+          iconId: "fr-icon-arrow-left-line",
+          iconPosition: "left",
+          nativeButtonProps: { type: "button" },
+          onClick: onPrecedent,
+          children: "Retour",
+        },
+        ...(peutContinuer
+          ? [
+              {
+                nativeButtonProps: { type: "submit" as const },
+                children: isLastStep ? "Voir le résultat" : "Continuer",
+              },
+            ]
+          : []),
+      ]}
+    />
   );
 }

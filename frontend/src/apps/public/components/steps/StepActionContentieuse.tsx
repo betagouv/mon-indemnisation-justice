@@ -1,8 +1,10 @@
 import React from "react";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
 import { ActionContentieuse } from "../types";
 import { SchemaEtapeActionContentieuse } from "../formulaires/eligibilite.schemas";
+import { saveCritere, critereActionContentieuse } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
 
@@ -10,12 +12,16 @@ export function StepActionContentieuse({ onPrecedent, onSuivant, isLastStep }: S
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeActionContentieuse },
     defaultValues: { actionContentieuse: undefined } as { actionContentieuse?: ActionContentieuse },
-    onSubmit: async ({ formApi }) => {
+    onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
+        saveCritere("actionContentieuse", critereActionContentieuse(value.actionContentieuse!));
         onSuivant();
       }
     },
   });
+
+  const actionContentieuse = useStore(formulaire.store, (s) => s.values.actionContentieuse);
+  const estBloque = actionContentieuse === ActionContentieuse.Oui;
 
   return (
     <form
@@ -53,7 +59,15 @@ export function StepActionContentieuse({ onPrecedent, onSuivant, isLastStep }: S
           />
         )}
       />
-      <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} />
+      {estBloque && (
+        <Alert
+          className="fr-mt-2w"
+          severity="error"
+          title="Démarche irrecevable"
+          description="Une procédure contentieuse en cours devant l'AJE rend la démarche précontentieuse irrecevable. Vous pourrez effectuer cette déclaration après la clôture de cette procédure."
+        />
+      )}
+      <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} peutContinuer={!estBloque} />
     </form>
   );
 }

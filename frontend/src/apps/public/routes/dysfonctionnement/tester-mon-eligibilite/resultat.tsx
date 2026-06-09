@@ -1,20 +1,16 @@
+import React from "react";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Layout } from "@/apps/public/components/Layout";
-import { REQUERANT_URL } from "@/apps/public/routeur";
+import { REQUERANT_URL, usePublicNavigate } from "@/apps/public/routeur";
+import { TOTAL_STEPS } from "@/apps/public/components/steps";
+import { getCriteres, clearCriteres } from "@/apps/public/services/eligibiliteStore";
 import { createFileRoute } from "@tanstack/react-router";
 
-type Critere = {
-  label: string;
-  rempli: boolean;
-  detail: string;
-};
-
-// TODO: récupérer les critères depuis la session PHP (option #2)
-const CRITERES_STUB: Critere[] = [];
-
 function ResultatEligibiliteRoute() {
-  const criteres = CRITERES_STUB;
+  const navigate = usePublicNavigate();
+  const criteres = getCriteres();
   const eligible = criteres.length > 0 && criteres.every((c) => c.rempli);
 
   return (
@@ -29,6 +25,17 @@ function ResultatEligibiliteRoute() {
           },
         ]}
       />
+
+      <div
+        className="fr-stepper fr-mb-2w"
+        style={{ "--background-active-blue-france": "var(--background-flat-success)" } as React.CSSProperties}
+      >
+        <div
+          className="fr-stepper__steps"
+          data-fr-current-step={TOTAL_STEPS}
+          data-fr-steps={TOTAL_STEPS}
+        />
+      </div>
 
       <h1>Résultat du test d'éligibilité</h1>
       <p className="fr-mb-3w">Synthèse de vos réponses et éligibilité préliminaire.</p>
@@ -50,7 +57,11 @@ function ResultatEligibiliteRoute() {
             }}
           >
             <span
-              className={`${rempli ? "fr-icon-checkbox-circle-fill fr-text-default--success" : "fr-icon-close-circle-fill fr-text-default--error"}`}
+              className={
+                rempli
+                  ? "fr-icon-checkbox-circle-fill fr-text-default--success"
+                  : "fr-icon-close-circle-fill fr-text-default--error"
+              }
               aria-hidden="true"
               style={{ flexShrink: 0, marginTop: "2px" }}
             />
@@ -66,22 +77,38 @@ function ResultatEligibiliteRoute() {
       </div>
 
       {criteres.length > 0 && (
-        <p className={`fr-text--lg ${eligible ? "fr-text-default--success" : "fr-text-default--error"}`}>
-          {eligible ? "Votre demande semble recevable." : "Un ou plusieurs critères ne sont pas remplis."}
-        </p>
+        <Alert
+          className="fr-mb-3w"
+          severity={eligible ? "success" : "error"}
+          title={eligible ? "Demande éligible" : "Demande non éligible en l'état"}
+          description={
+            eligible
+              ? "Votre demande semble recevable. Constituez votre dossier."
+              : "Un ou plusieurs critères ne sont pas remplis. Consultez le détail ci-dessus."
+          }
+        />
       )}
 
-      <div className="fr-mt-3w fr-btns-group fr-btns-group--inline">
-        <Button
-          priority="tertiary no outline"
-          iconId="fr-icon-arrow-left-line"
-          iconPosition="left"
-          linkProps={{ to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite" }}
-        >
-          Recommencer le test
-        </Button>
-        <Button linkProps={{ href: REQUERANT_URL }}>Déposer un dossier</Button>
-      </div>
+      <ButtonsGroup
+        inlineLayoutWhen="always"
+        buttons={[
+          {
+            priority: "tertiary no outline",
+            iconId: "fr-icon-arrow-left-line",
+            iconPosition: "left",
+            nativeButtonProps: { type: "button" },
+            onClick: () => {
+              clearCriteres();
+              navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite" });
+            },
+            children: "Recommencer le test",
+          },
+          {
+            linkProps: { href: REQUERANT_URL },
+            children: "Déposer un dossier",
+          },
+        ]}
+      />
     </Layout>
   );
 }
