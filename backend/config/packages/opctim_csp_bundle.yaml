@@ -24,20 +24,15 @@ opctim_csp_bundle:
       - 'sentry.incubateur.net'
       - 'client.crisp.chat'
       - 'nonce(mij-script)'
+    # Configuration CSP de Crisp : https://docs.crisp.chat/guides/others/whitelisting-our-systems/crisp-domain-names/
     img-src:
       - "'self'"
       - "blob:"
       - 'data:'
+      - 'https://client.crisp.chat'
+      - 'https://image.crisp.chat'
+      - 'https://storage.crisp.chat'
     style-src:
       - "'self'"
       - 'client.crisp.chat'
       - "'unsafe-inline'"
-
-
-# For different set-ups in the dev environment
-when@dev:
-  opctim_csp_bundle:
-    # always_add: []
-
-    directives:
-    # Add your directive overrides here

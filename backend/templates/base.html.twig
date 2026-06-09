@@ -36,9 +36,9 @@
     {% block stylesheets %}{% endblock stylesheets %}
     <title>{% block title %}Mon indemnisation justice{% if title is defined %} - {{ title }}{% endif %}{% endblock %}</title>
     {% block analytic %}
-        {% if app.environment == 'prod' %}
+        {% if matomo_site_id %}
             <!-- Matomo -->
-            <script>
+            <script type="text/javascript"  nonce="{{ csp_nonce('mij-script') }}">
                 var _paq = window._paq = window._paq || [];
                 /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
                 _paq.push(['trackPageView']);
@@ -46,7 +46,7 @@
                 (function () {
                     var u = "https://stats.beta.gouv.fr/";
                     _paq.push(['setTrackerUrl', u + 'matomo.php']);
-                    _paq.push(['setSiteId', '142']);
+                    _paq.push(['setSiteId', '{{ matomo_site_id }}']);
                     var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
                     g.async = true;
                     g.src = u + 'matomo.js';
