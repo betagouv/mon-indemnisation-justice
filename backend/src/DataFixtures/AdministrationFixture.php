@@ -33,6 +33,9 @@ class AdministrationFixture extends Fixture implements FixtureGroupInterface
             'PP' => new Administration()
                 ->setType(AdministrationType::PREFECTURE_DE_POLICE)
                 ->setSiret(AdministrationType::SIRET_PP),
+            'MI' => new Administration()
+                ->setType(AdministrationType::MINISTERE_INTERIEUR)
+                ->setSiret(AdministrationType::SIRET_MI),
         ] as $reference => $administration) {
             $manager->persist($administration);
             $this->addReference("administration-$reference", $administration);
