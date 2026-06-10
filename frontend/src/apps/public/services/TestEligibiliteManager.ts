@@ -1,4 +1,4 @@
-import { instanceToInstance, plainToClassFromExist } from "class-transformer";
+import { plainToClassFromExist } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 import { TestEligibilite } from "@/apps/public/models/TestEligibilite";
 
@@ -14,7 +14,7 @@ export type DeepPartial<T> = T extends object
 export interface TestEligibiliteManagerInterface {
   creer(): TestEligibilite;
   modifier(modifications: DeepPartial<TestEligibilite>): void;
-  soumettre(): void;
+  soumettre(): Promise<void>;
 }
 
 export namespace TestEligibiliteManagerInterface {
@@ -28,17 +28,17 @@ export class InMemoryTestEligibiliteManager implements TestEligibiliteManagerInt
 
   creer(): TestEligibilite {
     this.test = new TestEligibilite();
-    return instanceToInstance(this.test);
+    return this.test;
   }
 
   modifier(modifications: DeepPartial<TestEligibilite>): void {
     if (!this.test) {
       throw new Error("Aucun test d'éligibilité en cours");
     }
-    this.test = plainToClassFromExist(this.test, modifications);
+    plainToClassFromExist(this.test, modifications);
   }
 
-  soumettre(): void {
+  async soumettre(): Promise<void> {
     if (!this.test) {
       throw new Error("Aucun test d'éligibilité en cours");
     }
