@@ -1,10 +1,10 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { TestEligibiliteBrisPorteForm } from "@/apps/requerant/dossier/components/TestEligibiliteBrisPorteForm.tsx";
 import "@/style/requerant/dossier/test_mon_eligibilite.css";
-import { TestEligibiliteForm } from "@/apps/requerant/dossier/components/TestEligibiliteForm.tsx";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
+import React from "react";
+import ReactDOM from "react-dom/client";
 
 startReactDsfr({
   defaultColorScheme:
@@ -30,7 +30,7 @@ if (root) {
         />
 
         <div className="fr-col-12 fr-my-2w">
-          <TestEligibiliteForm
+          <TestEligibiliteBrisPorteForm
             token={args._token}
             estIssuAttestation={args.estIssuAttestation}
           />

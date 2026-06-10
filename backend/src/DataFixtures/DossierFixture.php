@@ -22,7 +22,7 @@ use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\PersonneMorale;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
-use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -107,7 +107,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ->setRapportAuLogement(RapportAuLogement::PROPRIETAIRE)
                     ->setDescriptionRequerant('Porte fracturée tôt ce matin')
                     ->setTestEligibilite(
-                        TestEligibilite::fromArray([
+                        TestEligibiliteBrisPorte::fromArray([
                             'departement' => $this->getReference('departement-bouches-du-rhone', GeoDepartement::class),
                             'estVise' => false,
                             'estHebergeant' => false,
@@ -160,7 +160,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                             ->setLocalite($this->faker->city())
                     )
                     ->setTestEligibilite(
-                        $this->getReference('test-eligibilite-melun', TestEligibilite::class)
+                        $this->getReference('test-eligibilite-melun', TestEligibiliteBrisPorte::class)
                     )
                     ->setRapportAuLogement(RapportAuLogement::BAILLEUR)
             )
@@ -248,7 +248,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                             ->setCodePostal('77000')
                     )
                     ->setTestEligibilite(
-                        $this->getReference('test-eligibilite-ray-keran', TestEligibilite::class)
+                        $this->getReference('test-eligibilite-ray-keran', TestEligibiliteBrisPorte::class)
                     )
                     ->setRapportAuLogement(RapportAuLogement::LOCATAIRE)
             )
@@ -429,7 +429,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                     ->setAdresse($adresse)
                     ->setRapportAuLogement($donneesTestEligibilite['rapportAuLogement'])
                     ->setTestEligibilite(
-                        TestEligibilite::fromArray(
+                        TestEligibiliteBrisPorte::fromArray(
                             array_merge(
                                 $donneesTestEligibilite,
                                 [

@@ -558,7 +558,7 @@ class Dossier
         return new self()->setType(DossierType::BRIS_PORTE);
     }
 
-    public static function brisDePorteDepuisTestEligibilite(TestEligibilite $testEligibilite): Dossier
+    public static function brisDePorteDepuisTestEligibilite(TestEligibiliteBrisPorte $testEligibilite): Dossier
     {
         return Dossier::brisDePorte()
             ->setUsager($testEligibilite->usager)

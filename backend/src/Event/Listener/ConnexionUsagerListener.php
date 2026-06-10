@@ -9,7 +9,7 @@ use MonIndemnisationJustice\Entity\BrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
-use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
 use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -96,12 +96,12 @@ class ConnexionUsagerListener implements EventSubscriberInterface
         ];
     }
 
-    protected function getTestEligibiliteEnCours(Request $request, Usager $requerant): ?TestEligibilite
+    protected function getTestEligibiliteEnCours(Request $request, Usager $requerant): ?TestEligibiliteBrisPorte
     {
         $preInscription = $request->getSession()->get(PublicBrisPorteController::CLEF_SESSION_PREINSCRIPTION, []);
         $idTestEligibilite = $requerant->getNavigation()?->idTestEligibilite ?? @$preInscription['testEligibilite'] ?? null;
 
-        return $idTestEligibilite ? $this->em->find(TestEligibilite::class, $idTestEligibilite) : null;
+        return $idTestEligibilite ? $this->em->find(TestEligibiliteBrisPorte::class, $idTestEligibilite) : null;
     }
 
     protected function getDeclarationFDOEnCours(Request $request, Usager $requerant): ?DeclarationFDOBrisPorte

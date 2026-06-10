@@ -3,9 +3,9 @@
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Output;
 
 use MonIndemnisationJustice\Entity\RapportAuLogement;
-use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
 
-class TestEligibiliteOutput
+class TestEligibiliteBrisPorteOutput
 {
     public function __construct(
         public ?RapportAuLogement $rapportAuLogement,
@@ -16,7 +16,7 @@ class TestEligibiliteOutput
     ) {
     }
 
-    public static function depuisTestEligibilite(?TestEligibilite $testEligibilite = null): ?self
+    public static function depuisTestEligibilite(?TestEligibiliteBrisPorte $testEligibilite = null): ?self
     {
         if (null === $testEligibilite) {
             return null;

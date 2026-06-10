@@ -22,9 +22,9 @@ class BrisPorte
     #[ORM\OneToOne(targetEntity: Dossier::class, mappedBy: 'brisPorte')]
     protected Dossier $dossier;
 
-    #[ORM\OneToOne(targetEntity: TestEligibilite::class, inversedBy: 'dossier', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: TestEligibiliteBrisPorte::class, inversedBy: 'dossier', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    protected ?TestEligibilite $testEligibilite = null;
+    protected ?TestEligibiliteBrisPorte $testEligibilite = null;
 
     #[ORM\OneToOne(targetEntity: DeclarationFDOBrisPorte::class, mappedBy: 'brisPorte', cascade: ['persist'])]
     protected ?DeclarationFDOBrisPorte $declarationFDO = null;
@@ -65,12 +65,12 @@ class BrisPorte
         return $this->id;
     }
 
-    public function getTestEligibilite(): ?TestEligibilite
+    public function getTestEligibilite(): ?TestEligibiliteBrisPorte
     {
         return $this->testEligibilite;
     }
 
-    public function setTestEligibilite(?TestEligibilite $testEligibilite): self
+    public function setTestEligibilite(?TestEligibiliteBrisPorte $testEligibilite): self
     {
         $this->testEligibilite = $testEligibilite;
 

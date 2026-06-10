@@ -27,7 +27,7 @@ const AvancementTest: LibelleAvancementTest[] = [
 
 type RapportAuLogementType = "proprietaire" | "locataire" | "bailleur";
 
-type TestEligibilite = {
+type TestEligibiliteBrisPorte = {
   avancement: LibelleAvancementTest;
   rapportAuLogement?: RapportAuLogementType;
   estVise?: boolean;
@@ -36,14 +36,14 @@ type TestEligibilite = {
   aContacteBailleur?: boolean;
 };
 
-export const TestEligibiliteForm = ({
+export const TestEligibiliteBrisPorteForm = ({
   token,
   estIssuAttestation,
 }: {
   token: string;
   estIssuAttestation: boolean;
 }) => {
-  const [test, setTest] = useState<TestEligibilite>({
+  const [test, setTest] = useState<TestEligibiliteBrisPorte>({
     avancement: "rapport_au_logement",
   });
 
