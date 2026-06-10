@@ -1,4 +1,6 @@
 import urlAvisIntervention from "@/apps/agent/fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte.pdf";
+import urlAvisInterventionGN
+  from "@/apps/agent/fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte_gn.pdf";
 import urlGuideDeclarationPN
   from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre-pn.pdf";
 import urlGuideDeclaration
@@ -14,6 +16,8 @@ import React, { useMemo } from "react";
 export const Route = createFileRoute("/les-documents")({
   component: () => {
     const { agent } = Route.useRouteContext<typeof RouteurFDO>();
+
+    const estGN = useMemo(() => "GN" === agent.administration.type, [agent]);
 
     const estPN = useMemo(
       () => ["PN", "MI"].includes(agent.administration.type),
@@ -46,7 +50,7 @@ export const Route = createFileRoute("/les-documents")({
                     label="Avis d’intervention à remettre à l’usager"
                     details={""}
                     linkProps={{
-                      href: `${window.location.origin}${urlAvisIntervention}`,
+                      href: `${window.location.origin}${estGN ? urlAvisInterventionGN : urlAvisIntervention}`,
                       target: "_self",
                       download: true,
                     }}
@@ -54,7 +58,7 @@ export const Route = createFileRoute("/les-documents")({
 
                   <div className="fr-grid-row fr-col-12">
                     <object
-                      data={urlAvisIntervention}
+                      data={estGN ? urlAvisInterventionGN : urlAvisIntervention}
                       type="application/pdf"
                       style={{ width: "100%", aspectRatio: "210/297" }}
                     ></object>
