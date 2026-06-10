@@ -52,7 +52,7 @@ class DossierTransitionListener
         // Informer le requérant que son dossier est bien déposé :
         $this->mailer
             ->toRequerant($evenement->dossier->getUsager())
-            ->subject('Votre déclaration de bris de porte a bien été prise en compte')
+            ->subject('Accusé de réception de votre demande d’indemnisation')
             ->htmlTemplate('email/requerant/dossier_depose.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
@@ -131,7 +131,7 @@ class DossierTransitionListener
             ->htmlTemplate('email/agent/fip6/dossier_proposition_acceptee.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
-            ]);
+            ])->send();
     }
 
     public function dossierArreteEdite(DossierArreteEditeEvent $evenement): void

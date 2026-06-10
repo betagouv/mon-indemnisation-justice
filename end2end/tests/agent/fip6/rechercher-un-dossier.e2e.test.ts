@@ -1,4 +1,4 @@
-import {test, expect} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 import {connexionAgent} from "../../helpers";
 
 test("recherche dossier", async ({browser}) => {
@@ -9,7 +9,7 @@ test("recherche dossier", async ({browser}) => {
 
     try {
         await connexionAgent(page, "Rédacteur");
-        await page.waitForURL("/agent/redacteur/dossiers");
+        await page.waitForURL((url) => url.pathname.startsWith("/agent/fip6/dossiers"));
 
         await expect(page.locator("h1", {hasText: "Les dossiers"})).toBeVisible();
 

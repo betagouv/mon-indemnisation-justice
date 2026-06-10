@@ -1,0 +1,38 @@
+opctim_csp_bundle:
+  # See https://github.com/opctim/symfony-csp-bundle?tab=readme-ov-file#the-always_add-option
+  always_add: [ ]
+
+  directives:
+    default-src: &default-src
+      - "'self'"
+      - 'data:'
+      - 'https:'
+      - 'stats.beta.gouv.fr'
+      - 'sentry.incubateur.net'
+      - 'https://client.crisp.chat'
+      - 'wss://client.relay.crisp.chat'
+      - 'https://image.crisp.chat'
+      - 'https://storage.crisp.chat'
+    base-uri:
+      - "'self'"
+    object-src:
+      - "'self'"
+      - "blob:"
+    script-src:
+      - "'self'"
+      - 'stats.beta.gouv.fr'
+      - 'sentry.incubateur.net'
+      - 'client.crisp.chat'
+      - 'nonce(mij-script)'
+    # Configuration CSP de Crisp : https://docs.crisp.chat/guides/others/whitelisting-our-systems/crisp-domain-names/
+    img-src:
+      - "'self'"
+      - "blob:"
+      - 'data:'
+      - 'https://client.crisp.chat'
+      - 'https://image.crisp.chat'
+      - 'https://storage.crisp.chat'
+    style-src:
+      - "'self'"
+      - 'client.crisp.chat'
+      - "'unsafe-inline'"

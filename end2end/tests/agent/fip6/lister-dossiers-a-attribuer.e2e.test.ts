@@ -1,8 +1,8 @@
 import {test} from "@playwright/test";
-import {expect} from "./expect";
 import {connexionAgent, getTitre} from "../../helpers";
+import {expect} from "./expect";
 
-test("recherche dossier", async ({browser}) => {
+test("attribuer dossier", async ({browser}) => {
     // Démarrer une session incognito pour éviter les effets de bord des sessions en cookie
     const context = await browser.newContext();
     await context.clearCookies();
@@ -10,7 +10,7 @@ test("recherche dossier", async ({browser}) => {
 
     try {
         await connexionAgent(page, "Attributeur");
-        await page.waitForURL("/agent/redacteur/dossiers");
+        await page.waitForURL((url) => url.pathname.startsWith("/agent/fip6/dossiers"));
 
         await expect(getTitre(page, "Les dossiers")).toBeVisible();
 

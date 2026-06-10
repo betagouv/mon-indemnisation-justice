@@ -1,8 +1,11 @@
 import { PieceJointePanelNavigation } from "@/apps/requerant/composants/piecesJointes/PieceJointePanelNavigation";
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant.tsx";
 import { container } from "@/apps/requerant/container.ts";
-import { Dossier, getRapportAuLogementLibelle, PieceJointe } from "@/apps/requerant/models";
-import { libellerNomTypePersonneMorale } from "@/apps/requerant/models/TypePersonneMoraleType";
+import {
+  Dossier,
+  getLibelleTypePersonneMorale,
+  PieceJointe,
+  TypePersonneMoraleType,
+} from "@/apps/requerant/models";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import { Loader } from "@/common/composants/Loader.tsx";
@@ -13,10 +16,9 @@ import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import {
   createFileRoute,
   notFound,
-  NotFoundRouteProps,
   redirect,
   useNavigate,
-  useRouter
+  useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import { default as React, useEffect, useMemo, useState } from "react";
@@ -31,9 +33,6 @@ export const Route = createFileRoute(
     stringify: ({ id }) => ({ id: id.toString() }),
   },
   pendingComponent: Loader,
-  notFoundComponent: (props: NotFoundRouteProps) => (
-    <NonTrouveComposant {...props} />
-  ),
   loader: async ({ params }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
@@ -103,11 +102,12 @@ function Etape4Recapitulatif() {
   const [pieceJointeSelectionnee, selectionnerPieceJointe] =
     useState<PieceJointe>(dossier.piecesJointes.at(0) as PieceJointe);
 
-  const nomPieceJointePrecedente = (
-    dossier.piecesJointes.at(
-      dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
-    ) as PieceJointe
-  ).nom;
+  const nomPieceJointePrecedente =
+    (
+      dossier.piecesJointes.at(
+        dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
+      ) as PieceJointe
+    ).nom || "";
   const selectionnerPieceJointePrecedente = () => {
     selectionnerPieceJointe(
       dossier.piecesJointes.at(
@@ -125,12 +125,13 @@ function Etape4Recapitulatif() {
     );
   };
 
-  const nomPieceJointeSuivante = (
-    dossier.piecesJointes.at(
-      (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
-        dossier.piecesJointes.length,
-    ) as PieceJointe
-  ).nom;
+  const nomPieceJointeSuivante =
+    (
+      dossier.piecesJointes.at(
+        (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
+          dossier.piecesJointes.length,
+      ) as PieceJointe
+    )?.nom || "";
 
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
 
@@ -197,29 +198,42 @@ function Etape4Recapitulatif() {
               <h4 className="fr-mb-3w">
                 Informations concernant le bris de porte
               </h4>
-              <p>
-                Vous signalez le bris de la porte
-                {dossier.estPorteBlindee ? " blindée" : ""}, par les forces de
-                l'ordre, du logement sis {dossier.adresse.libelle}
-                {dossier.rapportAuLogement !== "AUTRE" && (
-                  <>
-                    , dont vous êtes{" "}
-                    {getRapportAuLogementLibelle(
-                      dossier.rapportAuLogement,
-                    ).toLowerCase()}
-                  </>
-                )}
-                , en date du {dateSimple(dossier.dateOperation)}.
-              </p>
 
-              {dossier.description && (
-                <>
-                  <p>Vous nous avez fourni la description suivante :</p>
-                  <blockquote className="fr-citation">
-                    {dossier.description}
-                  </blockquote>
-                </>
-              )}
+              <ul>
+                <li>
+                  <u>Date de l'intervention: </u>{" "}
+                  {dateSimple(dossier.dateOperation)}
+                </li>
+                <li>
+                  <u>Adresse de l'intervention: </u> {dossier.adresse.libelle}
+                </li>
+                {dossier.estPersonneMorale ? (
+                  <>
+                    <li>
+                      <u>Personne morale :</u>{" "}
+                      {dossier.personneMorale?.raisonSociale} (
+                      {getLibelleTypePersonneMorale(
+                        dossier.personneMorale
+                          ?.typePersonneMorale as TypePersonneMoraleType,
+                      )}
+                      ), SIRET: {dossier.personneMorale?.siren}
+                    </li>
+                  </>
+                ) : (
+                  <li>
+                    <u>Nom & Prénom : </u>
+                    {dossier.getRequerantPersonne()?.libelle()}
+                  </li>
+                )}
+                <li>
+                  <u>Adresse email :</u>{" "}
+                  {dossier.getRequerantPersonne()?.courriel}
+                </li>
+                <li>
+                  <u>Numéro de téléphone :</u>{" "}
+                  {dossier.getRequerantPersonne()?.telephone}
+                </li>
+              </ul>
 
               <ButtonsGroup
                 inlineLayoutWhen="always"
@@ -234,69 +248,6 @@ function Etape4Recapitulatif() {
                     linkProps: {
                       from: Route.fullPath,
                       to: "../1-bris-porte",
-                    },
-                  },
-                ]}
-              />
-            </section>
-
-            <section className="fr-card fr-mb-5w fr-p-5w">
-              <h4 className="fr-mb-3w">Vos données personnelles</h4>
-              {dossier.personneMorale ? (
-                <>
-                  <p>
-                    Vous faites la demande d'indemnisation en tant que personne
-                    morale pour{" "}
-                    {libellerNomTypePersonneMorale(
-                      dossier.personneMorale.typePersonneMorale,
-                      { defini: true },
-                    )}{" "}
-                    {dossier.personneMorale.raisonSociale}, numéro{" "}
-                    {dossier.personneMorale.siren.length === 9
-                      ? "SIRET"
-                      : "SIREN"}{" "}
-                    {dossier.personneMorale.siren}
-                  </p>
-
-                  <p>
-                    Vous, {dossier.personneMorale.representantLegal.libelle()},
-                    attestez en être{" "}
-                    {dossier.getRequerantPersonne()?.estFeminin() ? "la" : "le"}{" "}
-                    représentant{e} légal{e} ou disposer d'un mandat de
-                    signature.
-                  </p>
-                </>
-              ) : (
-                <p>
-                  Vous, {dossier.personnePhysique?.personne.libelle()},
-                  domicilié{e} au {dossier.personnePhysique?.adresse.libelle} ,
-                  faites la demande d'indemnisation en tant que personne
-                  physique.
-                </p>
-              )}
-
-              <p>
-                Vous êtes joignable par téléphone au{" "}
-                {dossier.getRequerantPersonne()?.telephone} et par courriel à
-                l'adresse{" "}
-                <a href={`mailto:${dossier.getRequerantPersonne()?.courriel}`}>
-                  {dossier.getRequerantPersonne()?.courriel}
-                </a>
-              </p>
-
-              <ButtonsGroup
-                inlineLayoutWhen="always"
-                alignment="right"
-                buttonsIconPosition="right"
-                buttonsSize="medium"
-                buttons={[
-                  {
-                    priority: "secondary",
-                    children: "Modifier",
-                    iconId: "fr-icon-pencil-line",
-                    linkProps: {
-                      from: Route.fullPath,
-                      to: "../2-infos-requerant",
                     },
                   },
                 ]}
@@ -389,6 +340,17 @@ function Etape4Recapitulatif() {
                   </div>
                 ))}
               </div>
+            </section>
+
+            <section className="fr-card fr-mb-5w fr-p-5w">
+              <p>
+                Une fois votre dossier déposé, un e-mail de confirmation vous
+                sera adressé.
+              </p>
+              <p>
+                Le dépôt de dossier n'ouvre pas droit automatiquement à une
+                indemnisation.
+              </p>
             </section>
           </div>
         </div>

@@ -220,6 +220,10 @@ export class Agent {
     return this.aRole(RoleAgent.LIAISON_BUDGET);
   }
 
+  public estGestionnairePersonnel(): boolean {
+    return this.aRole(RoleAgent.GESTION_PERSONNEL);
+  }
+
   public estBetagouv(): boolean {
     return this.aRole(RoleAgent.BETAGOUV);
   }
@@ -230,6 +234,10 @@ export class Agent {
     );
   }
 
+  public estMinistere(): boolean {
+    return this.administration === Administration.MJ;
+  }
+
   public instruit(dossier: BaseDossier): boolean {
     return this.estRedacteur() && this.equals(dossier.redacteur);
   }
@@ -238,7 +246,7 @@ export class Agent {
     return `${this.prenom} ${this.nom.toUpperCase()}`;
   }
 
-  equals(redacteur: Redacteur | null): boolean {
+  equals(redacteur?: Redacteur): boolean {
     return redacteur?.id == this.id;
   }
 }

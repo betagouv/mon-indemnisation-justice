@@ -3,19 +3,15 @@
 namespace MonIndemnisationJustice\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\Dossier;
-use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator;
+use MonIndemnisationJustice\Service\MontantAfficheur;
 use Pentatrion\ViteBundle\Exception\EntrypointNotFoundException;
 use Pentatrion\ViteBundle\Service\EntrypointsLookup;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\FirewallMapInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -32,13 +28,9 @@ class AppRuntime implements RuntimeExtensionInterface
         protected readonly FranceConnectAuthenticator $franceConnectAuthenticator,
         protected readonly FirewallMapInterface $firewallMap,
         protected readonly Security $security,
+        protected readonly MontantAfficheur $montantAfficheur,
     ) {
         $this->publicDirectory = "{$projectDirectory}/public";
-    }
-
-    public function estRequerant(?UserInterface $user = null): bool
-    {
-        return $user instanceof Usager;
     }
 
     public function urlDeconnexion(Usager $requerant, Request $request): ?string
@@ -50,64 +42,10 @@ class AppRuntime implements RuntimeExtensionInterface
         return $this->router->generate('securite_usager_deconnexion');
     }
 
-    public function etatDossierRequerant(Dossier $dossier): string
+    public function montantLitteral(float $amount): string
     {
-        switch ($dossier->getEtatDossier()->getEtat()) {
-            case EtatDossierType::DOSSIER_A_FINALISER:
-                return 'Dossier à compléter';
+        return $this->montantAfficheur->afficherMontantLitteral($amount);
 
-            case EtatDossierType::DOSSIER_A_INSTRUIRE:
-            case EtatDossierType::DOSSIER_EN_INSTRUCTION:
-            case EtatDossierType::DOSSIER_OK_A_SIGNER:
-            case EtatDossierType::DOSSIER_KO_A_SIGNER:
-                return 'Dossier déposé';
-
-            case EtatDossierType::DOSSIER_OK_A_APPROUVER:
-                return 'Indemnisation à accepter';
-
-            case EtatDossierType::DOSSIER_OK_A_INDEMNISER:
-            case EtatDossierType::DOSSIER_OK_A_VERIFIER:
-                return "En attente d'indemnisation";
-
-            case EtatDossierType::DOSSIER_OK_INDEMNISE:
-                return 'Indemnisé';
-
-            case EtatDossierType::DOSSIER_KO_REJETE:
-            case EtatDossierType::DOSSIER_CLOTURE:
-                return 'Dossier rejeté';
-        }
-
-        return '';
-    }
-
-    public function estAgent(?UserInterface $user = null): bool
-    {
-        return $user instanceof Agent;
-    }
-
-    public function toSnake(string $string): string
-    {
-        return preg_replace('/(?<=\w)(?=[A-Z])|(?<=[a-z])(?=[0-9])/', '_', $string);
-    }
-
-    public function toKebab(string $string): string
-    {
-        return preg_replace('/_/', '-', $this->toSnake($string));
-    }
-
-    public function montantLitteral(float $amount, string $locale = 'fr'): string
-    {
-        $t = new \NumberFormatter($locale, \NumberFormatter::SPELLOUT);
-        $numberParsing = explode('.', number_format(round($amount, 2, PHP_ROUND_HALF_DOWN), 2, '.', ''));
-        $_1 = $t->format($numberParsing[0]);
-        $_2 = $t->format($numberParsing[1]);
-
-        return str_replace(['$1', '$2', '$3'], [$_1, $_2, $numberParsing[1] > 1 ? 's' : ''], '$1 euros et $2 centime$3');
-    }
-
-    public function absoluteAssetPath(string $path): string
-    {
-        return "file://{$this->publicDirectory}/{$path}";
     }
 
     public function estViteServerActif(): bool
@@ -122,60 +60,5 @@ class AppRuntime implements RuntimeExtensionInterface
         } catch (EntrypointNotFoundException $e) {
             return false;
         }
-    }
-
-    public function base64Image(string $path)
-    {
-        if (file_exists("{$this->publicDirectory}/{$path}")) {
-            return base64_encode(file_get_contents("{$this->publicDirectory}/{$path}"));
-        }
-
-        return '';
-    }
-
-    public function getAgentIncarnant(): ?Agent
-    {
-        $token = $this->security->getToken();
-
-        if ($token instanceof SwitchUserToken) {
-            return $impersonatorUser = $token->getOriginalToken()->getUser();
-        }
-
-        return null;
-    }
-
-    public function nbDossiersACategoriser(): int
-    {
-        return $this->em->getRepository(Dossier::class)->compterDossierACategoriser();
-    }
-
-    public function nbDossiersAAttribuer(): int
-    {
-        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_A_ATTRIBUER);
-    }
-
-    public function nbDossiersRejetASigner(): int
-    {
-        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_KO_A_SIGNER);
-    }
-
-    public function nbDossiersPropositionASigner(): int
-    {
-        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER);
-    }
-
-    public function nbDossiersArreteASigner(): int
-    {
-        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_VERIFIE);
-    }
-
-    public function nbDossiersATransmettre(): int
-    {
-        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
-    }
-
-    public function nbDossiersEnAttenteIndemnisation(): int
-    {
-        return $this->em->getRepository(Dossier::class)->compterDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
     }
 }

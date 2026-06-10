@@ -13,6 +13,7 @@ import {
   Requerant,
   TestEligibilite,
   TypeFDO,
+  Usager
 } from ".";
 
 export type TypeAttestation =
@@ -33,9 +34,9 @@ export abstract class BaseDossier {
   @DateTransform()
   @Type(() => Date)
   public dateDepot?: Date;
+  @Type(() => Redacteur)
   @Expose()
-  @Transform(({ value }: { value: number }) => Redacteur.resoudre(value))
-  public redacteur: Redacteur | null = null;
+  public redacteur?: Redacteur = undefined;
   public typeAttestation?: TypeAttestation;
   public qualiteRequerant?: string;
   public readonly estEligible: boolean;
@@ -141,6 +142,9 @@ export class DossierApercu extends BaseDossier {
 }
 
 export class DossierDetail extends BaseDossier {
+  @Expose()
+  @Type(() => Usager)
+  public readonly usager: Usager;
   @Expose()
   @Type(() => Requerant)
   public readonly requerant: Requerant;

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5663081c82a7fd98e488dd878838c38",
+    "content-hash": "9b751a9025b2e382acd80f3dece1c53c",
     "packages": [
         {
             "name": "acsiomatic/device-detector-bundle",
@@ -2727,6 +2727,65 @@
                 "source": "https://github.com/nelmio/NelmioCorsBundle/tree/2.6.1"
             },
             "time": "2026-01-12T15:59:08+00:00"
+        },
+        {
+            "name": "opctim/symfony-csp-bundle",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/opctim/symfony-csp-bundle.git",
+                "reference": "17085aa8051a4b11d036b67dd38bd50cf5c0b27b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/opctim/symfony-csp-bundle/zipball/17085aa8051a4b11d036b67dd38bd50cf5c0b27b",
+                "reference": "17085aa8051a4b11d036b67dd38bd50cf5c0b27b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "php": ">=8.1",
+                "symfony/event-dispatcher": "^6.4 || ^7.4 || ^8.0",
+                "symfony/framework-bundle": "^6.4 || ^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.5",
+                "symfony/yaml": "^5.4",
+                "twig/twig": "^3.9"
+            },
+            "suggest": {
+                "twig/twig": "For using the csp_nonce() method in templates."
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Opctim\\CspBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "@opctim / Tim Nelles",
+                    "email": "kontakt@timnelles.de",
+                    "homepage": "https://github.com/opctim",
+                    "role": "Developer"
+                },
+                {
+                    "name": "@alaugks / André Laugks",
+                    "email": "package@pb82.de",
+                    "homepage": "https://github.com/alaugks",
+                    "role": "Contributor"
+                }
+            ],
+            "description": "This bundle helps to properly secure your application using the CSP header in a symfony application.",
+            "support": {
+                "issues": "https://github.com/opctim/symfony-csp-bundle/issues",
+                "source": "https://github.com/opctim/symfony-csp-bundle/tree/2.0.0"
+            },
+            "time": "2025-12-15T08:47:00+00:00"
         },
         {
             "name": "pentatrion/vite-bundle",

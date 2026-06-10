@@ -1,6 +1,6 @@
 import {test} from "@playwright/test";
-import {expect} from "./expect";
 import {connexionAgent, getTitre} from "../../helpers";
+import {expect} from "./expect";
 
 test("lister les dossiers a categoriser", async ({browser}) => {
     // Démarrer une session incognito pour éviter les effets de bord des sessions en cookie
@@ -10,7 +10,7 @@ test("lister les dossiers a categoriser", async ({browser}) => {
 
     try {
         await connexionAgent(page, "Betagouv");
-        await page.waitForURL("/agent/redacteur/dossiers");
+        await page.waitForURL((url) => url.pathname.startsWith("/agent/fip6/dossiers"));
 
         await expect(getTitre(page, "Les dossiers")).toBeVisible();
 

@@ -31,22 +31,23 @@ export const Route = createFileRoute("/requerant/dossier/bris-de-porte/$id/")({
       });
     }
 
-    if (dossier.estBrouillon && !estDossierOkBrisDePorte(dossier)) {
+    // Renvoi à la première étape non complète
+    if (!estDossierOkBrisDePorte(dossier)) {
       return redirect<typeof RouteurRequerant>({
         to: "./1-bris-porte",
         params,
       });
     }
 
-    if (dossier.estBrouillon && !estDossierOkInfosRequerant(dossier)) {
+    if (!estDossierOkInfosRequerant(dossier)) {
       return redirect<typeof RouteurRequerant>({
         to: "./2-infos-requerant",
         params,
       });
     }
 
-    if (dossier.estBrouillon && !estDossierOkPiecesJointes(dossier)) {
-      redirect<typeof RouteurRequerant>({
+    if (!estDossierOkPiecesJointes(dossier)) {
+      return redirect<typeof RouteurRequerant>({
         to: "./3-pieces-jointes",
         params,
       });

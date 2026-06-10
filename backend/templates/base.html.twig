@@ -36,9 +36,9 @@
     {% block stylesheets %}{% endblock stylesheets %}
     <title>{% block title %}Mon indemnisation justice{% if title is defined %} - {{ title }}{% endif %}{% endblock %}</title>
     {% block analytic %}
-        {% if app.environment == 'prod' %}
+        {% if matomo_site_id %}
             <!-- Matomo -->
-            <script>
+            <script type="text/javascript"  nonce="{{ csp_nonce('mij-script') }}">
                 var _paq = window._paq = window._paq || [];
                 /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
                 _paq.push(['trackPageView']);
@@ -46,7 +46,7 @@
                 (function () {
                     var u = "https://stats.beta.gouv.fr/";
                     _paq.push(['setTrackerUrl', u + 'matomo.php']);
-                    _paq.push(['setSiteId', '142']);
+                    _paq.push(['setSiteId', '{{ matomo_site_id }}']);
                     var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
                     g.async = true;
                     g.src = u + 'matomo.js';
@@ -60,13 +60,7 @@
 </head>
 <body>
 {% block header %}
-    {% if app.user|est_requerant %}
-        {% include('requerant/_header.html.twig') %}
-    {% elseif app.user|est_agent %}
-        {% include('agent/_header.html.twig') %}
-    {% else %}
-        {% include('_header.html.twig') %}
-    {% endif %}
+    {% include('_header.html.twig') %}
 {% endblock header %}
 
 {# Fil d'ariane: à intégrer #}
@@ -89,8 +83,8 @@
 {% endblock %}
 
 {% block dsfrjs %}
-    <script type="module" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
-    <script type="text/javascript" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
+    <script type="module" nonce="{{ csp_nonce('mij-script') }}" src="{{ asset('dsfr/dsfr.module.min.js') }}"></script>
+    <script type="text/javascript" nonce="{{ csp_nonce('mij-script') }}" nomodule src="{{ asset('dsfr/dsfr.nomodule.min.js') }}"></script>
 {% endblock dsfrjs %}
 
 {# Sentry browser #}

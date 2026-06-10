@@ -1,16 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import "./liste/dossier-liste-element.css";
-import { plainToInstance } from "class-transformer";
-import { DossierAInstruire } from "./liste/DossierAInstruire.ts";
 import { dateSimple, periode } from "@/common/services/date.ts";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { plainToInstance } from "class-transformer";
+import React, { useEffect, useState } from "react";
+import "./liste/dossier-liste-element.css";
+import { DossierAInstruire } from "./liste/DossierAInstruire.ts";
 
 function DossierAInstruireLigne({ dossier }: { dossier: DossierAInstruire }) {
-  const consulterDossierURL = useMemo<string>(
-    () => `/agent/redacteur/dossier/${dossier.id}`,
-    [dossier.id],
-  );
-
   return (
     <div className="fr-grid-row mij-dossier-liste-element">
       <div className="fr-col-3">
@@ -60,7 +55,10 @@ function DossierAInstruireLigne({ dossier }: { dossier: DossierAInstruire }) {
               children: "Consulter",
               className: "fr-mb-0",
               linkProps: {
-                href: consulterDossierURL,
+                to: "/dossier/$id",
+                params: {
+                  id: dossier.id,
+                },
               },
             },
           ]}

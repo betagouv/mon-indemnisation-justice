@@ -5,8 +5,6 @@ namespace MonIndemnisationJustice\Controller\Agent;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\UnableToReadFile;
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierApercuOutput;
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierDetailOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Entity\Agent;
@@ -55,47 +53,31 @@ class DossierController extends AgentController
     }
 
     #[Route('/dossiers', name: 'agent_redacteur_dossiers')]
-    public function dossiers(NormalizerInterface $normalizer): Response
+    public function dossiers(Request $request): Response
     {
-        return $this->render('agent/dossier/recherche_dossiers.html.twig', [
-            'react' => [
-                'agent' => [
-                    'id' => $this->getAgent()->getId(),
-                    'roles' => $this->getAgent()->getRoles(),
-                ],
-                'redacteurs' => array_map(
-                    fn (Agent $redacteur) => [
-                        'id' => $redacteur->getId(),
-                        'nom' => $redacteur->getNomComplet(capital: true),
-                    ],
-                    $this->agentRepository->getRedacteurs(),
-                ),
-            ],
+        /** @var Agent $agent */
+        $agent = $request->getUser();
+        $this->logger->warning("Consultation de l'ancienne route de recherche de dossier", [
+            'agent' => $agent?->getId(),
         ]);
+
+        return $this->redirectToRoute('agent_fip6_react', ['extra' => 'dossiers']);
     }
 
     #[Route('/dossier/{id}', name: 'agent_redacteur_consulter_dossier')]
-    public function consulterDossier(#[MapEntity(id: 'id')] Dossier $dossier, NormalizerInterface $normalizer): Response
+    public function consulterDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
-        return $this->render('agent/dossier/consulter_bris_porte.html.twig', [
-            'titre' => 'Traitement du bris de porte '.$dossier->getReference(),
-            'react' => [
-                'agent' => [
-                    'id' => $this->getAgent()->getId(),
-                    'roles' => $this->getAgent()->getRoles(),
-                ],
-                'dossier' => $normalizer->normalize(DossierDetailOutput::creerDepuisDossier($dossier), 'json'),
-                'redacteurs' => array_map(
-                    fn (Agent $redacteur) => [
-                        'id' => $redacteur->getId(),
-                        'nom' => $redacteur->getNomComplet(capital: true),
-                    ],
-                    $this->agentRepository->getRedacteurs(),
-                ),
-            ],
+        /** @var Agent $agent */
+        $agent = $request->getUser();
+        $this->logger->warning("Consultation de l'ancienne route de consultation de dossier", [
+            'agent' => $agent?->getId(),
         ]);
+
+        // Renvoyer vers la nouvelle page de consultation de dossier, désormais gérée par React
+        return $this->redirectToRoute('agent_fip6_react', ['extra' => "dossier/{$dossier->getId()}"]);
     }
 
+    // TODO déplacer dans une route API dédiée
     #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
     #[Route('/dossier/{id}/decider.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
     public function decider(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
@@ -117,6 +99,7 @@ class DossierController extends AgentController
         ], Response::HTTP_OK);
     }
 
+    // TODO déplacer dans une route API dédiée
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/proposition-indemnisation/changer-montant.json', name: 'agent_redacteur_editer_courrier_dossier', methods: ['PUT'])]
     public function changerMontantIndemnisation(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
@@ -134,6 +117,7 @@ class DossierController extends AgentController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
+    // TODO déplacer dans une route API dédiée
     #[IsGranted(
         attribute: new Expression('user.instruit(subject["dossier"])'),
         subject: [
@@ -157,6 +141,7 @@ class DossierController extends AgentController
         return new JsonResponse(['etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json', ['agent:detail'])]);
     }
 
+    // TODO déplacer dans une route API dédiée
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/signer-courrier.json', name: 'agent_redacteur_signer_courrier_dossier', methods: ['POST'])]
     public function signerCourrierDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request, EventDispatcherInterface $eventDispatcher): Response
@@ -185,6 +170,7 @@ class DossierController extends AgentController
         ], Response::HTTP_OK);
     }
 
+    // TODO déplacer dans une route API dédiée
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/arrete-paiement/signer.json', name: 'agent_redacteur_signer_arrete_paiement', methods: ['POST'])]
     public function signerArretePaiement(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
@@ -210,6 +196,7 @@ class DossierController extends AgentController
         ], Response::HTTP_OK);
     }
 
+    // TODO déplacer dans une route API dédiée
     #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
     #[Route('/dossier/{id}/envoyer.json', name: 'agent_redacteur_envoyer_dossier', methods: ['POST'])]
     public function envoyer(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
@@ -226,57 +213,7 @@ class DossierController extends AgentController
         ], Response::HTTP_OK);
     }
 
-    #[Route('/dossiers.json', name: 'agent_redacteur_dossiers_json', methods: ['GET'])]
-    public function dossiersJson(Request $request, NormalizerInterface $normalizer): Response
-    {
-        $taille = 20;
-        $page = $request->query->getInt('p', 1);
-        $paginator = $this->dossierRepository->rechercheDossiers(
-            page: $page,
-            taille: $taille,
-            etats: $request->query->has('e')
-                ? array_map(fn ($e) => EtatDossierType::fromSlug($e), self::extraireCritereRecherche($request, 'e'))
-                : [
-                    // EtatDossierType::DOSSIER_CLOTURE,
-                    // EtatDossierType::DOSSIER_A_FINALISER,
-                    EtatDossierType::DOSSIER_A_ATTRIBUER,
-                    EtatDossierType::DOSSIER_A_INSTRUIRE,
-                    EtatDossierType::DOSSIER_EN_INSTRUCTION,
-                    EtatDossierType::DOSSIER_OK_A_SIGNER,
-                    EtatDossierType::DOSSIER_OK_A_APPROUVER,
-                    EtatDossierType::DOSSIER_OK_A_VERIFIER,
-                    EtatDossierType::DOSSIER_OK_A_INDEMNISER,
-                    EtatDossierType::DOSSIER_OK_INDEMNISE,
-                    EtatDossierType::DOSSIER_KO_A_SIGNER,
-                    EtatDossierType::DOSSIER_KO_REJETE,
-                ],
-            attributaires: count($ids = array_filter(
-                self::extraireCritereRecherche($request, 'a'),
-                fn ($a) => is_numeric($a)
-            )) > 0 ? $this->agentRepository->findBy(['id' => $ids]) : [],
-            filtres: self::extraireCritereRecherche($request, 'r'),
-            nonAttribue: in_array('_', self::extraireCritereRecherche($request, 'a'))
-        );
-
-
-        return new JsonResponse(
-            [
-                'page' => $page,
-                'taille' => $taille,
-                'total' => $paginator->count(),
-                'resultats' => $normalizer->normalize(
-                    array_map(
-                        fn (Dossier $dossier) => DossierApercuOutput::creerDepuisDossier($dossier),
-                        iterator_to_array(
-                            $paginator->getIterator()
-                        ) ?? [],
-                    ),
-                    'json'
-                ),
-            ]
-        );
-    }
-
+    // TODO déplacer dans une route API dédiée
     #[Route('/dossier/{id}/annoter.json', name: 'agent_redacteur_annoter_dossier', methods: ['POST'])]
     public function annoterDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
     {
@@ -286,6 +223,7 @@ class DossierController extends AgentController
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 
+    // TODO déplacer dans une route API dédiée
     #[IsGranted(
         attribute: new Expression('is_granted("ROLE_AGENT_LIAISON_BUDGET") and subject["dossier"].getEtatDossier().estAEnvoyerPourIndemnisation()'),
         subject: [
@@ -322,6 +260,7 @@ class DossierController extends AgentController
             ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
     }
 
+    // TODO déplacer dans une route API dédiée
     #[IsGranted(
         attribute: new Expression('is_granted("ROLE_AGENT_LIAISON_BUDGET") and subject["dossier"].getEtatDossier().estAEnvoyerPourIndemnisation()'),
         subject: [
@@ -339,6 +278,7 @@ class DossierController extends AgentController
         ], Response::HTTP_OK);
     }
 
+    // TODO déplacer dans une route API dédiée
     #[IsGranted(
         attribute: new Expression('is_granted("ROLE_AGENT_LIAISON_BUDGET") and subject["dossier"].getEtatDossier().estEnAttenteIndemnisation()'),
         subject: [
@@ -354,17 +294,5 @@ class DossierController extends AgentController
         return new JsonResponse([
             'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
         ], Response::HTTP_OK);
-    }
-
-    private static function extraireCritereRecherche(Request $request, string $nom): array
-    {
-        if (!$request->query->has($nom)) {
-            return [];
-        }
-
-        return array_filter(
-            explode('|', $request->query->getString($nom, '')),
-            fn ($v) => !empty($v)
-        );
     }
 }

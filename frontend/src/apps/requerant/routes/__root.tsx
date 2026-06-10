@@ -1,14 +1,14 @@
-import { NonTrouveComposant } from "@/apps/requerant/composants/routeur/NonTrouveComposant";
 import { ContexteUsager } from "@/apps/requerant/routeur/contexte.ts";
+import { ErreurComposant } from "@/common/composants/erreur/ErreurComposant";
 import "@/style/index.css";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { Header } from "@codegouvfr/react-dsfr/Header";
+import * as Sentry from "@sentry/react";
 import {
   createRootRouteWithContext,
   type LinkProps,
-  NotFoundRouteProps,
   Outlet,
   useLoaderData,
 } from "@tanstack/react-router";
@@ -86,6 +86,7 @@ const EspaceRequerant = () => {
         termsLinkProps={
           {
             href: `${window.location.origin}/mentions-legales`,
+            target: "_self",
           } as LinkProps
         }
       />
@@ -102,10 +103,16 @@ export const Route = createRootRouteWithContext<ContexteUsager>()({
     }
   },
   loader: async ({ context }) => ({ contexte: context }),
-  component: () => <EspaceRequerant />,
-  notFoundComponent: (props: NotFoundRouteProps) => (
-    <NonTrouveComposant {...props} />
+  component: () => (
+    <Sentry.ErrorBoundary
+      fallback={({ error, componentStack, resetError }) => (
+        <ErreurComposant erreur={error as Error} />
+      )}
+    >
+      <EspaceRequerant />
+    </Sentry.ErrorBoundary>
   ),
+
   scripts: () =>
     import.meta.env.DEV
       ? [

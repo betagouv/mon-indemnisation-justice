@@ -1,5 +1,6 @@
 /// <reference types="./types" />
 
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import legacy from "@vitejs/plugin-legacy";
 import { default as react } from "@vitejs/plugin-react";
@@ -19,19 +20,28 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       },
     },
     plugins: [
+      // Espace rédacteur (FIP6)
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
-        virtualRouteConfig: "./src/apps/agent/fip6/routeur/routeur-fip6.ts",
         generatedRouteTree: "./src/apps/agent/fip6/routeur/routeur-fip6.gen.ts",
         routesDirectory: "./src/apps/agent/fip6/routes/",
       }),
+      // Espace Forces de l'ordre (FDO)
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
         generatedRouteTree: "./src/apps/agent/fdo/routeur/routeur-fdo.gen.ts",
         routesDirectory: "./src/apps/agent/fdo/routes/",
       }),
+      // Espace requérant
+      tanstackRouter({
+        target: "react",
+        autoCodeSplitting: true,
+        generatedRouteTree: "./src/apps/public/routeur/routeur-public.gen.ts",
+        routesDirectory: "./src/apps/public/routes/",
+      }),
+      /** Here  */
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
@@ -52,13 +62,34 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         stimulus: false,
       }),
       react(),
+      sentryVitePlugin({
+        org: "betagouv",
+        project: "mon-indemnisation-justice",
+        url: process.env.VITE_SENTRY_URL || "",
+        authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
+        release: {
+          name: process.env.VITE_MIJ_VERSION || "dev",
+        },
+        sourcemaps: {
+          // As you're enabling client source maps, you probably want to delete them after they're uploaded to Sentry.
+          // Set the appropriate glob pattern for your output folder - some glob examples below:
+          filesToDeleteAfterUpload: [
+            "./**/*.map",
+            ".*/**/public/**/*.map",
+            "./dist/**/client/**/*.map",
+            "./build/**/client/**/*.map",
+          ],
+        },
+      }),
     ],
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     }, // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
-    esbuild: false,
+    oxc: {
+      target: "esnext",
+    },
     assetsInclude: ["*.pdf"],
     build: {
       target: "esnext",
@@ -66,25 +97,25 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       sourcemap: true,
       minify: mode === "production",
       emptyOutDir: false,
-      rollupOptions: {
-        // TODO: test to export vendors as manualChunks https://gist.github.com/emmiep/8fb5a2887a8ec007b319f0abff04ffb1#file-rollup-config-js-L18
+      // Voir https://rolldown.rs/reference/
+      rolldownOptions: {
         input: {
-          ...{
-            // Espace requérant
-            "requerant/dossier/tester_mon_eligibilite":
-              "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
-            "requerant/dossier/creation_de_compte":
-              "./src/apps/requerant/dossier/creation_de_compte.tsx",
-            requerant: "./src/apps/requerant/requerant.tsx",
-            // Espace agent FIP6
-            "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
-            "agent/dossiers/recherche":
-              "./src/apps/agent/fip6/dossiers/recherche_app.tsx",
-            "agent/dossiers/consulter":
-              "./src/apps/agent/fip6/dossiers/consultation_app.tsx",
-            // Espace agent FDO
-            "agent/fdo": path.join(__dirname, "./src/apps/agent/fdo/fdo.tsx"),
-          },
+          // Espace public
+          public: "./src/apps/public/public.tsx",
+          // Espace requérant
+          "requerant/dossier/tester_mon_eligibilite":
+            "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
+          "requerant/dossier/creation_de_compte":
+            "./src/apps/requerant/dossier/creation_de_compte.tsx",
+          requerant: "./src/apps/requerant/requerant.tsx",
+          // Espace agent FIP6
+          "agent/fip6": "./src/apps/agent/fip6/fip6.tsx",
+          "agent/dossiers/recherche":
+            "./src/apps/agent/fip6/dossiers/recherche_app.tsx",
+          "agent/dossiers/consulter":
+            "./src/apps/agent/fip6/dossiers/consultation_app.tsx",
+          // Espace agent FDO
+          "agent/fdo": path.join(__dirname, "./src/apps/agent/fdo/fdo.tsx"),
         },
         output: {
           manualChunks: {

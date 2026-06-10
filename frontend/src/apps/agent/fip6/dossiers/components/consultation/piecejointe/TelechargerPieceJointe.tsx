@@ -15,7 +15,8 @@ const component = function TelechargerPieceJointe({
       details={pieceJointe?.infoFichier}
       label={pieceJointe.originalFilename}
       linkProps={{
-        href: pieceJointe.url,
+        href: `${window.location.origin}${pieceJointe.url}`,
+        target: "_self",
       }}
     />
   );

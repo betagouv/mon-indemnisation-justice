@@ -211,6 +211,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
       title=" Rejeter la demande d'indemnisation"
       iconId="fr-icon-close-circle-line"
       size="large"
+      concealingBackdrop={false}
     >
       <Stepper
         currentStep={Etapes.rang(etape)}

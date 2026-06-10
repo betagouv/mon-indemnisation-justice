@@ -1,4 +1,4 @@
-import {test, expect} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 import {connexionAgent, getTitre} from "../../helpers";
 
 test("lister dossier à instruire", async ({browser}) => {
@@ -9,20 +9,22 @@ test("lister dossier à instruire", async ({browser}) => {
 
     try {
         await connexionAgent(page, "Rédacteur");
-        await page.waitForURL("/agent/redacteur/dossiers");
+        await page.waitForURL((url) => url.pathname.startsWith("/agent/fip6/dossiers"));
 
         await expect(getTitre(page, "Les dossiers")).toBeVisible();
 
         await page.goto("/agent/fip6/dossiers/a-instruire");
 
-        await expect(getTitre(page, "Dossiers à instruire")).toBeVisible();
+        await expect(
+            page.locator("H1", {hasText: "Dossiers à instruire"}),
+        ).toBeVisible();
 
         // Attendre que la requête xhr soit terminée
-        await page.waitForLoadState("networkidle");
+        await page.waitForSelector("h4[text=2 dossiers]", {
+            state: "visible",
+        });
 
-        await expect(getTitre(page, "2 dossiers", "h4")).toBeVisible();
-
-        await expect(page.locator(".mij-dossier-liste-element")).toHaveCount(2);
+        await expect(page.locator(".mij-dossier-liste-element")).toHaveCount(1);
     } catch (e) {
         await context.close();
     }

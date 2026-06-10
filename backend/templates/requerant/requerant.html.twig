@@ -14,19 +14,25 @@
     <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
     <link rel="stylesheet" href="{{ asset('remixicon/fonts/remixicon.css') }}"/>
 
-    {% block title %}Mon Indemnisation Justice : espace usager{% endblock title %}
-    {% block stylesheets %}
-        {{ vite_entry_link_tags('requerant') }}
-    {% endblock stylesheets %}
+    <title>Mon Indemnisation Justice : espace usager</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    {{ vite_entry_link_tags('requerant') }}
 </head>
 <body>
+{% if est_vite_server_actif() %}
+    {% include '_vite_hmr_extra.html.twig' %}
+{% endif %}
+
+{{ vite_entry_script_tags('requerant') }}
 </body>
+
 </html>
 
-{% block javascripts %}
-    {% if est_vite_server_actif() %}
-        {% include '_vite_hmr_extra.html.twig' %}
-    {% endif %}
 
-    {{ vite_entry_script_tags('requerant') }}
-{% endblock javascripts %}
+

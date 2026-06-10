@@ -4,6 +4,16 @@ COPY backend /app/
 
 ARG APP_ENV=prod
 ENV APP_ENV=$APP_ENV
+ARG CC_COMMIT_ID
+# Version actuellement déployée (calée sur le hash commmit donné par CleverCloud)
+ARG MIJ_VERSION=$CC_COMMIT_ID
+ENV MIJ_VERSION=$MIJ_VERSION
+# Propagation à vite
+ENV VITE_MIJ_VERSION=$MIJ_VERSION
+# Token d'API pour Sentry (utilisé pour publier les sources lors du build)
+ARG SENTRY_AUTH_TOKEN
+# Propagation à vite
+ENV VITE_SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 
 ARG DATABASE_URL
 ARG PRECONTENTIEUX_COURRIEL_EQUIPE

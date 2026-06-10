@@ -16,19 +16,19 @@
     <br/>
     <br/>
     <p>
-        Le dossier de demande d'indemnisation, de référence {{ dossier.reference }}, que vous avez déposé
-        le {{ dossier.dateDeclaration|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
-        a été étudié par les équipes du bureau du précontentieux.
+        L’instruction de votre dossier {{ dossier.reference }} est terminée.
     </p>
     <p>
-        Vous pouvez dès maintenant consulter la décision en cliquant sur le bouton ci-dessous, ou en vous rendant sur
-        votre espace personnel à
-        l'adresse suivante : <a href="{{ consultation_url }}" title="Consulter la décision">{{ consultation_url }}</a>
+        Vous pouvez dès à présent consulter la décision prise par nos services en cliquant sur le bouton ci-dessous, ou en vous connectant à votre espace personnel via le lien suivant :
+
     </p>
     <br/>
     <p>
         {{ email.bouton("Consulter la décision", consultation_url) }}
         <br/>
+    </p>
+    <p>
+        Nous vous en souhaitons une bonne réception.
     </p>
     <br/>
     Cordialement,<br/>

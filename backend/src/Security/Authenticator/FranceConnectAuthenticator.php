@@ -111,7 +111,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                     $this->em->persist($usager);
                     $this->em->flush();
                 } else {
-                    throw new CustomUserMessageAuthenticationException("Nous n'avons trouvé aucun compte enregistré sur notre plateforme depuis cet identifiant France Connect. Veuillez vous inscrire au préalable.");
+                    throw new CustomUserMessageAuthenticationException("Nous n'avons trouvé aucun compte enregistré sur notre plateforme depuis cet identifiant France Connect. Veuillez vous inscrire au préalable.", $userInfo);
                 }
             }
 

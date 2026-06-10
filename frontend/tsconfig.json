@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
+    "target": "esnext",
+    "module": "esnext",
     "lib": [
       "ESNext",
       "DOM"
@@ -26,5 +26,12 @@
         "./src/*"
       ]
     }
-  }
+  },
+  "include": [
+    "vite.config.ts",
+    "src/common/**/*",
+    "src/style/**/*",
+    "src/apps/_init.ts",
+    "src/apps/sentry.ts",
+  ]
 }

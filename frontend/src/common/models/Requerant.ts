@@ -1,5 +1,4 @@
-import { TypePersonneMoraleType } from "@/apps/requerant/models";
-import { TypesPersonneMorale } from "@/common/models/TypePersonneMorale";
+import { type TypePersonneMoraleType, TypesPersonneMorale } from "@/common/models/TypePersonneMorale";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import { Expose, Transform } from "class-transformer";
 

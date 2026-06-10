@@ -322,6 +322,7 @@
                                             <input
                                                     type="email"
                                                     name="_username"
+                                                    nonce="{{ csp_nonce('mij-script') }}
                                                     oninput="this.value = this.value.toLowerCase()"
                                                     class="fr-input"
                                                     aria-describedby="input-:r1:-desc-error"
@@ -425,7 +426,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script type="text/javascript">
+    <script type="text/javascript" nonce="{{ csp_nonce('mij-script') }}">
         const motDePasseOublieChamps = document.getElementById('mdp-oublie-email');
         const motDePasseOublieErreur = document.getElementById(motDePasseOublieChamps.getAttribute('aria-describedby'));
 

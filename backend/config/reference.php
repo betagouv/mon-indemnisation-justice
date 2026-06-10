@@ -1615,6 +1615,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     intercept_redirects?: bool|Param, // Default: false
  *     excluded_ajax_paths?: scalar|Param|null, // Default: "^/((index|app(_[\\w]+)?)\\.php/)?_wdt"
  * }
+ * @psalm-type OpctimCspBundleConfig = array{
+ *     always_add?: list<scalar|Param|null>,
+ *     report?: array{
+ *         url?: scalar|Param|null, // Default: null
+ *         route?: scalar|Param|null, // Default: null
+ *         route_params?: list<scalar|Param|null>,
+ *         chance?: int|Param, // Default: 100
+ *     },
+ *     directives?: list<list<scalar|Param|null>>,
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1631,6 +1641,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     sentry?: SentryConfig,
  *     pentatrion_vite?: PentatrionViteConfig,
  *     acsiomatic_device_detector?: AcsiomaticDeviceDetectorConfig,
+ *     opctim_csp_bundle?: OpctimCspBundleConfig,
  *     "when@ci"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1647,6 +1658,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         sentry?: SentryConfig,
  *         pentatrion_vite?: PentatrionViteConfig,
  *         acsiomatic_device_detector?: AcsiomaticDeviceDetectorConfig,
+ *         opctim_csp_bundle?: OpctimCspBundleConfig,
  *     },
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
@@ -1667,6 +1679,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         pentatrion_vite?: PentatrionViteConfig,
  *         acsiomatic_device_detector?: AcsiomaticDeviceDetectorConfig,
  *         web_profiler?: WebProfilerConfig,
+ *         opctim_csp_bundle?: OpctimCspBundleConfig,
  *     },
  *     "when@develop"?: array{
  *         imports?: ImportsConfig,
@@ -1684,6 +1697,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         sentry?: SentryConfig,
  *         pentatrion_vite?: PentatrionViteConfig,
  *         acsiomatic_device_detector?: AcsiomaticDeviceDetectorConfig,
+ *         opctim_csp_bundle?: OpctimCspBundleConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1701,6 +1715,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         sentry?: SentryConfig,
  *         pentatrion_vite?: PentatrionViteConfig,
  *         acsiomatic_device_detector?: AcsiomaticDeviceDetectorConfig,
+ *         opctim_csp_bundle?: OpctimCspBundleConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1720,6 +1735,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         pentatrion_vite?: PentatrionViteConfig,
  *         acsiomatic_device_detector?: AcsiomaticDeviceDetectorConfig,
  *         web_profiler?: WebProfilerConfig,
+ *         opctim_csp_bundle?: OpctimCspBundleConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
