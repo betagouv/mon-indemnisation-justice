@@ -1,20 +1,16 @@
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
 import { groupBy } from "lodash";
 import { action, computed, makeObservable, observable } from "mobx";
-import {
-  Adresse,
-  Document,
-  DocumentType,
-  EtatDossier,
-  EtatDossierType,
-  Redacteur,
-  Requerant,
-  TestEligibilite,
-  TypeFDO,
-  Usager
-} from ".";
+import { Adresse } from "./Adresse";
+import { Document, DocumentType } from "./Document";
+import { EtatDossier, EtatDossierType } from "./EtatDossier";
+import { TypeFDO } from "./InstitutionSecuritePublique";
+import { Redacteur } from "./Redacteur";
+import { Requerant } from "./Requerant";
+import { TestEligibilite } from "./TestEligibilite";
+import { Usager } from "./Usager";
 
 export type TypeAttestation =
   | "NOUVELLE_ATTESTATION"
