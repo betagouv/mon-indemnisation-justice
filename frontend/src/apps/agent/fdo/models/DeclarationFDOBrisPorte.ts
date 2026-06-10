@@ -1,5 +1,6 @@
 import { Exclude, Expose, Transform, Type } from "class-transformer";
-import { Agent, Document, DocumentType } from "@/common/models";
+import { Agent } from "@/common/models/Agent";
+import { Document, DocumentType } from "@/common/models/Document";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 
 export class Adresse {
