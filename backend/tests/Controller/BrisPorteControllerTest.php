@@ -7,7 +7,7 @@ use MonIndemnisationJustice\Controller\BrisPorteController;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
-use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
 use MonIndemnisationJustice\Entity\Usager;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -42,7 +42,7 @@ class BrisPorteControllerTest extends WebTestCase
     public function testTesterMonEligibilite(?callable $getTestEligibilite = null, ?string $redirection = null, bool $aRequerant = false): void
     {
         if ($getTestEligibilite) {
-            /** @var TestEligibilite $testEligibilite */
+            /** @var TestEligibiliteBrisPorte $testEligibilite */
             $testEligibilite = $getTestEligibilite($this->em);
             $this->initializeSession([BrisPorteController::CLEF_SESSION_TEST_ELIGIBILITE => $testEligibilite->id]);
         }
@@ -68,8 +68,8 @@ class BrisPorteControllerTest extends WebTestCase
         }
         $this->em->clear();
 
-        /** @var TestEligibilite $testEligibilite */
-        $testEligibilite = $this->em->getRepository(TestEligibilite::class)
+        /** @var TestEligibiliteBrisPorte $testEligibilite */
+        $testEligibilite = $this->em->getRepository(TestEligibiliteBrisPorte::class)
             ->createQueryBuilder('t')
             ->orderBy('t.dateSoumission', 'DESC')
             ->setMaxResults(1)
@@ -124,7 +124,7 @@ class BrisPorteControllerTest extends WebTestCase
     public function testCreationDeCompte(?callable $getTestEligibilite = null, ?string $redirection = null): void
     {
         if ($getTestEligibilite) {
-            /** @var TestEligibilite $testEligibilite */
+            /** @var TestEligibiliteBrisPorte $testEligibilite */
             $testEligibilite = $getTestEligibilite($this->em);
             $this->initializePreinscription($testEligibilite);
         }
@@ -180,7 +180,7 @@ class BrisPorteControllerTest extends WebTestCase
     public function testFinaliserLaCreation(?callable $getTestEligibilite = null, ?string $redirection = null): void
     {
         if ($getTestEligibilite) {
-            /** @var TestEligibilite $testEligibilite */
+            /** @var TestEligibiliteBrisPorte $testEligibilite */
             $testEligibilite = $getTestEligibilite($this->em);
             $this->initializePreinscription($testEligibilite);
         }
@@ -203,7 +203,7 @@ class BrisPorteControllerTest extends WebTestCase
         ];
     }
 
-    protected function initializePreinscription(?TestEligibilite $testEligibilite = null, ?DeclarationFDOBrisPorte $declarationErreurOperationnelle = null): void
+    protected function initializePreinscription(?TestEligibiliteBrisPorte $testEligibilite = null, ?DeclarationFDOBrisPorte $declarationErreurOperationnelle = null): void
     {
         $this->initializeSession([BrisPorteController::CLEF_SESSION_PREINSCRIPTION => [
             'testEligibilite' => $testEligibilite?->id,
@@ -231,7 +231,7 @@ class BrisPorteControllerTest extends WebTestCase
     protected static function getTestEligibiliteEnXpComplet(): callable
     {
         return function (EntityManagerInterface $em) {
-            $test = TestEligibilite::fromArray([
+            $test = TestEligibiliteBrisPorte::fromArray([
                 // 'description' => 'Test complet',
                 'estVise' => true,
                 'usager' => $em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']),
@@ -247,7 +247,7 @@ class BrisPorteControllerTest extends WebTestCase
     protected static function getTestEligibiliteEnXpIncomplet(): callable
     {
         return function (EntityManagerInterface $em) {
-            $test = TestEligibilite::fromArray([
+            $test = TestEligibiliteBrisPorte::fromArray([
                 // 'description' => 'Test incomplet',
                 'estVise' => true,
                 'dateSoumission' => new \DateTimeImmutable()->modify('-2 minutes')]);

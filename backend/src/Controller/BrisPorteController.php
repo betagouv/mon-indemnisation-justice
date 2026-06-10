@@ -10,9 +10,9 @@ use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
 use MonIndemnisationJustice\Entity\Personne;
-use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
 use MonIndemnisationJustice\Entity\Usager;
-use MonIndemnisationJustice\Forms\TestEligibiliteType;
+use MonIndemnisationJustice\Forms\TestEligibiliteBrisPorteType;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +31,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class PreInscription
 {
     public function __construct(
-        public ?TestEligibilite $testEligibilite = null,
+        public ?TestEligibiliteBrisPorte $testEligibilite = null,
         public ?DeclarationFDOBrisPorte $declarationErreurOperationnelle = null,
         public ?Usager $requerant = null,
     ) {
@@ -67,7 +67,7 @@ class BrisPorteController extends AbstractController
         }
 
         $preinscription = $this->getPreinscription($request);
-        $testEligibilite = $preinscription->testEligibilite ?? new TestEligibilite();
+        $testEligibilite = $preinscription->testEligibilite ?? new TestEligibiliteBrisPorte();
 
         if ($request->getSession()->has(AtterrissageController::SESSION_KEY)) {
             $testEligibilite->estIssuAttestation = true;
@@ -75,12 +75,12 @@ class BrisPorteController extends AbstractController
             $request->getSession()->remove(AtterrissageController::SESSION_KEY);
         }
 
-        $form = $this->createForm(TestEligibiliteType::class, $testEligibilite);
+        $form = $this->createForm(TestEligibiliteBrisPorteType::class, $testEligibilite);
 
         if (Request::METHOD_POST === $request->getMethod()) {
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                /** @var TestEligibilite $testEligibilite */
+                /** @var TestEligibiliteBrisPorte $testEligibilite */
                 $testEligibilite = $form->getData();
 
                 $testEligibilite->estEligibleExperimentation = true;
@@ -307,7 +307,7 @@ class BrisPorteController extends AbstractController
         $session = $request->getSession()->get(self::CLEF_SESSION_PREINSCRIPTION, []);
 
         return new PreInscription(
-            testEligibilite: $this->chargerEntite(TestEligibilite::class, @$session['testEligibilite'] ?? $request->getSession()->get(self::CLEF_SESSION_TEST_ELIGIBILITE)),
+            testEligibilite: $this->chargerEntite(TestEligibiliteBrisPorte::class, @$session['testEligibilite'] ?? $request->getSession()->get(self::CLEF_SESSION_TEST_ELIGIBILITE)),
             declarationErreurOperationnelle: $this->chargerEntite(DeclarationFDOBrisPorte::class, @$session['declarationErreurOperationnelle']),
             requerant: $this->chargerEntite(Usager::class, @$session['requerant']),
         );

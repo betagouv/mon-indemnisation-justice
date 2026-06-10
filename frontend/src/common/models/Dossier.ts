@@ -9,7 +9,7 @@ import { EtatDossier, EtatDossierType } from "./EtatDossier";
 import { TypeFDO } from "./InstitutionSecuritePublique";
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
-import { TestEligibilite } from "./TestEligibilite";
+import { TestEligibiliteBrisPorte } from "./TestEligibiliteBrisPorte.ts";
 import { Usager } from "./Usager";
 
 export type TypeAttestation =
@@ -146,8 +146,8 @@ export class DossierDetail extends BaseDossier {
   public readonly requerant: Requerant;
 
   @Expose()
-  @Type(() => TestEligibilite)
-  public readonly testEligibilite?: TestEligibilite;
+  @Type(() => TestEligibiliteBrisPorte)
+  public readonly testEligibilite?: TestEligibiliteBrisPorte;
 
   @Expose()
   @Type(() => DeclarationFDOBrisPorte)

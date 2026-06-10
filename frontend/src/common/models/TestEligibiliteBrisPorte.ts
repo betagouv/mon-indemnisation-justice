@@ -1,7 +1,7 @@
-import { RapportAuLogement } from "./RapportAuLogement";
 import { Transform } from "class-transformer";
+import { RapportAuLogement } from "./RapportAuLogement";
 
-export class TestEligibilite {
+export class TestEligibiliteBrisPorte {
   public estVise: boolean;
   public estHebergeant: boolean;
   @Transform(({ value }: { value: string }) => {

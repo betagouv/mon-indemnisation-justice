@@ -11,7 +11,7 @@ import {
 
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
-import { TestEligibilite } from "./TestEligibilite";
+import { TestEligibiliteBrisPorte } from "./TestEligibiliteBrisPorte.ts";
 import { Usager } from "./Usager";
 
 export {
@@ -28,7 +28,7 @@ export {
   InstitutionSecuritePublique,
   Redacteur,
   Requerant,
-  TestEligibilite,
+  TestEligibiliteBrisPorte,
   TypeFDO,
   Usager,
 };

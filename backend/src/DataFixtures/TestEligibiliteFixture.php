@@ -7,7 +7,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
-use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
 use MonIndemnisationJustice\Entity\Usager;
 
 class TestEligibiliteFixture extends Fixture implements DependentFixtureInterface
@@ -22,7 +22,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
     public function load(ObjectManager $manager): void
     {
         foreach ([
-            'ray-keran' => TestEligibilite::fromArray([
+            'ray-keran' => TestEligibiliteBrisPorte::fromArray([
                 'departement' => $this->getReference('departement-ille-et-vilaine', GeoDepartement::class),
                 // 'description' => 'Porte fracturée tôt ce matin',
                 'estVise' => false,
@@ -33,7 +33,7 @@ class TestEligibiliteFixture extends Fixture implements DependentFixtureInterfac
                 'usager' => $this->getReference('requerant-ray', Usager::class),
                 'dateSoumission' => new \DateTimeImmutable('-7 days'),
             ]),
-            'melun' => TestEligibilite::fromArray([
+            'melun' => TestEligibiliteBrisPorte::fromArray([
                 'estVise' => false,
                 'estHebergeant' => false,
                 'rapportAuLogement' => RapportAuLogement::BAILLEUR,
