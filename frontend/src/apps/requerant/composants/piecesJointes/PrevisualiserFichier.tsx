@@ -1,6 +1,7 @@
+import { Loader } from "@/common/composants/Loader.tsx";
+import { DocumentPDF } from "@/common/composants/document/DocumentPDF.tsx";
 import { contenuFichier } from "@/common/services/fichier.ts";
 import React, { useEffect, useState } from "react";
-import { Loader } from "@/common/composants/Loader.tsx";
 
 const fileReader = new FileReader();
 
@@ -21,29 +22,25 @@ export const PrevisualiserFichier = ({ fichier }: { fichier: File }) => {
     <Loader />
   ) : (
     <>
-      {fichier.type == "application/pdf" && (
-        <object
-          data={urlFichier}
-          title={fichier.name}
-          type="application/pdf"
-          style={{
-            width: "100%",
-            aspectRatio: "210/297",
-          }}
-        ></object>
-      )}
+      {urlFichier && (
+        <>
+          {fichier.type == "application/pdf" && (
+            <DocumentPDF url={urlFichier} />
+          )}
 
-      {fichier.type.match(/^image\/*/) && (
-        <img
-          src={urlFichier}
-          alt={fichier.name}
-          title={fichier.name}
-          style={{
-            width: "100%",
-            maxHeight: "100vh",
-            objectFit: "contain",
-          }}
-        />
+          {fichier.type.match(/^image\/*/) && (
+            <img
+              src={urlFichier}
+              alt={fichier.name}
+              title={fichier.name}
+              style={{
+                width: "100%",
+                maxHeight: "100vh",
+                objectFit: "contain",
+              }}
+            />
+          )}
+        </>
       )}
     </>
   );

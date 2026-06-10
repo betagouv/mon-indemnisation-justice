@@ -1,15 +1,10 @@
 import workerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
-
-const options = {
-  cMapUrl: "/cmaps/",
-  standardFontDataUrl: "/standard_fonts/",
-};
 
 export const DocumentPDF = ({ url }: { url: string }) => {
   const [nombreDePages, setNombreDePages] = useState<number>();
@@ -25,6 +20,14 @@ export const DocumentPDF = ({ url }: { url: string }) => {
     observateurTaille.observe(refConteneur.current);
     return () => observateurTaille.disconnect();
   }, []);
+
+  const options = useMemo(
+    () => ({
+      cMapUrl: "/cmaps/",
+      standardFontDataUrl: "/standard_fonts/",
+    }),
+    [1],
+  );
 
   return (
     <>
@@ -53,9 +56,7 @@ export const DocumentPDF = ({ url }: { url: string }) => {
             type="button"
             className="fr-btn fr-btn--lg fr-btn--tertiary-no-outline fr-text--lg fr-text--bold"
             disabled={numeroPage >= nombreDePages}
-            onClick={() =>
-              setNumeroPage((n) => Math.min(n + 1, nombreDePages))
-            }
+            onClick={() => setNumeroPage((n) => Math.min(n + 1, nombreDePages))}
           >
             &gt;
           </button>
@@ -70,7 +71,14 @@ export const DocumentPDF = ({ url }: { url: string }) => {
           }}
           options={options}
         >
-          <Page pageNumber={numeroPage} width={largeurConteneur} />
+          {Array.from(Array(nombreDePages).keys()).map((index) => (
+            <Page
+              key={`page-${index + 1}`}
+              pageNumber={index + 1}
+              width={index + 1 === numeroPage ? largeurConteneur : undefined}
+              renderMode={index + 1 === numeroPage ? "canvas" : "none"}
+            />
+          ))}
         </Document>
       </div>
     </>
