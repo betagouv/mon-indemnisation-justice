@@ -6,7 +6,7 @@ export type PrescriptionResult = {
 
 export const formatDateFr = (date: Date): string => {
   const s = date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-  return s.replace(/^1 /, "1<sup>er</sup> ");
+  return s.replace(/^1 /, "1er ");
 };
 
 export const calculerPrescription = (dateDecision?: Date): PrescriptionResult => {
