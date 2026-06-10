@@ -93,9 +93,16 @@ class DeclarationFDOBrisPorte
     #[ORM\PrePersist]
     public function onPrePersist(PrePersistEventArgs $args): void
     {
+        // On tente jusqu'à 10 référence de dossier à 6 caractères en s'assurant qu'elles ne sont pas déjà utilisées
         $generateurShortId = new Sqids(alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', minLength: 6);
+        $repository = $args->getObjectManager()->getRepository(DeclarationFDOBrisPorte::class);
+        $essais = 0;
+        do {
+            $reference = substr($generateurShortId->encode([random_int(1, PHP_INT_MAX), $this->agent->getId()]), 0, 6);
 
-        $this->reference = substr($generateurShortId->encode([$this->agent->getId(), $this->dateCreation->getTimestamp() % 1000]), 0, 6);
+        } while (++$essais <= 10 && null === $repository->findOneBy(['reference' => $reference]));
+
+        $this->reference = $reference;
         $this->dateSoumission = new \DateTimeImmutable();
     }
 
