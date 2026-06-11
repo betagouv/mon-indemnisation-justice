@@ -1,4 +1,5 @@
 import { PieceJointe } from "@/apps/requerant/models";
+import { DocumentPDF } from "@/common/composants/document/DocumentPDF.tsx";
 import Download from "@codegouvfr/react-dsfr/Download";
 import { default as React } from "react";
 
@@ -23,14 +24,9 @@ export const AfficherPieceJointe = ({
       )}
 
       {pieceJointe.estPDF() ? (
-        <object
-          data={pieceJointe.url}
-          type="application/pdf"
-          style={{
-            width: "100%",
-            aspectRatio: "210/297",
-          }}
-        ></object>
+        <>
+          <DocumentPDF url={`${window.location.origin}${pieceJointe.url}`} />
+        </>
       ) : (
         <img
           src={pieceJointe.url}
