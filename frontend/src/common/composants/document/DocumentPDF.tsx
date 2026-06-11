@@ -1,4 +1,4 @@
-import workerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import workerSrc from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
