@@ -8,11 +8,18 @@ import { usePublicNavigate } from "@/apps/public/routeur";
 import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
-import { saveCritere, critereProcedureTerminee } from "@/apps/public/services/eligibiliteStore";
+import { saveCritere, critereProcedureTerminee, clearCriteres } from "@/apps/public/services/eligibiliteStore";
+import { useInjection } from "inversify-react";
+import { container } from "@/apps/public/container";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 function TestEligibiliteRoute() {
   const navigate = usePublicNavigate();
-  const [procedureTerminee, setProcedureTerminee] = useState<boolean | undefined>(undefined);
+  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
+  const { test } = Route.useLoaderData();
+  const [procedureTerminee, setProcedureTerminee] = useState<boolean | undefined>(
+    () => test?.procedureTerminee,
+  );
   const [submitted, setSubmitted] = useState(false);
 
   const nonEligible = submitted && procedureTerminee === false;
@@ -58,7 +65,13 @@ function TestEligibiliteRoute() {
               </>
             }
           />
-          <Button linkProps={{ to: "/dysfonctionnement/tester-mon-eligibilite/" }}>
+          <Button
+            onClick={() => {
+              manager.effacer();
+              clearCriteres();
+              navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" });
+            }}
+          >
             Retour à l'accueil
           </Button>
         </>
@@ -98,6 +111,8 @@ function TestEligibiliteRoute() {
             className="fr-mt-2w"
             disabled={procedureTerminee === undefined}
             onClick={() => {
+              manager.get() ?? manager.creer();
+              manager.modifier({ procedureTerminee: procedureTerminee! });
               if (procedureTerminee) {
                 saveCritere("procedureTerminee", critereProcedureTerminee());
                 navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/1-date-decision" });
@@ -116,4 +131,7 @@ function TestEligibiliteRoute() {
 
 export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/test-eligibilite")({
   component: TestEligibiliteRoute,
+  loader: () => ({
+    test: container.get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$).get(),
+  }),
 });

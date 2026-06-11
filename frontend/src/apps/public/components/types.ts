@@ -24,8 +24,11 @@ export const PieceProcedure = {
 } as const;
 export type PieceProcedure = (typeof PieceProcedure)[keyof typeof PieceProcedure];
 
+import { TestEligibilite } from "@/apps/public/models/TestEligibilite";
+
 export type StepProps = {
   onPrecedent: () => void;
   onSuivant: () => void;
   isLastStep?: boolean;
+  test?: TestEligibilite;
 };

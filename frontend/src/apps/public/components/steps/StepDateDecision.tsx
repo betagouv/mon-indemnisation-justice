@@ -7,6 +7,9 @@ import { saveCritere, criterePrescription } from "@/apps/public/services/eligibi
 import { SchemaEtapeDateDecision } from "../formulaires/eligibilite.schemas";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
+import { useInjection } from "inversify-react";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
+import { dateChiffre } from "@/common/services/date";
 
 const ReferenceJuridique = (
   <div
@@ -33,14 +36,17 @@ function ExemplePrescription() {
   );
 }
 
-export function StepDateDecision({ onPrecedent, onSuivant, isLastStep }: StepProps) {
+export function StepDateDecision({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
+  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
+
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeDateDecision },
-    defaultValues: { dateDecision: "" },
+    defaultValues: { dateDecision: dateChiffre(test?.dateDecision) },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
         const critere = criterePrescription(new Date(value.dateDecision));
         if (!critere.rempli) return;
+        manager.modifier({ dateDecision: value.dateDecision as unknown as Date });
         saveCritere("prescription", critere);
         onSuivant();
       }

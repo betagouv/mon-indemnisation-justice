@@ -4,7 +4,9 @@ import React, { JSX, StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
 import { RouteurPublic } from "@/apps/public/routeur";
+import { container } from "@/apps/public/container";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
+import { Provider } from "inversify-react";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
 
 startReactDsfr({
@@ -28,6 +30,8 @@ declare module "@codegouvfr/react-dsfr/spa" {
 const root = ReactDOM.createRoot(document.body);
 root.render(
   <StrictMode>
-    <RouterProvider router={RouteurPublic} />
+    <Provider container={container}>
+      <RouterProvider router={RouteurPublic} />
+    </Provider>
   </StrictMode>,
 );

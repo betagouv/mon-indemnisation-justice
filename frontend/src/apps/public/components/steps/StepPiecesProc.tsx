@@ -1,11 +1,14 @@
 import React from "react";
 import { useForm } from "@tanstack/react-form";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { PieceProcedure } from "../types";
 import { SchemaEtapePiecesProc } from "../formulaires/eligibilite.schemas";
 import { saveCritere, critereDocumentsProc } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
+import { useInjection } from "inversify-react";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 const PIECES_LABELS: Record<PieceProcedure, string> = {
   [PieceProcedure.Assignation]: "Assignation ou requête introductive",
@@ -18,12 +21,14 @@ const PIECES_LABELS: Record<PieceProcedure, string> = {
   [PieceProcedure.Appel]: "Déclaration d'appel",
 };
 
-export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep }: StepProps) {
+export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
+  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapePiecesProc },
-    defaultValues: { piecesProc: [] as PieceProcedure[] },
-    onSubmit: async ({ formApi }) => {
+    defaultValues: { piecesProc: test?.piecesProc ?? ([] as PieceProcedure[]) },
+    onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
+        manager.modifier({ piecesProc: value.piecesProc });
         saveCritere("documentsProc", critereDocumentsProc());
         onSuivant();
       }
@@ -52,8 +57,6 @@ export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep }: StepProps
             <Checkbox
               legend="De quelles pièces de la procédure disposez-vous ?"
               hintText="Pour qualifier le délai déraisonnable, l'ensemble des décisions rendues dans votre procédure est nécessaire."
-              state={!field.state.meta.isValid ? "error" : "default"}
-              stateRelatedMessage={!field.state.meta.isValid ? (field.state.meta.errors.at(0)?.message ?? "") : ""}
               options={Object.values(PieceProcedure).map((piece) => ({
                 label: PIECES_LABELS[piece],
                 nativeInputProps: {
@@ -64,6 +67,18 @@ export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep }: StepProps
             />
           );
         }}
+      />
+      <formulaire.Subscribe
+        selector={(state) => ({ piecesProc: state.values.piecesProc, showError: state.isDirty || state.submissionAttempts > 0 })}
+        children={({ piecesProc, showError }) =>
+          showError && piecesProc.length === 0 ? (
+            <Alert
+              className="fr-mt-2w"
+              severity="error"
+              title="Veuillez sélectionner au moins une pièce de procédure"
+            />
+          ) : null
+        }
       />
       <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} />
     </form>

@@ -6,10 +6,13 @@ import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "@/apps/public/components/Layout";
 import { StepDateDecision } from "@/apps/public/components/steps/StepDateDecision";
+import { container } from "@/apps/public/container";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 
 function DateDecisionRoute() {
   const navigate = usePublicNavigate();
+  const { test } = Route.useLoaderData();
 
   return (
     <Layout>
@@ -31,6 +34,7 @@ function DateDecisionRoute() {
         nextTitle="État de la procédure"
       />
       <StepDateDecision
+        test={test}
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite" })}
         onSuivant={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/2-action-contentieuse" })}
       />
@@ -40,4 +44,7 @@ function DateDecisionRoute() {
 
 export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/1-date-decision")({
   component: DateDecisionRoute,
+  loader: () => ({
+    test: container.get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$).get(),
+  }),
 });

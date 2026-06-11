@@ -7,9 +7,12 @@ import { REQUERANT_URL, usePublicNavigate } from "@/apps/public/routeur";
 import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { getCriteres, clearCriteres } from "@/apps/public/services/eligibiliteStore";
 import { createFileRoute } from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 function ResultatEligibiliteRoute() {
   const navigate = usePublicNavigate();
+  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
   const criteres = getCriteres();
   const eligible = criteres.length > 0 && criteres.every((c) => c.rempli);
 
@@ -98,6 +101,7 @@ function ResultatEligibiliteRoute() {
             iconPosition: "left",
             nativeButtonProps: { type: "button" },
             onClick: () => {
+              manager.effacer();
               clearCriteres();
               navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite" });
             },
