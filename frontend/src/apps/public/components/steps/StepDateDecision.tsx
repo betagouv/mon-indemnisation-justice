@@ -36,9 +36,8 @@ function ExemplePrescription() {
   );
 }
 
-export function StepDateDecision({ onPrecedent, onSuivant, isLastStep }: StepProps) {
+export function StepDateDecision({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
-  const test = manager.get();
 
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeDateDecision },

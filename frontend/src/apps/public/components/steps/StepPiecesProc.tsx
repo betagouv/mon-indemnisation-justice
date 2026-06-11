@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "@tanstack/react-form";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
@@ -21,11 +21,8 @@ const PIECES_LABELS: Record<PieceProcedure, string> = {
   [PieceProcedure.Appel]: "Déclaration d'appel",
 };
 
-export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep }: StepProps) {
+export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
-  const test = manager.get();
-  const [soumis, setSoumis] = useState(false);
-
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapePiecesProc },
     defaultValues: { piecesProc: test?.piecesProc ?? ([] as PieceProcedure[]) },
@@ -43,7 +40,6 @@ export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep }: StepProps
       onSubmit={async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setSoumis(true);
         await formulaire.handleSubmit();
       }}
     >
@@ -72,13 +68,18 @@ export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep }: StepProps
           );
         }}
       />
-      {soumis && formulaire.state.values.piecesProc.length === 0 && (
-        <Alert
-          className="fr-mt-2w"
-          severity="error"
-          title="Veuillez sélectionner au moins une pièce de procédure"
-        />
-      )}
+      <formulaire.Subscribe
+        selector={(state) => ({ piecesProc: state.values.piecesProc, showError: state.isDirty || state.submissionAttempts > 0 })}
+        children={({ piecesProc, showError }) =>
+          showError && piecesProc.length === 0 ? (
+            <Alert
+              className="fr-mt-2w"
+              severity="error"
+              title="Veuillez sélectionner au moins une pièce de procédure"
+            />
+          ) : null
+        }
+      />
       <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} />
     </form>
   );

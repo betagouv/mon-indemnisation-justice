@@ -6,10 +6,13 @@ import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "@/apps/public/components/Layout";
 import { StepPiecesProc } from "@/apps/public/components/steps/StepPiecesProc";
+import { container } from "@/apps/public/container";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 
 function PiecesProcedureRoute() {
   const navigate = usePublicNavigate();
+  const { test } = Route.useLoaderData();
 
   return (
     <Layout>
@@ -31,6 +34,7 @@ function PiecesProcedureRoute() {
         nextTitle="Diligences"
       />
       <StepPiecesProc
+        test={test}
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/3-type-decision" })}
         onSuivant={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/5-diligences" })}
       />
@@ -40,4 +44,7 @@ function PiecesProcedureRoute() {
 
 export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure")({
   component: PiecesProcedureRoute,
+  loader: () => ({
+    test: container.get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$).get(),
+  }),
 });

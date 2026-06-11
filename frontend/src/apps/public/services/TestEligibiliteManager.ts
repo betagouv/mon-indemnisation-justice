@@ -42,7 +42,7 @@ export class InMemoryTestEligibiliteManager implements TestEligibiliteManagerInt
     if (!this.test) {
       throw new Error("Aucun test d'éligibilité en cours");
     }
-    plainToClassFromExist(this.test, modifications);
+    this.test = plainToClassFromExist(this.test, modifications);
   }
 
   effacer(): void {
@@ -53,6 +53,7 @@ export class InMemoryTestEligibiliteManager implements TestEligibiliteManagerInt
     if (!this.test) {
       throw new Error("Aucun test d'éligibilité en cours");
     }
+    return new Promise<void>((res) => setTimeout(res, Math.random() * 500));
   }
 }
 
@@ -84,6 +85,7 @@ export class LocalStorageTestEligibiliteManager implements TestEligibiliteManage
       this.test = plainToInstance(TestEligibilite, stockage.data);
       return this.test;
     } catch {
+      this.effacer();
       return undefined;
     }
   }
@@ -98,7 +100,7 @@ export class LocalStorageTestEligibiliteManager implements TestEligibiliteManage
     if (!this.test) {
       throw new Error("Aucun test d'éligibilité en cours");
     }
-    plainToClassFromExist(this.test, modifications);
+    this.test = plainToClassFromExist(this.test, modifications);
     this.sauvegarder();
   }
 

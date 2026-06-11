@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "@tanstack/react-form";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
@@ -17,17 +17,14 @@ const TYPE_DECISION_LABELS: Record<TypeDecision, string> = {
   [TypeDecision.Aucune]: "Aucune décision",
 };
 
-export function StepTypeDecision({ onPrecedent, onSuivant, isLastStep }: StepProps) {
+export function StepTypeDecision({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
-  const test = manager.get();
-  const [soumis, setSoumis] = useState(false);
-
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeTypeDecision },
-    defaultValues: { typeDecision: test?.typeDecision } as { typeDecision?: TypeDecision },
+    defaultValues: { typeDecision: test?.typeDecision?.[0] } as { typeDecision?: TypeDecision },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        manager.modifier({ typeDecision: value.typeDecision });
+        manager.modifier({ typeDecision: value.typeDecision ? [value.typeDecision] : [] });
         saveCritere("decisionsJustice", critereDecisionsJustice(value.typeDecision!));
         onSuivant();
       }
@@ -39,7 +36,6 @@ export function StepTypeDecision({ onPrecedent, onSuivant, isLastStep }: StepPro
       onSubmit={async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setSoumis(true);
         await formulaire.handleSubmit();
       }}
     >
@@ -60,13 +56,18 @@ export function StepTypeDecision({ onPrecedent, onSuivant, isLastStep }: StepPro
           />
         )}
       />
-      {soumis && !formulaire.state.values.typeDecision && (
-        <Alert
-          className="fr-mt-2w"
-          severity="error"
-          title="Veuillez sélectionner le type de décision"
-        />
-      )}
+      <formulaire.Subscribe
+        selector={(state) => ({ typeDecision: state.values.typeDecision, showError: state.isDirty || state.submissionAttempts > 0 })}
+        children={({ typeDecision, showError }) =>
+          showError && !typeDecision ? (
+            <Alert
+              className="fr-mt-2w"
+              severity="error"
+              title="Veuillez sélectionner le type de décision"
+            />
+          ) : null
+        }
+      />
       <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} />
     </form>
   );

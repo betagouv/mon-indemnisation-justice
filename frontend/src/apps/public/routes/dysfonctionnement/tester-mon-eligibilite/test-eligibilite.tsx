@@ -10,13 +10,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
 import { saveCritere, critereProcedureTerminee, clearCriteres } from "@/apps/public/services/eligibiliteStore";
 import { useInjection } from "inversify-react";
+import { container } from "@/apps/public/container";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 function TestEligibiliteRoute() {
   const navigate = usePublicNavigate();
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
+  const { test } = Route.useLoaderData();
   const [procedureTerminee, setProcedureTerminee] = useState<boolean | undefined>(
-    () => manager.get()?.procedureTerminee,
+    () => test?.procedureTerminee,
   );
   const [submitted, setSubmitted] = useState(false);
 
@@ -129,4 +131,7 @@ function TestEligibiliteRoute() {
 
 export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/test-eligibilite")({
   component: TestEligibiliteRoute,
+  loader: () => ({
+    test: container.get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$).get(),
+  }),
 });
