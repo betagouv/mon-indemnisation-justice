@@ -6,9 +6,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'eligibilite_tests')]
+#[ORM\Table(name: 'bris_porte_test_eligibilite')]
 #[ORM\HasLifecycleCallbacks]
-class TestEligibilite
+class TestEligibiliteBrisPorte
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -63,9 +63,9 @@ class TestEligibilite
         return !$this->estVise && !$this->estHebergeant;
     }
 
-    public static function fromArray(array $values): TestEligibilite
+    public static function fromArray(array $values): TestEligibiliteBrisPorte
     {
-        $testEligibilite = new TestEligibilite();
+        $testEligibilite = new TestEligibiliteBrisPorte();
 
         $testEligibilite->departement = $values['departement'] ?? null;
         $testEligibilite->estEligibleExperimentation = $testEligibilite->departement?->estDeploye() ?? false;

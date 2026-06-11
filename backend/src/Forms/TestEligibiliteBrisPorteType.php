@@ -3,14 +3,14 @@
 namespace MonIndemnisationJustice\Forms;
 
 use MonIndemnisationJustice\Entity\RapportAuLogement;
-use MonIndemnisationJustice\Entity\TestEligibilite;
+use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
 use MonIndemnisationJustice\Forms\Type\LiteralBooleanType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TestEligibiliteType extends AbstractType
+class TestEligibiliteBrisPorteType extends AbstractType
 {
     public function getBlockPrefix(): string
     {
@@ -20,7 +20,7 @@ class TestEligibiliteType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => TestEligibilite::class,
+            'data_class' => TestEligibiliteBrisPorte::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
             'csrf_token_id' => self::class,
