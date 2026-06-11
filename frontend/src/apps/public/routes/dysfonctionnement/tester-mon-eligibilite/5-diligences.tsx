@@ -6,10 +6,13 @@ import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "@/apps/public/components/Layout";
 import { StepDiligences } from "@/apps/public/components/steps/StepDiligences";
+import { container } from "@/apps/public/container";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 
 function DiligencesRoute() {
   const navigate = usePublicNavigate();
+  const { test } = Route.useLoaderData();
 
   return (
     <Layout>
@@ -30,6 +33,7 @@ function DiligencesRoute() {
         title="Diligences"
       />
       <StepDiligences
+        test={test}
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure" })}
         onSuivant={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/resultat" })}
         isLastStep
@@ -40,4 +44,7 @@ function DiligencesRoute() {
 
 export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/5-diligences")({
   component: DiligencesRoute,
+  loader: () => ({
+    test: container.get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$).get(),
+  }),
 });
