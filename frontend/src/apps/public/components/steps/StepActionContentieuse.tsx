@@ -7,13 +7,19 @@ import { SchemaEtapeActionContentieuse } from "../formulaires/eligibilite.schema
 import { saveCritere, critereActionContentieuse } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
+import { useInjection } from "inversify-react";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 export function StepActionContentieuse({ onPrecedent, onSuivant, isLastStep }: StepProps) {
+  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
+  const test = manager.get();
+
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeActionContentieuse },
-    defaultValues: { actionContentieuse: undefined } as { actionContentieuse?: ActionContentieuse },
+    defaultValues: { actionContentieuse: test?.actionContentieuse } as { actionContentieuse?: ActionContentieuse },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
+        manager.modifier({ actionContentieuse: value.actionContentieuse });
         saveCritere("actionContentieuse", critereActionContentieuse(value.actionContentieuse!));
         onSuivant();
       }

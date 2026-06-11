@@ -5,13 +5,19 @@ import { SchemaEtapeDiligences } from "../formulaires/eligibilite.schemas";
 import { saveCritere, critereDiligences } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
+import { useInjection } from "inversify-react";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 export function StepDiligences({ onPrecedent, onSuivant, isLastStep }: StepProps) {
+  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
+  const test = manager.get();
+
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeDiligences },
-    defaultValues: { preuvesDiligences: undefined } as { preuvesDiligences?: boolean },
+    defaultValues: { preuvesDiligences: test?.preuvesDiligences } as { preuvesDiligences?: boolean },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
+        manager.modifier({ preuvesDiligences: value.preuvesDiligences });
         saveCritere("diligences", critereDiligences(value.preuvesDiligences!));
         onSuivant();
       }

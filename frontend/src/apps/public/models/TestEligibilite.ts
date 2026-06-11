@@ -8,6 +8,8 @@ import {
 } from "@/apps/public/components/types";
 
 export class TestEligibilite {
+  public procedureTerminee?: boolean;
+
   @DateTransform(true)
   public dateDecision?: Date;
 
