@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools";
 import * as Sentry from "@sentry/react";
 import "es-iterator-helpers/auto";

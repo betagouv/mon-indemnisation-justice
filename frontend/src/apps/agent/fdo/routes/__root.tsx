@@ -110,9 +110,7 @@ const EspaceFDO = () => {
               "Déconnexion"
             ),
             linkProps: {
-              href: contexte.incarnePar
-                ? `${window.location.origin}/agent/fip6/agents/gestion?_switch_user=_exit`
-                : `${window.location.origin}/agent/deconnexion`,
+              href: contexte.urlDeconnexion,
               target: "_self",
             } as LinkProps,
           },

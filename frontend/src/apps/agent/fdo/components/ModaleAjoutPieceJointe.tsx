@@ -175,7 +175,11 @@ export const ModaleAjoutPieceJointe = React.forwardRef<
           />
 
           <form.Subscribe
-            selector={(state) => [state.values.type, state.values.fichier]}
+            selector={(state) => [
+              state.values.type,
+              state.values.fichier,
+              state.isDirty,
+            ]}
             children={([type, fichier]) => (
               <ButtonsGroup
                 className="fr-col-12"

@@ -115,6 +115,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                 }
             }
 
+            // On prépare l'URL de déconnexion à partir du token ID
             $request->getSession()->set(self::LOGOUT_URL_SESSION_KEY, $this->oidcClient->buildLogoutUrl($request, $idToken));
 
             return new SelfValidatingPassport(new UserBadge($usager->getUserIdentifier()));
