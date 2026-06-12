@@ -111,7 +111,6 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('securite_connexion');
     }
 
-    #[Route('/agent/connexion', name: 'agent_securite_connexion', methods: ['GET'])]
     #[IsGranted('PUBLIC_ACCESS')]
     #[Route('/connexion/agent', name: 'securite_agent_connexion', methods: ['GET', 'POST'])]
     public function connexionProConnect(Request $request, #[Autowire(service: 'oidc_client_pro_connect')] OidcClient $proConnectOidcClient): Response

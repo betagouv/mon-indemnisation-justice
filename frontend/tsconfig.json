@@ -33,5 +33,10 @@
     "src/style/**/*",
     "src/apps/_init.ts",
     "src/apps/sentry.ts",
+  ],
+  "references": [
+    { "path": "src/apps/agent/fdo" },
+    { "path": "src/apps/agent/fip6" },
+    { "path": "src/apps/requerant" }
   ]
 }
