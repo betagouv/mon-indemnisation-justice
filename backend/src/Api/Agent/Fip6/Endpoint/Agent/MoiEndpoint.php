@@ -42,7 +42,7 @@ class MoiEndpoint
                     'incarnePar' => $agentBetaIncarnant?->getNomComplet(true),
                     'urlDeconnexion' => $agentBetaIncarnant ?
                         $this->generateurUrl->generate('agent_fip6_react', ['extra' => '/agents/gestion?_switch_user=_exit'], UrlGeneratorInterface::ABSOLUTE_URL) :
-                        $request->getSession()->get(ProConnectAuthenticator::CLEF_SESSION_URL_DECONNEXION, $this->generateurUrl->generate('agent_securite_deconnexion', referenceType: UrlGeneratorInterface::ABSOLUTE_URL)),
+                        $request->getSession()->get(ProConnectAuthenticator::CLEF_SESSION_URL_DECONNEXION) ?? $this->generateurUrl->generate('agent_securite_deconnexion', referenceType: UrlGeneratorInterface::ABSOLUTE_URL),
                 ],
                 'json'
             )
