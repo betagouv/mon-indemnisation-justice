@@ -32,6 +32,7 @@ services:
       $clientId: '%env(PRO_CONNECT_CLIENT_ID)%'
       $clientSecret: '%env(PRO_CONNECT_CLIENT_SECRET)%'
       $loginCheckRoutes: [ 'securite_agent_connexion' ]
+      $logoutRoute: 'agent_securite_deconnexion'
       $context:
         scope: [ 'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom' ]
 
