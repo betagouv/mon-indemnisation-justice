@@ -6,7 +6,7 @@ export type StatutEvenement = "passe" | "actuel" | "futur";
 export type CoteEvenement = "gauche" | "droite";
 
 export type EvenementFrise = {
-  libelle: string;
+  libelle: ReactNode;
   date: Date;
   dateFin?: Date;
   auteur?: ReactNode;

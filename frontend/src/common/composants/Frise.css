@@ -24,6 +24,14 @@
   padding-bottom: 1.5rem;
 }
 
+.frise__cellule--gauche {
+  padding-right: 1rem;
+}
+
+.frise__cellule--droite {
+  padding-left: 1rem;
+}
+
 .frise__cellule--derniere {
   padding-bottom: 0;
 }
@@ -33,7 +41,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 1.5rem;
 }
 
 .frise__indicateur--dernier {
