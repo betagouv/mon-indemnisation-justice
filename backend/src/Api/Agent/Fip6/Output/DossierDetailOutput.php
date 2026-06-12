@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Output;
 use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\EtatDossier;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TypeAttestation;
 
@@ -14,6 +15,8 @@ readonly class DossierDetailOutput extends BaseDossierOutput
         int $id,
         ?string $reference,
         EtatDossierOutput $etat,
+        /* @var EtatDossierOutput[] $historique */
+        public array $historique,
         ?\DateTimeImmutable $dateDepot,
         ?string $montantIndemnisation,
         ?RedacteurOutput $redacteur,
@@ -54,6 +57,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
             id: $dossier->getId(),
             reference: $dossier->getReference(),
             etat: EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()),
+            historique: $dossier->getHistoriqueEtats()->map(fn (EtatDossier $etatDossier) => EtatDossierOutput::depuisEtatDossier($etatDossier))->toArray(),
             dateDepot: $dossier->getDateDepot(),
             montantIndemnisation: $dossier->getMontantIndemnisation(),
             redacteur: $dossier->getRedacteur() ? RedacteurOutput::depuisAgent($dossier->getRedacteur()) : null,

@@ -27,6 +27,8 @@ export abstract class BaseDossier {
   @Type(() => EtatDossier)
   @Expose()
   public etat: EtatDossier;
+  @Type(() => EtatDossier)
+  public readonly historique: EtatDossier[];
   @DateTransform()
   @Type(() => Date)
   public dateDepot?: Date;
