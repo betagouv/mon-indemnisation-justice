@@ -9,7 +9,14 @@ import {
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
 import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
-import { Agent, Document, DossierDetail, Redacteur } from "@/common/models";
+import { Frise } from "@/common/composants/Frise.tsx";
+import {
+  Agent,
+  Document,
+  DossierDetail,
+  EtatDossier,
+  Redacteur,
+} from "@/common/models";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import { dateEtHeureSimple } from "@/common/services/date";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
@@ -232,6 +239,11 @@ const ConsultationDossier = observer(function ConsultationDossier({
                       isDefault: true,
                     },
                     {
+                      tabId: "historique",
+                      label: "Historique",
+                      iconId: "fr-icon-time-line",
+                    },
+                    {
                       tabId: "suivi",
                       label: "Notes de suivi",
                       iconId: "fr-icon-ball-pen-line",
@@ -300,6 +312,33 @@ const ConsultationDossier = observer(function ConsultationDossier({
                         readOnly={dossier.enAttenteInstruction()}
                         value={notes}
                         onChange={(value) => setNotes(value)}
+                      />
+                    </div>
+                  </section>
+                )}
+
+                {selectedTab == "historique" && (
+                  <section>
+                    <h3>Historique du dossier</h3>
+
+                    <div className="fr-grid-row">
+                      <Frise
+                        afficherDurees={true}
+                        evenements={dossier.historique.map(
+                          (etat: EtatDossier, index: number, etats) => ({
+                            libelle: etat.libelle,
+                            date: etat.dateEntree,
+                            dateFin: etats.at(index + 1)?.dateEntree,
+                            auteur: etat.redacteur
+                              ? etat.redacteur.nom
+                              : dossier.requerant.nomSimple({
+                                  capitaliser: true,
+                                }),
+                            cote: etat.redacteur ? "droite" : "gauche",
+                            statut:
+                              etat.id === dossier.etat.id ? "actuel" : "passe",
+                          }),
+                        )}
                       />
                     </div>
                   </section>

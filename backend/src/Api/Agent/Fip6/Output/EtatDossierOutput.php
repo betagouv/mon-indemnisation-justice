@@ -17,7 +17,7 @@ final readonly class EtatDossierOutput
         public int $id,
         public string $etat,
         \DateTimeInterface $dateEntree,
-        public ?int $redacteur = null,
+        public ?RedacteurOutput $redacteur = null,
         public bool $requerant = false,
         public ?array $contexte = null,
     ) {
@@ -30,7 +30,7 @@ final readonly class EtatDossierOutput
             id: $etatDossier->getId(),
             etat: $etatDossier->getEtat()->value,
             dateEntree: $etatDossier->getDateEntree(),
-            redacteur: $etatDossier->getAgent()?->getId(),
+            redacteur: $etatDossier->getAgent() ? RedacteurOutput::depuisAgent($etatDossier->getAgent()) : null,
             requerant: null !== $etatDossier->getRequerant(),
             contexte: $etatDossier->getContexte(),
         );
