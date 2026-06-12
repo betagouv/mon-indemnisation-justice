@@ -1,12 +1,21 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
 import { container } from "@/apps/agent/fip6/container.ts";
-import { CompteurDossiers, DossierManagerInterface } from "@/apps/agent/fip6/services/dossier.ts";
+import {
+  CompteurDossiers,
+  DossierManagerInterface,
+} from "@/apps/agent/fip6/services/dossier.ts";
 import { RoleAgent } from "@/common/models/Agent.ts";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
-import { createRootRouteWithContext, type LinkProps, Outlet, redirect, useLoaderData } from "@tanstack/react-router";
+import {
+  createRootRouteWithContext,
+  type LinkProps,
+  Outlet,
+  redirect,
+  useLoaderData,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { useMemo } from "react";
