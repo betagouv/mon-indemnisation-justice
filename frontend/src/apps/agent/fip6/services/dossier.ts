@@ -1,5 +1,6 @@
 import { queryClient } from "@/apps/agent/fip6/query.ts";
-import { BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
+import { Agent, BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
+import { RoleAgent } from "@/common/models/Agent.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
@@ -18,7 +19,7 @@ export type ListeDossier =
 export type CompteurDossiers = Record<ListeDossier, number>;
 
 export interface DossierManagerInterface {
-  compteursDossiers(): Promise<CompteurDossiers>;
+  compteursDossiers(agent: Agent): Promise<CompteurDossiers>;
 
   consulter(id: number): Promise<DossierDetail>;
 
@@ -36,10 +37,14 @@ export namespace DossierManagerInterface {
 }
 
 export class APIDossierManager implements DossierManagerInterface {
-  compteursDossiers(): Promise<CompteurDossiers> {
+  compteursDossiers(agent: Agent): Promise<CompteurDossiers> {
     return queryClient.fetchQuery({
       queryKey: ["DossierManagerInterface", "compteursDossiers"],
       queryFn: async (): Promise<CompteurDossiers> => {
+        // Si l'agent n'a pas le rôle DOSSIER, évitons un appel inutile à l'API
+        if (!agent.aRole(RoleAgent.DOSSIER)) {
+          return {} as CompteurDossiers;
+        }
         const reponse = await fetch("/api/agent/fip6/decompter-dossiers");
         if (!reponse.ok) {
           throw new Error(
