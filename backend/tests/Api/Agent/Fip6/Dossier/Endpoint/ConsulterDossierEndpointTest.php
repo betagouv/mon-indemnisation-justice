@@ -31,7 +31,10 @@ class ConsulterDossierEndpointTest extends AbstractEndpointTestCase
                 'id' => $dossier->getEtatDossier()->getId(),
                 'etat' => $dossier->getEtatDossier()->getEtat()->value,
                 'dateEntree' => $dossier->getEtatDossier()->getDate()->format('Y-m-d H:i:s'),
-                'redacteur' => $dossier->getRedacteur()->getId(),
+                'redacteur' => [
+                    'id' => $dossier->getRedacteur()->getId(),
+                    'nom' => $dossier->getRedacteur()->getNomComplet(capital: true),
+                ],
                 'requerant' => null != $dossier->getEtatDossier()->getRequerant(),
                 'contexte' => null,
             ],
@@ -87,6 +90,6 @@ class ConsulterDossierEndpointTest extends AbstractEndpointTestCase
             ],
             'typeAttestation' => null,
             'typeAdministration' => null,
-        ], $reponse);
+        ], array_diff_key($reponse, ['historique' => []]));
     }
 }

@@ -36,7 +36,7 @@ class DemarrerInstructionDossierEndpointTest extends APIEndpointTestCase
 
         $this->assertEquals(EtatDossierType::DOSSIER_EN_INSTRUCTION->value, $output->etat->etat);
         $this->assertObjectHasProperty('redacteur', $output->etat);
-        $this->assertEquals($redacteur->getId(), $output->etat->redacteur);
+        $this->assertEquals($redacteur->getId(), $output->etat->redacteur->id);
     }
 
     /**
