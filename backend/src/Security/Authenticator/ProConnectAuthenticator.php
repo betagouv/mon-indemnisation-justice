@@ -25,6 +25,8 @@ use Symfony\Component\Security\Http\HttpUtils;
 
 class ProConnectAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
+    public const CLEF_SESSION_URL_DECONNEXION = 'proconnect.url_deconnexion';
+
     public function __construct(
         protected readonly HttpUtils $httpUtils,
         #[Autowire(service: 'oidc_client_pro_connect')]
@@ -56,7 +58,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
     {
         try {
             // Authenticate
-            list($accessToken) = $this->oidcClient->authenticate($request);
+            list($accessToken, $idToken) = $this->oidcClient->authenticate($request);
 
             // User info
             $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
@@ -123,6 +125,9 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
 
             $this->agentRepository->save($agent);
 
+            // On prépare l'URL de déconnexion à partir du token ID
+            $request->getSession()->set(self::CLEF_SESSION_URL_DECONNEXION, $this->oidcClient->buildLogoutUrl($request, $idToken));
+
             return new SelfValidatingPassport(new UserBadge($agent->getIdentifiant()));
         } catch (AuthenticationException $e) {
             $this->logger->error($e->getMessage(), $e->getMessageData());
@@ -138,7 +143,7 @@ class ProConnectAuthenticator extends AbstractAuthenticator implements Authentic
             return new RedirectResponse($redirection);
         }
 
-        // Sinon on renvoie vers la route d'accueil
+        // Sinon, on renvoie vers la route d'accueil
         return new RedirectResponse($this->urlGenerator->generate('agent_index'));
     }
 

@@ -41,11 +41,14 @@ export class APIAgentManager implements AgentManagerInterface {
     if (!this._contexteNavigation) {
       const reponse = await fetch("/api/agent/fip6/moi");
 
-      const data: { agent: any; incarnePar: string } = await reponse.json();
+      const data: { agent: any; incarnePar: string; urlDeconnexion: string } =
+        await reponse.json();
 
       this._contexteNavigation = {
         agent: plainToInstance(Agent, data.agent),
         incarnePar: data.incarnePar,
+        urlDeconnexion:
+        data.urlDeconnexion,
       };
     }
 

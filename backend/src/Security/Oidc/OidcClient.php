@@ -87,7 +87,7 @@ class OidcClient
 
     public function buildLogoutUrl(Request $request, string $idToken): ?string
     {
-        if (!isset($this->configuration['end_session_endpoint'])) {
+        if (!isset($this->configuration['end_session_endpoint']) || null === $this->logoutRoute) {
             return null;
         }
 
