@@ -36,7 +36,7 @@ class CloturerDossierEndpointTest extends AbstractEndpointTestCase
         $this->assertObjectHasProperty('etat', $output->etat);
 
         $this->assertEquals(EtatDossierType::DOSSIER_CLOTURE->value, $output->etat->etat);
-        $this->assertEquals($attributeur->getId(), $output->etat->redacteur);
+        $this->assertEquals($attributeur->getId(), $output->etat->redacteur->id);
     }
 
     /**
@@ -61,7 +61,7 @@ class CloturerDossierEndpointTest extends AbstractEndpointTestCase
         $this->assertObjectHasProperty('etat', $output->etat);
 
         $this->assertEquals(EtatDossierType::DOSSIER_CLOTURE->value, $output->etat->etat);
-        $this->assertEquals($validateur->getId(), $output->etat->redacteur);
+        $this->assertEquals($validateur->getId(), $output->etat->redacteur->id);
     }
 
     /**
@@ -87,7 +87,7 @@ class CloturerDossierEndpointTest extends AbstractEndpointTestCase
         $this->assertObjectHasProperty('etat', $output->etat);
 
         $this->assertEquals(EtatDossierType::DOSSIER_CLOTURE->value, $output->etat->etat);
-        $this->assertEquals($redacteur->getId(), $output->etat->redacteur);
+        $this->assertEquals($redacteur->getId(), $output->etat->redacteur->id);
     }
 
     /**

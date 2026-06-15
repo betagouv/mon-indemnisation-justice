@@ -1,3 +1,4 @@
+import { BadgeEtatDossier } from "@/apps/agent/fip6/composants/dossiers/BadgeEtatDossier.tsx";
 import { container } from "@/apps/agent/fip6/container";
 import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier";
 import { DossierActions } from "@/apps/agent/fip6/dossiers/components/consultation/action";
@@ -5,11 +6,12 @@ import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/
 import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier";
 import {
   ChampPieceJointe,
-  TelechargerPieceJointe,
+  TelechargerPieceJointe
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
 import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
-import { Agent, Document, DossierDetail, Redacteur } from "@/common/models";
+import { Frise } from "@/common/composants/Frise.tsx";
+import { Agent, Document, DossierDetail, EtatDossier, Redacteur } from "@/common/models";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import { dateEtHeureSimple } from "@/common/services/date";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
@@ -134,30 +136,7 @@ const ConsultationDossier = observer(function ConsultationDossier({
             >
               <h3 className="">Dossier {dossier.reference}</h3>
 
-              <div
-                className="fr-grid-row fr-grid-row--gutters fr-my-1w"
-                style={{ gap: ".5vw" }}
-              >
-                <p
-                  className={`fr-badge fr-badge--no-icon fr-badge--dossier-etat fr-badge--dossier-etat--${dossier.etat.etat.slug} fr-py-1w fr-px-2w`}
-                  {...(dossier.etat.estCloture()
-                    ? {
-                        "aria-describedby": `tooltip-etat-dossier-${dossier.id}`,
-                      }
-                    : {})}
-                >
-                  {dossier.etat.etat.libelle}
-                </p>
-              </div>
-              {dossier.etat.estCloture() && (
-                <span
-                  className="fr-tooltip fr-placement"
-                  id={`tooltip-etat-dossier-${dossier.id}`}
-                  role="tooltip"
-                >
-                  {dossier.etat.contexte?.motifRejet || <i>Aucun motif</i>}
-                </span>
-              )}
+              <BadgeEtatDossier etat={dossier.etat} className="fr-my-1w" />
 
               <p className="fr-my-1v">
                 {dossier.estDepose() ? (
@@ -232,6 +211,11 @@ const ConsultationDossier = observer(function ConsultationDossier({
                       isDefault: true,
                     },
                     {
+                      tabId: "historique",
+                      label: "Historique",
+                      iconId: "fr-icon-time-line",
+                    },
+                    {
                       tabId: "suivi",
                       label: "Notes de suivi",
                       iconId: "fr-icon-ball-pen-line",
@@ -300,6 +284,35 @@ const ConsultationDossier = observer(function ConsultationDossier({
                         readOnly={dossier.enAttenteInstruction()}
                         value={notes}
                         onChange={(value) => setNotes(value)}
+                      />
+                    </div>
+                  </section>
+                )}
+
+                {selectedTab == "historique" && (
+                  <section>
+                    <h3>Historique du dossier</h3>
+
+                    <div className="fr-grid-row">
+                      <Frise
+                        afficherDurees={true}
+                        evenements={dossier.historique.map(
+                          (etat: EtatDossier, index: number, etats) => ({
+                            libelle: (
+                              <BadgeEtatDossier etat={etat} grand={false} />
+                            ),
+                            date: etat.dateEntree,
+                            dateFin: etats.at(index + 1)?.dateEntree,
+                            auteur: etat.redacteur
+                              ? etat.redacteur.nom
+                              : dossier.requerant.nomSimple({
+                                  capitaliser: true,
+                                }),
+                            cote: etat.redacteur ? "droite" : "gauche",
+                            statut:
+                              etat.id === dossier.etat.id ? "actuel" : "passe",
+                          }),
+                        )}
                       />
                     </div>
                   </section>

@@ -38,7 +38,7 @@ class AttribuerDossierEndpointTest extends APIEndpointTestCase
 
         $this->assertEquals(EtatDossierType::DOSSIER_A_INSTRUIRE->value, $output->etat->etat);
         $this->assertObjectHasProperty('redacteur', $output->etat);
-        $this->assertEquals($attributeur->getId(), $output->etat->redacteur);
+        $this->assertEquals($attributeur->getId(), $output->etat->redacteur->id);
     }
 
     /**

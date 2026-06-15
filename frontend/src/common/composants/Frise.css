@@ -1,0 +1,129 @@
+/* ── Conteneur principal : grille 3 colonnes ── */
+.frise {
+  display: grid;
+  grid-template-columns: 1fr 2rem 1fr;
+  column-gap: 1rem;
+  padding: 0.5rem 0;
+
+  /* ── Sous le breakpoint md : grille 2 colonnes (indicateur + droite) ── */
+  @media (max-width: 48em) {
+    grid-template-columns: 2rem 1fr;
+
+    & .frise__cellule--gauche {
+      display: none;
+    }
+
+    & .frise__repli-mobile {
+      display: block;
+    }
+  }
+}
+
+/* ── Cellules gauche / droite ── */
+.frise__cellule {
+  padding-bottom: 1.5rem;
+}
+
+.frise__cellule--gauche {
+  padding-right: 1rem;
+}
+
+.frise__cellule--droite {
+  padding-left: 1rem;
+}
+
+.frise__cellule--derniere {
+  padding-bottom: 0;
+}
+
+/* ── Indicateur central (nœud + ligne) ── */
+.frise__indicateur {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.frise__indicateur--dernier {
+  padding-bottom: 0;
+}
+
+.frise__noeud {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid var(--border-disabled-grey);
+  background-color: var(--background-default-grey);
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.frise__ligne {
+  width: 2px;
+  flex: 1;
+  background-color: var(--border-disabled-grey);
+  margin-top: 2px;
+}
+
+/* ── Statuts ── */
+.frise__evenement--passe {
+  & .frise__noeud {
+    background-color: var(--background-action-high-blue-france);
+    border-color: var(--background-action-high-blue-france);
+  }
+
+  & .frise__ligne {
+    background-color: var(--background-action-high-blue-france);
+  }
+}
+
+.frise__evenement--actuel {
+  & .frise__noeud {
+    width: 1.25rem;
+    height: 1.25rem;
+    background-color: var(--background-action-high-blue-france);
+    border-color: var(--background-action-high-blue-france);
+    box-shadow:
+      0 0 0 3px var(--background-default-grey),
+      0 0 0 5px var(--background-action-high-blue-france);
+  }
+}
+
+.frise__evenement--futur {
+  & .frise__libelle {
+    color: var(--text-disabled-grey);
+  }
+}
+
+/* ── Contenu ── */
+.frise__contenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.frise__contenu--aligne-droite {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.frise__libelle {
+  font-weight: 700;
+  line-height: 1.5rem;
+  color: var(--text-default-grey);
+}
+
+.frise__date {
+  font-size: 0.75rem;
+  color: var(--text-mention-grey);
+}
+
+.frise__details {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-mention-grey);
+}
+
+/* Masqué par défaut, visible uniquement sur mobile (événements côté gauche) */
+.frise__repli-mobile {
+  display: none;
+}
