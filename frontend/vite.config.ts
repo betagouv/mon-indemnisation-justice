@@ -34,6 +34,13 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         generatedRouteTree: "./src/apps/agent/fdo/routeur/routeur-fdo.gen.ts",
         routesDirectory: "./src/apps/agent/fdo/routes/",
       }),
+        // Espace Public
+      tanstackRouter({
+        target: "react",
+        autoCodeSplitting: true,
+        generatedRouteTree: "./src/apps/public/routeur/routeur-public.gen.ts",
+        routesDirectory: "./src/apps/public/routes/",
+      }),
       // Espace requérant
       tanstackRouter({
         target: "react",
@@ -93,6 +100,8 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       // Voir https://rolldown.rs/reference/
       rolldownOptions: {
         input: {
+           // Espace public
+          public: "./src/apps/public/public.tsx",
           // Espace requérant
           "requerant/dossier/tester_mon_eligibilite":
             "./src/apps/requerant/dossier/tester_mon_eligibilite.tsx",
