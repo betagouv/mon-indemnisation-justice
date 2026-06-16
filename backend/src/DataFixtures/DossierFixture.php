@@ -7,6 +7,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
+use MonIndemnisationJustice\DataFixtures\Helpers\MailpitManager;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrisPorte;
@@ -45,6 +46,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         #[Autowire(param: 'kernel.project_dir')]
         protected readonly string $kernelDirectory,
         protected readonly DocumentManager $documentManager,
+        protected readonly MailpitManager $mailpitManager,
     ) {
         $this->faker = Factory::create('fr_FR');
         $this->dossierTeleversement = $this->kernelDirectory.'/fichiers/test/';
@@ -64,6 +66,9 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
+        // Suppression des emails
+        $this->mailpitManager->supprimerMessages();
+
         if ($this->filesystem->exists($this->dossierTeleversement)) {
             $finder = new Finder();
 

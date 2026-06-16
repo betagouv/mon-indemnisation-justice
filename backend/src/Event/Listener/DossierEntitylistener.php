@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Event\Listener;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
+use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -16,6 +17,15 @@ class DossierEntitylistener
         protected readonly EventDispatcherInterface $eventDispatcher,
         protected readonly DossierRepository $brisPorteRepository,
     ) {
+    }
+
+    public function prePersist(Dossier $dossier, PrePersistEventArgs $args)
+    {
+        $evenement = $dossier->getEtatDossier()->getEtat()->creerTransitionEvent($dossier);
+
+        if (null !== $evenement) {
+            $this->eventDispatcher->dispatch($evenement);
+        }
     }
 
     public function preUpdate(Dossier $dossier, PreUpdateEventArgs $args)
