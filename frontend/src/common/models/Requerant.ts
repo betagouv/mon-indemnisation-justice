@@ -50,7 +50,9 @@ export class Requerant {
     return this.civilite === "MME" ? "Madame" : "Monsieur";
   }
 
-  nomSimple({ capitaliser = false }: { capitaliser: boolean }): string {
+  nomSimple(
+    { capitaliser = false }: { capitaliser: boolean } = { capitaliser: false },
+  ): string {
     return `${this.prenom} ${capitaliser ? this.nom.toUpperCase() : this.nom}`;
   }
 
