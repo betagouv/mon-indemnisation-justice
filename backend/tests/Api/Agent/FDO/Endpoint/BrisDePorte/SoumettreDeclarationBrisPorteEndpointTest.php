@@ -9,16 +9,14 @@ use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Teste le point d'entrée @SoumettreDeclarationBrisPorteEndpoint de l'API, permettant à l'agent des FDO de soumettre un
  * brouillon de déclaration de bris de porte.
- *
- * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\SoumettreDeclarationBrisPorteEndpoint
  */
+#[CoversClass(SoumettreDeclarationBrisPorteEndpoint::class)]
 class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 {
     /**

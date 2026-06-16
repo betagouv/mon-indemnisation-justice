@@ -106,6 +106,7 @@ jobs:
       PRO_CONNECT_WELL_KNOWN_URL: https://domain.null/.well-known/openid-configuration
       PRO_CONNECT_CLIENT_ID: proconnect-mock
       PRO_CONNECT_CLIENT_SECRET: bar
+      MAILPIT_BASE_URL: http://localhost:8025
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -414,6 +415,7 @@ jobs:
       PRO_CONNECT_WELL_KNOWN_URL: http://localhost:9998/.well-known/openid-configuration
       PRO_CONNECT_CLIENT_ID: proconnect-mock
       PRO_CONNECT_CLIENT_SECRET: bar
+      MAILPIT_BASE_URL: http://localhost:8025
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3

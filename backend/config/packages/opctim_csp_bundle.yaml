@@ -38,6 +38,7 @@ opctim_csp_bundle:
       - 'https://stats.beta.gouv.fr'
       - 'https://sentry.incubateur.net'
       - 'https://client.crisp.chat'
+      - 'https://data.geopf.fr'
       - 'wss://client.relay.crisp.chat'
     worker-src:
       - "'self'"
