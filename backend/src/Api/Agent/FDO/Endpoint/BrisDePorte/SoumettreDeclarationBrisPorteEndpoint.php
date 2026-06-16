@@ -9,7 +9,6 @@ use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
-use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -41,7 +40,6 @@ class SoumettreDeclarationBrisPorteEndpoint
         protected readonly NormalizerInterface $normalizer,
         protected readonly DenormalizerInterface $denormalizer,
         protected readonly ValidatorInterface $validator,
-        protected readonly Mailer $mailer,
     ) {
     }
 
@@ -88,17 +86,6 @@ class SoumettreDeclarationBrisPorteEndpoint
         $this->em->detach($brouillon);
 
         $this->em->flush();
-
-        // Envoi du mail d'invitation à déclarer
-        if (null !== ($coordonneesRequerant = $declaration->getCoordonneesRequerant())) {
-            $this->mailer
-                ->to($coordonneesRequerant->getCourriel(), $coordonneesRequerant->getPrenom().' '.$coordonneesRequerant->getNom())
-                ->subject("Mon Indemnisation Justice: vous pouvez faire une demande d'indemnisation")
-                ->htmlTemplate('email/invitation_a_deposer.html.twig', [
-                    'declaration' => $declaration,
-                ])
-                ->send();
-        }
 
         return new JsonResponse(
             $this->normalizer->normalize(

@@ -5,9 +5,12 @@ namespace MonIndemnisationJustice\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use MonIndemnisationJustice\DataFixtures\Helpers\MailpitManager;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Entity\CoordonneesRequerant;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use MonIndemnisationJustice\Entity\Document;
@@ -15,6 +18,11 @@ use MonIndemnisationJustice\Entity\ProcedureJudiciaire;
 
 class FDOFixture extends Fixture implements DependentFixtureInterface
 {
+    public function __construct(protected readonly MailpitManager $mailpitManager)
+    {
+
+    }
+
     public function getDependencies(): array
     {
         return [
@@ -25,6 +33,9 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
+        // Suppression des emails
+        $this->mailpitManager->supprimerMessages();
+
         $brouillonPolice = new BrouillonDeclarationFDOBrisPorte()
             ->setDateCreation(new \DateTimeImmutable())
             ->setAgent($this->getReference('agent-policier', Agent::class))
@@ -117,6 +128,41 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
             ]);
 
         $manager->persist($brouillonGendarmerie);
+
+        $declarationGendarmerie = new DeclarationFDOBrisPorte()
+            ->setEstErreur(DeclarationFDOBrisPorteErreurType::OUI)
+            ->setDescriptionErreur('Intervention à la mauvaise porte')
+            ->setDateCreation(
+                new \DateTimeImmutable()->sub(
+                    \DateInterval::createFromDateString('1 day')
+                )
+            )
+            ->setDateOperation(
+                new \DateTimeImmutable()->sub(\DateInterval::createFromDateString('1 day'))
+            )
+            ->setAgent($this->getReference('agent-gendarme', Agent::class))
+            ->setAdresse(
+                new Adresse()
+                    ->setLigne1('19 rue de la Gare')
+                    ->setCodePostal('75019')
+                    ->setLocalite('PARIS')
+            )
+            ->setDateSoumission(new \DateTimeImmutable())
+            ->setProcedure(
+                new ProcedureJudiciaire()
+                    ->setNumeroProcedure('PRO871552')
+                    ->setServiceEnqueteur('GNFD')
+                    ->setTelephone('0123456789')
+            )
+            ->setCoordonneesRequerant(
+                new CoordonneesRequerant()
+                    ->setNom('LEMÉE')
+                    ->setPrenom('Pierre')
+                    ->setCivilite(Civilite::M)
+                    ->setCourriel('pierre.lemee@3f-habitat.fr')
+                    ->setTelephone('0123456789')
+            );
+        $manager->persist($declarationGendarmerie);
 
         $manager->flush();
     }
