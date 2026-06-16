@@ -5,9 +5,8 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use Sqids\Sqids;
+use MonIndemnisationJustice\Event\Listener\DeclarationBrisPorteFDOEntitylistener;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
@@ -20,7 +19,7 @@ use Symfony\Component\Uid\Uuid;
     name: 'declarations_fdo_bris_porte_reference_idx',
     columns: ['reference']
 )]
-#[ORM\HasLifecycleCallbacks]
+#[ORM\EntityListeners([DeclarationBrisPorteFDOEntitylistener::class])]
 class DeclarationFDOBrisPorte
 {
     #[ORM\Id]
@@ -88,22 +87,6 @@ class DeclarationFDOBrisPorte
     public function __construct()
     {
         $this->piecesJointes = new ArrayCollection([]);
-    }
-
-    #[ORM\PrePersist]
-    public function onPrePersist(PrePersistEventArgs $args): void
-    {
-        // On tente jusqu'à 10 référence de dossier à 6 caractères en s'assurant qu'elles ne sont pas déjà utilisées
-        $generateurShortId = new Sqids(alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', minLength: 6);
-        $repository = $args->getObjectManager()->getRepository(DeclarationFDOBrisPorte::class);
-        $essais = 0;
-        do {
-            $reference = substr($generateurShortId->encode([random_int(1, PHP_INT_MAX), $this->agent->getId()]), 0, 6);
-
-        } while (++$essais <= 10 && null === $repository->findOneBy(['reference' => $reference]));
-
-        $this->reference = $reference;
-        $this->dateSoumission = new \DateTimeImmutable();
     }
 
     public function getId(): Uuid
