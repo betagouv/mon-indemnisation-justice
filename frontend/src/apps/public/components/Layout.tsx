@@ -1,14 +1,23 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "@/style/index.css";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { Header } from "@codegouvfr/react-dsfr/Header";
+import { useLocation } from "@tanstack/react-router";
 
 type Props = {
   children: React.ReactNode;
 };
 
-export const Layout = ({ children }: Props) => (
+export const Layout = ({ children }: Props) => {
+  const mainRef = useRef<HTMLElement>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    mainRef.current?.scrollIntoView({ behavior: "instant" });
+  }, [location.pathname]);
+
+  return (
   <>
     <Header
       brandTop={
@@ -27,7 +36,7 @@ export const Layout = ({ children }: Props) => (
       ]}
     />
 
-    <main role="main" className="fr-p-2w">
+    <main ref={mainRef} role="main" className="fr-p-2w">
       <div className="fr-container fr-container--fluid">{children}</div>
     </main>
 
@@ -38,4 +47,5 @@ export const Layout = ({ children }: Props) => (
       termsLinkProps={{ href: "/mentions-legales" }}
     />
   </>
-);
+  );
+};

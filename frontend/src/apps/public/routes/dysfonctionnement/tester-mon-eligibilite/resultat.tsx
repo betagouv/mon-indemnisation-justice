@@ -8,6 +8,7 @@ import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { getCriteres, clearCriteres } from "@/apps/public/services/eligibiliteStore";
 import { createFileRoute } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
+import { container } from "@/apps/public/container";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 function ResultatEligibiliteRoute() {
@@ -119,4 +120,6 @@ function ResultatEligibiliteRoute() {
 
 export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/resultat")({
   component: ResultatEligibiliteRoute,
+  loader: () =>
+    container.get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$).soumettre().catch(console.error),
 });
