@@ -2,10 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
+    "lib": ["ESNext", "DOM"],
     "moduleResolution": "bundler",
     "jsx": "react",
     "esModuleInterop": true,
@@ -19,12 +16,11 @@
       "vitest/globals",
       "@vitest/browser/providers/playwright"
     ],
+    "typeRoots": ["./node_modules/@types", ".@types"],
     "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
@@ -32,7 +28,7 @@
     "src/common/**/*",
     "src/style/**/*",
     "src/apps/_init.ts",
-    "src/apps/sentry.ts",
+    "src/apps/sentry.ts"
   ],
   "references": [
     { "path": "src/apps/agent/fdo" },
