@@ -1,10 +1,10 @@
-import workerSrc from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
+import workerUrl from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
-pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
 export const DocumentPDF = ({ url }: { url: string }) => {
   const [nombreDePages, setNombreDePages] = useState<number>();
@@ -64,11 +64,13 @@ export const DocumentPDF = ({ url }: { url: string }) => {
       )}
       <div className="fr-grid-row fr-col-12" ref={refConteneur}>
         <Document
+          loading={<>Chargement du document en cours...</>}
           file={url}
           onLoadSuccess={({ numPages }) => {
             setNombreDePages(numPages);
             setNumeroPage(1);
           }}
+          onLoadError={(error) => console.error("DocumentPDF error:", error)}
           options={options}
         >
           {Array.from(Array(nombreDePages).keys()).map((index) => (
