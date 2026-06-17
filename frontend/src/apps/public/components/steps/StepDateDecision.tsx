@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
+import { CheckInput } from "@/apps/requerant/composants/champs/check/CheckInput.tsx";
 import { calculerPrescription } from "@/apps/public/services/prescription";
 import { saveCritere, criterePrescription } from "@/apps/public/services/eligibiliteStore";
 import { SchemaEtapeDateDecision } from "../formulaires/eligibilite.schemas";
@@ -76,28 +76,46 @@ export function StepDateDecision({ onPrecedent, onSuivant, isLastStep, test }: S
             <formulaire.Field
               name="dateDecision"
               children={(field) => (
-                <FormInput
+                <CheckInput
                   label="Date de la décision"
                   hintText="Indiquez la date de la dernière décision de justice rendue dans votre affaire."
-                  champ={field}
+                  validation={false}
                   nativeInputProps={{
                     type: "date",
                     value: field.state.value,
-                    onChange: (e) => field.handleChange(e.target.value),
+                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => field.handleChange(e.target.value),
                   }}
                 />
               )}
             />
           </div>
         </div>
-        {dateDecision && (
-          <Alert
-            className="fr-mt-2w"
-            severity={prescription.rempli ? "success" : "error"}
-            title={prescription.rempli ? "Vous êtes dans les délais" : "Délai de prescription dépassé"}
-            description={prescription.detail}
-          />
-        )}
+        <formulaire.Subscribe
+          selector={(state) => ({ dateDecision: state.values.dateDecision, showError: state.submissionAttempts > 0 })}
+          children={({ dateDecision, showError }) => {
+            if (showError && !dateDecision) {
+              return (
+                <Alert
+                  className="fr-mt-2w"
+                  severity="error"
+                  title="Veuillez indiquer la date de la décision"
+                />
+              );
+            }
+            if (dateDecision) {
+              const prescription = calculerPrescription(new Date(dateDecision));
+              return (
+                <Alert
+                  className="fr-mt-2w"
+                  severity={prescription.rempli ? "success" : "error"}
+                  title={prescription.rempli ? "Vous êtes dans les délais" : "Délai de prescription dépassé"}
+                  description={prescription.detail}
+                />
+              );
+            }
+            return null;
+          }}
+        />
         <NavButtons
           onPrecedent={onPrecedent}
           isLastStep={isLastStep}
