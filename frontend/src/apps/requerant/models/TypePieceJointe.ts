@@ -602,7 +602,7 @@ export class TypePieceJointe {
       // Extrait Kbis de moins de 3 mois ou identification équivalente (SIREN)
       // Justificatif des pouvoirs du signataire (délégation de signature si nécessaire)
       // Pièce d’identité du signataire
-      return ["extrait_kbis", "quittance_subrogative"].includes(this.type);
+      return ["extrait_kbis"].includes(this.type);
     }
 
     if (typePersonneMorale == "SYNDIC") {
