@@ -32,19 +32,50 @@ export const ErreurComposant = ({
           <dt>Message</dt>
           <dd>{erreur.message}</dd>
 
-          <dt>Trace</dt>
-          <dd>
-            <pre>
-              <code>
-                {erreur.stack?.split("\n").map((ligne, i) => (
-                  <React.Fragment key={i}>
-                    {ligne}
-                    {"\n"}
-                  </React.Fragment>
-                ))}
-              </code>
-            </pre>
-          </dd>
+          {import.meta.env.DEV && (
+            <>
+              <dt>Trace</dt>
+              <dd>
+                <ul style={{ listStyle: "none" }}>
+                  {erreur.stack?.split("\n").map((entree, i) => {
+                    const [cible, chemin] = entree.split("@");
+                    const elements = chemin?.split(":");
+
+                    const url = elements?.slice(0, -2).join(":") || undefined;
+                    const ligne = elements?.at(-2) || undefined;
+                    const async = url?.startsWith("async*") || false;
+
+                    return (
+                      <li
+                        key={`stack-trace-ligne-${i}`}
+                        style={{
+                          padding: 0,
+                          margin: 0,
+                          fontFamily: "monospace",
+                          fontSize: ".7rem",
+                        }}
+                      >
+                        {url ? (
+                          <>
+                            <a href={url} style={{}}>
+                              {async && <>async </>}
+                              {cible.replace(/^async\*/, "")}
+                            </a>
+                            {ligne ? `,ligne ${ligne}` : ""}
+                          </>
+                        ) : (
+                          <span>
+                            {async && <>async </>}
+                            {cible.replace(/^async\*/, "")}
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </dd>
+            </>
+          )}
         </dl>
       </Accordion>
       {retour}
