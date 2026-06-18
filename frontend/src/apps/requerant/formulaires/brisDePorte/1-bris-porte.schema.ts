@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const SchemaValidationBrisPorte = z
   .object({
-    estPersonneMorale: z.boolean(),
+    estPersonneMorale: z.boolean().optional(),
     personneMorale: z
       .object({
         typePersonneMorale: z.enum(TypesPersonneMorale, {
@@ -39,6 +39,15 @@ export const SchemaValidationBrisPorte = z
     estPorteBlindee: z.boolean(),
   })
   .superRefine((donnees, contexte) => {
+    if (donnees.estPersonneMorale === undefined) {
+      contexte.addIssue({
+        code: "custom",
+        path: ["estPersonneMorale"],
+        message:
+          "Veuillez préciser si vous représentez une personne morale ou physique",
+      });
+    }
+
     if (
       donnees.estPersonneMorale &&
       !donnees.personneMorale?.typePersonneMorale

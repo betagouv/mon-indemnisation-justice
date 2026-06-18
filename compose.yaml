@@ -155,6 +155,9 @@ services:
       - /app/node_modules
     environment:
       VITE_CRISP_WEBSITE_ID: ${VITE_CRISP_WEBSITE_ID:-}
+      VITE_TANSTACK_AFFICHER_DEVTOOLS: ${VITE_TANSTACK_AFFICHER_DEVTOOLS:-}
+      VITE_SENTRY_URL: ${VITE_SENTRY_URL:-}
+      VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
     ports:
       - "5173:5173"
     healthcheck:
