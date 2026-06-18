@@ -16,7 +16,10 @@
       "vitest/globals",
       "@vitest/browser/providers/playwright"
     ],
-    "typeRoots": ["./node_modules/@types", ".@types"],
+    "typeRoots": [
+      "./node_modules/@types",
+      ".@types"
+    ],
     "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
@@ -25,6 +28,7 @@
   },
   "include": [
     "vite.config.ts",
+    "src/vite-env.d.ts",
     "src/common/**/*",
     "src/style/**/*",
     "src/apps/_init.ts",
