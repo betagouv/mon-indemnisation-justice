@@ -1,4 +1,12 @@
 {
   "extends": "../../../tsconfig.json",
-  "include": ["**/*"],
+  "include": [
+    "../../../vite.config.ts",
+    "../../../src/vite-env.d.ts",
+    "../../../src/common/**/*",
+    "../../../src/style/**/*",
+    "../../../src/apps/_init.ts",
+    "../../../src/apps/sentry.ts",
+    "**/*"
+  ]
 }

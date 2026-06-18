@@ -6,17 +6,23 @@ import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import * as Sentry from "@sentry/react";
-import {
-  createRootRouteWithContext,
-  type LinkProps,
-  Outlet,
-  useLoaderData,
-} from "@tanstack/react-router";
+import { createRootRouteWithContext, type LinkProps, Outlet, useLoaderData } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
+import { useMemo } from "react";
 
 const EspaceRequerant = () => {
   const { contexte }: { contexte: ContexteUsager } = useLoaderData({} as any);
+
+  // On affiche les outils de développement de TanStack Router en fonction de la variable d'environnement VITE_TANSTACK_AFFICHER_DEVTOOLS
+  // ou à défaut uniquement en mode développement.
+  const afficherTanstackDevtools = useMemo<boolean>(
+    () =>
+      import.meta.env.VITE_TANSTACK_AFFICHER_DEVTOOLS != null
+        ? /^true$/i.test(import.meta.env.VITE_TANSTACK_AFFICHER_DEVTOOLS)
+        : import.meta.env.DEV,
+    [],
+  );
 
   return (
     <>
@@ -91,7 +97,7 @@ const EspaceRequerant = () => {
         }
       />
 
-      <TanStackRouterDevtools />
+      {afficherTanstackDevtools && <TanStackRouterDevtools />}
     </>
   );
 };
