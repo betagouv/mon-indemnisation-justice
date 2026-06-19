@@ -140,24 +140,24 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $requerant = $this->em->getRepository(Usager::class)->findOneBy([
+                $usager = $this->em->getRepository(Usager::class)->findOneBy([
                     'email' => $form->getData()->email,
                     'estVerifieCourriel' => true,
                 ]);
 
-                if ($requerant) {
+                if ($usager) {
                     // Génération d'un jeton de vérification
-                    $requerant->genererJetonVerification();
+                    $usager->genererJetonVerification();
 
-                    $this->em->persist($requerant);
+                    $this->em->persist($usager);
                     $this->em->flush();
 
                     // Envoi du mail de confirmation.
                     $this->mailer
-                        ->toRequerant($requerant)
+                        ->toRequerant($usager)
                         ->subject('Mon Indemnisation Justice: réinitialisation de votre mot de passe')
                         ->htmlTemplate('email/mot_de_passe_oublie.html.twig', [
-                            'requerant' => $requerant,
+                            'usager' => $usager,
                         ])
                         ->send();
                 }

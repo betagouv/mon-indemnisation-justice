@@ -11,7 +11,7 @@
                 aria-labelledby="fr-modal-flash-error"
                 role="alertdialog"
                 id="fr-modal-flash-error"
-                class="fr-modal"
+                class="fr-modal fr-modal--opened"
                 data-fr-js-opened="true"
         >
             <div class="fr-container fr-container--fluid fr-container-md">
@@ -323,7 +323,7 @@
                                                     type="email"
                                                     name="_username"
                                                     nonce="{{ csp_nonce('mij-script') }}
-                                                    oninput="this.value = this.value.toLowerCase()"
+                                                    oninput=" this.value=this.value.toLowerCase()"
                                                     class="fr-input"
                                                     aria-describedby="input-:r1:-desc-error"
                                                     id="input-:r1:" value="{{ last_username }}"
