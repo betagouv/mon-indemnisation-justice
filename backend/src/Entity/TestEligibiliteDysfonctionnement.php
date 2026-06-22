@@ -55,21 +55,28 @@ class TestEligibiliteDysfonctionnement
         return $this->estDansLesDelais()
             && $this->aUneActionContentieuse === false
             && !empty($this->typesDecision)
-            && !in_array('aucune', $this->typesDecision ?? [], true)
+            && !in_array('aucune', $this->typesDecision ?? [])
             && !empty($this->piecesProcedure)
-            && !in_array('aucune', $this->piecesProcedure ?? [], true)
+            && !in_array('aucune', $this->piecesProcedure ?? [])
             && $this->preuvesDiligences === true;
+    }
+
+    public function getDateExpiration(): ?\DateTimeImmutable
+    {
+        if (null === $this->dateDecision) {
+            return null;
+        }
+
+        return (clone $this->dateDecision)
+            ->add(new \DateInterval('P5Y'))
+            ->modify('first day of january');
     }
 
     private function estDansLesDelais(): bool
     {
-        if (null === $this->dateDecision) {
-            return false;
-        }
-        // Prescription : avant le 1er janvier de l'année de la décision + 5 ans
-        $expiration = new \DateTimeImmutable(((int) $this->dateDecision->format('Y') + 5) . '-01-01');
+        $expiration = $this->getDateExpiration();
 
-        return new \DateTimeImmutable() < $expiration;
+        return null !== $expiration && new \DateTimeImmutable() < $expiration;
     }
 
     public static function fromArray(array $values): self

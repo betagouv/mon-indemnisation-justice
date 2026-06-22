@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Tests\Entity;
 
 use MonIndemnisationJustice\Entity\TestEligibiliteDysfonctionnement;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(TestEligibiliteDysfonctionnement::class)]
@@ -118,23 +119,25 @@ class TestEligibiliteDysfonctionnementTest extends TestCase
         $this->assertFalse($test->estEligible());
     }
 
-    public function testPrescriptionExpirationLe1erJanvier(): void
+    public static function donneesPrescriptionExpirationLe1erJanvier(): array
     {
-        $anneeExpirée = (int) date('Y') - 5; // ex. 2021 → expire le 1er jan 2026 → prescrit
+        $anneeExpiree = (int) date('Y') - 5; // ex. 2021 → expire le 1er jan 2026 → prescrit
         $anneeValide = (int) date('Y') - 4;  // ex. 2022 → expire le 1er jan 2027 → dans les délais
 
-        // Décision fin de l'année expirée → prescrite (peu importe le jour dans l'année)
-        $test = TestEligibiliteDysfonctionnement::fromArray([
-            ...$this->eligibleParDefaut(),
-            'dateDecision' => new \DateTimeImmutable("{$anneeExpirée}-12-31"),
-        ]);
-        $this->assertFalse($test->estEligible());
+        return [
+            'annee_expiree' => [new \DateTimeImmutable("{$anneeExpiree}-12-31"), false],
+            'annee_valide' => [new \DateTimeImmutable("{$anneeValide}-01-01"), true],
+        ];
+    }
 
-        // Décision début de l'année valide → encore dans les délais
+    #[DataProvider('donneesPrescriptionExpirationLe1erJanvier')]
+    public function testPrescriptionExpirationLe1erJanvier(\DateTimeImmutable $dateDecision, bool $estDansLesDelais): void
+    {
         $test = TestEligibiliteDysfonctionnement::fromArray([
             ...$this->eligibleParDefaut(),
-            'dateDecision' => new \DateTimeImmutable("{$anneeValide}-01-01"),
+            'dateDecision' => $dateDecision,
         ]);
-        $this->assertTrue($test->estEligible());
+
+        $this->assertSame($estDansLesDelais, $test->estEligible());
     }
 }

@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-#[Route('/api/public/dysfonctionnement/test-eligibilite', name: 'api_public_dysfonctionnement_test_eligibilite', methods: ['PUT'])]
+#[Route('/api/public/dysfonctionnement/test-eligibilite', name: 'api_public_dysfonctionnement_test_eligibilite', methods: ['PUT'], env: ['dev', 'test', 'ci', 'develop'])]
 class SauvegarderTestEligibiliteDysfonctionnementEndpoint
 {
     public const CLEF_SESSION = 'dysfonctionnement_test_eligibilite';

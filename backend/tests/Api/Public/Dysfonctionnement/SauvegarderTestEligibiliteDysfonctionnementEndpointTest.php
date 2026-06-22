@@ -52,8 +52,14 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
 
     public function testMettreAJourUnTestExistantEnSession(): void
     {
-        $this->put(self::PAYLOAD_ELIGIBLE);
-        $idInitial = json_decode($this->client->getResponse()->getContent(), true)['id'];
+        $testExistant = TestEligibiliteDysfonctionnement::fromArray([
+            ...self::PAYLOAD_ELIGIBLE,
+            'dateDecision' => new \DateTimeImmutable(self::PAYLOAD_ELIGIBLE['dateDecision']),
+        ]);
+        $this->em->persist($testExistant);
+        $this->em->flush();
+
+        $this->initializeSession([SauvegarderTestEligibiliteDysfonctionnementEndpoint::CLEF_SESSION => $testExistant->id]);
 
         $this->put([
             ...self::PAYLOAD_ELIGIBLE,
@@ -63,11 +69,11 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
         $this->assertTrue($this->client->getResponse()->isSuccessful());
 
         $donnees = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals($idInitial, $donnees['id'], "L'id doit être le même : le test existant est mis à jour");
+        $this->assertEquals($testExistant->id, $donnees['id'], "L'id doit être le même : le test existant est mis à jour");
         $this->assertFalse($donnees['estEligible']);
 
         $this->em->clear();
-        $test = $this->em->getRepository(TestEligibiliteDysfonctionnement::class)->find($idInitial);
+        $test = $this->em->getRepository(TestEligibiliteDysfonctionnement::class)->find($testExistant->id);
         $this->assertFalse($test->preuvesDiligences);
     }
 

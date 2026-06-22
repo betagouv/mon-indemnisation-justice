@@ -13,6 +13,7 @@ export const Layout = ({ children }: Props) => {
   const mainRef = useRef<HTMLElement>(null);
   const location = useLocation();
 
+  // Ramène le scroll en haut du contenu principal à chaque changement de page
   useEffect(() => {
     mainRef.current?.scrollIntoView({ behavior: "instant" });
   }, [location.pathname]);
