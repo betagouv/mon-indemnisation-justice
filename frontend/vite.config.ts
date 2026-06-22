@@ -6,8 +6,12 @@ import legacy from "@vitejs/plugin-legacy";
 import { default as react } from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
 import * as path from "path";
-import { defineConfig, loadEnv, UserConfig } from "vite";
+import { defineConfig, loadEnv, normalizePath, UserConfig } from "vite";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 import symfonyPlugin from "vite-plugin-symfony";
+
+const pdfjsDistPath = path.dirname(require.resolve("pdfjs-dist/package.json"));
+const wasmDir = normalizePath(path.join(pdfjsDistPath, "wasm"));
 
 export default defineConfig(({ mode }: UserConfig): UserConfig => {
   process.env = mode ? { ...process.env, ...loadEnv(mode, process.cwd()) } : {};
@@ -20,6 +24,14 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       },
     },
     plugins: [
+      viteStaticCopy({
+        targets: [
+          {
+            src: wasmDir,
+            dest: "",
+          },
+        ],
+      }),
       // Espace rédacteur (FIP6)
       tanstackRouter({
         target: "react",
@@ -34,7 +46,7 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         generatedRouteTree: "./src/apps/agent/fdo/routeur/routeur-fdo.gen.ts",
         routesDirectory: "./src/apps/agent/fdo/routes/",
       }),
-        // Espace Public
+      // Espace Public
       tanstackRouter({
         target: "react",
         autoCodeSplitting: true,
@@ -100,7 +112,7 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       // Voir https://rolldown.rs/reference/
       rolldownOptions: {
         input: {
-           // Espace public
+          // Espace public
           public: "./src/apps/public/public.tsx",
           // Espace requérant
           "requerant/dossier/tester_mon_eligibilite":
