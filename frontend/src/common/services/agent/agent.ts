@@ -47,8 +47,7 @@ export class APIAgentManager implements AgentManagerInterface {
       this._contexteNavigation = {
         agent: plainToInstance(Agent, data.agent),
         incarnePar: data.incarnePar,
-        urlDeconnexion:
-        data.urlDeconnexion,
+        urlDeconnexion: data.urlDeconnexion,
       };
     }
 

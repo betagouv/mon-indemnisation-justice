@@ -106,7 +106,7 @@ export class Administration {
 
   public static MI: Administration = new Administration(
     "MI",
-    "Ministère de l'Intérieur'",
+    "Ministère de l'Intérieur",
   );
 
   protected constructor(

@@ -1,3 +1,3 @@
-import { ValidationAgentApp } from "./ValidationAgentApp.tsx";
+import { ValidationAgentPage } from "./ValidationAgentPage.tsx";
 
-export { ValidationAgentApp };
+export { ValidationAgentPage };
