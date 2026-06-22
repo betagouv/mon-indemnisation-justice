@@ -1,6 +1,10 @@
-import { createFileRoute, Navigate, useRouteContext } from "@tanstack/react-router";
-import React from "react";
 import { RoleAgent } from "@/common/models/Agent.ts";
+import {
+  createFileRoute,
+  Navigate,
+  useRouteContext,
+} from "@tanstack/react-router";
+import React from "react";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
