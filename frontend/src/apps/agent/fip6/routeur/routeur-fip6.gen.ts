@@ -13,6 +13,7 @@ import { Route as MonCompteRouteImport } from './../routes/mon-compte'
 import { Route as IndexRouteImport } from './../routes/index'
 import { Route as DossiersIndexRouteImport } from './../routes/dossiers/index'
 import { Route as DossierIndexRouteImport } from './../routes/dossier/index'
+import { Route as AgentsIndexRouteImport } from './../routes/agents/index'
 import { Route as DossiersRejetASignerRouteImport } from './../routes/dossiers/rejet-a-signer'
 import { Route as DossiersRechercherRouteImport } from './../routes/dossiers/rechercher'
 import { Route as DossiersPropositionASignerRouteImport } from './../routes/dossiers/proposition-a-signer'
@@ -25,9 +26,11 @@ import { Route as DossiersATransmettreRouteImport } from './../routes/dossiers/a
 import { Route as DossiersAInstruireRouteImport } from './../routes/dossiers/a-instruire'
 import { Route as DossiersACategoriserRouteImport } from './../routes/dossiers/a-categoriser'
 import { Route as DossiersAAttribuerRouteImport } from './../routes/dossiers/a-attribuer'
-import { Route as AgentsGestionRouteImport } from './../routes/agents/gestion'
 import { Route as DossierIdIndexRouteImport } from './../routes/dossier/$id/index'
+import { Route as AgentsGestionIndexRouteImport } from './../routes/agents/gestion/index'
 import { Route as DossiersUsagerIdRouteImport } from './../routes/dossiers/usager/$id'
+import { Route as AgentsGestionInactifsRouteImport } from './../routes/agents/gestion/inactifs'
+import { Route as AgentsGestionActifsRouteImport } from './../routes/agents/gestion/actifs'
 
 const MonCompteRoute = MonCompteRouteImport.update({
   id: '/mon-compte',
@@ -47,6 +50,11 @@ const DossiersIndexRoute = DossiersIndexRouteImport.update({
 const DossierIndexRoute = DossierIndexRouteImport.update({
   id: '/dossier/',
   path: '/dossier/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsIndexRoute = AgentsIndexRouteImport.update({
+  id: '/agents/',
+  path: '/agents/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DossiersRejetASignerRoute = DossiersRejetASignerRouteImport.update({
@@ -111,14 +119,14 @@ const DossiersAAttribuerRoute = DossiersAAttribuerRouteImport.update({
   path: '/dossiers/a-attribuer',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AgentsGestionRoute = AgentsGestionRouteImport.update({
-  id: '/agents/gestion',
-  path: '/agents/gestion',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DossierIdIndexRoute = DossierIdIndexRouteImport.update({
   id: '/dossier/$id/',
   path: '/dossier/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsGestionIndexRoute = AgentsGestionIndexRouteImport.update({
+  id: '/agents/gestion/',
+  path: '/agents/gestion/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DossiersUsagerIdRoute = DossiersUsagerIdRouteImport.update({
@@ -126,11 +134,20 @@ const DossiersUsagerIdRoute = DossiersUsagerIdRouteImport.update({
   path: '/dossiers/usager/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentsGestionInactifsRoute = AgentsGestionInactifsRouteImport.update({
+  id: '/agents/gestion/inactifs',
+  path: '/agents/gestion/inactifs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsGestionActifsRoute = AgentsGestionActifsRouteImport.update({
+  id: '/agents/gestion/actifs',
+  path: '/agents/gestion/actifs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/mon-compte': typeof MonCompteRoute
-  '/agents/gestion': typeof AgentsGestionRoute
   '/dossiers/a-attribuer': typeof DossiersAAttribuerRoute
   '/dossiers/a-categoriser': typeof DossiersACategoriserRoute
   '/dossiers/a-instruire': typeof DossiersAInstruireRoute
@@ -143,15 +160,18 @@ export interface FileRoutesByFullPath {
   '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
   '/dossiers/rechercher': typeof DossiersRechercherRoute
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
+  '/agents': typeof AgentsIndexRoute
   '/dossier': typeof DossierIndexRoute
   '/dossiers': typeof DossiersIndexRoute
+  '/agents/gestion/actifs': typeof AgentsGestionActifsRoute
+  '/agents/gestion/inactifs': typeof AgentsGestionInactifsRoute
   '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
+  '/agents/gestion': typeof AgentsGestionIndexRoute
   '/dossier/$id': typeof DossierIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/mon-compte': typeof MonCompteRoute
-  '/agents/gestion': typeof AgentsGestionRoute
   '/dossiers/a-attribuer': typeof DossiersAAttribuerRoute
   '/dossiers/a-categoriser': typeof DossiersACategoriserRoute
   '/dossiers/a-instruire': typeof DossiersAInstruireRoute
@@ -164,16 +184,19 @@ export interface FileRoutesByTo {
   '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
   '/dossiers/rechercher': typeof DossiersRechercherRoute
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
+  '/agents': typeof AgentsIndexRoute
   '/dossier': typeof DossierIndexRoute
   '/dossiers': typeof DossiersIndexRoute
+  '/agents/gestion/actifs': typeof AgentsGestionActifsRoute
+  '/agents/gestion/inactifs': typeof AgentsGestionInactifsRoute
   '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
+  '/agents/gestion': typeof AgentsGestionIndexRoute
   '/dossier/$id': typeof DossierIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/mon-compte': typeof MonCompteRoute
-  '/agents/gestion': typeof AgentsGestionRoute
   '/dossiers/a-attribuer': typeof DossiersAAttribuerRoute
   '/dossiers/a-categoriser': typeof DossiersACategoriserRoute
   '/dossiers/a-instruire': typeof DossiersAInstruireRoute
@@ -186,9 +209,13 @@ export interface FileRoutesById {
   '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
   '/dossiers/rechercher': typeof DossiersRechercherRoute
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
+  '/agents/': typeof AgentsIndexRoute
   '/dossier/': typeof DossierIndexRoute
   '/dossiers/': typeof DossiersIndexRoute
+  '/agents/gestion/actifs': typeof AgentsGestionActifsRoute
+  '/agents/gestion/inactifs': typeof AgentsGestionInactifsRoute
   '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
+  '/agents/gestion/': typeof AgentsGestionIndexRoute
   '/dossier/$id/': typeof DossierIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -196,7 +223,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/mon-compte'
-    | '/agents/gestion'
     | '/dossiers/a-attribuer'
     | '/dossiers/a-categoriser'
     | '/dossiers/a-instruire'
@@ -209,15 +235,18 @@ export interface FileRouteTypes {
     | '/dossiers/proposition-a-signer'
     | '/dossiers/rechercher'
     | '/dossiers/rejet-a-signer'
+    | '/agents'
     | '/dossier'
     | '/dossiers'
+    | '/agents/gestion/actifs'
+    | '/agents/gestion/inactifs'
     | '/dossiers/usager/$id'
+    | '/agents/gestion'
     | '/dossier/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/mon-compte'
-    | '/agents/gestion'
     | '/dossiers/a-attribuer'
     | '/dossiers/a-categoriser'
     | '/dossiers/a-instruire'
@@ -230,15 +259,18 @@ export interface FileRouteTypes {
     | '/dossiers/proposition-a-signer'
     | '/dossiers/rechercher'
     | '/dossiers/rejet-a-signer'
+    | '/agents'
     | '/dossier'
     | '/dossiers'
+    | '/agents/gestion/actifs'
+    | '/agents/gestion/inactifs'
     | '/dossiers/usager/$id'
+    | '/agents/gestion'
     | '/dossier/$id'
   id:
     | '__root__'
     | '/'
     | '/mon-compte'
-    | '/agents/gestion'
     | '/dossiers/a-attribuer'
     | '/dossiers/a-categoriser'
     | '/dossiers/a-instruire'
@@ -251,16 +283,19 @@ export interface FileRouteTypes {
     | '/dossiers/proposition-a-signer'
     | '/dossiers/rechercher'
     | '/dossiers/rejet-a-signer'
+    | '/agents/'
     | '/dossier/'
     | '/dossiers/'
+    | '/agents/gestion/actifs'
+    | '/agents/gestion/inactifs'
     | '/dossiers/usager/$id'
+    | '/agents/gestion/'
     | '/dossier/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MonCompteRoute: typeof MonCompteRoute
-  AgentsGestionRoute: typeof AgentsGestionRoute
   DossiersAAttribuerRoute: typeof DossiersAAttribuerRoute
   DossiersACategoriserRoute: typeof DossiersACategoriserRoute
   DossiersAInstruireRoute: typeof DossiersAInstruireRoute
@@ -273,9 +308,13 @@ export interface RootRouteChildren {
   DossiersPropositionASignerRoute: typeof DossiersPropositionASignerRoute
   DossiersRechercherRoute: typeof DossiersRechercherRoute
   DossiersRejetASignerRoute: typeof DossiersRejetASignerRoute
+  AgentsIndexRoute: typeof AgentsIndexRoute
   DossierIndexRoute: typeof DossierIndexRoute
   DossiersIndexRoute: typeof DossiersIndexRoute
+  AgentsGestionActifsRoute: typeof AgentsGestionActifsRoute
+  AgentsGestionInactifsRoute: typeof AgentsGestionInactifsRoute
   DossiersUsagerIdRoute: typeof DossiersUsagerIdRoute
+  AgentsGestionIndexRoute: typeof AgentsGestionIndexRoute
   DossierIdIndexRoute: typeof DossierIdIndexRoute
 }
 
@@ -307,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/dossier'
       fullPath: '/dossier'
       preLoaderRoute: typeof DossierIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents/': {
+      id: '/agents/'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dossiers/rejet-a-signer': {
@@ -393,18 +439,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DossiersAAttribuerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agents/gestion': {
-      id: '/agents/gestion'
-      path: '/agents/gestion'
-      fullPath: '/agents/gestion'
-      preLoaderRoute: typeof AgentsGestionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dossier/$id/': {
       id: '/dossier/$id/'
       path: '/dossier/$id'
       fullPath: '/dossier/$id'
       preLoaderRoute: typeof DossierIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents/gestion/': {
+      id: '/agents/gestion/'
+      path: '/agents/gestion'
+      fullPath: '/agents/gestion'
+      preLoaderRoute: typeof AgentsGestionIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dossiers/usager/$id': {
@@ -414,13 +460,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DossiersUsagerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agents/gestion/inactifs': {
+      id: '/agents/gestion/inactifs'
+      path: '/agents/gestion/inactifs'
+      fullPath: '/agents/gestion/inactifs'
+      preLoaderRoute: typeof AgentsGestionInactifsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents/gestion/actifs': {
+      id: '/agents/gestion/actifs'
+      path: '/agents/gestion/actifs'
+      fullPath: '/agents/gestion/actifs'
+      preLoaderRoute: typeof AgentsGestionActifsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MonCompteRoute: MonCompteRoute,
-  AgentsGestionRoute: AgentsGestionRoute,
   DossiersAAttribuerRoute: DossiersAAttribuerRoute,
   DossiersACategoriserRoute: DossiersACategoriserRoute,
   DossiersAInstruireRoute: DossiersAInstruireRoute,
@@ -433,9 +492,13 @@ const rootRouteChildren: RootRouteChildren = {
   DossiersPropositionASignerRoute: DossiersPropositionASignerRoute,
   DossiersRechercherRoute: DossiersRechercherRoute,
   DossiersRejetASignerRoute: DossiersRejetASignerRoute,
+  AgentsIndexRoute: AgentsIndexRoute,
   DossierIndexRoute: DossierIndexRoute,
   DossiersIndexRoute: DossiersIndexRoute,
+  AgentsGestionActifsRoute: AgentsGestionActifsRoute,
+  AgentsGestionInactifsRoute: AgentsGestionInactifsRoute,
   DossiersUsagerIdRoute: DossiersUsagerIdRoute,
+  AgentsGestionIndexRoute: AgentsGestionIndexRoute,
   DossierIdIndexRoute: DossierIdIndexRoute,
 }
 export const routeTree = rootRouteImport

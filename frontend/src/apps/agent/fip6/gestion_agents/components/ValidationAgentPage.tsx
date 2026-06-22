@@ -1,23 +1,36 @@
-import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { Route } from "@/apps/agent/fip6/routes/agents/gestion";
-import { RouteurRequerant } from "@/apps/requerant/routeur";
+import {
+  Modale,
+  ModaleProps,
+  ModaleRef,
+} from "@/common/composants/dsfr/Modale";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { Administration, Agent } from "@/common/models";
-import { RoleAgent, TypeAdministration, TypeRoleAgent } from "@/common/models/Agent.ts";
+import {
+  RoleAgent,
+  TypeAdministration,
+  TypeRoleAgent,
+} from "@/common/models/Agent.ts";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import { estCourrielValide } from "@/common/services/courriel.ts";
 import "@/style/index.css";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Button, ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { UseNavigateResult } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { ChangeEvent, useCallback, useState } from "react";
+import React, {
+  ChangeEvent,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 const ValidationAgentLigne = ({
   agent,
@@ -415,15 +428,80 @@ const modaleEditionAgent = createModal({
   isOpenedByDefault: false,
 });
 
-export const ValidationAgentApp = () => {
-  const { context }: { context: AgentContext } = Route.useLoaderData();
-  const naviguer = useNavigate<typeof RouteurRequerant>({
-    from: Route.fullPath,
-  });
+export type ModaleSelectionRechercheProps = Omit<
+  ModaleProps,
+  "children" | "id" | "title" | "titleAs" | "titleProps"
+>;
 
+const ModaleSelectionRecherche = forwardRef<
+  ModaleRef,
+  ModaleSelectionRechercheProps
+>((props, ref) => {
+  const refModale = useRef<ModaleRef>(null);
+
+  useImperativeHandle(ref, () => ({
+    ouvrir: () => {
+      refModale.current?.ouvrir();
+    },
+
+    fermer: () => {
+      refModale.current?.fermer();
+    },
+  }));
+
+  return (
+    <Modale
+      {...props}
+      ref={refModale}
+      title="Critères de recherche"
+      size="large"
+      id="modale-selection-recherche"
+    >
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-12 fr-col-lg-6">
+          <Input label="Nom" />
+        </div>
+
+        <div className="fr-col-12 fr-col-lg-6">
+          <Checkbox
+            legend="Administration de rattachement"
+            options={Administration.liste().map(
+              (administration: Administration) => ({
+                label: administration.libelle,
+                nativeInputProps: {
+                  name: `administration-${administration.type}`,
+                  value: administration.type,
+                },
+              }),
+            )}
+            state="default"
+          />
+        </div>
+      </div>
+    </Modale>
+  );
+});
+
+export type RequeteRechercheAgent = {
+  actifs: boolean;
+  requete?: string;
+  administrations?: Administration[];
+};
+
+export const ValidationAgentPage = ({
+  editeur,
+  naviguer,
+  requete,
+}: {
+  editeur: Agent;
+  naviguer: UseNavigateResult<string>;
+  requete: RequeteRechercheAgent;
+}) => {
   const agentManager = useInjection<AgentManagerInterface>(
     AgentManagerInterface.$,
   );
+
+  const refModaleSelectionRecherche = useRef<ModaleRef>(null);
 
   const queryClient = useQueryClient();
 
@@ -433,8 +511,11 @@ export const ValidationAgentApp = () => {
     data: agents = [],
     error,
   } = useQuery<Agent[]>({
-    queryKey: ["fip6-agents"],
-    queryFn: () => agentManager.agentsActifs(),
+    queryKey: ["fip6-agents", requete],
+    queryFn: () =>
+      requete.actifs
+        ? agentManager.agentsActifs()
+        : agentManager.agentsInactifs(),
   });
 
   const [agentSelectionne, selectionnerAgent] = useState<Agent | undefined>();
@@ -459,11 +540,7 @@ export const ValidationAgentApp = () => {
         />
       </modaleEditionAgent.Component>
 
-      <div className="fr-grid-row">
-        <div className="fr-col-12">
-          <h2>Gestion des agents</h2>
-        </div>
-      </div>
+      <ModaleSelectionRecherche ref={refModaleSelectionRecherche} />
 
       {isError && (
         <Alert
@@ -479,16 +556,33 @@ export const ValidationAgentApp = () => {
       ) : (
         <>
           <div className="fr-grid-row fr-grid-row--right fr-my-1w fr-grid-row--middle">
-            <Button
-              children="Ajouter un agent"
-              title="Ajouter un agent"
-              iconId="fr-icon-add-line"
-              iconPosition="right"
-              size="medium"
-              onClick={() => {
-                selectionnerAgent(new Agent());
-                modaleEditionAgent.open();
-              }}
+            <ButtonsGroup
+              inlineLayoutWhen="always"
+              buttonsSize="medium"
+              alignment="right"
+              buttons={[
+                {
+                  iconId: "fr-icon-equalizer-line",
+                  priority: "secondary",
+                  onClick: () => {
+                    console.log(refModaleSelectionRecherche.current);
+                    refModaleSelectionRecherche.current?.ouvrir();
+                  },
+                  children: "Critères de recherche",
+                  title: "Critères de recherche",
+                  size: "medium",
+                },
+                {
+                  children: "Ajouter un agent",
+                  title: "Ajouter un agent",
+                  iconId: "fr-icon-add-line",
+                  size: "medium",
+                  onClick: () => {
+                    selectionnerAgent(new Agent());
+                    modaleEditionAgent.open();
+                  },
+                },
+              ]}
             />
           </div>
 
@@ -503,7 +597,7 @@ export const ValidationAgentApp = () => {
             <ValidationAgentLigne
               key={agent.id}
               agent={agent}
-              agentEditeur={context.agent}
+              agentEditeur={editeur}
               incarner={(agent: Agent) =>
                 naviguer({
                   href: `${window.location.origin}/agent/?_switch_user=${agent.identifiant}`,
