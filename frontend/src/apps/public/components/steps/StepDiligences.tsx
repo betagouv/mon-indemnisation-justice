@@ -27,13 +27,12 @@ export function StepDiligences({ onPrecedent, onSuivant, isLastStep, test }: Ste
   return (
     <>
       <p>
-        L'appréciation du délai tient compte du comportement des parties. Avoir alerté la
-        juridiction sur les délais renforce votre dossier.
+        L'appréciation du caractère raisonnable de la durée d’une procédure tient compte du comportement des parties.
       </p>
       <div className="fr-callout fr-mb-3w">
         <p className="fr-text--sm fr-mb-0">
-          Courrier au juge signalant que le dossier était complet, relances écrites auprès du
-          greffe, demandes de fixation d'audience…
+          Exemples : relances auprès du greffe, demandes d’information sur l’avancement de la procédure, demandes de fixation d’audience, courriers adressés à la juridiction 
+          ou tout autre échange relatif au traitement de l’affaire.
         </p>
       </div>
       <form
@@ -47,7 +46,8 @@ export function StepDiligences({ onPrecedent, onSuivant, isLastStep, test }: Ste
           name="preuvesDiligences"
           children={(field) => (
             <FormRadioButtons
-              legend="Disposez-vous de preuves de diligences accomplies ?"
+              legend="Disposez-vous de justificatifs des démarches que vous avez effectuées auprès de la juridiction ?"
+              hintText="Ces éléments peuvent être utiles pour apprécier le déroulement de la procédure."
               options={[
                 {
                   label: "Oui, j'ai des preuves de mes démarches",

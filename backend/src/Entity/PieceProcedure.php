@@ -4,12 +4,10 @@ namespace MonIndemnisationJustice\Entity;
 
 enum PieceProcedure: string
 {
-    case ASSIGNATION = 'assignation';
-    case DECISIONS_JUGE = 'decisions_juge';
-    case CALENDRIER = 'calendrier';
+    case ACTE_INTRODUCTIF = 'acte_introductif';
     case ECRITURES = 'ecritures';
     case CONVOCATIONS = 'convocations';
-    case RENVOI = 'renvoi';
     case ECHANGES = 'echanges';
-    case APPEL = 'appel';
+    case DOCUMENTS_PROCEDURE = 'documents_procedure';
+    case AUCUNE = 'aucune';
 }

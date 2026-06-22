@@ -19,7 +19,7 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
         'dateDecision' => '2023-06-15',
         'aUneActionContentieuse' => false,
         'typesDecision' => ['jugement_premiere_instance'],
-        'piecesProcedure' => ['assignation', 'ecritures'],
+        'piecesProcedure' => ['acte_introductif', 'ecritures'],
         'preuvesDiligences' => true,
     ];
 
@@ -36,6 +36,18 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
         $test = $this->em->getRepository(TestEligibiliteDysfonctionnement::class)->find($donnees['id']);
         $this->assertNotNull($test);
         $this->assertEquals(['jugement_premiere_instance'], $test->typesDecision);
+    }
+
+    public function testAccepteMultiplesTypesDecision(): void
+    {
+        $this->put([
+            ...self::PAYLOAD_ELIGIBLE,
+            'typesDecision' => ['jugement_premiere_instance', 'arret_cour_appel'],
+        ]);
+
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+        $donnees = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($donnees['estEligible']);
     }
 
     public function testMettreAJourUnTestExistantEnSession(): void
@@ -78,7 +90,7 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
             // dateDecision manquante
             'aUneActionContentieuse' => false,
             'typesDecision' => ['jugement_premiere_instance'],
-            'piecesProcedure' => ['assignation'],
+            'piecesProcedure' => ['acte_introductif'],
             'preuvesDiligences' => true,
         ]);
 
@@ -90,6 +102,26 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
         $this->put([
             ...self::PAYLOAD_ELIGIBLE,
             'piecesProcedure' => [],
+        ]);
+
+        $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testErreurValidationSiAucuneEnTypesDecision(): void
+    {
+        $this->put([
+            ...self::PAYLOAD_ELIGIBLE,
+            'typesDecision' => ['aucune'],
+        ]);
+
+        $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testErreurValidationSiAucuneEnPiecesProcedure(): void
+    {
+        $this->put([
+            ...self::PAYLOAD_ELIGIBLE,
+            'piecesProcedure' => ['aucune'],
         ]);
 
         $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());

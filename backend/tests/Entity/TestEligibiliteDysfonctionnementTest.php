@@ -16,7 +16,7 @@ class TestEligibiliteDysfonctionnementTest extends TestCase
             'dateDecision' => new \DateTimeImmutable(date('Y', strtotime('-1 year')) . '-06-15'),
             'aUneActionContentieuse' => false,
             'typesDecision' => ['jugement_premiere_instance'],
-            'piecesProcedure' => ['assignation', 'ecritures'],
+            'piecesProcedure' => ['acte_introductif', 'ecritures'],
             'preuvesDiligences' => true,
         ];
     }
@@ -24,6 +24,16 @@ class TestEligibiliteDysfonctionnementTest extends TestCase
     public function testEstEligibleQuandTousLesCriteresRemplis(): void
     {
         $test = TestEligibiliteDysfonctionnement::fromArray($this->eligibleParDefaut());
+
+        $this->assertTrue($test->estEligible());
+    }
+
+    public function testEstEligibleAvecPlusieursDecisions(): void
+    {
+        $test = TestEligibiliteDysfonctionnement::fromArray([
+            ...$this->eligibleParDefaut(),
+            'typesDecision' => ['jugement_premiere_instance', 'arret_cour_appel'],
+        ]);
 
         $this->assertTrue($test->estEligible());
     }
@@ -58,11 +68,31 @@ class TestEligibiliteDysfonctionnementTest extends TestCase
         $this->assertFalse($test->estEligible());
     }
 
+    public function testNonEligibleSiTypesDecisionContientAucune(): void
+    {
+        $test = TestEligibiliteDysfonctionnement::fromArray([
+            ...$this->eligibleParDefaut(),
+            'typesDecision' => ['aucune'],
+        ]);
+
+        $this->assertFalse($test->estEligible());
+    }
+
     public function testNonEligibleSiAucunePieceDeProcedure(): void
     {
         $test = TestEligibiliteDysfonctionnement::fromArray([
             ...$this->eligibleParDefaut(),
             'piecesProcedure' => [],
+        ]);
+
+        $this->assertFalse($test->estEligible());
+    }
+
+    public function testNonEligibleSiPiecesProcedureContientAucune(): void
+    {
+        $test = TestEligibiliteDysfonctionnement::fromArray([
+            ...$this->eligibleParDefaut(),
+            'piecesProcedure' => ['aucune'],
         ]);
 
         $this->assertFalse($test->estEligible());

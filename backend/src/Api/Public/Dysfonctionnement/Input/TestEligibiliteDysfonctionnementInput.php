@@ -26,7 +26,7 @@ class TestEligibiliteDysfonctionnementInput
     #[Assert\Count(min: 1, minMessage: 'Veuillez sélectionner au moins un type de décision')]
     #[Assert\All([
         new Assert\Choice(
-            choices: ['jugement_premiere_instance', 'arret_cour_appel', 'arret_cour_cassation', 'aucune'],
+            choices: ['jugement_premiere_instance', 'arret_cour_appel', 'arret_cour_cassation'],
             message: 'Type de décision invalide'
         ),
     ])]
@@ -39,7 +39,7 @@ class TestEligibiliteDysfonctionnementInput
     #[Assert\Count(min: 1, minMessage: 'Veuillez sélectionner au moins une pièce de procédure')]
     #[Assert\All([
         new Assert\Choice(
-            choices: ['assignation', 'decisions_juge', 'calendrier', 'ecritures', 'convocations', 'renvoi', 'echanges', 'appel'],
+            choices: ['acte_introductif', 'ecritures', 'convocations', 'echanges', 'documents_procedure'],
             message: 'Pièce de procédure invalide'
         ),
     ])]

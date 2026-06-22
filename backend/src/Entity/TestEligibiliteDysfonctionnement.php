@@ -55,7 +55,9 @@ class TestEligibiliteDysfonctionnement
         return $this->estDansLesDelais()
             && $this->aUneActionContentieuse === false
             && !empty($this->typesDecision)
+            && !in_array('aucune', $this->typesDecision ?? [], true)
             && !empty($this->piecesProcedure)
+            && !in_array('aucune', $this->piecesProcedure ?? [], true)
             && $this->preuvesDiligences === true;
     }
 

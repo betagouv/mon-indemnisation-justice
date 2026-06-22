@@ -45,35 +45,62 @@ describe("SchemaEtapeActionContentieuse", () => {
 });
 
 describe("SchemaEtapeTypeDecision", () => {
-  it("accepte un type de décision valide", () => {
-    expect(SchemaEtapeTypeDecision.safeParse({ typeDecision: "jugement_premiere_instance" }).success).toBe(true);
+  it("accepte un tableau avec une décision valide", () => {
+    expect(SchemaEtapeTypeDecision.safeParse({ typeDecision: ["jugement_premiere_instance"] }).success).toBe(true);
+  });
+
+  it("accepte plusieurs décisions", () => {
+    expect(
+      SchemaEtapeTypeDecision.safeParse({
+        typeDecision: ["jugement_premiere_instance", "arret_cour_appel"],
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejette un tableau vide", () => {
+    const result = SchemaEtapeTypeDecision.safeParse({ typeDecision: [] });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toBe("Veuillez sélectionner au moins une décision");
   });
 
   it("rejette si non renseigné", () => {
     const result = SchemaEtapeTypeDecision.safeParse({});
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0].message).toBe("Veuillez sélectionner le type de décision");
+  });
+
+  it("rejette la valeur 'aucune'", () => {
+    const result = SchemaEtapeTypeDecision.safeParse({ typeDecision: ["aucune"] });
+    expect(result.success).toBe(false);
   });
 
   it("rejette une valeur inconnue", () => {
-    const result = SchemaEtapeTypeDecision.safeParse({ typeDecision: "valeur_inconnue" });
+    const result = SchemaEtapeTypeDecision.safeParse({ typeDecision: ["valeur_inconnue"] });
     expect(result.success).toBe(false);
   });
 });
 
 describe("SchemaEtapePiecesProc", () => {
   it("accepte un tableau avec au moins une pièce valide", () => {
-    expect(SchemaEtapePiecesProc.safeParse({ piecesProc: ["assignation"] }).success).toBe(true);
+    expect(SchemaEtapePiecesProc.safeParse({ piecesProc: ["acte_introductif"] }).success).toBe(true);
   });
 
   it("accepte plusieurs pièces", () => {
-    expect(SchemaEtapePiecesProc.safeParse({ piecesProc: ["assignation", "ecritures", "calendrier"] }).success).toBe(true);
+    expect(
+      SchemaEtapePiecesProc.safeParse({
+        piecesProc: ["acte_introductif", "ecritures", "convocations"],
+      }).success,
+    ).toBe(true);
   });
 
   it("rejette un tableau vide", () => {
     const result = SchemaEtapePiecesProc.safeParse({ piecesProc: [] });
     expect(result.success).toBe(false);
     expect(result.error?.issues[0].message).toBe("Veuillez sélectionner au moins une pièce de procédure");
+  });
+
+  it("rejette la valeur 'aucune'", () => {
+    const result = SchemaEtapePiecesProc.safeParse({ piecesProc: ["aucune"] });
+    expect(result.success).toBe(false);
   });
 
   it("rejette une valeur inconnue dans le tableau", () => {
