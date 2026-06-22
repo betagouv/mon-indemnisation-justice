@@ -1,5 +1,11 @@
+import { Agent } from "@/common/models";
+import { RoleAgent } from "@/common/models/Agent";
 import "@/style/agents.css";
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Navigate,
+  useRouteContext,
+} from "@tanstack/react-router";
 import React from "react";
 
 export const Route = createFileRoute("/dossiers/")({
@@ -7,5 +13,13 @@ export const Route = createFileRoute("/dossiers/")({
 });
 
 function IndexDossiers() {
-  return <Navigate to="/dossiers/rechercher" search={{} as any} />;
+  const { agent }: { agent: Agent } = useRouteContext({
+    from: Route.fullPath,
+  });
+
+  return agent.aRole(RoleAgent.DOSSIER) ? (
+    <Navigate to="/dossiers/rechercher" search={{} as any} />
+  ) : (
+    <Navigate to="/" search={{} as any} />
+  );
 }
