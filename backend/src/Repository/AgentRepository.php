@@ -182,13 +182,19 @@ class AgentRepository extends ServiceEntityRepository
             ->setParameter('actifs', $actifs);
 
         if (sizeof($administrations) > 0) {
-            $qb->andWhere('a.id IN (:administrations)')
+            $qb->andWhere('a.administration IN (:administrations)')
                 ->setParameter('administrations', $administrations);
         }
 
         if (null !== $recherche) {
-            $qb->andWhere($qb->expr()->orX('a.nom ILIKE :recherche', 'a.prenom ILIKE :recherche', 'a.email ILIKE :recherche'))
-                ->setParameter('recherche', "%$recherche%");
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    'a.nom LIKE :recherche',
+                    'a.prenom LIKE :recherche',
+                    'a.email LIKE :recherche'
+                )
+            )
+                ->setParameter('recherche', '%'.strtolower($recherche).'%');
         }
 
         $qb->setMaxResults($taille)->setFirstResult(($page - 1) * $taille);

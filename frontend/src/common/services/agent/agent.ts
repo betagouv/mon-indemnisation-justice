@@ -129,7 +129,13 @@ export class APIAgentManager implements AgentManagerInterface {
         : {}),
       ...(requete.requete ? { recherche: requete.requete } : {}),
     })
-      .map(([key, value]) => `${key}=${value}`)
+      .map(([key, value]) => {
+        if (Array.isArray(value)) {
+          return value.map((v) => `${key}[]=${v}`).join("&");
+        }
+
+        return `${key}=${value}`;
+      })
       .join("&");
 
     const reponse = await fetch(

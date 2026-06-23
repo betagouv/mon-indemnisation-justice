@@ -25,6 +25,7 @@ class RecherchersAgentsEndpoint
         AgentRepository $agentRepository,
         NormalizerInterface $normalizer,
     ) {
+
         $paginator = $agentRepository->rechercherAgents(
             page: $input->page,
             taille: $input->taille,
