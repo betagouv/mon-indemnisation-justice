@@ -9,13 +9,13 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class AgentVoter extends Voter
 {
-    public const ACTION_LISTER = 'agent:lister';
+    public const ACTION_RECHERCHER = 'agent:rechercher';
     public const ACTION_CREER = 'agent:creer';
     public const ACTION_EDITER = 'agent:editer';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::ACTION_LISTER, self::ACTION_CREER, self::ACTION_EDITER]);
+        return in_array($attribute, [self::ACTION_RECHERCHER, self::ACTION_CREER, self::ACTION_EDITER]);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool

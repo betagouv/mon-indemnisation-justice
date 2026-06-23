@@ -10,7 +10,11 @@ import {
   TypeAdministration,
   TypeRoleAgent,
 } from "@/common/models/Agent.ts";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
+import {
+  AgentManagerInterface,
+  RechercheAgentRequete,
+  RechercheAgentResultat,
+} from "@/common/services/agent/agent.ts";
 import { estCourrielValide } from "@/common/services/courriel.ts";
 import "@/style/index.css";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
@@ -19,7 +23,9 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import Pagination from "@codegouvfr/react-dsfr/Pagination";
 import { Select } from "@codegouvfr/react-dsfr/Select";
+import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UseNavigateResult } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
@@ -492,10 +498,16 @@ export const ValidationAgentPage = ({
   editeur,
   naviguer,
   requete,
+  construireLien,
 }: {
   editeur: Agent;
   naviguer: UseNavigateResult<string>;
-  requete: RequeteRechercheAgent;
+  requete: RechercheAgentRequete;
+  construireLien: ({
+    changement,
+  }: {
+    changement: Partial<RechercheAgentRequete>;
+  }) => RegisteredLinkProps;
 }) => {
   const agentManager = useInjection<AgentManagerInterface>(
     AgentManagerInterface.$,
@@ -508,14 +520,11 @@ export const ValidationAgentPage = ({
   const {
     isPending,
     isError,
-    data: agents = [],
+    data: resultat,
     error,
-  } = useQuery<Agent[]>({
+  } = useQuery<RechercheAgentResultat>({
     queryKey: ["fip6-agents", requete],
-    queryFn: () =>
-      requete.actifs
-        ? agentManager.agentsActifs()
-        : agentManager.agentsInactifs(),
+    queryFn: () => agentManager.rechercher(requete),
   });
 
   const [agentSelectionne, selectionnerAgent] = useState<Agent | undefined>();
@@ -533,9 +542,9 @@ export const ValidationAgentPage = ({
           }
           agent={agentSelectionne}
           onEdite={(agent: Agent) =>
-            queryClient.setQueryData(["fip6-agents"], (agents: Agent[]) =>
-              [agent].concat(...agents.filter((a) => a.id !== agent.id)),
-            )
+            queryClient.invalidateQueries({
+              queryKey: ["fip6-agents", requete],
+            })
           }
         />
       </modaleEditionAgent.Component>
@@ -586,29 +595,57 @@ export const ValidationAgentPage = ({
             />
           </div>
 
-          <div className="fr-grid-row fr-grid-row--gutters mij-liste fr-py-3v fr-text--bold">
-            <div className="fr-col-3">Nom & adresse courriel</div>
-            <div className="fr-col-3">Administration</div>
-            <div className="fr-col-4">Niveau d'accès</div>
-            <div className="fr-col-2"></div>
-          </div>
-
-          {agents.map((agent) => (
-            <ValidationAgentLigne
-              key={agent.id}
-              agent={agent}
-              agentEditeur={editeur}
-              incarner={(agent: Agent) =>
-                naviguer({
-                  href: `${window.location.origin}/agent/?_switch_user=${agent.identifiant}`,
-                })
-              }
-              editer={() => {
-                selectionnerAgent(agent);
-                modaleEditionAgent.open();
-              }}
-            />
-          ))}
+          {resultat && (
+            <>
+              <div className="fr-grid-row">
+                <h5>{`${resultat.total} agent${resultat.total > 1 ? "s" : ""} correspondant${resultat.total > 1 ? "s" : ""}`}</h5>
+              </div>
+              <div className="fr-grid-row">
+                <Pagination
+                  count={Math.ceil((1 * resultat.total) / resultat.taille)}
+                  defaultPage={resultat.page}
+                  showFirstLast={true}
+                  getPageLinkProps={(pageNumber: number) => ({
+                    ...construireLien({
+                      changement: {
+                        page: pageNumber,
+                      },
+                    }),
+                    "aria-current":
+                      requete.page === pageNumber ? "true" : undefined,
+                  })}
+                />
+              </div>
+              {resultat?.resultats.length ? (
+                <>
+                  <div className="fr-grid-row fr-grid-row--gutters mij-liste fr-py-3v fr-text--bold">
+                    <div className="fr-col-3">Nom & adresse courriel</div>
+                    <div className="fr-col-3">Administration</div>
+                    <div className="fr-col-4">Niveau d'accès</div>
+                    <div className="fr-col-2"></div>
+                  </div>
+                  {resultat?.resultats.map((agent) => (
+                    <ValidationAgentLigne
+                      key={agent.id}
+                      agent={agent}
+                      agentEditeur={editeur}
+                      incarner={(agent: Agent) =>
+                        naviguer({
+                          href: `${window.location.origin}/agent/?_switch_user=${agent.identifiant}`,
+                        })
+                      }
+                      editer={() => {
+                        selectionnerAgent(agent);
+                        modaleEditionAgent.open();
+                      }}
+                    />
+                  ))}
+                </>
+              ) : (
+                <span>Aucun résultat</span>
+              )}
+            </>
+          )}
         </>
       )}
     </>

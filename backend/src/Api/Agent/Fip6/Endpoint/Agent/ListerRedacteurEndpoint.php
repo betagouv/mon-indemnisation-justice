@@ -12,6 +12,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  * Route API qui retourne la liste des agents rédacteurs.
  */
 #[Route('/api/agent/fip6/agents/redacteurs', name: 'api_agent_agents_liste_redacteurs', methods: ['GET'])]
+// TODO définir des permissions
+// #[IsGranted(AgentVoter::ACTION_READ)]
 class ListerRedacteurEndpoint
 {
     public function __construct(
