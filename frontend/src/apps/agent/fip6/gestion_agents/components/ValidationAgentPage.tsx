@@ -437,13 +437,30 @@ const modaleEditionAgent = createModal({
 export type ModaleSelectionRechercheProps = Omit<
   ModaleProps,
   "children" | "id" | "title" | "titleAs" | "titleProps"
->;
+> & {
+  onSelection: ({
+    recherche,
+    administrations,
+  }: {
+    recherche: string;
+    administrations: Administration[];
+  }) => void;
+  criteres: {
+    recherche: string;
+    administrations: Administration[];
+  };
+};
 
 const ModaleSelectionRecherche = forwardRef<
   ModaleRef,
   ModaleSelectionRechercheProps
->((props, ref) => {
+>(({ onSelection, criteres, ...props }, ref) => {
   const refModale = useRef<ModaleRef>(null);
+
+  const [recherche, setRecherche] = useState<string>(criteres.recherche);
+  const [administrations, setAdministrations] = useState<Administration[]>(
+    criteres.administrations,
+  );
 
   useImperativeHandle(ref, () => ({
     ouvrir: () => {
@@ -465,7 +482,13 @@ const ModaleSelectionRecherche = forwardRef<
     >
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-lg-6">
-          <Input label="Nom" />
+          <Input
+            label="Nom"
+            nativeInputProps={{
+              defaultValue: recherche,
+              onChange: (e) => setRecherche(() => e.target.value || ""),
+            }}
+          />
         </div>
 
         <div className="fr-col-12 fr-col-lg-6">
@@ -477,12 +500,53 @@ const ModaleSelectionRecherche = forwardRef<
                 nativeInputProps: {
                   name: `administration-${administration.type}`,
                   value: administration.type,
+                  defaultChecked: administrations.includes(administration),
+                  onChange: (e) =>
+                    setAdministrations((administrations: Administration[]) =>
+                      administrations
+                        .filter((a) => a.type !== e.target.value)
+                        .concat(
+                          ...(e.target.checked
+                            ? [
+                                Administration.pourType(
+                                  e.target.value as TypeAdministration,
+                                ),
+                              ]
+                            : []),
+                        ),
+                    ),
                 },
               }),
             )}
             state="default"
           />
         </div>
+
+        <ButtonsGroup
+          inlineLayoutWhen="always"
+          alignment="right"
+          className="fr-col-12"
+          buttons={[
+            {
+              children: "Fermer",
+              priority: "secondary",
+              onClick: () => {
+                refModale.current?.fermer();
+              },
+            },
+            {
+              children: "Valider",
+              priority: "primary",
+              onClick: () => {
+                onSelection({
+                  recherche,
+                  administrations,
+                });
+                refModale.current?.fermer();
+              },
+            },
+          ]}
+        />
       </div>
     </Modale>
   );
@@ -549,7 +613,23 @@ export const ValidationAgentPage = ({
         />
       </modaleEditionAgent.Component>
 
-      <ModaleSelectionRecherche ref={refModaleSelectionRecherche} />
+      <ModaleSelectionRecherche
+        ref={refModaleSelectionRecherche}
+        criteres={{
+          administrations: requete.administrations || [],
+          recherche: requete.requete || "",
+        }}
+        onSelection={({ recherche, administrations }) =>
+          naviguer({
+            search: {
+              a: administrations
+                ?.map((administration) => administration.type)
+                .join("|"),
+              r: recherche,
+            } as any,
+          })
+        }
+      />
 
       {isError && (
         <Alert
