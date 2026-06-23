@@ -3,7 +3,9 @@
 namespace MonIndemnisationJustice\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\EtatDossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -35,8 +37,7 @@ class AgentRepository extends ServiceEntityRepository
     {
         $qb = $this
             ->createQueryBuilder('a')
-            ->orderBy('a.nom')
-        ;
+            ->orderBy('a.nom');
 
         foreach ($roles as $index => $role) {
             $qb->orWhere("a.roles LIKE :role{$index}");
@@ -91,8 +92,7 @@ class AgentRepository extends ServiceEntityRepository
             ->orderBy('count(ed.dossier)', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getSingleResult()
-        ;
+            ->getSingleResult();
     }
 
     /**
@@ -110,8 +110,7 @@ class AgentRepository extends ServiceEntityRepository
             ->orderBy('count(ed.dossier)', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getSingleResult()
-        ;
+            ->getSingleResult();
     }
 
     /**
@@ -139,8 +138,7 @@ class AgentRepository extends ServiceEntityRepository
             ->orderBy('count(ed.dossier)', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getSingleResult()
-        ;
+            ->getSingleResult();
     }
 
     /**
@@ -155,8 +153,7 @@ class AgentRepository extends ServiceEntityRepository
             ->where('a.estValide = false')
             ->orderBy('a.dateCreation', 'DESC')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
     /**
@@ -172,5 +169,30 @@ class AgentRepository extends ServiceEntityRepository
             ->orderBy('a.dateCreation', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param array<AdministrationType> $administrations
+     */
+    public function rechercherAgents(int $page, int $taille, bool $actifs = true, array $administrations = [], ?string $recherche = null): Paginator
+    {
+        $qb = $this
+            ->createQueryBuilder('a')
+            ->where('a.estValide = :actifs')
+            ->setParameter('actifs', $actifs);
+
+        if (sizeof($administrations) > 0) {
+            $qb->andWhere('a.id IN (:administrations)')
+                ->setParameter('administrations', $administrations);
+        }
+
+        if (null !== $recherche) {
+            $qb->andWhere($qb->expr()->orX('a.nom ILIKE :recherche', 'a.prenom ILIKE :recherche', 'a.email ILIKE :recherche'))
+                ->setParameter('recherche', "%$recherche%");
+        }
+
+        $qb->setMaxResults($taille)->setFirstResult(($page - 1) * $taille);
+
+        return new Paginator($qb->getQuery(), fetchJoinCollection: true);
     }
 }

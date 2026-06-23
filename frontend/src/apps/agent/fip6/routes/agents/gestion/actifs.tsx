@@ -1,10 +1,16 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
 import { ValidationAgentPage } from "@/apps/agent/fip6/gestion_agents/components";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
-import { RoleAgent } from "@/common/models/Agent.ts";
+import {
+  Administration,
+  RoleAgent,
+  TypeAdministration,
+} from "@/common/models/Agent.ts";
+import { RechercheAgentRequete } from "@/common/services/agent/agent";
+import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import React from "react";
+import React, { useMemo } from "react";
 
 export const Route = createFileRoute("/agents/gestion/actifs")({
   beforeLoad: async ({ context }: { context: AgentContext }) => {
@@ -25,6 +31,29 @@ function GestionAgentsActifs() {
   const naviguer = useNavigate<typeof RouteurRequerant>({
     from: Route.fullPath,
   });
+
+  const {
+    p,
+    a,
+    r,
+  }: {
+    p: number;
+    a?: string;
+    r?: string;
+  } = Route.useSearch();
+
+  const requete: RechercheAgentRequete = useMemo(
+    () => ({
+      page: p || 1,
+      taille: 20,
+      actifs: true,
+      administrations: a
+        ?.split("|")
+        .map((valeur) => Administration.pourType(valeur as TypeAdministration)),
+      requete: r,
+    }),
+    [p, a, r],
+  );
 
   return (
     <>
@@ -53,7 +82,9 @@ function GestionAgentsActifs() {
             naviguer({
               from: Route.fullPath,
               to: "../inactifs",
-              search: true,
+              search: {
+                p: 1,
+              } as any,
             });
           }
         }}
@@ -61,7 +92,24 @@ function GestionAgentsActifs() {
         <ValidationAgentPage
           editeur={context.agent}
           naviguer={naviguer}
-          requete={{ actifs: true }}
+          requete={requete}
+          construireLien={({ changement }) => {
+            const nouvelleRequete: RechercheAgentRequete = {
+              ...requete,
+              ...changement,
+            };
+
+            return {
+              to: Route.fullPath,
+              search: {
+                p: nouvelleRequete.page,
+                a: nouvelleRequete.administrations
+                  ?.map((administration) => administration.type)
+                  .join("|"),
+                r: nouvelleRequete.requete,
+              },
+            } as RegisteredLinkProps;
+          }}
         />
       </Tabs>
     </>
