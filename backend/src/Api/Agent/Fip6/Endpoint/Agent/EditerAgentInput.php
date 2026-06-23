@@ -22,7 +22,7 @@ class EditerAgentInput
     #[Assert\Choice(callback: [Agent::class, 'roles'], multiple: true, message: "Au moins un rôle n'a pas été reconnu")]
     public array $roles = [];
 
-    public function versAgent(?Agent $agent): Agent
+    public function versAgent(?Agent $agent = null): Agent
     {
         return ($agent ?? new Agent())
             ->setPrenom($this->prenom)
