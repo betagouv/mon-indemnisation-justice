@@ -106,7 +106,7 @@ function Etape3PiecesJointes() {
   const { dossier }: { dossier: Dossier } = Route.useLoaderData();
 
   // Récupération du routeur, uniquement pour pouvoir invalider son cache
-  const routeur = useRouter();
+  const routeur = useRouter<typeof RouteurRequerant>();
 
   // La référence vers la modale d'ajout de pièce jointe
   const refModaleAjoutPieceJointe = useRef<AjouterPiecesJointesModaleRef>(null);
@@ -383,7 +383,23 @@ function Etape3PiecesJointes() {
                       : ["fr-hidden" as FrCxArg]),
                   ])}
                 >
-                  <AfficherPieceJointe pieceJointe={pieceJointe} />
+                  <AfficherPieceJointe
+                    pieceJointe={pieceJointe}
+                    supprimer={
+                      pieceJointeSelectionnee &&
+                      pieceJointeSelectionnee.id == pieceJointe.id
+                        ? async (pieceJointe: PieceJointe) => {
+                            await dossierManager.retirerPieceJointe(
+                              dossier.id,
+                              pieceJointe,
+                            );
+                            await (
+                              routeur as typeof RouteurRequerant
+                            ).invalidate();
+                          }
+                        : undefined
+                    }
+                  />
                 </div>
               ))}
 

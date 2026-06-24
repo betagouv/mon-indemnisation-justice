@@ -48,6 +48,7 @@ await container
 
 declare module "@tanstack/react-router" {
   interface Register {
+    // @ts-expect-error: chaque app déclare son propre router localement
     router: ReturnType<typeof creerRouteurFIP6>;
   }
 

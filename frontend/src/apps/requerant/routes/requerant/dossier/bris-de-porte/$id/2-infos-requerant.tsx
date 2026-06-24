@@ -192,11 +192,11 @@ function Etape2InfosRequerant() {
           {dossier.estEnInstruction && (
             <div className="fr-grid-row">
               <Notice
-                description="Cette étape est en lecture seule le dossier étant entré en instruction"
+                description="Le dossier étant entré en instruction, vous ne pouvez pas modifier les informations"
                 iconDisplayed
                 isClosable={false}
                 severity="info"
-                title="Cette étape est en lecture seule, le dossier étant entré en instruction"
+                title="Cette étape est en lecture seule"
               />
             </div>
           )}
