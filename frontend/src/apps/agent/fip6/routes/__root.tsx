@@ -34,7 +34,7 @@ export const Route = createRootRouteWithContext<AgentContext>()({
     contexte: context,
     compteurDossiers: await container
       .get(DossierManagerInterface.$)
-      .compteursDossiers(),
+      .compteursDossiers(context.agent),
   }),
   component: () => <EspaceRedacteur />,
   notFoundComponent: () => {
@@ -117,7 +117,7 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["a-categoriser"]}
+                        children={compteurDossiers["a-categoriser"] ?? 0}
                       />
                     </>
                   ),
@@ -138,7 +138,7 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["a-attribuer"]}
+                        children={compteurDossiers["a-attribuer"] ?? 0}
                       />
                     </>
                   ),
@@ -159,7 +159,7 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["a-instruire"]}
+                        children={compteurDossiers["a-instruire"] ?? 0}
                       />
                     </>
                   ),
@@ -175,7 +175,7 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["en-instruction"]}
+                        children={compteurDossiers["en-instruction"] ?? 0}
                       />
                     </>
                   ),
@@ -196,7 +196,7 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["rejet-a-signer"]}
+                        children={compteurDossiers["rejet-a-signer"] ?? 0}
                       />
                     </>
                   ),
@@ -212,7 +212,7 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["proposition-a-signer"]}
+                        children={compteurDossiers["proposition-a-signer"] ?? 0}
                       />
                     </>
                   ),
@@ -234,7 +234,7 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["a-verifier"]}
+                        children={compteurDossiers["a-verifier"] ?? 0}
                       />
                     </>
                   ),
@@ -255,7 +255,7 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["arrete-a-signer"]}
+                        children={compteurDossiers["arrete-a-signer"] ?? 0}
                       />
                     </>
                   ),
@@ -276,7 +276,7 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["a-transmettre"]}
+                        children={compteurDossiers["a-transmettre"] ?? 0}
                       />
                     </>
                   ),
@@ -292,7 +292,9 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["en-attente-indemnisation"]}
+                        children={
+                          compteurDossiers["en-attente-indemnisation"] ?? 0
+                        }
                       />
                     </>
                   ),

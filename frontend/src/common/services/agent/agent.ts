@@ -4,6 +4,21 @@ import { RoleAgent } from "@/common/models/Agent";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
+export type RechercheAgentRequete = {
+  page: number;
+  taille: number;
+  actifs: boolean;
+  requete?: string;
+  administrations?: Administration[];
+};
+
+export type RechercheAgentResultat = {
+  resultats: Agent[];
+  taille: number;
+  total: number;
+  page: number;
+};
+
 export interface AgentManagerInterface {
   moi(): Promise<AgentContext>;
 
@@ -25,8 +40,7 @@ export interface AgentManagerInterface {
     administration: Administration;
     roles?: RoleAgent[];
   }): Promise<Agent>;
-  agentsActifs(): Promise<Agent[]>;
-  agentsInactifs(): Promise<Agent[]>;
+  rechercher(requete: RechercheAgentRequete): Promise<RechercheAgentResultat>;
 }
 
 export namespace AgentManagerInterface {
@@ -47,8 +61,7 @@ export class APIAgentManager implements AgentManagerInterface {
       this._contexteNavigation = {
         agent: plainToInstance(Agent, data.agent),
         incarnePar: data.incarnePar,
-        urlDeconnexion:
-        data.urlDeconnexion,
+        urlDeconnexion: data.urlDeconnexion,
       };
     }
 
@@ -100,13 +113,45 @@ export class APIAgentManager implements AgentManagerInterface {
     return plainToInstance(Agent, await reponse.json());
   }
 
-  async agentsActifs(): Promise<Agent[]> {
-    const reponse = await fetch("/api/agent/fip6/agents/actifs");
+  async rechercher(
+    requete: RechercheAgentRequete,
+  ): Promise<RechercheAgentResultat> {
+    const parametresURL = Object.entries({
+      page: requete.page,
+      taille: requete.taille,
+      actif: requete.actifs,
+      ...(requete.administrations
+        ? {
+            administrations: requete.administrations?.map(
+              (administration) => administration.type,
+            ),
+          }
+        : {}),
+      ...(requete.requete ? { recherche: requete.requete } : {}),
+    })
+      .map(([key, value]) => {
+        if (Array.isArray(value)) {
+          return value.map((v) => `${key}[]=${v}`).join("&");
+        }
 
-    return plainToInstance(Agent, (await reponse.json()) as any[]);
-  }
+        return `${key}=${value}`;
+      })
+      .join("&");
 
-  agentsInactifs(): Promise<Agent[]> {
-    return Promise.resolve([]);
+    const reponse = await fetch(
+      `/api/agent/fip6/agents/rechercher?${parametresURL}`,
+    );
+
+    const data: {
+      resultats: any[];
+      taille: number;
+      total: number;
+      page: number;
+    } = await reponse.json();
+
+    return {
+      ...data,
+      resultats: plainToInstance(Agent, data.resultats),
+    };
   }
 }

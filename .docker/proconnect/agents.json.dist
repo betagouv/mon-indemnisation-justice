@@ -90,6 +90,16 @@
         "siret": "11001001400014"
     },
     {
+        "_title": "Sans droit",
+        "sub": "b0aa2e81-4dc2-4a06-83ea-9472316e1121",
+        "email": "sans.droit@justice.gouv.fr",
+        "given_name": "Sandro",
+        "usual_name": "Ha",
+        "uid": "53019",
+        "idp_id": "9e139e69-de07-4cbe-987f-d12cb38c0368",
+        "siret": "11001001400014"
+    },
+    {
         "_title": "Validateur",
         "sub": "dda38b83-bca4-4a25-8e2a-d2eb4947f02d",
         "email": "validateur@justice.gouv.fr",

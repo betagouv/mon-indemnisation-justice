@@ -1,23 +1,42 @@
-import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { Route } from "@/apps/agent/fip6/routes/agents/gestion";
-import { RouteurRequerant } from "@/apps/requerant/routeur";
+import {
+  Modale,
+  ModaleProps,
+  ModaleRef,
+} from "@/common/composants/dsfr/Modale";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { Administration, Agent } from "@/common/models";
-import { RoleAgent, TypeAdministration, TypeRoleAgent } from "@/common/models/Agent.ts";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
+import {
+  RoleAgent,
+  TypeAdministration,
+  TypeRoleAgent,
+} from "@/common/models/Agent.ts";
+import {
+  AgentManagerInterface,
+  RechercheAgentRequete,
+  RechercheAgentResultat,
+} from "@/common/services/agent/agent.ts";
 import { estCourrielValide } from "@/common/services/courriel.ts";
 import "@/style/index.css";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Button, ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import Pagination from "@codegouvfr/react-dsfr/Pagination";
 import { Select } from "@codegouvfr/react-dsfr/Select";
+import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { UseNavigateResult } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { ChangeEvent, useCallback, useState } from "react";
+import React, {
+  ChangeEvent,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 const ValidationAgentLigne = ({
   agent,
@@ -415,26 +434,161 @@ const modaleEditionAgent = createModal({
   isOpenedByDefault: false,
 });
 
-export const ValidationAgentApp = () => {
-  const { context }: { context: AgentContext } = Route.useLoaderData();
-  const naviguer = useNavigate<typeof RouteurRequerant>({
-    from: Route.fullPath,
-  });
+export type ModaleSelectionRechercheProps = Omit<
+  ModaleProps,
+  "children" | "id" | "title" | "titleAs" | "titleProps"
+> & {
+  onSelection: ({
+    recherche,
+    administrations,
+  }: {
+    recherche: string;
+    administrations: Administration[];
+  }) => void;
+  criteres: {
+    recherche: string;
+    administrations: Administration[];
+  };
+};
 
+const ModaleSelectionRecherche = forwardRef<
+  ModaleRef,
+  ModaleSelectionRechercheProps
+>(({ onSelection, criteres, ...props }, ref) => {
+  const refModale = useRef<ModaleRef>(null);
+
+  const [recherche, setRecherche] = useState<string>(criteres.recherche);
+  const [administrations, setAdministrations] = useState<Administration[]>(
+    criteres.administrations,
+  );
+
+  useImperativeHandle(ref, () => ({
+    ouvrir: () => {
+      refModale.current?.ouvrir();
+    },
+
+    fermer: () => {
+      refModale.current?.fermer();
+    },
+  }));
+
+  return (
+    <Modale
+      {...props}
+      ref={refModale}
+      title="Critères de recherche"
+      size="large"
+      id="modale-selection-recherche"
+    >
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-12 fr-col-lg-6">
+          <Input
+            label="Nom"
+            nativeInputProps={{
+              defaultValue: recherche,
+              onChange: (e) => setRecherche(() => e.target.value || ""),
+            }}
+          />
+        </div>
+
+        <div className="fr-col-12 fr-col-lg-6">
+          <Checkbox
+            legend="Administration de rattachement"
+            options={Administration.liste().map(
+              (administration: Administration) => ({
+                label: administration.libelle,
+                nativeInputProps: {
+                  name: `administration-${administration.type}`,
+                  value: administration.type,
+                  defaultChecked: administrations.includes(administration),
+                  onChange: (e) =>
+                    setAdministrations((administrations: Administration[]) =>
+                      administrations
+                        .filter((a) => a.type !== e.target.value)
+                        .concat(
+                          ...(e.target.checked
+                            ? [
+                                Administration.pourType(
+                                  e.target.value as TypeAdministration,
+                                ),
+                              ]
+                            : []),
+                        ),
+                    ),
+                },
+              }),
+            )}
+            state="default"
+          />
+        </div>
+
+        <ButtonsGroup
+          inlineLayoutWhen="always"
+          alignment="right"
+          className="fr-col-12"
+          buttons={[
+            {
+              children: "Fermer",
+              priority: "secondary",
+              onClick: () => {
+                refModale.current?.fermer();
+              },
+            },
+            {
+              children: "Valider",
+              priority: "primary",
+              onClick: () => {
+                onSelection({
+                  recherche,
+                  administrations,
+                });
+                refModale.current?.fermer();
+              },
+            },
+          ]}
+        />
+      </div>
+    </Modale>
+  );
+});
+
+export type RequeteRechercheAgent = {
+  actifs: boolean;
+  requete?: string;
+  administrations?: Administration[];
+};
+
+export const ValidationAgentPage = ({
+  editeur,
+  naviguer,
+  requete,
+  construireLien,
+}: {
+  editeur: Agent;
+  naviguer: UseNavigateResult<string>;
+  requete: RechercheAgentRequete;
+  construireLien: ({
+    changement,
+  }: {
+    changement: Partial<RechercheAgentRequete>;
+  }) => RegisteredLinkProps;
+}) => {
   const agentManager = useInjection<AgentManagerInterface>(
     AgentManagerInterface.$,
   );
+
+  const refModaleSelectionRecherche = useRef<ModaleRef>(null);
 
   const queryClient = useQueryClient();
 
   const {
     isPending,
     isError,
-    data: agents = [],
+    data: resultat,
     error,
-  } = useQuery<Agent[]>({
-    queryKey: ["fip6-agents"],
-    queryFn: () => agentManager.agentsActifs(),
+  } = useQuery<RechercheAgentResultat>({
+    queryKey: ["fip6-agents", requete],
+    queryFn: () => agentManager.rechercher(requete),
   });
 
   const [agentSelectionne, selectionnerAgent] = useState<Agent | undefined>();
@@ -452,18 +606,30 @@ export const ValidationAgentApp = () => {
           }
           agent={agentSelectionne}
           onEdite={(agent: Agent) =>
-            queryClient.setQueryData(["fip6-agents"], (agents: Agent[]) =>
-              [agent].concat(...agents.filter((a) => a.id !== agent.id)),
-            )
+            queryClient.invalidateQueries({
+              queryKey: ["fip6-agents", requete],
+            })
           }
         />
       </modaleEditionAgent.Component>
 
-      <div className="fr-grid-row">
-        <div className="fr-col-12">
-          <h2>Gestion des agents</h2>
-        </div>
-      </div>
+      <ModaleSelectionRecherche
+        ref={refModaleSelectionRecherche}
+        criteres={{
+          administrations: requete.administrations || [],
+          recherche: requete.requete || "",
+        }}
+        onSelection={({ recherche, administrations }) =>
+          naviguer({
+            search: {
+              a: administrations
+                ?.map((administration) => administration.type)
+                .join("|"),
+              r: recherche,
+            } as any,
+          })
+        }
+      />
 
       {isError && (
         <Alert
@@ -479,42 +645,87 @@ export const ValidationAgentApp = () => {
       ) : (
         <>
           <div className="fr-grid-row fr-grid-row--right fr-my-1w fr-grid-row--middle">
-            <Button
-              children="Ajouter un agent"
-              title="Ajouter un agent"
-              iconId="fr-icon-add-line"
-              iconPosition="right"
-              size="medium"
-              onClick={() => {
-                selectionnerAgent(new Agent());
-                modaleEditionAgent.open();
-              }}
+            <ButtonsGroup
+              inlineLayoutWhen="always"
+              buttonsSize="medium"
+              alignment="right"
+              buttons={[
+                {
+                  iconId: "fr-icon-equalizer-line",
+                  priority: "secondary",
+                  onClick: () => {
+                    console.log(refModaleSelectionRecherche.current);
+                    refModaleSelectionRecherche.current?.ouvrir();
+                  },
+                  children: "Critères de recherche",
+                  title: "Critères de recherche",
+                  size: "medium",
+                },
+                {
+                  children: "Ajouter un agent",
+                  title: "Ajouter un agent",
+                  iconId: "fr-icon-add-line",
+                  size: "medium",
+                  onClick: () => {
+                    selectionnerAgent(new Agent());
+                    modaleEditionAgent.open();
+                  },
+                },
+              ]}
             />
           </div>
 
-          <div className="fr-grid-row fr-grid-row--gutters mij-liste fr-py-3v fr-text--bold">
-            <div className="fr-col-3">Nom & adresse courriel</div>
-            <div className="fr-col-3">Administration</div>
-            <div className="fr-col-4">Niveau d'accès</div>
-            <div className="fr-col-2"></div>
-          </div>
-
-          {agents.map((agent) => (
-            <ValidationAgentLigne
-              key={agent.id}
-              agent={agent}
-              agentEditeur={context.agent}
-              incarner={(agent: Agent) =>
-                naviguer({
-                  href: `${window.location.origin}/agent/?_switch_user=${agent.identifiant}`,
-                })
-              }
-              editer={() => {
-                selectionnerAgent(agent);
-                modaleEditionAgent.open();
-              }}
-            />
-          ))}
+          {resultat && (
+            <>
+              <div className="fr-grid-row">
+                <h5>{`${resultat.total} agent${resultat.total > 1 ? "s" : ""} correspondant${resultat.total > 1 ? "s" : ""}`}</h5>
+              </div>
+              <div className="fr-grid-row">
+                <Pagination
+                  count={Math.ceil((1 * resultat.total) / resultat.taille)}
+                  defaultPage={resultat.page}
+                  showFirstLast={true}
+                  getPageLinkProps={(pageNumber: number) => ({
+                    ...construireLien({
+                      changement: {
+                        page: pageNumber,
+                      },
+                    }),
+                    "aria-current":
+                      requete.page === pageNumber ? "true" : undefined,
+                  })}
+                />
+              </div>
+              {resultat?.resultats.length ? (
+                <>
+                  <div className="fr-grid-row fr-grid-row--gutters mij-liste fr-py-3v fr-text--bold">
+                    <div className="fr-col-3">Nom & adresse courriel</div>
+                    <div className="fr-col-3">Administration</div>
+                    <div className="fr-col-4">Niveau d'accès</div>
+                    <div className="fr-col-2"></div>
+                  </div>
+                  {resultat?.resultats.map((agent) => (
+                    <ValidationAgentLigne
+                      key={agent.id}
+                      agent={agent}
+                      agentEditeur={editeur}
+                      incarner={(agent: Agent) =>
+                        naviguer({
+                          href: `${window.location.origin}/agent/?_switch_user=${agent.identifiant}`,
+                        })
+                      }
+                      editer={() => {
+                        selectionnerAgent(agent);
+                        modaleEditionAgent.open();
+                      }}
+                    />
+                  ))}
+                </>
+              ) : (
+                <span>Aucun résultat</span>
+              )}
+            </>
+          )}
         </>
       )}
     </>

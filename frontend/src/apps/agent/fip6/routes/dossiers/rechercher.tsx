@@ -7,18 +7,28 @@ import {
 } from "@/apps/agent/fip6/composants/pages/RechercherDossierPage.tsx";
 import { container } from "@/apps/agent/fip6/container";
 import { Agent, EtatDossierType, Redacteur } from "@/common/models";
+import { RoleAgent } from "@/common/models/Agent";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import "@/style/agents.css";
 import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link.tsx";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import React, { useMemo } from "react";
 
 export const Route = createFileRoute("/dossiers/rechercher")({
-  loader: async ({ context }: { context: AgentContext }) => ({
-    agent: context.agent,
-    // TODO transformer par un appel API
-    redacteurs: await container.get(AgentManagerInterface.$).redacteurs(),
-  }),
+  loader: async ({ context }: { context: AgentContext }) => {
+    if (!context.agent.aRole(RoleAgent.DOSSIER)) {
+      throw redirect({
+        to: "/",
+        replace: true,
+      });
+    }
+
+    return {
+      agent: context.agent,
+      // TODO transformer par un appel API
+      redacteurs: await container.get(AgentManagerInterface.$).redacteurs(),
+    };
+  },
   validateSearch: validerParametres,
   component: RechercherComposant,
 });

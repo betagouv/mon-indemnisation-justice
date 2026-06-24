@@ -8,8 +8,12 @@ import { queryClient } from "./query";
 
 import { container } from "./container";
 
+import { ErreurComposant } from "@/common/composants/erreur/ErreurComposant.tsx";
+import { NonTrouveComposant } from "@/common/composants/erreur/NonTrouveComposant.tsx";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
+import * as Sentry from "@sentry/react";
 import { Provider } from "inversify-react";
 import ReactDOM from "react-dom/client";
 import { RouteurFIP6 } from "./routeur";
@@ -32,7 +36,12 @@ declare module "@codegouvfr/react-dsfr/spa" {
   }
 }
 
-ReactDOM.createRoot(document.body).render(
+ReactDOM.createRoot(document.body, {
+  // Error reporting: captures all errors
+  onUncaughtError: Sentry.reactErrorHandler(),
+  onCaughtError: Sentry.reactErrorHandler(),
+  onRecoverableError: Sentry.reactErrorHandler(),
+}).render(
   <StrictMode>
     <CacheBuster
       currentAppVersion={import.meta.env.VITE_MIJ_VERSION || "dev"}
@@ -47,7 +56,31 @@ ReactDOM.createRoot(document.body).render(
     >
       <QueryClientProvider client={queryClient}>
         <Provider container={container}>
-          <RouterProvider router={RouteurFIP6} />
+          <RouterProvider
+            router={RouteurFIP6}
+            defaultErrorComponent={({ error, info, reset }) => (
+              <ErreurComposant
+                erreur={error}
+                action={
+                  <ButtonsGroup
+                    inlineLayoutWhen="always"
+                    alignment="center"
+                    buttonsIconPosition="left"
+                    buttonsEquisized={false}
+                    buttons={[
+                      {
+                        children: "Revenir à l'accueil",
+                        linkProps: {
+                          to: "/",
+                        },
+                      },
+                    ]}
+                  />
+                }
+              />
+            )}
+            defaultNotFoundComponent={(props) => <NonTrouveComposant />}
+          />
         </Provider>
       </QueryClientProvider>
     </CacheBuster>

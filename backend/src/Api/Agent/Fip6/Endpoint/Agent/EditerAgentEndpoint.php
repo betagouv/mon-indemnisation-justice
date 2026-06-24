@@ -2,10 +2,11 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Agent;
 
+use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\AgentOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\AgentVoter;
+use MonIndemnisationJustice\Api\Requerant\Dossier\Normalization\EntityResolveur;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,22 +28,26 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class EditerAgentEndpoint
 {
     public function __construct(
-        protected readonly AgentRepository $agentRepository,
+        protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
         protected readonly ObjectMapperInterface $mapper,
     ) {
     }
 
-    public function __invoke(#[MapRequestPayload] EditerAgentInput $input, #[MapEntity] Agent $agent)
-    {
-        $agent = $this->mapper->map($input, $agent);
+    public function __invoke(
+        #[MapRequestPayload] EditerAgentInput $input,
+        #[MapEntity] Agent $agent,
+    ) {
+        EntityResolveur::configurer($this->em);
+        $agent = $input->versAgent($agent)->setValide(true);
 
-        $this->agentRepository->save($agent);
+
+        $this->em->getRepository(Agent::class)->save($agent);
 
         return new JsonResponse(
             $this->normalizer->normalize(
                 $this->normalizer->normalize(
-                    $this->mapper->map($agent, AgentOutput::class),
+                    AgentOutput::depuisAgent($agent),
                     'json'
                 ),
                 Response::HTTP_OK
