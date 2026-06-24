@@ -1,5 +1,8 @@
 import "@/apps/_init.ts";
+import { ErreurComposant } from "@/common/composants/erreur/ErreurComposant";
+import { NonTrouveComposant } from "@/common/composants/erreur/NonTrouveComposant";
 import "@/style/agents.css";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -33,7 +36,31 @@ createRoot(document.body).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <Provider container={container}>
-        <RouterProvider router={RouteurFDO} />
+        <RouterProvider
+          router={RouteurFDO}
+          defaultErrorComponent={({ error, info, reset }) => (
+            <ErreurComposant
+              erreur={error}
+              action={
+                <ButtonsGroup
+                  inlineLayoutWhen="always"
+                  alignment="center"
+                  buttonsIconPosition="left"
+                  buttonsEquisized={false}
+                  buttons={[
+                    {
+                      children: "Revenir à l'accueil",
+                      linkProps: {
+                        to: "/",
+                      },
+                    },
+                  ]}
+                />
+              }
+            />
+          )}
+          defaultNotFoundComponent={(props) => <NonTrouveComposant />}
+        />
       </Provider>
     </QueryClientProvider>
   </StrictMode>,

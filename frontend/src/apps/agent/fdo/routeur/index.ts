@@ -2,8 +2,8 @@ import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import * as Sentry from "@sentry/browser";
 import { createRouter } from "@tanstack/react-router";
-import { routeTree } from "./routeur-fdo.gen";
 import { container } from "../container";
+import { routeTree } from "./routeur-fdo.gen";
 
 const creerRouteurFDO = (context: AgentContext) =>
   createRouter({
@@ -11,6 +11,7 @@ const creerRouteurFDO = (context: AgentContext) =>
     defaultPreload: "intent",
     defaultStaleTime: 5000,
     scrollRestoration: true,
+    // Préfixage des URLS : le chemin /agent/fdo dans le navigateur pointe sur la racine du dossier "routes"
     rewrite: {
       // URL navigateur vers URL routeur
       input: ({ url }) => {

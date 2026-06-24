@@ -64,7 +64,7 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
       legacy({
         // Doc https://github.com/vitejs/vite/tree/main/packages/plugin-legacy
         //targets: ['defaults', 'not IE 11'],
-        modernTargets: ["firefox>=60, chrome>=61"],
+        modernTargets: ["firefox>=89", "chrome>=89"],
         polyfills: ["es.promise.finally", "es/map", "es/set", ""],
         modernPolyfills: true,
         renderLegacyChunks: false, // Pas besoin puisqu'on est ESM **only**
@@ -74,25 +74,30 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         stimulus: false,
       }),
       react(),
-      sentryVitePlugin({
-        org: "betagouv",
-        project: "mon-indemnisation-justice",
-        url: process.env.VITE_SENTRY_URL || "",
-        authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
-        release: {
-          name: process.env.VITE_MIJ_VERSION || "dev",
-        },
-        sourcemaps: {
-          // As you're enabling client source maps, you probably want to delete them after they're uploaded to Sentry.
-          // Set the appropriate glob pattern for your output folder - some glob examples below:
-          filesToDeleteAfterUpload: [
-            "./**/*.map",
-            ".*/**/public/**/*.map",
-            "./dist/**/client/**/*.map",
-            "./build/**/client/**/*.map",
-          ],
-        },
-      }),
+      // Publication des sources vers Sentry (uniquement si l'env var VITE_SENTRY_AUTH_TOKEN est définie)
+      ...(process.env.VITE_SENTRY_AUTH_TOKEN
+        ? [
+            sentryVitePlugin({
+              org: "betagouv",
+              project: "mon-indemnisation-justice",
+              url: process.env.VITE_SENTRY_URL || "",
+              authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
+              release: {
+                name: process.env.VITE_MIJ_VERSION || "dev",
+              },
+              sourcemaps: {
+                // As you're enabling client source maps, you probably want to delete them after they're uploaded to Sentry.
+                // Set the appropriate glob pattern for your output folder - some glob examples below:
+                filesToDeleteAfterUpload: [
+                  "./**/*.map",
+                  ".*/**/public/**/*.map",
+                  "./dist/**/client/**/*.map",
+                  "./build/**/client/**/*.map",
+                ],
+              },
+            }),
+          ]
+        : []),
     ],
     resolve: {
       alias: {
