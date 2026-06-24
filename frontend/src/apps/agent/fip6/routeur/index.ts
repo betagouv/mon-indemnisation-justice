@@ -11,6 +11,7 @@ const creerRouteurFIP6 = (context: AgentContext) =>
     defaultPreload: "intent",
     defaultStaleTime: 5000,
     scrollRestoration: true,
+    // Préfixage des URLS : le chemin /agent/fip6 dans le navigateur pointe sur la racine du dossier "routes"
     rewrite: {
       // URL navigateur vers URL routeur
       input: ({ url }) => {
