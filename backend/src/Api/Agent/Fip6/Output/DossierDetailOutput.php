@@ -26,7 +26,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
         ?bool $estEligible,
         public UsagerOutput $usager,
         public RequerantOutput $requerant,
-        public AdresseOutput $adresse,
+        public ?AdresseOutput $adresse,
         // TODO implémenter
         public ?TestEligibiliteBrisPorteOutput $testEligibilite,
         public ?DeclarationFDOOutput $declarationFDO,
@@ -66,7 +66,7 @@ readonly class DossierDetailOutput extends BaseDossierOutput
             estEligible: $dossier->getBrisPorte()->getTestEligibilite()?->estEligible(),
             usager: UsagerOutput::depuisUsager($dossier->getUsager()),
             requerant: RequerantOutput::depuisRequerant($dossier->estPersonneMorale() ? $dossier->getRequerantPersonneMorale() : $dossier->getRequerantPersonnePhysique()),
-            adresse: AdresseOutput::depuisAdresse($dossier->getBrisPorte()->getAdresse()),
+            adresse: $dossier->getBrisPorte()->getAdresse() ? AdresseOutput::depuisAdresse($dossier->getBrisPorte()->getAdresse()) : null,
             testEligibilite: TestEligibiliteBrisPorteOutput::depuisTestEligibilite($dossier->getBrisPorte()->getTestEligibilite()),
             declarationFDO: DeclarationFDOOutput::depuisDeclarationFDOBrisPorte($dossier->getBrisPorte()->getDeclarationFDO()),
             descriptionRequerant: $dossier->getBrisPorte()->getDescriptionRequerant(),

@@ -161,7 +161,7 @@ export class DossierDetail extends BaseDossier {
 
   @Expose()
   @Type(() => Adresse)
-  public readonly adresse: Adresse;
+  public readonly adresse?: Adresse;
 
   @DateTransform()
   public dateOperation: Date | null;

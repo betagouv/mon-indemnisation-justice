@@ -140,7 +140,7 @@ export const InfosDossier = ({
               </li>
               <li>
                 <b>Survenu à l'adresse: </b>{" "}
-                {dossier.adresse.estRenseignee() ? (
+                {dossier.adresse?.estRenseignee() ? (
                   <>{dossier.adresse.libelle()}</>
                 ) : (
                   <i>non renseigné</i>
