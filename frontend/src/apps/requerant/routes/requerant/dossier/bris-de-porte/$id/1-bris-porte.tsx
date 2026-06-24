@@ -6,7 +6,7 @@ import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import {
   extraireDonneesBrisDeporte,
-  SchemaValidationBrisPorte
+  SchemaValidationBrisPorte,
 } from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
 import {
   Adresse,
@@ -15,7 +15,7 @@ import {
   getRapportAuLogementLibelle,
   RapportAuLogement,
   TypePersonneMoraleType,
-  TypesPersonneMorale
+  TypesPersonneMorale,
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
@@ -30,7 +30,13 @@ import Notice from "@codegouvfr/react-dsfr/Notice";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, notFound, redirect, useBlocker, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  notFound,
+  redirect,
+  useBlocker,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React, { useState } from "react";
 
@@ -187,11 +193,11 @@ function Etape1BrisPorte() {
           {dossier.estEnInstruction && (
             <div className="fr-grid-row">
               <Notice
-                description="Cette étape est en lecture seule le dossier étant entré en instruction"
+                description="Le dossier étant entré en instruction, vous ne pouvez pas modifier les informations"
                 iconDisplayed
                 isClosable={false}
                 severity="info"
-                title="Cette étape est en lecture seule, le dossier étant entré en instruction"
+                title="Cette étape est en lecture seule"
               />
             </div>
           )}
