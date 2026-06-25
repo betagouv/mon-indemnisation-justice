@@ -530,6 +530,15 @@ class Dossier
         return $document ?? new Document()->setType($type)->ajouterAuDossier($this);
     }
 
+    public function retirerPieceJointe(Document $pieceJointe): self
+    {
+        $this->piecesJointes->removeElement($pieceJointe);
+        // On réordonne les pièces jointes pour que les indices soient cohérents
+        $this->piecesJointes = new ArrayCollection($this->piecesJointes->getValues());
+
+        return $this;
+    }
+
     /**
      * @param bool|null $progression est-ce qu'il s'agit d'une avancée d'un état vers le suivant ou d'un retour arrière ?
      *

@@ -1,4 +1,4 @@
-import { Dossier } from "@/apps/requerant/models";
+import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import { differentiel } from "@/common/services";
@@ -38,6 +38,11 @@ export interface DossierManagerInterface {
     id: number,
     piecesJointes: NouvellePieceJointe[],
   ): Promise<Dossier | undefined>;
+
+  retirerPieceJointe(
+    dossierId: number,
+    pieceJointe: PieceJointe,
+  ): Promise<boolean>;
 
   mesDemandes(): Promise<DossierApercu[]>;
 
@@ -142,6 +147,28 @@ export class ApiDossierManager implements DossierManagerInterface {
     });
 
     return this.dossiers.get(id)?.modifie;
+  }
+
+  async retirerPieceJointe(
+    dossierId: number,
+    pieceJointe: PieceJointe,
+  ): Promise<boolean> {
+    const reponse = await fetch(
+      `/api/requerant/piece-jointe/${pieceJointe.id}/supprimer`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    const data = await reponse.json();
+    const dossier = plainToInstance(Dossier, data);
+
+    this.dossiers.set(dossier.id, {
+      original: dossier,
+      modifie: instanceToInstance(dossier),
+    });
+
+    return reponse.ok;
   }
 
   async enregistrer(id: number): Promise<Dossier> {

@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\Agent;
@@ -136,17 +137,30 @@ class DossierRepository extends ServiceEntityRepository
         return $this->listerDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
     }
 
-    /**
-     * @return Dossier[]
-     */
-    public function listerDossierParEtat(EtatDossierType $etat): array
+    protected function creerBaseRequeteDossierParEtat(EtatDossierType $etat, DossierType $type = DossierType::BRIS_PORTE): QueryBuilder
     {
         return $this->createQueryBuilder('d')
             ->join('d.etatDossier', 'ed')
             ->where('ed.etat = :etat')
+            ->andWhere('d.type = :type')
             ->setParameter('etat', $etat)
+            ->setParameter('type', $type);
+    }
+
+    public function getDossierParEtat(EtatDossierType $etat, DossierType $type = DossierType::BRIS_PORTE): ?Dossier
+    {
+        return $this->creerBaseRequeteDossierParEtat($etat, $type)
             ->getQuery()
-            ->getResult();
+            ->setMaxResults(1)
+            ->getSingleResult();
+    }
+
+    /**
+     * @return Dossier[]
+     */
+    public function listerDossierParEtat(EtatDossierType $etat, DossierType $type = DossierType::BRIS_PORTE): array
+    {
+        return $this->creerBaseRequeteDossierParEtat($etat, $type)->getQuery()->getResult();
     }
 
     /**

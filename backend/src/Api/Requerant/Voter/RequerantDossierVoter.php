@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Voter;
 
+use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -15,6 +16,7 @@ class RequerantDossierVoter extends Voter
     public const string ACTION_DOSSIER_CONSULTER = 'dossier:consulter';
     public const string ACTION_DOSSIER_AMENDER = 'dossier:amender';
     public const string ACTION_DOSSIER_TELEVERSER = 'dossier:televerser';
+    public const string ACTION_DOSSIER_SUPPRIMER_PIECE_JOINTE = 'dossier:supprimer-piece-jointe';
     public const string ACTION_DOSSIER_PUBLIER = 'dossier:publier';
     public const string ACTION_DOSSIER_ACCEPTER_INDEMNISATION = 'dossier:accepter_indemnisation';
 
@@ -28,6 +30,7 @@ class RequerantDossierVoter extends Voter
                 self::ACTION_DOSSIER_CONSULTER,
                 self::ACTION_DOSSIER_AMENDER,
                 self::ACTION_DOSSIER_TELEVERSER,
+                self::ACTION_DOSSIER_SUPPRIMER_PIECE_JOINTE,
                 self::ACTION_DOSSIER_PUBLIER,
                 self::ACTION_DOSSIER_ACCEPTER_INDEMNISATION,
             ]
@@ -45,6 +48,17 @@ class RequerantDossierVoter extends Voter
 
         if (in_array($attribute, [self::ACTION_DOSSIER_LISTER, self::ACTION_DOSSIER_INITIER])) {
             return true;
+        }
+
+        if (self::ACTION_DOSSIER_SUPPRIMER_PIECE_JOINTE === $attribute) {
+            if (!$subject instanceof Document) {
+                return false;
+            }
+            /** @var Document $pieceJointe */
+            $pieceJointe = $subject;
+
+            // La pièce jointe est lié au dossier du requérant
+            return $pieceJointe->getDossier()->getUsager() === $usager;
         }
 
         // Les actions de consultation / édition, liée à un dossier spécifique, sont restreintes à l'usager l'ayant initié
