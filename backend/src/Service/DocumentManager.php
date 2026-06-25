@@ -7,9 +7,9 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToWriteFile;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Filesystem\Path;
@@ -100,6 +100,7 @@ class DocumentManager
     public function supprimer(Document $document)
     {
         $this->storage->delete($document->getFilename());
+        $document->getDossier()->retirerPieceJointe($document);
 
         $this->em->remove($document);
         $this->em->flush();

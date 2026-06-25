@@ -149,12 +149,26 @@ export class ApiDossierManager implements DossierManagerInterface {
     return this.dossiers.get(id)?.modifie;
   }
 
-  retirerPieceJointe(
+  async retirerPieceJointe(
     dossierId: number,
     pieceJointe: PieceJointe,
   ): Promise<boolean> {
-    // TODO implémenter l'appel à l'API
-    return Promise.resolve(true);
+    const reponse = await fetch(
+      `/api/requerant/piece-jointe/${pieceJointe.id}/supprimer`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    const data = await reponse.json();
+    const dossier = plainToInstance(Dossier, data);
+
+    this.dossiers.set(dossier.id, {
+      original: dossier,
+      modifie: instanceToInstance(dossier),
+    });
+
+    return reponse.ok;
   }
 
   async enregistrer(id: number): Promise<Dossier> {

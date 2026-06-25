@@ -78,7 +78,6 @@ class DossierDto
             idDeclarationFDO: $dossier->getBrisPorte()->getDeclarationFDO()?->getId(),
             estPorteBlindee: $dossier->getBrisPorte()?->estPorteBlindee(),
             description: $dossier->getBrisPorte()->getDescriptionRequerant(),
-            // TODO gérer ça plus tard
             piecesJointes: $dossier->getPiecesJointes()->map(fn (Document $pieceJointe) => PieceJointeDto::depuisDocument($pieceJointe))->toArray(),
         );
     }

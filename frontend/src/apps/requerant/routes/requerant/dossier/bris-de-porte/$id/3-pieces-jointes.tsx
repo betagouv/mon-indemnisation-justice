@@ -393,6 +393,20 @@ function Etape3PiecesJointes() {
                               dossier.id,
                               pieceJointe,
                             );
+                            // Sélection de la pièce jointe précédente
+                            const index =
+                              dossier.piecesJointes.indexOf(pieceJointe);
+                            if (index >= 0) {
+                              selectionnerPieceJointe(
+                                dossier.piecesJointes.at(index - 1),
+                              );
+                              selectionnerTypePieceJointe(
+                                dossier.piecesJointes.at(index - 1)?.type ||
+                                  (typesPiecesJointesDemandes.at(
+                                    0,
+                                  ) as TypePieceJointe),
+                              );
+                            }
                             await (
                               routeur as typeof RouteurRequerant
                             ).invalidate();
