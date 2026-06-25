@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Tests\Api\Requerant\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Requerant\Dossier\AmenderDossierEndpoint;
+use MonIndemnisationJustice\Api\Requerant\Dossier\TeleverserPiecesJointesEndpoint;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DossierType;
@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-#[CoversClass(AmenderDossierEndpoint::class)]
+#[CoversClass(TeleverserPiecesJointesEndpoint::class)]
 class TeleverserPiecesJointesEndpointTest extends WebTestCase
 {
     protected KernelBrowser $client;
