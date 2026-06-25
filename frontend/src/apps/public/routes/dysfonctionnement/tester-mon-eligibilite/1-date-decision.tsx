@@ -30,7 +30,7 @@ function DateDecisionRoute() {
       <Stepper
         currentStep={2}
         stepCount={TOTAL_STEPS}
-        title="Date de la décision"
+        title="Date de la décision de justice "
         nextTitle="État de la procédure"
       />
       <StepDateDecision

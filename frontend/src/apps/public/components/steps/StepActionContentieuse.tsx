@@ -69,7 +69,7 @@ export function StepActionContentieuse({ onPrecedent, onSuivant, isLastStep, tes
                 className="fr-mt-2w"
                 severity="error"
                 title="Démarche irrecevable"
-                description="Une procédure contentieuse en cours devant l'AJE rend la démarche précontentieuse irrecevable. Vous pourrez effectuer cette déclaration après la clôture de cette procédure."
+                description="Une procédure contentieuse en cours devant l'AJE rend la démarche précontentieuse irrecevable."
               />
             );
           }

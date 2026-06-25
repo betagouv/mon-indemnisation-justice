@@ -40,9 +40,8 @@ function TestEligibiliteRoute() {
       <h1>Test d'éligibilité</h1>
 
       <p className="fr-mb-3w">
-        Ce test vous permet de vérifier si vous pouvez faire une déclaration de déni de justice.
-        Certaines conditions doivent être remplies, notamment que votre affaire soit définitivement
-        terminée. Répondez aux questions suivantes pour continuer.
+       Ce test vous permet de vérifier si votre situation est susceptible de relever d’un déni de justice et de faire l’objet d’une demande de réparation.
+       Répondez aux questions suivantes pour poursuivre votre démarche. 
       </p>
 
       {nonEligible ? (
@@ -50,17 +49,15 @@ function TestEligibiliteRoute() {
           <Alert
             className="fr-mb-3w"
             severity="error"
-            title="Démarche non éligible"
+            title="Vous ne pouvez pas poursuivre le test d’éligibilité."
             description={
               <>
-                <p>Vous ne pouvez pas continuer le test d'éligibilité.</p>
+                <p>La procédure concernée par votre demande est toujours en cours.</p>
                 <p>
-                  La déclaration de déni de justice n'est possible que si l'ensemble des procédures
-                  liées à votre affaire est terminé (première instance, appel, etc.)
+                  Une demande de réparation au titre d’un déni de justice ne peut être déposée qu’après que la juridiction concernée a statué.
                 </p>
                 <p>
-                  Vous pourrez effectuer cette démarche lorsque votre affaire sera définitivement
-                  terminée.
+                  Vous pourrez renouveler votre démarche une fois la décision rendue. 
                 </p>
               </>
             }
@@ -85,8 +82,8 @@ function TestEligibiliteRoute() {
           />
 
           <RadioButtons
-            legend="La procédure est-elle terminée ?"
-            hintText="Vous ne pouvez faire une déclaration que si votre affaire est complètement terminée, c'est-à-dire après toutes les décisions de justice, y compris en appel si vous en avez fait un."
+            legend="La juridiction concernée a-t-elle rendu sa décision ?"
+            hintText="Vous ne pouvez poursuivre ce test que si la juridiction dont vous souhaitez contester la durée de traitement a rendu sa décision. "
             options={[
               {
                 label: "Oui",

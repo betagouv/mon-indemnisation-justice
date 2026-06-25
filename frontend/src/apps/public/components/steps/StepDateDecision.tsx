@@ -1,7 +1,8 @@
 import React from "react";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
+import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import { CheckInput } from "@/apps/requerant/composants/champs/check/CheckInput.tsx";
 import { calculerPrescription } from "@/apps/public/services/prescription";
 import { saveCritere, criterePrescription } from "@/apps/public/services/eligibiliteStore";
 import { SchemaEtapeDateDecision } from "../formulaires/eligibilite.schemas";
@@ -12,16 +13,11 @@ import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestElig
 import { dateChiffre } from "@/common/services/date";
 
 const ReferenceJuridique = (
-  <div
-    className="fr-text--sm fr-mb-2w fr-p-2w"
-    style={{
-      border: "1px solid var(--border-default-grey)",
-      backgroundColor: "var(--background-alt-grey)",
-      color: "var(--text-default-grey)",
-    }}
-  >
-    Art. 1er, loi n°68-1250 du 31/12/1968 — Civ. 1re, 15/06/2017, n°16-18.769
-  </div>
+  <Accordion label="Référence juridique" className="fr-mb-2w">
+    <p className="fr-text--sm fr-mb-0">
+      Art. 1er, loi n°68-1250 du 31/12/1968 — Civ. 1re, 15/06/2017, n°16-18.769
+    </p>
+  </Accordion>
 );
 
 function ExemplePrescription() {
@@ -76,28 +72,46 @@ export function StepDateDecision({ onPrecedent, onSuivant, isLastStep, test }: S
             <formulaire.Field
               name="dateDecision"
               children={(field) => (
-                <FormInput
-                  label="Date de la décision"
-                  hintText="Indiquez la date de la dernière décision de justice rendue dans votre affaire."
-                  champ={field}
+                <CheckInput
+                  label="Date de la décision "
+                  hintText="Indiquez la date de la décision rendue par la juridiction concernée par votre demande."
+                  validation={false}
                   nativeInputProps={{
                     type: "date",
                     value: field.state.value,
-                    onChange: (e) => field.handleChange(e.target.value),
+                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => field.handleChange(e.target.value),
                   }}
                 />
               )}
             />
           </div>
         </div>
-        {dateDecision && (
-          <Alert
-            className="fr-mt-2w"
-            severity={prescription.rempli ? "success" : "error"}
-            title={prescription.rempli ? "Vous êtes dans les délais" : "Délai de prescription dépassé"}
-            description={prescription.detail}
-          />
-        )}
+        <formulaire.Subscribe
+          selector={(state) => ({ dateDecision: state.values.dateDecision, showError: state.submissionAttempts > 0 })}
+          children={({ dateDecision, showError }) => {
+            if (showError && !dateDecision) {
+              return (
+                <Alert
+                  className="fr-mt-2w"
+                  severity="error"
+                  title="Veuillez indiquer la date de la décision"
+                />
+              );
+            }
+            if (dateDecision) {
+              const prescription = calculerPrescription(new Date(dateDecision));
+              return (
+                <Alert
+                  className="fr-mt-2w"
+                  severity={prescription.rempli ? "success" : "error"}
+                  title={prescription.rempli ? "Vous êtes dans les délais" : "Le délai de prescription dépassé"}
+                  description={prescription.detail}
+                />
+              );
+            }
+            return null;
+          }}
+        />
         <NavButtons
           onPrecedent={onPrecedent}
           isLastStep={isLastStep}

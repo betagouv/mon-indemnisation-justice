@@ -8,11 +8,13 @@ import { Layout } from "@/apps/public/components/Layout";
 import { StepDiligences } from "@/apps/public/components/steps/StepDiligences";
 import { container } from "@/apps/public/container";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
+import { useInjection } from "inversify-react";
 
 
 function DiligencesRoute() {
   const navigate = usePublicNavigate();
   const { test } = Route.useLoaderData();
+  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
 
   return (
     <Layout>
@@ -35,12 +37,8 @@ function DiligencesRoute() {
       <StepDiligences
         test={test}
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure" })}
-        onSuivant={async () => {
-          try {
-            await manager.soumettre();
-          } catch (e) {
-            console.error(e);
-          }
+        onSuivant={() => {
+          manager.soumettre().catch(console.error);
           navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/resultat" });
         }}
         isLastStep
