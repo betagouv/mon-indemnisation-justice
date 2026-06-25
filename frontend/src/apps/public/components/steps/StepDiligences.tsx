@@ -19,7 +19,7 @@ export function StepDiligences({ onPrecedent, onSuivant, isLastStep, test }: Ste
       if (formApi.state.isValid) {
         manager.modifier({ preuvesDiligences: value.preuvesDiligences });
         saveCritere("diligences", critereDiligences(value.preuvesDiligences!));
-        onSuivant();
+        await onSuivant();
       }
     },
   });

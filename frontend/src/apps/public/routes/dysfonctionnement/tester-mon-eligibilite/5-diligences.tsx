@@ -37,8 +37,8 @@ function DiligencesRoute() {
       <StepDiligences
         test={test}
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure" })}
-        onSuivant={() => {
-          manager.soumettre().catch(console.error);
+        onSuivant={async () => {
+          await manager.soumettre();
           navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/resultat" });
         }}
         isLastStep

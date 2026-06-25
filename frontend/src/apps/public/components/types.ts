@@ -26,7 +26,7 @@ import { TestEligibilite } from "@/apps/public/models/TestEligibilite";
 
 export type StepProps = {
   onPrecedent: () => void;
-  onSuivant: () => void;
+  onSuivant: () => void | Promise<void>;
   isLastStep?: boolean;
   test?: TestEligibilite;
 };
