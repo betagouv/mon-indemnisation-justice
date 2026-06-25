@@ -3,7 +3,7 @@ import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Layout } from "@/apps/public/components/Layout";
-import { REQUERANT_URL, usePublicNavigate } from "@/apps/public/routeur";
+import { usePublicNavigate } from "@/apps/public/routeur";
 import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { getCriteres, clearCriteres } from "@/apps/public/services/eligibiliteStore";
 import { createFileRoute } from "@tanstack/react-router";
@@ -86,7 +86,7 @@ function ResultatEligibiliteRoute() {
           title={eligible ? "Demande éligible" : "Demande non éligible en l'état"}
           description={
             eligible
-              ? "Votre demande semble recevable. Constituez votre dossier."
+              ? "Votre demande semble recevable. Créez votre compte pour constituer votre dossier."
               : "Un ou plusieurs critères ne sont pas remplis. Consultez le détail ci-dessus."
           }
         />
@@ -107,10 +107,19 @@ function ResultatEligibiliteRoute() {
             },
             children: "Recommencer le test",
           },
-          {
-            linkProps: { href: REQUERANT_URL },
-            children: "Déposer un dossier",
-          },
+          ...(eligible
+            ? [
+                {
+                  nativeButtonProps: {
+                    type: "button" as const,
+                    onClick: () => {
+                      window.location.href = "/dysfonctionnement/creation-de-compte";
+                    },
+                  },
+                  children: "Créer mon compte",
+                },
+              ]
+            : []),
         ]}
       />
     </Layout>

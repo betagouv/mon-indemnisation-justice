@@ -23,6 +23,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class Usager implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const string ROLE_REQUERANT = 'ROLE_REQUERANT';
+    public const string ROLE_PUBLIC = 'ROLE_PUBLIC';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]

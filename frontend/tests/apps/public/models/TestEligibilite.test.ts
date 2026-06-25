@@ -12,7 +12,7 @@ const plainEligible = {
   dateDecision: "2023-06-15",
   actionContentieuse: "non",
   typeDecision: ["jugement_premiere_instance"],
-  piecesProc: ["assignation", "ecritures"],
+  piecesProc: ["acte_introductif", "ecritures"],
   preuvesDiligences: true,
 };
 
@@ -24,7 +24,7 @@ describe("TestEligibilite", () => {
       expect(test.dateDecision).toEqual(new Date("2023-06-15"));
       expect(test.actionContentieuse).toBe(ActionContentieuse.Non);
       expect(test.typeDecision).toEqual([TypeDecision.JugementPremiereInstance]);
-      expect(test.piecesProc).toEqual([PieceProcedure.Assignation, PieceProcedure.Ecritures]);
+      expect(test.piecesProc).toEqual([PieceProcedure.ActeIntroductif, PieceProcedure.Ecritures]);
       expect(test.preuvesDiligences).toBe(true);
     });
 
@@ -49,6 +49,14 @@ describe("TestEligibilite", () => {
       expect(test.estEligible).toBe(true);
     });
 
+    it("est éligible avec plusieurs décisions de justice", () => {
+      const test = plainToInstance(TestEligibilite, {
+        ...plainEligible,
+        typeDecision: ["jugement_premiere_instance", "arret_cour_appel"],
+      });
+      expect(test.estEligible).toBe(true);
+    });
+
     it("est non éligible si la date est prescrite", () => {
       const test = plainToInstance(TestEligibilite, { ...plainEligible, dateDecision: "2015-01-01" });
       expect(test.estEligible).toBe(false);
@@ -61,6 +69,11 @@ describe("TestEligibilite", () => {
 
     it("est non éligible si aucune décision de justice", () => {
       const test = plainToInstance(TestEligibilite, { ...plainEligible, typeDecision: [] });
+      expect(test.estEligible).toBe(false);
+    });
+
+    it("est non éligible si typeDecision contient 'aucune'", () => {
+      const test = plainToInstance(TestEligibilite, { ...plainEligible, typeDecision: ["aucune"] });
       expect(test.estEligible).toBe(false);
     });
 

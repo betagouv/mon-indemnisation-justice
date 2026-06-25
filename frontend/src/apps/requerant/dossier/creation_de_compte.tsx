@@ -22,6 +22,7 @@ interface Routes {
   connexion: string;
   inscriptionFranceConnect: string;
   cgu: string;
+  creerCompte?: string;
 }
 
 const token: string = args.token;
@@ -61,7 +62,7 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
   const creerLeCompte = async function () {
     setSauvegardeEnCours(true);
 
-    const response = await fetch(`/bris-de-porte/creer-compte`, {
+    const response = await fetch(routes.creerCompte ?? `/bris-de-porte/creer-compte`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -135,19 +136,19 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                         </a>
                       </p>
                     </div>
-
+                    
                     <div className="fr-grid-row fr-grid-row--center">
-                      <div className="fr-notice fr-notice--info fr-mb-2w">
-                        <div className="fr-container">
-                          <div className="fr-notice__body">
-                            <p>
-                              FranceConnect est la solution proposée par l’État
-                              pour sécuriser et simplifier la connexion à vos
-                              services en ligne
-                            </p>
-                          </div>
+                    <div className="fr-notice fr-notice--info fr-mb-2w">
+                      <div className="fr-container">
+                        <div className="fr-notice__body">
+                          <p>
+                            FranceConnect est la solution proposée par l'État
+                            pour sécuriser et simplifier la connexion à vos
+                            services en ligne
+                          </p>
                         </div>
                       </div>
+                    </div>
 
                       <FranceConnectButton
                         url={routes.inscriptionFranceConnect}

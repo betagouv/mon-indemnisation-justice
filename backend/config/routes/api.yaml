@@ -1,3 +1,9 @@
+public:
+  resource:
+    path: ../../src/Api/Public/
+    namespace: MonIndemnisationJustice\Api\Public
+  type: attribute
+
 requerant:
   resource:
     path: ../../src/Api/Requerant/
