@@ -7,6 +7,7 @@ import { SchemaEtapeTypeDecision } from "../formulaires/eligibilite.schemas";
 import { saveCritere, critereDecisionsJustice } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
+import { NavButtonsBloque } from "./NavButtonsBloque";
 import { useInjection } from "inversify-react";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
@@ -23,7 +24,7 @@ const DECISIONS_DISPONIBLES = [
   TypeDecision.ArretCourCassation,
 ];
 
-export function StepTypeDecision({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
+export function StepTypeDecision({ onPrecedent, onSuivant, onAnnuler, isLastStep, test }: StepProps) {
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeTypeDecision },
@@ -103,11 +104,10 @@ export function StepTypeDecision({ onPrecedent, onSuivant, isLastStep, test }: S
           ) : null
         }
       />
-      <NavButtons
-        onPrecedent={onPrecedent}
-        isLastStep={isLastStep}
-        peutContinuer={!aucuneSelectionnee}
-      />
+      {aucuneSelectionnee
+        ? <NavButtonsBloque />
+        : <NavButtons onPrecedent={onPrecedent} onAnnuler={onAnnuler} isLastStep={isLastStep} />
+      }
     </form>
   );
 }

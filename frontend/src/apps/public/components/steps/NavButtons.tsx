@@ -2,34 +2,33 @@ import React from "react";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 
 type NavButtonsProps = {
-  onPrecedent: () => void;
+  onPrecedent?: () => void;
+  onAnnuler?: () => void;
   isLastStep?: boolean;
   peutContinuer?: boolean;
 };
 
-export function NavButtons({ onPrecedent, isLastStep, peutContinuer = true }: NavButtonsProps) {
+export function NavButtons({ onPrecedent, onAnnuler, isLastStep, peutContinuer = true }: NavButtonsProps) {
+  type Btn = React.ComponentProps<typeof ButtonsGroup>["buttons"][number];
+
+  const buttons: Btn[] = [
+    ...(onAnnuler
+      ? [{ priority: "tertiary no outline" as const, nativeButtonProps: { type: "button" as const }, onClick: onAnnuler, children: "Annuler" }]
+      : []),
+    ...(onPrecedent
+      ? [{ priority: "secondary" as const, iconId: "fr-icon-arrow-left-line" as const, iconPosition: "left" as const, nativeButtonProps: { type: "button" as const }, onClick: onPrecedent, children: "Précédent" }]
+      : []),
+    ...(peutContinuer
+      ? [{ nativeButtonProps: { type: "submit" as const }, children: isLastStep ? "Voir le résultat" : "Étape suivante" }]
+      : []),
+  ];
+
   return (
     <ButtonsGroup
       className="fr-mt-3w"
       inlineLayoutWhen="always"
-      buttons={[
-        {
-          priority: "tertiary no outline",
-          iconId: "fr-icon-arrow-left-line",
-          iconPosition: "left",
-          nativeButtonProps: { type: "button" },
-          onClick: onPrecedent,
-          children: "Retour",
-        },
-        ...(peutContinuer
-          ? [
-              {
-                nativeButtonProps: { type: "submit" as const },
-                children: isLastStep ? "Voir le résultat" : "Continuer",
-              },
-            ]
-          : []),
-      ]}
+      alignment="right"
+      buttons={buttons as [Btn, ...Btn[]]}
     />
   );
 }

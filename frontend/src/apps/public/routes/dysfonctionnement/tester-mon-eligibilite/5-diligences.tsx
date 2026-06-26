@@ -41,6 +41,7 @@ function DiligencesRoute() {
           await manager.soumettre();
           navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/resultat" });
         }}
+        onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
         isLastStep
       />
     </Layout>

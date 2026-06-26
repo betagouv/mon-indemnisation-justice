@@ -7,10 +7,11 @@ import { SchemaEtapeActionContentieuse } from "../formulaires/eligibilite.schema
 import { saveCritere, critereActionContentieuse } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
+import { NavButtonsBloque } from "./NavButtonsBloque";
 import { useInjection } from "inversify-react";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
-export function StepActionContentieuse({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
+export function StepActionContentieuse({ onPrecedent, onSuivant, onAnnuler, isLastStep, test }: StepProps) {
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
 
   const formulaire = useForm({
@@ -87,9 +88,11 @@ export function StepActionContentieuse({ onPrecedent, onSuivant, isLastStep, tes
       />
       <formulaire.Subscribe
         selector={(state) => state.values.actionContentieuse}
-        children={(actionContentieuse) => (
-          <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} peutContinuer={actionContentieuse !== ActionContentieuse.Oui} />
-        )}
+        children={(actionContentieuse) =>
+          actionContentieuse === ActionContentieuse.Oui
+            ? <NavButtonsBloque />
+            : <NavButtons onPrecedent={onPrecedent} onAnnuler={onAnnuler} isLastStep={isLastStep} />
+        }
       />
     </form>
   );

@@ -37,6 +37,7 @@ function PiecesProcedureRoute() {
         test={test}
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/3-type-decision" })}
         onSuivant={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/5-diligences" })}
+        onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
       />
     </Layout>
   );

@@ -8,6 +8,7 @@ import { saveCritere, criterePrescription } from "@/apps/public/services/eligibi
 import { SchemaEtapeDateDecision } from "../formulaires/eligibilite.schemas";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
+import { NavButtonsBloque } from "./NavButtonsBloque";
 import { useInjection } from "inversify-react";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 import { dateChiffre } from "@/common/services/date";
@@ -32,7 +33,7 @@ function ExemplePrescription() {
   );
 }
 
-export function StepDateDecision({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
+export function StepDateDecision({ onPrecedent, onSuivant, onAnnuler, isLastStep, test }: StepProps) {
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
 
   const formulaire = useForm({
@@ -112,11 +113,10 @@ export function StepDateDecision({ onPrecedent, onSuivant, isLastStep, test }: S
             return null;
           }}
         />
-        <NavButtons
-          onPrecedent={onPrecedent}
-          isLastStep={isLastStep}
-          peutContinuer={!dateDecision || prescription.rempli}
-        />
+        {dateDecision && !prescription.rempli
+          ? <NavButtonsBloque />
+          : <NavButtons onPrecedent={onPrecedent} onAnnuler={onAnnuler} isLastStep={isLastStep} peutContinuer={!dateDecision || prescription.rempli} />
+        }
       </form>
     </>
   );

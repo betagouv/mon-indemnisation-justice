@@ -9,7 +9,7 @@ import { NavButtons } from "./NavButtons";
 import { useInjection } from "inversify-react";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
-export function StepDiligences({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
+export function StepDiligences({ onPrecedent, onSuivant, onAnnuler, isLastStep, test }: StepProps) {
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
 
   const formulaire = useForm({
@@ -81,7 +81,7 @@ export function StepDiligences({ onPrecedent, onSuivant, isLastStep, test }: Ste
             ) : null
           }
         />
-        <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} />
+        <NavButtons onPrecedent={onPrecedent} onAnnuler={onAnnuler} isLastStep={isLastStep} />
       </form>
     </>
   );

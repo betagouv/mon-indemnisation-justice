@@ -7,6 +7,7 @@ import { SchemaEtapePiecesProc } from "../formulaires/eligibilite.schemas";
 import { saveCritere, critereDocumentsProc } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
+import { NavButtonsBloque } from "./NavButtonsBloque";
 import { useInjection } from "inversify-react";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
@@ -29,7 +30,7 @@ const PIECES_DISPONIBLES = [
   PieceProcedure.DocumentsProcedure,
 ];
 
-export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
+export function StepPiecesProc({ onPrecedent, onSuivant, onAnnuler, isLastStep, test }: StepProps) {
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapePiecesProc },
@@ -109,11 +110,10 @@ export function StepPiecesProc({ onPrecedent, onSuivant, isLastStep, test }: Ste
           ) : null
         }
       />
-      <NavButtons
-        onPrecedent={onPrecedent}
-        isLastStep={isLastStep}
-        peutContinuer={!aucuneSelectionnee}
-      />
+      {aucuneSelectionnee
+        ? <NavButtonsBloque />
+        : <NavButtons onPrecedent={onPrecedent} onAnnuler={onAnnuler} isLastStep={isLastStep} />
+      }
     </form>
   );
 }

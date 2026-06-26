@@ -37,6 +37,7 @@ function DateDecisionRoute() {
         test={test}
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite" })}
         onSuivant={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/2-action-contentieuse" })}
+        onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
       />
     </Layout>
   );

@@ -1,14 +1,13 @@
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import { NavButtons, NavButtonsBloque, TOTAL_STEPS } from "@/apps/public/components/steps";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "@/apps/public/components/Layout";
 import { usePublicNavigate } from "@/apps/public/routeur";
-import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
-import { saveCritere, critereProcedureTerminee, clearCriteres } from "@/apps/public/services/eligibiliteStore";
+import { saveCritere, critereProcedureTerminee } from "@/apps/public/services/eligibiliteStore";
 import { useInjection } from "inversify-react";
 import { container } from "@/apps/public/container";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
@@ -57,20 +56,12 @@ function TestEligibiliteRoute() {
                   Une demande de réparation au titre d’un déni de justice ne peut être déposée qu’après que la juridiction concernée a statué.
                 </p>
                 <p>
-                  Vous pourrez renouveler votre démarche une fois la décision rendue. 
+                  Vous pourrez renouveler votre démarche une fois la décision rendue.
                 </p>
               </>
             }
           />
-          <Button
-            onClick={() => {
-              manager.effacer();
-              clearCriteres();
-              navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" });
-            }}
-          >
-            Retour à l'accueil
-          </Button>
+          <NavButtonsBloque />
         </>
       ) : (
         <>
@@ -81,33 +72,9 @@ function TestEligibiliteRoute() {
             nextTitle="Date de la décision"
           />
 
-          <RadioButtons
-            legend="La juridiction concernée a-t-elle rendu sa décision ?"
-            hintText="Vous ne pouvez poursuivre ce test que si la juridiction dont vous souhaitez contester la durée de traitement a rendu sa décision. "
-            options={[
-              {
-                label: "Oui",
-                nativeInputProps: {
-                  value: "oui",
-                  checked: procedureTerminee === true,
-                  onChange: () => setProcedureTerminee(true),
-                },
-              },
-              {
-                label: "Non",
-                nativeInputProps: {
-                  value: "non",
-                  checked: procedureTerminee === false,
-                  onChange: () => setProcedureTerminee(false),
-                },
-              },
-            ]}
-          />
-
-          <Button
-            className="fr-mt-2w"
-            disabled={procedureTerminee === undefined}
-            onClick={() => {
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
               manager.get() ?? manager.creer();
               manager.modifier({ procedureTerminee: procedureTerminee! });
               if (procedureTerminee) {
@@ -118,8 +85,33 @@ function TestEligibiliteRoute() {
               }
             }}
           >
-            Suivant
-          </Button>
+            <RadioButtons
+              legend="La juridiction concernée a-t-elle rendu sa décision ?"
+              hintText="Vous ne pouvez poursuivre ce test que si la juridiction dont vous souhaitez contester la durée de traitement a rendu sa décision. "
+              options={[
+                {
+                  label: "Oui",
+                  nativeInputProps: {
+                    value: "oui",
+                    checked: procedureTerminee === true,
+                    onChange: () => setProcedureTerminee(true),
+                  },
+                },
+                {
+                  label: "Non",
+                  nativeInputProps: {
+                    value: "non",
+                    checked: procedureTerminee === false,
+                    onChange: () => setProcedureTerminee(false),
+                  },
+                },
+              ]}
+            />
+            <NavButtons
+              onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
+              peutContinuer={procedureTerminee !== undefined}
+            />
+          </form>
         </>
       )}
     </Layout>

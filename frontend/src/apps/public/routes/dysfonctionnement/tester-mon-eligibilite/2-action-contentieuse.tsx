@@ -37,6 +37,7 @@ function ActionContentieuseRoute() {
         test={test}
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/1-date-decision" })}
         onSuivant={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/3-type-decision" })}
+        onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
       />
     </Layout>
   );

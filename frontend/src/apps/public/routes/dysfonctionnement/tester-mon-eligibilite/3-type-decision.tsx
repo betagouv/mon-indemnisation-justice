@@ -37,6 +37,7 @@ function TypeDecisionRoute() {
         test={test}
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/2-action-contentieuse" })}
         onSuivant={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure" })}
+        onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
       />
     </Layout>
   );
