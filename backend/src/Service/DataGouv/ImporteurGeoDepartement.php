@@ -6,14 +6,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\GeoRegion;
 
-class ImporteurGeoDepartement implements DataGouvProcessor
+class ImporteurGeoDepartement extends AbstractImporteurDataGouv
 {
     // Liste des départements français métropolitains, d'outre mer et les COM ainsi que leurs préfectures https://www.data.gouv.fr/fr/datasets/liste-des-departements-francais-metropolitains-doutre-mer-et-les-com-ainsi-que-leurs-prefectures/
-    public const RESOURCE_GEO_DEPARTEMENT = '8603852d-9ae4-4a32-b65f-d5800106e985';
+    private const RESOURCE_GEO_DEPARTEMENT = '8603852d-9ae4-4a32-b65f-d5800106e985';
 
     public function __construct(
-        protected readonly EntityManagerInterface $entityManager,
+        protected readonly EntityManagerInterface $em,
     ) {
+        parent::__construct();
     }
 
     public function getResource(): string
@@ -21,28 +22,39 @@ class ImporteurGeoDepartement implements DataGouvProcessor
         return self::RESOURCE_GEO_DEPARTEMENT;
     }
 
-    public function processRecord(array $record): void
+    /**
+     * @param array{
+     *     code: string,
+     *     type: string,
+     *     nom: string,
+     *     chefLieu: string,
+     *     region: string,
+     *     debutValidite: string,
+     *     finValidite: string|null,
+     * } $entree
+     */
+    protected function traiterEntree(array $entree): bool
     {
         /* @var GeoDepartement $departement */
-        $departement = $this->entityManager->getRepository(GeoDepartement::class)->find($record['code']);
+        $departement = $this->em->getRepository(GeoDepartement::class)->find($entree['code']);
 
         if (null === $departement) {
-            $region = $this->entityManager->getRepository(GeoRegion::class)->findOneBy(['nom' => $record['region']]);
+            $region = $this->em->getRepository(GeoRegion::class)->findOneBy(['nom' => $entree['region']]);
 
-            $departement = (new GeoDepartement())
-                ->setCode($record['code'])
+            $departement = new GeoDepartement()
+                ->setCode($entree['code'])
                 ->setDeploye(false)
-                ->setNom($record['nom'])
-                ->setRegion($region)
-            ;
+                ->setNom($entree['nom'])
+                ->setRegion($region);
         }
 
-        $this->entityManager->persist($departement);
-        $this->entityManager->flush();
+        $this->em->persist($departement);
+
+        return true;
     }
 
-    public function onProcessed(): void
+    protected function apresImport(): void
     {
-        // TODO: Implement onProcessed() method.
+        $this->em->flush();
     }
 }
