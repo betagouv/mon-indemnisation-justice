@@ -1,13 +1,13 @@
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { NavButtons, NavButtonsBloque, TOTAL_STEPS } from "@/apps/public/components/steps";
+import { NavButtons, BlockedNavButtons, TOTAL_STEPS } from "@/apps/public/components/steps";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "@/apps/public/components/Layout";
 import { usePublicNavigate } from "@/apps/public/routeur";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
-import { saveCritere, critereProcedureTerminee } from "@/apps/public/services/eligibiliteStore";
+import { saveCritere, critereProcedureTerminee, clearCriteres } from "@/apps/public/services/eligibiliteStore";
 import { useInjection } from "inversify-react";
 import { container } from "@/apps/public/container";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
@@ -61,7 +61,7 @@ function TestEligibiliteRoute() {
               </>
             }
           />
-          <NavButtonsBloque />
+          <BlockedNavButtons onRetour={() => { manager.effacer(); clearCriteres(); navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" }); }} />
         </>
       ) : (
         <>

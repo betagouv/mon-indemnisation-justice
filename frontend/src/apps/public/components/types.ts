@@ -28,6 +28,7 @@ export type StepProps = {
   onPrecedent: () => void;
   onSuivant: () => void | Promise<void>;
   onAnnuler?: () => void;
+  onRetour?: () => void;
   isLastStep?: boolean;
   test?: TestEligibilite;
 };

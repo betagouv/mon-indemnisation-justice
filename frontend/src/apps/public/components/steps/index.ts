@@ -1,7 +1,8 @@
 export const TOTAL_STEPS = 6;
 
+export { ConditionalButtonsGroup } from "./ConditionalButtonsGroup";
 export { NavButtons } from "./NavButtons";
-export { NavButtonsBloque } from "./NavButtonsBloque";
+export { BlockedNavButtons } from "./BlockedNavButtons";
 export { StepDateDecision } from "./StepDateDecision";
 export { StepActionContentieuse } from "./StepActionContentieuse";
 export { StepTypeDecision } from "./StepTypeDecision";

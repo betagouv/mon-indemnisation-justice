@@ -8,10 +8,13 @@ import { Layout } from "@/apps/public/components/Layout";
 import { StepPiecesProc } from "@/apps/public/components/steps/StepPiecesProc";
 import { container } from "@/apps/public/container";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
+import { useInjection } from "inversify-react";
+import { clearCriteres } from "@/apps/public/services/eligibiliteStore";
 
 
 function PiecesProcedureRoute() {
   const navigate = usePublicNavigate();
+  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
   const { test } = Route.useLoaderData();
 
   return (
@@ -38,6 +41,7 @@ function PiecesProcedureRoute() {
         onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/3-type-decision" })}
         onSuivant={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/5-diligences" })}
         onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
+        onRetour={() => { manager.effacer(); clearCriteres(); navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" }); }}
       />
     </Layout>
   );
