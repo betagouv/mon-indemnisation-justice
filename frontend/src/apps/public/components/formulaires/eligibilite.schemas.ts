@@ -7,18 +7,14 @@ const valeursTypeDecision = [
   TypeDecision.JugementPremiereInstance,
   TypeDecision.ArretCourAppel,
   TypeDecision.ArretCourCassation,
-  TypeDecision.Aucune,
 ] as const;
 
 const valeursPieceProcedure = [
-  PieceProcedure.Assignation,
-  PieceProcedure.DecisionsJuge,
-  PieceProcedure.Calendrier,
+  PieceProcedure.ActeIntroductif,
   PieceProcedure.Ecritures,
   PieceProcedure.Convocations,
-  PieceProcedure.Renvoi,
   PieceProcedure.Echanges,
-  PieceProcedure.Appel,
+  PieceProcedure.DocumentsProcedure,
 ] as const;
 
 export const SchemaEtapeDateDecision = z.object({
@@ -41,19 +37,11 @@ export const SchemaEtapeActionContentieuse = z
     }
   });
 
-export const SchemaEtapeTypeDecision = z
-  .object({
-    typeDecision: z.enum(valeursTypeDecision).optional(),
-  })
-  .superRefine((donnees, contexte) => {
-    if (!donnees.typeDecision) {
-      contexte.addIssue({
-        code: "custom",
-        path: ["typeDecision"],
-        message: "Veuillez sélectionner le type de décision",
-      });
-    }
-  });
+export const SchemaEtapeTypeDecision = z.object({
+  typeDecision: z
+    .array(z.enum(valeursTypeDecision))
+    .min(1, { error: "Veuillez sélectionner au moins une décision" }),
+});
 
 export const SchemaEtapePiecesProc = z.object({
   piecesProc: z
