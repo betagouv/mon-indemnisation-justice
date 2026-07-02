@@ -4,9 +4,10 @@ namespace MonIndemnisationJustice\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Repository\GeoCommuneRepository;
 
 #[ORM\Table(name: 'geo_communes')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: GeoCommuneRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class GeoCommune extends GeoDataEntity
 {

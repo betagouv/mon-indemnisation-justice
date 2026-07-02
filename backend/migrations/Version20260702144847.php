@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260630144509 extends AbstractMigration
+final class Version20260702144847 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -24,6 +24,7 @@ final class Version20260630144509 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_1BB6213DFB4274AB ON fdo_etablissements (administration_code)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_1BB6213D4DE7DC5C ON fdo_etablissements (adresse_id)');
         $this->addSql('CREATE INDEX IDX_1BB6213DB2B59251 ON fdo_etablissements (code_postal_id)');
+        $this->addSql('CREATE INDEX unique_nom_etablissement ON fdo_etablissements (nom)');
         $this->addSql('CREATE TABLE fdo_etablissements_code_postaux (etablissement_id UUID NOT NULL, code_postal_id INT NOT NULL, PRIMARY KEY (etablissement_id, code_postal_id))');
         $this->addSql('CREATE INDEX IDX_5E473888FF631228 ON fdo_etablissements_code_postaux (etablissement_id)');
         $this->addSql('CREATE INDEX IDX_5E473888B2B59251 ON fdo_etablissements_code_postaux (code_postal_id)');
@@ -46,7 +47,7 @@ final class Version20260630144509 extends AbstractMigration
         $this->addSql('ALTER TABLE fdo_etablissements_code_postaux DROP CONSTRAINT FK_5E473888B2B59251');
         $this->addSql('DROP TABLE fdo_etablissements');
         $this->addSql('DROP TABLE fdo_etablissements_code_postaux');
-        $this->addSql('ALTER INDEX idx_6ad6c7c46a333750 RENAME TO idx_881877c16a333750');
         $this->addSql('ALTER INDEX idx_6ad6c7c44f36f0fc RENAME TO idx_881877c14f36f0fc');
+        $this->addSql('ALTER INDEX idx_6ad6c7c46a333750 RENAME TO idx_881877c16a333750');
     }
 }
