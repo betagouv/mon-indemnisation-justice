@@ -3,10 +3,14 @@
 namespace MonIndemnisationJustice\Service\DataGouv;
 
 use GuzzleHttp\Client as HttpClient;
+use MonIndemnisationJustice\Entity\Adresse;
 
 abstract class AbstractImporteurDataGouv
 {
     protected HttpClient $client;
+
+    // private const REGEX_FORMAT_ADRESSE = '/^(?P<numero>(\d+|null)) ?(?P<ligne1>.+)(?P<ligne2>-\s.+)\$(?P<code_postal>\d{5,6})\s+(?<commune>.+)$/';
+    private const REGEX_FORMAT_ADRESSE = '/^((?P<numero>\d+)\s+)?(?P<ligne1>.*)(\s+-\s+(?P<ligne2>.+))?(?P<code_postal>\d{5})\s+(?P<commune>.+)$/';
 
     public function __construct()
     {
@@ -101,5 +105,33 @@ abstract class AbstractImporteurDataGouv
                 array_keys($enTetes)
             )
         );
+    }
+
+    /**
+     * Les données d'adresse Data.gouv sont de ce format :
+     *  "null Rue Charles Domercq - Hall 1$33000 Bordeaux"
+     *
+     * Soit :
+     *  [<numéro>] <ligne1> [- <ligne2>]$<code_postal> <commune>
+     */
+    public static function extraireAdresse(string $valeur): ?Adresse
+    {
+        if (!preg_match(self::REGEX_FORMAT_ADRESSE, $valeur, $correspondances)) {
+            return null;
+        }
+
+        [
+            'numero' => $numero,
+            'ligne1' => $ligne1,
+            'ligne2' => $ligne2,
+            'code_postal' => $codePostal,
+            'commune' => $commune,
+        ] = $correspondances;
+
+        return new Adresse()
+            ->setLigne1(!empty($numero) && 'null' !== $numero ? "$numero " : ''.$ligne1)
+            ->setLigne2(!empty($ligne2) ? $ligne2 : null)
+            ->setCodePostal($codePostal)
+            ->setLocalite($commune);
     }
 }

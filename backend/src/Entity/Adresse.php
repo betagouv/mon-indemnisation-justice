@@ -125,6 +125,27 @@ class Adresse
         return $this;
     }
 
+    public function fusionner(Adresse $adresse): Adresse
+    {
+        if ($adresse->getLigne1()) {
+            $this->setLigne1($adresse->getLigne1());
+        }
+
+        if ($adresse->getLigne2()) {
+            $this->setLigne2($adresse->getLigne2());
+        }
+
+        if ($adresse->getCodePostal()) {
+            $this->setCodePostal($adresse->getCodePostal());
+        }
+
+        if ($adresse->getCommune()) {
+            $this->setCommune($adresse->getCommune());
+        }
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Dossier>
      */

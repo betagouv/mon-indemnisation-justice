@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MonIndemnisationJustice\Command;
 
+use MonIndemnisationJustice\Service\DataGouv\ImporteurBrigadeGendarmerie;
 use MonIndemnisationJustice\Service\DataGouv\ImporteurCompetencesTerritorialesFDO;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -14,6 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ImporterDonneesFDOCommand extends Command
 {
     public function __construct(
+        protected readonly ImporteurBrigadeGendarmerie $importeurBrigadeGendarmerie,
         protected readonly ImporteurCompetencesTerritorialesFDO $importeurCompetencesTerritorialesFDO,
     ) {
         parent::__construct();
@@ -22,10 +24,14 @@ class ImporterDonneesFDOCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $conserverFichier = true;
+        $output->write('Import des données de gendarmeries');
+        $totalGendarmeries = $this->importeurBrigadeGendarmerie->importer($conserverFichier);
+        $output->writeln(" <info>OK</info> : $totalGendarmeries importée(s)");
+
+
         $output->write('Import des données de zone de compétence territoriale');
         $totalCompetences = $this->importeurCompetencesTerritorialesFDO->importer($conserverFichier);
         $output->writeln(" <info>OK</info> : $totalCompetences importée(s)");
-
 
         return Command::SUCCESS;
     }
