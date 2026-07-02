@@ -9,6 +9,10 @@ use MonIndemnisationJustice\Entity\FDO\EtablissementFDO;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\GeoCommune;
 use MonIndemnisationJustice\Entity\GeoDepartement;
+use MonIndemnisationJustice\Repository\EtablissementFDORepository;
+use MonIndemnisationJustice\Repository\GeoCodePostalRepository;
+use MonIndemnisationJustice\Repository\GeoCommuneRepository;
+use MonIndemnisationJustice\Repository\GeoDepartementRepository;
 use Psr\Log\LoggerInterface;
 
 class ImporteurBrigadeGendarmerie extends AbstractImporteurDataGouv
@@ -17,6 +21,10 @@ class ImporteurBrigadeGendarmerie extends AbstractImporteurDataGouv
     private const RESOURCE_BRIGADE_GENDARMERIE = '061a5736-8fc2-4388-9e55-8cc31be87fa0';
 
     protected readonly Administration $administration;
+    protected readonly GeoCodePostalRepository $geoCodePostalRepository;
+    protected readonly GeoCommuneRepository $geoCommuneRepository;
+    protected readonly GeoDepartementRepository $geoDepartementRepository;
+    protected readonly EtablissementFDORepository $etablissementFDORepository;
 
     public function __construct(
         protected readonly LoggerInterface $logger,
@@ -25,6 +33,11 @@ class ImporteurBrigadeGendarmerie extends AbstractImporteurDataGouv
         parent::__construct();
 
         $this->administration = $this->em->getRepository(Administration::class)->find(['type' => AdministrationType::GENDARMERIE_NATIONALE]);
+
+        $this->geoCodePostalRepository = $this->em->getRepository(GeoCodePostal::class);
+        $this->geoCommuneRepository = $this->em->getRepository(GeoCommune::class);
+        $this->geoDepartementRepository = $this->em->getRepository(GeoDepartement::class);
+        $this->etablissementFDORepository = $this->em->getRepository(EtablissementFDO::class);
     }
 
     protected function getResource(): string
@@ -54,38 +67,29 @@ class ImporteurBrigadeGendarmerie extends AbstractImporteurDataGouv
      */
     protected function traiterEntree(array $entree): bool
     {
+        if (!empty($entree['identifiant_public_unite'])) {
 
-        $codePostal = $this->em->getRepository(GeoCodePostal::class)->findOneBy(
-            [
-                'codePostal' => $entree['code_postal'],
-            ]
-        ) ?? new GeoCodePostal()
-            ->setCodePostal($entree['code_postal'])
-            ->setCommune(
-                $this->em->getRepository(GeoCommune::class)->find($entree['code_commune_insee']) ?? new GeoCommune()->setCode($entree['code_commune_insee'])->setNom($entree['commune'])
-                ->setDepartement(
-                    $entree['code_postal'] ?
 
-                        $this->em->getRepository(GeoDepartement::class)
-                            ->find($codeDepartement = GeoDepartement::extraireCodeDepuisCodePostal($entree['code_postal'])) ?? new GeoDepartement()->setCode($codeDepartement)->setNom($entree['departement'])
-                        : null
-                )
+            $codePostal = $this->geoCodePostalRepository->getOrCreate(
+                $entree['code_postal'],
+                $this->geoCommuneRepository->getOrCreate(
+                    $entree['code_commune_insee'],
+                    $entree['commune'],
+                    $this->geoDepartementRepository->getOrCreate(
+                        $entree['code_postal'],
+                        $entree['departement']
+                    )
+                ),
             );
 
+            $this->em->persist($codePostal);
 
-        if ($codePostal) {
-            $etablissement = $this->em->getRepository(EtablissementFDO::class)->findOneBy(
-                [
-                    'administration' => $this->administration,
-                    'codePostal' => $codePostal,
-                ]
-            ) ?? new EtablissementFDO()->setAdministration($this->administration)
-                ->setCodePostal($codePostal);
+            $etablissement = $this->etablissementFDORepository->getOrCreate(
+                $this->administration,
+                $codePostal
+            );
 
-            // TODO ajouter l'adresse & le numéro de téléphone
             $adresse = self::extraireAdresse($entree['adresse_geographique']);
-
-            dump($adresse);
 
             $etablissement
                 ->setAdresse($adresse)
@@ -93,14 +97,13 @@ class ImporteurBrigadeGendarmerie extends AbstractImporteurDataGouv
                 ->setNom($entree['service'])
                 ->setIdentifiant($entree['identifiant_public_unite']);
 
+            $this->em->persist($etablissement);
+            $this->em->flush();
+
             return true;
         }
 
-        return false;
-    }
 
-    protected function apresImport(): void
-    {
-        $this->em->flush();
+        return false;
     }
 }

@@ -4,10 +4,12 @@ namespace MonIndemnisationJustice\Service\DataGouv;
 
 use GuzzleHttp\Client as HttpClient;
 use MonIndemnisationJustice\Entity\Adresse;
+use Symfony\Component\Filesystem\Filesystem;
 
 abstract class AbstractImporteurDataGouv
 {
     protected HttpClient $client;
+    protected Filesystem $filesystem;
 
     // private const REGEX_FORMAT_ADRESSE = '/^(?P<numero>(\d+|null)) ?(?P<ligne1>.+)(?P<ligne2>-\s.+)\$(?P<code_postal>\d{5,6})\s+(?<commune>.+)$/';
     private const REGEX_FORMAT_ADRESSE = '/^((?P<numero>\d+)\s+)?(?P<ligne1>.*)(\s+-\s+(?P<ligne2>.+))?(?P<code_postal>\d{5})\s+(?P<commune>.+)$/';
@@ -17,6 +19,7 @@ abstract class AbstractImporteurDataGouv
         $this->client = new HttpClient([
             'base_uri' => 'https://tabular-api.data.gouv.fr',
         ]);
+        $this->filesystem = new Filesystem();
     }
 
     abstract protected function getResource(): string;
@@ -59,15 +62,16 @@ abstract class AbstractImporteurDataGouv
      */
     public function lireRessourceCSV(string $ressource, bool $conserverFichier = false, ?int $limite = null): \Generator
     {
-        $fichier = sys_get_temp_dir()."/data_gouv_$ressource.csv";
+        $fichier = sprintf('%s/data_gouv_%s_%s.csv', sys_get_temp_dir(), $ressource, date('Y-m-d'));
+        $uri = "https://tabular-api.data.gouv.fr/api/resources/$ressource/data/csv/";
 
-        if (file_exists($fichier)) {
+        if ($this->filesystem->exists($fichier)) {
             if (!$conserverFichier) {
-                unlink($fichier);
-                file_put_contents($fichier, file_get_contents("https://tabular-api.data.gouv.fr/api/resources/$ressource/data/csv/"));
+                $this->filesystem->remove($fichier);
+                $this->client->request('GET', $uri, ['sink' => $fichier]);
             }
         } else {
-            file_put_contents($fichier, file_get_contents("https://tabular-api.data.gouv.fr/api/resources/$ressource/data/csv/"));
+            $this->client->request('GET', $uri, ['sink' => $fichier]);
         }
 
         /** @var array|null $enTetes */
@@ -86,7 +90,7 @@ abstract class AbstractImporteurDataGouv
         fclose($source);
 
         if (!$conserverFichier) {
-            unlink($fichier);
+            $this->filesystem->remove($fichier);
         }
     }
 

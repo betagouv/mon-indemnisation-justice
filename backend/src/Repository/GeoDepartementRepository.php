@@ -2,9 +2,9 @@
 
 namespace MonIndemnisationJustice\Repository;
 
-use MonIndemnisationJustice\Entity\GeoDepartement;
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use MonIndemnisationJustice\Entity\GeoDepartement;
 
 /**
  * @extends ServiceEntityRepository<GeoDepartement>
@@ -31,5 +31,12 @@ class GeoDepartementRepository extends ServiceEntityRepository
             ->orderBy('d.code', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    public function getOrCreate(string $codeOuCodePostal, string $nom): ?GeoDepartement
+    {
+        $code = 5 === strlen($codeOuCodePostal) ? GeoDepartement::extraireCodeDepuisCodePostal($codeOuCodePostal) : $codeOuCodePostal;
+
+        return $this->find($code) ?? new GeoDepartement()->setCode($code)->setNom($nom);
     }
 }

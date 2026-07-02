@@ -7,6 +7,8 @@ use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\FDO\EtablissementFDO;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
+use MonIndemnisationJustice\Entity\GeoCommune;
+use MonIndemnisationJustice\Entity\GeoDepartement;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -42,45 +44,39 @@ class ImporteurCompetencesTerritorialesFDO extends AbstractImporteurDataGouv
      */
     protected function traiterEntree(array $entree): bool
     {
-        $typeAdministration = AdministrationType::tryFrom($entree['institution']);
-        $codePostal = $this->em->getRepository(GeoCodePostal::class)->findOneBy(
-            [
-                'codePostal' => $entree['code_postal'],
-            ]
+        $commune = $this->em->getRepository(GeoCommune::class)->getOrCreate(
+            $entree['code_commune'],
+            $entree['libelle_commune'],
+            $this->em->getRepository(GeoDepartement::class)->find(
+                $entree['code_postal']
+            )
         );
+        $typeAdministration = AdministrationType::tryFrom($entree['institution']);
         $administration = $typeAdministration ? $this->em->find(Administration::class, 'PN' === $typeAdministration && $codePostal->getCommune()?->getDepartement()?->estPrefectureDePolice() ? AdministrationType::PREFECTURE_DE_POLICE : $typeAdministration) : null;
-
-        if ($typeAdministration && $administration) {
-            $etablissement = $this->em->getRepository(EtablissementFDO::class)->findOneBy(
-                [
-                    'administration' => $administration,
-                    'codePostal' => $codePostal,
-                ]
-            ) ?? new EtablissementFDO()->setAdministration($administration)
-                ->setCodePostal($codePostal);
-
-            $etablissement
+        $etablissement =
+            $this->em->getRepository(EtablissementFDO::class)->getByNom($entree['service']) ??
+            new EtablissementFDO()
                 ->setIdentifiant($entree['id_service'])
-                ->setNom($entree['service']);
-
-            if (isset($entree['codes_postaux'])) {
-                $etablissement->setCompetences(
-                    $this->em->getRepository(GeoCodePostal::class)->findBy(
-                        [
-                            'codePostal' => explode('-', $entree['codes_postaux']),
-                        ]
+                ->setNom($entree['service'])
+                ->setCodePostal(
+                    $this->em->getRepository(GeoCodePostal::class)->getOrCreate(
+                        $entree['code_postal'],
+                        $commune
                     )
-                );
-            }
+                )
+                ->setAdministration($administration);
 
-            $this->em->persist($etablissement);
+        foreach (explode('-', $entree['codes_postaux']) as $codePostal) {
+            $geoCodePostal = $this->em->getRepository(GeoCodePostal::class)->getOrCreate(
+                $codePostal,
+                $commune
+            );
+            $etablissement->ajouterCompetence($geoCodePostal);
         }
 
-        return true;
-    }
-
-    protected function apresImport(): void
-    {
+        $this->em->persist($etablissement);
         $this->em->flush();
+
+        return true;
     }
 }

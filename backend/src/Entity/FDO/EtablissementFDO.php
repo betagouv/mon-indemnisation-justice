@@ -8,10 +8,12 @@ use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
+use MonIndemnisationJustice\Repository\EtablissementFDORepository;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: EtablissementFDORepository::class)]
 #[ORM\Table(name: 'fdo_etablissements')]
+#[ORM\Index(columns: ['nom'], name: 'unique_nom_etablissement')]
 class EtablissementFDO
 {
     #[ORM\Id]
@@ -26,6 +28,7 @@ class EtablissementFDO
 
     #[ORM\Column(type: 'string')]
     protected string $nom;
+
     #[ORM\Column(type: 'string', length: 16)]
     protected ?string $identifiant = null;
 
@@ -119,13 +122,9 @@ class EtablissementFDO
         return $this->competences;
     }
 
-    public function setCompetences(array $competences): EtablissementFDO
+    public function ajouterCompetence(GeoCodePostal $codePostal): EtablissementFDO
     {
-        $this->competences->clear();
-
-        foreach ($competences as $competence) {
-            $this->competences->add($competence);
-        }
+        $this->competences->add($codePostal);
 
         return $this;
     }
