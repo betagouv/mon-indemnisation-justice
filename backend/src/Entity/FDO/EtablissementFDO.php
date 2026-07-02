@@ -33,7 +33,8 @@ class EtablissementFDO
     #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     protected ?Adresse $adresse = null;
 
-    #[ORM\ManyToOne(GeoCodePostal::class)]
+    #[ORM\ManyToOne(GeoCodePostal::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'code_postal_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected GeoCodePostal $codePostal;
     /**
      * @var Collection<GeoCodePostal>
@@ -91,7 +92,12 @@ class EtablissementFDO
 
     public function setAdresse(?Adresse $adresse): EtablissementFDO
     {
-        $this->adresse = $adresse;
+        // Si une adresse est donnée alors que l'adresse est déjà définie, on fusionne
+        if (null !== $this->adresse && null !== $adresse) {
+            $this->adresse->fusionner($adresse);
+        } else {
+            $this->adresse = $adresse;
+        }
 
         return $this;
     }

@@ -43,24 +43,26 @@ class ImporteurCompetencesTerritorialesFDO extends AbstractImporteurDataGouv
     protected function traiterEntree(array $entree): bool
     {
         $typeAdministration = AdministrationType::tryFrom($entree['institution']);
-        $administration = $typeAdministration ? $this->em->find(Administration::class, $typeAdministration) : null;
+        $codePostal = $this->em->getRepository(GeoCodePostal::class)->findOneBy(
+            [
+                'codePostal' => $entree['code_postal'],
+            ]
+        );
+        $administration = $typeAdministration ? $this->em->find(Administration::class, 'PN' === $typeAdministration && $codePostal->getCommune()?->getDepartement()?->estPrefectureDePolice() ? AdministrationType::PREFECTURE_DE_POLICE : $typeAdministration) : null;
 
         if ($typeAdministration && $administration) {
+            $etablissement = $this->em->getRepository(EtablissementFDO::class)->findOneBy(
+                [
+                    'administration' => $administration,
+                    'codePostal' => $codePostal,
+                ]
+            ) ?? new EtablissementFDO()->setAdministration($administration)
+                ->setCodePostal($codePostal);
 
-
-            $etablissement = new EtablissementFDO()
-                ->setAdministration($administration)
-                ->setCodePostal(
-                    $this->em->getRepository(GeoCodePostal::class)->findOneBy(
-                        [
-                            'codePostal' => $entree['code_postal'],
-                        ]
-                    )
-                )
+            $etablissement
                 ->setIdentifiant($entree['id_service'])
                 ->setNom($entree['service']);
 
-            /*
             if (isset($entree['codes_postaux'])) {
                 $etablissement->setCompetences(
                     $this->em->getRepository(GeoCodePostal::class)->findBy(
@@ -70,7 +72,6 @@ class ImporteurCompetencesTerritorialesFDO extends AbstractImporteurDataGouv
                     )
                 );
             }
-            */
 
             $this->em->persist($etablissement);
         }

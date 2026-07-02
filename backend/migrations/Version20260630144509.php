@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260626153937 extends AbstractMigration
+final class Version20260630144509 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -29,7 +29,7 @@ final class Version20260626153937 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_5E473888B2B59251 ON fdo_etablissements_code_postaux (code_postal_id)');
         $this->addSql('ALTER TABLE fdo_etablissements ADD CONSTRAINT FK_1BB6213DFB4274AB FOREIGN KEY (administration_code) REFERENCES administrations (code) ON DELETE SET NULL NOT DEFERRABLE');
         $this->addSql('ALTER TABLE fdo_etablissements ADD CONSTRAINT FK_1BB6213D4DE7DC5C FOREIGN KEY (adresse_id) REFERENCES adresse (id) ON DELETE CASCADE NOT DEFERRABLE');
-        $this->addSql('ALTER TABLE fdo_etablissements ADD CONSTRAINT FK_1BB6213DB2B59251 FOREIGN KEY (code_postal_id) REFERENCES geo_codes_postaux (id)');
+        $this->addSql('ALTER TABLE fdo_etablissements ADD CONSTRAINT FK_1BB6213DB2B59251 FOREIGN KEY (code_postal_id) REFERENCES geo_codes_postaux (id) ON DELETE SET NULL NOT DEFERRABLE');
         $this->addSql('ALTER TABLE fdo_etablissements_code_postaux ADD CONSTRAINT FK_5E473888FF631228 FOREIGN KEY (etablissement_id) REFERENCES fdo_etablissements (id) NOT DEFERRABLE');
         $this->addSql('ALTER TABLE fdo_etablissements_code_postaux ADD CONSTRAINT FK_5E473888B2B59251 FOREIGN KEY (code_postal_id) REFERENCES geo_codes_postaux (id) NOT DEFERRABLE');
         $this->addSql('ALTER INDEX idx_881877c16a333750 RENAME TO IDX_6AD6C7C46A333750');
@@ -46,7 +46,7 @@ final class Version20260626153937 extends AbstractMigration
         $this->addSql('ALTER TABLE fdo_etablissements_code_postaux DROP CONSTRAINT FK_5E473888B2B59251');
         $this->addSql('DROP TABLE fdo_etablissements');
         $this->addSql('DROP TABLE fdo_etablissements_code_postaux');
-        $this->addSql('ALTER INDEX idx_6ad6c7c44f36f0fc RENAME TO idx_881877c14f36f0fc');
         $this->addSql('ALTER INDEX idx_6ad6c7c46a333750 RENAME TO idx_881877c16a333750');
+        $this->addSql('ALTER INDEX idx_6ad6c7c44f36f0fc RENAME TO idx_881877c14f36f0fc');
     }
 }
