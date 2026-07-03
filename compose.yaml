@@ -120,8 +120,14 @@ services:
         - SCW_REGION=${SCW_REGION:-}
         - SCW_SECRET_KEY=${SCW_SECRET_KEY:-}
         - SENTRY_DSN=${SENTRY_DSN:-}
+    environment:
+      SUPERVISOR_API_USERNAME: mij
+      SUPERVISOR_API_PASSWORD: P4ssword
+      SUPERVISOR_API_PORT: 8003
     env_file:
       - backend/.env.dev
+    ports:
+      - "8003:8003"
 
   test:
     hostname: test

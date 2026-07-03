@@ -1,9 +1,13 @@
-FROM pierrelemee/mij-frankenphp
+FROM pierrelemee/supervisor-docker:0.1.3 AS supervisor
+
+FROM pierrelemee/mij-frankenphp AS php
+
+COPY --from=supervisor /opt/supervisor-api /opt/supervisor-api
 
 # Installer cron, supervisor et screen
 RUN apt update -y && \
     apt upgrade -y --fix-missing && \
-    apt install -y cron supervisor screen
+    apt install -y cron screen
 
 COPY backend /app/
 
@@ -44,20 +48,15 @@ EOF
 
 RUN chmod 0600 /etc/cron.d/taches-mij-job
 
-# Configuration de supervisor
-COPY <<EOF /etc/supervisor/conf.d/supervisord.conf
-[supervisord]
-nodaemon=true
-logfile=/var/log/supervisord.log
-pidfile=/var/run/supervisord.pid
-
+RUN cat <<EOF > /root/commandes.conf
 [program:cron]
 command=/usr/sbin/cron -f
 autostart=true
 autorestart=true
-stdout_logfile=/dev/stdout
-stderr_logfile=/dev/stderr
+stdout_logfile=/var/log/cron.out.log
+stderr_logfile=/var/log/cron.err.log
 EOF
 
-# Lancer supervisor au démarrage
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+ENV SUPERVISOR_CONFIG="/root/commandes.conf"
+
+CMD ["/opt/supervisor-api/supervisor-api"]
