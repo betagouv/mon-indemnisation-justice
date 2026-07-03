@@ -52,7 +52,7 @@ class ImporteurCompetencesTerritorialesFDO extends AbstractImporteurDataGouv
             )
         );
         $typeAdministration = AdministrationType::tryFrom($entree['institution']);
-        $administration = $typeAdministration ? $this->em->find(Administration::class, 'PN' === $typeAdministration && $codePostal->getCommune()?->getDepartement()?->estPrefectureDePolice() ? AdministrationType::PREFECTURE_DE_POLICE : $typeAdministration) : null;
+        $administration = $typeAdministration ? $this->em->find(Administration::class, 'PN' === $typeAdministration && $commune->getDepartement()?->estPrefectureDePolice() ? AdministrationType::PREFECTURE_DE_POLICE : $typeAdministration) : null;
         $etablissement =
             $this->em->getRepository(EtablissementFDO::class)->getByNom($entree['service']) ??
             new EtablissementFDO()

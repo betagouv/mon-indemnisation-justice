@@ -13,7 +13,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EtablissementFDORepository::class)]
 #[ORM\Table(name: 'fdo_etablissements')]
-#[ORM\Index(columns: ['nom'], name: 'unique_nom_etablissement')]
+#[ORM\Index(name: 'unique_nom_etablissement', columns: ['nom'])]
 class EtablissementFDO
 {
     #[ORM\Id]
