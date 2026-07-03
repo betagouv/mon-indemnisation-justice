@@ -11,7 +11,7 @@ on:
       - completed
 
 jobs:
-  deploy:
+  deploy-web:
     runs-on: ubuntu-24.04
     if: ${{ github.event.push || github.event.workflow_run.conclusion == 'success' }}
     steps:
@@ -26,9 +26,30 @@ jobs:
 
       - name: Deploy to prod application
         env:
-          CC_APP_ID: ${{ secrets.CC_APP_PROD_ID }}
+          CC_APP_ID: ${{ secrets.CC_APP_PROD_WEB_ID }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
         run: |
-          clever link $CC_APP_ID
-          clever deploy --alias mij-prod-docker --force --same-commit-policy restart
+          clever link $CC_APP_ID --alias mij-prod-web
+          clever deploy --alias mij-prod-web --force --same-commit-policy restart
+  deploy-worker:
+    runs-on: ubuntu-24.04
+    if: ${{ github.event.push || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch all history
+          fetch-depth: 0
+          ref: prod
+      - name: Install clever tools
+        run: |
+          npm install -g clever-tools
+
+      - name: Deploy to prod application
+        env:
+          CC_APP_ID: ${{ secrets.CC_APP_PROD_WORKER_ID }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+        run: |
+          clever link $CC_APP_ID --alias mij-prod-worker
+          clever deploy --alias mij-prod-worker --force --same-commit-policy restart

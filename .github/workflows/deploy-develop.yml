@@ -3,16 +3,16 @@ name: Deploy to dev app
 on:
   push:
     branches:
-    - develop
+      - develop
 
 jobs:
-  deploy:
+  deploy-web:
+    name: Deploy the web application
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
-          # Fetch all history
-          fetch-depth: 0
+          fetch-depth: 5
           ref: develop
       - name: Install clever tools
         run: |
@@ -20,9 +20,29 @@ jobs:
 
       - name: Deploy to dev application
         env:
-          CC_APP_ID: ${{ secrets.CC_APP_DEV_ID }}
+          CC_APP_ID: ${{ secrets.CC_APP_DEV_WEB_ID }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
         run: |
-          clever link $CC_APP_ID
-          clever deploy --alias precontentieux-dev-docker --force --same-commit-policy restart
+          clever link $CC_APP_ID --alias app-develop-web
+          clever deploy --alias app-develop-web --force --same-commit-policy restart
+  deploy-worker:
+    name: Deploy the worker application
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 5
+          ref: develop
+      - name: Install clever tools
+        run: |
+          npm install -g clever-tools
+
+      - name: Deploy to dev application
+        env:
+          CC_APP_ID: ${{ secrets.CC_APP_DEV_WORKER_ID }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+        run: |
+          clever link $CC_APP_ID --alias app-develop-worker
+          clever deploy --alias app-develop-worker --force --same-commit-policy restart
