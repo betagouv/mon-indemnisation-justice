@@ -59,5 +59,5 @@ stdout_logfile=/dev/stdout
 stderr_logfile=/dev/stderr
 EOF
 
-# Lancer supervisor a démarrage
+# Lancer supervisor au démarrage
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
