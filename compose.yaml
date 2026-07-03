@@ -94,6 +94,35 @@ services:
     ports:
       - "8001:80"
 
+  worker:
+    hostname: worker
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+      dockerfile: .docker/prod/worker.dockerfile
+      args:
+        - APP_DEBUG=${APP_DEBUG:-1}
+        - APP_ENV=${APP_ENV:-dev}
+        - APP_SECRET=${APP_SECRET:-}
+        - BASE_URL=${BASE_URL:-https://mon-indemnisation.justice.gouv.dev}
+        - COMPOSER_OPTS=
+        - DATABASE_URL=${DATABASE_URL:-postgresql://precontentieux:precontentieux@postgres:5432/precondev?serverVersion=15&charset=utf8}
+        - EMAIL_FROM=${EMAIL_FROM:-ne-pas-repondre@mon-indemnisation.justice.gouv.dev}
+        - EMAIL_FROM_LABEL=${EMAIL_FROM_LABEL:-Mon Indemnisation Justice (dev)}
+        - MAILER_DSN=${MAILER_DSN:-smtp://mailpit:1025}
+        - PRECONTENTIEUX_COURRIEL_EQUIPE=${PRECONTENTIEUX_COURRIEL_EQUIPE:-ne-pas-repondre@mon-indemnisation.justice.gouv.dev}
+        - SCW_ACCESS_KEY=${SCW_ACCESS_KEY:-}
+        - SCW_BUCKET=${SCW_BUCKET:-}
+        - SCW_DEFAULT_ORGANIZATION_ID=${SCW_DEFAULT_ORGANIZATION_ID:-}
+        - SCW_DEFAULT_PROJECT_ID=${SCW_DEFAULT_PROJECT_ID:-}
+        - SCW_HOST=${SCW_HOST:-}
+        - SCW_REGION=${SCW_REGION:-}
+        - SCW_SECRET_KEY=${SCW_SECRET_KEY:-}
+        - SENTRY_DSN=${SENTRY_DSN:-}
+    env_file:
+      - backend/.env.dev
+
   test:
     hostname: test
     build:

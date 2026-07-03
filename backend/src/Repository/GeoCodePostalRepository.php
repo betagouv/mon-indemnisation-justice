@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
+use MonIndemnisationJustice\Entity\GeoCommune;
 
 /**
  * @extends ServiceEntityRepository<GeoCodePostal>
@@ -32,12 +33,22 @@ class GeoCodePostalRepository extends ServiceEntityRepository
     {
         return $this
             ->createQueryBuilder('gcp')
-                ->join('gcp.commune', 'gc')
+            ->join('gcp.commune', 'gc')
             ->where('gc.code = :codeInsee')
             ->setParameter('codeInsee', $codeInsee)
             ->orderBy('gcp.codePostal', 'asc')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function getOrCreate(string $codePostal, GeoCommune $commune): GeoCodePostal
+    {
+        $ex = $this->findOneBy([
+            'codePostal' => $codePostal,
+            'commune' => $commune,
+        ]);
+
+        return $ex ?? new GeoCodePostal()->setCodePostal($codePostal)->setCommune($commune);
     }
 }

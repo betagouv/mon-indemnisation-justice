@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\GeoCommune;
 use MonIndemnisationJustice\Entity\GeoDepartement;
 
-class ImporteurGeoCommune implements DataGouvProcessor
+class ImporteurGeoCommune extends AbstractImporteurDataGouv
 {
     // Communes et villes de France https://www.data.gouv.fr/fr/datasets/communes-et-villes-de-france-en-csv-excel-json-parquet-et-feather/
 
@@ -15,8 +15,9 @@ class ImporteurGeoCommune implements DataGouvProcessor
     private const RESOURCE_GEO_COMMUNE = '6989ed1a-8ffb-4ef9-b008-340327c99430';
 
     public function __construct(
-        protected readonly EntityManagerInterface $entityManager,
+        protected readonly EntityManagerInterface $em,
     ) {
+        parent::__construct();
     }
 
     public function getResource(): string
@@ -24,25 +25,28 @@ class ImporteurGeoCommune implements DataGouvProcessor
         return self::RESOURCE_GEO_COMMUNE;
     }
 
-    public function processRecord(array $record): void
+    public function traiterEntree(array $entree): bool
     {
-        if (null !== $record['code_insee']) {
+        if (null !== $entree['code_insee']) {
             /** @var GeoCommune $commune */
-            $commune = $this->entityManager->getRepository(GeoCommune::class)->find($record['code_insee']);
+            $commune = $this->em->getRepository(GeoCommune::class)->find($entree['code_insee']);
             if (null === $commune) {
-                $commune = (new GeoCommune())
-                ->setCode($record['code_insee'])
-                ->setNom($record['nom_standard'])
-                ->setDepartement($this->entityManager->getRepository(GeoDepartement::class)->find($record['dep_code']));
+                $commune = new GeoCommune()
+                    ->setCode($entree['code_insee'])
+                    ->setNom($entree['nom_standard'])
+                    ->setDepartement($this->em->getRepository(GeoDepartement::class)->find($entree['dep_code']));
 
-                $this->entityManager->persist($commune);
-                $this->entityManager->flush();
+                $this->em->persist($commune);
             }
+
+            return true;
         }
+
+        return false;
     }
 
-    public function onProcessed(): void
+    protected function apresImport(): void
     {
-        // TODO: Implement onProcessed() method.
+        $this->em->flush();
     }
 }
