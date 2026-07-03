@@ -7,7 +7,6 @@ use MonIndemnisationJustice\Repository\GeoCodePostalRepository;
 
 #[ORM\Table(name: 'geo_codes_postaux')]
 #[ORM\Entity(repositoryClass: GeoCodePostalRepository::class)]
-#[ORM\Index(name: 'idx_code_postal', columns: ['code_postal'])]
 #[ORM\UniqueConstraint(name: 'unique_code_insee_postal', fields: ['codePostal', 'commune'])]
 #[ORM\HasLifecycleCallbacks]
 class GeoCodePostal extends GeoDataEntity
@@ -17,7 +16,7 @@ class GeoCodePostal extends GeoDataEntity
     #[ORM\Column]
     protected ?int $id = null;
 
-    #[ORM\Column(name: 'code_postal', length: 5)]
+    #[ORM\Column(name: 'code_postal', length: 5, unique: true)]
     /** Le code postal */
     protected string $codePostal;
 
