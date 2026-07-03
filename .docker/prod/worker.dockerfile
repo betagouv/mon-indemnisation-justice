@@ -1,4 +1,4 @@
-FROM pierrelemee/supervisor-docker:0.1.3 AS supervisor
+FROM pierrelemee/supervisor-docker:0.1.5 AS supervisor
 
 FROM pierrelemee/mij-frankenphp AS php
 
@@ -48,15 +48,6 @@ EOF
 
 RUN chmod 0600 /etc/cron.d/taches-mij-job
 
-RUN cat <<EOF > /root/commandes.conf
-[program:cron]
-command=/usr/sbin/cron -f
-autostart=true
-autorestart=true
-stdout_logfile=/var/log/cron.out.log
-stderr_logfile=/var/log/cron.err.log
-EOF
-
-ENV SUPERVISOR_CONFIG="/root/commandes.conf"
+ENV SUPERVISOR_CONFIG="[program:cron]\ncommand=/usr/sbin/cron -f\nautostart=true\nautorestart=true\nstdout_logfile=/var/log/cron.out.log\nstderr_logfile=/var/log/cron.err.log"
 
 CMD ["/opt/supervisor-api/supervisor-api"]
