@@ -4,74 +4,139 @@
     <div class="fr-container fr-container--fluid fr-my-3w">
         <div class="fr-grid-row">
             <div class="fr-col-12">
-
                 <h1>Foire aux questions</h1>
 
-                <h4 id="qui-peut-deposer">Qui peut déposer une demande d’indemnisation ?</h4>
-
-                <p>Toute personne victime d’un bris de porte causé par erreur lors d’une opération de police
-                    judiciaire.</p>
-
-                <h4 id="comment-se-connecter">Comment se connecter à “Mon Indemnisation Justice” ?</h4>
-
-                <p>L’accès à <b>Mon Indemnisation Justice</b> se fait via FranceConnect pour les particuliers.</p>
-
-                <p><a target="_blank" title="France Connect, le dispositif d’identification conçu par l’État pour vous faciliter l’accès à vos
-                    services en ligne" href="https://www.franceconnect.gouv.fr/">FranceConnect</a>
-                    est le dispositif d’identification conçu par l’État pour vous faciliter l’accès à vos
-                    services en ligne en utilisant un de vos comptes déjà existants
-                    (impots.gouv.fr, Ameli, La Poste, etc...).</p>
-
-                <ol>
-                    <li>Cliquez sur <b>« Se connecter avec FranceConnect »</b> sur la page d’accueil.</li>
-                    <li>Sélectionnez le compte que vous souhaitez utiliser (impots.gouv.fr, Ameli, Identité Numérique La Poste, etc.).</li>
-                    <li>Une fois connecté, vous serez automatiquement redirigé vers votre espace personnel sur <b>Mon
-                            Indemnisation Justice</b>.
-                    </li>
-                </ol>
-
-                <h4 id="comment-deposer">Comment déposer une demande ?</h4>
-
-                <p>Rendez vous à votre commissariat ou gendarmerie afin qu’un agent déclare le bris de porte et initie
-                    votre dossier. Vous recevrez ensuite une invitation par email pour compléter votre dossier en
-                    ligne.</p>
-
-                <h4 id="quels-documents">Quels documents dois-je préparer?</h4>
-
-
-                <p>Avant de déposer votre demande, munissez vous des documents suivants :</p>
-
                 <ul>
-                    <li>Une photo de la porte endommagée</li>
-                    <li>Une attestation de non prise en charge du sinistre par votre assurance</li>
-                    <li>Une attestation de non prise en charge du sinistre par votre bailleur (si vous êtes locataire)
-                    </li>
-                    <li>Une copie recto-verso de votre pièce d’identité ou un extrait Kbis de moins de 3 mois (si vous
-                        êtesune personne morale)
-                    </li>
-                    <li>La facture acquittée attestant de la réalité des travaux de remise en état à l'identique</li>
-                    <li>Votre titre de propriété ou votre contrat de bail</li>
+                    <li><a href="#deposer-ma-demande" title="Déposer ma demande">Déposer ma demande</a></li>
+                    <li><a href="#eligibilite" title="Éligibilité à l'indemnisation & conditions de prise en charge">Éligibilité à l'indemnisation & conditions de prise en charge</a></li>
+                    <li><a href="#suivi-dossier" title="Suivi de mon dossier">Suivi de mon dossier</a></li>
+                    <li><a href="#paiement" title="Paiement">Paiement</a></li>
+                    <li><a href="#reperations" title="Réparations">Réparations</a></li>
                 </ul>
 
-                <h4 id="quel-delai">Quel est le délai de traitement ?</h4>
+                <h3 id="deposer-ma-demande">Déposer ma demande</h3>
 
-                <p>Le Bureau du précontentieux s’efforce de traiter les demandes dans les meilleurs délais.</p>
+                <h5>Comment déposer une demande d'indemnisation ?</h5>
 
-                <p>Si vous avez reçu un email d'invitation de <b>Mon Indemnisation Justice</b>, le délai de traitement
-                    de votre demande sera considérablement réduit, car la déclaration préalable des forces de l'ordre
-                    facilite l'instruction de votre dossier.</p>
+                <p>Pour déposer votre demande, rendez-vous <a href="{{ absolute_url(path('app_homepage')) }}" title="Vers la page d'accueil de Mon Indemnisation justice">sur la page d'accueil de <b>Mon Indemnisation Justice</b></a> et identifiez le cas correspondant à votre situation (e-mail d'invitation, avis d'intervention, attestation papier ou absence de document). Les démarches à suivre vous seront alors indiquées.</p>
 
-                <h4 id="comment-verifier">Comment vérifier le versement ?</h4>
+                <h5>Je n'ai pas reçu d'avis d'intervention, que dois-je faire ?</h5>
 
-                <p>Vous recevrez une notification par email lorsque le virement aura été effectué par nos services.</p>
+                <p>Rendez-vous dans votre commissariat ou votre brigade de gendarmerie afin qu'un agent déclare le bris de porte et initie votre dossier sur Mon Indemnisation Justice.</p>
 
-                <h4 id="dois-je-payer">Dois-je payer le serrurier réquisitionné par les forces de l’ordre ?</h4>
+                <p>Vous recevrez ensuite un e-mail contenant un lien vous permettant de vous connecter à notre service en ligne et de compléter votre dossier en joignant les pièces demandées.</p>
 
-                <p>Non. Si le serrurier a été réquisitionné par les forces de l’ordre, vous n’avez pas à régler sa
-                    facture.</p>
+                <p>Retrouvez le commissariat ou la brigade de gendarmerie la plus proche : <a href="https://www.masecurite.interieur.gouv.fr/fr/trouver-un-commissariat-une-gendarmerie" title="le commissariat ou la brigade de gendarmerie">https://www.masecurite.interieur.gouv.fr/fr/trouver-un-commissariat-une-gendarmerie</a>
 
-                <p>Celle-ci est prise en charge par l'État.</p>
+                <h5>Je n'ai pas reçu l'e-mail d'invitation suite à la déclaration des forces de l'ordre.</h5>
 
+                <p>Vérifiez le dossier « Courriers indésirables » de votre boîte courriel.</p>
+
+                <p>Si vous ne trouvez pas cet e-mail, nous vous invitons à contacter l'agent ayant déclaré le bris de porte afin de vérifier l'adresse e-mail renseignée et numéro de téléphone.</p>
+
+                <h5>Quelles sont les pièces obligatoires pour constituer mon dossier ?</h5>
+
+                <p>Selon votre situation, les pièces suivantes peuvent être demandées :</p>
+
+                <ul>
+                    <li>L'avis d'intervention (si l'agent n'a pas déclaré votre bris de porte sur MIJ)</li>
+                    <li>Une photo de la porte endommagée</li>
+                    <li>Une attestation de non prise en charge par votre assurance</li>
+                    <li>Une autorisation de votre bailleur (si vous êtes locataire)</li>
+                    <li>Une copie recto-verso de votre pièce d'identité ou un extrait Kbis de moins de trois mois pour les personnes morales</li>
+                    <li>La facture acquittée des travaux de remise en état à l'identique</li>
+                    <li>Votre contrat de bail ou votre titre de propriété</li>
+                </ul>
+
+                <h5>Puis-je déposer plusieurs pages dans un seul document ?</h5>
+
+                <p>Oui.</p>
+
+                <p>Nous vous recommandons de regrouper l'ensemble des pages d'un même justificatif dans un unique fichier PDF afin de faciliter l'instruction de votre dossier.</p>
+
+                <h5>Puis-je ajouter des documents après avoir déposé ma demande ?</h5>
+
+                <p>Oui.</p>
+
+                <p>Si un agent vous demande des éléments complémentaires, vous pouvez déposer de nouveaux documents en vous connectant à votre espace personnel sur <b>Mon Indemnisation Justice</b>.</p>
+
+                <hr/>
+
+                <h3 id="eligibilite">Éligibilité à l'indemnisation & conditions de prise en charge</h3>
+
+                <h5>Comment tester mon éligibilité ?</h5>
+
+                <p>Vous pouvez vérifier votre éligibilité en remplissant le questionnaire disponible <a href="{{ absolute_url(path('bris_porte_tester_eligibilite')) }}" title="Testez votre éligibilité à l'indemnisation pour un bris de porte">ici</a>.</p>
+
+                <h5>Pourquoi ma demande d'indemnisation est-elle rejetée ?</h5>
+
+                <p>À l'issue de l'instruction, il peut être constaté que les conditions d'indemnisation ne sont pas réunies.</p>
+
+                <p>Vous ne pouvez notamment pas être indemnisé lorsque votre logement était bien celui visé par l'intervention des forces de l'ordre et qu'aucune erreur n'a été commise.</p>
+
+                <h5>Je suis propriétaire bailleur, puis-je être indemnisé ?</h5>
+
+                <p>L'indemnisation n'est pas automatique. Si votre locataire était la personne visée par l'intervention des forces de l'ordre, les dommages causés au logement ne sont pas éligibles à une indemnisation.</p>
+
+                <h5>Je suis locataire. Pourquoi faut-il contacter mon bailleur ?</h5>
+
+                <p>Le bailleur peut être amené à prendre en charge les réparations du logement.</p>
+
+                <p>Si celui-ci refuse d'intervenir, une attestation de non prise en charge devra être jointe à votre dossier afin de permettre son instruction.</p>
+
+                <h5>Pourquoi me demande-t-on une attestation de mon assurance ?</h5>
+
+                <p>Cette attestation permet de vérifier que votre assurance ne prend pas déjà en charge le même dommage.</p>
+
+                <p>Une même réparation ne peut être indemnisée deux fois.</p>
+
+                <hr/>
+
+                <h3 id="suivi-dossier">Suivi de mon dossier</h3>
+
+                <h5>Quel est le délai de traitement de mon dossier ?</h5>
+
+                <p>Une fois votre dossier déposé, celui-ci est étudié par nos services.</p>
+
+                <p>À titre indicatif, le délai moyen d'instruction est compris entre <b>1 et 3 mois</b>.</p>
+
+                <h5>Comment savoir où en est mon dossier ?</h5>
+
+                <p>Connectez-vous à votre espace personnel sur <b>Mon Indemnisation Justice</b> afin de consulter l'état d'avancement de votre dossier.</p>
+
+                <p>Vous recevrez également des notifications par e-mail lors des principales étapes de traitement.</p>
+
+                <h5>Quand serai-je indemnisé(e) ?</h5>
+
+                <p>Après réception de votre déclaration d'acceptation complétée et signée, le versement est effectué dans un délai estimé de <b>2 à 4 semaines</b>.</p>
+
+                <hr/>
+
+                <h3 id="paiement">Paiement</h3>
+
+                <h5>Comment serai-je payé(e) ?</h5>
+
+                <p>L'indemnisation est versée par virement bancaire sur le compte associé au RIB transmis dans votre dossier.</p>
+
+                <h5>Puis-je modifier mon RIB ?</h5>
+
+                <p>Oui.</p>
+
+                <p>Tant que le paiement n'a pas été effectué, vous pouvez transmettre un nouveau relevé d'identité bancaire.</p>
+
+                <hr/>
+
+                <h3 id="reperations">Réparations</h3>
+
+                <h5>Puis-je choisir mon serrurier pour effectuer les réparations ?</h5>
+
+                <p>Oui.</p>
+
+                <p>Vous êtes libre de faire appel au professionnel de votre choix pour réaliser les travaux de remise en état.</p>
+
+                <h5>Puis-je remplacer ma porte par un modèle différent ?</h5>
+
+                <p>L'indemnisation couvre uniquement les travaux de **remise en état à l'identique**. Les améliorations ou montées en gamme (par exemple le remplacement d'une porte classique par une porte blindée) ne sont pas prises en charge.</p>
             </div>
         </div>
     </div>
