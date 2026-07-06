@@ -147,18 +147,6 @@ class Agent implements UserInterface
         return $this;
     }
 
-    public function getSiret(): ?string
-    {
-        return $this->siret;
-    }
-
-    public function setSiret(?string $siret): static
-    {
-        $this->siret = $siret;
-
-        return $this;
-    }
-
     public function getPlaintextRole(): string
     {
         $roles = [];
@@ -427,7 +415,7 @@ class Agent implements UserInterface
 
     public function getNomCourt(): ?string
     {
-        return sprintf('%s. %s', $this->prenom[0], $this->nom);
+        return sprintf('%s. %s', $this->prenom[0], strtoupper($this->nom));
     }
 
     public function getNomComplet($capital = false): ?string

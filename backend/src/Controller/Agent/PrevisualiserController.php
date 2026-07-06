@@ -4,54 +4,39 @@ declare(strict_types=1);
 
 namespace MonIndemnisationJustice\Controller\Agent;
 
+use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/agent/previsualiser', condition: "env('APP_DEBUG')")]
+#[Route('/agent/beta/previsualiser', condition: "env('APP_DEBUG')")]
 class PrevisualiserController extends AbstractController
 {
-    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
-    #[Route('/dossier/{id}/decision', name: 'agent_previsualiser_courrier_decision', methods: ['GET'])]
-    public function previsualiserCourrierDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        $document = $dossier->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);
+    public function __construct(
+        protected readonly EntityManagerInterface $em,
+    ) {
+    }
 
-        if (null === $document) {
-            throw new NotFoundHttpException();
-        }
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/proposition-indemnisation/{dossierId}', name: 'agent_beta_previsualiser_proposition_indemnisation', methods: ['GET'])]
+    public function previsualiserCourrierDossier(
+        Request $request,
+        int $dossierId = 0,
+    ): Response {
+        $dossier = $dossierId > 0 ? $this->em->getRepository(Dossier::class)->find($dossierId) : $this->em->getRepository(Dossier::class)->getDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER);
+
+        $document = $dossier->getOrCreateDocument(DocumentType::TYPE_COURRIER_MINISTERE);
 
         return $this->render($document->getType()->getGabarit(), [
             'dossier' => $document->getDossier(),
-            'corps' => $document?->getCorps(),
-            'contexte' => $document->getMetaDonnee('contexte') ?? [],
-        ]);
-    }
-
-    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
-    #[Route('/dossier/{id}/declaration-acceptation', name: 'agent_previsualiser_declaration_acceptation', methods: ['GET'])]
-    public function previsualiserDeclarationAcceptation(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        return $this->render('courrier/declarationAcceptation.html.twig', [
-            'dossier' => $dossier,
-            'web' => $request->query->getBoolean('w', true),
-        ]);
-    }
-
-    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
-    #[Route('/dossier/{id}/arrete-paiement', name: 'agent_previsualiser_courrier_decision', methods: ['GET'])]
-    public function previsualiserArretePaiementDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        return $this->render('courrier/arretePaiement.html.twig', [
-            'dossier' => $dossier,
-            'web' => $request->query->getBoolean('w', true),
+            'corps' => $document->getCorps(),
+            'contexte' => $request->query->all() ?? $document->getMetaDonnee('contexte') ?? [],
         ]);
     }
 }
