@@ -7,6 +7,7 @@ import { default as react } from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
 import * as path from "path";
 import { defineConfig, loadEnv, normalizePath, UserConfig } from "vite";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import symfonyPlugin from "vite-plugin-symfony";
 
@@ -32,6 +33,7 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
           },
         ],
       }),
+      nodePolyfills(),
       // Espace rédacteur (FIP6)
       tanstackRouter({
         target: "react",

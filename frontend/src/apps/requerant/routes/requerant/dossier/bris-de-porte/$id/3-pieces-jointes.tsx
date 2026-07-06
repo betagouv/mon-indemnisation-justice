@@ -1,23 +1,17 @@
 import {
   AjouterPiecesJointesModale,
-  AjouterPiecesJointesModaleRef,
+  AjouterPiecesJointesModaleRef
 } from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe.tsx";
 import {
   getSchemaValidationPiecesJointes,
-  listerTypesPiecesJointesRequis,
+  listerTypesPiecesJointesRequis
 } from "@/apps/requerant/formulaires/brisDePorte/3-pieces-jointes.schema.ts";
 import { Dossier, PieceJointe } from "@/apps/requerant/models";
-import {
-  PieceJointeType,
-  TypePieceJointe,
-} from "@/apps/requerant/models/TypePieceJointe.ts";
+import { PieceJointeType, TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
-import {
-  DossierManagerInterface,
-  NouvellePieceJointe,
-} from "@/apps/requerant/services/DossierManager";
+import { DossierManagerInterface, NouvellePieceJointe } from "@/apps/requerant/services/DossierManager";
 import classes from "@/apps/requerant/style/form.module.css";
 import { MiseEnAvant } from "@/common/composants/dsfr/MiseEnAvant.tsx";
 import { Requis } from "@/common/composants/dsfr/Requis.tsx";
@@ -27,19 +21,14 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import artworkDocumentAddUrl from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
+import artworkDocumentAddUrl
+  from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document-add.svg?url&no-inline";
 import SideMenu from "@codegouvfr/react-dsfr/SideMenu";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  notFound,
-  redirect,
-  useNavigate,
-  useRouter,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect, useNavigate, useRouter } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { default as React, useMemo, useRef, useState } from "react";
+import { default as React, useEffect, useMemo, useRef, useState } from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$id/3-pieces-jointes",
@@ -195,6 +184,16 @@ function Etape3PiecesJointes() {
       }
     },
   });
+
+  // Forcer tous les boutons sans attributs `type` explicitement définis à être de type "button".
+  // Il s'agit d'un patch temporaire pour éviter au bouton d'affichage / masquage du `SideMenu` de déclencher la soumission du formulaire.
+  // TODO supprimer ceci dès que `react-dsfr` sera à jour avec le correctif de https://github.com/codegouvfr/react-dsfr/issues/500
+  useEffect(() => {
+    const buttons = document.querySelectorAll("button:not([type])");
+    buttons.forEach((button) => {
+      button.setAttribute("type", "button");
+    });
+  }, []);
 
   return (
     <>
