@@ -33,16 +33,18 @@ class PrevisualiserController extends AbstractController
     ): Response {
         $dossier = $dossierId > 0 ? $this->em->getRepository(Dossier::class)->find($dossierId) : $this->em->getRepository(Dossier::class)->getDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER);
 
-        $document = $dossier->getOrCreateDocument(DocumentType::TYPE_COURRIER_MINISTERE);
-
-        return new Response(
-            $this->documentManager->genererCorps(
-                $dossier,
-                $request->query->get('montant'),
-                montantIndemnisation: $request->query->has('montant') ?
-                    floatval($request->query->get('montant')) :
-                    $dossier->getMontantIndemnisation() ?? 1234.56
-            )
+        return $this->render(
+            'courrier/decision.html.twig',
+            [
+                'dossier' => $dossier,
+                'corps' => $this->documentManager->genererCorps(
+                    $dossier,
+                    DocumentType::TYPE_COURRIER_MINISTERE,
+                    montantIndemnisation: $request->query->has('montant') ?
+                        floatval($request->query->get('montant')) :
+                        $dossier->getMontantIndemnisation() ?? 1234.56
+                ),
+            ]
         );
     }
 }

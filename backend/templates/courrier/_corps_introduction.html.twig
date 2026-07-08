@@ -1,13 +1,6 @@
 <p>
-    Vous nous avez adressé une demande d’indemnisation à la suite des dommages causés à la porte du logement situé à/au ….
-    par {% if dossier. %}la police/gendarmerie{% if dossier.brisPorte.dateOperation is not null %} le
-    {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}{% endif %}
-
-    J’accuse réception de votre requête par laquelle vous
-    sollicitez l’indemnisation du préjudice subi en raison de la détérioration de la porte d’entrée du logement sis
+    Vous nous avez adressé une demande d’indemnisation à la suite des dommages causés à la porte du logement situé
     {{ dossier.brisPorte.adresse.ligne1 }} à {{ dossier.brisPorte.adresse.localite|default }}
-    ({{ dossier.brisPorte.adresse.codeDepartemental }}).
-    Cette dégradation aurait été occasionnée au cours d’une opération de police
-    judiciaire
-    .
+    par {% if dossier.brisPorte.typeInstitutionSecuritePublique == constant('MonIndemnisationJustice\\Entity\\AdministrationType::GENDARMERIE_NATIONALE') %} la gendarmerie{% else %} la police{% endif%}{% if dossier.brisPorte.dateOperation is not null %} le
+    {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}{% endif %}.
 </p>

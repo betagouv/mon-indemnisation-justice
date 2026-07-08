@@ -1,5 +1,6 @@
 {% if dossier.estPersonneMorale %}
     {% include 'courrier/decision/propositionIndemnisation/_pi_corps_personne_morale.html.twig' %}
 {% else %}
-    {% include 'courrier/decision/propositionIndemnisation/_pi_corps_personne_physique.html.twig' %}
+    {# TODO en fonction des retours on fera du ménage dans les templates #}
+    {% include 'courrier/decision/propositionIndemnisation/_pi_corps_personne_morale.html.twig' %}
 {% endif %}
