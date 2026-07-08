@@ -9,10 +9,13 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
 use MonIndemnisationJustice\Service\DocumentManager;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -31,7 +34,7 @@ class PrevisualiserController extends AbstractController
 
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
     #[Route('/proposition-indemnisation/{dossierId}', name: 'agent_beta_previsualiser_proposition_indemnisation', methods: ['GET'])]
-    public function previsualiserCourrierDossier(
+    public function propositionIndemnisation(
         Request $request,
         int $dossierId = 0,
     ): Response {
@@ -49,6 +52,49 @@ class PrevisualiserController extends AbstractController
                     montantIndemnisation: $request->query->has('montant') ?
                         floatval($request->query->get('montant')) :
                         $dossier->getMontantIndemnisation() ?? 1234.56
+                ),
+            ]
+        );
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/rejet/{motif}', name: 'agent_beta_previsualiser_rejet_aleatoire', methods: ['GET'])]
+    public function rejetAleatoire(
+        string $motif,
+    ) {
+        return $this->redirectToRoute(
+            'agent_beta_previsualiser_rejet',
+            [
+                'motif' => $motif,
+                'dossierId' => $this->em->getRepository(Dossier::class)->getDossierParEtatAleatoire(EtatDossierType::DOSSIER_KO_A_SIGNER)->getId(),
+            ]
+        );
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/rejet/{dossierId}/{motif}', name: 'agent_beta_previsualiser_rejet', methods: ['GET'])]
+    public function rejet(
+        Request $request,
+        #[MapEntity(Dossier::class, id: 'dossierId')]
+        Dossier $dossier,
+        string $motif,
+    ): Response {
+        $this->toolbar->setMode(WebDebugToolbarListener::DISABLED);
+
+        $motifRejet = MotifRejetBrisPorte::tryFrom(strtoupper($motif));
+
+        if (null === $motifRejet) {
+            throw new BadRequestException('Aucun motif trouvé pour '.strtoupper($motif));
+        }
+
+        return $this->render(
+            'courrier/decision.html.twig',
+            [
+                'dossier' => $dossier,
+                'corps' => $this->documentManager->genererCorps(
+                    $dossier,
+                    DocumentType::TYPE_COURRIER_MINISTERE,
+                    motifRejet: $motifRejet
                 ),
             ]
         );

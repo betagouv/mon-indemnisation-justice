@@ -137,7 +137,7 @@ class DocumentManager
                     'corps' => true,
                 ],
                 $montantIndemnisation ? ['montantIndemnisation' => $montantIndemnisation, 'indemnisation' => true] : [],
-                $motifRejet ? ['motifRejet' => $motifRejet, 'indemnisation' => false] : []
+                $motifRejet ? ['motifRejet' => $motifRejet->value, 'indemnisation' => false] : []
             )
         );
     }

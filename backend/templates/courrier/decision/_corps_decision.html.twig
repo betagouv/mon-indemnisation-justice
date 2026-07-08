@@ -5,7 +5,7 @@
     {% set fdo = "la police" %}
 {% endif%}
 
-{% if indemnisation %}
+{% if indemnisation|default(false) %}
     {% include 'courrier/decision/propositionIndemnisation/_pi_corps.html.twig' %}
 {% else %}
     {% include 'courrier/decision/rejet/_rejet_corps.html.twig' %}

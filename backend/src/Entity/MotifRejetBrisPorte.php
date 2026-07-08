@@ -5,9 +5,9 @@ namespace MonIndemnisationJustice\Entity;
 enum MotifRejetBrisPorte: string
 {
     // Le requérant est le mis en cause
-    case MEC = 'MIS_EN_CAUSE';
+    case MIS_EN_CAUSE = 'MIS_EN_CAUSE';
     // Le requérant est mis en cause par l'intervention d'un chien renifleur
-    case MEC_CHIEN = 'MIS_EN_CAUSE_CHIEN';
+    case MIS_EN_CAUSE_CHIEN = 'MIS_EN_CAUSE_CHIEN';
     // Le locataire est le mis en cause
     case LOCATAIRE = 'LOCATAIRE';
     // Le locataire est mis en cause par l'intervention d'un chien renifleur
