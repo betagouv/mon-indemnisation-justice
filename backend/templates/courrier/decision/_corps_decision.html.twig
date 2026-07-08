@@ -1,3 +1,10 @@
+{% set fdo = "la police/la gendarmerie" %}
+{% if dossier.brisPorte.typeInstitutionSecuritePublique == constant('MonIndemnisationJustice\\Entity\\AdministrationType::GENDARMERIE_NATIONALE') %}
+     {% set fdo = "la gendarmerie" %}
+{% elseif dossier.brisPorte.typeInstitutionSecuritePublique is not null %}
+    {% set fdo = "la police" %}
+{% endif%}
+
 {% if indemnisation %}
     {% include 'courrier/decision/propositionIndemnisation/_pi_corps.html.twig' %}
 {% else %}

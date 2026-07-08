@@ -4,6 +4,7 @@
     <style>
         body {
 
+
             header {
                 display: flex;
                 flex-direction: row;
@@ -12,7 +13,6 @@
                 margin-bottom: 6rem;
 
                 .courrier-decision-courrier-titre {
-                    font-family: 'Marianne', sans-serif;
                     width: 50%;
                     text-align: right;
                     font-weight: bold;
@@ -49,6 +49,7 @@
                     }
 
                     .section-a-droite {
+                        text-align: right;
                         width: calc(7 * 100% / 18);
 
                         &.section-flottante {
@@ -104,8 +105,8 @@
                     <p>
                         {% if dossier.redacteur is not null %}Affaire suivie par : {{ dossier.redacteur.nomCourt }}<br/>{% endif %}
                         Sous-direction des finances, <br/>
-                        de l’immobilier et de la performance<br/>
-                        bureau du precontentieux (FIP6)
+                        de l’immobilier et de la performance (SDFIP)<br/>
+                        Bureau du precontentieux (FIP6)<br/>
                         <a href="mailto:precontentieux.dsj-fip6@justice.gouv.fr">precontentieux.dsj-fip6@justice.gouv.fr</a><br/>
                         Référence à rappeler : {{ dossier.reference }}
                 </p>
@@ -119,10 +120,14 @@
 
             <div class="section-a-droite section-flottante">
                 <p>
-                    {{ dossier.requerantPersonne.nomCourant(capital: true) }}{% if dossier.courrielRequerant != null %}
-                        <br/>
-                        Courriel: <a
-                                href="mailto:{{ dossier.courrielRequerant }}">{{ dossier.courrielRequerant }}</a>
+                    {% if dossier.estPersonneMorale %}
+                        {{ dossier.requerantPersonneMorale.libelle(true) }}
+                    {% else %}
+                    {{ dossier.requerantPersonne.civilite.libelle }} {{ dossier.requerantPersonne.nomCourant(civilite: false, capital: true) }}{% if dossier.courrielRequerant != null %}
+                    {% endif %}
+                    <br/>
+                    Courriel: <a
+                            href="mailto:{{ dossier.courrielRequerant }}">{{ dossier.courrielRequerant }}</a>
                     {% endif %}
                 </p>
             </div>

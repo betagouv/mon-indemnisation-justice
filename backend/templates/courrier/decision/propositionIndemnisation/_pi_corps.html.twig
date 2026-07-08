@@ -1,6 +1,18 @@
-{% if dossier.estPersonneMorale %}
-    {% include 'courrier/decision/propositionIndemnisation/_pi_corps_personne_morale.html.twig' %}
-{% else %}
-    {# TODO en fonction des retours on fera du ménage dans les templates #}
-    {% include 'courrier/decision/propositionIndemnisation/_pi_corps_personne_morale.html.twig' %}
-{% endif %}
+{% include 'courrier/decision/_corps_introduction.html.twig' %}
+<p>
+    Après examen de votre demande et de vos documents justificatifs, le ministère de la Justice s’engage à prendre en charge les frais de réparation/remplacement de cette porte.
+</p>
+
+<p>
+    Au regard de la facture acquittée transmise/des devis transmis, nous vous proposons une indemnité de {{ montantIndemnisation|montant_litteral }} euros ({{ montantIndemnisation|number_format(2, ',', ' ') }} EUR).
+</p>
+
+<p>
+    Si cette proposition vous convient, vous devez compléter et signer la déclaration d’acceptation ci-jointe et la retourner via votre
+    espace personnel.
+</p>
+
+<p>
+    Si cette proposition ne vous convient pas, vous pouvez engager une action en justice dirigée contre l’Agent judiciaire de l’État devant la juridiction civile compétente.
+</p>
+{% include 'courrier/decision/_corps_formule_cloture.html.twig' %}

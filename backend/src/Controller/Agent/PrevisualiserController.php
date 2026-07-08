@@ -11,6 +11,8 @@ use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,6 +24,8 @@ class PrevisualiserController extends AbstractController
     public function __construct(
         protected readonly EntityManagerInterface $em,
         protected readonly DocumentManager $documentManager,
+        #[Autowire(service: 'web_profiler.debug_toolbar')]
+        protected readonly WebDebugToolbarListener $toolbar,
     ) {
     }
 
@@ -31,6 +35,8 @@ class PrevisualiserController extends AbstractController
         Request $request,
         int $dossierId = 0,
     ): Response {
+        $this->toolbar->setMode(WebDebugToolbarListener::DISABLED);
+
         $dossier = $dossierId > 0 ? $this->em->getRepository(Dossier::class)->find($dossierId) : $this->em->getRepository(Dossier::class)->getDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER);
 
         return $this->render(

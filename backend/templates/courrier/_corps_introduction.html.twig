@@ -1,6 +1,0 @@
-<p>
-    Vous nous avez adressé une demande d’indemnisation à la suite des dommages causés à la porte du logement situé
-    {{ dossier.brisPorte.adresse.ligne1 }} à {{ dossier.brisPorte.adresse.localite|default }}
-    par {% if dossier.brisPorte.typeInstitutionSecuritePublique == constant('MonIndemnisationJustice\\Entity\\AdministrationType::GENDARMERIE_NATIONALE') %} la gendarmerie{% else %} la police{% endif%}{% if dossier.brisPorte.dateOperation is not null %} le
-    {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}{% endif %}.
-</p>

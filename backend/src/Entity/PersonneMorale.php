@@ -65,6 +65,16 @@ class PersonneMorale
         return $this;
     }
 
+    /**
+     * @param bool|null $defini l'article, défini ou non, à utiliser.
+     *
+     * "Ex: l'assocation Machin" ou "un Syndic Truc"
+     */
+    public function getLibelle(?bool $defini): string
+    {
+        return sprintf('%s %s', $this->type->getLibelle($defini), $this->raisonSociale);
+    }
+
     public function getRaisonSociale(): ?string
     {
         return $this->raisonSociale;

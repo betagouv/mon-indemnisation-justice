@@ -10,6 +10,7 @@ use League\Flysystem\UnableToWriteFile;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Filesystem\Path;
@@ -126,7 +127,7 @@ class DocumentManager
         return $this->storage->read($document->getFilename());
     }
 
-    public function genererCorps(Dossier $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?string $motifRejet = null): string
+    public function genererCorps(Dossier $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?MotifRejetBrisPorte $motifRejet = null): string
     {
         return $this->twig->render(
             $type->getGabaritCorps(),
@@ -141,7 +142,7 @@ class DocumentManager
         );
     }
 
-    public function generer(Dossier $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?string $motifRejet = null): Document
+    public function generer(Dossier $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?MotifRejetBrisPorte $motifRejet = null): Document
     {
         if (!$type->estEditableAgent()) {
             throw new \LogicException("Les documents de type '$type->value' ne sont pas éditables");
@@ -153,7 +154,7 @@ class DocumentManager
                 $this->genererCorps($dossier, $type, $montantIndemnisation, $motifRejet)
             )->setMetaDonnees(array_merge(
                 $montantIndemnisation ? ['montantIndemnisation' => $montantIndemnisation, 'indemnisation' => true] : [],
-                $motifRejet ? ['motifRejet' => $motifRejet, 'indemnisation' => true] : []
+                $motifRejet ? ['motifRejet' => $motifRejet->value, 'indemnisation' => false] : []
             ));
 
         $document = $this->imprimanteCourrier->imprimerDocument($document)

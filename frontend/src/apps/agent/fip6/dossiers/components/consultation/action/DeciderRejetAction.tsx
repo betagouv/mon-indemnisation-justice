@@ -1,12 +1,6 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { plainToInstance } from "class-transformer";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 
 import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
@@ -87,6 +81,9 @@ const DefinirMotifRefus = ({
           defaultValue={motifRejet ?? ""}
           onChange={(e) => setMotifRejet(e.target.value as MotifRejet)}
         >
+          <option value="" disabled hidden>
+            Sélectionnez un motif de rejet
+          </option>
           <option value="est_bailleur">
             Le requérant est le bailleur (art. 1732)
           </option>
