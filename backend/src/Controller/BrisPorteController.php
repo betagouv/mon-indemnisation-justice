@@ -10,6 +10,7 @@ use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Metadonnees\NavigationRequerant;
 use MonIndemnisationJustice\Entity\Personne;
+use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Forms\TestEligibiliteBrisPorteType;
@@ -194,6 +195,7 @@ class BrisPorteController extends AbstractController
                 ],
                 'token' => $csrfTokenManager->getToken('creation-de-compte')->getValue(),
                 'inscription' => $normalizer->normalize($inscription, 'json'),
+                'franceConnect' => !(RapportAuLogement::BAILLEUR_SOCIAL === $preinscription->testEligibilite?->rapportAuLogement),
             ],
         ]);
     }

@@ -1,7 +1,4 @@
-import {
-  Civilite,
-  Inscription,
-} from "@/apps/requerant/dossier/models/Inscription";
+import { Civilite, Inscription } from "@/apps/requerant/dossier/models/Inscription";
 import FranceConnectButton from "@codegouvfr/react-dsfr/FranceConnectButton";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
@@ -27,6 +24,7 @@ interface Routes {
 const token: string = args.token;
 const routes: Routes = args.routes as Routes;
 const inscription = plainToInstance(Inscription, args.inscription);
+const proposerFranceConnect = !!(args.franceConnect || false);
 let erreurs = observable.map<string, string>([]);
 
 autorun(async (i) => {
@@ -56,7 +54,9 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
   const [confirmationRevelee, setConfirmationRevelee] = useState(false);
   //const { pending: sauvegardeEnCours } = useFormStatus();
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState(false);
-  const [inscriptionParEmail, setInscriptionParEmail] = useState(false);
+  const [inscriptionParEmail, setInscriptionParEmail] = useState(
+    !proposerFranceConnect,
+  );
 
   const creerLeCompte = async function () {
     setSauvegardeEnCours(true);
@@ -136,37 +136,41 @@ const CreationDeCompteApp = observer(function CreationDeCompteApp({
                       </p>
                     </div>
 
-                    <div className="fr-grid-row fr-grid-row--center">
-                      <div className="fr-notice fr-notice--info fr-mb-2w">
-                        <div className="fr-container">
-                          <div className="fr-notice__body">
-                            <p>
-                              FranceConnect est la solution proposée par l’État
-                              pour sécuriser et simplifier la connexion à vos
-                              services en ligne
-                            </p>
+                    {proposerFranceConnect && (
+                      <>
+                        <div className="fr-grid-row fr-grid-row--center">
+                          <div className="fr-notice fr-notice--info fr-mb-2w">
+                            <div className="fr-container">
+                              <div className="fr-notice__body">
+                                <p>
+                                  FranceConnect est la solution proposée par
+                                  l’État pour sécuriser et simplifier la
+                                  connexion à vos services en ligne
+                                </p>
+                              </div>
+                            </div>
                           </div>
+
+                          <FranceConnectButton
+                            url={routes.inscriptionFranceConnect}
+                          />
                         </div>
-                      </div>
 
-                      <FranceConnectButton
-                        url={routes.inscriptionFranceConnect}
-                      />
-                    </div>
+                        <div className="fr-section-separateur--ligne">
+                          <span>ou</span>
+                        </div>
 
-                    <div className="fr-section-separateur--ligne">
-                      <span>ou</span>
-                    </div>
-
-                    {!inscriptionParEmail && (
-                      <div className="fr-grid-row fr-grid-row--center">
-                        <button
-                          className="fr-btn"
-                          onClick={() => setInscriptionParEmail(true)}
-                        >
-                          S'inscrire avec une adresse email
-                        </button>
-                      </div>
+                        {!inscriptionParEmail && (
+                          <div className="fr-grid-row fr-grid-row--center">
+                            <button
+                              className="fr-btn"
+                              onClick={() => setInscriptionParEmail(true)}
+                            >
+                              S'inscrire avec une adresse email
+                            </button>
+                          </div>
+                        )}
+                      </>
                     )}
 
                     {inscriptionParEmail && (
