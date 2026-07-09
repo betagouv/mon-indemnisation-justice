@@ -3,12 +3,9 @@
 namespace MonIndemnisationJustice\Controller\Agent;
 
 use Doctrine\ORM\EntityManagerInterface;
-use League\Flysystem\FilesystemException;
-use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -20,13 +17,11 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -221,43 +216,6 @@ class DossierController extends AgentController
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
-    }
-
-    // TODO déplacer dans une route API dédiée
-    #[IsGranted(
-        attribute: new Expression('is_granted("ROLE_AGENT_LIAISON_BUDGET") and subject["dossier"].getEtatDossier().estAEnvoyerPourIndemnisation()'),
-        subject: [
-            'dossier' => new Expression('args["dossier"]'),
-        ]
-    )]
-    #[Route('/{id}/documents-a-transmettre', name: 'agent_redacteur_documents_a_transmettre_dossier', methods: ['GET'])]
-    public function download(#[MapEntity] Dossier $dossier, Request $request): Response
-    {
-        $zip = new \ZipArchive();
-        $zipName = tempnam(sys_get_temp_dir(), "zip_dossier_{$dossier->getId()}");
-
-        if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
-            throw new \RuntimeException('Cannot open '.$zipName);
-        }
-
-        /** @var Document $document */
-        foreach ($dossier->getDocumentsATransmettre()->toArray() as $document) {
-            try {
-                $contenu = $this->documentManager->getContenuTexte($document);
-                $zip->addFromString(preg_replace('#/#', '', $document->getOriginalFilename()), $contenu);
-            } catch (FilesystemException|UnableToReadFile $e) {
-                $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
-                // $this->documentManager->supprimer($document);
-            }
-        }
-
-        $zip->close();
-
-        return new BinaryFileResponse($zipName, headers: [
-            'Content-Type' => 'application/zip',
-            'Content-Length' => filesize($zipName),
-        ])
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
     }
 
     // TODO déplacer dans une route API dédiée

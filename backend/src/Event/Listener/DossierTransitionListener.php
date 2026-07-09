@@ -151,13 +151,13 @@ class DossierTransitionListener
 
     public function dossierArreteSigne(DossierArreteSigneEvent $evenement): void
     {
-        // Prévenir l'agent de liaison avec le bureau du budget qu'un dossier est prêt pour transmission :
+        // Prévenir le rédacteur que son dossier est prêt à être transmis à FIP3:
         foreach ($this->agentRepository->getAgentsLiaisonBudget() as $agentLiaisonBudget) {
             $this->mailer
-                ->toAgent($agentLiaisonBudget)
-                ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à transmettre à FIP3 ')
+                ->toAgent($evenement->dossier->getRedacteur())
+                ->subject('Mon Indemnisation Justice: votre dossier peut être transmis à FIP3 ')
                 ->htmlTemplate('email/agent/fip6/dossier_a_transmettre.twig', [
-                    'agent' => $agentLiaisonBudget,
+                    'agent' => $evenement->dossier->getRedacteur(),
                     'dossier' => $evenement->dossier,
                 ])
                 ->send();
