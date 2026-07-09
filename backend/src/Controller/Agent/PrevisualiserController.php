@@ -28,7 +28,7 @@ class PrevisualiserController extends AbstractController
         protected readonly EntityManagerInterface $em,
         protected readonly DocumentManager $documentManager,
         #[Autowire(service: 'web_profiler.debug_toolbar')]
-        protected readonly WebDebugToolbarListener $toolbar,
+        protected readonly ?WebDebugToolbarListener $toolbar = null,
     ) {
     }
 
@@ -38,7 +38,7 @@ class PrevisualiserController extends AbstractController
         Request $request,
         int $dossierId = 0,
     ): Response {
-        $this->toolbar->setMode(WebDebugToolbarListener::DISABLED);
+        $this->toolbar?->setMode(WebDebugToolbarListener::DISABLED);
 
         $dossier = $dossierId > 0 ? $this->em->getRepository(Dossier::class)->find($dossierId) : $this->em->getRepository(Dossier::class)->getDossierParEtat(EtatDossierType::DOSSIER_OK_A_SIGNER);
 
@@ -79,7 +79,7 @@ class PrevisualiserController extends AbstractController
         Dossier $dossier,
         string $motif,
     ): Response {
-        $this->toolbar->setMode(WebDebugToolbarListener::DISABLED);
+        $this->toolbar?->setMode(WebDebugToolbarListener::DISABLED);
 
         $motifRejet = MotifRejetBrisPorte::tryFrom(strtoupper($motif));
 

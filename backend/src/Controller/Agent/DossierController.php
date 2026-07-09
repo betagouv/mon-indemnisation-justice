@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\DossierRepository;
 use MonIndemnisationJustice\Service\DocumentManager;
@@ -91,7 +92,12 @@ class DossierController extends AgentController
         $this->dossierManager->avancer(
             $dossier,
             $agent,
-            contexte: $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : null,
+            contexte: $request->getPayload()->has('motifRejet') || $request->getPayload()->has('montantIndemnisation') ?
+                array_merge(
+                    $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : [],
+                    $request->getPayload()->has('motifRejet') ? ['motifRejet' => MotifRejetBrisPorte::tryFrom($request->getPayload()->get('motifRejet'))] : [],
+                ) :
+                null,
         );
 
         return new JsonResponse([

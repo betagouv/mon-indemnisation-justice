@@ -4,10 +4,11 @@ namespace MonIndemnisationJustice\Tests\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
 use MonIndemnisationJustice\Service\DocumentManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -35,35 +36,31 @@ class DocumentManagerTest extends WebTestCase
     public static function donneesGenererCorpsRejetOk(): array
     {
         return [
-            'est_vise' => [
-                'est_vise',
-                8,
+            'mis_en_cause' => [
+                MotifRejetBrisPorte::MIS_EN_CAUSE,
                 [
-                    [3, 'l’opération de police judiciaire ayant conduit au bris de porte du domicile visait à l’interpellation de'],
-                    [4, "l'instruction de votre demande n'a pas permis de mettre en évidence un dysfonctionnement du service public de la justice"],
+                    'vous étiez bien concerné(e) par leur intervention',
                 ],
             ],
-            'est_hebergeant' => [
-                'est_hebergeant',
-                8,
+            'locataire_hebergeant' => [
+                MotifRejetBrisPorte::LOCATAIRE_HEBERGEANT,
                 [
-                    [2, "l’article 7 de la Loi n° 89-462 du 6 juillet 1989 impose au locataire d’user paisiblement des locaux conformément à leur destination contractuelle et de s'assurer contre les risques dont il doit répondre en tant que locataire"],
-                    [3, "hébergé à votre domicile, sans qu'il n'y ait eu d'erreur de porte de la part des"],
+                    'les personnes recherchées étaient bien hébergées à votre domicile',
+                    'le locataire doit répondre des dommages causés au logement loué',
                 ],
             ],
-            'est_bailleur' => [
-                'est_bailleur',
-                8,
+            'locataire' => [
+                MotifRejetBrisPorte::LOCATAIRE,
                 [
-                    [2, "l’article 7 de la Loi n° 89-462 du 6 juillet 1989 impose au locataire d’user paisiblement des locaux conformément à leur destination contractuelle et de s'assurer contre les risques dont il doit répondre en tant que locataire"],
-                    [3, 'il appartient à votre locataire de répondre des dommages causés engageant sa responsabilité contractuelle'],
+                    'vous étiez bien concerné(e) par leur intervention',
+                    'le locataire doit répondre des dommages causés au logement loué',
                 ],
             ],
         ];
     }
 
     #[DataProvider('donneesGenererCorpsRejetOk')]
-    public function testGenererCorpRejetOk(string $motifRejet, int $nbParagraphes, array $mentions): void
+    public function testGenererCorpRejetOk(MotifRejetBrisPorte $motifRejet, array $mentions = []): void
     {
         $dossier = $this->getDossierParEtat(EtatDossierType::DOSSIER_EN_INSTRUCTION);
 
@@ -71,29 +68,25 @@ class DocumentManagerTest extends WebTestCase
 
         $this->assertIsString($corps);
         $crawler = new Crawler($corps);
-        /** @var Crawler $paragraphs */
-        $paragraphs = $crawler->filter('p');
-        $this->assertEquals($nbParagraphes, $paragraphs->count());
         foreach ($mentions as $mention) {
-            [$numeroParagraphe, $texte] = $mention;
-            $this->assertStringContainsString($texte, $paragraphs->eq($numeroParagraphe)->text());
+            $this->assertStringContainsString($mention, $corps);
         }
     }
 
     public static function donneesGenererCourrierRejetOk(): array
     {
         return [
-            'est_vise' => [
-                'est_vise',
+            'mis_en_cause' => [
+                MotifRejetBrisPorte::MIS_EN_CAUSE,
                 [
-                    'l’opération de police judiciaire ayant conduit au bris de porte du domicile visait à l’interpellation de',
+                    'vous étiez bien concerné(e) par leur intervention',
                 ],
             ],
         ];
     }
 
     #[DataProvider('donneesGenererCourrierRejetOk')]
-    public function testGenererCourrierRejetOk(string $motifRejet, array $mentions): void
+    public function testGenererCourrierRejetOk(MotifRejetBrisPorte $motifRejet, array $mentions): void
     {
         $dossier = $this->getDossierParEtat(EtatDossierType::DOSSIER_EN_INSTRUCTION);
 

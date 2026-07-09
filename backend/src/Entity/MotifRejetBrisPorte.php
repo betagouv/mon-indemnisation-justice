@@ -14,8 +14,8 @@ enum MotifRejetBrisPorte: string
     case LOCATAIRE_CHIEN = 'LOCATAIRE_CHIEN';
     // Le locataire via une plateforme type Airbnb est mis en cause
     case LOCATAIRE_AIRBNB = 'LOCATAIRE_AIRBNB';
-    // Le locataire hébergait le mis en cause
+    // Le locataire hébergeait le mis en cause
     case LOCATAIRE_HEBERGEANT = 'LOCATAIRE_HEBERGEANT';
-    // Le locataire est le mis en cause et l'intervention a entrainé des dégradations dans les parties communes
+    // Le locataire est mis en cause et l'intervention a entrainé des dégradations dans les parties communes
     case LOCATAIRE_PARTIES_COMMUNES = 'LOCATAIRE_PARTIES_COMMUNES';
 }
