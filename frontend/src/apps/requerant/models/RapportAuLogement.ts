@@ -2,6 +2,7 @@ const RapportAuLogements = [
   "PROPRIETAIRE",
   "LOCATAIRE",
   "BAILLEUR",
+  "BAILLEUR_SOCIAL",
   "AUTRE",
 ] as const;
 type RapportAuLogement = (typeof RapportAuLogements)[number];
@@ -10,6 +11,7 @@ const RapportAuLogementLibelles: { [key in RapportAuLogement]: string } = {
   PROPRIETAIRE: "Propriétaire occupant",
   BAILLEUR: "Propriétaire bailleur",
   LOCATAIRE: "Locataire",
+  BAILLEUR_SOCIAL: "Bailleur social",
   AUTRE: "Autre",
 };
 

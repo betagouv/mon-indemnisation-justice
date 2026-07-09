@@ -4,7 +4,6 @@ namespace MonIndemnisationJustice\Api\Requerant\Dossier\Dto;
 
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\Dossier;
-use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -67,7 +66,7 @@ class DossierDto
             etatActuel: EtatDossierDto::depuisEtatDossier($dossier->getEtatDossier()),
             dateDepot: $dossier->getDateDepot() ? \DateTimeImmutable::createFromInterface($dossier->getDateDepot()) : null,
             estPersonneMorale: $dossier->estPersonneMorale(),
-            personnePhysique: PersonnePhysiqueDto::depuisPersonnePhysique($dossier->getRequerantPersonnePhysique() ?? $dossier->getUsager()->getPersonne()->getPersonnePhysique() ?? new PersonnePhysique()),
+            personnePhysique: PersonnePhysiqueDto::depuisPersonnePhysique($dossier->getRequerantPersonnePhysique() ?? $dossier->getUsager()->getPersonne()->getPersonnePhysique()),
             personneMorale: PersonneMoraleDto::depuisPersonneMorale($dossier->getRequerantPersonneMorale()),
             rapportAuLogement: $dossier->getBrisPorte()->getRapportAuLogement(),
             descriptionRapportAuLogement: $dossier->getBrisPorte()->getPrecisionRapportAuLogement(),

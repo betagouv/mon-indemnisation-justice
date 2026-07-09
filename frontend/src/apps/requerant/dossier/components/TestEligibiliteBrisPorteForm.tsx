@@ -25,7 +25,11 @@ const AvancementTest: LibelleAvancementTest[] = [
   "a_contacte_bailleur",
 ];
 
-type RapportAuLogementType = "proprietaire" | "locataire" | "bailleur";
+type RapportAuLogementType =
+  | "proprietaire"
+  | "locataire"
+  | "bailleur"
+  | "bailleur_social";
 
 type TestEligibiliteBrisPorte = {
   avancement: LibelleAvancementTest;
@@ -226,6 +230,15 @@ export const TestEligibiliteBrisPorteForm = ({
                   checked: test.rapportAuLogement === "bailleur",
                   value: "BAILLEUR",
                   onChange: () => setRapportAuLogement("bailleur"),
+                },
+              },
+              {
+                label: "Bailleur social",
+                nativeInputProps: {
+                  name: "rapportAuLogement",
+                  checked: test.rapportAuLogement === "bailleur_social",
+                  value: "BAILLEUR_SOCIAL",
+                  onChange: () => setRapportAuLogement("bailleur_social"),
                 },
               },
             ]}

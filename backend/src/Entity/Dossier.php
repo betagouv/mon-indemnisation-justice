@@ -572,12 +572,16 @@ class Dossier
         return Dossier::brisDePorte()
             ->setUsager($testEligibilite->usager)
             ->setRequerant(
-
-                // Si l'usager a déjà une personne physique associée, on utilise celle-ci
-                $testEligibilite->usager->getPersonne()->getPersonnePhysique() ??
-                new PersonnePhysique()
-                    ->setPersonne($testEligibilite->usager->getPersonne())
+                RapportAuLogement::BAILLEUR_SOCIAL === $testEligibilite->rapportAuLogement ?
+                    new PersonneMorale()
+                        ->setRepresentantLegal($testEligibilite->usager->getPersonne())
+                        ->setType(PersonneMoraleType::BAILLEUR_SOCIAL) :
+                    // Si l'usager a déjà une personne physique associée, on utilise celle-ci
+                    $testEligibilite->usager->getPersonne()->getPersonnePhysique() ??
+                    new PersonnePhysique()
+                        ->setPersonne($testEligibilite->usager->getPersonne())
             )
+            ->setPersonneMorale(RapportAuLogement::BAILLEUR_SOCIAL === $testEligibilite->rapportAuLogement)
             ->setBrisPorte(
                 new BrisPorte()
                     ->setRapportAuLogement($testEligibilite->rapportAuLogement)

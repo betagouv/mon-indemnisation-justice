@@ -44,7 +44,7 @@ class PersonnePhysiqueDto
         }
 
         return new self(
-            personne: PersonneDto::depuisPersonne($personnePhysique->getPersonne()),
+            personne: $personnePhysique->getPersonne() ? PersonneDto::depuisPersonne($personnePhysique->getPersonne()) : null,
             prenom2: $personnePhysique->getPrenom2(),
             prenom3: $personnePhysique->getPrenom3(),
             adresse: AdresseDto::depuisAdresse($personnePhysique->getAdresse()),
