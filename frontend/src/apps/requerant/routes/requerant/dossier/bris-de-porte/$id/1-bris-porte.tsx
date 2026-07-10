@@ -6,7 +6,7 @@ import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import {
   extraireDonneesBrisDeporte,
-  SchemaValidationBrisPorte,
+  SchemaValidationBrisPorte
 } from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
 import {
   Adresse,
@@ -15,7 +15,7 @@ import {
   getRapportAuLogementLibelle,
   RapportAuLogement,
   TypePersonneMoraleType,
-  TypesPersonneMorale,
+  TypesPersonneMorale
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
@@ -30,13 +30,7 @@ import Notice from "@codegouvfr/react-dsfr/Notice";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm } from "@tanstack/react-form";
-import {
-  createFileRoute,
-  notFound,
-  redirect,
-  useBlocker,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect, useBlocker, useNavigate } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React, { useState } from "react";
 
@@ -320,7 +314,8 @@ function Etape1BrisPorte() {
             })}
             children={({ estPersonneMorale, typePersonneMorale }) => (
               <>
-                {(estPersonneMorale === false || !!typePersonneMorale) && (
+                {(estPersonneMorale === false ||
+                  typePersonneMorale != "BAILLEUR_SOCIAL") && (
                   <div className="fr-grid-row fr-grid-row--gutters">
                     <div className="fr-col-lg-6 fr-col-12">
                       <formulaire.Field
