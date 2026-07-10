@@ -58,6 +58,42 @@ class PrevisualiserController extends AbstractController
     }
 
     #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/declaration-acceptation/', name: 'agent_beta_previsualiser_declaration_aceptation_aleatoire', methods: ['GET'])]
+    public function declarationAcceptationAleatoire()
+    {
+        return $this->redirectToRoute(
+            'agent_beta_previsualiser_declaration_aceptation',
+            [
+                'dossierId' => $this->em->getRepository(Dossier::class)->getDossierParEtatAleatoire(EtatDossierType::DOSSIER_OK_A_APPROUVER)->getId(),
+            ]
+        );
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/declaration-acceptation/{dossierId}', name: 'agent_beta_previsualiser_declaration_aceptation', methods: ['GET'])]
+    public function declarationAcceptation(
+        Request $request,
+        #[MapEntity(Dossier::class, id: 'dossierId')]
+        Dossier $dossier,
+    ): Response {
+        $this->toolbar?->setMode(WebDebugToolbarListener::DISABLED);
+
+        return $this->render(
+            'courrier/declarationAcceptation.html.twig',
+            [
+                'dossier' => $dossier,
+                'corps' => $this->documentManager->genererCorps(
+                    $dossier,
+                    DocumentType::TYPE_COURRIER_REQUERANT,
+                    montantIndemnisation: $request->query->has('montant') ?
+                        floatval($request->query->get('montant')) :
+                        $dossier->getMontantIndemnisation() ?? 1234.56
+                ),
+            ]
+        );
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
     #[Route('/rejet/{motif}', name: 'agent_beta_previsualiser_rejet_aleatoire', methods: ['GET'])]
     public function rejetAleatoire(
         string $motif,

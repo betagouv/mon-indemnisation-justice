@@ -72,7 +72,9 @@ class PersonneMorale
      */
     public function getLibelle(?bool $defini): string
     {
-        return sprintf('%s %s', $this->type->getLibelle($defini), $this->raisonSociale);
+        $type = preg_match('/\s*sci/i', $this->raisonSociale) ? PersonneMoraleType::SCI : $this->type;
+
+        return sprintf('%s %s', $type->getLibelle($defini), preg_replace('/\s*sci/i', '', $this->raisonSociale));
     }
 
     public function getRaisonSociale(): ?string

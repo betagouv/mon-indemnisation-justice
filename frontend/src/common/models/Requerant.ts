@@ -1,4 +1,7 @@
-import { type TypePersonneMoraleType, TypesPersonneMorale } from "@/common/models/TypePersonneMorale";
+import {
+  type TypePersonneMoraleType,
+  TypesPersonneMorale,
+} from "@/common/models/TypePersonneMorale";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 import { Expose, Transform } from "class-transformer";
 
@@ -53,7 +56,7 @@ export class Requerant {
   nomSimple(
     { capitaliser = false }: { capitaliser: boolean } = { capitaliser: false },
   ): string {
-    return `${this.prenom} ${capitaliser ? this.nom.toUpperCase() : this.nom}`;
+    return `${this.prenom ?? ""} ${capitaliser ? (this.nom ?? "").toUpperCase() : (this.nom ?? "")}`;
   }
 
   nomComplet(): string {

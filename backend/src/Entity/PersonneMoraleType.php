@@ -21,6 +21,7 @@ enum PersonneMoraleType: string
     public function getLibelle(?bool $defini): string
     {
         return sprintf('%s%s', $this->getArticle($defini), match ($this) {
+            self::SCI => 'SCI',
             self::ASSOCIATION => 'association',
             self::SYNDIC => 'syndic',
             default => 'société',
@@ -34,7 +35,7 @@ enum PersonneMoraleType: string
         }
 
         return match ($this) {
-            self::ASSOCIATION => $defini ? 'l\' ' : 'une ',
+            self::ASSOCIATION => $defini ? 'l\'' : 'une ',
             self::SYNDIC => $defini ? 'le ' : 'un ',
             default => $defini ? 'la ' : 'une ',
         };
