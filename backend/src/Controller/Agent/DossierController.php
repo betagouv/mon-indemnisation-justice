@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Controller\Agent;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
@@ -219,12 +220,7 @@ class DossierController extends AgentController
     }
 
     // TODO déplacer dans une route API dédiée
-    #[IsGranted(
-        attribute: new Expression('is_granted("ROLE_AGENT_LIAISON_BUDGET") and subject["dossier"].getEtatDossier().estAEnvoyerPourIndemnisation()'),
-        subject: [
-            'dossier' => new Expression('args["dossier"]'),
-        ]
-    )]
+    #[IsGranted(DossierVoter::ACTION_TRANSMETTRE_A_FIP3, subject: 'dossier', message: 'Seul le rédacteur ou un agent habilité peut transmettre les éléments à FIP3', statusCode: Response::HTTP_FORBIDDEN)]
     #[Route('/dossier/{id}/envoyer-pour-indemnisation.json', name: 'agent_redacteur_envoyer_pour_indemnisation_dossier', methods: ['POST'])]
     public function envoyerPourIndemnisationDossier(#[MapEntity] Dossier $dossier): Response
     {
@@ -237,12 +233,7 @@ class DossierController extends AgentController
     }
 
     // TODO déplacer dans une route API dédiée
-    #[IsGranted(
-        attribute: new Expression('is_granted("ROLE_AGENT_LIAISON_BUDGET") and subject["dossier"].getEtatDossier().estEnAttenteIndemnisation()'),
-        subject: [
-            'dossier' => new Expression('args["dossier"]'),
-        ]
-    )]
+    #[IsGranted(DossierVoter::ACTION_TRANSMETTRE_A_FIP3, subject: 'dossier', message: 'Seul le rédacteur ou un agent habilité peut marquer le dossier comme indemnisé', statusCode: Response::HTTP_FORBIDDEN)]
     #[Route('/dossier/{id}/marquer-indemnise.json', name: 'agent_redacteur_marquer_indemnise_dossier', methods: ['POST'])]
     public function marquerIndemniseDossier(#[MapEntity] Dossier $dossier): Response
     {

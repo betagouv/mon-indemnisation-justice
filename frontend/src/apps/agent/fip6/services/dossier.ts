@@ -1,5 +1,12 @@
 import { queryClient } from "@/apps/agent/fip6/query.ts";
-import { Agent, BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
+import {
+  Agent,
+  BaseDossier,
+  Document,
+  DocumentType,
+  DossierDetail,
+  EtatDossier,
+} from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
@@ -28,6 +35,10 @@ export interface DossierManagerInterface {
     type: DocumentType,
     fichier: File,
   ): Promise<Document>;
+
+  transmettreAFIP3(dossier: BaseDossier): Promise<void>;
+
+  marquerIndemnise(dossier: BaseDossier): Promise<void>;
 }
 
 export namespace DossierManagerInterface {
@@ -95,5 +106,43 @@ export class APIDossierManager implements DossierManagerInterface {
       data?.erreur ??
         "Une erreur est survenue lors de l'envoi de la pièce jointe",
     );
+  }
+
+  async transmettreAFIP3(dossier: BaseDossier): Promise<void> {
+    const response = await fetch(
+      `/agent/redacteur/dossier/${dossier.id}/envoyer-pour-indemnisation.json`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      // TODO arrêter ça, à la place gérer un cache sur le dossier et le mettre à jour
+      dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+    }
+  }
+
+  async marquerIndemnise(dossier: BaseDossier): Promise<void> {
+    const response = await fetch(
+      `/agent/redacteur/dossier/${dossier.id}/marquer-indemnise.json`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      // TODO arrêter ça, à la place gérer un cache sur le dossier et le mettre à jour
+      dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+    }
   }
 }

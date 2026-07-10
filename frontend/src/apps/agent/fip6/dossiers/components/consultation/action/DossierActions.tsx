@@ -28,12 +28,12 @@ import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import React from "react";
 import {
-  attribuerBoutons,
   AttribuerModale as AttribuerActionModale,
+  attribuerBoutons,
 } from "./AttributionAction.tsx";
 import {
-  cloturerBoutons,
   CloturerModale as CloturerActionModale,
+  cloturerBoutons,
 } from "./CloturerAction.tsx";
 import {
   signerArretePaiementBoutons,
@@ -45,15 +45,15 @@ export const DossierActions = function DossierActionBar({
   agent,
   redacteurs,
   onDecide,
-  onEdite,
   onSigne,
+  onTermine,
 }: {
   dossier: DossierDetail;
   agent: Agent;
   redacteurs: Redacteur[];
   onDecide?: () => void;
-  onEdite?: () => void;
   onSigne?: () => void;
+  onTermine: () => void | Promise<void>;
 }) {
   return (
     <>
@@ -102,8 +102,16 @@ export const DossierActions = function DossierActionBar({
       <SignerCourrierModale dossier={dossier} agent={agent} onSigne={onSigne} />
       <GenererArretePaiementModale dossier={dossier} agent={agent} />
       <SignerArretePaiementModale dossier={dossier} agent={agent} />
-      <EnvoyerPourIndemnisationActionModale dossier={dossier} agent={agent} />
-      <MarquerIndemniseActionModale dossier={dossier} agent={agent} />
+      <EnvoyerPourIndemnisationActionModale
+        dossier={dossier}
+        agent={agent}
+        onTermine={onTermine}
+      />
+      <MarquerIndemniseActionModale
+        dossier={dossier}
+        agent={agent}
+        onTermine={onTermine}
+      />
     </>
   );
 };

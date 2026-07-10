@@ -1,17 +1,13 @@
+import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
+import { Agent, DossierDetail, EtatDossierType } from "@/common/models";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Download from "@codegouvfr/react-dsfr/Download";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import {
-  Agent,
-  DossierDetail,
-  EtatDossier,
-  EtatDossierType,
-} from "@/common/models";
+import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
+import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import Download from "@codegouvfr/react-dsfr/Download";
-import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { plainToInstance } from "class-transformer";
 
 const _modale = createModal({
   id: "modale-action-envoyer-pour-indemnisation",
@@ -25,16 +21,22 @@ const estAEnvoyerPourIndemnisation = ({
   dossier: DossierDetail;
   agent: Agent;
 }): boolean =>
-  agent.estLiaisonBudget() &&
+  (agent.instruit(dossier) || agent.estLiaisonBudget()) &&
   dossier.etat.etat === EtatDossierType.OK_A_INDEMNISER;
 
 const component = observer(function EnvoyerPourIndemnisationActionModale({
   dossier,
   agent,
+  onTermine,
 }: {
   dossier: DossierDetail;
   agent: Agent;
+  onTermine: () => void | Promise<void>;
 }) {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
   // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
   const [sauvegardeEnCours, setSauvegarderEnCours]: [
     boolean,
@@ -50,22 +52,9 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
   const envoyerPourIndemnisation = useCallback(async () => {
     setSauvegarderEnCours(true);
 
-    const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/envoyer-pour-indemnisation.json`,
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
-        },
-      },
-    );
+    await dossierManager.transmettreAFIP3(dossier);
 
-    if (response.ok) {
-      const data = await response.json();
-      dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-    }
-
+    await onTermine();
     _modale.close();
     setSauvegarderEnCours(false);
   }, [dossier.id]);
@@ -86,7 +75,9 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
         label="Télécharger les documents à transmettre"
         details="Arrêté de paiement, RIB, pièce d'identité"
         linkProps={{
-          href: `/agent/redacteur/${dossier.id}/documents-a-transmettre`,
+          href: `${document.location.origin}/agent/document/dossier/${dossier.id}/documents-a-transmettre`,
+          target: "_self",
+          download: true,
         }}
       />
 

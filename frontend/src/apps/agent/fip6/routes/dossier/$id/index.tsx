@@ -6,17 +6,28 @@ import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/
 import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier";
 import {
   ChampPieceJointe,
-  TelechargerPieceJointe
+  TelechargerPieceJointe,
 } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
 import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
 import { Frise } from "@/common/composants/Frise.tsx";
-import { Agent, Document, DossierDetail, EtatDossier, Redacteur } from "@/common/models";
+import {
+  Agent,
+  Document,
+  DossierDetail,
+  EtatDossier,
+  Redacteur,
+} from "@/common/models";
 import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
 import { dateEtHeureSimple } from "@/common/services/date";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  notFound,
+  useRouter,
+} from "@tanstack/react-router";
 import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 
@@ -69,6 +80,8 @@ const ConsultationDossier = observer(function ConsultationDossier({
   agent: Agent;
   redacteurs: Redacteur[];
 }) {
+  const routeur = useRouter();
+
   // Référence vers l'onglet ouvert
   const [selectedTab, selectTab] = useState(
     window.location.hash?.replace(/^#/, "") || "infos",
@@ -192,8 +205,8 @@ const ConsultationDossier = observer(function ConsultationDossier({
                 agent={agent}
                 redacteurs={redacteurs}
                 onDecide={() => ouvrirSectionCourrier()}
-                onEdite={() => ouvrirSectionCourrier()}
                 onSigne={() => ouvrirSectionCourrier()}
+                onTermine={async () => await routeur.invalidate()}
               />
 
               {/* L'agent validateur génère et signe l'arrêté de paiement */}

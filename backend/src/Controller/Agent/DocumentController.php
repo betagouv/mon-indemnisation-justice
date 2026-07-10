@@ -86,7 +86,7 @@ class DocumentController extends AbstractController
     }
 
     #[IsGranted(DossierVoter::ACTION_TRANSMETTRE_A_FIP3, subject: 'dossier', message: 'Seul un agent habilité peut transmettre le dossier', statusCode: Response::HTTP_FORBIDDEN)]
-    #[Route('/{id}/documents-a-transmettre', name: 'agent_document_telecharger_a_transmettre_a_fip3', methods: ['GET'])]
+    #[Route('/dossier/{id}/documents-a-transmettre', name: 'agent_document_telecharger_a_transmettre_a_fip3', methods: ['GET'])]
     public function documentsATransmettreAFIP3(#[MapEntity] Dossier $dossier, Request $request): Response
     {
         $zip = new \ZipArchive();

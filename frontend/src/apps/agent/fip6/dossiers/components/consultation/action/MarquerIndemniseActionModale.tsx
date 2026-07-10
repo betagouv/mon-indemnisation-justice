@@ -1,15 +1,11 @@
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import {
-  Agent,
-  DossierDetail,
-  EtatDossier,
-  EtatDossierType,
-} from "@/common/models";
-import { observer } from "mobx-react-lite";
-import React, { useCallback, useState } from "react";
+import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
+import { Agent, DossierDetail, EtatDossierType } from "@/common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { plainToInstance } from "class-transformer";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useInjection } from "inversify-react";
+import { observer } from "mobx-react-lite";
+import React, { useCallback, useState } from "react";
 
 const _modale = createModal({
   id: "modale-action-emarquer-indemnise",
@@ -23,16 +19,23 @@ const estEnAttenteIndemnisation = ({
   dossier: DossierDetail;
   agent: Agent;
 }): boolean =>
-  agent.estLiaisonBudget() &&
-  dossier.etat.etat === EtatDossierType.OK_EN_ATTENTE_PAIEMENT;
+  agent.estLiaisonBudget() ||
+  (agent.instruit(dossier) &&
+    dossier.etat.etat === EtatDossierType.OK_EN_ATTENTE_PAIEMENT);
 
 const component = observer(function EnvoyerPourIndemnisationActionModale({
   dossier,
   agent,
+  onTermine,
 }: {
   dossier: DossierDetail;
   agent: Agent;
+  onTermine: () => void | Promise<void>;
 }) {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
   // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
   const [sauvegardeEnCours, setSauvegarderEnCours]: [
     boolean,
@@ -41,22 +44,8 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
 
   const marquerIndemnise = useCallback(async () => {
     setSauvegarderEnCours(true);
-
-    const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/marquer-indemnise.json`,
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
-        },
-      },
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-    }
+    await dossierManager.marquerIndemnise(dossier);
+    await onTermine();
 
     _modale.close();
     setSauvegarderEnCours(false);
