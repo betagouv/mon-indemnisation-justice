@@ -44,10 +44,15 @@ abstract class AbstractEndpointTestCase extends WebTestCase
         $agent = $this->getAgent($courriel);
 
         if ($agent) {
-            $this->client->loginUser($agent, 'agent');
+            $this->connexionAgent($agent);
         }
 
         return $agent;
+    }
+
+    protected function connexionAgent(Agent $agent): void
+    {
+        $this->client->loginUser($agent, 'agent');
     }
 
     protected function assertArrayEquals(array $expected, mixed $actual): void

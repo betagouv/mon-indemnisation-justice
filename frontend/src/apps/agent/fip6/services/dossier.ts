@@ -5,7 +5,6 @@ import {
   Document,
   DocumentType,
   DossierDetail,
-  EtatDossier,
 } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
 import { plainToInstance } from "class-transformer";
@@ -68,16 +67,33 @@ export class APIDossierManager implements DossierManagerInterface {
     });
   }
 
+  protected recupererDossier(id: number): Promise<DossierDetail> {
+    return queryClient.fetchQuery<DossierDetail>({
+      queryKey: ["DossierManagerInterface", "dossier", id],
+      queryFn: async (): Promise<DossierDetail> => {
+        const reponse = await fetch(`/api/agent/fip6/dossier/${id}`);
+
+        if (!reponse.ok) {
+          throw new Error(`Failed to fetch dossier: ${reponse.status}`);
+        }
+
+        const donnees = await reponse.json();
+
+        return plainToInstance(DossierDetail, donnees);
+      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+  }
+
+  protected enregistrerDossier(dossier: DossierDetail): void {
+    queryClient.setQueryData(
+      ["DossierManagerInterface", "dossier", dossier.id],
+      () => dossier,
+    );
+  }
+
   async consulter(id: number): Promise<DossierDetail> {
-    const reponse = await fetch(`/api/agent/fip6/dossier/${id}`);
-
-    if (!reponse.ok) {
-      throw new Error(`Failed to fetch dossier: ${reponse.status}`);
-    }
-
-    const data = await reponse.json();
-
-    return plainToInstance(DossierDetail, data);
+    return this.recupererDossier(id);
   }
 
   async ajouterPieceJointe(
@@ -109,8 +125,8 @@ export class APIDossierManager implements DossierManagerInterface {
   }
 
   async transmettreAFIP3(dossier: BaseDossier): Promise<void> {
-    const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/envoyer-pour-indemnisation.json`,
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/transmettre-a-fip3`,
       {
         method: "POST",
         headers: {
@@ -120,16 +136,16 @@ export class APIDossierManager implements DossierManagerInterface {
       },
     );
 
-    if (response.ok) {
-      const data = await response.json();
-      // TODO arrêter ça, à la place gérer un cache sur le dossier et le mettre à jour
-      dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
     }
   }
 
   async marquerIndemnise(dossier: BaseDossier): Promise<void> {
-    const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/marquer-indemnise.json`,
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/marquer-indemnise`,
       {
         method: "POST",
         headers: {
@@ -139,10 +155,10 @@ export class APIDossierManager implements DossierManagerInterface {
       },
     );
 
-    if (response.ok) {
-      const data = await response.json();
-      // TODO arrêter ça, à la place gérer un cache sur le dossier et le mettre à jour
-      dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
     }
   }
 }
