@@ -1,4 +1,5 @@
-{% set libelle = dossier.estPersonneMorale ? 'la société ' ~ dossier.requerantPersonneMorale.raisonSociale : dossier.requerantPersonnePhysique?.personne.nomComplet %}
+{% set e = (dossier.requerantPersonne is not null and dossier.requerantPersonne.estFeminin) ? 'e' : '' %}
+{% set montantLitteral = (montantIndemnisation ?? dossier.montantIndemnisation)|montant_litteral ~ ' (' ~ (montantIndemnisation ?? dossier.montantIndemnisation)|number_format(2, ',', ' ') ~ ' EUR)' %}
 
 <h3>Arrêté</h3>
 
@@ -8,55 +9,43 @@
     Vu la loi n° 2026-103 du 19 février 2026 de finances pour 2026 ;
 </p>
 <p>
-    Vu la demande de {{ libelle }} aux fins d’indemnisation du préjudice subi en raison de la
-    détérioration de la porte d’entrée du logement situé {{ dossier.brisPorte.adresse.ligne1 }} à {{ dossier.brisPorte.adresse.localite|upper }}
-    {% if dossier.brisPorte.adresse.codeDepartemental %}({{ dossier.brisPorte.adresse.codeDepartemental }}){% endif %} reçue
-    le {{ dossier.dateDepot|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }};
+    Vu la demande de {{ dossier.requerantPersonne.nomComplet }}{% if dossier.estPersonneMorale %}, représentant{{ e }} légal{{ e }} {{ dossier.requerantPersonneMorale.libelleDe }},{% endif %} du {{ dossier.dateDepot|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}.
 </p>
 <p>
-    Vu la proposition du Ministère de la Justice en date
-    du {{ dossier.dateSignatureAgent|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
-    d'allouer à {{ libelle }} une indemnité définitive
-    de {{ dossier.montantIndemnisation|montant_litteral }}
-    ({{ dossier.montantIndemnisation|number_format(2, ',', ' ') }} EUR) ;
+    Vu la proposition du Ministère de la Justice du {{ dossier.dateSignatureAgent|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
+    d'allouer à {{ dossier.requerantPersonne.nomComplet }} une indemnité    de {{ montantLitteral }} ;
 </p>
 <p>
-    Vu la déclaration d’acceptation
-    de {{ libelle }}{% if dossier.estPersonneMorale %}, représentée par {{ dossier.requerantPersonneMorale.representantLegal.nomComplet }}, {% endif %}
-    en date
-    du {{ dossier.dateSignatureRequerant|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}
-    ;
+    Vu la déclaration d’acceptation de {{ dossier.requerantPersonne.nomComplet }} ;
 </p>
 <p>
-    Considérant que le préjudice matériel subi par {{ libelle }}, relatif à la détérioration de la
-    porte d’entrée du logement sis {{ dossier.brisPorte.adresse.ligne1 }}
-    à {{ dossier.brisPorte.adresse.localite|default }} {% if dossier.brisPorte.adresse.codeDepartemental %}({{ dossier.brisPorte.adresse.codeDepartemental }}){% endif %},
-    résulte d’une opération de police judiciaire menée
-    le {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }};
+    Considérant que le préjudice subi par {{ dossier.requerantPersonne.nomComplet }}, relatif aux dommages causés à la porte
+    du logement sis {{ dossier.brisPorte.adresse.ligne1 }} à {{ dossier.brisPorte.adresse.localite|upper }} {% if dossier.brisPorte.adresse.codeDepartemental %}({{ dossier.brisPorte.adresse.codeDepartemental }}){% endif %},
+    résulte d’une opération de police judiciaire menée le {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }};
 </p>
 
-<p>Considérant que la responsabilité de l’État est engagée à l’égard de {{ dossier.requerantPersonne.nomComplet }} sur le
+<p>
+    Considérant que la responsabilité de l’État est engagée à l’égard de {{ dossier.requerantPersonne.nomComplet }} sur le
     fondement de la rupture d’égalité devant les charges publiques ;
 </p>
 
-<p>Considérant qu’il convient de procéder au paiement de ladite somme ;</p>
+<p>
+    Considérant que le quantum supporté par l’État est fixé à la somme de {{ montantLitteral }};
+</p>
+
+<p>
+    Considérant qu’il convient de procéder au paiement de ladite somme ;
+</p>
 
 <h3>Arrêté</h3>
 
 <p>
-    <b><u>Article 1er</u></b>. - Il est alloué à {{ libelle }} la somme
-    de {{ dossier.montantIndemnisation|montant_litteral }}
-    ({{ dossier.montantIndemnisation|number_format(2, ',', ' ') }} EUR) pour les causes sus-énoncées.</p>
+    <b><u>Article 1er</u></b>. - Il est alloué à {{ dossier.requerantPersonne.nomComplet }} la somme
+    de {{ montantLitteral }} pour les causes sus-énoncées.</p>
 <p>
-    <b><u>Article 2.</u></b> - Cette somme sera versée sur le compte bancaire de {{ libelle }}
-    ouvert à ?BANQUE? :
+    <b><u>Article 2.</u></b> - Cette somme sera versée sur le compte bancaire de {{ dossier.requerantPersonne.nomComplet }}
+    ouvert à la banque ?BANQUE?.
 </p>
-<ul>
-    <li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Code banque : ?CODE BANQUE?</li>
-    <li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Code guichet : ?CODE GUICHET?</li>
-    <li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Numéro de compte : ?NO COMPTE?</li>
-    <li data-list="bullet"><span class="ql-ui" contenteditable="false"></span>Clé RIB : ?CLEF RIB?</li>
-</ul>
 <p>
     <b><u>Article 3.</u></b> - Le montant de cette indemnité sera imputé sur les crédits inscrits au programme
     166, HT2, domaine fonctionnel 0166-06-01 du budget du Ministère de la Justice.

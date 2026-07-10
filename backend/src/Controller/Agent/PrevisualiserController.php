@@ -135,4 +135,40 @@ class PrevisualiserController extends AbstractController
             ]
         );
     }
+
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/arrete-paiement', name: 'agent_beta_previsualiser_arrete_paiement_aleatoire', methods: ['GET'])]
+    public function arretePaiementAleatoire()
+    {
+        return $this->redirectToRoute(
+            'agent_beta_previsualiser_arrete_paiement',
+            [
+                'dossierId' => $this->em->getRepository(Dossier::class)->getDossierParEtatAleatoire(EtatDossierType::DOSSIER_OK_VERIFIE)->getId(),
+            ]
+        );
+    }
+
+    #[IsGranted(Agent::ROLE_AGENT_DOSSIER)]
+    #[Route('/arrete-paiement/{dossierId}', name: 'agent_beta_previsualiser_arrete_paiement', methods: ['GET'])]
+    public function arretePaiement(
+        Request $request,
+        #[MapEntity(Dossier::class, id: 'dossierId')]
+        Dossier $dossier,
+    ): Response {
+        $this->toolbar?->setMode(WebDebugToolbarListener::DISABLED);
+
+        return $this->render(
+            'courrier/arretePaiement.html.twig',
+            [
+                'dossier' => $dossier,
+                'corps' => $this->documentManager->genererCorps(
+                    $dossier,
+                    DocumentType::TYPE_ARRETE_PAIEMENT,
+                    montantIndemnisation: $request->query->has('montant') ?
+                        floatval($request->query->get('montant')) :
+                        $dossier->getMontantIndemnisation() ?? 1234.56
+                ),
+            ]
+        );
+    }
 }

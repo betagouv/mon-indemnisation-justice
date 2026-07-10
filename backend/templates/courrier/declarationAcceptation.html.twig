@@ -1,7 +1,5 @@
 {% extends 'courrier/_base_courrier.html.twig' %}
 
-{% set libellePersonneMorale = dossier.requerantPersonneMorale is not null ? dossier.requerantPersonneMorale.libelle(true) : null %}
-
 {% block style %}
     <style>
         body {
@@ -87,7 +85,7 @@
                 <input name="checkbox" id="champ-rib-personnel" type="checkbox"
                        aria-describedby="champ-rib-personnel-messages">
                 <label class="fr-label" style="font-weight: bold;" for="champ-rib-personnel">sur le compte
-                    {% if libellePersonneMorale starts with 'le ' %}{{ libellePersonneMorale|replace({'le ': 'du '}) }}{% else %}de {{ libellePersonneMorale }}{% endif %}</label>
+                    {{ dossier.requerantPersonneMorale.libelleDe }}</label>
                 <div class="fr-messages-group" id="champ-rib-personnel-messages" aria-live="polite">
                 </div>
             </div>

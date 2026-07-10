@@ -28,6 +28,19 @@ enum PersonneMoraleType: string
         });
     }
 
+    /**
+     * Formate le libellé du type de personne morale quand il est préposé par "de".
+     */
+    public function getLibelleDe(): string
+    {
+        return match ($this) {
+            self::SCI => 'de la SCI',
+            self::ASSOCIATION => "de l'association",
+            self::SYNDIC => 'du syndic',
+            default => 'de la société',
+        };
+    }
+
     public function getArticle(?bool $defini): string
     {
         if (null === $defini) {

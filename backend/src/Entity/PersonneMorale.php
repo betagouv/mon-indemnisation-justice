@@ -72,9 +72,35 @@ class PersonneMorale
      */
     public function getLibelle(?bool $defini): string
     {
-        $type = preg_match('/\s*sci/i', $this->raisonSociale) ? PersonneMoraleType::SCI : $this->type;
+        return sprintf('%s %s', $this->getTypeNettoye()->getLibelle($defini), $this->getRaisonSocialeNettoyee());
+    }
 
-        return sprintf('%s %s', $type->getLibelle($defini), preg_replace('/\s*sci/i', '', $this->raisonSociale));
+    /**
+     * Formate le libellé de la personne morale quand elle est préposée par "de".
+     */
+    public function getLibelleDe(): string
+    {
+        return sprintf('%s %s', $this->getTypeNettoye()->getLibelleDe(), $this->getRaisonSocialeNettoyee());
+    }
+
+    /**
+     * Essaye de détecter une erreur de type en fonction du nom de la personne morale.
+     *
+     * Notamment si la raison sociale commence par "SCI", alors le type est SCI.
+     */
+    protected function getTypeNettoye(): PersonneMoraleType
+    {
+        return preg_match('/\s*sci/i', $this->raisonSociale) ? PersonneMoraleType::SCI : $this->type;
+    }
+
+    /**
+     * Essaye de détecter une erreur de type en fonction du nom de la personne morale.
+     *
+     * Notamment si la raison sociale commence par "SCI", alors le type est SCI.
+     */
+    protected function getRaisonSocialeNettoyee(): string
+    {
+        return preg_match('/^\s*sci\s*/i', $this->raisonSociale) ? preg_replace('/\s*sci\s*/i', '', $this->raisonSociale) : $this->raisonSociale;
     }
 
     public function getRaisonSociale(): ?string
