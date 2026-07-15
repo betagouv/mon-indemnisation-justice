@@ -18,11 +18,11 @@
         dossier <b>{{ dossier.reference }}</b>, il peut désormais être transmis au bureau du budget.
     </p>
     <p>
-        Vous pouvez consulter le dossier et le transmettre en cliquant sur le bouton ci-dessous :
+        Vous pouvez voir la liste de tous {% if agent.estRedacteur %}vos{% else %}les{% endif%} dossiers à transmettre en cliquant sur le bouton ci-dessous :
     </p>
     <br/>
     <p>
-        {{ email.bouton("Dossier " ~ dossier.reference, url('agent_fip6_react', {'extra': "dossier/" ~ dossier.id})) }}
+        {{ email.bouton("Dossiers à transmettre au bureau du budget", url('agent_fip6_react', {'extra': "dossiers/a-transmettre"})) }}
         <br/>
     </p>
     <br/>

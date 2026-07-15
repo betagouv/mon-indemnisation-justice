@@ -263,7 +263,7 @@ class Agent implements UserInterface
      */
     protected function getDossiersParEtatActuel(EtatDossierType $etatActuel): array
     {
-        return $this->dossiers->filter(fn (Dossier $dossier) => $dossier->getEtatDossier()->getEtat() === $etatActuel)->toArray();
+        return $this->dossiers->filter(fn (Dossier $dossier) => $dossier->getEtatDossier()->getEtat() === $etatActuel)->getValues();
     }
 
     public function nbDossiersAInstruire(): int
@@ -303,6 +303,32 @@ class Agent implements UserInterface
     public function getDossiersAVerifier(): array
     {
         return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_OK_A_VERIFIER) : [];
+    }
+
+    public function nbDossiersATransmettreAFIP3(): int
+    {
+        return count($this->getDossiersATransmettreAFIP3());
+    }
+
+    /**
+     * @return Dossier[]
+     */
+    public function getDossiersATransmettreAFIP3(): array
+    {
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_OK_A_INDEMNISER) : [];
+    }
+
+    /**
+     * @return Dossier[]
+     */
+    public function getDossiersEnAttentePaiement(): array
+    {
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT) : [];
+    }
+
+    public function nbDossiersEnAttentePaiement(): int
+    {
+        return count($this->getDossiersEnAttentePaiement());
     }
 
     /**

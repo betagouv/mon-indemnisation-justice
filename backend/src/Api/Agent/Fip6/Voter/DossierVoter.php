@@ -133,7 +133,7 @@ class DossierVoter extends Voter
             self::ACTION_LISTER_A_ATTRIBUER => $agent->aRole(Agent::ROLE_AGENT_ATTRIBUTEUR),
             self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_EN_INSTRUCTION, self::ACTION_LISTER_A_VERIFIER => $agent->aRole(Agent::ROLE_AGENT_REDACTEUR),
             self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_ARRETE_A_SIGNER => $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR),
-            self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET),
+            self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET) || $agent->estRedacteur(),
             default => false,
         };
     }

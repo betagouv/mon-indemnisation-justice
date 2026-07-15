@@ -229,7 +229,7 @@ const EspaceRedacteur = () => {
                 {
                   text: (
                     <>
-                      À vérifier
+                      Arrêté à éditer
                       <Badge
                         as={"p"}
                         small={true}
@@ -265,8 +265,8 @@ const EspaceRedacteur = () => {
                 },
               ]
             : []),
-          // Liste des dossiers à synchroniser avec FIP3 (si LIAISON_BUDGET)
-          ...(agent.aRole(RoleAgent.LIAISON_BUDGET)
+          // Liste des dossiers à synchroniser avec FIP3 (si LIAISON_BUDGET ou rédacteur)
+          ...(agent.aRole(RoleAgent.LIAISON_BUDGET) || agent.estRedacteur()
             ? [
                 {
                   text: (

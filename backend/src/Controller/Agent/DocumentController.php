@@ -97,7 +97,7 @@ class DocumentController extends AbstractController
         }
 
         /** @var Document $document */
-        foreach ($dossier->getDocumentsATransmettre()->toArray() as $document) {
+        foreach ($dossier->getDocumentsATransmettre()->getValues() as $document) {
             try {
                 $contenu = $this->documentManager->getContenuTexte($document);
                 $zip->addFromString(preg_replace('#/#', '', $document->getOriginalFilename()), $contenu);
