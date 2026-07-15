@@ -10,6 +10,7 @@ use MonIndemnisationJustice\Repository\DossierRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -29,8 +30,15 @@ class MarquerDossierIndemniseEndpoint
         Dossier $dossier,
         NormalizerInterface $normalizer,
         Security $security,
+        Request $request,
     ) {
-        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_INDEMNISE, agent: $security->getUser());
+        /** @var \DateTime $dateIndemnisation */
+        $dateIndemnisation = max(min(\DateTime::createFromFormat('Y-m-d', $request->request->get('dateIndemnisation')), new \DateTime()), \DateTime::createFromImmutable($dossier->getEtatDossier()->getDateEntree()))->setTime(0, 0);
+
+        $dossier
+            ->changerStatut(EtatDossierType::DOSSIER_OK_INDEMNISE, agent: $security->getUser())->getEtatDossier()
+            ->setDateEntree(\DateTimeImmutable::createFromMutable($dateIndemnisation));
+
         $this->dossierRepository->save($dossier);
 
         return new JsonResponse(

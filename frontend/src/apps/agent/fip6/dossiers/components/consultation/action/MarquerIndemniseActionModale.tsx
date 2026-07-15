@@ -1,7 +1,9 @@
 import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
 import { Agent, DossierDetail, EtatDossierType } from "@/common/models";
+import { dateChiffre, dateSimple } from "@/common/services/date.ts";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Input } from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
@@ -36,6 +38,10 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
     DossierManagerInterface.$,
   );
 
+  const [dateIndemnisation, setDateIndemnisation] = useState<Date>(
+    dossier.etat.dateEntree,
+  );
+
   // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
   const [sauvegardeEnCours, setSauvegarderEnCours]: [
     boolean,
@@ -44,7 +50,7 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
 
   const marquerIndemnise = useCallback(async () => {
     setSauvegarderEnCours(true);
-    await dossierManager.marquerIndemnise(dossier);
+    await dossierManager.marquerIndemnise(dossier, dateIndemnisation);
     await onTermine();
 
     _modale.close();
@@ -59,11 +65,9 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
     >
       <p>
         Ce dossier a été transmis au Bureau du Budget le{" "}
-        {dossier.etat.dateEntree.toLocaleString("fr-FR", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
+        {dateSimple(dossier.etat.dateEntree, {
+          masquerAnneeSiCourante: true,
+          jourDeLaSemaine: true,
         })}
         .
       </p>
@@ -72,6 +76,17 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
         Si vous avez été notifié du versement de l'indemnité, vous pouvez
         marquer le dossier comme indemnisé.
       </p>
+
+      <Input
+        label="Date du virement"
+        nativeInputProps={{
+          type: "date",
+          defaultValue: dateChiffre(dateIndemnisation),
+          onChange: (e) => setDateIndemnisation(new Date(e.target.value)),
+          min: dateChiffre(dossier.etat.dateEntree),
+          max: dateChiffre(new Date()),
+        }}
+      />
 
       <ButtonsGroup
         inlineLayoutWhen="always"
@@ -89,7 +104,10 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
             children: "Marquer indemnisé",
             iconId: "fr-icon-check-line",
             priority: "primary",
-            disabled: sauvegardeEnCours,
+            disabled:
+              sauvegardeEnCours ||
+              dateIndemnisation < dossier.etat.dateEntree ||
+              dateIndemnisation > new Date(),
             onClick: async () => marquerIndemnise(),
           },
         ]}

@@ -1,12 +1,7 @@
 import { queryClient } from "@/apps/agent/fip6/query.ts";
-import {
-  Agent,
-  BaseDossier,
-  Document,
-  DocumentType,
-  DossierDetail,
-} from "@/common/models";
+import { Agent, BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
+import { dateChiffre } from "@/common/services/date.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
@@ -37,7 +32,10 @@ export interface DossierManagerInterface {
 
   transmettreAFIP3(dossier: BaseDossier): Promise<void>;
 
-  marquerIndemnise(dossier: BaseDossier): Promise<void>;
+  marquerIndemnise(
+    dossier: BaseDossier,
+    dateIndemnisation: Date,
+  ): Promise<void>;
 }
 
 export namespace DossierManagerInterface {
@@ -143,11 +141,17 @@ export class APIDossierManager implements DossierManagerInterface {
     }
   }
 
-  async marquerIndemnise(dossier: BaseDossier): Promise<void> {
+  async marquerIndemnise(
+    dossier: BaseDossier,
+    dateIndemnisation: Date,
+  ): Promise<void> {
     const reponse = await fetch(
       `/api/agent/fip6/dossier/${dossier.id}/marquer-indemnise`,
       {
         method: "POST",
+        body: JSON.stringify({
+          dateIndemnisation: dateChiffre(dateIndemnisation),
+        }),
         headers: {
           "Content-type": "application/json",
           Accept: "application/json",

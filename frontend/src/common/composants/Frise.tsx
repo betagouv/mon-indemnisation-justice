@@ -24,14 +24,6 @@ const FriseContenu = ({
   alignDroit?: boolean;
   afficherDuree?: boolean;
 }) => {
-  console.log(
-    afficherDuree,
-    evenement.dateFin,
-    afficherDuree && !!evenement.dateFin,
-    afficherDuree && !!evenement.dateFin
-      ? periode(evenement.date, evenement.dateFin)
-      : undefined,
-  );
   return (
     <div
       className={`frise__contenu${alignDroit ? " frise__contenu--aligne-droite" : ""}`}
