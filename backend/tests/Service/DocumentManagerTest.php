@@ -39,7 +39,7 @@ class DocumentManagerTest extends WebTestCase
             'mis_en_cause' => [
                 MotifRejetBrisPorte::MIS_EN_CAUSE,
                 [
-                    'vous étiez bien concerné(e) par leur intervention',
+                    'vous étiez bien concerné par leur intervention/les personnes recherchées étaient bien hébergées à votre domicile',
                 ],
             ],
             'locataire_hebergeant' => [
@@ -79,7 +79,7 @@ class DocumentManagerTest extends WebTestCase
             'mis_en_cause' => [
                 MotifRejetBrisPorte::MIS_EN_CAUSE,
                 [
-                    'vous étiez bien concerné(e) par leur intervention',
+                    'vous étiez bien concerné par leur intervention/les personnes recherchées étaient bien hébergées à votre domicile',
                 ],
             ],
         ];

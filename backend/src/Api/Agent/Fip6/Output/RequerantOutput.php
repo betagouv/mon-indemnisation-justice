@@ -12,12 +12,12 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 class RequerantOutput
 {
     public function __construct(
-        public ?Civilite $civilite = null,
-        public ?string $nom = null,
-        public ?string $nomNaissance = null,
-        public array $prenoms = [],
-        public ?string $courriel = null,
-        public ?string $telephone = null,
+        public Civilite $civilite,
+        public string $nom,
+        public ?string $nomNaissance,
+        public array $prenoms,
+        public string $courriel,
+        public ?string $telephone,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
         public ?\DateTimeImmutable $dateNaissance,
         public ?string $communeNaissance,
