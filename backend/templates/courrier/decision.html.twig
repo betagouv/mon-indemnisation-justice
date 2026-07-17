@@ -141,7 +141,7 @@
 
         <div id="courrier-decision-courrier-contenu">
             <p class="courrier-decision-objet">
-                Objet : Proposition d’indemnisation
+                Objet : {% if dossier.estAccepte %}Proposition d’indemnisation{% else %}Décision concernant votre demande d’indemnisation{% endif %}
             </p>
 
             <p>
