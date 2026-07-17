@@ -24,6 +24,8 @@ class DecompterDossierEndpointTest extends AbstractEndpointTestCase
             'a-instruire' => $redacteur->nbDossiersAInstruire(),
             'en-instruction' => $redacteur->nbDossiersEnInstruction(),
             'a-verifier' => $redacteur->nbDossiersAVerifier(),
+            'a-transmettre' => $redacteur->nbDossiersATransmettreAFIP3(),
+            'en-attente-indemnisation' => $redacteur->nbDossiersEnAttentePaiement(),
         ], $donnees);
     }
 }

@@ -57,12 +57,14 @@ const Page = () => {
                   sauvegardé le{" "}
                   {dateSimple(
                     declaration.dateSoumission ?? declaration.dateCreation,
-                    true,
+                    { masquerAnneeSiCourante: true },
                   )}
                 </>
               ),
               declaration.dateOperation ? (
-                dateSimple(declaration.dateOperation, true)
+                dateSimple(declaration.dateOperation, {
+                  masquerAnneeSiCourante: true,
+                })
               ) : (
                 <i>Non renseignée</i>
               ),

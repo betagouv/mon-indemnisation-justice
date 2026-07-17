@@ -2,11 +2,13 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
-use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierEnAttenteIndemnisationOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
+use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Repository\DossierRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,23 +23,21 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class ListerDossierEnAttenteIndemnisationEndpoint
 {
     public function __construct(
-        protected readonly EntityManagerInterface $entityManager,
+        protected readonly DossierRepository $dossierRepository,
         protected readonly NormalizerInterface $normalizer,
     ) {
     }
 
-    public function __invoke(): Response
-    {
-        $dossiers = $this->entityManager->getRepository(Dossier::class)->listerDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
+    public function __invoke(
+        Security $security,
+    ): Response {
+        /** @var Agent $agent */
+        $agent = $security->getUser();
+        $dossiers = $agent->estRedacteur() ? $agent->getDossiersEnAttentePaiement() : $this->dossierRepository->listerDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
 
         return new JsonResponse(
             $this->normalizer->normalize(
                 array_map(
-                    /* Pas réussi à utiliser l'ObjectMapper ici : il se plaitn de ne pas trouver les champs
-                    `dateValidation` et `agentValidateur` dans la classe source, ce qui est tout de même ballot pour un
-                    mapper ... Et je n'ai pas non plus réussi à utiliser des _arrow function_ en guise de callable
-                    transformer, pas plus que de déléguer à un transformer de classe (jamais appelé ...).
-                    */
                     fn (Dossier $dossier) => DossierEnAttenteIndemnisationOutput::creerDepuisDossier($dossier),
                     $dossiers
                 ),

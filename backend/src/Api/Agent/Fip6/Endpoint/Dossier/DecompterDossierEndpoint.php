@@ -50,9 +50,15 @@ class DecompterDossierEndpoint
             $decomptes['arrete-a-signer'] = $dossierRepository->compterDossierParEtat(EtatDossierType::DOSSIER_OK_VERIFIE);
         }
 
-        if ($agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET)) {
-            $decomptes['a-transmettre'] = $dossierRepository->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
-            $decomptes['en-attente-indemnisation'] = $dossierRepository->compterDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
+        if ($agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET) || $agent->estRedacteur()) {
+            if ($agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET)) {
+
+                $decomptes['a-transmettre'] = $dossierRepository->compterDossierParEtat(EtatDossierType::DOSSIER_OK_A_INDEMNISER);
+                $decomptes['en-attente-indemnisation'] = $dossierRepository->compterDossierParEtat(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT);
+            } else {
+                $decomptes['a-transmettre'] = $agent->nbDossiersATransmettreAFIP3();
+                $decomptes['en-attente-indemnisation'] = $agent->nbDossiersEnAttentePaiement();
+            }
         }
 
         return new JsonResponse($decomptes);

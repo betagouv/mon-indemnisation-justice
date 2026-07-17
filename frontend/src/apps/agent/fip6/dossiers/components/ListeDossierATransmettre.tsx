@@ -52,8 +52,9 @@ function DossierATransmettreLigne({
               children: "Télécharger",
               className: "fr-mb-0",
               linkProps: {
-                href: `${window.location.origin}/agent/redacteur/${dossier.id}/documents-a-transmettre`,
+                href: `${window.location.origin}/agent/document/dossier/${dossier.id}/documents-a-transmettre`,
                 target: "_self",
+                download: true,
               },
             },
             {

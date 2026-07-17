@@ -1,6 +1,7 @@
 import { queryClient } from "@/apps/agent/fip6/query.ts";
 import { Agent, BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
+import { dateChiffre } from "@/common/services/date.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
@@ -28,6 +29,13 @@ export interface DossierManagerInterface {
     type: DocumentType,
     fichier: File,
   ): Promise<Document>;
+
+  transmettreAFIP3(dossier: BaseDossier): Promise<void>;
+
+  marquerIndemnise(
+    dossier: BaseDossier,
+    dateIndemnisation: Date,
+  ): Promise<void>;
 }
 
 export namespace DossierManagerInterface {
@@ -57,16 +65,33 @@ export class APIDossierManager implements DossierManagerInterface {
     });
   }
 
+  protected recupererDossier(id: number): Promise<DossierDetail> {
+    return queryClient.fetchQuery<DossierDetail>({
+      queryKey: ["DossierManagerInterface", "dossier", id],
+      queryFn: async (): Promise<DossierDetail> => {
+        const reponse = await fetch(`/api/agent/fip6/dossier/${id}`);
+
+        if (!reponse.ok) {
+          throw new Error(`Failed to fetch dossier: ${reponse.status}`);
+        }
+
+        const donnees = await reponse.json();
+
+        return plainToInstance(DossierDetail, donnees);
+      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+  }
+
+  protected enregistrerDossier(dossier: DossierDetail): void {
+    queryClient.setQueryData(
+      ["DossierManagerInterface", "dossier", dossier.id],
+      () => dossier,
+    );
+  }
+
   async consulter(id: number): Promise<DossierDetail> {
-    const reponse = await fetch(`/api/agent/fip6/dossier/${id}`);
-
-    if (!reponse.ok) {
-      throw new Error(`Failed to fetch dossier: ${reponse.status}`);
-    }
-
-    const data = await reponse.json();
-
-    return plainToInstance(DossierDetail, data);
+    return this.recupererDossier(id);
   }
 
   async ajouterPieceJointe(
@@ -95,5 +120,49 @@ export class APIDossierManager implements DossierManagerInterface {
       data?.erreur ??
         "Une erreur est survenue lors de l'envoi de la pièce jointe",
     );
+  }
+
+  async transmettreAFIP3(dossier: BaseDossier): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/transmettre-a-fip3`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async marquerIndemnise(
+    dossier: BaseDossier,
+    dateIndemnisation: Date,
+  ): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/marquer-indemnise`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          dateIndemnisation: dateChiffre(dateIndemnisation),
+        }),
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
   }
 }
