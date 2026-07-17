@@ -1,5 +1,7 @@
 import { BaseDossier, Document } from "@/common/models";
+import { MotifRejetBrisPorte } from "@/common/models/rejet.ts";
 import { plainToInstance } from "class-transformer";
+import { ServiceIdentifier } from "inversify";
 
 export interface DocumentManagerInterface {
   imprimer(document: Document, corps?: string): Promise<Document>;
@@ -11,7 +13,7 @@ export interface DocumentManagerInterface {
 
   genererCourrierRejet(
     dossier: BaseDossier,
-    motifRejet: string,
+    motifRejet: MotifRejetBrisPorte,
   ): Promise<Document>;
 
   genererDeclarationAcceptation(
@@ -84,7 +86,7 @@ export class APIDocumentManager implements DocumentManagerInterface {
 
   async genererCourrierRejet(
     dossier: BaseDossier,
-    motifRejet: string,
+    motifRejet: MotifRejetBrisPorte,
   ): Promise<Document> {
     const response = await fetch(
       `/api/agent/fip6/dossier/${dossier.id}/generer-courrier-rejet`,

@@ -1,19 +1,14 @@
+{% set e = (dossier.requerantPersonne is not null and dossier.requerantPersonne.estFeminin) ? 'e' : '' %}
 <p>
-    Je soussigné{% if dossier.requerantPersonne.estFeminin %}e{% endif %},
+    Je soussigné{{ e }},
     {{ dossier.requerantPersonne.getNomCourant(false, true) }},
-    déclare accepter l’indemnité définitive de <b>{{ montantIndemnisation|montant_litteral }}
-        ({{ montantIndemnisation|number_format(2, ',', ' ') }} EUR)</b> toutes causes de
-    préjudice confondues qui m’est proposée par le garde des Sceaux, ministre de la Justice, en réparation
-    du préjudice subi en raison de la détérioration de la porte d’entrée d’un logement m’appartenant
-    sis {{ dossier.brisPorte.adresse.ligne1 }}
-    à {{ dossier.brisPorte.adresse.localite }} ({{ dossier.brisPorte.adresse.codeDepartemental }});
+    {% if dossier.estPersonneMorale %}représentant{{ e }} légal{{ e }} {{ dossier.requerantPersonneMorale.libelleDe }},{% endif %}
+    déclare accepter l’indemnité de {{ montantIndemnisation|montant_litteral }}
+    ({{ montantIndemnisation|number_format(2, ',', ' ') }} EUR) qui m’est proposée par le ministère de la Justice, en
+    réparation des dommages causés à la porte du logement sis {{ dossier.brisPorte.adresse.ligne1 }}
+    à {{ dossier.brisPorte.adresse.localite|upper }} ({{ dossier.brisPorte.adresse.codeDepartemental }})
+    {% if dossier.brisPorte.dateOperation is not null %} le {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}{% endif %}.
 </p>
-
 <p>
-    Je reconnais que, moyennant le versement de cette somme, je serai intégralement
-    désintéressé{% if dossier.requerantPersonne.estFeminin %}e{% endif %} du préjudice
-    subi au cours de l’opération de police judiciaire intervenue
-    {% if dossier.brisPorte.dateOperation is not null %}le {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }}{% endif %}
-    à l’adresse susmentionnée
-    ;
+    Je reconnais qu’après le versement de cette somme, je serai intégralement indemnisé{{ e }} du préjudice subi.
 </p>

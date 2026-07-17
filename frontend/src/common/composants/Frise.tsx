@@ -64,8 +64,6 @@ export const Frise = ({
   evenements: EvenementFrise[];
   afficherDurees?: boolean;
 }) => {
-  console.log(afficherDurees);
-
   return (
     <div className="frise fr-col-12">
       {evenements.map((evenement, index) => {

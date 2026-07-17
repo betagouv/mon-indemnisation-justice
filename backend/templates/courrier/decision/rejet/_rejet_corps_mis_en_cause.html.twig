@@ -1,0 +1,17 @@
+{% include 'courrier/decision/_corps_introduction.html.twig' %}
+{% set e = (dossier.requerantPersonne is not null and dossier.requerantPersonne.estFeminin) ? 'e' : '' %}
+<p>
+    Après examen de votre dossier, nous ne pouvons pas donner une réponse favorable à votre demande d’indemnisation.
+</p>
+<p>
+    En effet, {{ fdo }} n’a pas commis d’erreur opérationnelle, vous étiez bien concerné{{ e }} par leur intervention/les personnes recherchées étaient bien hébergées à votre domicile.
+</p>
+
+<p>
+    Par ailleurs, la responsabilité de l’Etat du fait d’un fonctionnement défectueux du service public de la justice au sens de l’article L. 141-1 du code de l’organisation judiciaire, ne peut être retenue.
+</p>
+<p>
+    Si vous souhaitez contester cette décision, vous pouvez engager une action en justice dirigée contre l’Agent judiciaire de l’État devant la juridiction civile compétente.
+</p>
+
+{% include 'courrier/decision/_corps_formule_cloture.html.twig' %}

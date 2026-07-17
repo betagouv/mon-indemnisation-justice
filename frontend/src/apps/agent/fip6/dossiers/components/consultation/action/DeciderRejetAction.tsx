@@ -1,25 +1,20 @@
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { plainToInstance } from "class-transformer";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import {ButtonProps} from "@codegouvfr/react-dsfr/Button";
+import {plainToInstance} from "class-transformer";
+import React, {Dispatch, SetStateAction, useCallback, useEffect, useState,} from "react";
 
-import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { Loader } from "@/common/composants/Loader.tsx";
-import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
-import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+import {EditeurDocument} from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
+import {ChampPieceJointe} from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
+import {Loader} from "@/common/composants/Loader.tsx";
+import {Agent, Document, DossierDetail, EtatDossier} from "@/common/models";
+import {getLibelleMotifRejetBrisPorte, MotifRejetBrisPorte, MotifsRejetBrisPorte,} from "@/common/models/rejet.ts";
+import {DocumentManagerInterface} from "@/common/services/agent/document.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import {createModal} from "@codegouvfr/react-dsfr/Modal";
+import {useIsModalOpen} from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
+import {Stepper} from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import { useInjection } from "inversify-react";
-import { observer } from "mobx-react-lite";
+import {useInjection} from "inversify-react";
+import {observer} from "mobx-react-lite";
 
 const _modale = createModal({
   id: "modale-action-decider-rejet",
@@ -69,8 +64,8 @@ const DefinirMotifRefus = ({
   motifRejet,
   setMotifRejet,
 }: {
-  motifRejet: MotifRejet | null;
-  setMotifRejet: Dispatch<SetStateAction<MotifRejet>>;
+  motifRejet?: MotifRejetBrisPorte;
+  setMotifRejet: Dispatch<SetStateAction<MotifRejetBrisPorte>>;
 }) => {
   return (
     <>
@@ -85,17 +80,16 @@ const DefinirMotifRefus = ({
         <select
           className="fr-select"
           defaultValue={motifRejet ?? ""}
-          onChange={(e) => setMotifRejet(e.target.value as MotifRejet)}
+          onChange={(e) => setMotifRejet(e.target.value as MotifRejetBrisPorte)}
         >
-          <option value="est_bailleur">
-            Le requérant est le bailleur (art. 1732)
+          <option value="" disabled hidden>
+            Sélectionnez un motif de rejet
           </option>
-          <option value="est_vise">
-            Le requérant était visé par l'opération
-          </option>
-          <option value="est_hebergeant">
-            Le requérant hébergeait la personne visée par l'opération
-          </option>
+          {MotifsRejetBrisPorte.values().map((motif) => (
+            <option key={motif} value={motif}>
+              {getLibelleMotifRejetBrisPorte(motif)}
+            </option>
+          ))}
         </select>
       </div>
     </>
@@ -124,18 +118,18 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
 
   // Mémorise le motif de rejet
   const [motifRejet, setMotifRejet]: [
-    MotifRejet | null,
-    (motif: MotifRejet) => void,
-  ] = useState<MotifRejet | null>(
+    MotifRejetBrisPorte | undefined,
+    (motif: MotifRejetBrisPorte) => void,
+  ] = useState<MotifRejetBrisPorte | undefined>(
     (courrier?.metaDonnees?.motifRejet ?? dossier.qualiteRequerant == "PRO")
-      ? "est_bailleur"
+      ? "LOCATAIRE"
       : dossier.testEligibilite
         ? dossier.testEligibilite.estVise
-          ? "est_vise"
+          ? "MIS_EN_CAUSE"
           : dossier.testEligibilite.estHebergeant
-            ? "est_hebergeant"
-            : null
-        : null,
+            ? "LOCATAIRE_HEBERGEANT"
+            : undefined
+        : undefined,
   );
 
   // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
@@ -162,7 +156,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
     useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
   const genererCourrierRejet = useCallback(
-    async (dossier: DossierDetail, motifRejet: MotifRejet) => {
+    async (dossier: DossierDetail, motifRejet: MotifRejetBrisPorte) => {
       setGenerationEnCours(true);
       const courrierRejet = await documentManager.genererCourrierRejet(
         dossier,
@@ -176,7 +170,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
   );
 
   const deciderDossier = useCallback(
-    async ({ motifRejet }: { motifRejet: MotifRejet }) => {
+    async ({ motifRejet }: { motifRejet: MotifRejetBrisPorte }) => {
       setSauvegarderEnCours(true);
 
       const response = await fetch(
@@ -225,7 +219,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
         <>
           <DefinirMotifRefus
             motifRejet={motifRejet}
-            setMotifRejet={(motifRejet: MotifRejet) =>
+            setMotifRejet={(motifRejet: MotifRejetBrisPorte) =>
               setMotifRejet(motifRejet)
             }
           />
@@ -246,7 +240,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
                 iconId: "fr-icon-edit-box-line",
                 onClick: async () => {
                   if (
-                    null !== motifRejet &&
+                    motifRejet &&
                     (motifRejet != courrier?.metaDonnees?.motifRejet ||
                       courrier?.metaDonnees?.montantIndemnisation)
                   ) {
@@ -269,7 +263,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
               className="fr-my-2w"
               document={courrier as Document}
               regenererDocument={() =>
-                genererCourrierRejet(dossier, motifRejet as MotifRejet)
+                genererCourrierRejet(dossier, motifRejet as MotifRejetBrisPorte)
               }
               onImprime={(document: Document) => dossier.addDocument(document)}
               onImpression={(impressionEnCours) =>
@@ -359,7 +353,9 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
                 disabled: !courrier || sauvegardeEnCours,
                 iconId: "fr-icon-send-plane-fill",
                 onClick: () =>
-                  deciderDossier({ motifRejet: motifRejet as MotifRejet }),
+                  deciderDossier({
+                    motifRejet: motifRejet as MotifRejetBrisPorte,
+                  }),
                 children: "Valider et envoyer pour signature",
               },
             ]}

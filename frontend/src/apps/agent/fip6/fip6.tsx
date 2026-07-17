@@ -1,5 +1,6 @@
 import "@/apps/_init.ts";
 import { Chargement } from "@/common/composants/dsfr/Chargement";
+import "@/style/agents.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Link, LinkProps, RouterProvider } from "@tanstack/react-router";
 import React, { JSX, StrictMode } from "react";

@@ -19,6 +19,10 @@ doctrine:
         alias: MonIndemnisationJustice
     controller_resolver:
       enabled: false
+    dql:
+      string_functions:
+        RAND: MonIndemnisationJustice\Doctrine\Functions\RandomFunction
+
 
 when@test:
   doctrine:

@@ -1,11 +1,6 @@
 import { ListeDossiers } from "@/apps/agent/fip6/composants/dossiers/ListeDossiers.tsx";
 import { Loader } from "@/common/composants/Loader.tsx";
-import {
-  Agent,
-  DossierApercu,
-  EtatDossierType,
-  Redacteur,
-} from "@/common/models";
+import { Agent, DossierApercu, EtatDossierType, Redacteur } from "@/common/models";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -283,7 +278,7 @@ export const RechercherDossierPage = ({
               <div className="fr-col-12 fr-my-2w">
                 <h6 className="fr-m-0">
                   {isPending ? (
-                    "Chargement des dosssiers ..."
+                    "Chargement des dossiers ..."
                   ) : (
                     <>
                       {reponse.total} dossier

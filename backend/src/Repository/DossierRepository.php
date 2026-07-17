@@ -147,6 +147,15 @@ class DossierRepository extends ServiceEntityRepository
             ->setParameter('type', $type);
     }
 
+    public function getDossierParEtatAleatoire(EtatDossierType $etat, DossierType $type = DossierType::BRIS_PORTE): ?Dossier
+    {
+        return $this->creerBaseRequeteDossierParEtat($etat, $type)
+            ->orderBy('RAND()')
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getSingleResult();
+    }
+
     public function getDossierParEtat(EtatDossierType $etat, DossierType $type = DossierType::BRIS_PORTE): ?Dossier
     {
         return $this->creerBaseRequeteDossierParEtat($etat, $type)
