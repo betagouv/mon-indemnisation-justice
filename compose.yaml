@@ -133,7 +133,7 @@ services:
     hostname: test
     build:
       context: .
-      dockerfile: .docker/php/prod.dockerfile
+      dockerfile: .docker/prod/web.dockerfile
       args:
         - APP_ENV=test
         - APP_DEBUG=false

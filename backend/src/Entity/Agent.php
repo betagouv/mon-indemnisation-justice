@@ -147,18 +147,6 @@ class Agent implements UserInterface
         return $this;
     }
 
-    public function getSiret(): ?string
-    {
-        return $this->siret;
-    }
-
-    public function setSiret(?string $siret): static
-    {
-        $this->siret = $siret;
-
-        return $this;
-    }
-
     public function getPlaintextRole(): string
     {
         $roles = [];
@@ -263,7 +251,7 @@ class Agent implements UserInterface
      */
     protected function getDossiersParEtatActuel(EtatDossierType $etatActuel): array
     {
-        return $this->dossiers->filter(fn (Dossier $dossier) => $dossier->getEtatDossier()->getEtat() === $etatActuel)->toArray();
+        return $this->dossiers->filter(fn (Dossier $dossier) => $dossier->getEtatDossier()->getEtat() === $etatActuel)->getValues();
     }
 
     public function nbDossiersAInstruire(): int
@@ -303,6 +291,32 @@ class Agent implements UserInterface
     public function getDossiersAVerifier(): array
     {
         return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_OK_A_VERIFIER) : [];
+    }
+
+    public function nbDossiersATransmettreAFIP3(): int
+    {
+        return count($this->getDossiersATransmettreAFIP3());
+    }
+
+    /**
+     * @return Dossier[]
+     */
+    public function getDossiersATransmettreAFIP3(): array
+    {
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_OK_A_INDEMNISER) : [];
+    }
+
+    /**
+     * @return Dossier[]
+     */
+    public function getDossiersEnAttentePaiement(): array
+    {
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT) : [];
+    }
+
+    public function nbDossiersEnAttentePaiement(): int
+    {
+        return count($this->getDossiersEnAttentePaiement());
     }
 
     /**
@@ -427,7 +441,7 @@ class Agent implements UserInterface
 
     public function getNomCourt(): ?string
     {
-        return sprintf('%s. %s', $this->prenom[0], $this->nom);
+        return sprintf('%s. %s', $this->prenom[0], strtoupper($this->nom));
     }
 
     public function getNomComplet($capital = false): ?string

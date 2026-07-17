@@ -4,19 +4,29 @@
     <style>
         body {
 
+
             header {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 6rem;
 
                 .courrier-decision-courrier-titre {
-                    font-family: 'Marianne', sans-serif;
-                    width: 33%;
+                    width: 50%;
                     text-align: right;
-                    font-weight: bold;
+                    font-weight: bolder;
                     font-size: 12pt;
-                    letter-spacing: -.5pt;
                 }
             }
 
             #courrier-decision {
+
+                ul,ol {
+                    li {
+                        margin: .7rem 0;
+                    }
+                }
 
 
                 #courrier-decision-courrier-introduction {
@@ -31,9 +41,9 @@
                             margin-top: 0 !important;
                         }
 
-                        margin: 10pt 0;
-                        font-size: 10pt;
-                        line-height: 13pt;
+                        margin: 9pt 0;
+                        font-size: 9pt;
+                        line-height: 11pt;
                     }
 
                     .contact-bureau {
@@ -44,6 +54,7 @@
                     }
 
                     .section-a-droite {
+                        text-align: right;
                         width: calc(7 * 100% / 18);
 
                         &.section-flottante {
@@ -53,8 +64,14 @@
                 }
 
                 #courrier-decision-courrier-contenu {
+                    .courrier-decision-objet {
+                        font-weight:bold;
+                        margin-bottom: 3rem;
+                    }
+
+
                     p {
-                        margin: 12pt 0;
+                        margin: 10pt 0;
                         letter-spacing: 0;
                         font-size: 11pt;
                         line-height: 13pt;
@@ -83,31 +100,20 @@
     </header>
     <div id="courrier-decision" class="page">
         <div id="courrier-decision-courrier-introduction">
-
             <div class="section-a-gauche">
                 <p>
-                    <b>Chef de bureau / Adjointe au chef du bureau</b>
+                    La Cheffe de bureau<br/>
+                    L’adjoint à la Cheffe de bureau
                 </p>
 
-                {% if dossier.redacteur is not null %}
+
                     <p>
-                        <u>Affaire suivie par</u> : <span
-                                class="texte-majuscule">{{ dossier.redacteur.nomCourt }}</span>
-                    </p>
-                {% endif %}
-
-                <p>
-                    <b class="texte-majuscule">
+                        {% if dossier.redacteur is not null %}Affaire suivie par : {{ dossier.redacteur.nomCourt }}<br/>{% endif %}
                         Sous-direction des finances, <br/>
-                        de l’immobilier et de la performance<br/>
-                        bureau du precontentieux (FIP6)
-
-                    </b>
-                </p>
-
-                <p class="contact-bureau">
-                    <a href="mailto:precontentieux.dsj-fip6@justice.gouv.fr">precontentieux.dsj-fip6@justice.gouv.fr</a><br/>
-                    <b><u>Référence à rappeler</u></b> : {{ dossier.reference }}
+                        de l’immobilier et de la performance (SDFIP)<br/>
+                        Bureau du precontentieux (FIP6)<br/>
+                        <a href="mailto:precontentieux.dsj-fip6@justice.gouv.fr">precontentieux.dsj-fip6@justice.gouv.fr</a><br/>
+                        Référence à rappeler : {{ dossier.reference }}
                 </p>
             </div>
 
@@ -119,10 +125,14 @@
 
             <div class="section-a-droite section-flottante">
                 <p>
-                    {{ dossier.requerantPersonne.nomCourant(capital: true) }}{% if dossier.courrielRequerant != null %}
-                        <br/>
-                        Courriel: <a
-                                href="mailto:{{ dossier.courrielRequerant }}">{{ dossier.courrielRequerant }}</a>
+                    {% if dossier.estPersonneMorale %}
+                        {{ dossier.requerantPersonneMorale.libelle(true) }}
+                    {% else %}
+                    {{ dossier.requerantPersonne.civilite.libelle }} {{ dossier.requerantPersonne.nomCourant(civilite: false, capital: true) }}{% if dossier.courrielRequerant != null %}
+                    {% endif %}
+                    <br/>
+                    Courriel: <a
+                            href="mailto:{{ dossier.courrielRequerant }}">{{ dossier.courrielRequerant }}</a>
                     {% endif %}
                 </p>
             </div>
@@ -130,6 +140,10 @@
         </div>
 
         <div id="courrier-decision-courrier-contenu">
+            <p class="courrier-decision-objet">
+                Objet : Proposition d’indemnisation
+            </p>
+
             <p>
                 {{ dossier.requerantPersonne.civilite.libelle }},
             </p>

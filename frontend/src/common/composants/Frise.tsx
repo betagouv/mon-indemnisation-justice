@@ -24,14 +24,6 @@ const FriseContenu = ({
   alignDroit?: boolean;
   afficherDuree?: boolean;
 }) => {
-  console.log(
-    afficherDuree,
-    evenement.dateFin,
-    afficherDuree && !!evenement.dateFin,
-    afficherDuree && !!evenement.dateFin
-      ? periode(evenement.date, evenement.dateFin)
-      : undefined,
-  );
   return (
     <div
       className={`frise__contenu${alignDroit ? " frise__contenu--aligne-droite" : ""}`}
@@ -64,8 +56,6 @@ export const Frise = ({
   evenements: EvenementFrise[];
   afficherDurees?: boolean;
 }) => {
-  console.log(afficherDurees);
-
   return (
     <div className="frise fr-col-12">
       {evenements.map((evenement, index) => {

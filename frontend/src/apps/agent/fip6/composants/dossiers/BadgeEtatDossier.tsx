@@ -1,5 +1,6 @@
 import { EtatDossier } from "@/common/models";
 import React from "react";
+import { getLibelleMotifRejetBrisPorte } from "@/common/models/rejet.ts";
 
 export const BadgeEtatDossier = ({
   etat,
@@ -19,6 +20,11 @@ export const BadgeEtatDossier = ({
               "aria-describedby": `tooltip-etat-dossier-${etat.id}`,
             }
           : {})}
+        {...(etat.contexte?.motifRejet
+          ? {
+              "aria-describedby": `tooltip-etat-dossier-motif-rejet-${etat.id}`,
+            }
+          : {})}
       >
         {etat.etat.libelle}
       </p>
@@ -30,6 +36,15 @@ export const BadgeEtatDossier = ({
         role="tooltip"
       >
         {etat.contexte?.motifRejet || <i>Aucun motif</i>}
+      </span>
+    )}
+    {etat.contexte?.motifRejet && (
+      <span
+        className="fr-tooltip fr-placement"
+        id={`tooltip-etat-dossier-motif-rejet-${etat.id}`}
+        role="tooltip"
+      >
+        {getLibelleMotifRejetBrisPorte(etat.contexte.motifRejet)}
       </span>
     )}
   </>

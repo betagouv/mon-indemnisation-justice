@@ -305,5 +305,14 @@ a:not([href]) {
         font-size: 11pt;
         line-height: 13pt;
     }
+
+    ol {
+        list-style-type: none !important;
+        padding-left: 0 !important;
+
+        li::marker {
+            content: '';
+        }
+    }
 }
 

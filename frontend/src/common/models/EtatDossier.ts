@@ -1,6 +1,7 @@
 import { Expose, Transform, Type } from "class-transformer";
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
+import { MotifRejetBrisPorte } from "@/common/models/rejet.ts";
 
 interface EtatInterface {
   get libelle(): string;
@@ -166,6 +167,10 @@ export class EtatDossierType implements EtatInterface {
   }
 }
 
+export type ContexteEtatDossier = any & {
+  motifRejet?: MotifRejetBrisPorte;
+};
+
 export class EtatDossier implements EtatInterface {
   public readonly id: number;
   @Transform(({ value }: { value: string }) => EtatDossierType.resoudre(value))
@@ -183,7 +188,7 @@ export class EtatDossier implements EtatInterface {
   @Expose()
   @Type(() => Requerant)
   public readonly requerant: boolean;
-  public readonly contexte: any | null = null;
+  public readonly contexte?: ContexteEtatDossier;
 
   get libelle(): string {
     return this.etat.libelle;

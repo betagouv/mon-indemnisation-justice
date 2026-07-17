@@ -127,7 +127,7 @@ class BrisPorte
 
     public function getTypeInstitutionSecuritePublique(): ?AdministrationType
     {
-        return $this->typeAdministration;
+        return $this->typeAdministration ?? $this->declarationFDO?->getAgent()->getAdministration()->getType();
     }
 
     public function setTypeInstitutionSecuritePublique(?AdministrationType $typeAdministration): self

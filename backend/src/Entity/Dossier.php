@@ -153,9 +153,11 @@ class Dossier
         return $this->requerantPersonnePhysique;
     }
 
-    public function getRequerantPersonne(): Personne
+    public function getRequerantPersonne(): ?Personne
     {
-        return $this->requerantPersonneMorale?->getRepresentantLegal() ?? $this->requerantPersonnePhysique->getPersonne();
+        return $this->estPersonneMorale() && null !== $this->requerantPersonneMorale?->getRepresentantLegal()->getNom() ?
+            $this->requerantPersonneMorale?->getRepresentantLegal()
+            : $this->requerantPersonnePhysique?->getPersonne();
     }
 
     public function getCourrielRequerant(): string

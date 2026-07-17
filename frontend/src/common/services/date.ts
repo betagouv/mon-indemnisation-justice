@@ -78,9 +78,16 @@ export const dateChiffre = function (date?: Date): string {
  *  */
 export const dateSimple = function (
   date: Date,
-  masquerAnneeSiCourante: boolean = false,
+  {
+    masquerAnneeSiCourante = false,
+    jourDeLaSemaine = false,
+  }: { masquerAnneeSiCourante?: boolean; jourDeLaSemaine?: boolean } = {
+    masquerAnneeSiCourante: false,
+    jourDeLaSemaine: false,
+  },
 ): string {
   return date.toLocaleString("fr-FR", {
+    weekday: jourDeLaSemaine ? "long" : undefined,
     day: "numeric",
     month: "long",
     year:
@@ -142,5 +149,5 @@ export const dateEtHeureSimple = function (
     return "";
   }
 
-  return `${dateSimple(date, masquerAnneeSiCourante)} à ${avecMinutes ? heureEtMinutesSimple(date, { litterale }) : heureSimple(date, { litterale })}`;
+  return `${dateSimple(date, { masquerAnneeSiCourante })} à ${avecMinutes ? heureEtMinutesSimple(date, { litterale }) : heureSimple(date, { litterale })}`;
 };
