@@ -286,7 +286,7 @@ export const DeciderIndemnisationModale = observer(
 
         {etape === "EDITION_COURRIER_PI" && (
           <>
-            {courrier ? (
+            {!!courrier ? (
               <EditeurDocument
                 className="fr-my-2w"
                 document={courrier as Document}
