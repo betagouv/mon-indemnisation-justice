@@ -1,20 +1,30 @@
-import {ButtonProps} from "@codegouvfr/react-dsfr/Button";
-import {plainToInstance} from "class-transformer";
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useState,} from "react";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { plainToInstance } from "class-transformer";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
-import {EditeurDocument} from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import {ChampPieceJointe} from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import {Loader} from "@/common/composants/Loader.tsx";
-import {Agent, Document, DossierDetail, EtatDossier} from "@/common/models";
-import {getLibelleMotifRejetBrisPorte, MotifRejetBrisPorte, MotifsRejetBrisPorte,} from "@/common/models/rejet.ts";
-import {DocumentManagerInterface} from "@/common/services/agent/document.ts";
+import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
+import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
+import { Loader } from "@/common/composants/Loader.tsx";
+import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
+import {
+  getLibelleMotifRejetBrisPorte,
+  MotifRejetBrisPorte,
+  MotifsRejetBrisPorte,
+} from "@/common/models/rejet.ts";
+import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import {createModal} from "@codegouvfr/react-dsfr/Modal";
-import {useIsModalOpen} from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
-import {Stepper} from "@codegouvfr/react-dsfr/Stepper";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
-import {useInjection} from "inversify-react";
-import {observer} from "mobx-react-lite";
+import { useInjection } from "inversify-react";
+import { observer } from "mobx-react-lite";
 
 const _modale = createModal({
   id: "modale-action-decider-rejet",
@@ -258,7 +268,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
 
       {etape === "EDITION_COURRIER_REJET" && (
         <>
-          {courrier ? (
+          {!!courrier ? (
             <EditeurDocument
               className="fr-my-2w"
               document={courrier as Document}
