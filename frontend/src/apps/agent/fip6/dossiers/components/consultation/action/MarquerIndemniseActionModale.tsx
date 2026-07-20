@@ -21,9 +21,8 @@ const estEnAttenteIndemnisation = ({
   dossier: DossierDetail;
   agent: Agent;
 }): boolean =>
-  agent.estLiaisonBudget() ||
-  (agent.instruit(dossier) &&
-    dossier.etat.etat === EtatDossierType.OK_EN_ATTENTE_PAIEMENT);
+  dossier.etat.etat === EtatDossierType.OK_EN_ATTENTE_PAIEMENT &&
+  (agent.estLiaisonBudget() || agent.instruit(dossier));
 
 const component = observer(function EnvoyerPourIndemnisationActionModale({
   dossier,
