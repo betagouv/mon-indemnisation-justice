@@ -30,8 +30,6 @@ services:
         aliases:
           - mon-indemnisation.justice.gouv.dev
           - mon-indemnisation.justice.gouv.test
-          - proconnect.gouv.test
-          - franceconnect.gouv.test
     ports:
       - "80:80"
       - "443:443"
@@ -55,9 +53,7 @@ services:
     hostname: symfony
     stdin_open: true
     tty: true
-    build:
-      context: .
-      dockerfile: .docker/php/dev.dockerfile
+    image: pierrelemee/mij-frankenphp:latest
     command: |
       bash -c "composer install --no-interaction --optimize-autoloader && \
       yarn install && \
@@ -78,8 +74,7 @@ services:
       - postgres
       - mailpit
       - vite
-      - franceconnect
-      - proconnect
+      - idconnect
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
       - ./backend:/app
@@ -201,40 +196,22 @@ services:
       timeout: 5s
       retries: 5
 
-  franceconnect:
-    image: pierrelemee/mock-oidc-server
-    hostname: franceconnect
+  idconnect:
+    image: pierrelemee/mock-oidc-server:2.1.2
+    hostname: idconnect
     networks:
       mijnet:
         aliases:
-          - franceconnect
-    ports:
-      - '9997:9997'
-    environment:
-      PORT: 9997
-      HOST: '0.0.0.0'
-      # Liste exhaustive des exemples : https://github.com/france-connect/sources/blob/main/docker/volumes/fcp-low/mocks/idp/databases/citizen/base.csv
-      USERS: "/app/data/usagers.json"
-    working_dir: /app
-    volumes:
-      - ./.docker/franceconnect:/app/data/
-
-  proconnect:
-    image: pierrelemee/mock-oidc-server
-    hostname: proconnect
-    networks:
-      mijnet:
-        aliases:
-          - proconnect
+          - idconnect
     ports:
       - '9998:9998'
     environment:
       PORT: 9998
       HOST: '0.0.0.0'
-      USERS: "/app/data/agents.json"
+      CONFIG: "/app/data/config.json"
     working_dir: /app
     volumes:
-      - ./.docker/proconnect:/app/data/
+      - ./.docker/idconnect:/app/data/
 
   playwright:
     profiles:
