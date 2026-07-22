@@ -38,7 +38,7 @@ jobs:
           - 1025:1025
           - 8025:8025
       idconnect: &idconnect
-        image: pierrelemee/mock-oidc-server:2.1.2
+        image: pierrelemee/mock-oidc-server:2.2.1
         ports:
           - 9998:9998
         env:
