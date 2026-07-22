@@ -6,6 +6,7 @@ on:
       - '**'
       - '!prod'
       - '!develop'
+      - '!staging'
 
 permissions:
   contents: read
