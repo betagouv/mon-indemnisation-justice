@@ -1642,24 +1642,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     pentatrion_vite?: PentatrionViteConfig,
  *     acsiomatic_device_detector?: AcsiomaticDeviceDetectorConfig,
  *     opctim_csp_bundle?: OpctimCspBundleConfig,
- *     "when@ci"?: array{
- *         imports?: ImportsConfig,
- *         parameters?: ParametersConfig,
- *         services?: ServicesConfig,
- *         framework?: FrameworkConfig,
- *         doctrine?: DoctrineConfig,
- *         doctrine_migrations?: DoctrineMigrationsConfig,
- *         twig?: TwigConfig,
- *         twig_extra?: TwigExtraConfig,
- *         security?: SecurityConfig,
- *         monolog?: MonologConfig,
- *         nelmio_cors?: NelmioCorsConfig,
- *         flysystem?: FlysystemConfig,
- *         sentry?: SentryConfig,
- *         pentatrion_vite?: PentatrionViteConfig,
- *         acsiomatic_device_detector?: AcsiomaticDeviceDetectorConfig,
- *         opctim_csp_bundle?: OpctimCspBundleConfig,
- *     },
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1819,7 +1801,6 @@ namespace Symfony\Component\Routing\Loader\Configurator;
  *     deprecated?: array{package:string, version:string, message?:string},
  * }
  * @psalm-type RoutesConfig = array{
- *     "when@ci"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
  *     "when@dev"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
  *     "when@develop"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
  *     "when@prod"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
