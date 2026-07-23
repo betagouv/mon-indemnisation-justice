@@ -17,6 +17,7 @@ use Psr\Log\LoggerInterface;
 class ImporteurCompetencesTerritorialesFDO extends AbstractImporteurDataGouv
 {
     private const RESSOURCE_COMPETENCE_TERRITORIALE = 'c53cd4d4-4623-4772-9b8c-bc72a9cdf4c2';
+    protected array $etablissementVus = [];
 
     public function __construct(
         protected readonly LoggerInterface $logger,
@@ -28,6 +29,11 @@ class ImporteurCompetencesTerritorialesFDO extends AbstractImporteurDataGouv
     protected function getResource(): string
     {
         return self::RESSOURCE_COMPETENCE_TERRITORIALE;
+    }
+
+    protected function avantImport(): void
+    {
+        $this->etablissementVus = [];
     }
 
     /**
@@ -51,6 +57,7 @@ class ImporteurCompetencesTerritorialesFDO extends AbstractImporteurDataGouv
                 $entree['code_postal']
             )
         );
+
         $typeAdministration = AdministrationType::tryFrom($entree['institution']);
         $administration = $typeAdministration ? $this->em->find(Administration::class, 'PN' === $typeAdministration && $commune->getDepartement()?->estPrefectureDePolice() ? AdministrationType::PREFECTURE_DE_POLICE : $typeAdministration) : null;
         $etablissement =
@@ -66,13 +73,27 @@ class ImporteurCompetencesTerritorialesFDO extends AbstractImporteurDataGouv
                 )
                 ->setAdministration($administration);
 
-        foreach (explode('-', $entree['codes_postaux']) as $codePostal) {
-            $geoCodePostal = $this->em->getRepository(GeoCodePostal::class)->getOrCreate(
+        // Affectation des zones de compétences : comme un même établissement peut apparaître plusieurs fois, à sa première
+        // apparition, on initialise ses codes postaux de compétence avec la liste associée qu'on étendra sur les apparitions
+        // suivantes
+        $competences = array_map(
+            fn (string $codePostal) => $this->em->getRepository(GeoCodePostal::class)->getOrCreate(
                 $codePostal,
                 $commune
-            );
-            $etablissement->ajouterCompetence($geoCodePostal);
+            ),
+            array_filter(
+                explode('-', $entree['codes_postaux']),
+                fn (string $codePostal) => !empty($codePostal)
+            ),
+        );
+
+        if (!isset($this->etablissementVus[$etablissement->getNom()])) {
+            $etablissement->setCompetences($competences);
+        } else {
+            $etablissement->ajouterCompetences($competences);
         }
+
+        $this->etablissementVus[$etablissement->getNom()] = true;
 
         $this->em->persist($etablissement);
         $this->em->flush();

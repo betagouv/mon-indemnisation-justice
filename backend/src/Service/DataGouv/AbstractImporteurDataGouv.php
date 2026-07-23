@@ -32,27 +32,37 @@ abstract class AbstractImporteurDataGouv
     {
     }
 
-    protected function gererErreur(\Exception $e): void
+    protected function gererErreur(\Throwable $e): ?\Throwable
     {
-        throw $e;
+        echo $e->getMessage().PHP_EOL;
+
+        return $e;
     }
 
     public function importer(bool $conserverFichier = false, ?int $limite = null): int
     {
+
         $total = 0;
+        $exception = null;
         try {
             $this->avantImport();
             foreach ($this->lireRessourceCSV($this->getResource(), $conserverFichier, $limite) as $entree) {
                 $total += $this->traiterEntree($entree) ? 1 : 0;
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            $exception = $e;
             $this->gererErreur($e);
+
         } finally {
             $this->apresImport();
-
-            return $total;
         }
+
+        if (null !== $exception) {
+            throw $exception;
+        }
+
+        return $total;
     }
 
     abstract protected function traiterEntree(array $entree): bool;
