@@ -1,0 +1,28 @@
+name: Deploy to staging app
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy-web:
+    name: Deployer l'application de staging
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: staging
+      - name: Install clever tools
+        run: |
+          npm install -g clever-tools
+
+      - name: Deployer l'application de staging
+        env:
+          CC_APP_ID: ${{ secrets.CC_APP_STAGING_WEB_ID }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+        run: |
+          clever link $CC_APP_ID --alias app-staging-web
+          clever deploy --alias app-staging-web --force --same-commit-policy restart

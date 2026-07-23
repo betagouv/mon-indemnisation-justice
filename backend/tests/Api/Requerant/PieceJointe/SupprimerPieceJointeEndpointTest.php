@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Requerant\PieceJointe;
+namespace MonIndemnisationJustice\Tests\Api\Requerant\PieceJointe;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Requerant\PieceJointe\SupprimerPieceJointeEndpoint;

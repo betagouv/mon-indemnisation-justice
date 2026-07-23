@@ -10,6 +10,7 @@ use Firebase\JWT\SignatureInvalidException;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,6 +42,7 @@ class OidcClient
         protected readonly string $clientSecret,
         protected readonly array $loginCheckRoutes,
         protected readonly UrlGeneratorInterface $urlGenerator,
+        protected readonly LoggerInterface $logger,
         #[Target('oidc')]
         protected readonly CacheInterface $cache,
         protected readonly array $context = [],
@@ -149,8 +151,12 @@ class OidcClient
                 throw new AuthenticationException("{$context->error} - {$context->error_description}", previous: $e);
             }
 
+            $this->logger->warning("OidcClient : {$e->getMessage()} - {$e->getResponse()->getBody()->getContents()}");
+
             throw new AuthenticationException('Authorization failed.', previous: $e);
         } catch (GuzzleException $e) {
+
+            $this->logger->warning("OidcClient : {$e->getMessage()}");
             throw new AuthenticationException('Authorization failed.', previous: $e);
         }
 

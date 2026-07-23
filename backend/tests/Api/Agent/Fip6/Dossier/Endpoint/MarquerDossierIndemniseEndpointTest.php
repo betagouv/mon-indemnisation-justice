@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Agent\Fip6\Dossier\Endpoint;
+namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\MarquerDossierIndemniseEndpoint;
 use MonIndemnisationJustice\Entity\EtatDossier;
