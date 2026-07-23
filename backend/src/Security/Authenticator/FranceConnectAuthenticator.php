@@ -66,7 +66,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
             // Authenticate
             list($accessToken, $idToken) = $this->oidcClient->authenticate($request);
 
-            // User info
+            // User info (doc: https://docs.partenaires.franceconnect.gouv.fr/fs/fs-technique/fs-technique-scope-fc/#liste-des-claims)
             $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
             $courriel = strtolower($userInfo['email'] ?? '');
 
@@ -93,7 +93,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                         ->setPersonne(
                             new Personne()
                                 ->setCivilite('male' === $userInfo['gender'] ? Civilite::M : Civilite::MME)
-                                ->setNom($userInfo['family_name'] ?? '')
+                                ->setNom($userInfo['preferred_username'] ?? $userInfo['family_name'] ?? '')
                                 ->setNomNaissance($userInfo['family_name'] ?? '')
                                 ->setPrenom($prenoms[0] ?? null)
                                 ->setCourriel($courriel)

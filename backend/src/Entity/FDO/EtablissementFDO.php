@@ -42,7 +42,7 @@ class EtablissementFDO
     /**
      * @var Collection<GeoCodePostal>
      */
-    #[ORM\ManyToMany(targetEntity: GeoCodePostal::class, cascade: [], orphanRemoval: true)]
+    #[ORM\ManyToMany(targetEntity: GeoCodePostal::class, cascade: ['persist'], orphanRemoval: true)]
     #[ORM\JoinTable(name: 'fdo_etablissements_code_postaux')]
     #[ORM\JoinColumn(name: 'etablissement_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'code_postal_id', referencedColumnName: 'id')]
@@ -117,14 +117,30 @@ class EtablissementFDO
         return $this;
     }
 
-    public function getCompetences(): Collection
+    public function setCompetences(Collection|array $competences): EtablissementFDO
     {
-        return $this->competences;
+        $this->competences = is_array($competences) ? new ArrayCollection($competences) : $competences;
+
+        return $this;
+    }
+
+    /**
+     * @param array<GeoCodePostal> $codePostaux
+     */
+    public function ajouterCompetences(array $codePostaux): EtablissementFDO
+    {
+        foreach ($codePostaux as $codePostal) {
+            $this->ajouterCompetence($codePostal);
+        }
+
+        return $this;
     }
 
     public function ajouterCompetence(GeoCodePostal $codePostal): EtablissementFDO
     {
-        $this->competences->add($codePostal);
+        if (!$this->competences->contains($codePostal)) {
+            $this->competences->add($codePostal);
+        }
 
         return $this;
     }
