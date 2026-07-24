@@ -1,6 +1,6 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
-import { DossierEnInstruction } from "@/apps/agent/fip6/modeles";
-import { dateSimple, periode } from "@/common/services/date.ts";
+import { DossierEnInstruction } from "@fip6/modeles";
+import { dateSimple, periode } from "@common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createFileRoute } from "@tanstack/react-router";
 import { plainToInstance } from "class-transformer";

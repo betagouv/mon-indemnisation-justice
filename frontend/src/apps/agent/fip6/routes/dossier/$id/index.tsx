@@ -1,27 +1,27 @@
-import { BadgeEtatDossier } from "@/apps/agent/fip6/composants/dossiers/BadgeEtatDossier.tsx";
-import { container } from "@/apps/agent/fip6/container";
-import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier";
-import { DossierActions } from "@/apps/agent/fip6/dossiers/components/consultation/action";
-import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/editor";
-import { InfosDossier } from "@/apps/agent/fip6/dossiers/components/consultation/InfosDossier";
+import { Frise } from "@common/composants/Frise.tsx";
 import {
-  ChampPieceJointe,
-  TelechargerPieceJointe,
-} from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { PiecesJointes } from "@/apps/agent/fip6/dossiers/components/consultation/PiecesJointes";
-import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
-import { Frise } from "@/common/composants/Frise.tsx";
-import {
-  Agent,
   Document,
   DossierDetail,
   EtatDossier,
   Redacteur,
-} from "@/common/models";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
-import { dateEtHeureSimple } from "@/common/services/date";
+} from "@common/models";
+import { dateEtHeureSimple } from "@common/services/date";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { AgentManagerInterface } from "@fip6//services/agent";
+import { BadgeEtatDossier } from "@fip6/composants/dossiers/BadgeEtatDossier.tsx";
+import { container } from "@fip6/container";
+import { BadgesDossier } from "@fip6/dossiers/components/BadgesDossier";
+import { DossierActions } from "@fip6/dossiers/components/consultation/action";
+import { QuillEditor } from "@fip6/dossiers/components/consultation/editor";
+import { InfosDossier } from "@fip6/dossiers/components/consultation/InfosDossier";
+import {
+  ChampPieceJointe,
+  TelechargerPieceJointe,
+} from "@fip6/dossiers/components/consultation/piecejointe";
+import { PiecesJointes } from "@fip6/dossiers/components/consultation/PiecesJointes";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { DossierManagerInterface } from "@fip6/services/dossier";
 import {
   createFileRoute,
   Link,
@@ -77,7 +77,7 @@ const ConsultationDossier = observer(function ConsultationDossier({
   redacteurs,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
   redacteurs: Redacteur[];
 }) {
   const routeur = useRouter();
@@ -412,7 +412,7 @@ function ConsulterDossier() {
     dossier,
     agent,
     redacteurs,
-  }: { dossier: DossierDetail; agent: Agent; redacteurs: Redacteur[] } =
+  }: { dossier: DossierDetail; agent: AgentFIP6; redacteurs: Redacteur[] } =
     Route.useLoaderData();
 
   return (

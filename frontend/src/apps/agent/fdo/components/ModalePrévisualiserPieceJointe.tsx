@@ -1,14 +1,14 @@
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
-import {
-  ChampPieceJointe,
-  TelechargerPieceJointe,
-} from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { Document } from "@/common/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import {
+  ChampPieceJointe,
+  TelechargerPieceJointe,
+} from "@fip6/dossiers/components/consultation/piecejointe";
+import { DeclarationFDOBrisPorte } from "@fdo/modeles/DeclarationFDOBrisPorte.ts";
 import React, { useCallback, useState } from "react";
 
 const _modale = createModal({

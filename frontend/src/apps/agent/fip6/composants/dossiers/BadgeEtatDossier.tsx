@@ -1,6 +1,6 @@
-import { EtatDossier } from "@/common/models";
+import { EtatDossier } from "@common/models";
 import React from "react";
-import { getLibelleMotifRejetBrisPorte } from "@/common/models/rejet.ts";
+import { getLibelleMotifRejetBrisPorte } from "@common/models/rejet.ts";
 
 export const BadgeEtatDossier = ({
   etat,

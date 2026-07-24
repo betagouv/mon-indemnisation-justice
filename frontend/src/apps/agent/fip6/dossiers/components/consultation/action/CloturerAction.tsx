@@ -1,4 +1,4 @@
-import { Agent, BaseDossier, DossierDetail, EtatDossier } from "@/common/models";
+import { Agent, BaseDossier, DossierDetail, EtatDossier } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { plainToInstance } from "class-transformer";

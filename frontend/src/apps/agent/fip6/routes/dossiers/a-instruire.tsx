@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ListeDossierAInstruire } from "@/apps/agent/fip6/dossiers/components/ListeDossierAInstruire.tsx";
 import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
+import { ListeDossierAInstruire } from "@fip6/dossiers/components/ListeDossierAInstruire.tsx";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/dossiers/a-instruire")({
   beforeLoad: async ({ context }: { context: AgentContext }) => {

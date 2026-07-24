@@ -1,6 +1,6 @@
-import { Agent } from "@/common/models";
-import { RoleAgent } from "@/common/models/Agent";
 import "@/style/agents.css";
+import { Agent } from "@common/models";
+import { RoleAgent } from "@common/models/Agent";
 import {
   createFileRoute,
   Navigate,

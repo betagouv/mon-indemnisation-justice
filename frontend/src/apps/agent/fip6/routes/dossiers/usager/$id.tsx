@@ -1,8 +1,8 @@
-import {ListeDossiers} from "@/apps/agent/fip6/composants/dossiers/ListeDossiers.tsx";
-import {DossierApercu, Usager} from "@/common/models";
-import {createFileRoute} from "@tanstack/react-router";
-import {plainToInstance} from "class-transformer";
-import React, {useMemo} from "react";
+import { DossierApercu, Usager } from "@common/models";
+import { ListeDossiers } from "@fip6/composants/dossiers/ListeDossiers.tsx";
+import { createFileRoute } from "@tanstack/react-router";
+import { plainToInstance } from "class-transformer";
+import React, { useMemo } from "react";
 
 export const Route = createFileRoute("/dossiers/usager/$id")({
   component: RouteComponent,

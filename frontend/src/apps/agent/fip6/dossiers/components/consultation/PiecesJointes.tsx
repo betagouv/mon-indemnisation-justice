@@ -1,15 +1,15 @@
+import { Agent, Document, DossierDetail } from "@common/models";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import {
   AjoutPieceJointe,
   ChampPieceJointe,
   TelechargerPieceJointe,
-} from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { MenuPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/MenuPieceJointe";
+} from "@fip6/dossiers/components/consultation/piecejointe";
+import { MenuPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe/MenuPieceJointe";
 import {
   ouvrirModaleSuppressionPieceJointe,
   SuppressionPieceJointe,
-} from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/SuppressionPieceJointe";
-import { Agent, Document, DossierDetail } from "@/common/models";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+} from "@fip6/dossiers/components/consultation/piecejointe/SuppressionPieceJointe";
 import React, { ReactNode, useCallback, useState } from "react";
 
 export const PiecesJointes = ({

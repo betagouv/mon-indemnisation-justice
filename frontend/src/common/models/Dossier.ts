@@ -1,5 +1,5 @@
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
+import { DeclarationFDOBrisPorte } from "@fdo/modeles/DeclarationFDOBrisPorte";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
 import { groupBy } from "lodash";
 import { action, computed, makeObservable, observable } from "mobx";

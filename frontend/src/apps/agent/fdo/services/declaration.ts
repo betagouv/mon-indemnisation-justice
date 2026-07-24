@@ -1,9 +1,9 @@
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import { DeclarationFDOBrisPorte } from "@fdo/modeles/DeclarationFDOBrisPorte";
 import { inject, ServiceIdentifier } from "inversify";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 //import * as Sentry from "@sentry/browser";
 import { merge } from "ts-deepmerge";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
+import { AgentManagerInterface } from "@fdo//services/agent";
 
 export interface DeclarationManagerInterface {
   getListe(): Promise<DeclarationFDOBrisPorte[]>;

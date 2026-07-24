@@ -1,16 +1,16 @@
-import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
 import {
   Agent,
   Document,
   DocumentType,
   DossierDetail,
   EtatDossier,
-} from "@/common/models";
-import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+} from "@common/models";
+import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
+import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { plainToInstance } from "class-transformer";
 import { useInjection } from "inversify-react";
 import React, { useCallback, useEffect, useState } from "react";

@@ -1,4 +1,4 @@
-import { RoleAgent } from "@/common/models/Agent.ts";
+import { RoleAgent } from "@common/models/Agent.ts";
 import {
   createFileRoute,
   Navigate,

@@ -1,6 +1,6 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { routeTree } from "@/apps/agent/fip6/routeur/routeur-fip6.gen.ts";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
+import { AgentManagerInterface } from "@fip6/services/agent";
+import { routeTree } from "@fip6/routeur/routeur-fip6.gen.ts";
 import * as Sentry from "@sentry/browser";
 import { createRouter } from "@tanstack/react-router";
 import { container } from "../container.ts";

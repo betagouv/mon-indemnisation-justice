@@ -1,6 +1,6 @@
-import { DossierRejetASigner } from "@/apps/agent/fip6/dossiers/components/liste/DossierRejetASigner.ts";
-import { periode } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { periode } from "@common/services/date.ts";
+import { DossierRejetASigner } from "@fip6/dossiers/components/liste/DossierRejetASigner.ts";
 import { plainToInstance } from "class-transformer";
 import React, { useEffect, useState } from "react";
 import "./liste/dossier-liste-element.css";

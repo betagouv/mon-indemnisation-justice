@@ -1,6 +1,6 @@
-import { Document } from "@/common/models";
-import React from "react";
 import Download from "@codegouvfr/react-dsfr/Download";
+import { Document } from "@common/models";
+import React from "react";
 
 const component = function TelechargerPieceJointe({
   pieceJointe,

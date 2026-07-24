@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 
-import { Document } from "@/common/models";
 import { fr } from "@codegouvfr/react-dsfr";
+import { Document } from "@common/models";
 
 export const ChampPieceJointe = function PieceJointe({
   pieceJointe,

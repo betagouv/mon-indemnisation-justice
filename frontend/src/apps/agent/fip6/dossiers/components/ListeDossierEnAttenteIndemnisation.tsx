@@ -1,9 +1,7 @@
-import {
-  DossierEnAttenteIndemnisation
-} from "@/apps/agent/fip6/dossiers/components/liste/DossierEnAttenteIndemnisation.ts";
-import { dateSimple } from "@/common/services/date.ts";
-import { convertirEnEuros } from "@/common/services/devise.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { dateSimple } from "@common/services/date.ts";
+import { convertirEnEuros } from "@common/services/devise.ts";
+import { DossierEnAttenteIndemnisation } from "@fip6/dossiers/components/liste/DossierEnAttenteIndemnisation.ts";
 import { plainToInstance } from "class-transformer";
 import React, { useEffect, useState } from "react";
 import "./liste/dossier-liste-element.css";

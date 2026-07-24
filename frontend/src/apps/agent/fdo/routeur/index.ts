@@ -1,11 +1,11 @@
-import { AgentContext } from "@/apps/agent/_commun/contexts";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
+import { AgentManagerInterface } from "@fdo/services/agent";
 import * as Sentry from "@sentry/browser";
 import { createRouter } from "@tanstack/react-router";
 import { container } from "../container";
+import { AgentFDOContexte } from "./contexte.ts";
 import { routeTree } from "./routeur-fdo.gen";
 
-const creerRouteurFDO = (context: AgentContext) =>
+const creerRouteurFDO = (context: AgentFDOContexte) =>
   createRouter({
     routeTree,
     defaultPreload: "intent",
@@ -36,14 +36,14 @@ let RouteurFDO;
 await container
   .get(AgentManagerInterface.$)
   .moi()
-  .then((context: AgentContext) => {
+  .then((contexte: AgentFDOContexte) => {
     Sentry.setTag("app", "fdo");
     Sentry.setUser({
-      id: context.agent.id,
-      email: context.agent.courriel,
-      username: context.agent.nomComplet(),
+      id: contexte.agent.id,
+      email: contexte.agent.courriel,
+      username: contexte.agent.nomComplet(),
     });
-    RouteurFDO = creerRouteurFDO(context);
+    RouteurFDO = creerRouteurFDO(contexte);
   });
 
 declare module "@tanstack/react-router" {

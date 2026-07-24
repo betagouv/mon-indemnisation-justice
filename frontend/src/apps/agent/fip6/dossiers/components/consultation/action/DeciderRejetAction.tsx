@@ -8,16 +8,16 @@ import React, {
   useState,
 } from "react";
 
-import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { Loader } from "@/common/composants/Loader.tsx";
-import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
+import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
+import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import { Loader } from "@common/composants/Loader.tsx";
+import { Agent, Document, DossierDetail, EtatDossier } from "@common/models";
 import {
   getLibelleMotifRejetBrisPorte,
   MotifRejetBrisPorte,
   MotifsRejetBrisPorte,
-} from "@/common/models/rejet.ts";
-import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+} from "@common/models/rejet.ts";
+import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";

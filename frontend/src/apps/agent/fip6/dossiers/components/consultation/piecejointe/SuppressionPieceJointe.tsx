@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from "react";
-import { Document, DossierDetail } from "@/common/models";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { Document, DossierDetail } from "@common/models";
+import React, { useCallback, useState } from "react";
 
 const _modale = createModal({
   id: "modale-supprimer-piece-jointe",
@@ -98,6 +98,6 @@ const component = function SuppressionPieceJointe({
 };
 
 export {
-  component as SuppressionPieceJointe,
   ouvrirModaleSuppressionPieceJointe,
+  component as SuppressionPieceJointe,
 };

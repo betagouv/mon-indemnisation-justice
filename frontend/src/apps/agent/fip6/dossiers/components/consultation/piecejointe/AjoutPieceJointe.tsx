@@ -1,5 +1,5 @@
-import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier.ts";
-import { Agent, Document, DocumentType, DossierDetail } from "@/common/models";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
+import { Agent, Document, DocumentType, DossierDetail } from "@common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Select } from "@codegouvfr/react-dsfr/Select";

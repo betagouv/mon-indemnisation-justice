@@ -1,5 +1,5 @@
+import { ListeDossierACategoriser } from "@fip6/dossiers/components/ListeDossierACategoriser.tsx";
 import { createFileRoute } from "@tanstack/react-router";
-import { ListeDossierACategoriser } from "@/apps/agent/fip6/dossiers/components/ListeDossierACategoriser.tsx";
 
 export const Route = createFileRoute("/dossiers/a-categoriser")({
   component: ListeDossierACategoriser,

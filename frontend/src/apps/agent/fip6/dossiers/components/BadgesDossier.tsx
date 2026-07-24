@@ -1,6 +1,6 @@
-import React from "react";
-import { BaseDossier } from "@/common/models";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import { BaseDossier } from "@common/models";
+import React from "react";
 
 export const BadgesDossier = ({
   dossier,

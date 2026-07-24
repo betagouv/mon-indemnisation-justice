@@ -1,5 +1,11 @@
-import { queryClient } from "@/apps/agent/fip6/query.ts";
-import { Agent, BaseDossier, Document, DocumentType, DossierDetail } from "@/common/models";
+import { queryClient } from "@fip6/query.ts";
+import {
+  Agent,
+  BaseDossier,
+  Document,
+  DocumentType,
+  DossierDetail,
+} from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
 import { dateChiffre } from "@/common/services/date.ts";
 import { plainToInstance } from "class-transformer";

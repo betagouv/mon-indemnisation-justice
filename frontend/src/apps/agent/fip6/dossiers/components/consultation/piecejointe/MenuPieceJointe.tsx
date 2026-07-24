@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Document, DocumentType, DossierDetail } from "@/common/models";
+import { Document, DocumentType, DossierDetail } from "@common/models";
 
 export const SectionMenuPieceJointe = ({
   titre,

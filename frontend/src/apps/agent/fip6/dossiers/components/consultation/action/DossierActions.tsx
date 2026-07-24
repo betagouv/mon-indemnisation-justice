@@ -1,39 +1,39 @@
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Agent, DossierDetail, Redacteur } from "@common/models";
 import {
   deciderIndemnisationBoutons,
   DeciderIndemnisationModale,
-} from "@/apps/agent/fip6/dossiers/components/consultation/action/DeciderIndemnisationAction.tsx";
+} from "@fip6/dossiers/components/consultation/action/DeciderIndemnisationAction.tsx";
 import {
   deciderRejetBoutons,
   DeciderRejetModale,
-} from "@/apps/agent/fip6/dossiers/components/consultation/action/DeciderRejetAction.tsx";
-import { demarrerInstructionBoutons } from "@/apps/agent/fip6/dossiers/components/consultation/action/DemarrerInstructionAction.tsx";
+} from "@fip6/dossiers/components/consultation/action/DeciderRejetAction.tsx";
+import { demarrerInstructionBoutons } from "@fip6/dossiers/components/consultation/action/DemarrerInstructionAction.tsx";
 import {
   EnvoyerPourIndemnisationActionModale,
   envoyerPourIndemnisationBoutons,
-} from "@/apps/agent/fip6/dossiers/components/consultation/action/EnvoyerPourIndemnisationActionModale.tsx";
+} from "@fip6/dossiers/components/consultation/action/EnvoyerPourIndemnisationActionModale.tsx";
 import {
   genererArretePaiementBoutons,
   GenererArretePaiementModale,
-} from "@/apps/agent/fip6/dossiers/components/consultation/action/GenererArretePaiementAction.tsx";
+} from "@fip6/dossiers/components/consultation/action/GenererArretePaiementAction.tsx";
 import {
   MarquerIndemniseActionModale,
   marquerIndemniseBoutons,
-} from "@/apps/agent/fip6/dossiers/components/consultation/action/MarquerIndemniseActionModale.tsx";
+} from "@fip6/dossiers/components/consultation/action/MarquerIndemniseActionModale.tsx";
 import {
   signerCourrierBoutons,
   SignerCourrierModale,
-} from "@/apps/agent/fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
-import { Agent, DossierDetail, Redacteur } from "@/common/models";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+} from "@fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
 import React from "react";
 import {
-  AttribuerModale as AttribuerActionModale,
   attribuerBoutons,
+  AttribuerModale as AttribuerActionModale,
 } from "./AttributionAction.tsx";
 import {
-  CloturerModale as CloturerActionModale,
   cloturerBoutons,
+  CloturerModale as CloturerActionModale,
 } from "./CloturerAction.tsx";
 import {
   signerArretePaiementBoutons,

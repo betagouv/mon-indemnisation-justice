@@ -1,11 +1,11 @@
-import { QuillEditor } from "@/apps/agent/fip6/dossiers/components/consultation/editor";
-import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { Loader } from "@/common/composants/Loader.tsx";
-import { Document } from "@/common/models";
-import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+import { Loader } from "@common/composants/Loader.tsx";
+import { Document } from "@common/models";
+import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { QuillEditor } from "@fip6/dossiers/components/consultation/editor";
+import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { useInjection } from "inversify-react";
 import React, { useCallback, useEffect, useState } from "react";
 

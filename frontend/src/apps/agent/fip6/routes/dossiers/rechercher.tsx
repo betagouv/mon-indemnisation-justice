@@ -1,16 +1,16 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts";
+import "@/style/agents.css";
+import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link.tsx";
+import { Agent, EtatDossierType, Redacteur } from "@common/models";
+import { RoleAgent } from "@common/models/Agent";
 import {
   RechercherDossierPage,
   RechercheRequete,
   requeteVersParametres,
   validerParametres,
-} from "@/apps/agent/fip6/composants/pages/RechercherDossierPage.tsx";
-import { container } from "@/apps/agent/fip6/container";
-import { Agent, EtatDossierType, Redacteur } from "@/common/models";
-import { RoleAgent } from "@/common/models/Agent";
-import { AgentManagerInterface } from "@/common/services/agent/agent.ts";
-import "@/style/agents.css";
-import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link.tsx";
+} from "@fip6/composants/pages/RechercherDossierPage.tsx";
+import { container } from "@fip6/container";
+import { AgentManagerInterface } from "@fip6/services/agent";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import React, { useMemo } from "react";
 

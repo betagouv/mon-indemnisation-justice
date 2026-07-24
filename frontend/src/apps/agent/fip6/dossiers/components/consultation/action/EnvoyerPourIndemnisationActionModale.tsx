@@ -1,5 +1,5 @@
-import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
-import { Agent, DossierDetail, EtatDossierType } from "@/common/models";
+import { DossierManagerInterface } from "@fip6/services/dossier";
+import { Agent, DossierDetail, EtatDossierType } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Download from "@codegouvfr/react-dsfr/Download";

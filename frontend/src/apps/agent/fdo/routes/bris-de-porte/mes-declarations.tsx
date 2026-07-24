@@ -1,11 +1,11 @@
-import { container } from "@/apps/agent/fdo/container.ts";
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
-import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
-import { dateSimple } from "@/common/services/date.ts";
+import { dateSimple } from "@/common/services/date";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Table from "@codegouvfr/react-dsfr/Table";
+import { container } from "@fdo/container";
+import { DeclarationFDOBrisPorte } from "@fdo/modeles/DeclarationFDOBrisPorte.ts";
+import { DeclarationManagerInterface } from "@fdo/services";
 import {
   createFileRoute,
   useNavigate,

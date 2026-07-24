@@ -18,6 +18,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  * Route API qui retourne les informations sur l'agent actuellement connecté.
  */
 #[Route('/api/agent/fip6/moi', name: 'api_agent_fip6_moi', methods: ['GET'])]
+#[Route('/api/agent/fdo/moi', name: 'api_agent_fdo_moi', methods: ['GET'])] // TODO déménagez-moi
 class MoiEndpoint
 {
     public function __construct(

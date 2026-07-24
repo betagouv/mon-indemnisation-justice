@@ -1,8 +1,12 @@
-import { AgentContext } from "@/apps/agent/_commun/contexts";
 import { Administration, Agent, Redacteur } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent";
+import { queryClient } from "@fdo/query.ts";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { AgentFIP6Contexte } from "@fip6/routeur/contexte";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
+
+const referenceService = "AgentManagerInterface@FIP6";
 
 export type RechercheAgentRequete = {
   page: number;
@@ -20,11 +24,10 @@ export type RechercheAgentResultat = {
 };
 
 export interface AgentManagerInterface {
-  moi(): Promise<AgentContext>;
+  moi(): Promise<AgentFIP6Contexte>;
 
   redacteurs(): Promise<Redacteur[]>;
 
-  // TODO: changer ça pour pouvoir patcher (utiliser Partial<{}>)
   editerAgent({
     id,
     prenom,
@@ -40,32 +43,33 @@ export interface AgentManagerInterface {
     administration: Administration;
     roles?: RoleAgent[];
   }): Promise<Agent>;
+
   rechercher(requete: RechercheAgentRequete): Promise<RechercheAgentResultat>;
 }
 
 export namespace AgentManagerInterface {
-  export const $: ServiceIdentifier<AgentManagerInterface> = Symbol(
-    "AgentManagerInterface",
-  );
+  export const $: ServiceIdentifier<AgentManagerInterface> =
+    Symbol(referenceService);
 }
 
 export class APIAgentManager implements AgentManagerInterface {
-  protected _contexteNavigation?: AgentContext;
-  async moi(): Promise<AgentContext> {
-    if (!this._contexteNavigation) {
-      const reponse = await fetch("/api/agent/fip6/moi");
+  async moi(): Promise<AgentFIP6Contexte> {
+    return queryClient.fetchQuery({
+      queryKey: [referenceService, "moi"],
+      queryFn: async (): Promise<AgentFIP6Contexte> => {
+        const reponse = await fetch("/api/agent/fip6/moi");
 
-      const data: { agent: any; incarnePar: string; urlDeconnexion: string } =
-        await reponse.json();
+        const data: { agent: any; incarnePar: string; urlDeconnexion: string } =
+          await reponse.json();
 
-      this._contexteNavigation = {
-        agent: plainToInstance(Agent, data.agent),
-        incarnePar: data.incarnePar,
-        urlDeconnexion: data.urlDeconnexion,
-      };
-    }
-
-    return this._contexteNavigation;
+        return {
+          agent: plainToInstance(AgentFIP6, data.agent),
+          incarnePar: data.incarnePar,
+          urlDeconnexion: data.urlDeconnexion,
+        };
+      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    });
   }
 
   async redacteurs(): Promise<Redacteur[]> {

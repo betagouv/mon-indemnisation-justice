@@ -1,6 +1,6 @@
-import { BaseDossier } from "@/common/models/Dossier";
 import { Redacteur } from "@/common/models/Redacteur";
 import { Expose, Transform } from "class-transformer";
+import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
 
 export type TypeRoleAgent =
   | "ROLE_AGENT_DOSSIER"
@@ -175,8 +175,7 @@ export class Agent {
     Administration.pourType(value as TypeAdministration),
   )
   public administration: Administration;
-  // TODO généraliser https://stackoverflow.com/a/61732579/4558679
-  @Transform(({ value }) => new Date(value))
+  @DateTransform()
   public readonly dateCreation: Date;
 
   get roles(): RoleAgent[] {
@@ -191,42 +190,12 @@ export class Agent {
     return this._roles.some((r) => roles.includes(r));
   }
 
-  definirRole(role: RoleAgent, aRole: boolean): void {
-    if (aRole) {
-      if (!this.aRole(role)) {
-        this.ajouterRole(role);
-      }
-    } else {
-      this.retirerRole(role);
-    }
-  }
-
   ajouterRole(role: RoleAgent): void {
     this._roles.push(role);
   }
 
   retirerRole(role: RoleAgent): void {
     this._roles = this._roles.filter((r) => r.type == role.type);
-  }
-
-  public estAttributeur(): boolean {
-    return this.aRole(RoleAgent.ATTRIBUTEUR);
-  }
-
-  public estValidateur(): boolean {
-    return this.aRole(RoleAgent.VALIDATEUR);
-  }
-
-  public estRedacteur(): boolean {
-    return this.aRole(RoleAgent.REDACTEUR);
-  }
-
-  public estLiaisonBudget(): boolean {
-    return this.aRole(RoleAgent.LIAISON_BUDGET);
-  }
-
-  public estGestionnairePersonnel(): boolean {
-    return this.aRole(RoleAgent.GESTION_PERSONNEL);
   }
 
   public estBetagouv(): boolean {
@@ -244,10 +213,6 @@ export class Agent {
 
   public estMinistere(): boolean {
     return this.administration === Administration.MJ;
-  }
-
-  public instruit(dossier: BaseDossier): boolean {
-    return this.estRedacteur() && this.equals(dossier.redacteur);
   }
 
   nomComplet(): string {
