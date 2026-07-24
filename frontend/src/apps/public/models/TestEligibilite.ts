@@ -15,10 +15,10 @@ export class TestEligibilite {
 
   public actionContentieuse?: ActionContentieuse;
 
-  @Transform(({ value }: { value: unknown }) => value === undefined ? undefined : (Array.isArray(value) ? value : []) as TypeDecision[])
+  @Transform(({ value }: { value: unknown }) => Array.isArray(value) ? value as TypeDecision[] : [])
   public typeDecision: TypeDecision[] = [];
 
-  @Transform(({ value }: { value: unknown }) => value === undefined ? undefined : (Array.isArray(value) ? value : []) as PieceProcedure[])
+  @Transform(({ value }: { value: unknown }) => Array.isArray(value) ? value as PieceProcedure[] : [])
   public piecesProc: PieceProcedure[] = [];
 
   @Transform(({ value }: { value: boolean | string | undefined }) => value === undefined ? undefined : value === true || value === "oui")
@@ -29,6 +29,7 @@ export class TestEligibilite {
       calculerPrescription(this.dateDecision).rempli &&
       this.actionContentieuse === ActionContentieuse.Non &&
       this.typeDecision.length > 0 &&
+      !this.typeDecision.includes(TypeDecision.Aucune) &&
       this.piecesProc.length > 0 &&
       this.preuvesDiligences === true
     );
