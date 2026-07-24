@@ -1,13 +1,9 @@
-import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import {
-  Document,
-  InstitutionSecuritePublique,
-  TypeFDO,
-} from "@/common/models";
-import { MetaDonneesAttestation } from "@/common/models/Document.ts";
-import { TypeAttestation } from "@/common/models/Dossier.ts";
-import { libellesTypeAttestation } from "@/common/models/TypeAttestation.ts";
-import { dateChiffre, dateSimple } from "@/common/services/date.ts";
+import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import { Document, InstitutionSecuritePublique, TypeFDO } from "@common/models";
+import { MetaDonneesAttestation } from "@common/models/Document.ts";
+import { TypeAttestation } from "@common/models/Dossier.ts";
+import { libellesTypeAttestation } from "@common/models/TypeAttestation.ts";
+import { dateChiffre, dateSimple } from "@common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";

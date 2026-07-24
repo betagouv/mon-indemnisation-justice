@@ -1,21 +1,17 @@
-import {
-  Modale,
-  ModaleProps,
-  ModaleRef,
-} from "@/common/composants/dsfr/Modale";
-import { Loader } from "@/common/composants/Loader.tsx";
-import { Administration, Agent } from "@/common/models";
+import { Modale, ModaleProps, ModaleRef } from "@common/composants/dsfr/Modale";
+import { Loader } from "@common/composants/Loader.tsx";
+import { Administration, Agent } from "@common/models";
 import {
   RoleAgent,
   TypeAdministration,
   TypeRoleAgent,
-} from "@/common/models/Agent.ts";
+} from "@common/models/Agent.ts";
 import {
   AgentManagerInterface,
   RechercheAgentRequete,
   RechercheAgentResultat,
-} from "@/common/services/agent/agent.ts";
-import { estCourrielValide } from "@/common/services/courriel.ts";
+} from "@fip6/services/agent";
+import { estCourrielValide } from "@common/services/courriel.ts";
 import "@/style/index.css";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";

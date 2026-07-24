@@ -1,6 +1,9 @@
 import { Personne } from "@/apps/requerant/models/Personne";
-import { PieceJointeType, TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
-import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
+import {
+  PieceJointeType,
+  TypePieceJointe,
+} from "@/apps/requerant/models/TypePieceJointe.ts";
+import DateTransform from "@common/normalisation/transformers/DateTransform.ts";
 import UndefinedTransform from "@/common/normalisation/transformers/UndefinedTransform.ts";
 import { Type } from "class-transformer";
 import { Adresse } from "./Adresse";

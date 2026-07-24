@@ -23,7 +23,10 @@
     "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@common/*": ["./src/common/*"],
+      "@fip6/*": ["./src/apps/agent/fip6/*"],
+      "@fdo/*": ["./src/apps/agent/fdo/*"],
     }
   },
   "include": [

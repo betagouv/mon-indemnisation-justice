@@ -1,6 +1,6 @@
-import { Agent, DossierDetail } from "@/common/models";
-import { dateSimple } from "@/common/services/date.ts";
-import { capitaliser } from "@/common/services/divers.ts";
+import { Agent, DossierDetail } from "@common/models";
+import { dateSimple } from "@common/services/date.ts";
+import { capitaliser } from "@common/services/divers.ts";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import React, { useMemo } from "react";
 

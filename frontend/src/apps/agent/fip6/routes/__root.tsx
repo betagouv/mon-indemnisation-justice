@@ -1,10 +1,10 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
-import { container } from "@/apps/agent/fip6/container.ts";
+import { container } from "@fip6/container.ts";
 import {
   CompteurDossiers,
   DossierManagerInterface,
-} from "@/apps/agent/fip6/services/dossier.ts";
-import { RoleAgent } from "@/common/models/Agent.ts";
+} from "@fip6/services/dossier.ts";
+import { RoleAgent } from "@common/models/Agent.ts";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { Header } from "@codegouvfr/react-dsfr/Header";

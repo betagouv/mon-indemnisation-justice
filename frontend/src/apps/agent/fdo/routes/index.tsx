@@ -1,6 +1,6 @@
-import { RouteurFDO } from "@/apps/agent/fdo/routeur";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Card from "@codegouvfr/react-dsfr/Card";
+import { RouteurFDO } from "@fdo/routeur";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import React from "react";
 
