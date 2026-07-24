@@ -6,13 +6,21 @@ echo "Démarrage de l'instance de ${APP_ENV} #${INSTANCE_NUMBER}";
 
 # Si INSTANCE_NUMBER vaut 0, alors jouer la migration de base de données
 if [ -z "${INSTANCE_NUMBER}" ] || [ ${INSTANCE_NUMBER} == '0' ]; then
-  # 1: drop database tables
-  "${ROOT}/bin/console" doctrine:schema:drop --force
-  echo 'drop table if exists doctrine_migration_versions' | psql "${DATABASE_URL/\?*/}" ;
-  echo 'drop table if exists _cache_limitateur_connexion' | psql "${DATABASE_URL/\?*/}" ;
+  # 1: Supprimer les tables existantes
+  # "${ROOT}/bin/console" doctrine:schema:drop --force; # Ne fonctionne pas, laisse parfois quelques tables
+  tables=$(echo "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name <> 'spatial_ref_sys'"  | psql -t "${DATABASE_URL/\?*/}");
+  for table in $tables; do
+    echo "DROP TABLE IF EXISTS $table CASCADE" | psql "${DATABASE_URL/\?*/}";
+  done
+
+  # Afficher la liste des tables
+  echo "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name <> 'spatial_ref_sys'"  | psql -t "${DATABASE_URL/\?*/}" ;
 
   # 2: run Doctrine migrations
-  "${ROOT}/bin/console" doctrine:migration:migrate --no-interaction --all-or-nothing
+  "${ROOT}/bin/console" doctrine:migration:migrate --no-interaction --all-or-nothing;
+
+  # Afficher la liste des tables
+  echo "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name <> 'spatial_ref_sys'"  | psql -t "${DATABASE_URL/\?*/}" ;
 
   # 3 : provision agents
   psql "${DATABASE_URL/\?*/}" << EOF
