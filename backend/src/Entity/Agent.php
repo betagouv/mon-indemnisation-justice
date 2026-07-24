@@ -86,6 +86,10 @@ class Agent implements UserInterface
     /** @var Collection<Dossier> */
     protected Collection $dossiers;
 
+    #[ORM\OneToMany(targetEntity: AffectationAgentFDO::class, mappedBy: 'agent', cascade: ['detach'])]
+    /** @var Collection<AffectationAgentFDO> */
+    protected Collection $affectations;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     protected ?\DateTimeImmutable $dateCreation = null;
 
@@ -317,6 +321,24 @@ class Agent implements UserInterface
     public function nbDossiersEnAttentePaiement(): int
     {
         return count($this->getDossiersEnAttentePaiement());
+    }
+
+    public function getAffectation(): ?AffectationAgentFDO
+    {
+        // On doit donc s'assurer qu'il n'y a qu'une seule affectation active par agent
+        return $this->affectations->filter(fn (AffectationAgentFDO $affectation) => $affectation->estActive())->first();
+    }
+
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function setAffectations(Collection $affectations): Agent
+    {
+        $this->affectations = $affectations;
+
+        return $this;
     }
 
     /**

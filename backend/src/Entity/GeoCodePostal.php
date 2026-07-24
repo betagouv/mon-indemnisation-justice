@@ -16,7 +16,7 @@ class GeoCodePostal extends GeoDataEntity
     #[ORM\Column]
     protected ?int $id = null;
 
-    #[ORM\Column(name: 'code_postal', length: 5, unique: true)]
+    #[ORM\Column(name: 'code_postal', length: 5)]
     /** Le code postal */
     protected string $codePostal;
 

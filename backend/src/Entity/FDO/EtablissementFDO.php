@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Adresse;
+use MonIndemnisationJustice\Entity\AffectationAgentFDO;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Repository\EtablissementFDORepository;
 use Symfony\Component\Uid\Uuid;
@@ -53,6 +54,10 @@ class EtablissementFDO
 
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     protected ?string $courriel = null;
+
+    #[ORM\OneToMany(targetEntity: AffectationAgentFDO::class, mappedBy: 'agent', cascade: ['detach'])]
+    /** @var Collection<AffectationAgentFDO> */
+    protected Collection $affectations;
 
     public function __construct()
     {
@@ -179,5 +184,14 @@ class EtablissementFDO
         $this->telephone = $telephone;
 
         return $this;
+    }
+
+    public function getAffectations(bool $uniquementActives = true): Collection
+    {
+        if ($uniquementActives) {
+            return $this->affectations->filter(fn (AffectationAgentFDO $affectation) => $affectation->estActive());
+        }
+
+        return $this->affectations;
     }
 }
