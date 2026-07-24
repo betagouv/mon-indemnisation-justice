@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { instanceToPlain, plainToClassFromExist, plainToInstance } from "class-transformer";
 import { injectable, ServiceIdentifier } from "inversify";
 import { TestEligibilite } from "@/apps/public/models/TestEligibilite";
+import { ActionContentieuse } from "@/apps/public/components/types";
 
 // Source - https://stackoverflow.com/a/61132308
 // Posted by Terry, modified by community. See post 'Timeline' for change history
@@ -112,6 +113,23 @@ export class LocalStorageTestEligibiliteManager implements TestEligibiliteManage
   async soumettre(): Promise<void> {
     if (!this.test) {
       throw new Error("Aucun test d'éligibilité en cours");
+    }
+
+    const reponse = await fetch("/api/public/dysfonctionnement/test-eligibilite", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        procedureTerminee: this.test.procedureTerminee,
+        dateDecision: this.test.dateDecision?.toISOString().split("T")[0],
+        aUneActionContentieuse: this.test.actionContentieuse === ActionContentieuse.Oui,
+        typesDecision: this.test.typeDecision,
+        piecesProcedure: this.test.piecesProc,
+        preuvesDiligences: this.test.preuvesDiligences,
+      }),
+    });
+
+    if (!reponse.ok) {
+      throw new Error("Erreur lors de la soumission du test d'éligibilité");
     }
   }
 

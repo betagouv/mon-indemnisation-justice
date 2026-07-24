@@ -1,34 +1,23 @@
 import React from "react";
-import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { ConditionalButtonsGroup } from "./ConditionalButtonsGroup";
 
 type NavButtonsProps = {
-  onPrecedent: () => void;
+  onPrecedent?: () => void;
+  onAnnuler?: () => void;
   isLastStep?: boolean;
   peutContinuer?: boolean;
 };
 
-export function NavButtons({ onPrecedent, isLastStep, peutContinuer = true }: NavButtonsProps) {
+export function NavButtons({ onPrecedent, onAnnuler, isLastStep, peutContinuer = true }: NavButtonsProps) {
   return (
-    <ButtonsGroup
+    <ConditionalButtonsGroup
       className="fr-mt-3w"
       inlineLayoutWhen="always"
+      alignment="right"
       buttons={[
-        {
-          priority: "tertiary no outline",
-          iconId: "fr-icon-arrow-left-line",
-          iconPosition: "left",
-          nativeButtonProps: { type: "button" },
-          onClick: onPrecedent,
-          children: "Retour",
-        },
-        ...(peutContinuer
-          ? [
-              {
-                nativeButtonProps: { type: "submit" as const },
-                children: isLastStep ? "Voir le résultat" : "Continuer",
-              },
-            ]
-          : []),
+        { button: { priority: "tertiary no outline", nativeButtonProps: { type: "button" }, onClick: onAnnuler, children: "Annuler" }, condition: !!onAnnuler },
+        { button: { priority: "secondary", iconId: "fr-icon-arrow-left-line", iconPosition: "left", nativeButtonProps: { type: "button" }, onClick: onPrecedent, children: "Précédent" }, condition: !!onPrecedent },
+        { button: { nativeButtonProps: { type: "submit" }, children: isLastStep ? "Voir le résultat" : "Étape suivante" }, condition: peutContinuer },
       ]}
     />
   );

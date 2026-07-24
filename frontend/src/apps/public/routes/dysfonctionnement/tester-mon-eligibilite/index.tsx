@@ -19,11 +19,11 @@ function AccueilVisiteur() {
       <h1>Déclarer un déni de justice</h1>
 
       <p className="fr-mb-3w">
-        Ce service vous permet de signaler une situation de déni de justice
-        afin de faire valoir vos droits et, le cas échéant, engager des
-        démarches pour obtenir qu'une juridiction statue dans un délai
-        raisonnable ou sur le fond de l'affaire.
+       Ce service vous permet de déclarer une situation susceptible de constituer un déni de justice en raison
+        d’un délai de traitement que vous estimez anormalement long dans le cadre d’une procédure judiciaire terminée, 
+        afin de solliciter l’examen de votre droit à réparation des préjudices qui pourraient en résulter. 
       </p>
+      <p>Ce dispositif ne permet ni de contester une décision de justice ni d’obtenir des informations sur l’état d’avancement d’une procédure en cours. </p>
 
       <CallOut
         iconId="fr-icon-information-line"
@@ -44,71 +44,15 @@ function AccueilVisiteur() {
         <ul>
           <li>Pièce d'identité en cours de validité</li>
           <li>
-            Coordonnées complètes (adresse postale, téléphone, adresse
-            électronique)
+           Décision de justice ayant mis fin à la procédure (jugement, arrêt, ordonnance) 
           </li>
           <li>
-            Description détaillée de la situation, exposant les faits et
-            les démarches engagées
+            Acte introductif d’instance (requête, assignation, déclaration d’appel, citation, plainte avec constitution de partie civile) 
           </li>
           <li>
-            Chronologie précise de la procédure (dates de saisine,
-            audiences, relances, etc.)
+            Tout document permettant d’établir les principales étapes de la procédure (convocations, avis d’audience, notifications, significations, courriers de la juridiction)
           </li>
-        </ul>
-
-        <p>Éléments relatifs à la procédure :</p>
-        <ul>
-          <li>
-            Copie de la requête, assignation ou déclaration introductive
-            d'instance
-          </li>
-          <li>Copie des conclusions et mémoires déposés</li>
-          <li>
-            Copie des actes de procédure (convocations, notifications,
-            significations)
-          </li>
-          <li>
-            Copie des décisions de justice déjà rendues, le cas échéant
-            (jugement, ordonnance, arrêt)
-          </li>
-        </ul>
-
-        <p>Justificatifs des démarches effectuées :</p>
-        <ul>
-          <li>Copies des courriers adressés à la juridiction</li>
-          <li>Copies des relances (courriers, emails)</li>
-          <li>Accusés de réception ou preuves de dépôt</li>
-          <li>Tout échange avec le greffe ou les services judiciaires</li>
-        </ul>
-
-        <p>Éléments permettant d'établir le déni de justice :</p>
-        <ul>
-          <li>
-            Documents attestant de l'absence de réponse de la juridiction
-          </li>
-          <li>
-            Éléments démontrant un délai anormalement long de traitement
-          </li>
-          <li>
-            Toute pièce utile illustrant une impossibilité d'obtenir une
-            décision
-          </li>
-        </ul>
-
-        <p>Le cas échéant :</p>
-        <ul>
-          <li>
-            Mandat ou pouvoir si vous agissez pour le compte d'un tiers
-          </li>
-          <li>
-            Coordonnées et qualité de votre représentant (avocat,
-            mandataire)
-          </li>
-          <li>
-            Tout document complémentaire que vous jugez utile à l'examen
-            de votre situation
-          </li>
+          <li>Justificatifs des démarches effectuées auprès de la juridiction ou du greffe (courriers, relances, accusés de réception, échanges électroniques)</li>
         </ul>
       </CallOut>
 

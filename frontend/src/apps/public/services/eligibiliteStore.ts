@@ -50,18 +50,20 @@ export function critereActionContentieuse(value: ActionContentieuse): CritereEli
   };
 }
 
-const DETAIL_TYPE_DECISION: Record<TypeDecision, string> = {
-  [TypeDecision.JugementPremiereInstance]: "Oui, jugement de première instance",
-  [TypeDecision.ArretCourAppel]: "Oui, arrêt de la Cour d'appel",
-  [TypeDecision.ArretCourCassation]: "Oui, arrêt de la Cour de cassation",
-  [TypeDecision.Aucune]: "Non, il me manque des pièces",
+const DETAIL_TYPE_DECISION: Partial<Record<TypeDecision, string>> = {
+  [TypeDecision.JugementPremiereInstance]: "Décision de première instance",
+  [TypeDecision.ArretCourAppel]: "Décision de la cour d'appel",
+  [TypeDecision.ArretCourCassation]: "Décision de la Cour de cassation",
 };
 
-export function critereDecisionsJustice(value: TypeDecision): CritereEligibilite {
+export function critereDecisionsJustice(values: TypeDecision[]): CritereEligibilite {
+  const aucune = values.includes(TypeDecision.Aucune);
   return {
     label: "Décisions de justice",
-    rempli: value !== TypeDecision.Aucune,
-    detail: DETAIL_TYPE_DECISION[value],
+    rempli: !aucune && values.length > 0,
+    detail: aucune
+      ? "Non, je ne dispose pas des décisions requises"
+      : "Oui, je dispose des décisions de justice",
   };
 }
 

@@ -24,6 +24,11 @@ when@develop:
   framework:
     trusted_proxies: '127.0.0.1,REMOTE_ADDR'
 
+
+when@staging:
+  framework:
+    trusted_proxies: '127.0.0.1,%env(default::CC_REVERSE_PROXY_IPS)%'
+
 when@prod:
   framework:
     trusted_proxies: '127.0.0.1,%env(default::CC_REVERSE_PROXY_IPS)%'

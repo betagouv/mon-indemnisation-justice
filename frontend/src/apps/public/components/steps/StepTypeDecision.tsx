@@ -1,35 +1,45 @@
 import React from "react";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { TypeDecision } from "../types";
 import { SchemaEtapeTypeDecision } from "../formulaires/eligibilite.schemas";
 import { saveCritere, critereDecisionsJustice } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
+import { BlockedNavButtons } from "./BlockedNavButtons";
 import { useInjection } from "inversify-react";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
 const TYPE_DECISION_LABELS: Record<TypeDecision, string> = {
-  [TypeDecision.JugementPremiereInstance]: "Jugement de première instance",
-  [TypeDecision.ArretCourAppel]: "Arrêt de la Cour d'appel",
-  [TypeDecision.ArretCourCassation]: "Arrêt de la Cour de cassation",
-  [TypeDecision.Aucune]: "Aucune décision",
+  [TypeDecision.JugementPremiereInstance]: "Décision de première instance",
+  [TypeDecision.ArretCourAppel]: "Décision de la cour d'appel",
+  [TypeDecision.ArretCourCassation]: "Décision de la Cour de cassation",
+  [TypeDecision.Aucune]: "Je ne dispose pas de la décision",
 };
 
-export function StepTypeDecision({ onPrecedent, onSuivant, isLastStep, test }: StepProps) {
+const DECISIONS_DISPONIBLES = [
+  TypeDecision.JugementPremiereInstance,
+  TypeDecision.ArretCourAppel,
+  TypeDecision.ArretCourCassation,
+];
+
+export function StepTypeDecision({ onPrecedent, onSuivant, onAnnuler, onRetour, isLastStep, test }: StepProps) {
   const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeTypeDecision },
-    defaultValues: { typeDecision: test?.typeDecision?.[0] } as { typeDecision?: TypeDecision },
+    defaultValues: { typeDecision: test?.typeDecision ?? ([] as TypeDecision[]) },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        manager.modifier({ typeDecision: value.typeDecision ? [value.typeDecision] : [] });
-        saveCritere("decisionsJustice", critereDecisionsJustice(value.typeDecision!));
+        manager.modifier({ typeDecision: value.typeDecision });
+        saveCritere("decisionsJustice", critereDecisionsJustice(value.typeDecision));
         onSuivant();
       }
     },
   });
+
+  const typeDecision = useStore(formulaire.store, (state) => state.values.typeDecision);
+  const aucuneSelectionnee = typeDecision.includes(TypeDecision.Aucune);
 
   return (
     <form
@@ -41,34 +51,63 @@ export function StepTypeDecision({ onPrecedent, onSuivant, isLastStep, test }: S
     >
       <formulaire.Field
         name="typeDecision"
-        children={(field) => (
-          <FormRadioButtons
-            legend="De quelles décisions disposez-vous ?"
-            hintText="Pour qualifier le délai déraisonnable, l'ensemble des décisions rendues dans votre procédure est nécessaire."
-            options={Object.values(TypeDecision).map((type) => ({
-              label: TYPE_DECISION_LABELS[type],
-              nativeInputProps: {
-                value: type,
-                checked: field.state.value === type,
-                onChange: () => field.handleChange(type),
-              },
-            }))}
-          />
-        )}
+        children={(field) => {
+          const toggle = (decision: TypeDecision) => {
+            if (decision === TypeDecision.Aucune) {
+              field.handleChange(
+                field.state.value.includes(TypeDecision.Aucune) ? [] : [TypeDecision.Aucune],
+              );
+            } else {
+              const sansCetteDecision = field.state.value.filter(
+                (d) => d !== decision && d !== TypeDecision.Aucune,
+              );
+              field.handleChange(
+                field.state.value.includes(decision)
+                  ? sansCetteDecision
+                  : [...sansCetteDecision, decision],
+              );
+            }
+          };
+
+          return (
+            <Checkbox
+              legend="De quelles décisions disposez-vous ?"
+              hintText="Pour qualifier le délai déraisonnable, l'ensemble des décisions rendues dans votre procédure est nécessaire."
+              options={[...DECISIONS_DISPONIBLES, TypeDecision.Aucune].map((decision) => ({
+                label: TYPE_DECISION_LABELS[decision],
+                nativeInputProps: {
+                  checked: field.state.value.includes(decision),
+                  onChange: () => toggle(decision),
+                },
+              }))}
+            />
+          );
+        }}
       />
+      {aucuneSelectionnee && (
+        <Alert
+          className="fr-mt-2w"
+          severity="error"
+          title="La décision de justice est requise"
+          description="La décision de justice concernée est nécessaire à l'examen de votre demande. Nous vous invitons à vous en munir avant de poursuivre votre démarche."
+        />
+      )}
       <formulaire.Subscribe
-        selector={(state) => ({ typeDecision: state.values.typeDecision, showError: state.isDirty || state.submissionAttempts > 0 })}
+        selector={(state) => ({ typeDecision: state.values.typeDecision, showError: state.submissionAttempts > 0 })}
         children={({ typeDecision, showError }) =>
-          showError && !typeDecision ? (
+          showError && typeDecision.length === 0 ? (
             <Alert
               className="fr-mt-2w"
               severity="error"
-              title="Veuillez sélectionner le type de décision"
+              title="Veuillez sélectionner au moins une décision"
             />
           ) : null
         }
       />
-      <NavButtons onPrecedent={onPrecedent} isLastStep={isLastStep} />
+      {aucuneSelectionnee && onRetour
+        ? <BlockedNavButtons onRetour={onRetour} />
+        : <NavButtons onPrecedent={onPrecedent} onAnnuler={onAnnuler} isLastStep={isLastStep} />
+      }
     </form>
   );
 }

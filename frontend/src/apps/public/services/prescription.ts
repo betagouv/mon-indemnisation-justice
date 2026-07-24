@@ -14,11 +14,12 @@ export const calculerPrescription = (dateDecision?: Date): PrescriptionResult =>
   if (isNaN(dateDecision.getTime())) return { rempli: false, expiration: null, detail: "Date invalide" };
   const expiration = new Date(dateDecision.getFullYear() + 5, 0, 1);
   const rempli = new Date() < expiration;
+  const fin = new Date(expiration.getFullYear() - 1, 11, 31);
   return {
     rempli,
     expiration,
     detail: rempli
-      ? `Dans les délais (recevable jusqu'au ${formatDateFr(expiration)})`
+      ? `Dans les délais (recevable jusqu'au ${formatDateFr(fin)} inclus)`
       : `Prescrite depuis le ${formatDateFr(expiration)}`,
   };
 };

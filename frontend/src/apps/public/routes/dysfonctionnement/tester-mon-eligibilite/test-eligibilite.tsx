@@ -1,11 +1,10 @@
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import { NavButtons, BlockedNavButtons, TOTAL_STEPS } from "@/apps/public/components/steps";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "@/apps/public/components/Layout";
 import { usePublicNavigate } from "@/apps/public/routeur";
-import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
 import { saveCritere, critereProcedureTerminee, clearCriteres } from "@/apps/public/services/eligibiliteStore";
@@ -40,9 +39,8 @@ function TestEligibiliteRoute() {
       <h1>Test d'éligibilité</h1>
 
       <p className="fr-mb-3w">
-        Ce test vous permet de vérifier si vous pouvez faire une déclaration de déni de justice.
-        Certaines conditions doivent être remplies, notamment que votre affaire soit définitivement
-        terminée. Répondez aux questions suivantes pour continuer.
+       Ce test vous permet de vérifier si votre situation est susceptible de relever d’un déni de justice et de faire l’objet d’une demande de réparation.
+       Répondez aux questions suivantes pour poursuivre votre démarche. 
       </p>
 
       {nonEligible ? (
@@ -50,30 +48,20 @@ function TestEligibiliteRoute() {
           <Alert
             className="fr-mb-3w"
             severity="error"
-            title="Démarche non éligible"
+            title="Vous ne pouvez pas poursuivre le test d’éligibilité."
             description={
               <>
-                <p>Vous ne pouvez pas continuer le test d'éligibilité.</p>
+                <p>La procédure concernée par votre demande est toujours en cours.</p>
                 <p>
-                  La déclaration de déni de justice n'est possible que si l'ensemble des procédures
-                  liées à votre affaire est terminé (première instance, appel, etc.)
+                  Une demande de réparation au titre d’un déni de justice ne peut être déposée qu’après que la juridiction concernée a statué.
                 </p>
                 <p>
-                  Vous pourrez effectuer cette démarche lorsque votre affaire sera définitivement
-                  terminée.
+                  Vous pourrez renouveler votre démarche une fois la décision rendue.
                 </p>
               </>
             }
           />
-          <Button
-            onClick={() => {
-              manager.effacer();
-              clearCriteres();
-              navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" });
-            }}
-          >
-            Retour à l'accueil
-          </Button>
+          <BlockedNavButtons onRetour={() => { manager.effacer(); clearCriteres(); navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" }); }} />
         </>
       ) : (
         <>
@@ -84,33 +72,9 @@ function TestEligibiliteRoute() {
             nextTitle="Date de la décision"
           />
 
-          <RadioButtons
-            legend="La procédure est-elle terminée ?"
-            hintText="Vous ne pouvez faire une déclaration que si votre affaire est complètement terminée, c'est-à-dire après toutes les décisions de justice, y compris en appel si vous en avez fait un."
-            options={[
-              {
-                label: "Oui",
-                nativeInputProps: {
-                  value: "oui",
-                  checked: procedureTerminee === true,
-                  onChange: () => setProcedureTerminee(true),
-                },
-              },
-              {
-                label: "Non",
-                nativeInputProps: {
-                  value: "non",
-                  checked: procedureTerminee === false,
-                  onChange: () => setProcedureTerminee(false),
-                },
-              },
-            ]}
-          />
-
-          <Button
-            className="fr-mt-2w"
-            disabled={procedureTerminee === undefined}
-            onClick={() => {
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
               manager.get() ?? manager.creer();
               manager.modifier({ procedureTerminee: procedureTerminee! });
               if (procedureTerminee) {
@@ -121,8 +85,33 @@ function TestEligibiliteRoute() {
               }
             }}
           >
-            Suivant
-          </Button>
+            <RadioButtons
+              legend="La juridiction concernée a-t-elle rendu sa décision ?"
+              hintText="Vous ne pouvez poursuivre ce test que si la juridiction dont vous souhaitez contester la durée de traitement a rendu sa décision. "
+              options={[
+                {
+                  label: "Oui",
+                  nativeInputProps: {
+                    value: "oui",
+                    checked: procedureTerminee === true,
+                    onChange: () => setProcedureTerminee(true),
+                  },
+                },
+                {
+                  label: "Non",
+                  nativeInputProps: {
+                    value: "non",
+                    checked: procedureTerminee === false,
+                    onChange: () => setProcedureTerminee(false),
+                  },
+                },
+              ]}
+            />
+            <NavButtons
+              onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
+              peutContinuer={procedureTerminee !== undefined}
+            />
+          </form>
         </>
       )}
     </Layout>
