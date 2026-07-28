@@ -1,5 +1,5 @@
-import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
-import { FormUpload } from "@/apps/requerant/composants/champs/form/FormUpload.tsx";
+import { FormSelect } from "@common/composants/dsfr/champs/form/FormSelect.tsx";
+import { FormUpload } from "@common/composants/dsfr/champs/form/FormUpload.tsx";
 import { PrevisualiserFichier } from "@/apps/requerant/composants/piecesJointes/PrevisualiserFichier.tsx";
 import { Dossier } from "@/apps/requerant/models";
 import {

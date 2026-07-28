@@ -1,7 +1,7 @@
-import { CheckSuggestedInputProps } from "@/apps/requerant/composants/champs/check/CheckSuggestedInput.tsx";
-import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
-import { TanstackFormField } from "@/apps/requerant/composants/champs/form/TanstackFormField";
-import { BaseSuggestedInput } from "@/apps/requerant/composants/SuggestedInput.tsx";
+import { BaseSuggestedInput } from "@common/composants/dsfr/champs/SuggestedInput";
+import { CheckSuggestedInputProps } from "@common/composants/dsfr/champs/check/CheckSuggestedInput.tsx";
+import { FormInput } from "@common/composants/dsfr/champs/form/FormInput";
+import { TanstackFormField } from "@common/composants/dsfr/champs/form/TanstackFormField";
 import React from "react";
 
 export type FormSuggestedInputProps<TSuggestion extends {} = {}> = Omit<
@@ -19,11 +19,13 @@ export const FormSuggestedInput = <TSuggestion extends {} = {}>({
   rafraichisseurDebounceMs,
   estARafraichir,
   nativeInputProps,
+  className,
   ...inputProps
 }: FormSuggestedInputProps<TSuggestion>) => {
   return (
     <BaseSuggestedInput
-      renderInput={({ onFocus, onBlur, onChange }) => (
+      className={className}
+      renderInput={({ onFocus, onBlur, onChange, addon }) => (
         <FormInput
           nativeInputProps={{
             ...nativeInputProps,
@@ -40,6 +42,7 @@ export const FormSuggestedInput = <TSuggestion extends {} = {}>({
               nativeInputProps?.onChange?.(e);
             },
           }}
+          addon={addon}
           {...inputProps}
         />
       )}

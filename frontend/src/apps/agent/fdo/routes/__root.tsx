@@ -4,12 +4,30 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
-import { createRootRouteWithContext, type LinkProps, Outlet, redirect, useLoaderData } from "@tanstack/react-router";
+import { ModaleAutoAffectation } from "@fdo/components/affectation/ModaleAutoAffectation.tsx";
+import { RouteurFDO } from "@fdo/routeur";
+import { AgentFDOContexte } from "@fdo/routeur/contexte.ts";
+import {
+  createRootRouteWithContext,
+  type LinkProps,
+  Outlet,
+  redirect,
+  useLoaderData,
+  useRouter,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
+import { useState } from "react";
 
 const EspaceFDO = () => {
-  const { contexte }: { contexte: AgentContext } = useLoaderData({} as any);
+  const { contexte }: { contexte: AgentFDOContexte } = useLoaderData({} as any);
+
+  // Récupération du routeur, uniquement pour pouvoir invalider son cache
+  const routeur = useRouter<typeof RouteurFDO>();
+
+  const [estAffecte, setAffecte] = useState<boolean>(
+    contexte.agent.estAffecte(),
+  );
 
   return (
     <>
@@ -120,6 +138,15 @@ const EspaceFDO = () => {
       <main role="main">
         <div className="fr-container fr-container--fluid">
           <Outlet />
+          {!estAffecte && (
+            <ModaleAutoAffectation
+              agent={contexte.agent}
+              onAffecte={async () => {
+                await routeur.invalidate();
+                setAffecte(true);
+              }}
+            />
+          )}
         </div>
       </main>
 

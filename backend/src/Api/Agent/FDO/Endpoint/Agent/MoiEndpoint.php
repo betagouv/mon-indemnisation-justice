@@ -1,9 +1,8 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Agent;
+namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\Agent;
 
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\AgentOutput;
-use MonIndemnisationJustice\Api\Agent\Fip6\Voter\AgentVoter;
+use MonIndemnisationJustice\Api\Agent\FDO\Output\MoiOutput;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Security\Authenticator\ProConnectAuthenticator;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -17,10 +16,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Route API qui retourne les informations sur l'agent du Bureau du précontentieux actuellement connecté.
+ * Route API qui retourne les informations sur l'agent des FDO actuellement connecté.
  */
-#[Route('/api/agent/fip6/moi', name: 'api_agent_fip6_moi', methods: ['GET'])]
-#[IsGranted(AgentVoter::ACTION_S_IDENTIFIER, message: "Vous devez être connecté en tant qu'agent du Bureau du précontentieux", statusCode: Response::HTTP_FORBIDDEN)]
+#[Route('/api/agent/fdo/moi', name: 'api_agent_fdo_moi', methods: ['GET'])]
+#[IsGranted(
+    Agent::ROLE_AGENT_FORCES_DE_L_ORDRE,
+    message: "Vous devez être connecté en tant qu'agent des Forces de l'Ordre",
+    statusCode: Response::HTTP_FORBIDDEN
+)]
 class MoiEndpoint
 {
     public function __construct(
@@ -41,7 +44,7 @@ class MoiEndpoint
         return new JsonResponse(
             $this->normalizer->normalize(
                 [
-                    'agent' => AgentOutput::depuisAgent($this->security->getUser()),
+                    'agent' => MoiOutput::depuisAgent($this->security->getUser()),
                     'incarnePar' => $agentBetaIncarnant?->getNomComplet(true),
                     'urlDeconnexion' => $agentBetaIncarnant ?
                         $this->generateurUrl->generate('agent_fip6_react', ['extra' => 'agents/gestion', '_switch_user' => '_exit'], UrlGeneratorInterface::ABSOLUTE_URL) :

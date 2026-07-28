@@ -1,7 +1,7 @@
 import {
   FormInput,
   FormInputProps,
-} from "@/apps/requerant/composants/champs/form/FormInput.tsx";
+} from "@common/composants/dsfr/champs/form/FormInput.tsx";
 import React, { KeyboardEvent } from "react";
 
 export type RegExpInputProps = FormInputProps & {

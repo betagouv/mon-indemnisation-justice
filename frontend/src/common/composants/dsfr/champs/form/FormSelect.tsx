@@ -1,9 +1,9 @@
 import {
   CheckSelect,
   CheckSelectProps,
-} from "@/apps/requerant/composants/champs/check/CheckSelect.tsx";
+} from "@common/composants/dsfr/champs/check/CheckSelect.tsx";
+import { TanstackFormField } from "@common/composants/dsfr/champs/form/TanstackFormField";
 import React from "react";
-import { TanstackFormField } from "@/apps/requerant/composants/champs/form/TanstackFormField";
 
 export type FormSelectProps = Omit<
   CheckSelectProps,

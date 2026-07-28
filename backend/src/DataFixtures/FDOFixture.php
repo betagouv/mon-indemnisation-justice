@@ -6,6 +6,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use MonIndemnisationJustice\DataFixtures\Helpers\MailpitManager;
+use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
@@ -14,6 +15,7 @@ use MonIndemnisationJustice\Entity\CoordonneesRequerant;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\FDO\EtablissementFDO;
 use MonIndemnisationJustice\Entity\ProcedureJudiciaire;
 
 class FDOFixture extends Fixture implements DependentFixtureInterface
@@ -28,6 +30,7 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
         return [
             AgentFixture::class,
             DocumentFixture::class,
+            AdministrationFixture::class,
         ];
     }
 
@@ -36,6 +39,33 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
         // Suppression des emails
         $this->mailpitManager->supprimerMessages();
 
+        // Établissements
+        $commissariatParis20 = new EtablissementFDO()
+            ->setNom('Commissariat de police de Paris 20ème arrondissement')
+            ->setIdentifiant('')
+            ->setAdministration($this->getReference('administration-PN', Administration::class));
+
+        $manager->persist($commissariatParis20);
+
+        $gendarmerieDoullens = new EtablissementFDO()
+            ->setNom('Gendarmerie - Brigade de Doullens')
+            ->setIdentifiant('1013843')
+            ->setAdministration($this->getReference('administration-GN', Administration::class));
+
+        $manager->persist($gendarmerieDoullens);
+
+        // Affectations
+        $policier = $this->getReference('agent-policier', Agent::class);
+
+        $policier->affecter($commissariatParis20);
+        $manager->persist($policier);
+
+        $gendarme = $this->getReference('agent-gendarme', Agent::class);
+
+        $gendarme->affecter($gendarmerieDoullens);
+        $manager->persist($gendarme);
+
+        // Déclarations de bris de porte
         $brouillonPolice = new BrouillonDeclarationFDOBrisPorte()
             ->setDateCreation(new \DateTimeImmutable())
             ->setAgent($this->getReference('agent-policier', Agent::class))

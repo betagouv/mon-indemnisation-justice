@@ -1,8 +1,8 @@
+import { Pays } from "@/apps/requerant/models";
 import {
   FormSelect,
   FormSelectProps,
-} from "@/apps/requerant/composants/champs/form/FormSelect";
-import { Pays } from "@/apps/requerant/models";
+} from "@common/composants/dsfr/champs/form/FormSelect";
 import { plainToInstance } from "class-transformer";
 import React from "react";
 import donnesPays from "./pays.json";

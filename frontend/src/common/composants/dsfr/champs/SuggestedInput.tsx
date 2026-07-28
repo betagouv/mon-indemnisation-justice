@@ -72,7 +72,9 @@ export type BaseSuggestedInputProps<TSuggestion extends {} = {}> = {
     onFocus: FocusEventHandler<HTMLInputElement>;
     onBlur: FocusEventHandler<HTMLInputElement>;
     onChange: ChangeEventHandler<HTMLInputElement>;
+    addon: ReactNode;
   }) => ReactNode;
+  className?: string;
 } & CoreSuggestedInputProps<TSuggestion>;
 
 /**
@@ -92,6 +94,7 @@ export const BaseSuggestedInput = <TSuggestion extends {} = {}>({
     rafraichisseur,
     rafraichisseurDebounceMs,
     estARafraichir,
+    className,
     renderInput,
   } = props;
 
@@ -171,7 +174,10 @@ export const BaseSuggestedInput = <TSuggestion extends {} = {}>({
   };
 
   return (
-    <div className={classes.suggestedInput} ref={refConteneur}>
+    <div
+      className={`${classes.suggestedInput} ${className}`}
+      ref={refConteneur}
+    >
       {renderInput({
         onFocus: (e) => {
           setChampActif(false);
@@ -184,16 +190,18 @@ export const BaseSuggestedInput = <TSuggestion extends {} = {}>({
         onChange: (e: ChangeEvent<HTMLInputElement>) => {
           handleInputChange(e.target.value);
         },
+        addon: afficherSuggestions ? (
+          <ul>
+            {correspondances.map((suggestion, index) => (
+              <li key={index} onClick={() => handleSelectOption(suggestion)}>
+                {suggestion.libelle}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <></>
+        ),
       })}
-      {afficherSuggestions && (
-        <ul>
-          {correspondances.map((suggestion, index) => (
-            <li key={index} onClick={() => handleSelectOption(suggestion)}>
-              {suggestion.libelle}
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 };
@@ -226,12 +234,15 @@ export const SuggestedInput = <TSuggestion extends {} = {}>({
   rafraichisseurDebounceMs,
   estARafraichir,
   nativeInputProps,
+  className,
   ...inputProps
 }: SuggestedInputProps<TSuggestion>) => {
   return (
     <BaseSuggestedInput
-      renderInput={({ onFocus, onBlur, onChange }) => (
+      className={className}
+      renderInput={({ onFocus, onBlur, onChange, addon }) => (
         <Input
+          style={{ margin: 0 }}
           nativeInputProps={{
             ...nativeInputProps,
             onFocus: (e) => {
@@ -247,6 +258,7 @@ export const SuggestedInput = <TSuggestion extends {} = {}>({
               nativeInputProps?.onChange?.(e);
             },
           }}
+          addon={addon}
           {...inputProps}
         />
       )}

@@ -1,12 +1,12 @@
-import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
-import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
-import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
-import { FormSuggestedInput } from "@/apps/requerant/composants/champs/form/FormSuggeestedInput.tsx";
+import { FormInput } from "@common/composants/dsfr/champs/form/FormInput.tsx";
+import { FormRadioButtons } from "@common/composants/dsfr/champs/form/FormRadioButtons.tsx";
+import { FormSelect } from "@common/composants/dsfr/champs/form/FormSelect.tsx";
+import { FormSuggestedInput } from "@common/composants/dsfr/champs/form/FormSuggestedInput.tsx";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import {
   extraireDonneesBrisDeporte,
-  SchemaValidationBrisPorte
+  SchemaValidationBrisPorte,
 } from "@/apps/requerant/formulaires/brisDePorte/1-bris-porte.schema";
 import {
   Adresse,
@@ -15,22 +15,28 @@ import {
   getRapportAuLogementLibelle,
   RapportAuLogement,
   TypePersonneMoraleType,
-  TypesPersonneMorale
+  TypesPersonneMorale,
 } from "@/apps/requerant/models";
 import { RapportAuLogements } from "@/apps/requerant/models/RapportAuLogement.ts";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { AdresseManagerInterface } from "@/apps/requerant/services/AdresseManager.ts";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import classes from "@/apps/requerant/style/form.module.css";
-import { Requis } from "@/common/composants/dsfr/Requis.tsx";
-import { Loader } from "@/common/composants/Loader.tsx";
-import { dateChiffre } from "@/common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Notice from "@codegouvfr/react-dsfr/Notice";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { Requis } from "@common/composants/dsfr/Requis.tsx";
+import { Loader } from "@common/composants/Loader.tsx";
+import { dateChiffre } from "@common/services/date.ts";
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, notFound, redirect, useBlocker, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  notFound,
+  redirect,
+  useBlocker,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React, { useState } from "react";
 
@@ -408,13 +414,6 @@ function Etape1BrisPorte() {
             rapportAuLogement,
             descriptionRapportAuLogement,
           }) => {
-            console.log(
-              estPersonneMorale,
-              rapportAuLogement,
-              rapportAuLogement !== "AUTRE",
-              !!descriptionRapportAuLogement,
-            );
-
             return (
               <>
                 {estPersonneMorale != null &&

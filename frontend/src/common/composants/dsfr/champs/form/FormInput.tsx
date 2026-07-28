@@ -1,8 +1,8 @@
 import {
   CheckInput,
   CheckInputProps,
-} from "@/apps/requerant/composants/champs/check/CheckInput.tsx";
-import { TanstackFormField } from "@/apps/requerant/composants/champs/form/TanstackFormField";
+} from "@common/composants/dsfr/champs/check/CheckInput.tsx";
+import { TanstackFormField } from "@common/composants/dsfr/champs/form/TanstackFormField";
 import React from "react";
 
 export type FormInputProps = Omit<

@@ -1,9 +1,9 @@
-import React from "react";
-import { TanstackFormField } from "@/apps/requerant/composants/champs/form/TanstackFormField";
 import {
   CheckRadioButtons,
   CheckRadioButtonsProps,
-} from "@/apps/requerant/composants/champs/check/CheckRadioButtons.tsx";
+} from "@common/composants/dsfr/champs/check/CheckRadioButtons.tsx";
+import { TanstackFormField } from "@common/composants/dsfr/champs/form/TanstackFormField";
+import React from "react";
 
 export type FormRadioButtonsProps = Omit<
   CheckRadioButtonsProps,

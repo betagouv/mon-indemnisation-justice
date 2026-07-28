@@ -1,8 +1,8 @@
-import { CodePostalInput } from "@/apps/requerant/composants/champs/CodePostalInput.tsx";
-import { FormInput } from "@/apps/requerant/composants/champs/form/FormInput.tsx";
-import { FormSelect } from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
-import { FormSuggestedInput } from "@/apps/requerant/composants/champs/form/FormSuggeestedInput.tsx";
-import { PaysSelect } from "@/apps/requerant/composants/champs/PaysSelect";
+import { CodePostalInput } from "@common/composants/dsfr/champs/CodePostalInput.tsx";
+import { FormInput } from "@common/composants/dsfr/champs/form/FormInput.tsx";
+import { FormSelect } from "@common/composants/dsfr/champs/form/FormSelect.tsx";
+import { FormSuggestedInput } from "@common/composants/dsfr/champs/form/FormSuggestedInput.tsx";
+import { PaysSelect } from "@common/composants/dsfr/champs/PaysSelect";
 import { SelectionCivilite } from "@/apps/requerant/composants/SelectionCivilite.tsx";
 import { TitreSection } from "@/apps/requerant/composants/TitreSection.tsx";
 import { container } from "@/apps/requerant/container.ts";

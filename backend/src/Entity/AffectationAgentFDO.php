@@ -10,9 +10,9 @@ use MonIndemnisationJustice\Entity\FDO\EtablissementFDO;
 #[ORM\Table(name: 'fdo_affectations')]
 class AffectationAgentFDO
 {
-    #[ORM\Id, ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'affectations'), ORM\JoinColumn('agent_id')]
+    #[ORM\Id, ORM\ManyToOne(targetEntity: Agent::class, cascade: ['persist'], inversedBy: 'affectations'), ORM\JoinColumn('agent_id')]
     protected Agent $agent;
-    #[ORM\Id, ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'affectations'), ORM\JoinColumn('etablissement_id')]
+    #[ORM\Id, ORM\ManyToOne(targetEntity: EtablissementFDO::class, cascade: ['persist'], inversedBy: 'affectations'), ORM\JoinColumn('etablissement_id', onDelete: 'SET NULL')]
     protected EtablissementFDO $etablissement;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]

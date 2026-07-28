@@ -1,7 +1,7 @@
 import {
   RegExpInput,
   RegExpInputProps,
-} from "@/apps/requerant/composants/champs/RegExpInput.tsx";
+} from "@common/composants/dsfr/champs/RegExpInput.tsx";
 import React from "react";
 
 export type CodePostalInputProps = Omit<

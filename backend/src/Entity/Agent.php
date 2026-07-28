@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Entity\FDO\EtablissementFDO;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -86,7 +87,10 @@ class Agent implements UserInterface
     /** @var Collection<Dossier> */
     protected Collection $dossiers;
 
-    #[ORM\OneToMany(targetEntity: AffectationAgentFDO::class, mappedBy: 'agent', cascade: ['detach'])]
+    #[ORM\Column(nullable: true)]
+    protected ?bool $estExempteAffectation = null;
+
+    #[ORM\OneToMany(targetEntity: AffectationAgentFDO::class, mappedBy: 'agent', cascade: ['persist', 'remove'])]
     /** @var Collection<AffectationAgentFDO> */
     protected Collection $affectations;
 
@@ -323,6 +327,18 @@ class Agent implements UserInterface
         return count($this->getDossiersEnAttentePaiement());
     }
 
+    public function estExempteAffectation(): ?bool
+    {
+        return $this->estExempteAffectation;
+    }
+
+    public function setExempteAffectation(bool $estExempteAffectation): Agent
+    {
+        $this->estExempteAffectation = $estExempteAffectation;
+
+        return $this;
+    }
+
     public function getAffectation(): ?AffectationAgentFDO
     {
         // On doit donc s'assurer qu'il n'y a qu'une seule affectation active par agent
@@ -332,6 +348,19 @@ class Agent implements UserInterface
     public function getAffectations(): Collection
     {
         return $this->affectations;
+    }
+
+    public function affecter(EtablissementFDO $etablissement, ?\DateTimeImmutable $date = null): Agent
+    {
+        // TODO clôre l'affectation en cours
+        $this->affectations->add(
+            new AffectationAgentFDO()
+                ->setEtablissement($etablissement)
+                ->setAgent($this)
+                ->setDateAffectation($date ?? new \DateTimeImmutable())
+        );
+
+        return $this;
     }
 
     public function setAffectations(Collection $affectations): Agent

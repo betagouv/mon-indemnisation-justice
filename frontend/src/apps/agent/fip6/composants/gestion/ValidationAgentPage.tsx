@@ -650,7 +650,6 @@ export const ValidationAgentPage = ({
                   iconId: "fr-icon-equalizer-line",
                   priority: "secondary",
                   onClick: () => {
-                    console.log(refModaleSelectionRecherche.current);
                     refModaleSelectionRecherche.current?.ouvrir();
                   },
                   children: "Critères de recherche",

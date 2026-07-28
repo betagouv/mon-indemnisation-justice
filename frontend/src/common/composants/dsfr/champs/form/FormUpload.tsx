@@ -1,5 +1,8 @@
-import { CheckUpload, CheckUploadProps } from "@/apps/requerant/composants/champs/check/CheckUpload.tsx";
-import { TanstackFormField } from "@/apps/requerant/composants/champs/form/TanstackFormField";
+import {
+  CheckUpload,
+  CheckUploadProps,
+} from "@common/composants/dsfr/champs/check/CheckUpload.tsx";
+import { TanstackFormField } from "@common/composants/dsfr/champs/form/TanstackFormField";
 import React from "react";
 
 export type FormUploadProps = Omit<

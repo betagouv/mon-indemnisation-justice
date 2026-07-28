@@ -31,7 +31,7 @@ class EtablissementFDO
     protected string $nom;
 
     #[ORM\Column(type: 'string', length: 16)]
-    protected ?string $identifiant = null;
+    protected string $identifiant;
 
     #[ORM\OneToOne(Adresse::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -162,12 +162,12 @@ class EtablissementFDO
         return $this;
     }
 
-    public function getIdentifiant(): ?string
+    public function getIdentifiant(): string
     {
         return $this->identifiant;
     }
 
-    public function setIdentifiant(?string $identifiant): EtablissementFDO
+    public function setIdentifiant(string $identifiant): EtablissementFDO
     {
         $this->identifiant = $identifiant;
 

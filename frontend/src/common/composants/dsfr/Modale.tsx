@@ -1,7 +1,12 @@
 import { ModalProps } from "@codegouvfr/react-dsfr/Modal";
 import { fr } from "@codegouvfr/react-dsfr/src/fr";
 import { cx } from "@codegouvfr/react-dsfr/src/tools/cx.ts";
-import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle } from "react";
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+} from "react";
 
 export type ModaleRef = {
   ouvrir: () => void;
@@ -13,6 +18,7 @@ export type ModaleProps = Omit<ModalProps, "size"> & {
   size?: "large" | "medium" | "small" | "full";
   onFerme?: () => void;
   ouverte?: boolean;
+  refermable?: boolean;
 };
 
 export const Modale = forwardRef<ModaleRef, ModaleProps>(
@@ -24,6 +30,7 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
       size = "large",
       onFerme,
       ouverte = false,
+      refermable = true,
       title,
       titleAs: TitleTag = "h1",
       iconId,
@@ -83,17 +90,19 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
               >
                 <div className={fr.cx("fr-modal__body")}>
                   <div className={fr.cx("fr-modal__header")}>
-                    <button
-                      className={fr.cx("fr-btn--close", "fr-btn")}
-                      title="Fermer"
-                      aria-controls={id}
-                      type="button"
-                      onClick={() => {
-                        onFerme?.();
-                      }}
-                    >
-                      Fermer
-                    </button>
+                    {refermable && (
+                      <button
+                        className={fr.cx("fr-btn--close", "fr-btn")}
+                        title="Fermer"
+                        aria-controls={id}
+                        type="button"
+                        onClick={() => {
+                          onFerme?.();
+                        }}
+                      >
+                        Fermer
+                      </button>
+                    )}
                   </div>
                   <div className={fr.cx("fr-modal__content")}>
                     <TitleTag
