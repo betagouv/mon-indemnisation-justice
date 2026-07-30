@@ -26,6 +26,7 @@ final class Version20260724130358 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_C56F0146FF631228 ON fdo_affectations (etablissement_id)');
         $this->addSql('ALTER TABLE fdo_affectations ADD CONSTRAINT FK_C56F01463414710B FOREIGN KEY (agent_id) REFERENCES agents (id) NOT DEFERRABLE');
         $this->addSql('ALTER TABLE fdo_affectations ADD CONSTRAINT FK_C56F0146FF631228 FOREIGN KEY (etablissement_id) REFERENCES fdo_etablissements (id) ON DELETE SET NULL NOT DEFERRABLE');
+        $this->addSql("UPDATE agents SET est_exempte_affectation = true where administration_code = 'MI'");
         $this->addSql('DROP INDEX idx_code_postal');
     }
 

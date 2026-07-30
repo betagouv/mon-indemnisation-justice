@@ -406,6 +406,9 @@ class Agent implements UserInterface
 
         $this->setValide($this->administration->getType()->estAutoValide());
 
+        if (AdministrationType::MINISTERE_INTERIEUR === $administration->getType()) {
+            $this->setExempteAffectation(true);
+        }
 
         return $this;
     }
