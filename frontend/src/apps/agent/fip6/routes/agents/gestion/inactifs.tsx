@@ -1,14 +1,14 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
-import { ValidationAgentPage } from "@/apps/agent/fip6/gestion_agents/components";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import {
   Administration,
   RoleAgent,
   TypeAdministration,
-} from "@/common/models/Agent.ts";
-import { RechercheAgentRequete } from "@/common/services/agent/agent";
+} from "@common/models/Agent.ts";
 import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { ValidationAgentPage } from "@fip6/composants/gestion";
+import { RechercheAgentRequete } from "@fip6/services/agent";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import React, { useMemo } from "react";
 

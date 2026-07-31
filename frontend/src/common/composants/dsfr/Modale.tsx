@@ -1,7 +1,13 @@
 import { ModalProps } from "@codegouvfr/react-dsfr/Modal";
 import { fr } from "@codegouvfr/react-dsfr/src/fr";
 import { cx } from "@codegouvfr/react-dsfr/src/tools/cx.ts";
-import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle } from "react";
+import { dsfr } from "@common/services/dsfr";
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+} from "react";
 
 export type ModaleRef = {
   ouvrir: () => void;
@@ -13,6 +19,7 @@ export type ModaleProps = Omit<ModalProps, "size"> & {
   size?: "large" | "medium" | "small" | "full";
   onFerme?: () => void;
   ouverte?: boolean;
+  refermable?: boolean;
 };
 
 export const Modale = forwardRef<ModaleRef, ModaleProps>(
@@ -24,6 +31,7 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
       size = "large",
       onFerme,
       ouverte = false,
+      refermable = true,
       title,
       titleAs: TitleTag = "h1",
       iconId,
@@ -35,20 +43,21 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
     useEffect(() => {
       if (ouverte) {
         // On doit laisser le temps à la lib JS du DSFR de se charger avant de lancer l'ouvertue de la modale
-        setTimeout(
-          () => window.dsfr(document.getElementById(id)).modal.disclose(),
-          250,
-        );
+        dsfr(document.getElementById(id))
+          .then((dsfr) => dsfr?.modal.disclose())
+          .catch((e) => console.error(e));
       }
     }, []);
 
     useImperativeHandle(ref, () => ({
-      ouvrir: () => {
-        window.dsfr(document.getElementById(id)).modal.disclose();
-      },
-      fermer: () => {
-        window.dsfr(document.getElementById(id)).modal.conceal();
-      },
+      ouvrir: () =>
+        dsfr(document.getElementById(id))
+          .then((dsfr) => dsfr?.modal.disclose())
+          .catch((e) => console.error(e)),
+      fermer: () =>
+        dsfr(document.getElementById(id))
+          .then((dsfr) => dsfr?.modal.conceal())
+          .catch((e) => console.error(e)),
     }));
 
     return (
@@ -83,17 +92,19 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
               >
                 <div className={fr.cx("fr-modal__body")}>
                   <div className={fr.cx("fr-modal__header")}>
-                    <button
-                      className={fr.cx("fr-btn--close", "fr-btn")}
-                      title="Fermer"
-                      aria-controls={id}
-                      type="button"
-                      onClick={() => {
-                        onFerme?.();
-                      }}
-                    >
-                      Fermer
-                    </button>
+                    {refermable && (
+                      <button
+                        className={fr.cx("fr-btn--close", "fr-btn")}
+                        title="Fermer"
+                        aria-controls={id}
+                        type="button"
+                        onClick={() => {
+                          onFerme?.();
+                        }}
+                      >
+                        Fermer
+                      </button>
+                    )}
                   </div>
                   <div className={fr.cx("fr-modal__content")}>
                     <TitleTag

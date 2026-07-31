@@ -1,24 +1,24 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts";
-import {
-  ModaleAjoutPieceJointe,
-  ModaleAjoutPieceJointeRef,
-} from "@/apps/agent/fdo/components/ModaleAjoutPieceJointe.tsx";
-import {
-  ModalePrevisualiserPieceJointe,
-  ModalePrevisualiserPieceJointeRef,
-} from "@/apps/agent/fdo/components/ModalePrévisualiserPieceJointe.tsx";
-import { container } from "@/apps/agent/fdo/container.ts";
-import {
-  DeclarationFDOBrisPorte,
-  Procedure,
-} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
-import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 import { Document } from "@/common/models";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import {
+  ModaleAjoutPieceJointe,
+  ModaleAjoutPieceJointeRef,
+} from "@fdo/components/ModaleAjoutPieceJointe.tsx";
+import {
+  ModalePrevisualiserPieceJointe,
+  ModalePrevisualiserPieceJointeRef,
+} from "@fdo/components/ModalePrévisualiserPieceJointe.tsx";
+import { container } from "@fdo/container.ts";
+import {
+  DeclarationFDOBrisPorte,
+  Procedure,
+} from "@fdo/modeles/DeclarationFDOBrisPorte.ts";
+import { DeclarationManagerInterface } from "@fdo/services";
 import { useForm } from "@tanstack/react-form";
 import {
   createFileRoute,

@@ -104,6 +104,11 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
+        "@common": fileURLToPath(new URL("./src/common", import.meta.url)),
+        "@fdo": fileURLToPath(new URL("./src/apps/agent/fdo", import.meta.url)),
+        "@fip6": fileURLToPath(
+          new URL("./src/apps/agent/fip6", import.meta.url),
+        ),
       },
     }, // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
     oxc: {

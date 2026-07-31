@@ -1,13 +1,13 @@
 import {
-  FormSelect,
-  FormSelectProps,
-} from "@/apps/requerant/composants/champs/form/FormSelect.tsx";
-import {
   Civilite,
   Civilites,
   getCivilite,
   getCiviliteLibelle,
 } from "@/apps/requerant/models";
+import {
+  FormSelect,
+  FormSelectProps,
+} from "@common/composants/dsfr/champs/form/FormSelect.tsx";
 import React from "react";
 
 export const SelectionCivilite = ({

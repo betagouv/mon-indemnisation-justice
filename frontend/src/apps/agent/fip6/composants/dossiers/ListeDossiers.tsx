@@ -1,9 +1,9 @@
-import React, { type ReactNode } from "react";
-import { DossierApercu } from "@/common/models";
-import { Tableau } from "@/common/composants/dsfr/Tableau.tsx";
-import { dateEtHeureSimple, periode } from "@/common/services/date.ts";
-import { BadgesDossier } from "@/apps/agent/fip6/dossiers/components/BadgesDossier.tsx";
+import { Tableau } from "@common/composants/dsfr/Tableau.tsx";
+import { DossierApercu } from "@common/models";
+import { dateEtHeureSimple, periode } from "@common/services/date.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { BadgesDossier } from "@fip6/dossiers/components/BadgesDossier.tsx";
+import React, { type ReactNode } from "react";
 
 export const ListeDossiers = ({
   dossiers,

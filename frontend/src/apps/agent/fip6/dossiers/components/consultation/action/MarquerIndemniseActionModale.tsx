@@ -1,10 +1,10 @@
-import { DossierManagerInterface } from "@/apps/agent/fip6/services/dossier";
-import { Agent, DossierDetail, EtatDossierType } from "@/common/models";
-import { dateChiffre, dateSimple } from "@/common/services/date.ts";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { Agent, DossierDetail, EtatDossierType } from "@common/models";
+import { dateChiffre, dateSimple } from "@common/services/date.ts";
+import { DossierManagerInterface } from "@fip6/services/dossier";
 import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";

@@ -1,21 +1,21 @@
-import urlAvisIntervention from "@/apps/agent/fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte.pdf";
-import urlAvisInterventionGN
-  from "@/apps/agent/fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte_gn.pdf";
-import urlGuideDeclarationPN
-  from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre-pn.pdf";
-import urlGuideDeclaration
-  from "@/apps/agent/fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre.pdf";
-import urlGuideRemiseAvis
-  from "@/apps/agent/fdo/fichiers/documents/guide-de-remise-de-l-avis-d-intervention-apres-un-bris-de-porte.pdf";
-import { RouteurFDO } from "@/apps/agent/fdo/routeur";
+import urlAvisIntervention from "@fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte.pdf";
+import urlAvisInterventionGN from "@fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte_gn.pdf";
+import urlGuideDeclarationPN from "@fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre-pn.pdf";
+import urlGuideDeclaration from "@fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre.pdf";
+import urlGuideRemiseAvis from "@fdo/fichiers/documents/guide-de-remise-de-l-avis-d-intervention-apres-un-bris-de-porte.pdf";
+import { RouteurFDO } from "@fdo/routeur";
 import Download from "@codegouvfr/react-dsfr/Download";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { AgentFDOContexte } from "@fdo/routeur/contexte.ts";
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useMemo } from "react";
 
 export const Route = createFileRoute("/les-documents")({
   component: () => {
-    const { agent } = Route.useRouteContext<typeof RouteurFDO>();
+    const { agent } = Route.useRouteContext<
+      typeof RouteurFDO,
+      AgentFDOContexte
+    >();
 
     const estGN = useMemo(() => "GN" === agent.administration.type, [agent]);
 

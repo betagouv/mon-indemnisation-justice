@@ -1,26 +1,43 @@
-import React from "react";
-import { useForm } from "@tanstack/react-form";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
-import { ActionContentieuse } from "../types";
-import { SchemaEtapeActionContentieuse } from "../formulaires/eligibilite.schemas";
-import { saveCritere, critereActionContentieuse } from "@/apps/public/services/eligibiliteStore";
-import type { StepProps } from "../types";
-import { NavButtons } from "./NavButtons";
-import { BlockedNavButtons } from "./BlockedNavButtons";
-import { useInjection } from "inversify-react";
+import {
+  critereActionContentieuse,
+  saveCritere,
+} from "@/apps/public/services/eligibiliteStore";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { FormRadioButtons } from "@common/composants/dsfr/champs/form/FormRadioButtons.tsx";
+import { useForm } from "@tanstack/react-form";
+import { useInjection } from "inversify-react";
+import React from "react";
+import { SchemaEtapeActionContentieuse } from "../formulaires/eligibilite.schemas";
+import type { StepProps } from "../types";
+import { ActionContentieuse } from "../types";
+import { BlockedNavButtons } from "./BlockedNavButtons";
+import { NavButtons } from "./NavButtons";
 
-export function StepActionContentieuse({ onPrecedent, onSuivant, onAnnuler, onRetour, isLastStep, test }: StepProps) {
-  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
+export function StepActionContentieuse({
+  onPrecedent,
+  onSuivant,
+  onAnnuler,
+  onRetour,
+  isLastStep,
+  test,
+}: StepProps) {
+  const manager = useInjection<TestEligibiliteManagerInterface>(
+    TestEligibiliteManagerInterface.$,
+  );
 
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeActionContentieuse },
-    defaultValues: { actionContentieuse: test?.actionContentieuse } as { actionContentieuse?: ActionContentieuse },
+    defaultValues: { actionContentieuse: test?.actionContentieuse } as {
+      actionContentieuse?: ActionContentieuse;
+    },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
         manager.modifier({ actionContentieuse: value.actionContentieuse });
-        saveCritere("actionContentieuse", critereActionContentieuse(value.actionContentieuse!));
+        saveCritere(
+          "actionContentieuse",
+          critereActionContentieuse(value.actionContentieuse!),
+        );
         onSuivant();
       }
     },
@@ -62,7 +79,10 @@ export function StepActionContentieuse({ onPrecedent, onSuivant, onAnnuler, onRe
         )}
       />
       <formulaire.Subscribe
-        selector={(state) => ({ actionContentieuse: state.values.actionContentieuse, showError: state.isDirty || state.submissionAttempts > 0 })}
+        selector={(state) => ({
+          actionContentieuse: state.values.actionContentieuse,
+          showError: state.isDirty || state.submissionAttempts > 0,
+        })}
         children={({ actionContentieuse, showError }) => {
           if (actionContentieuse === ActionContentieuse.Oui) {
             return (
@@ -89,9 +109,15 @@ export function StepActionContentieuse({ onPrecedent, onSuivant, onAnnuler, onRe
       <formulaire.Subscribe
         selector={(state) => state.values.actionContentieuse}
         children={(actionContentieuse) =>
-          actionContentieuse === ActionContentieuse.Oui && onRetour
-            ? <BlockedNavButtons onRetour={onRetour} />
-            : <NavButtons onPrecedent={onPrecedent} onAnnuler={onAnnuler} isLastStep={isLastStep} />
+          actionContentieuse === ActionContentieuse.Oui && onRetour ? (
+            <BlockedNavButtons onRetour={onRetour} />
+          ) : (
+            <NavButtons
+              onPrecedent={onPrecedent}
+              onAnnuler={onAnnuler}
+              isLastStep={isLastStep}
+            />
+          )
         }
       />
     </form>

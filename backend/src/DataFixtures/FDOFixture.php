@@ -6,6 +6,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use MonIndemnisationJustice\DataFixtures\Helpers\MailpitManager;
+use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
@@ -14,13 +15,14 @@ use MonIndemnisationJustice\Entity\CoordonneesRequerant;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\FDO\EtablissementFDO;
+use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\ProcedureJudiciaire;
 
 class FDOFixture extends Fixture implements DependentFixtureInterface
 {
     public function __construct(protected readonly MailpitManager $mailpitManager)
     {
-
     }
 
     public function getDependencies(): array
@@ -28,6 +30,8 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
         return [
             AgentFixture::class,
             DocumentFixture::class,
+            AdministrationFixture::class,
+            GeoFixture::class,
         ];
     }
 
@@ -36,6 +40,43 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
         // Suppression des emails
         $this->mailpitManager->supprimerMessages();
 
+        // Établissements
+        $commissariatProvins = new EtablissementFDO()
+            ->setNom(' Commissariat de police de Provins')
+            ->setIdentifiant('')
+            ->setCodePostal($this->getReference('code-postal-77160', GeoCodePostal::class))
+            ->setAdministration($this->getReference('administration-PN', Administration::class));
+
+        $manager->persist($commissariatProvins);
+
+        $commissariatParis20 = new EtablissementFDO()
+            ->setNom('Commissariat de police de Paris 20ème arrondissement')
+            ->setIdentifiant('')
+            ->setCodePostal($this->getReference('code-postal-75020', GeoCodePostal::class))
+            ->setAdministration($this->getReference('administration-PP', Administration::class));
+
+        $manager->persist($commissariatParis20);
+
+        $gendarmerieAuray = new EtablissementFDO()
+            ->setNom("Gendarmerie - Brigade d'Auray")
+            ->setIdentifiant('1006429')
+            ->setCodePostal($this->getReference('code-postal-56400', GeoCodePostal::class))
+            ->setAdministration($this->getReference('administration-GN', Administration::class));
+
+        $manager->persist($gendarmerieAuray);
+
+        // Affectations
+        $policier = $this->getReference('agent-policier', Agent::class);
+
+        $policier->affecter($commissariatProvins);
+        $manager->persist($policier);
+
+        $gendarme = $this->getReference('agent-gendarme', Agent::class);
+
+        $gendarme->affecter($gendarmerieAuray);
+        $manager->persist($gendarme);
+
+        // Déclarations de bris de porte
         $brouillonPolice = new BrouillonDeclarationFDOBrisPorte()
             ->setDateCreation(new \DateTimeImmutable())
             ->setAgent($this->getReference('agent-policier', Agent::class))

@@ -1,6 +1,6 @@
 "use client";
 
-import { Agent, DossierDetail, EtatDossier, Redacteur } from "@/common/models";
+import { Agent, DossierDetail, EtatDossier, Redacteur } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";

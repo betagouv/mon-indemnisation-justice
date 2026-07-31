@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\InitierDeclarationBrisPorteEndpoint;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -11,9 +12,8 @@ use Symfony\Component\Uid\Uuid;
  * brouillon de déclaration.
  *
  * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\InitierDeclarationBrisPorteEndpoint
  */
+#[CoversClass(InitierDeclarationBrisPorteEndpoint::class)]
 class InitierDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 {
     /**

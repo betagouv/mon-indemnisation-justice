@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use MonIndemnisationJustice\Entity\FDO\EtablissementFDO;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -85,6 +86,13 @@ class Agent implements UserInterface
     #[ORM\OrderBy(['dateCreation' => 'ASC'])]
     /** @var Collection<Dossier> */
     protected Collection $dossiers;
+
+    #[ORM\Column(nullable: true)]
+    protected ?bool $estExempteAffectation = null;
+
+    #[ORM\OneToMany(targetEntity: AffectationAgentFDO::class, mappedBy: 'agent', cascade: ['persist', 'remove'])]
+    /** @var Collection<AffectationAgentFDO> */
+    protected Collection $affectations;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     protected ?\DateTimeImmutable $dateCreation = null;
@@ -319,6 +327,50 @@ class Agent implements UserInterface
         return count($this->getDossiersEnAttentePaiement());
     }
 
+    public function estExempteAffectation(): ?bool
+    {
+        return $this->estExempteAffectation;
+    }
+
+    public function setExempteAffectation(bool $estExempteAffectation): Agent
+    {
+        $this->estExempteAffectation = $estExempteAffectation;
+
+        return $this;
+    }
+
+    public function getAffectation(): ?AffectationAgentFDO
+    {
+        // On doit donc s'assurer qu'il n'y a qu'une seule affectation active par agent
+        return $this->affectations->filter(fn (AffectationAgentFDO $affectation) => $affectation->estActive())->first();
+    }
+
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function affecter(EtablissementFDO $etablissement, ?\DateTimeImmutable $date = null): Agent
+    {
+        // TODO clôre l'affectation en cours
+        $this->affectations->add(
+            new AffectationAgentFDO()
+                ->setEtablissement($etablissement)
+                ->setAgent($this)
+                ->setDateAffectation($date ?? new \DateTimeImmutable())
+        );
+        $this->estExempteAffectation = false;
+
+        return $this;
+    }
+
+    public function setAffectations(Collection $affectations): Agent
+    {
+        $this->affectations = $affectations;
+
+        return $this;
+    }
+
     /**
      * A visual identifier that represents this user.
      *
@@ -355,6 +407,9 @@ class Agent implements UserInterface
 
         $this->setValide($this->administration->getType()->estAutoValide());
 
+        if (AdministrationType::MINISTERE_INTERIEUR === $administration->getType()) {
+            $this->setExempteAffectation(true);
+        }
 
         return $this;
     }

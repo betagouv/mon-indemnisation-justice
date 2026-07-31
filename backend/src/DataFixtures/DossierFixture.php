@@ -55,7 +55,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            GeoFixtures::class,
+            GeoFixture::class,
             AgentFixture::class,
             UsagerFixture::class,
             TestEligibiliteFixture::class,

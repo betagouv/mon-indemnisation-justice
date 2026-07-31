@@ -1,7 +1,7 @@
-import { DossierArreteASigner } from "@/apps/agent/fip6/dossiers/components/liste/DossierArreteASigner.ts";
-import { periode } from "@/common/services/date.ts";
-import { convertirEnEuros } from "@/common/services/devise.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { periode } from "@common/services/date.ts";
+import { convertirEnEuros } from "@common/services/devise.ts";
+import { DossierArreteASigner } from "@fip6/dossiers/components/liste/DossierArreteASigner.ts";
 import { plainToInstance } from "class-transformer";
 import React, { useEffect, useState } from "react";
 import "./liste/dossier-liste-element.css";

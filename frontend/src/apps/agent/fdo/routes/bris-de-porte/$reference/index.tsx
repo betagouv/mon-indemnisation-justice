@@ -1,6 +1,6 @@
+import { container } from "@fdo/container";
+import { DeclarationManagerInterface } from "@fdo/services";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { container } from "@/apps/agent/fdo/container";
-import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 
 export const Route = createFileRoute("/bris-de-porte/$reference/")({
   beforeLoad: async ({ params }) => {
