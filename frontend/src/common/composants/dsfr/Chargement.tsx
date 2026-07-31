@@ -1,6 +1,7 @@
-import { Tourniquet } from "@/common/composants/dsfr/Tourniquet";
+import { Tourniquet } from "@common/composants/dsfr/Tourniquet";
 import React from "react";
 import "./Chargement.css";
+
 export const Chargement = ({
   titre,
   message,

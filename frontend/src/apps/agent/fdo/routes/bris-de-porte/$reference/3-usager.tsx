@@ -1,19 +1,24 @@
-import { container } from "@/apps/agent/fdo/container.ts";
-import {
-  Civilite,
-  CoordonneesRequerant,
-  DeclarationFDOBrisPorte,
-} from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
-import { RouteurFDO } from "@/apps/agent/fdo/routeur";
-import { DeclarationManagerInterface } from "@/apps/agent/fdo/services";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import { container } from "@fdo/container.ts";
+import {
+  Civilite,
+  CoordonneesRequerant,
+  DeclarationFDOBrisPorte,
+} from "@fdo/modeles/DeclarationFDOBrisPorte.ts";
+import { RouteurFDO } from "@fdo/routeur";
+import { DeclarationManagerInterface } from "@fdo/services";
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  redirect,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React, { ChangeEvent, useState } from "react";
 import { z } from "zod";
@@ -100,6 +105,8 @@ function Page() {
   }: { declaration: DeclarationFDOBrisPorte; reference: string } =
     Route.useLoaderData();
 
+  const routeur = useRouter<typeof RouteurFDO>();
+
   const naviguer = useNavigate<typeof RouteurFDO>({
     from: Route.fullPath,
   });
@@ -145,6 +152,7 @@ function Page() {
         }
 
         await declarationManager.soumettre(declaration);
+        await routeur.invalidate();
         await naviguer({
           to: "/bris-de-porte/mes-declarations",
         });

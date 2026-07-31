@@ -110,6 +110,25 @@ class AgentFixture extends Fixture implements FixtureGroupInterface, DependentFi
                 ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
                 ->setUid('890')
                 ->setValide(),
+            'commissaire' => new Agent()
+                ->setIdentifiant('cbd05ae7-73e5-4f40-bd0c-b99d12ca4861')
+                ->setEmail('commissaire@interieur.gouv.fr')
+                ->setAdministration($this->getAdministration(AdministrationType::PREFECTURE_DE_POLICE))
+                ->setPrenom('Côme')
+                ->setNom('Hissert')
+                ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
+                ->setUid('763')
+                ->setValide(),
+            'interieur' => new Agent()
+                ->setIdentifiant('93e13c04-03af-4a54-9746-2946221cbab4')
+                ->setEmail('interieur@interieur.gouv.fr')
+                ->setAdministration($this->getAdministration(AdministrationType::MINISTERE_INTERIEUR))
+                ->setPrenom('Alain')
+                ->setNom('Thérieur')
+                ->setRoles([Agent::ROLE_AGENT, Agent::ROLE_AGENT_FORCES_DE_L_ORDRE])
+                ->setUid('8424')
+                ->setValide()
+                ->setExempteAffectation(true),
         ] as $reference => $agent) {
             $manager->persist($agent);
             $this->addReference("agent-{$reference}", $agent);

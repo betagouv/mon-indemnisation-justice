@@ -59,45 +59,56 @@ class ImporteurCompetencesTerritorialesFDO extends AbstractImporteurDataGouv
         );
 
         $typeAdministration = AdministrationType::tryFrom($entree['institution']);
-        $administration = $typeAdministration ? $this->em->find(Administration::class, 'PN' === $typeAdministration && $commune->getDepartement()?->estPrefectureDePolice() ? AdministrationType::PREFECTURE_DE_POLICE : $typeAdministration) : null;
-        $etablissement =
-            $this->em->getRepository(EtablissementFDO::class)->getByNom($entree['service']) ??
-            new EtablissementFDO()
-                ->setIdentifiant($entree['id_service'])
-                ->setNom($entree['service'])
-                ->setCodePostal(
-                    $this->em->getRepository(GeoCodePostal::class)->getOrCreate(
-                        $entree['code_postal'],
-                        $commune
+
+        if (null !== $typeAdministration) {
+            if (AdministrationType::POLICE_NATIONALE == $typeAdministration && $commune->getDepartement()?->estPrefectureDePolice()) {
+                $typeAdministration = AdministrationType::PREFECTURE_DE_POLICE;
+            }
+
+            /** @var Administration $administration */
+            $administration = $this->em->find(Administration::class, $typeAdministration);
+            $etablissement =
+                $this->em->getRepository(EtablissementFDO::class)->getByNom($entree['service']) ??
+                new EtablissementFDO()
+                    ->setIdentifiant($entree['id_service'])
+                    ->setNom($entree['service'])
+                    ->setCodePostal(
+                        $this->em->getRepository(GeoCodePostal::class)->getOrCreate(
+                            $entree['code_postal'],
+                            $commune
+                        )
                     )
-                )
-                ->setAdministration($administration);
+                    ->setAdministration($administration);
 
-        // Affectation des zones de compétences : comme un même établissement peut apparaître plusieurs fois, à sa première
-        // apparition, on initialise ses codes postaux de compétence avec la liste associée qu'on étendra sur les apparitions
-        // suivantes
-        $competences = array_map(
-            fn (string $codePostal) => $this->em->getRepository(GeoCodePostal::class)->getOrCreate(
-                $codePostal,
-                $commune
-            ),
-            array_filter(
-                explode('-', $entree['codes_postaux']),
-                fn (string $codePostal) => !empty($codePostal)
-            ),
-        );
+            // Affectation des zones de compétences : comme un même établissement peut apparaître plusieurs fois, à sa première
+            // apparition, on initialise ses codes postaux de compétence avec la liste associée qu'on étendra sur les apparitions
+            // suivantes
+            $competences = array_map(
+                fn (string $codePostal) => $this->em->getRepository(GeoCodePostal::class)->getOrCreate(
+                    $codePostal,
+                    $commune
+                ),
+                array_filter(
+                    explode('-', $entree['codes_postaux']),
+                    fn (string $codePostal) => !empty($codePostal)
+                ),
+            );
 
-        if (!isset($this->etablissementVus[$etablissement->getNom()])) {
-            $etablissement->setCompetences($competences);
-        } else {
-            $etablissement->ajouterCompetences($competences);
+            if (!isset($this->etablissementVus[$etablissement->getNom()])) {
+                $etablissement->setCompetences($competences);
+            } else {
+                $etablissement->ajouterCompetences($competences);
+            }
+
+            $this->etablissementVus[$etablissement->getNom()] = true;
+
+            $this->em->persist($etablissement);
+            $this->em->flush();
+
+            return true;
         }
 
-        $this->etablissementVus[$etablissement->getNom()] = true;
 
-        $this->em->persist($etablissement);
-        $this->em->flush();
-
-        return true;
+        return false;
     }
 }

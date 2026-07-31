@@ -1,6 +1,6 @@
 import "@/apps/_init.ts";
-import { Chargement } from "@/common/composants/dsfr/Chargement";
 import "@/style/agents.css";
+import { Chargement } from "@common/composants/dsfr/Chargement";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Link, LinkProps, RouterProvider } from "@tanstack/react-router";
 import React, { JSX, StrictMode } from "react";
@@ -9,11 +9,11 @@ import { queryClient } from "./query";
 
 import { container } from "./container";
 
-import { ErreurComposant } from "@/common/composants/erreur/ErreurComposant.tsx";
-import { NonTrouveComposant } from "@/common/composants/erreur/NonTrouveComposant.tsx";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
+import { ErreurComposant } from "@common/composants/erreur/ErreurComposant.tsx";
+import { NonTrouveComposant } from "@common/composants/erreur/NonTrouveComposant.tsx";
 import * as Sentry from "@sentry/react";
 import { Provider } from "inversify-react";
 import ReactDOM from "react-dom/client";

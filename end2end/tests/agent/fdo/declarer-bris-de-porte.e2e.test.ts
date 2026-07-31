@@ -1,4 +1,4 @@
-import {test, expect} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 import {connexionAgent, getTitre} from "../../helpers";
 
 test("FDO - Gendarme - déclarer bris de porte", async ({browser}) => {

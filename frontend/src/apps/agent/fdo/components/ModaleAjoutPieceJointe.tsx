@@ -1,4 +1,4 @@
-import { DeclarationFDOBrisPorte } from "@/apps/agent/fdo/models/DeclarationFDOBrisPorte.ts";
+import { DeclarationFDOBrisPorte } from "@fdo/modeles/DeclarationFDOBrisPorte.ts";
 import { Document, DocumentType } from "@/common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";

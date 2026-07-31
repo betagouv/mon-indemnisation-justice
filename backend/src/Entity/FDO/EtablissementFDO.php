@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Adresse;
+use MonIndemnisationJustice\Entity\AffectationAgentFDO;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Repository\EtablissementFDORepository;
 use Symfony\Component\Uid\Uuid;
@@ -30,7 +31,7 @@ class EtablissementFDO
     protected string $nom;
 
     #[ORM\Column(type: 'string', length: 16)]
-    protected ?string $identifiant = null;
+    protected string $identifiant;
 
     #[ORM\OneToOne(Adresse::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -53,6 +54,10 @@ class EtablissementFDO
 
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     protected ?string $courriel = null;
+
+    #[ORM\OneToMany(targetEntity: AffectationAgentFDO::class, mappedBy: 'etablissement', cascade: ['detach'])]
+    /** @var Collection<AffectationAgentFDO> */
+    protected Collection $affectations;
 
     public function __construct()
     {
@@ -157,12 +162,12 @@ class EtablissementFDO
         return $this;
     }
 
-    public function getIdentifiant(): ?string
+    public function getIdentifiant(): string
     {
         return $this->identifiant;
     }
 
-    public function setIdentifiant(?string $identifiant): EtablissementFDO
+    public function setIdentifiant(string $identifiant): EtablissementFDO
     {
         $this->identifiant = $identifiant;
 
@@ -179,5 +184,14 @@ class EtablissementFDO
         $this->telephone = $telephone;
 
         return $this;
+    }
+
+    public function getAffectations(bool $uniquementActives = true): Collection
+    {
+        if ($uniquementActives) {
+            return $this->affectations->filter(fn (AffectationAgentFDO $affectation) => $affectation->estActive());
+        }
+
+        return $this->affectations;
     }
 }

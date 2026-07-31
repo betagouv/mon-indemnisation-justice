@@ -1,6 +1,6 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import { Agent, DossierDetail, EtatDossier } from "@common/models";
 import { plainToInstance } from "class-transformer";
-import { Agent, DossierDetail, EtatDossier } from "@/common/models";
 
 const demarrerInstruction = async ({ dossier }: { dossier: DossierDetail }) => {
   const response = await fetch(

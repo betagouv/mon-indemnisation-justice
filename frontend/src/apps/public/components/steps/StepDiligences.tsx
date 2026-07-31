@@ -1,20 +1,33 @@
-import React from "react";
-import { useForm } from "@tanstack/react-form";
+import {
+  critereDiligences,
+  saveCritere,
+} from "@/apps/public/services/eligibiliteStore";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { FormRadioButtons } from "@/apps/requerant/composants/champs/form/FormRadioButtons.tsx";
+import { FormRadioButtons } from "@common/composants/dsfr/champs/form/FormRadioButtons.tsx";
+import { useForm } from "@tanstack/react-form";
+import { useInjection } from "inversify-react";
+import React from "react";
 import { SchemaEtapeDiligences } from "../formulaires/eligibilite.schemas";
-import { saveCritere, critereDiligences } from "@/apps/public/services/eligibiliteStore";
 import type { StepProps } from "../types";
 import { NavButtons } from "./NavButtons";
-import { useInjection } from "inversify-react";
-import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 
-export function StepDiligences({ onPrecedent, onSuivant, onAnnuler, isLastStep, test }: StepProps) {
-  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
+export function StepDiligences({
+  onPrecedent,
+  onSuivant,
+  onAnnuler,
+  isLastStep,
+  test,
+}: StepProps) {
+  const manager = useInjection<TestEligibiliteManagerInterface>(
+    TestEligibiliteManagerInterface.$,
+  );
 
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeDiligences },
-    defaultValues: { preuvesDiligences: test?.preuvesDiligences } as { preuvesDiligences?: boolean },
+    defaultValues: { preuvesDiligences: test?.preuvesDiligences } as {
+      preuvesDiligences?: boolean;
+    },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
         manager.modifier({ preuvesDiligences: value.preuvesDiligences });
@@ -27,12 +40,15 @@ export function StepDiligences({ onPrecedent, onSuivant, onAnnuler, isLastStep, 
   return (
     <>
       <p>
-        L'appréciation du caractère raisonnable de la durée d’une procédure tient compte du comportement des parties.
+        L'appréciation du caractère raisonnable de la durée d’une procédure
+        tient compte du comportement des parties.
       </p>
       <div className="fr-callout fr-mb-3w">
         <p className="fr-text--sm fr-mb-0">
-          Exemples : relances auprès du greffe, demandes d’information sur l’avancement de la procédure, demandes de fixation d’audience, courriers adressés à la juridiction 
-          ou tout autre échange relatif au traitement de l’affaire.
+          Exemples : relances auprès du greffe, demandes d’information sur
+          l’avancement de la procédure, demandes de fixation d’audience,
+          courriers adressés à la juridiction ou tout autre échange relatif au
+          traitement de l’affaire.
         </p>
       </div>
       <form
@@ -70,7 +86,10 @@ export function StepDiligences({ onPrecedent, onSuivant, onAnnuler, isLastStep, 
           )}
         />
         <formulaire.Subscribe
-          selector={(state) => ({ preuvesDiligences: state.values.preuvesDiligences, showError: state.isDirty || state.submissionAttempts > 0 })}
+          selector={(state) => ({
+            preuvesDiligences: state.values.preuvesDiligences,
+            showError: state.isDirty || state.submissionAttempts > 0,
+          })}
           children={({ preuvesDiligences, showError }) =>
             showError && preuvesDiligences === undefined ? (
               <Alert
@@ -81,7 +100,11 @@ export function StepDiligences({ onPrecedent, onSuivant, onAnnuler, isLastStep, 
             ) : null
           }
         />
-        <NavButtons onPrecedent={onPrecedent} onAnnuler={onAnnuler} isLastStep={isLastStep} />
+        <NavButtons
+          onPrecedent={onPrecedent}
+          onAnnuler={onAnnuler}
+          isLastStep={isLastStep}
+        />
       </form>
     </>
   );

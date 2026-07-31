@@ -1,5 +1,5 @@
-import { EditeurDocument } from "@/apps/agent/fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { Loader } from "@/common/composants/Loader.tsx";
+import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
+import { Loader } from "@common/composants/Loader.tsx";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
@@ -12,10 +12,10 @@ import React, {
   useState,
 } from "react";
 
-import { ChampPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe";
-import { TelechargerPieceJointe } from "@/apps/agent/fip6/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
-import { Agent, Document, DossierDetail, EtatDossier } from "@/common/models";
-import { DocumentManagerInterface } from "@/common/services/agent/document.ts";
+import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
+import { Agent, Document, DossierDetail, EtatDossier } from "@common/models";
+import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
@@ -30,7 +30,7 @@ const _modale = createModal({
   isOpenedByDefault: false,
 });
 
-// TODO tenter d'utiliser @/common/composants/ListeEtapes.tsx;
+// TODO tenter d'utiliser @common/composants/ListeEtapes.tsx;
 
 type IdEtape =
   | "EDITION_COURRIER"
