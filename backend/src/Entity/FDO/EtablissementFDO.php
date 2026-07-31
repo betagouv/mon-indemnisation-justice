@@ -55,7 +55,7 @@ class EtablissementFDO
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     protected ?string $courriel = null;
 
-    #[ORM\OneToMany(targetEntity: AffectationAgentFDO::class, mappedBy: 'agent', cascade: ['detach'])]
+    #[ORM\OneToMany(targetEntity: AffectationAgentFDO::class, mappedBy: 'etablissement', cascade: ['detach'])]
     /** @var Collection<AffectationAgentFDO> */
     protected Collection $affectations;
 

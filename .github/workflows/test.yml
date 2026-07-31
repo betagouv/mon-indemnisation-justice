@@ -266,31 +266,35 @@ jobs:
         with:
           firefox-version: 'latest-esr'
 
-      - name: Build frontend assets
+      - name: Générer les scripts frontend
         run: |
           yarn install --no-progress --non-interactive --frozen-lockfile
           yarn build --outDir=../backend/public/build --base=/build
         working-directory: frontend
 
-      - name: Install Puppeteer & DSFR
+      - name: Installer Puppeteer & le DSFR
         run: yarn install
         working-directory: backend
 
-      - name: Run migration
+      - name: Jouer les migrations de base de données
         run: bin/console -e test doctrine:migrations:migrate --no-interaction --all-or-nothing
         working-directory: backend
 
-      - name: Load data fixtures
+      - name: Charger les données de test
         run: bin/console -e test -n doctrine:fixture:load --purge-with-truncate
         working-directory: backend
 
-      - name: Run backend unit tests
+      - name: Valider le schéma de données
+        run: bin/console -e test -n doctrine:schema:validate -q -n
+        working-directory: backend
+
+      - name: Lancer les tests unitaires
         run: bin/phpunit --log-junit test-result-backend.xml
         working-directory: backend
         env:
           FIREFOX_PATH: ${{ steps.setup-firefox.outputs.firefox-path }}
 
-      - name: Report backend test result
+      - name: Reporter le résultat des tests
         if: ${{ !cancelled() }}
         uses: dorny/test-reporter@v2
         with:
