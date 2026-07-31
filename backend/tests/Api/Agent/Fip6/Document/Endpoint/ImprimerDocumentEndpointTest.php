@@ -3,15 +3,16 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Document\Endpoint;
 
 use League\Flysystem\FilesystemOperator;
+use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Document\ImprimerDocumentEndpoint;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Document\ImprimerDocumentEndpoint
  */
+#[CoversClass(ImprimerDocumentEndpoint::class)]
 class ImprimerDocumentEndpointTest extends AbstractEndpointTestCase
 {
     protected FilesystemOperator $storage;

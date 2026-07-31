@@ -359,6 +359,7 @@ class Agent implements UserInterface
                 ->setAgent($this)
                 ->setDateAffectation($date ?? new \DateTimeImmutable())
         );
+        $this->estExempteAffectation = false;
 
         return $this;
     }

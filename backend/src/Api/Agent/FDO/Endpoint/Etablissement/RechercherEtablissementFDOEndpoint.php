@@ -40,10 +40,12 @@ class RechercherEtablissementFDOEndpoint
 
         return new JsonResponse(
             $this->normalizer->normalize(
-                array_map(
-                    fn (EtablissementFDO $etablissmeent) => EtablissementFDOOutput::depuisEtablissementFDO($etablissmeent),
-                    $etablissements
-                ),
+                [
+                    'resultats' => array_map(
+                        fn (EtablissementFDO $etablissmeent) => EtablissementFDOOutput::depuisEtablissementFDO($etablissmeent),
+                        $etablissements
+                    ),
+                ],
                 'json'
             )
         );

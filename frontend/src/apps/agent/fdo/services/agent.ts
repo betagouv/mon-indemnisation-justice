@@ -58,10 +58,11 @@ export class APIAgentManager implements AgentManagerInterface {
         }).toString(),
     );
 
-    const data: { id: string; nom: string; identifiant: string }[] =
-      await reponse.json();
+    const data: {
+      resultats: { id: string; nom: string; identifiant: string }[];
+    } = await reponse.json();
 
-    return plainToInstance(EtablissementFDO, data);
+    return plainToInstance(EtablissementFDO, data.resultats);
   }
 
   async attribuerEtablissement({

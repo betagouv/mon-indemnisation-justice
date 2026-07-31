@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
     message: "Vous devez être connecté en tant qu'agent des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
-class AttribuerEtablissementEndpoint
+class AffecterEtablissementEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
@@ -32,10 +32,19 @@ class AttribuerEtablissementEndpoint
 
     public function __invoke(
         #[MapRequestPayload]
-        AttribuerEtablissementInput $input,
+        AffecterEtablissementInput $input,
         Security $security,
         Request $request,
     ) {
+        if (false === $input->estExempt) {
+            if (null === $input->etablissement) {
+                throw new BadRequestHttpException("L'établissement doit être renseigné");
+            }
+            if (null === $input->dateAffectation) {
+                throw new BadRequestHttpException("La date d'affectation doit être renseignéee");
+            }
+        }
+
         /** @var Agent $agent */
         $agent = $security->getUser();
 
@@ -43,6 +52,7 @@ class AttribuerEtablissementEndpoint
             $agent->setExempteAffectation(true);
         } else {
             $etablissement = $input->etablissement ? $this->em->getRepository(EtablissementFDO::class)->find($input->etablissement) : null;
+
             if (null === $etablissement) {
                 throw new BadRequestHttpException('Etablissement inconnu');
             }

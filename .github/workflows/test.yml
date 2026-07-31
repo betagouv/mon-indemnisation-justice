@@ -93,6 +93,16 @@ jobs:
                     "siret": "15700001900461"
                   },
                   {
+                    "_title": "Intérieur",
+                    "sub": "93e13c04-03af-4a54-9746-2946221cbab4",
+                    "email": "interieur@interieur.gouv.fr",
+                    "given_name": "Alain",
+                    "usual_name": "Thérieur",
+                    "uid": "8424",
+                    "idp_id": "ee89db94-64de-4e14-b31a-e93ed3ab1168",
+                    "siret": "11001401600015"
+                  },
+                  {
                     "_title": "Gestion agents",
                     "sub": "4c656917-66f8-4f14-a413-49ef964d2bf3",
                     "email": "gestion-agents@justice.gouv.fr",

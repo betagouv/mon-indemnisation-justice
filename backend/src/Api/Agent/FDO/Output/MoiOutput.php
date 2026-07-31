@@ -37,8 +37,10 @@ class MoiOutput
             administration: $agent->getAdministration()->getType(),
             roles: $agent->getRoles(),
             dateCreation: $agent->getDateCreation(),
-            affectations: $agent->estExempteAffectation() ? false : $agent->getAffectations()
-                ->map(fn (AffectationAgentFDO $affectation) => AffectationAgentFDOOutput::depuisAffectation($affectation))->toArray(),
+            affectations: $agent->estExempteAffectation() ?
+                false :
+                $agent->getAffectations()
+                    ->map(fn (AffectationAgentFDO $affectation) => AffectationAgentFDOOutput::depuisAffectation($affectation))->toArray(),
         );
     }
 }
