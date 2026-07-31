@@ -1,7 +1,7 @@
 import { ModalProps } from "@codegouvfr/react-dsfr/Modal";
 import { fr } from "@codegouvfr/react-dsfr/src/fr";
 import { cx } from "@codegouvfr/react-dsfr/src/tools/cx.ts";
-import { onDSFRPret } from "@common/services/dsfr";
+import { dsfr } from "@common/services/dsfr";
 import React, {
   ForwardedRef,
   forwardRef,
@@ -43,21 +43,21 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
     useEffect(() => {
       if (ouverte) {
         // On doit laisser le temps à la lib JS du DSFR de se charger avant de lancer l'ouvertue de la modale
-        onDSFRPret(() =>
-          window.dsfr(document.getElementById(id)).modal.disclose(),
-        );
+        dsfr(document.getElementById(id))
+          .then((dsfr) => dsfr?.modal.disclose())
+          .catch((e) => console.error(e));
       }
     }, []);
 
     useImperativeHandle(ref, () => ({
       ouvrir: () =>
-        onDSFRPret(() =>
-          window.dsfr(document.getElementById(id)).modal.disclose(),
-        ),
+        dsfr(document.getElementById(id))
+          .then((dsfr) => dsfr?.modal.disclose())
+          .catch((e) => console.error(e)),
       fermer: () =>
-        onDSFRPret(() =>
-          window.dsfr(document.getElementById(id)).modal.conceal(),
-        ),
+        dsfr(document.getElementById(id))
+          .then((dsfr) => dsfr?.modal.conceal())
+          .catch((e) => console.error(e)),
     }));
 
     return (

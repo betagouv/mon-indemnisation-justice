@@ -3,11 +3,11 @@
   "private": true,
   "module": "esnext",
   "dependencies": {
-    "playwright": "^1.62.1",
+    "playwright": "^1.59.1",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1",
+    "@playwright/test": "^1.59.1",
     "@types/node": "^25.6.0"
   }
 }
