@@ -51,7 +51,7 @@ class GeoCommune extends GeoDataEntity
         return $this;
     }
 
-    public function getDepartement(): GeoDepartement
+    public function getDepartement(): ?GeoDepartement
     {
         return $this->departement;
     }
