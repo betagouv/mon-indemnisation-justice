@@ -10,7 +10,7 @@ use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\GeoRegion;
 
-class GeoFixtures extends Fixture
+class GeoFixture extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
@@ -90,6 +90,11 @@ class GeoFixtures extends Fixture
                 ->setCode('35')
                 ->setNom('Ille-et-Vilaine')
                 ->setDeploye(true),
+            'morbihan' => new GeoDepartement()
+                ->setRegion($this->getReference('region-bretagne', GeoRegion::class))
+                ->setCode('56')
+                ->setNom('Morbihan')
+                ->setDeploye(true),
             'loire-atlantique' => new GeoDepartement()
                 ->setRegion($this->getReference('region-pdl', GeoRegion::class))
                 ->setCode('44')
@@ -109,34 +114,46 @@ class GeoFixtures extends Fixture
     protected function chargerCommunes(ObjectManager $manager): void
     {
         foreach ([
-            'bourgoin' => (new GeoCommune())
+            'bourgoin' => new GeoCommune()
                 ->setCode('38053')
                 ->setNom('Bourgoin-Jallieu')
                 ->setDepartement($this->getReference('departement-isere', GeoDepartement::class)),
-            'vitre' => (new GeoCommune())
+            'vitre' => new GeoCommune()
                 ->setCode('35360')
                 ->setNom('Vitré')
                 ->setDepartement($this->getReference('departement-ille-et-vilaine', GeoDepartement::class)),
-            'melun' => (new GeoCommune())
+            'melun' => new GeoCommune()
                 ->setCode('77288')
                 ->setNom('Melun')
                 ->setDepartement($this->getReference('departement-seine-et-marne', GeoDepartement::class)),
-            'aix-en-provence' => (new GeoCommune())
+            'aix-en-provence' => new GeoCommune()
                 ->setCode('13001')
                 ->setNom('Aix-en-Provence')
                 ->setDepartement($this->getReference('departement-bouches-du-rhone', GeoDepartement::class)),
-            'saint-malo' => (new GeoCommune())
+            'saint-malo' => new GeoCommune()
                 ->setCode('35288')
                 ->setNom('Saint-Malo')
                 ->setDepartement($this->getReference('departement-ille-et-vilaine', GeoDepartement::class)),
-            'ancenis' => (new GeoCommune())
+            'ancenis' => new GeoCommune()
                 ->setCode('44003')
                 ->setNom('Ancenis-Saint-Géréon')
                 ->setDepartement($this->getReference('departement-loire-atlantique', GeoDepartement::class)),
-            'istres' => (new GeoCommune())
+            'istres' => new GeoCommune()
                 ->setCode('13047')
                 ->setNom('Istres')
-                ->setDepartement($this->getReference('departement-loire-atlantique', GeoDepartement::class)),
+                ->setDepartement($this->getReference('departement-bouches-du-rhone', GeoDepartement::class)),
+            'provins' => new GeoCommune()
+                ->setCode('77379')
+                ->setNom('Provins')
+                ->setDepartement($this->getReference('departement-seine-et-marne', GeoDepartement::class)),
+            'paris20' => new GeoCommune()
+                ->setCode('75120')
+                ->setNom('Paris 20e')
+                ->setDepartement($this->getReference('departement-paris', GeoDepartement::class)),
+            'auray' => new GeoCommune()
+                ->setCode('56007')
+                ->setNom('Auray')
+                ->setDepartement($this->getReference('departement-morbihan', GeoDepartement::class)),
         ] as $reference => $commune) {
             $manager->persist($commune);
             $this->addReference("commune-{$reference}", $commune);
@@ -164,6 +181,15 @@ class GeoFixtures extends Fixture
             '13800' => new GeoCodePostal()
                 ->setCommune($this->getReference('commune-istres', GeoCommune::class))
                 ->setCodePostal('13800'),
+            '75020' => new GeoCodePostal()
+                ->setCommune($this->getReference('commune-paris20', GeoCommune::class))
+                ->setCodePostal('75020'),
+            '77160' => new GeoCodePostal()
+                ->setCommune($this->getReference('commune-provins', GeoCommune::class))
+                ->setCodePostal('77160'),
+            '56400' => new GeoCodePostal()
+                ->setCommune($this->getReference('commune-auray', GeoCommune::class))
+                ->setCodePostal('56400'),
         ] as $reference => $codePostal) {
             $manager->persist($codePostal);
             $this->addReference("code-postal-{$reference}", $codePostal);
