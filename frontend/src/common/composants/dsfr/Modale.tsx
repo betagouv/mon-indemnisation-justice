@@ -50,12 +50,14 @@ export const Modale = forwardRef<ModaleRef, ModaleProps>(
     }, []);
 
     useImperativeHandle(ref, () => ({
-      ouvrir: () => {
-        window.dsfr(document.getElementById(id)).modal.disclose();
-      },
-      fermer: () => {
-        window.dsfr(document.getElementById(id)).modal.conceal();
-      },
+      ouvrir: () =>
+        onDSFRPret(() =>
+          window.dsfr(document.getElementById(id)).modal.disclose(),
+        ),
+      fermer: () =>
+        onDSFRPret(() =>
+          window.dsfr(document.getElementById(id)).modal.conceal(),
+        ),
     }));
 
     return (

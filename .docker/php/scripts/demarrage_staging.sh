@@ -13,16 +13,10 @@ if [ -z "${INSTANCE_NUMBER}" ] || [ ${INSTANCE_NUMBER} == '0' ]; then
     echo "DROP TABLE IF EXISTS $table CASCADE" | psql "${DATABASE_URL/\?*/}";
   done
 
-  # Afficher la liste des tables
-  echo "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name <> 'spatial_ref_sys'"  | psql -t "${DATABASE_URL/\?*/}" ;
-
-  # 2: run Doctrine migrations
+  # 2: jouer les migrations Doctrine
   "${ROOT}/bin/console" doctrine:migration:migrate --no-interaction --all-or-nothing;
 
-  # Afficher la liste des tables
-  echo "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' and table_type = 'BASE TABLE' and table_name <> 'spatial_ref_sys'"  | psql -t "${DATABASE_URL/\?*/}" ;
-
-  # 3 : provision agents
+  # 3: charger les données de test
   psql "${DATABASE_URL/\?*/}" << EOF
 insert into agents (email, nom, prenom, roles, identifiant, uid, administration_code, est_valide, date_creation) values
     ('gestion1@mailou.org', 'Un', 'Gestion', 'ROLE_AGENT,ROLE_AGENT_GESTION_PERSONNEL', '28e1857f-26f6-4988-8d01-d984f46dab6e', '0101', 'MJ', true, now() - interval '1 day'),
