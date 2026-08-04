@@ -82,35 +82,6 @@ export function StepDateDecision({
         </div>
       </div>
 
-      <p
-        className="fr-text--sm fr-mt-2w"
-        style={{ color: "var(--text-default-info)" }}
-      >
-        <span
-          className="fr-icon-information-line fr-icon--sm"
-          aria-hidden="true"
-        />{" "}
-        La prescription est quadriennale : vous disposez de 4 ans à compter du
-        1er janvier de l'année suivant celle de la décision pour agir.
-      </p>
-
-      <Accordion
-        label="Référence juridique et exemple"
-        className="fr-mt-2w fr-mb-2w"
-      >
-        <div className="fr-callout">
-          <p className="fr-text--sm">
-            Référence juridique : Art. 1er, loi n°68-1250 du 31/12/1968 — Civ.
-            1re, 15/06/2017, n°16-18.769
-          </p>
-          <p className="fr-text--sm fr-mb-0">
-            Exemple : Décision rendue le 15 mars {annee} → délai du 1er janvier{" "}
-            {annee + 1} au 31 décembre {annee + 4}. Au 1er janvier {annee + 5},
-            l'action est prescrite.
-          </p>
-        </div>
-      </Accordion>
-
       <formulaire.Subscribe
         selector={(state) => ({
           dateDecision: state.values.dateDecision,
@@ -135,7 +106,7 @@ export function StepDateDecision({
                 title={
                   prescription.rempli
                     ? "Vous êtes dans les délais"
-                    : "Le délai de prescription dépassé"
+                    : "Le délai de prescription est dépassé"
                 }
                 description={prescription.detail}
               />
@@ -144,6 +115,36 @@ export function StepDateDecision({
           return null;
         }}
       />
+
+      <p
+        className="fr-text--sm fr-mt-2w"
+        style={{ color: "var(--text-default-info)" }}
+      >
+        <span
+          className="fr-icon-information-line fr-icon--sm"
+          aria-hidden="true"
+        />{" "}
+        La prescription est quadriennale : vous disposez de 4 ans à compter du
+        1er janvier de l'année suivant celle de la décision pour effectuer une
+        demande d'indemnisation suite à un délai déraisonnable de procédure.
+      </p>
+
+      <Accordion
+        label="Référence juridique et exemple"
+        className="fr-mt-2w fr-mb-2w"
+      >
+        <div className="fr-callout">
+          <p className="fr-text--sm">
+            Référence juridique : Art. 1er, loi n°68-1250 du 31/12/1968 — Civ.
+            1re, 15/06/2017, n°16-18.769
+          </p>
+          <p className="fr-text--sm fr-mb-0">
+            Exemple : Décision rendue le 15 mars {annee} → délai du 1er janvier{" "}
+            {annee + 1} au 31 décembre {annee + 4}. Au 1er janvier {annee + 5},
+            l'action est prescrite.
+          </p>
+        </div>
+      </Accordion>
 
       {dateDecision && !prescription.rempli && onRetour ? (
         <BlockedNavButtons onRetour={onRetour} />

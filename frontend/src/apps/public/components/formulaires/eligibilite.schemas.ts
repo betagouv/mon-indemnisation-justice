@@ -12,7 +12,6 @@ const valeursTypeDecision = [
 const valeursPieceProcedure = [
   PieceProcedure.ActeIntroductif,
   PieceProcedure.Ecritures,
-  PieceProcedure.Convocations,
   PieceProcedure.Echanges,
   PieceProcedure.DocumentsProcedure,
 ] as const;

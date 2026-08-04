@@ -39,7 +39,7 @@ class TestEligibiliteDysfonctionnementInput
     #[Assert\Count(min: 1, minMessage: 'Veuillez sélectionner au moins une pièce de procédure')]
     #[Assert\All([
         new Assert\Choice(
-            choices: ['acte_introductif', 'ecritures', 'convocations', 'echanges', 'documents_procedure'],
+            choices: ['acte_introductif', 'ecritures', 'echanges', 'documents_procedure'],
             message: 'Pièce de procédure invalide'
         ),
     ])]
