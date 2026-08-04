@@ -30,7 +30,7 @@ function TestEligibiliteRoute() {
         homeLinkProps={{ href: "/" }}
         segments={[
           {
-            label: "Déclarer un déni de justice",
+            label: "Déclarer un délai déraisonnable de procédure",
             linkProps: { to: "/dysfonctionnement/tester-mon-eligibilite/" },
           },
         ]}
@@ -39,7 +39,7 @@ function TestEligibiliteRoute() {
       <h1>Test d'éligibilité</h1>
 
       <p className="fr-mb-3w">
-       Ce test vous permet de vérifier si votre situation est susceptible de relever d’un déni de justice et de faire l’objet d’une demande de réparation.
+       Ce test vous permet de vérifier si votre situation est susceptible de relever d’un délai déraisonnable de procédure et de faire l’objet d’une demande de réparation.
        Répondez aux questions suivantes pour poursuivre votre démarche. 
       </p>
 
@@ -48,12 +48,12 @@ function TestEligibiliteRoute() {
           <Alert
             className="fr-mb-3w"
             severity="error"
-            title="Vous ne pouvez pas poursuivre le test d’éligibilité."
+            title="Vous n’êtes pas éligible à déposer un dossier."
             description={
               <>
                 <p>La procédure concernée par votre demande est toujours en cours.</p>
                 <p>
-                  Une demande de réparation au titre d’un déni de justice ne peut être déposée qu’après que la juridiction concernée a statué.
+                  Une demande de réparation au titre d’un délai déraisonnable de procédure ne peut être déposée qu’après que la juridiction concernée a statué.
                 </p>
                 <p>
                   Vous pourrez renouveler votre démarche une fois la décision rendue.

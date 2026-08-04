@@ -23,7 +23,7 @@ function ResultatEligibiliteRoute() {
         homeLinkProps={{ href: "/" }}
         segments={[
           {
-            label: "Déclarer un déni de justice",
+            label: "Déclarer un délai déraisonnable de procédure",
             linkProps: { to: "/dysfonctionnement/tester-mon-eligibilite/" },
           },
         ]}
@@ -41,7 +41,6 @@ function ResultatEligibiliteRoute() {
       </div>
 
       <h1>Résultat du test d'éligibilité</h1>
-      <p className="fr-mb-3w">Synthèse de vos réponses et éligibilité préliminaire.</p>
 
       <div
         className="fr-mb-3w"
@@ -83,10 +82,10 @@ function ResultatEligibiliteRoute() {
         <Alert
           className="fr-mb-3w"
           severity={eligible ? "success" : "error"}
-          title={eligible ? "Demande éligible" : "Demande non éligible en l'état"}
+          title={eligible ? "Vous pouvez déposer votre dossier" : "Demande non éligible en l'état"}
           description={
             eligible
-              ? "Votre demande semble recevable. Constituez votre dossier."
+              ? undefined
               : "Un ou plusieurs critères ne sont pas remplis. Consultez le détail ci-dessus."
           }
         />

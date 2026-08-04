@@ -23,7 +23,7 @@ function DiligencesRoute() {
         homeLinkProps={{ href: "/" }}
         segments={[
           {
-            label: "Déclarer un déni de justice",
+            label: "Déclarer un délai déraisonnable de procédure",
             linkProps: { to: "/dysfonctionnement/tester-mon-eligibilite/" },
           },
         ]}
