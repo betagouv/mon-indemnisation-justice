@@ -66,6 +66,11 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     protected Personne $personne;
 
+    // Présence d'un avocat rattaché = usager avocat.
+    #[ORM\OneToOne(targetEntity: Avocat::class)]
+    #[ORM\JoinColumn(name: 'avocat_id', referencedColumnName: 'numero_cnbf', nullable: true)]
+    protected ?Avocat $avocat = null;
+
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $navigation = null;
 
@@ -268,6 +273,18 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isPersonneMorale(): bool
+    {
+        return $this->isPersonneMorale;
+    }
+
+    public function setIsPersonneMorale(bool $isPersonneMorale): static
+    {
+        $this->isPersonneMorale = $isPersonneMorale;
+
+        return $this;
+    }
+
     public function getPersonne(): Personne
     {
         return $this->personne;
@@ -278,6 +295,23 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         $this->personne = $personne;
 
         return $this;
+    }
+
+    public function getAvocat(): ?Avocat
+    {
+        return $this->avocat;
+    }
+
+    public function setAvocat(?Avocat $avocat): static
+    {
+        $this->avocat = $avocat;
+
+        return $this;
+    }
+
+    public function estAvocat(): bool
+    {
+        return null !== $this->avocat;
     }
 
     public function getDernierDossier(): ?Dossier
