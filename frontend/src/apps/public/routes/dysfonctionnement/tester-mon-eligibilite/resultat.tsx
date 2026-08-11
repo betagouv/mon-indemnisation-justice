@@ -3,7 +3,7 @@ import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Layout } from "@/apps/public/components/Layout";
-import { REQUERANT_URL, usePublicNavigate } from "@/apps/public/routeur";
+import { usePublicNavigate } from "@/apps/public/routeur";
 import { TOTAL_STEPS } from "@/apps/public/components/steps";
 import { getCriteres, clearCriteres } from "@/apps/public/services/eligibiliteStore";
 import { createFileRoute } from "@tanstack/react-router";
@@ -108,7 +108,7 @@ function ResultatEligibiliteRoute() {
             children: "Recommencer le test",
           },
           {
-            linkProps: { href: REQUERANT_URL },
+            onClick: () => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/inscription" }),
             children: "Déposer un dossier",
           },
         ]}
