@@ -18,7 +18,8 @@ export type PublicPath =
   | "/dysfonctionnement/tester-mon-eligibilite/3-type-decision"
   | "/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure"
   | "/dysfonctionnement/tester-mon-eligibilite/5-diligences"
-  | "/dysfonctionnement/tester-mon-eligibilite/resultat";
+  | "/dysfonctionnement/tester-mon-eligibilite/resultat"
+  | "/dysfonctionnement/tester-mon-eligibilite/inscription";
 
 // Le routeur public n'est pas enregistré dans le Register global de TanStack Router
 // (le routeur requerant y est déjà). Sans enregistrement, les search params sont inférés
