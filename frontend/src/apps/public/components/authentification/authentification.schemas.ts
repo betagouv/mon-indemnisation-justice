@@ -7,6 +7,9 @@ export type AvocatTrouve = {
   nom: string;
   prenom: string;
   raisonSociale: string | null;
+  civilite: "M" | "MME" | null;
+  telephone: string | null;
+  email: string | null;
   barreau: Barreau;
 };
 
