@@ -47,6 +47,13 @@ class OidcClient
         protected readonly CacheInterface $cache,
         protected readonly array $context = [],
         protected readonly ?string $logoutRoute = null,
+        // Uniquement en dev, contre le mock OIDC (cf. .env.dev/OIDC_MOCK_PUBLIC_HOST) : `wellKnownUrl` pointe vers
+        // le mock via le nom du service Docker ("idconnect", résoluble par Symfony mais pas par le navigateur).
+        // `jwks_uri`/`token_endpoint`/`userinfo_endpoint` sont appelés côté serveur (par Symfony) et doivent donc
+        // garder ce même hôte ; seule `authorization_endpoint`, elle, est un lien suivi par le navigateur et doit
+        // pointer vers un hôte que celui-ci peut atteindre — d'où la substitution ciblée dans `buildAuthorizeUrl()`
+        // plutôt qu'un header `X-Forwarded-Host` sur la requête de découverte, qui réécrirait les 4 URLs à la fois.
+        protected readonly ?string $publicHost = null,
     ) {
         $this->client = new HttpClient([]);
         $this->sessionKey = sprintf('_oidc_authentication_%s', sha1($this->wellKnownUrl));
@@ -68,7 +75,7 @@ class OidcClient
 
         return sprintf(
             '%s?%s',
-            $this->configuration['authorization_endpoint'],
+            $this->withPublicHost($this->configuration['authorization_endpoint']),
             http_build_query(
                 array_merge(
                     [
@@ -261,5 +268,26 @@ class OidcClient
     protected function getRedirectUri(?string $redirectRoute = null): string
     {
         return $this->urlGenerator->generate(null !== $redirectRoute && in_array($redirectRoute, $this->loginCheckRoutes) ? $redirectRoute : $this->loginCheckRoutes[0], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
+    }
+
+    /**
+     * Remplace l'hôte d'une URL du fournisseur OIDC par `publicHost`, si défini (cf. constructeur). Utilisé
+     * uniquement pour les URLs suivies par le navigateur (authorization_endpoint, end_session_endpoint) : les
+     * appels serveur-à-serveur (jwks_uri, token_endpoint, userinfo_endpoint) gardent l'hôte d'origine.
+     */
+    protected function withPublicHost(string $url): string
+    {
+        if (null === $this->publicHost) {
+            return $url;
+        }
+
+        $composants = parse_url($url);
+
+        return sprintf(
+            '%s://%s%s',
+            $composants['scheme'] ?? 'http',
+            $this->publicHost,
+            $composants['path'] ?? ''
+        );
     }
 }

@@ -35,6 +35,7 @@ services:
       $logoutRoute: 'agent_securite_deconnexion'
       $context:
         scope: [ 'openid', 'given_name', 'usual_name', 'email', 'uid', 'siret', 'idp_id', 'custom' ]
+      $publicHost: '%env(default::OIDC_MOCK_PUBLIC_HOST)%'
 
 
   oidc_client_france_connect:
@@ -48,6 +49,7 @@ services:
       $context:
         scope: [ 'openid', 'email', 'phone_number', 'given_name', 'family_name', 'birthdate', 'gender', 'birthplace', 'birthcountry' ]
         acr_values: 'eidas1'
+      $publicHost: '%env(default::OIDC_MOCK_PUBLIC_HOST)%'
 
   MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator:
     arguments:
