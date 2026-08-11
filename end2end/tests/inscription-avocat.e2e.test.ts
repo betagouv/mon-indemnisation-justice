@@ -64,7 +64,7 @@ test.describe("inscription avocat", () => {
         await selectionnerBoutonRadio(page, "Êtes-vous déjà inscrit(e) sur la plateforme ?", "Non");
 
         // Identification par recherche dans l'annuaire (AvocatFixture : Jean MICHON, CNBF 123456, Barreau de Paris)
-        await page.getByLabel("Nom").fill("Michon");
+        await page.getByPlaceholder("Ex : Dupont").fill("Michon");
         await page.getByText(/MICHON Jean/).click();
 
         // Le formulaire n'apparaît qu'une fois l'avocat identifié — nom/prénom/barreau/CNBF sont
