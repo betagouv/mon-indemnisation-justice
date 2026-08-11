@@ -44,6 +44,8 @@ RUN yarn install
 RUN cat <<EOF > /etc/cron.d/taches-mij-job
 17 5 * * * root /app/bin/console mij:importer:geo
 31 5 * * * root /app/bin/console mij:importer:fdo
+# Annuaire des avocats / barreaux
+0 3 28 * * root /app/bin/console mij:importer:avocats
 EOF
 
 RUN chmod 0600 /etc/cron.d/taches-mij-job
