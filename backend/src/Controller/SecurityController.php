@@ -101,6 +101,14 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute('securite_connexion');
     }
 
+    #[Route('/connexion/usager/lancer', name: 'securite_usager_connexion_lancer', methods: ['GET'])]
+    public function lancerConnexionFranceConnect(Request $request, #[Autowire(service: 'oidc_client_france_connect')] OidcClient $franceConnectOidcClient): Response
+    {
+        // Pas de vérification CSRF ici : le bouton est un simple lien <a> depuis l'app React,
+        // qui ne peut pas encore poser de jeton CSRF dans un <form>.
+        return $this->redirect($franceConnectOidcClient->buildAuthorizeUrl($request, 'securite_usager_connexion'));
+    }
+
     #[Route('/deconnexion/usager', name: 'securite_usager_deconnexion', methods: ['GET'])]
     public function deconnexionFranceConnect(Security $security): Response
     {
