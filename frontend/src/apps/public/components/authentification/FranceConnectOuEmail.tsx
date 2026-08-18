@@ -21,10 +21,34 @@ export function FranceConnectOuEmail({ action, labelBoutonEmail, children }: Fra
 
   return (
     <div>
-      <LienFranceConnect action={action} />
-      <Button priority="tertiary no outline" onClick={() => setAfficherEmail(true)} nativeButtonProps={{ type: "button" }}>
-        {labelBoutonEmail}
-      </Button>
+       <div className="fr-grid-row fr-grid-row--center">
+        <div className="fr-notice fr-notice--info fr-mb-2w" style={{ width: "100%" }}>
+          <div className="fr-container">
+            <div className="fr-notice__body">
+              <p>
+                FranceConnect est la solution proposée par l’État pour sécuriser et simplifier la connexion à vos
+                services en ligne
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <LienFranceConnect action={action} />
+      </div>
+
+      <div
+        style={{ display: "flex", alignItems: "center", gap: "1rem", margin: "1.5rem 0", color: "var(--text-mention-grey)" }}
+      >
+        <hr style={{ flex: 1, border: 0, borderTop: "1px solid var(--border-default-grey)" }} />
+        ou
+        <hr style={{ flex: 1, border: 0, borderTop: "1px solid var(--border-default-grey)" }} />
+      </div>
+
+      <div className="fr-grid-row fr-grid-row--center">
+        <Button priority="secondary" size="large" onClick={() => setAfficherEmail(true)} nativeButtonProps={{ type: "button" }}>
+          {labelBoutonEmail}
+        </Button>
+      </div>
     </div>
   );
 }
