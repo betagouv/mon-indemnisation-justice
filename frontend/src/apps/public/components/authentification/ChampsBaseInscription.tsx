@@ -74,6 +74,7 @@ export function ChampsBaseInscription({
           <FormInput
             label="Nom de naissance"
             hintText="Si différent du nom d'usage"
+            className="fr-mt-3w"
             champ={field}
             nativeInputProps={{ value: field.state.value, onChange: (e: any) => field.handleChange(e.target.value) }}
           />
