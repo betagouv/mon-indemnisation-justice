@@ -9,18 +9,19 @@ import React from "react";
 //
 // `champsNomPrenom` permet à l'appelant de personnaliser le rendu des champs nom/prénom (ex : avocat, qui a besoin
 // d'un champ Nom couplé à la recherche dans l'annuaire des avocats) sans dupliquer le reste du bloc.
-// `champsAvantCgu` insère des champs supplémentaires (ex : barreau/CNBF pour l'avocat) juste avant la case CGU,
-// pour que l'acceptation des conditions reste bien le dernier geste avant validation.
+// `champsApresNomNaissance` insère des champs supplémentaires (ex : barreau/CNBF pour l'avocat) juste après le nom
+// de naissance, avant les coordonnées — ordre des champs demandé : nom/prénom, nom de naissance, [champs
+// spécifiques au profil], coordonnées, mot de passe.
 export function ChampsBaseInscription({
   formulaire,
   morale,
   champsNomPrenom,
-  champsAvantCgu,
+  champsApresNomNaissance,
 }: {
   formulaire: any;
   morale: boolean;
   champsNomPrenom?: React.ReactNode;
-  champsAvantCgu?: React.ReactNode;
+  champsApresNomNaissance?: React.ReactNode;
 }) {
   return (
     <>
@@ -42,10 +43,10 @@ export function ChampsBaseInscription({
       {champsNomPrenom ?? (
         <div className="fr-grid-row fr-grid-row--gutters">
           <formulaire.Field
-            name="prenom"
+            name="nom"
             children={(field: any) => (
               <FormInput
-                label="Prénom"
+                label="Nom"
                 className="fr-col-6"
                 champ={field}
                 estRequis
@@ -54,10 +55,10 @@ export function ChampsBaseInscription({
             )}
           />
           <formulaire.Field
-            name="nom"
+            name="prenom"
             children={(field: any) => (
               <FormInput
-                label="Nom"
+                label="Prénom"
                 className="fr-col-6"
                 champ={field}
                 estRequis
@@ -81,41 +82,46 @@ export function ChampsBaseInscription({
         )}
       />
 
-      <formulaire.Field
-        name="courriel"
-        children={(field: any) => (
-          <FormInput
-            label={morale ? "Adresse email professionnelle" : "Adresse email"}
-            champ={field}
-            estRequis
-            nativeInputProps={{
-              type: "email",
-              autoComplete: "email",
-              value: field.state.value,
-              onChange: (e: any) => field.handleChange(e.target.value),
-            }}
-          />
-        )}
-      />
+      {champsApresNomNaissance}
 
-      <formulaire.Field
-        name="telephone"
-        children={(field: any) => (
-          <FormInput
-            label={morale ? "Téléphone professionnel" : "Téléphone"}
-            champ={field}
-            estRequis
-            nativeInputProps={{
-              type: "tel",
-              autoComplete: "tel",
-              value: field.state.value,
-              onChange: (e: any) => field.handleChange(e.target.value),
-            }}
-          />
-        )}
-      />
+      <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+        <formulaire.Field
+          name="courriel"
+          children={(field: any) => (
+            <FormInput
+              label={morale ? "Adresse email professionnelle" : "Adresse email"}
+              className="fr-col-6"
+              champ={field}
+              estRequis
+              nativeInputProps={{
+                type: "email",
+                autoComplete: "email",
+                value: field.state.value,
+                onChange: (e: any) => field.handleChange(e.target.value),
+              }}
+            />
+          )}
+        />
+        <formulaire.Field
+          name="telephone"
+          children={(field: any) => (
+            <FormInput
+              label={morale ? "Téléphone professionnel" : "Téléphone"}
+              className="fr-col-6"
+              champ={field}
+              estRequis
+              nativeInputProps={{
+                type: "tel",
+                autoComplete: "tel",
+                value: field.state.value,
+                onChange: (e: any) => field.handleChange(e.target.value),
+              }}
+            />
+          )}
+        />
+      </div>
 
-      <div className="fr-grid-row fr-grid-row--gutters">
+      <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
         <formulaire.Field
           name="motDePasse"
           children={(field: any) => (
@@ -154,8 +160,6 @@ export function ChampsBaseInscription({
         />
       </div>
 
-      {champsAvantCgu}
-
       <formulaire.Field
         name="cguOk"
         children={(field: any) => {
@@ -167,8 +171,6 @@ export function ChampsBaseInscription({
 
           return (
             <Checkbox
-              // Compense la marge négative du fr-grid-row--gutters précédent (motDePasse/confirmation, ou
-              // champsAvantCgu), qui sinon colle la case CGU directement contre le bloc du dessus.
               className="fr-mt-3w"
               state={enErreur ? "error" : "default"}
               stateRelatedMessage={enErreur ? field.state.meta.errors.at(0)?.message : undefined}

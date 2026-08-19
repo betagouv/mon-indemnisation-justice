@@ -113,7 +113,6 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
                   champ={field}
                   estRequis
                   nativeInputProps={{
-                    placeholder: "Ex : Dupont",
                     // Sans ça, le navigateur peut proposer ses propres suggestions d'autocomplétion
                     autoComplete: "off",
                     value: field.state.value,
@@ -152,8 +151,8 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
             />
           </div>
         }
-        champsAvantCgu={
-          <div className="fr-grid-row fr-grid-row--gutters">
+        champsApresNomNaissance={
+          <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
             <formulaire.Field
               name="barreau"
               children={(field) => (
@@ -161,7 +160,7 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
                   key={field.state.value?.id ?? "vide"}
                   label="Barreau d'appartenance"
                   hintText=" "
-                  className="fr-col-8"
+                  className="fr-col-6"
                   champ={field}
                   estRequis
                   nativeInputProps={{
@@ -191,7 +190,7 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
                 <FormInput
                   label="Numéro CNBF"
                   hintText="6 chiffres"
-                  className="fr-col-4"
+                  className="fr-col-6"
                   champ={field}
                   estRequis
                   nativeInputProps={{
