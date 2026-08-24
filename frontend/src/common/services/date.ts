@@ -70,7 +70,12 @@ export const periode = (de: Date, a: Date | undefined = undefined): string => {
  * @param date
  */
 export const dateChiffre = function (date?: Date): string {
-  return date?.toISOString().split("T")[0] ?? "";
+  try {
+    return date?.toISOString().split("T")[0] ?? "";
+  } catch (e) {
+    // Capter l'erreur "RangeError: invalid date"
+    return "";
+  }
 };
 
 /**
