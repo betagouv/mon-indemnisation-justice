@@ -1,5 +1,4 @@
 import {
-  Agent,
   Document,
   DocumentType,
   DossierDetail,
@@ -14,6 +13,7 @@ import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejo
 import { plainToInstance } from "class-transformer";
 import { useInjection } from "inversify-react";
 import React, { useCallback, useEffect, useState } from "react";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-verifier-acceptation",
@@ -39,7 +39,7 @@ export const GenererArretePaiementModale =
     agent,
   }: {
     dossier: DossierDetail;
-    agent: Agent;
+    agent: AgentFIP6;
   }) {
     // Indique l'état de la validation en cours
     const [etatValidation, setEtatValidation]: [
@@ -238,7 +238,7 @@ export const genererArretePaiementBoutons = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): ButtonProps[] => {
   return estAVerifier({ dossier, agent })
     ? [

@@ -1,6 +1,6 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Agent, DossierDetail, Redacteur } from "@common/models";
+import { DossierDetail, Redacteur } from "@common/models";
 import {
   deciderIndemnisationBoutons,
   DeciderIndemnisationModale,
@@ -39,6 +39,7 @@ import {
   signerArretePaiementBoutons,
   SignerArretePaiementModale,
 } from "./SignerArretePaiementAction.tsx";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 export const DossierActions = function DossierActionBar({
   dossier,
@@ -49,7 +50,7 @@ export const DossierActions = function DossierActionBar({
   onTermine,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
   redacteurs: Redacteur[];
   onDecide?: () => void;
   onSigne?: () => void;

@@ -2,12 +2,13 @@ import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { Agent, DossierDetail, EtatDossierType } from "@common/models";
+import { DossierDetail, EtatDossierType } from "@common/models";
 import { dateChiffre, dateSimple } from "@common/services/date.ts";
 import { DossierManagerInterface } from "@fip6/services/dossier";
 import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-emarquer-indemnise",
@@ -19,7 +20,7 @@ const estEnAttenteIndemnisation = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): boolean =>
   dossier.etat.etat === EtatDossierType.OK_EN_ATTENTE_PAIEMENT &&
   (agent.estLiaisonBudget() || agent.instruit(dossier));
@@ -30,7 +31,7 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
   onTermine,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
   onTermine: () => void | Promise<void>;
 }) {
   const dossierManager = useInjection<DossierManagerInterface>(
@@ -120,7 +121,7 @@ export const marquerIndemniseBoutons = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): ButtonProps[] => {
   return estEnAttenteIndemnisation({ dossier, agent })
     ? [

@@ -8,21 +8,22 @@ import React, {
   useState,
 } from "react";
 
-import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { Loader } from "@common/composants/Loader.tsx";
-import { Agent, Document, DossierDetail, EtatDossier } from "@common/models";
+import { Document, DossierDetail, EtatDossier } from "@common/models";
 import {
   getLibelleMotifRejetBrisPorte,
   MotifRejetBrisPorte,
   MotifsRejetBrisPorte,
 } from "@common/models/rejet.ts";
 import { DocumentManagerInterface } from "@common/services/agent/document.ts";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
+import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
 
@@ -60,14 +61,12 @@ const Etapes: {
   },
 };
 
-type MotifRejet = "est_bailleur" | "est_vise" | "est_hebergeant" | "autre";
-
 const estEnAttenteDecision = ({
   dossier,
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }) => dossier.enInstruction() && agent.instruit(dossier);
 
 const DefinirMotifRefus = ({
@@ -111,7 +110,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
   onDecide,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
   onDecide?: () => void;
 }) {
   const [courrier, setCourrier] = useState<Document | null>(
@@ -383,7 +382,7 @@ export const deciderRejetBoutons = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): ButtonProps[] => {
   return estEnAttenteDecision({ dossier, agent })
     ? [
