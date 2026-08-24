@@ -3,7 +3,11 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { DossierDetail, EtatDossierType } from "@common/models";
-import { dateChiffre, dateSimple } from "@common/services/date.ts";
+import {
+  dateChiffre,
+  dateDansNJours,
+  dateSimple,
+} from "@common/services/date.ts";
 import { DossierManagerInterface } from "@fip6/services/dossier";
 import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
@@ -81,7 +85,7 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
           type: "date",
           defaultValue: dateChiffre(dateIndemnisation),
           onChange: (e) => setDateIndemnisation(new Date(e.target.value)),
-          min: dateChiffre(dossier.etat.dateEntree),
+          min: dateChiffre(dateDansNJours(1, dossier.etat.dateEntree)),
           max: dateChiffre(new Date()),
         }}
       />

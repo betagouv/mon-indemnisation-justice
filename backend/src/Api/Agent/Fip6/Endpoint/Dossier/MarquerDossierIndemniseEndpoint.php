@@ -32,12 +32,23 @@ class MarquerDossierIndemniseEndpoint
         Security $security,
         Request $request,
     ) {
-        /** @var \DateTime $dateIndemnisation */
-        $dateIndemnisation = max(min(\DateTime::createFromFormat('Y-m-d', $request->request->get('dateIndemnisation')), new \DateTime()), \DateTime::createFromImmutable($dossier->getEtatDossier()->getDateEntree()))->setTime(0, 0);
+        $maintenant = new \DateTimeImmutable();
+        $dateIndemnisation = \DateTimeImmutable::createFromFormat('Y-m-d', $request->request->get('dateIndemnisation'));
+
+        // Pas d'indemnisation dans le futur : date ramenée à maintenant
+        if ($dateIndemnisation > $maintenant) {
+            $dateIndemnisation = $maintenant;
+        }
+
+        // Pas d'indemnisation avant l'état actuel : date ramenée à 1 minute plus tard
+        if ($dateIndemnisation < $dossier->getEtatDossier()->getDateEntree()) {
+            $dateIndemnisation = $dossier->getEtatDossier()->getDateEntree()->add(\DateInterval::createFromDateString('1 minute'));
+        }
 
         $dossier
-            ->changerStatut(EtatDossierType::DOSSIER_OK_INDEMNISE, agent: $security->getUser())->getEtatDossier()
-            ->setDateEntree(\DateTimeImmutable::createFromMutable($dateIndemnisation));
+            ->changerStatut(EtatDossierType::DOSSIER_OK_INDEMNISE, agent: $security->getUser())
+            ->getEtatDossier()
+            ->setDateEntree(false !== $dateIndemnisation ? $dateIndemnisation : $maintenant);
 
         $this->dossierRepository->save($dossier);
 
