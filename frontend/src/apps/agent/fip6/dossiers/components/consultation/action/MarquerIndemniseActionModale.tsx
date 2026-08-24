@@ -38,9 +38,7 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
     DossierManagerInterface.$,
   );
 
-  const [dateIndemnisation, setDateIndemnisation] = useState<Date>(
-    dossier.etat.dateEntree,
-  );
+  const [dateIndemnisation, setDateIndemnisation] = useState<Date>(new Date());
 
   // Indique si la sauvegarde du rédacteur attribué est en cours (le cas échéant affiche un message explicit et bloque les boutons)
   const [sauvegardeEnCours, setSauvegarderEnCours]: [
