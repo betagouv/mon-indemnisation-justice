@@ -1,5 +1,5 @@
 import { DossierManagerInterface } from "@fip6/services/dossier";
-import { Agent, DossierDetail, EtatDossierType } from "@common/models";
+import { DossierDetail, EtatDossierType } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Download from "@codegouvfr/react-dsfr/Download";
@@ -8,6 +8,7 @@ import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-envoyer-pour-indemnisation",
@@ -19,7 +20,7 @@ const estAEnvoyerPourIndemnisation = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): boolean =>
   (agent.instruit(dossier) || agent.estLiaisonBudget()) &&
   dossier.etat.etat === EtatDossierType.OK_A_INDEMNISER;
@@ -30,7 +31,7 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
   onTermine,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
   onTermine: () => void | Promise<void>;
 }) {
   const dossierManager = useInjection<DossierManagerInterface>(
@@ -118,7 +119,7 @@ export const envoyerPourIndemnisationBoutons = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): ButtonProps[] => {
   return estAEnvoyerPourIndemnisation({ dossier, agent })
     ? [

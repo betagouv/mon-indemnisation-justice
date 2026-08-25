@@ -1,12 +1,13 @@
 "use client";
 
-import { Agent, DossierDetail, EtatDossier, Redacteur } from "@common/models";
+import { DossierDetail, EtatDossier, Redacteur } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-attribution",
@@ -50,7 +51,7 @@ const estAAttribuer = ({
   redacteurs,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
   redacteurs: Redacteur[];
 }) => agent.estAttributeur() && dossier.estAAttribuer();
 
@@ -60,7 +61,7 @@ export const AttribuerModale = observer(function AttribuerActionModale({
   redacteurs,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
   redacteurs: Redacteur[];
 }) {
   // Représente le rédacteur à attribuer, présentement en cours de sélection dans le menu déroulant
@@ -161,7 +162,7 @@ export const attribuerBoutons = ({
   redacteurs,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
   redacteurs: Redacteur[];
 }): ButtonProps[] => {
   return estAAttribuer({ dossier, agent, redacteurs })

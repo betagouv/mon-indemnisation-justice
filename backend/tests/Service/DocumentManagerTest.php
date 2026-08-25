@@ -12,7 +12,6 @@ use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
 use MonIndemnisationJustice\Service\DocumentManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -52,7 +51,7 @@ class DocumentManagerTest extends WebTestCase
             'locataire' => [
                 MotifRejetBrisPorte::LOCATAIRE,
                 [
-                    'vous étiez bien concerné(e) par leur intervention',
+                    'le logement loué à votre locataire était bien celui visé par leur intervention',
                     'le locataire doit répondre des dommages causés au logement loué',
                 ],
             ],
@@ -67,7 +66,6 @@ class DocumentManagerTest extends WebTestCase
         $corps = $this->documentManager->genererCorps($dossier, DocumentType::TYPE_COURRIER_MINISTERE, motifRejet: $motifRejet);
 
         $this->assertIsString($corps);
-        $crawler = new Crawler($corps);
         foreach ($mentions as $mention) {
             $this->assertStringContainsString($mention, $corps);
         }

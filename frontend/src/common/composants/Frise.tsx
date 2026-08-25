@@ -13,16 +13,15 @@ export type EvenementFrise = {
   statut: StatutEvenement;
   cote?: CoteEvenement;
   details?: ReactNode;
+  afficherDuree?: boolean;
 };
 
 const FriseContenu = ({
   evenement,
   alignDroit = false,
-  afficherDuree = false,
 }: {
   evenement: EvenementFrise;
   alignDroit?: boolean;
-  afficherDuree?: boolean;
 }) => {
   return (
     <div
@@ -32,7 +31,7 @@ const FriseContenu = ({
       {evenement.date && (
         <span className="frise__date">
           {dateEtHeureSimple(evenement.date)}{" "}
-          {afficherDuree && (
+          {evenement.afficherDuree && (
             <>
               {" "}
               - <b>({periode(evenement.date, evenement.dateFin)})</b>
@@ -49,13 +48,7 @@ const FriseContenu = ({
   );
 };
 
-export const Frise = ({
-  evenements,
-  afficherDurees = false,
-}: {
-  evenements: EvenementFrise[];
-  afficherDurees?: boolean;
-}) => {
+export const Frise = ({ evenements }: { evenements: EvenementFrise[] }) => {
   return (
     <div className="frise fr-col-12">
       {evenements.map((evenement, index) => {
@@ -68,13 +61,7 @@ export const Frise = ({
             <div
               className={`frise__cellule frise__cellule--gauche${estDernier ? " frise__cellule--derniere" : ""}`}
             >
-              {estGauche && (
-                <FriseContenu
-                  evenement={evenement}
-                  afficherDuree={afficherDurees}
-                  alignDroit
-                />
-              )}
+              {estGauche && <FriseContenu evenement={evenement} alignDroit />}
             </div>
 
             {/* Indicateur central */}
@@ -89,19 +76,11 @@ export const Frise = ({
             <div
               className={`frise__cellule frise__cellule--droite${estDernier ? " frise__cellule--derniere" : ""}`}
             >
-              {!estGauche && (
-                <FriseContenu
-                  evenement={evenement}
-                  afficherDuree={afficherDurees}
-                />
-              )}
+              {!estGauche && <FriseContenu evenement={evenement} />}
               {/* Affiché uniquement sur mobile pour les évènements côté gauche */}
               {estGauche && (
                 <div className="frise__repli-mobile">
-                  <FriseContenu
-                    evenement={evenement}
-                    afficherDuree={afficherDurees}
-                  />
+                  <FriseContenu evenement={evenement} />
                 </div>
               )}
             </div>

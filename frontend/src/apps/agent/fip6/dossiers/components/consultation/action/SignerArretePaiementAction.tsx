@@ -6,7 +6,6 @@ import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Agent,
   Document,
   DossierDetail,
   EtatDossier,
@@ -18,6 +17,7 @@ import { EditeurDocument } from "@fip6/dossiers/components/consultation/document
 import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { DocumentManagerInterface } from "@common/services/agent/document.ts";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-generer-arrete-paiement",
@@ -29,7 +29,7 @@ const estEnAttenteSignatureArretePaiement = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): boolean =>
   dossier.etat.etat == EtatDossierType.OK_VERIFIE && agent.estValidateur();
 
@@ -43,7 +43,7 @@ export const SignerArretePaiementModale = observer(
     agent,
   }: {
     dossier: DossierDetail;
-    agent: Agent;
+    agent: AgentFIP6;
   }) {
     // Est-ce que l'édition de l'arrêté de paiement est en cours
     const [estEdition, setEdition] = useState(true);
@@ -264,7 +264,7 @@ export const signerArretePaiementBoutons = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): ButtonProps[] => {
   return estEnAttenteSignatureArretePaiement({ dossier, agent })
     ? [
