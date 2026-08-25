@@ -223,8 +223,8 @@ jobs:
       PRO_CONNECT_CLIENT_SECRET: 99b05ed4b5ae45c21e25c75ddd91e48b0d97f388
       MAILPIT_BASE_URL: http://localhost:8025
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: 22.x
 
@@ -234,7 +234,7 @@ jobs:
           packages: poppler-utils
 
       - name: Cache composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: backend-composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
@@ -250,13 +250,13 @@ jobs:
         working-directory: backend
 
       - name: Cache backend yarn dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: backend/node_modules
           key: backend-yarn-backend-${{ runner.os }}-${{ hashFiles('backend/yarn.lock') }}
 
       - name: Cache frontend yarn dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: frontend/node_modules
           key: backend-yarn-frontend-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
@@ -296,7 +296,7 @@ jobs:
 
       - name: Reporter le résultat des tests
         if: ${{ !cancelled() }}
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         with:
           name: "Rapport des tests backend"
           report-title: "Rapport des tests backend"
@@ -307,13 +307,13 @@ jobs:
   test-frontend:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: 22.x
 
       - name: Cache yarn dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: frontend/node_modules
           key: frontend-yarn-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
@@ -389,8 +389,8 @@ jobs:
       PRO_CONNECT_CLIENT_SECRET: 99b05ed4b5ae45c21e25c75ddd91e48b0d97f388
       MAILPIT_BASE_URL: http://localhost:8025
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: 22.x
 
@@ -407,7 +407,7 @@ jobs:
 
       - name: Cache composer dependencies
         id: cache-composer
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: backend/vendor
           key: end2end-composer-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
@@ -419,7 +419,7 @@ jobs:
 
       - name: Cache frontend yarn dependencies
         id: cache-yarn-frontend
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: frontend/node_modules
           key: end2end-yarn-frontend-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
@@ -431,7 +431,7 @@ jobs:
 
       - name: Cache yarn dependencies
         id: cache-yarn-end2end
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             end2end/node_modules
