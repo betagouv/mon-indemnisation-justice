@@ -1,9 +1,10 @@
-import { Agent, BaseDossier, DossierDetail, EtatDossier } from "@common/models";
+import { BaseDossier, DossierDetail, EtatDossier } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import React, { ChangeEvent, useState } from "react";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-cloturer",
@@ -96,7 +97,7 @@ const estCloturable = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }) =>
   dossier.estCloturable() &&
   (agent.estAttributeur() || agent.estValidateur() || agent.instruit(dossier));
@@ -106,7 +107,7 @@ export const CloturerModale = observer(function CloturerActionModale({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }) {
   // Indique l'état de l'action de clôture :
   const [etatCloture, setEtatCloture]: [
@@ -343,7 +344,7 @@ export const cloturerBoutons = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): ButtonProps[] => {
   return estCloturable({ dossier, agent })
     ? [

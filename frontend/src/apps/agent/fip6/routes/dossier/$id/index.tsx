@@ -308,7 +308,6 @@ const ConsultationDossier = observer(function ConsultationDossier({
 
                     <div className="fr-grid-row">
                       <Frise
-                        afficherDurees={true}
                         evenements={dossier.historique.map(
                           (etat: EtatDossier, index: number, etats) => ({
                             libelle: (
@@ -316,6 +315,7 @@ const ConsultationDossier = observer(function ConsultationDossier({
                             ),
                             date: etat.dateEntree,
                             dateFin: etats.at(index + 1)?.dateEntree,
+                            afficherDuree: !etat.estTerminal(),
                             auteur: etat.redacteur
                               ? etat.redacteur.nom
                               : dossier.requerant.nomSimple({

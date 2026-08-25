@@ -150,6 +150,14 @@ export class EtatDossierType implements EtatInterface {
     return EtatDossierType.CLOTURE == this;
   }
 
+  estTerminal(): boolean {
+    return [
+      EtatDossierType.KO_REJETE,
+      EtatDossierType.OK_INDEMNISE,
+      EtatDossierType.CLOTURE,
+    ].includes(this);
+  }
+
   public static get liste(): EtatDossierType[] {
     return EtatDossierType._catalog;
   }
@@ -220,5 +228,9 @@ export class EtatDossier implements EtatInterface {
 
   estCloture(): boolean {
     return this.etat.estCloture();
+  }
+
+  estTerminal(): boolean {
+    return this.etat.estTerminal();
   }
 }

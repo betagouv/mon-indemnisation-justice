@@ -12,7 +12,7 @@ import React, {
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { Loader } from "@common/composants/Loader.tsx";
-import { Agent, Document, DossierDetail, EtatDossier } from "@common/models";
+import { Document, DossierDetail, EtatDossier } from "@common/models";
 import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
@@ -20,6 +20,7 @@ import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-decider-indemnisation",
@@ -62,7 +63,7 @@ const estEnAttenteDecision = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }) => dossier.enInstruction() && agent.instruit(dossier);
 
 const DefinirMontantIndemnisation = ({
@@ -117,7 +118,7 @@ export const DeciderIndemnisationModale = observer(
     onDecide,
   }: {
     dossier: DossierDetail;
-    agent: Agent;
+    agent: AgentFIP6;
     onDecide?: () => void;
   }) {
     // Le courrier de décision
@@ -471,7 +472,7 @@ export const deciderIndemnisationBoutons = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): ButtonProps[] => {
   return estEnAttenteDecision({ dossier, agent })
     ? [
