@@ -226,7 +226,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
 
       - name: Install system packages
         uses: awalsh128/cache-apt-pkgs-action@latest
@@ -310,7 +310,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
 
       - name: Cache yarn dependencies
         uses: actions/cache@v5
@@ -392,7 +392,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
 
       - name: Setup PHP and run tests
         uses: shivammathur/setup-php@v2

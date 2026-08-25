@@ -34,10 +34,10 @@ RUN echo 'post_max_size = 30M' >> $PHP_INI_DIR/php.ini
 RUN echo 'intl.default_locale = "fr"' >> $PHP_INI_DIR/php.ini
 
 # Node
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
 RUN apt-get install -y nodejs
 # Contournement de l'erreur https://github.com/nodejs/node/issues/62425#issuecomment-4200715930
-RUN npm install -g npm@10.9.8
+RUN npm install -g npm@11
 RUN npm install --force -g yarn
 
 # Firefox
