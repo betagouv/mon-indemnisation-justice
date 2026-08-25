@@ -242,8 +242,8 @@ jobs:
       - name: Setup PHP and run tests
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
-          extensions: 'zip, intl, calendar gd, pdo, pdo_pgsql, pgsql'
+          php-version: '8.5'
+          extensions: 'zip, intl, calendar gd, pdo, pdo_pgsql, pgsql, uri'
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --optimize-autoloader
@@ -397,8 +397,8 @@ jobs:
       - name: Setup PHP and run tests
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
-          extensions: 'zip, intl, calendar gd, pdo, pdo_pgsql, pgsql'
+          php-version: '8.5'
+          extensions: 'zip, intl, calendar gd, pdo, pdo_pgsql, pgsql, uri'
 
       - name: Install Symfony CLI
         run: |

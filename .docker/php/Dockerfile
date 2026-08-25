@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:1.11.3-php8.4-trixie AS frankenphp
+FROM dunglas/frankenphp:1.12.7-php8.5-trixie AS frankenphp
 
 # Extra .bashrc config
 RUN echo "alias ll='ls -l'" > /root/.bashrc
