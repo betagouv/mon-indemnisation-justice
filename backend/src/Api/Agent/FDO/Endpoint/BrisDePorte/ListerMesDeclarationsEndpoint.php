@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\FDO\Transformers\DeclarationFDOBrisPorteOutputMapper;
+use MonIndemnisationJustice\Api\Agent\FDO\Output\DeclarationFDOBrisPorteOutput;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
@@ -11,7 +11,6 @@ use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -29,7 +28,6 @@ class ListerMesDeclarationsEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly ObjectMapperInterface $objectMapper,
         protected readonly NormalizerInterface $normalizer,
     ) {
     }
@@ -44,7 +42,7 @@ class ListerMesDeclarationsEndpoint
             array_merge(
                 $this->normalizer->normalize(
                     array_map(
-                        fn (DeclarationFDOBrisPorte $declaration) => DeclarationFDOBrisPorteOutputMapper::mapper($declaration, $this->objectMapper),
+                        fn (DeclarationFDOBrisPorte $declaration) => DeclarationFDOBrisPorteOutput::depuisDeclarationFDO($declaration),
                         $declarations
                     ),
                     'json'

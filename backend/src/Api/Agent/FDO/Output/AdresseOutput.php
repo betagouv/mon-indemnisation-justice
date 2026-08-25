@@ -3,13 +3,24 @@
 namespace MonIndemnisationJustice\Api\Agent\FDO\Output;
 
 use MonIndemnisationJustice\Entity\Adresse;
-use Symfony\Component\ObjectMapper\Attribute\Map;
 
-#[Map(source: Adresse::class)]
 class AdresseOutput
 {
-    public string $ligne1;
-    public ?string $ligne2;
-    public string $codePostal;
-    public string $localite;
+    public function __construct(
+        public readonly string $ligne1,
+        public readonly ?string $ligne2,
+        public readonly string $codePostal,
+        public readonly string $localite,
+    ) {
+    }
+
+    public static function depuisAdresse(Adresse $adresse): self
+    {
+        return new self(
+            ligne1: $adresse->getLigne1(),
+            ligne2: $adresse->getLigne2(),
+            codePostal: $adresse->getCodePostal(),
+            localite: $adresse->getLocalite(),
+        );
+    }
 }
