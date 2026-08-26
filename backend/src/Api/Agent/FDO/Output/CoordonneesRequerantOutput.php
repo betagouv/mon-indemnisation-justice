@@ -9,9 +9,23 @@ use Symfony\Component\ObjectMapper\Attribute\Map;
 #[Map(source: CoordonneesRequerant::class)]
 class CoordonneesRequerantOutput
 {
-    public Civilite $civilite;
-    public string $nom;
-    public string $prenom;
-    public string $telephone;
-    public string $courriel;
+    public function __construct(
+        public readonly Civilite $civilite,
+        public readonly string $nom,
+        public readonly string $prenom,
+        public readonly string $telephone,
+        public readonly string $courriel,
+    ) {
+    }
+
+    public static function depuisCoordonneesRequerant(CoordonneesRequerant $coordonneesRequerant): self
+    {
+        return new self(
+            civilite: $coordonneesRequerant->getCivilite(),
+            nom: $coordonneesRequerant->getNom(),
+            prenom: $coordonneesRequerant->getPrenom(),
+            telephone: $coordonneesRequerant->getTelephone(),
+            courriel: $coordonneesRequerant->getCourriel(),
+        );
+    }
 }
