@@ -214,6 +214,8 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->assertTrue($this->client->getResponse()->isClientError());
 
         ['erreurs' => $erreurs] = json_decode($this->client->getResponse()->getContent(), true);
+
+
         $this->assertIsArray($erreurs);
         $this->assertEquals([
             'coordonneesRequerant.courriel' => "L'adresse courriel du requérant est requise",
