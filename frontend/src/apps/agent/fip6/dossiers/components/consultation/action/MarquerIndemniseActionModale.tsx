@@ -106,10 +106,7 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
             children: "Marquer indemnisé",
             iconId: "fr-icon-check-line",
             priority: "primary",
-            disabled:
-              sauvegardeEnCours ||
-              dateIndemnisation < dossier.etat.dateEntree ||
-              dateIndemnisation > new Date(),
+            disabled: sauvegardeEnCours || !dateIndemnisation,
             onClick: async () => marquerIndemnise(),
           },
         ]}
