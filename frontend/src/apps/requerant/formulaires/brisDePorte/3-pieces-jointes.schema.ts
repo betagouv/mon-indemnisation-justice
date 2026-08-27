@@ -2,11 +2,29 @@ import { Dossier, PieceJointe } from "@/apps/requerant/models";
 import { TypePieceJointe } from "@/apps/requerant/models/TypePieceJointe.ts";
 import { z } from "zod";
 
-export const listerTypesPiecesJointesRequis = (dossier: Dossier) => {
+export const listerTypesPiecesJointesRequis = (
+  dossier: Dossier,
+): TypePieceJointe[] => {
   return Object.values(TypePieceJointe.liste).filter((type) =>
     type.estRequis(
       dossier.rapportAuLogement,
-      dossier.personneMorale?.typePersonneMorale,
+      dossier.estPersonneMorale
+        ? dossier.personneMorale?.typePersonneMorale
+        : undefined,
+      dossier.estLieDeclaration(),
+    ),
+  );
+};
+
+export const listerTypesPiecesJointesDemandes = (
+  dossier: Dossier,
+): TypePieceJointe[] => {
+  return Object.values(TypePieceJointe.liste).filter((type) =>
+    type.estDemande(
+      dossier.rapportAuLogement,
+      dossier.estPersonneMorale
+        ? dossier.personneMorale?.typePersonneMorale
+        : undefined,
       dossier.estLieDeclaration(),
     ),
   );
