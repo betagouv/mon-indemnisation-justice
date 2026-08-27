@@ -1,9 +1,9 @@
-import { Loader } from "@common/composants/Loader.tsx";
-import { Document } from "@common/models";
-import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Loader } from "@common/composants/Loader.tsx";
+import { Document } from "@common/models";
+import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { QuillEditor } from "@fip6/dossiers/components/consultation/editor";
 import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { useInjection } from "inversify-react";
@@ -44,6 +44,7 @@ export const EditeurDocument = function EditeurDocumentComponent({
 
   const [modeEdition, setModeEdition] = useState<boolean>(!!document.corps);
   const [impressionEnCours, setImpressionEnCours] = useState<boolean>(false);
+  const [erreur, setErreur] = useState<string | undefined>(undefined);
   const [modificationsEnAttente, setModificationsEnAttente] =
     useState<boolean>(false);
   const [positionEditeur, setPositionEditeur] = useState<EditeurPosition>({});
@@ -59,12 +60,20 @@ export const EditeurDocument = function EditeurDocumentComponent({
     if (corps) {
       onImpression?.(true);
       setImpressionEnCours(true);
-      document = await documentManager.imprimer(document, corps);
-      onImprime?.(document);
+      const { reponse, erreur } = await documentManager.imprimer(
+        document,
+        corps,
+      );
+      if (null != reponse) {
+        onImprime?.(document);
+        setErreur(undefined);
+        setModificationsEnAttente(false);
+      } else {
+        setErreur(erreur.message);
+      }
 
       setImpressionEnCours(false);
       onImpression?.(false);
-      setModificationsEnAttente(false);
     }
   }, [document.id, corps]);
 
@@ -105,6 +114,20 @@ export const EditeurDocument = function EditeurDocumentComponent({
     <div className={className}>
       <div className="fr-col-12 fr-mb-2w">
         <div className="fr-grid-row fr-grid-row--right" style={{ gap: "1rem" }}>
+          {erreur && (
+            <Alert
+              className="fr-col-12"
+              severity="error"
+              title="Une erreur est surrvenue"
+              description={
+                <>
+                  <p>Lors de la re-génération du document PDF ("{erreur}")</p>
+                  <p>Les modifications n'ont pas été enregistrées</p>
+                </>
+              }
+            />
+          )}
+
           {corps && (
             <span className="fr-text--sm fr-mx-0 fr-my-auto">
               {impressionEnCours ? (
