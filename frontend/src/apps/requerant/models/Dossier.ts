@@ -17,6 +17,8 @@ import { Usager } from "./Usager";
 export abstract class BaseDossier {
   // Référence du dossier ou id du brouillon
   public readonly id: number;
+  // TODO enrichir ce type afin d'introduire la notion de type de demande
+  public readonly type: "BRI" | "DYS" = "BRI";
   public readonly reference?: string;
   @Type(() => EtatDossier)
   etatActuel: EtatDossier;

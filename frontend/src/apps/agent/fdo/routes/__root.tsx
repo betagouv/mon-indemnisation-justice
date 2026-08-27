@@ -140,7 +140,7 @@ const EspaceFDO = () => {
           <Outlet />
           {!estAffecte && (
             <ModaleAutoAffectation
-              agent={contexte.agent}
+              contexte={contexte}
               onAffecte={async () => {
                 await routeur.invalidate();
                 setAffecte(true);

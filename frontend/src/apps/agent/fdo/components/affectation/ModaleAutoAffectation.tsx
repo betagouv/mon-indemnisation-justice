@@ -5,7 +5,6 @@ import { FormInput } from "@common/composants/dsfr/champs/form/FormInput.tsx";
 import { FormSuggestedInput } from "@common/composants/dsfr/champs/form/FormSuggestedInput.tsx";
 import { Modale } from "@common/composants/dsfr/Modale.tsx";
 import { dateChiffre } from "@common/services/date.ts";
-import { AgentFDO } from "@fdo/modeles/AgentFDO.ts";
 import { EtablissementFDO } from "@fdo/modeles/EtablissementFDO.ts";
 import { AgentManagerInterface } from "@fdo/services/agent.ts";
 import { useForm } from "@tanstack/react-form";
@@ -13,17 +12,19 @@ import { useInjection } from "inversify-react";
 import * as React from "react";
 import { useMemo } from "react";
 import { z } from "zod";
+import { AgentFDOContexte } from "@fdo/routeur/contexte.ts";
+import type { LinkProps } from "@tanstack/react-router";
 
 export const ModaleAutoAffectation = ({
-  agent,
+  contexte,
   onAffecte,
 }: {
-  agent: AgentFDO;
+  contexte: AgentFDOContexte;
   onAffecte: () => Promise<void> | void;
 }) => {
   const estGendarmerie = useMemo<boolean>(
-    () => agent.administration.type === "GN",
-    [agent.id],
+    () => contexte.agent.administration.type === "GN",
+    [contexte.agent.id],
   );
 
   const agentManager = useInjection<AgentManagerInterface>(
@@ -253,6 +254,17 @@ export const ModaleAutoAffectation = ({
           buttonsSize="medium"
           alignment="right"
           buttons={[
+            {
+              children: contexte.incarnePar
+                ? `Redevenir ${contexte.incarnePar}`
+                : "Déconnexion",
+              priority: "secondary",
+              iconId: "fr-icon-logout-box-r-line",
+              linkProps: {
+                href: contexte.urlDeconnexion,
+                target: "_self",
+              } as LinkProps,
+            },
             {
               children: "Enregistrer",
               priority: "primary",
