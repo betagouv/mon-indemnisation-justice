@@ -94,11 +94,13 @@ const DefinirMotifRefus = ({
           <option value="" disabled hidden>
             Sélectionnez un motif de rejet
           </option>
-          {MotifsRejetBrisPorte.values().map((motif) => (
-            <option key={motif} value={motif}>
-              {getLibelleMotifRejetBrisPorte(motif)}
-            </option>
-          ))}
+          {[
+            ...MotifsRejetBrisPorte.values().map((motif) => (
+              <option key={motif} value={motif}>
+                {getLibelleMotifRejetBrisPorte(motif)}
+              </option>
+            )),
+          ]}
         </select>
       </div>
     </>
@@ -305,6 +307,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
                 disabled: !courrier || generationEnCours,
                 iconId: "fr-icon-send-plane-line",
                 onClick: () => {
+                  // TODO re-générer le document si le corps a divergé
                   setEtape("VERIFICATION_REJET");
                 },
                 children: "Valider et vérifier",

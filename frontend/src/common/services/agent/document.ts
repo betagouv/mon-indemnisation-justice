@@ -3,8 +3,21 @@ import { MotifRejetBrisPorte } from "@/common/models/rejet.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
+export type APIReponse<T> =
+  | {
+      reponse: T;
+      erreur: null;
+    }
+  | {
+      reponse: null;
+      erreur: {
+        code: number;
+        message?: string;
+      };
+    };
+
 export interface DocumentManagerInterface {
-  imprimer(document: Document, corps?: string): Promise<Document>;
+  imprimer(document: Document, corps?: string): Promise<APIReponse<Document>>;
 
   genererCourrierPropositionIndemnisation(
     dossier: BaseDossier,
@@ -31,27 +44,35 @@ export namespace DocumentManagerInterface {
 }
 
 export class APIDocumentManager implements DocumentManagerInterface {
-  async imprimer(document: Document, corps?: string): Promise<Document> {
-    return new Promise(async (resolve, reject) => {
-      const response = await fetch(
-        `/api/agent/fip6/document/${document.id}/imprimer`,
-        {
-          headers: {
-            "Content-type": "application/json",
-          },
-          method: "PUT",
-          body: JSON.stringify({ corps: corps || document.corps }),
+  async imprimer(
+    document: Document,
+    corps?: string,
+  ): Promise<APIReponse<Document>> {
+    const response = await fetch(
+      `/api/agent/fip6/document/${document.id}/imprimer`,
+      {
+        headers: {
+          "Content-type": "application/json",
         },
-      );
+        method: "PUT",
+        body: JSON.stringify({ corps: corps || document.corps }),
+      },
+    );
 
-      if (response.ok) {
-        const data = await response.json();
+    if (response.ok) {
+      const data = await response.json();
 
-        resolve(plainToInstance(Document, data));
-      } else {
-        reject("Une erreur est survenue lors de l'appel à l'API");
-      }
-    });
+      return { reponse: plainToInstance(Document, data), erreur: null };
+    }
+    return {
+      reponse: null,
+      erreur: {
+        code: response.status,
+        message:
+          response.statusText ||
+          "Une erreur est survenue lors de l'appel à l'API",
+      },
+    };
   }
 
   async genererCourrierPropositionIndemnisation(
