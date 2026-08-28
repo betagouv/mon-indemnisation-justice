@@ -23,6 +23,7 @@ enum EtatDossierType: string
     case DOSSIER_A_FINALISER = 'A_FINALISER';
     // Le requérant a finalisé et déposé son dossier
     case DOSSIER_A_ATTRIBUER = 'A_ATTRIBUER';
+    case DOSSIER_A_VERIFIER = 'A_VERIFIER';
     case DOSSIER_A_INSTRUIRE = 'A_INSTRUIRE';
     case DOSSIER_EN_INSTRUCTION = 'EN_INSTRUCTION';
 
@@ -89,7 +90,8 @@ enum EtatDossierType: string
         return match ($this) {
             self::DOSSIER_CLOTURE, self::DOSSIER_EN_INSTRUCTION => self::DOSSIER_A_INSTRUIRE,
             self::DOSSIER_A_ATTRIBUER => self::DOSSIER_A_FINALISER,
-            self::DOSSIER_A_INSTRUIRE => self::DOSSIER_A_ATTRIBUER,
+            self::DOSSIER_A_VERIFIER => self::DOSSIER_A_ATTRIBUER,
+            self::DOSSIER_A_INSTRUIRE => self::DOSSIER_A_VERIFIER,
             self::DOSSIER_OK_A_SIGNER, self::DOSSIER_KO_A_SIGNER => self::DOSSIER_EN_INSTRUCTION,
             self::DOSSIER_OK_A_APPROUVER => self::DOSSIER_OK_A_SIGNER,
             self::DOSSIER_OK_A_VERIFIER => self::DOSSIER_OK_A_APPROUVER,
@@ -106,7 +108,8 @@ enum EtatDossierType: string
     {
         return match ($this) {
             self::DOSSIER_A_FINALISER => self::DOSSIER_A_ATTRIBUER,
-            self::DOSSIER_A_ATTRIBUER => self::DOSSIER_A_INSTRUIRE,
+            self::DOSSIER_A_ATTRIBUER => self::DOSSIER_A_VERIFIER,
+            self::DOSSIER_A_VERIFIER => self::DOSSIER_A_INSTRUIRE,
             self::DOSSIER_A_INSTRUIRE => self::DOSSIER_EN_INSTRUCTION,
             self::DOSSIER_EN_INSTRUCTION => isset($contexte['montantIndemnisation']) ? self::DOSSIER_OK_A_SIGNER : self::DOSSIER_KO_A_SIGNER,
             self::DOSSIER_OK_A_SIGNER => self::DOSSIER_OK_A_APPROUVER,
@@ -129,6 +132,7 @@ enum EtatDossierType: string
             $this,
             [
                 self::DOSSIER_A_ATTRIBUER,
+                self::DOSSIER_A_VERIFIER,
                 self::DOSSIER_A_INSTRUIRE,
                 self::DOSSIER_EN_INSTRUCTION,
                 self::DOSSIER_OK_A_SIGNER,
@@ -146,6 +150,7 @@ enum EtatDossierType: string
             [
                 self::DOSSIER_A_FINALISER,
                 self::DOSSIER_A_ATTRIBUER,
+                self::DOSSIER_A_VERIFIER,
                 self::DOSSIER_A_INSTRUIRE,
                 self::DOSSIER_EN_INSTRUCTION,
                 self::DOSSIER_OK_A_SIGNER,
@@ -188,12 +193,7 @@ enum EtatDossierType: string
 
     public static function fromSlug($slug): ?self
     {
-        foreach (self::cases() as $etat) {
-            if ($etat->slugAction() === $slug) {
-                return $etat;
-            }
-        }
+        return array_find(self::cases(), fn ($etat) => $etat->slugAction() === $slug);
 
-        return null;
     }
 }

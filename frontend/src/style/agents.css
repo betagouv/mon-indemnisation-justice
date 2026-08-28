@@ -34,8 +34,12 @@ a:not([href])[role="button"] {
     --var-couleur-pp-a-attribuer: #2f4077;
     --var-couleur-ap-a-attribuer: #f4f6fe;
 
-    /* A_INSTRUIRE = 'blue-ecume' */
-    --var-couleur-pp-a-instruire: #2f4077;
+    /* A_VERIFIER = 'blue-cumulus' */
+    --var-couleur-pp-a-verifier: #3558a2;
+    --var-couleur-ap-a-verifier: #f4f6fe;
+
+    /* A_INSTRUIRE = 'blue-cumulus' */
+    --var-couleur-pp-a-instruire: #3558a2;
     --var-couleur-ap-a-instruire: #f4f6fe;
 
     /* EN_INSTRUCTION = 'info' */
@@ -110,6 +114,10 @@ a:not([href]) {
         border-left-color: var(--var-couleur-pp-a-attribuer);
     }
 
+    &.fr-dossier-etat--a-verifier {
+        border-left-color: var(--var-couleur-pp-a-verifier);
+    }
+
     &.fr-dossier-etat--a-instruire {
         border-left-color: var(--var-couleur-pp-a-instruire);
     }
@@ -168,6 +176,11 @@ a:not([href]) {
     &.fr-badge--dossier-etat--a-attribuer {
         color: var(--var-couleur-pp-a-attribuer);
         background-color: var(--var-couleur-ap-a-attribuer);
+    }
+
+    &.fr-badge--dossier-etat--a-verifier {
+        color: var(--var-couleur-pp-a-verifier);
+        background-color: var(--var-couleur-ap-a-verifier);
     }
 
     &.fr-badge--dossier-etat--a-instruire {

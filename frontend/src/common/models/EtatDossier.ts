@@ -1,7 +1,7 @@
+import { MotifRejetBrisPorte } from "@/common/models/rejet.ts";
 import { Expose, Transform, Type } from "class-transformer";
 import { Redacteur } from "./Redacteur";
 import { Requerant } from "./Requerant";
-import { MotifRejetBrisPorte } from "@/common/models/rejet.ts";
 
 interface EtatInterface {
   get libelle(): string;
@@ -28,6 +28,7 @@ export class EtatDossierType implements EtatInterface {
 
   public static A_FINALISER = new EtatDossierType("A_FINALISER", "À finaliser");
   public static A_ATTRIBUER = new EtatDossierType("A_ATTRIBUER", "À attribuer");
+  public static A_VERIFIER = new EtatDossierType("A_VERIFIER", "À vérifier");
   public static A_INSTRUIRE = new EtatDossierType(
     "A_INSTRUIRE",
     "Attribué - à instruire",
@@ -90,6 +91,7 @@ export class EtatDossierType implements EtatInterface {
   protected static _catalog: EtatDossierType[] = [
     EtatDossierType.A_FINALISER,
     EtatDossierType.A_ATTRIBUER,
+    EtatDossierType.A_VERIFIER,
     EtatDossierType.A_INSTRUIRE,
     EtatDossierType.EN_INSTRUCTION,
     EtatDossierType.CLOTURE,
@@ -112,6 +114,9 @@ export class EtatDossierType implements EtatInterface {
     return this.id.startsWith("OK") || this.id.startsWith("KO");
   }
 
+  /**
+   * Le courrier de réponse à la demande d'indemnisation a-t-il été envoyé au requérant ?
+   */
   public estEnvoye(): boolean {
     return [
       EtatDossierType.OK_A_APPROUVER,

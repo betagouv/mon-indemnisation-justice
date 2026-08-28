@@ -1,4 +1,4 @@
-import { Agent, Document, DossierDetail } from "@common/models";
+import { Document, DossierDetail } from "@common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import {
   AjoutPieceJointe,
@@ -11,13 +11,14 @@ import {
   SuppressionPieceJointe,
 } from "@fip6/dossiers/components/consultation/piecejointe/SuppressionPieceJointe";
 import React, { ReactNode, useCallback, useState } from "react";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 export const PiecesJointes = ({
   dossier,
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): ReactNode => {
   const selectionnerPremierePieceJointe = useCallback(
     () =>

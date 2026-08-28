@@ -89,6 +89,10 @@ export abstract class BaseDossier {
   }
 
   get estAVerifier(): boolean {
+    return [EtatDossierType.A_VERIFIER].includes(this.etat.etat);
+  }
+
+  get estDeclarationAcceptationAVerifier(): boolean {
     return [EtatDossierType.OK_A_VERIFIER].includes(this.etat.etat);
   }
 

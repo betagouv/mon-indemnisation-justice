@@ -5,9 +5,8 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
-use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Repository\AgentRepository;
-use MonIndemnisationJustice\Repository\DossierRepository;
+use MonIndemnisationJustice\Service\DossierManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,7 +25,7 @@ class AttribuerDossierEndpoint
         protected readonly NormalizerInterface $normalizer,
         protected readonly ObjectMapperInterface $objectMapper,
         protected readonly AgentRepository $agentRepository,
-        protected readonly DossierRepository $dossierRepository,
+        protected readonly DossierManager $dossierManager,
     ) {
     }
 
@@ -47,11 +46,11 @@ class AttribuerDossierEndpoint
         }
 
         $dossier
-            ->setRedacteur($agent)
-            ->changerStatut(EtatDossierType::DOSSIER_A_INSTRUIRE, agent: $security->getUser(), contexte: [
-                'redacteur' => $agent->getId(),
-            ]);
-        $this->dossierRepository->save($dossier);
+            ->setRedacteur($agent);
+
+        $this->dossierManager->avancer($dossier, $security->getUser(), [
+            'redacteur' => $agent->getId(),
+        ]);
 
         return new JsonResponse([
             'etat' => $this->normalizer->normalize(

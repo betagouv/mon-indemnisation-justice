@@ -1,19 +1,20 @@
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import {
+  BaseDossier,
   Document,
   DocumentType,
   DossierDetail,
   EtatDossier,
 } from "@common/models";
 import { DocumentManagerInterface } from "@common/services/agent/document.ts";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { plainToInstance } from "class-transformer";
 import { useInjection } from "inversify-react";
 import React, { useCallback, useEffect, useState } from "react";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-verifier-acceptation",
@@ -27,8 +28,14 @@ type ValidationAcceptationEtat = {
   sauvegardeEnCours: boolean;
 };
 
-const estAVerifier = ({ dossier, agent }): boolean =>
-  dossier.estAVerifier && agent.instruit(dossier);
+const estAVerifier = ({
+  dossier,
+  agent,
+}: {
+  dossier: BaseDossier;
+  agent: AgentFIP6;
+}): boolean =>
+  dossier.estDeclarationAcceptationAVerifier && agent.instruit(dossier);
 
 /**
  * Le rédacteur vérifie la déclaration d'acceptation et la valide

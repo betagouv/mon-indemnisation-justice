@@ -26,6 +26,7 @@ import {
   signerCourrierBoutons,
   SignerCourrierModale,
 } from "@fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import React from "react";
 import {
   attribuerBoutons,
@@ -39,7 +40,10 @@ import {
   signerArretePaiementBoutons,
   SignerArretePaiementModale,
 } from "./SignerArretePaiementAction.tsx";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import {
+  verifierBoutons,
+  VerifierDossierActionModale,
+} from "@fip6/dossiers/components/consultation/action/VerifierDossierAction.tsx";
 
 export const DossierActions = function DossierActionBar({
   dossier,
@@ -68,6 +72,8 @@ export const DossierActions = function DossierActionBar({
           [
             ...cloturerBoutons({ dossier, agent }),
             ...attribuerBoutons({ dossier, agent, redacteurs }),
+            // Vérifier (contrôler ? valider ?) le dossier
+            ...verifierBoutons({ dossier, agent }),
             ...demarrerInstructionBoutons({ dossier, agent }),
             ...deciderRejetBoutons({
               dossier,
@@ -93,6 +99,7 @@ export const DossierActions = function DossierActionBar({
         agent={agent}
         redacteurs={redacteurs}
       />
+      <VerifierDossierActionModale dossier={dossier} agent={agent} />
       <DeciderRejetModale dossier={dossier} agent={agent} onDecide={onDecide} />
       <DeciderIndemnisationModale
         key={dossier.id}
