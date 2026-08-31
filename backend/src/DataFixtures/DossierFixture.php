@@ -207,6 +207,27 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $this->addReference('dossier-a-attribuer-melun', $dossierAAttribuer);
 
+        $dossierAVerifier = $this->creerDossier(
+            $this->getReference('requerant-istres', Usager::class),
+            [
+                'rapportAuLogement' => RapportAuLogement::BAILLEUR_SOCIAL,
+                'estVise' => false,
+                'estHerbergeant' => false,
+                'aContacteAssurance' => false,
+            ],
+            new \DateTimeImmutable('-3 days'),
+            EtatDossierType::DOSSIER_A_VERIFIER,
+            adresse: new Adresse()
+                ->setLigne1($this->faker->streetAddress())
+                ->setCodePostal($this->faker->postcode())
+                ->setLocalite($this->faker->city()),
+            redacteur: $this->getReference('agent-redacteur', Agent::class),
+        )->ajouterDocument($this->creerDocumentDepuisRessource('pieces_jointes/Facture 1.png', DocumentType::TYPE_FACTURE, true));
+
+        $this->addReference('dossier-a-verifier', $dossierAVerifier);
+
+        $manager->persist($dossierAVerifier);
+
         $dossierAInstruire = $this->creerDossier(
             $this->getReference('requerant-melun', Usager::class),
             [
@@ -309,7 +330,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $manager->persist($dossierPropositionASigner);
 
 
-        $dossierAVerifier = $this->creerDossier(
+        $dossierDeclarationAcceptationtionAVerifier = $this->creerDossier(
             $this->getReference('requerant-melun', Usager::class),
             [
                 'rapportAuLogement' => RapportAuLogement::LOCATAIRE,
@@ -337,9 +358,9 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             )
             ->setPropositionIndemnisation('2031');
 
-        $this->addReference('dossier-a-verifier-melun', $dossierAVerifier);
+        $this->addReference('dossier-proposition-a-verifier-melun', $dossierDeclarationAcceptationtionAVerifier);
 
-        $manager->persist($dossierAVerifier);
+        $manager->persist($dossierDeclarationAcceptationtionAVerifier);
 
         $dossierArreteASigner = $this->creerDossier(
             $this->getReference('requerant-saint-malo', Usager::class),

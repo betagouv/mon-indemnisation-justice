@@ -14,6 +14,7 @@ class DossierVoter extends Voter
     public const string ACTION_RECHERCHER = 'dossier:rechercher';
     public const string ACTION_DECOMPTER = 'dossier:decompter';
     public const string ACTION_ATTRIBUER = 'dossier:attribuer';
+    public const string ACTION_VERIFIER = 'dossier:verifier';
     public const string ACTION_INSTRUIRE = 'dossier:instruire';
     public const string ACTION_CLOTURER = 'dossier:cloturer';
     public const string ACTION_AJOUTER_PIECE_JOINTE = 'dossier:ajouter-piece-jointe';
@@ -39,6 +40,7 @@ class DossierVoter extends Voter
             self::ACTION_RECHERCHER,
             self::ACTION_DECOMPTER,
             self::ACTION_ATTRIBUER,
+            self::ACTION_VERIFIER,
             self::ACTION_INSTRUIRE,
             self::ACTION_CLOTURER,
             self::ACTION_AJOUTER_PIECE_JOINTE,
@@ -77,7 +79,7 @@ class DossierVoter extends Voter
             self::ACTION_RECHERCHER, => $this->agentPeutRechercher($agent),
             self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent, $subject),
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
-            self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
+            self::ACTION_INSTRUIRE, self::ACTION_VERIFIER => $this->agentPeutInstruire($agent, $subject),
             self::ACTION_CLOTURER => $this->agentPeutCloturer($agent, $subject),
             self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
             self::ACTION_TRANSMETTRE_A_FIP3, => $this->agentPeutTransmettreAFIP3($agent, $subject),

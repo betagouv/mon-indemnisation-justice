@@ -23,17 +23,6 @@ class Document
     protected ?int $id = null;
 
     #[ORM\Column(nullable: true)]
-    public ?bool $estValide = null;
-
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    public ?\DateTimeInterface $dateValidation = null;
-
-    #[ORM\ManyToOne(targetEntity: Agent::class, cascade: [])]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    public ?Agent $validateur = null;
-
-
-    #[ORM\Column(nullable: true)]
     protected ?string $mime = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
@@ -76,6 +65,9 @@ class Document
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $originalFilename = null;
+
+    #[ORM\OneToOne(targetEntity: PieceJointeValidation::class, mappedBy: 'pieceJointe')]
+    protected ?PieceJointeValidation $validation = null;
 
     public function __construct()
     {
@@ -232,14 +224,21 @@ class Document
         return null !== $this->type->getGabarit();
     }
 
-    public function valider(Agent $agent): self
+    public function valider(PieceJointeValidation $validation): self
     {
-        return $this->setValidation(true, $agent);
+        $this->validation = $validation;
+
+        return $this;
     }
 
-    public function rejeter(Agent $agent): self
+    public function estVerifie(): bool
     {
-        return $this->setValidation(false, $agent);
+        return null !== $this->validation;
+    }
+
+    public function getValidation(): ?PieceJointeValidation
+    {
+        return $this->validation;
     }
 
     public function getFileHash(): string

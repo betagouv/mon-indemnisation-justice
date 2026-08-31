@@ -29,11 +29,8 @@ class DossierManager
         $this->dossierRepository->save($dossier);
     }
 
-    public function avancer(Dossier $dossier, ?Agent $agent = null, ?array $contexte = null): Dossier
+    public function changer(Dossier $dossier, EtatDossierType $etat, ?Agent $agent = null, ?array $contexte = null): Dossier
     {
-        /** @var EtatDossierType $etat */
-        $etat = $dossier->getEtatDossier()->getEtat()->etatSuivant($contexte ?? []);
-
         $dossier->changerStatut(
             $etat,
             requerant: in_array($etat, [EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_OK_A_VERIFIER]),
@@ -42,6 +39,19 @@ class DossierManager
         );
 
         $this->dossierRepository->save($dossier);
+
+        return $dossier;
+    }
+
+    public function avancer(Dossier $dossier, ?Agent $agent = null, ?array $contexte = null): Dossier
+    {
+        $this->changer(
+            $dossier,
+            $dossier->getEtatDossier()->getEtat()->etatSuivant($contexte ?? []),
+            agent: $agent,
+            contexte: $contexte
+        );
+
 
         return $dossier;
     }

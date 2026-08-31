@@ -21,6 +21,7 @@ enum EtatDossierType: string
 {
     // Le requérant a initié un dossier qu'il n'a pas encore déposé
     case DOSSIER_A_FINALISER = 'A_FINALISER';
+    case DOSSIER_A_COMPLETER = 'A_COMPLETER';
     // Le requérant a finalisé et déposé son dossier
     case DOSSIER_A_ATTRIBUER = 'A_ATTRIBUER';
     case DOSSIER_A_VERIFIER = 'A_VERIFIER';

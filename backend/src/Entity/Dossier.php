@@ -81,12 +81,16 @@ class Dossier
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
 
+    #[ORM\OneToMany(targetEntity: DossierValidation::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    protected Collection $validations;
+
     public function __construct()
     {
         $this->brisPorte = new BrisPorte();
         $this->dateCreation = new \DateTimeImmutable();
         $this->piecesJointes = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
+        $this->validations = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -429,6 +433,9 @@ class Dossier
         $this->documentsParType[$type->value] = [];
     }
 
+    /**
+     * @return Collection<Document>
+     */
     public function getPiecesJointes(): Collection
     {
         return $this->piecesJointes;
@@ -562,6 +569,24 @@ class Dossier
             ->findFirst(
                 fn (int $index, EtatDossier $e) => $etat === $e->getEtat()
             )?->getDate();
+    }
+
+    public function getValidations(): Collection
+    {
+        return $this->validations;
+    }
+
+    public function getValidation(): ?DossierValidation
+    {
+        return $this->validations->last();
+    }
+
+    public function valider(DossierValidation $validation): self
+    {
+        $validation->setDossier($this);
+        $this->validations->add($validation);
+
+        return $this;
     }
 
     public static function brisDePorte(): Dossier
