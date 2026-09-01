@@ -22,7 +22,7 @@ class Avocat
     protected string $prenom;
 
     #[ORM\Column(length: 255, nullable: true)]
-    protected ?string $raisonSociale = null;
+    protected ?string $cabinet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     protected ?string $email = null;
@@ -73,14 +73,14 @@ class Avocat
         return $this;
     }
 
-    public function getRaisonSociale(): ?string
+    public function getCabinet(): ?string
     {
-        return $this->raisonSociale;
+        return $this->cabinet;
     }
 
-    public function setRaisonSociale(?string $raisonSociale): self
+    public function setCabinet(?string $cabinet): self
     {
-        $this->raisonSociale = $raisonSociale;
+        $this->cabinet = $cabinet;
 
         return $this;
     }

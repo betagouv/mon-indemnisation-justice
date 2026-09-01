@@ -34,7 +34,7 @@ class RechercherAvocatEndpoint
                     'numeroCnbf' => $avocat->getNumeroCnbf(),
                     'nom' => $avocat->getNom(),
                     'prenom' => $avocat->getPrenom(),
-                    'raisonSociale' => $avocat->getRaisonSociale(),
+                    'cabinet' => $avocat->getCabinet(),
                     'civilite' => $avocat->getCivilite()?->value,
                     'telephone' => $avocat->getTelephone(),
                     'email' => $avocat->getEmail(),

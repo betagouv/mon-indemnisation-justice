@@ -31,7 +31,7 @@ class MesDemandesEndpoint
 
         return new JsonResponse(
             $this->normalizer->normalize(
-                $usager->getDossiersBrisDePorte()->map(
+                $usager->getDossiers()->map(
                     fn (Dossier $dossier) => DossierApercuDto::depuisDossier($dossier)
                 )->toArray(),
             ),

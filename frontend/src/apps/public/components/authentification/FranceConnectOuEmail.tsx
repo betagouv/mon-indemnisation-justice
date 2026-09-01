@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { LienFranceConnect } from "./LienFranceConnect";
 
 type FranceConnectOuEmailProps = {
-  action: "S’identifier avec" | "S’inscrire avec";
   labelBoutonEmail: string;
   children: React.ReactNode;
 };
@@ -12,7 +11,7 @@ type FranceConnectOuEmailProps = {
  * Pousse FranceConnect en priorité pour la personne physique (inscription ET connexion),
  * avec un bouton tertiaire discret pour basculer vers le formulaire email.
  */
-export function FranceConnectOuEmail({ action, labelBoutonEmail, children }: FranceConnectOuEmailProps) {
+export function FranceConnectOuEmail({ labelBoutonEmail, children }: FranceConnectOuEmailProps) {
   const [afficherEmail, setAfficherEmail] = useState(false);
 
   if (afficherEmail) {
@@ -33,11 +32,18 @@ export function FranceConnectOuEmail({ action, labelBoutonEmail, children }: Fra
           </div>
         </div>
 
-        <LienFranceConnect action={action} />
+        <LienFranceConnect />
       </div>
 
+      {/* Séparateur "ou" entre FranceConnect et le formulaire email */}
       <div
-        style={{ display: "flex", alignItems: "center", gap: "1rem", margin: "1.5rem 0", color: "var(--text-mention-grey)" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          margin: "1.5rem 0",
+          color: "var(--text-mention-grey)",
+        }}
       >
         <hr style={{ flex: 1, border: 0, borderTop: "1px solid var(--border-default-grey)" }} />
         ou

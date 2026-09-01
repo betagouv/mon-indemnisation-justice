@@ -78,12 +78,15 @@ class Dossier
     #[ORM\JoinColumn(name: 'bris_porte_id', nullable: true)]
     protected ?BrisPorte $brisPorte = null;
 
+    #[ORM\OneToOne(targetEntity: DemandeDysfonctionnement::class, inversedBy: 'dossier', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'demande_dysfonctionnement_id', nullable: true)]
+    protected ?DemandeDysfonctionnement $demandeDysfonctionnement = null;
+
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
 
     public function __construct()
     {
-        $this->brisPorte = new BrisPorte();
         $this->dateCreation = new \DateTimeImmutable();
         $this->piecesJointes = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
@@ -93,7 +96,7 @@ class Dossier
     public function onPrePersist(PrePersistEventArgs $args): void
     {
         if ($this->historiqueEtats->isEmpty()) {
-            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: null === $this->brisPorte->getDeclarationFDO(), agent: $this->brisPorte->getDeclarationFDO()?->getAgent());
+            $this->changerStatut(EtatDossierType::DOSSIER_A_FINALISER, requerant: null === $this->brisPorte?->getDeclarationFDO(), agent: $this->brisPorte?->getDeclarationFDO()?->getAgent());
         }
     }
 
@@ -207,6 +210,18 @@ class Dossier
     public function setBrisPorte(?BrisPorte $brisPorte): Dossier
     {
         $this->brisPorte = $brisPorte;
+
+        return $this;
+    }
+
+    public function getDemandeDysfonctionnement(): ?DemandeDysfonctionnement
+    {
+        return $this->demandeDysfonctionnement;
+    }
+
+    public function setDemandeDysfonctionnement(?DemandeDysfonctionnement $demandeDysfonctionnement): Dossier
+    {
+        $this->demandeDysfonctionnement = $demandeDysfonctionnement;
 
         return $this;
     }
@@ -589,5 +604,28 @@ class Dossier
                     ->setRapportAuLogement($testEligibilite->rapportAuLogement)
                     ->setTestEligibilite($testEligibilite)
             );
+    }
+
+    public static function dysfonctionnement(): Dossier
+    {
+        return new self()->setType(DossierType::DYSFONCTIONNEMENT);
+    }
+
+    public static function dysfonctionnementDepuisTestEligibilite(TestEligibiliteDysfonctionnement $testEligibilite): Dossier
+    {
+        $demandeDysfonctionnement = new DemandeDysfonctionnement()->setTestEligibilite($testEligibilite);
+        // Doctrine ne resynchronise jamais le côté inverse d'une relation bidirectionnelle en mémoire : on le
+        // fait explicitement pour que $testEligibilite->dossier reflète immédiatement ce rattachement.
+        $testEligibilite->dossier = $demandeDysfonctionnement;
+
+        return Dossier::dysfonctionnement()
+            ->setUsager($testEligibilite->usager)
+            ->setRequerant(
+                // Si l'usager a déjà une personne physique associée, on utilise celle-ci
+                $testEligibilite->usager->getPersonne()->getPersonnePhysique() ??
+                new PersonnePhysique()
+                    ->setPersonne($testEligibilite->usager->getPersonne())
+            )
+            ->setDemandeDysfonctionnement($demandeDysfonctionnement);
     }
 }

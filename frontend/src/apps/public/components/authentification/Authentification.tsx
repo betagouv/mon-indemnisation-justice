@@ -91,7 +91,7 @@ export function Authentification({ etatInitial, onEtatChange }: Authentification
 
           case "inscription-physique":
             return (
-              <FranceConnectOuEmail key={etape} action="S’inscrire avec" labelBoutonEmail="Inscription par email">
+              <FranceConnectOuEmail key={etape} labelBoutonEmail="Inscription par email">
                 <FormulaireInscriptionUsager typePersonne={TypePersonne.Physique} onSucces={() => setInscriptionReussie(true)} />
               </FranceConnectOuEmail>
             );
@@ -110,7 +110,7 @@ export function Authentification({ etatInitial, onEtatChange }: Authentification
 
           case "connexion-physique":
             return (
-              <FranceConnectOuEmail key={etape} action="S’identifier avec" labelBoutonEmail="Connexion par email">
+              <FranceConnectOuEmail key={etape} labelBoutonEmail="Connexion par email">
                 <FormulaireConnexion labelEmail="Adresse email" />
               </FranceConnectOuEmail>
             );

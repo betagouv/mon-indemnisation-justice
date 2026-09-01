@@ -6,7 +6,7 @@ export type AvocatTrouve = {
   numeroCnbf: string;
   nom: string;
   prenom: string;
-  raisonSociale: string | null;
+  cabinet: string | null;
   civilite: "M" | "MME" | null;
   telephone: string | null;
   email: string | null;

@@ -40,7 +40,7 @@ class InscriptionUsagerService
                     ->setCourriel($input->courriel)
                     ->setTelephone($input->telephone)
             )
-            ->setIsPersonneMorale($input->estPersonneMorale);
+            ->setPersonneMorale($input->estPersonneMorale);
 
         $usager->setPassword($this->userPasswordHasher->hashPassword($usager, $input->motDePasse));
         $usager->genererJetonVerification();

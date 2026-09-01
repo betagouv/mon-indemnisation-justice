@@ -75,8 +75,8 @@ services:
       # `host.docker.internal` est conservé pour compatibilité mais ne fonctionne pas dans cette image : il y résout
       # vers le conteneur symfony lui-même plutôt que vers l'hôte, cf. FRANCE_CONNECT_WELL_KNOWN_URL/PRO_CONNECT_WELL_KNOWN_URL
       # dans .env.dev qui utilisent donc `idconnect` directement.
-      - NO_PROXY=localhost,127.0.0.0/8,::1,nexus.codeo.intranet.justice.gouv.fr,*.intranet.justice.gouv.fr,franceconnect.gouv.test,proconnect.gouv.test,host.docker.internal,idconnect
-      - no_proxy=localhost,127.0.0.0/8,::1,nexus.codeo.intranet.justice.gouv.fr,*.intranet.justice.gouv.fr,franceconnect.gouv.test,proconnect.gouv.test,host.docker.internal,idconnect
+      - NO_PROXY=${NO_PROXY:-localhost,127.0.0.0/8,::1,nexus.codeo.intranet.justice.gouv.fr,*.intranet.justice.gouv.fr,franceconnect.gouv.test,proconnect.gouv.test,host.docker.internal,idconnect}
+      - no_proxy=${NO_PROXY:-localhost,127.0.0.0/8,::1,nexus.codeo.intranet.justice.gouv.fr,*.intranet.justice.gouv.fr,franceconnect.gouv.test,proconnect.gouv.test,host.docker.internal,idconnect}
     restart: always
     depends_on:
       - postgres

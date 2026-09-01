@@ -273,12 +273,12 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isPersonneMorale(): bool
+    public function estPersonneMorale(): bool
     {
         return $this->isPersonneMorale;
     }
 
-    public function setIsPersonneMorale(bool $isPersonneMorale): static
+    public function setPersonneMorale(bool $isPersonneMorale): static
     {
         $this->isPersonneMorale = $isPersonneMorale;
 
@@ -317,6 +317,11 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     public function getDernierDossier(): ?Dossier
     {
         return $this->dossiers->isEmpty() ? null : $this->dossiers->last();
+    }
+
+    public function getDossiers(): Collection
+    {
+        return $this->dossiers;
     }
 
     /**

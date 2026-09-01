@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Public\Dysfonctionnement\Input\InscriptionAvocatInput;
 use MonIndemnisationJustice\Entity\Avocat;
 use MonIndemnisationJustice\Service\InscriptionUsagerService;
-use MonIndemnisationJustice\Validation\Constraint\AvocatValide;
+use MonIndemnisationJustice\Validation\Constraint\UniqueAvocatCnbf;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,7 +49,7 @@ class InscrireAvocatEndpoint
         }
         $input = $resultat;
 
-        // La contrainte AvocatValide garantit à ce stade que ce numéro CNBF correspond bien à un Avocat existant.
+        // La contrainte AvocatConnu garantit à ce stade que ce numéro CNBF correspond bien à un Avocat existant.
         $avocat = $this->em->getRepository(Avocat::class)->find($input->numeroCnbf);
 
         $usager = $this->inscriptionUsagerService->creerUsager($input, $request);
@@ -58,11 +58,11 @@ class InscrireAvocatEndpoint
         try {
             $this->em->flush();
         } catch (UniqueConstraintViolationException) {
-            // AvocatValide vérifie par SELECT qu'aucun usager n'est déjà rattaché à ce numéro CNBF, mais ne protège
-            // pas contre deux inscriptions concurrentes pour le même avocat : seule la contrainte unique en base
-            // (usagers.avocat_id) le fait, en rejetant la seconde des deux transactions à ce flush.
+            // UniqueAvocatCnbf vérifie par SELECT qu'aucun usager n'est déjà rattaché à ce numéro CNBF, mais ne
+            // protège pas contre deux inscriptions concurrentes pour le même avocat : seule la contrainte unique en
+            // base (usagers.avocat_id) le fait, en rejetant la seconde des deux transactions à ce flush.
             return new JsonResponse([
-                'erreurs' => ['numeroCnbf' => (new AvocatValide())->messageDejaInscrit],
+                'erreurs' => ['numeroCnbf' => (new UniqueAvocatCnbf())->message],
             ], Response::HTTP_BAD_REQUEST);
         }
 

@@ -10,16 +10,22 @@ use MonIndemnisationJustice\Entity\Civilite;
 class ImporteurAvocat extends AbstractImporteurDataGouv
 {
     // Annuaire des avocats de France (CNB) https://www.data.gouv.fr/datasets/annuaire-des-avocats-de-france
-    private const RESOURCE_AVOCATS = '99c8ff76-c0ff-4046-80d7-c10fc8e51c34';
+    // Le CNB crée une NOUVELLE ressource (nouvel id) à chaque mise à jour de l'annuaire, au lieu de mettre à jour
+    // la ressource existante en place : un id de ressource figé finit donc toujours par pointer vers une version
+    // périmée. Seul le slug du jeu de données, lui, reste stable — on résout donc la ressource CSV la plus
+    // récente dynamiquement à chaque import, via l'API JSON standard de data.gouv.fr (pas de scraping HTML).
+    private const SLUG_JEU_DE_DONNEES = 'annuaire-des-avocats-de-france';
 
     private const TAILLE_PAGE = 200;
-   
+
     private const TAILLE_LOT = 200;
 
     /** @var array<string, Barreau> */
     private array $barreauxCache = [];
 
     private int $compteurLot = 0;
+
+    private ?string $ressourceResolue = null;
 
     public function __construct(
         protected readonly EntityManagerInterface $em,
@@ -29,7 +35,31 @@ class ImporteurAvocat extends AbstractImporteurDataGouv
 
     public function getResource(): string
     {
-        return self::RESOURCE_AVOCATS;
+        return $this->ressourceResolue ??= $this->resoudreDerniereRessourceCSV();
+    }
+
+    private function resoudreDerniereRessourceCSV(): string
+    {
+        $reponse = $this->client->request(
+            'GET',
+            'https://www.data.gouv.fr/api/1/datasets/'.self::SLUG_JEU_DE_DONNEES.'/'
+        );
+        $ressources = json_decode($reponse->getBody()->getContents(), true)['resources'] ?? [];
+        $ressourcesCsv = array_values(array_filter(
+            $ressources,
+            fn (array $ressource) => 'csv' === strtolower($ressource['format'] ?? '')
+        ));
+
+        if (empty($ressourcesCsv)) {
+            throw new \RuntimeException(sprintf(
+                "Aucune ressource CSV trouvée dans le jeu de données data.gouv.fr '%s'.",
+                self::SLUG_JEU_DE_DONNEES
+            ));
+        }
+
+        usort($ressourcesCsv, fn (array $a, array $b) => $b['last_modified'] <=> $a['last_modified']);
+
+        return $ressourcesCsv[0]['id'];
     }
 
     /**
@@ -99,7 +129,7 @@ class ImporteurAvocat extends AbstractImporteurDataGouv
         $avocat
             ->setNom((string) ($entree['avNom'] ?? ''))
             ->setPrenom((string) ($entree['avPrenom'] ?? ''))
-            ->setRaisonSociale($entree['cbRaisonSociale'] ?? null)
+            ->setCabinet($entree['cbRaisonSociale'] ?? null)
             ->setEmail($entree['avMelOrdre'] ?? null)
             ->setCivilite(self::civiliteDepuis($entree['civilit'] ?? null))
             ->setTelephone($entree['cbTel'] ?? null)

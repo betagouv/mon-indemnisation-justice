@@ -6,16 +6,17 @@ use MonIndemnisationJustice\Validation\Validator\AvocatValideValidator;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Vérifie, pour une inscription avocat, que le numéro CNBF correspond bien à un avocat connu de
- * l'annuaire importé, qu'il n'est pas déjà rattaché à un compte existant, et que le barreau donné
- * correspond bien à celui de cet avocat.
+ * Contrainte de classe pour l'inscription avocat : vérifie la cohérence entre le numéro CNBF et le barreau
+ * sélectionné (le barreau donné doit être celui auquel l'avocat est rattaché dans l'annuaire).
+ *
+ * Les deux autres règles portant sur le seul numéro CNBF sont des contraintes de propriété posées
+ * directement sur InscriptionAvocatInput::$numeroCnbf : {@see AvocatConnu} (présence dans l'annuaire) et
+ * {@see UniqueAvocatCnbf} (pas déjà rattaché à un compte).
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class AvocatValide extends Constraint
 {
-    public string $messageInconnu = "Ce numéro CNBF n'est pas reconnu dans l'annuaire des avocats.";
-    public string $messageDejaInscrit = 'Ce numéro CNBF est déjà rattaché à un compte existant, nous vous invitons à vous connecter.';
-    public string $messageBarreauIncorrect = "Ce numéro CNBF n'est pas rattaché au barreau sélectionné.";
+    public string $message = "Ce numéro CNBF n'est pas rattaché au barreau sélectionné.";
 
     public function getTargets(): string|array
     {

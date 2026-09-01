@@ -5,7 +5,6 @@ namespace MonIndemnisationJustice\Validation\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Public\Dysfonctionnement\Input\InscriptionAvocatInput;
 use MonIndemnisationJustice\Entity\Avocat;
-use MonIndemnisationJustice\Repository\UsagerRepository;
 use MonIndemnisationJustice\Validation\Constraint\AvocatValide;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -15,7 +14,6 @@ class AvocatValideValidator extends ConstraintValidator
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly UsagerRepository $usagerRepository,
     ) {
     }
 
@@ -29,31 +27,17 @@ class AvocatValideValidator extends ConstraintValidator
             return;
         }
 
-        // Les contraintes NotBlank/Regex sur numeroCnbf/barreauId gèrent déjà les valeurs vides ou mal formées.
-        if ('' === $value->numeroCnbf || !preg_match('/^\d{6}$/', $value->numeroCnbf)) {
+        // Numéro ou barreau vide/mal formé : géré par les contraintes NotBlank/Regex de propriété. La présence
+        // de l'avocat dans l'annuaire est garantie par AvocatConnu (contrainte de propriété) : si le find()
+        // ci-dessous ne retourne rien, cette violation-là sera déjà remontée, inutile d'en ajouter une seconde.
+        if ('' === $value->barreauId || !preg_match('/^\d{6}$/', $value->numeroCnbf)) {
             return;
         }
 
         $avocat = $this->em->getRepository(Avocat::class)->find($value->numeroCnbf);
 
-        if (null === $avocat) {
-            $this->context->buildViolation($constraint->messageInconnu)
-                ->atPath('numeroCnbf')
-                ->addViolation();
-
-            return;
-        }
-
-        if (null !== $this->usagerRepository->findOneBy(['avocat' => $avocat])) {
-            $this->context->buildViolation($constraint->messageDejaInscrit)
-                ->atPath('numeroCnbf')
-                ->addViolation();
-
-            return;
-        }
-
-        if ('' !== $value->barreauId && $avocat->getBarreau()->getId() !== $value->barreauId) {
-            $this->context->buildViolation($constraint->messageBarreauIncorrect)
+        if (null !== $avocat && $avocat->getBarreau()->getId() !== $value->barreauId) {
+            $this->context->buildViolation($constraint->message)
                 ->atPath('barreauId')
                 ->addViolation();
         }

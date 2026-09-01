@@ -28,14 +28,14 @@ class AvocatFixture extends Fixture
                 ->setNumeroCnbf('123456')
                 ->setNom('MICHON')
                 ->setPrenom('Jean')
-                ->setRaisonSociale('MICHON AVOCAT')
+                ->setCabinet('MICHON AVOCAT')
                 ->setEmail('jean.michon@avocat.fr')
                 ->setBarreau($barreauParis),
             'keran' => new Avocat()
                 ->setNumeroCnbf('654321')
                 ->setNom('KERAN')
                 ->setPrenom('Ray')
-                ->setRaisonSociale('KERAN AVOCAT')
+                ->setCabinet('KERAN AVOCAT')
                 ->setEmail('ray.keran@avocat.fr')
                 ->setBarreau($barreauLyon),
         ] as $reference => $avocat) {

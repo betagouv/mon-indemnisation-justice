@@ -42,6 +42,11 @@ class TestEligibiliteDysfonctionnement
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     public ?\DateTimeImmutable $dateSoumission = null;
 
+    // Rattachement au dossier issu de ce test, une fois converti (côté inverse de la relation, cf.
+    // DemandeDysfonctionnement::testEligibilite) : permet de savoir si un test a déjà été converti en dossier.
+    #[ORM\OneToOne(targetEntity: DemandeDysfonctionnement::class, mappedBy: 'testEligibilite')]
+    public ?DemandeDysfonctionnement $dossier = null;
+
     #[ORM\PrePersist]
     public function prePersist(): void
     {

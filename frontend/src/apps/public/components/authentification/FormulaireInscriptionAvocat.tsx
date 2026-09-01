@@ -3,11 +3,16 @@ import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { FormInput } from "@common/composants/dsfr/champs/form/FormInput.tsx";
 import { FormSuggestedInput } from "@common/composants/dsfr/champs/form/FormSuggestedInput.tsx";
 import { useForm } from "@tanstack/react-form";
+import { useInjection } from "inversify-react";
 import React, { useEffect, useRef, useState } from "react";
 import { ChampsBaseInscription } from "./ChampsBaseInscription";
-import { listerBarreaux } from "./BarreauService";
-import { rechercherAvocats } from "./AvocatService";
-import { appliquerErreursChamps, ErreurInscription, inscrireAvocat } from "./AuthentificationService";
+import {
+  appliquerErreursChamps,
+  AuthentificationServiceInterface,
+  ErreurInscription,
+} from "@/apps/public/services/AuthentificationService";
+import { AvocatServiceInterface } from "@/apps/public/services/AvocatService";
+import { BarreauServiceInterface } from "@/apps/public/services/BarreauService";
 import { AvocatTrouve, Barreau, InscriptionAvocat, SchemaInscriptionAvocat } from "./authentification.schemas";
 
 type FormulaireInscriptionAvocatProps = {
@@ -40,9 +45,15 @@ const VALEURS_INITIALES: InscriptionAvocat = {
 export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionAvocatProps) {
   const [erreurGenerale, setErreurGenerale] = useState<string | null>(null);
   const barreauxRef = useRef<Barreau[]>([]);
+  const authentificationService = useInjection<AuthentificationServiceInterface>(
+    AuthentificationServiceInterface.$,
+  );
+  const avocatService = useInjection<AvocatServiceInterface>(AvocatServiceInterface.$);
+  const barreauService = useInjection<BarreauServiceInterface>(BarreauServiceInterface.$);
 
   useEffect(() => {
-    listerBarreaux()
+    barreauService
+      .listerBarreaux()
       .then((donnees) => {
         barreauxRef.current = donnees;
       })
@@ -60,7 +71,7 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
       }
       setErreurGenerale(null);
       try {
-        await inscrireAvocat(value);
+        await authentificationService.inscrireAvocat(value);
         onSucces();
       } catch (erreur) {
         if (erreur instanceof ErreurInscription && Object.keys(erreur.erreursChamps).length > 0) {
@@ -120,7 +131,7 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
                   }}
                   estARafraichir={(valeur) => valeur.trim().length >= 2}
                   rafraichisseur={async (valeur) => {
-                    const avocats = await rechercherAvocats(valeur);
+                    const avocats = await avocatService.rechercherAvocats(valeur);
 
                     return avocats.map((avocat) => ({
                       libelle: `${avocat.nom} ${avocat.prenom}`,

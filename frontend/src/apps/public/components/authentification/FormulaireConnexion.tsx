@@ -7,15 +7,11 @@ type FormulaireConnexionProps = {
   labelEmail: string;
 };
 
-const URL_CONNEXION = "/connexion-requerant";
-
-const URL_MOT_DE_PASSE_OUBLIE = "/connexion";
-
 export function FormulaireConnexion({ labelEmail }: FormulaireConnexionProps) {
   const jetonCsrf = obtenirJetonCsrf();
 
   return (
-    <form method="POST" action={URL_CONNEXION}>
+    <form method="POST" action="/connexion-requerant">
       <input type="hidden" name="_csrf_token" value={jetonCsrf} />
 
       <div className="fr-grid-row fr-grid-row--gutters">
@@ -33,7 +29,7 @@ export function FormulaireConnexion({ labelEmail }: FormulaireConnexionProps) {
       </div>
 
       <p>
-        <a href={URL_MOT_DE_PASSE_OUBLIE} target="_self" className="fr-link fr-text--sm">
+        <a href="/connexion" target="_self" className="fr-link fr-text--sm">
           Mot de passe oublié ?
         </a>
       </p>

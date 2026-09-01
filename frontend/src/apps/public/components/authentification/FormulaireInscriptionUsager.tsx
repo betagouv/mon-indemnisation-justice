@@ -1,9 +1,14 @@
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { useForm } from "@tanstack/react-form";
+import { useInjection } from "inversify-react";
 import React, { useState } from "react";
 import { ChampsBaseInscription } from "./ChampsBaseInscription";
-import { appliquerErreursChamps, ErreurInscription, inscrireUsager } from "./AuthentificationService";
+import {
+  appliquerErreursChamps,
+  AuthentificationServiceInterface,
+  ErreurInscription,
+} from "@/apps/public/services/AuthentificationService";
 import { InscriptionUsager, SchemaInscriptionUsager } from "./authentification.schemas";
 import { TypePersonne } from "./etatAuthentification";
 
@@ -27,6 +32,9 @@ const VALEURS_INITIALES: InscriptionUsager = {
 export function FormulaireInscriptionUsager({ typePersonne, onSucces }: FormulaireInscriptionUsagerProps) {
   const morale = typePersonne === TypePersonne.Morale;
   const [erreurGenerale, setErreurGenerale] = useState<string | null>(null);
+  const authentificationService = useInjection<AuthentificationServiceInterface>(
+    AuthentificationServiceInterface.$,
+  );
 
   const formulaire = useForm({
     validators: { onSubmit: SchemaInscriptionUsager },
@@ -37,7 +45,7 @@ export function FormulaireInscriptionUsager({ typePersonne, onSucces }: Formulai
       }
       setErreurGenerale(null);
       try {
-        await inscrireUsager(value, typePersonne);
+        await authentificationService.inscrireUsager(value, typePersonne);
         onSucces();
       } catch (erreur) {
         if (erreur instanceof ErreurInscription && Object.keys(erreur.erreursChamps).length > 0) {
