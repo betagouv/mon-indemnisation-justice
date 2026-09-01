@@ -10,26 +10,14 @@ import { dateChiffre } from "@/common/services/date.ts";
 import { queryClient } from "@fip6/query.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
-
-export type ListeDossier =
-  | "a-categoriser"
-  | "a-attribuer"
-  | "a-verifier"
-  | "a-instruire"
-  | "en-instruction"
-  | "rejet-a-signer"
-  | "proposition-a-signer"
-  | "acceptation-a-verifier"
-  | "arrete-a-signer"
-  | "a-transmettre"
-  | "en-attente-indemnisation";
-
-export type CompteurDossiers = Record<ListeDossier, number>;
+import { CompteurDossiers } from "./dossier.d";
 
 export interface DossierManagerInterface {
   compteursDossiers(agent: Agent): Promise<CompteurDossiers>;
 
   consulter(id: number): Promise<DossierDetail>;
+
+  verifier(dossier: DossierDetail): Promise<DossierDetail>;
 
   ajouterPieceJointe(
     dossier: BaseDossier,

@@ -35,6 +35,19 @@ final class Version20260901084323 extends AbstractMigration
         $this->addSql('ALTER TABLE document DROP validateur_id');
         $this->addSql('ALTER TABLE document DROP est_valide');
         $this->addSql('ALTER TABLE document DROP date_validation');
+        // Passer tous les dossiers actuellement à `A_INSTRUIRE` en `A_VERIFIER`
+        $this->addSql(
+            <<<SQL
+UPDATE dossier_etats
+SET etat = 'A_VERIFIER'
+FROM (
+    SELECT ed.id
+    FROM dossiers d
+        INNER JOIN dossier_etats ed ON d.etat_actuel_id = ed.id AND ed.etat = 'A_INSTRUIRE'
+) ed
+WHERE ed.id = dossier_etats.id;
+SQL
+        );
     }
 
     public function down(Schema $schema): void
