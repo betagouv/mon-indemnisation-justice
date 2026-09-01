@@ -6,17 +6,15 @@ use MonIndemnisationJustice\Entity\Dossier;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
-class DossierAVerifierOutput
+class DossierDeclarationAcceptationAVerifierOutput
 {
     public function __construct(
         public readonly int $id,
         public readonly string $reference,
         public readonly string $requerant,
-        public readonly string $adresse,
+        public readonly ?float $montantIndemnisation,
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        public readonly \DateTimeInterface $dateOperation,
-        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        public readonly \DateTimeInterface $datePublication,
+        public readonly \DateTimeImmutable $dateAcceptation,
     ) {
     }
 
@@ -26,9 +24,8 @@ class DossierAVerifierOutput
             id: $dossier->getId(),
             reference: $dossier->getReference(),
             requerant: $dossier->getUsager()->getNomCourant(),
-            adresse: $dossier->getBrisPorte()->getAdresse()->getLibelle(),
-            dateOperation: $dossier->getBrisPorte()->getDateOperation(),
-            datePublication: $dossier->getDateDeclaration()
+            montantIndemnisation: $dossier->getMontantIndemnisation(),
+            dateAcceptation: $dossier->getEtatDossier()->getDate()
         );
     }
 }

@@ -18,8 +18,8 @@ enum EtatDossierUsager: string
     public static function depuisEtatDossier(EtatDossierType $etatDossier): EtatDossierUsager
     {
         return match ($etatDossier) {
-            EtatDossierType::DOSSIER_A_FINALISER => self::A_COMPLETER,
-            EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_A_INSTRUIRE => self::DEPOSE,
+            EtatDossierType::DOSSIER_A_FINALISER, EtatDossierType::DOSSIER_A_COMPLETER => self::A_COMPLETER,
+            EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_A_VERIFIER, EtatDossierType::DOSSIER_A_INSTRUIRE => self::DEPOSE,
             EtatDossierType::DOSSIER_EN_INSTRUCTION, EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER => self::EN_INSTRUCTION,
             EtatDossierType::DOSSIER_OK_A_APPROUVER => self::OK_A_ACCEPTER,
             EtatDossierType::DOSSIER_OK_A_VERIFIER, EtatDossierType::DOSSIER_OK_VERIFIE, EtatDossierType::DOSSIER_OK_A_INDEMNISER, EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT => self::OK_A_INDEMNISER,

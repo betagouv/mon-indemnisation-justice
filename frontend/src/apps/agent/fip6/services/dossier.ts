@@ -1,4 +1,3 @@
-import { queryClient } from "@fip6/query.ts";
 import {
   Agent,
   BaseDossier,
@@ -8,17 +7,19 @@ import {
 } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
 import { dateChiffre } from "@/common/services/date.ts";
+import { queryClient } from "@fip6/query.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
 export type ListeDossier =
   | "a-categoriser"
   | "a-attribuer"
+  | "a-verifier"
   | "a-instruire"
   | "en-instruction"
   | "rejet-a-signer"
   | "proposition-a-signer"
-  | "a-verifier"
+  | "acceptation-a-verifier"
   | "arrete-a-signer"
   | "a-transmettre"
   | "en-attente-indemnisation";

@@ -1,14 +1,15 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
-import { container } from "@fip6/container.ts";
-import {
-  CompteurDossiers,
-  DossierManagerInterface,
-} from "@fip6/services/dossier.ts";
-import { RoleAgent } from "@common/models/Agent.ts";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Footer from "@codegouvfr/react-dsfr/Footer";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
+import { RoleAgent } from "@common/models/Agent.ts";
+import { container } from "@fip6/container.ts";
+import { AgentFIP6Contexte } from "@fip6/routeur/contexte.ts";
+import {
+  CompteurDossiers,
+  DossierManagerInterface,
+} from "@fip6/services/dossier.ts";
 import {
   createRootRouteWithContext,
   type LinkProps,
@@ -58,7 +59,7 @@ const EspaceRedacteur = () => {
   const {
     contexte,
     compteurDossiers,
-  }: { contexte: AgentContext; compteurDossiers: CompteurDossiers } =
+  }: { contexte: AgentFIP6Contexte; compteurDossiers: CompteurDossiers } =
     useLoaderData({} as any);
 
   const liens = useMemo((): NavItem[] => {
@@ -148,9 +149,25 @@ const EspaceRedacteur = () => {
                 },
               ]
             : []),
-          // Liste des dossiers en instruction / à instruire (si REDACTEUR)
+          // Liste des dossiers à vérifier / en instruction / à instruire (si REDACTEUR)
           ...(agent.aRole(RoleAgent.REDACTEUR)
             ? [
+                {
+                  text: (
+                    <>
+                      À vérifier
+                      <Badge
+                        as={"p"}
+                        small={true}
+                        className={"fr-badge--blue-ecume"}
+                        children={compteurDossiers["a-verifier"] ?? 0}
+                      />
+                    </>
+                  ),
+                  linkProps: {
+                    to: "/dossiers/a-verifier",
+                  },
+                },
                 {
                   text: (
                     <>
@@ -234,12 +251,14 @@ const EspaceRedacteur = () => {
                         as={"p"}
                         small={true}
                         className={"fr-badge--blue-ecume"}
-                        children={compteurDossiers["a-verifier"] ?? 0}
+                        children={
+                          compteurDossiers["acceptation-a-verifier"] ?? 0
+                        }
                       />
                     </>
                   ),
                   linkProps: {
-                    to: "/dossiers/a-verifier",
+                    to: "/dossiers/acceptation-a-verifier",
                   },
                 },
               ]

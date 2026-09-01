@@ -39,9 +39,10 @@ class DecompterDossierEndpoint
         }
 
         if ($agent->estRedacteur()) {
+            $decomptes['a-verifier'] = $agent->nbDossiersAVerifier();
             $decomptes['a-instruire'] = $agent->nbDossiersAInstruire();
             $decomptes['en-instruction'] = $agent->nbDossiersEnInstruction();
-            $decomptes['a-verifier'] = $agent->nbDossiersAVerifier();
+            $decomptes['acceptation-a-verifier'] = $agent->nbDossiersDeclarationAcceptationAVerifier();
         }
 
         if ($agent->aRole(Agent::ROLE_AGENT_VALIDATEUR)) {

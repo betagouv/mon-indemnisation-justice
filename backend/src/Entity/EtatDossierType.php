@@ -16,6 +16,7 @@ use MonIndemnisationJustice\Event\Event\DossierPropositionEnvoyeeEvent;
 use MonIndemnisationJustice\Event\Event\DossierRejeteEvent;
 use MonIndemnisationJustice\Event\Event\DossierTransitionEvent;
 use MonIndemnisationJustice\Event\Event\DossierTransmisBudgetEvent;
+use MonIndemnisationJustice\Event\Event\DossierVerifieEvent;
 
 enum EtatDossierType: string
 {
@@ -72,7 +73,8 @@ enum EtatDossierType: string
             self::DOSSIER_EN_INSTRUCTION => new DossierEnCoursInstructionEvent($dossier),
             self::DOSSIER_CLOTURE => new DossierClotureEvent($dossier),
             self::DOSSIER_A_ATTRIBUER => new DossierDeposeEvent($dossier),
-            self::DOSSIER_A_INSTRUIRE => new DossierAttribueEvent($dossier),
+            self::DOSSIER_A_VERIFIER => new DossierAttribueEvent($dossier),
+            self::DOSSIER_A_COMPLETER, self::DOSSIER_A_INSTRUIRE => new DossierVerifieEvent($dossier),
             self::DOSSIER_OK_A_SIGNER => new DossierInstruitPropositionEvent($dossier),
             self::DOSSIER_OK_A_APPROUVER => new DossierPropositionEnvoyeeEvent($dossier),
             self::DOSSIER_OK_A_VERIFIER => new DossierPropositionAccepteeEvent($dossier),
@@ -92,7 +94,7 @@ enum EtatDossierType: string
             self::DOSSIER_CLOTURE, self::DOSSIER_EN_INSTRUCTION => self::DOSSIER_A_INSTRUIRE,
             self::DOSSIER_A_ATTRIBUER => self::DOSSIER_A_FINALISER,
             self::DOSSIER_A_VERIFIER => self::DOSSIER_A_ATTRIBUER,
-            self::DOSSIER_A_INSTRUIRE => self::DOSSIER_A_VERIFIER,
+            self::DOSSIER_A_COMPLETER, self::DOSSIER_A_INSTRUIRE => self::DOSSIER_A_VERIFIER,
             self::DOSSIER_OK_A_SIGNER, self::DOSSIER_KO_A_SIGNER => self::DOSSIER_EN_INSTRUCTION,
             self::DOSSIER_OK_A_APPROUVER => self::DOSSIER_OK_A_SIGNER,
             self::DOSSIER_OK_A_VERIFIER => self::DOSSIER_OK_A_APPROUVER,
@@ -109,7 +111,7 @@ enum EtatDossierType: string
     {
         return match ($this) {
             self::DOSSIER_A_FINALISER => self::DOSSIER_A_ATTRIBUER,
-            self::DOSSIER_A_ATTRIBUER => self::DOSSIER_A_VERIFIER,
+            self::DOSSIER_A_ATTRIBUER, self::DOSSIER_A_COMPLETER => self::DOSSIER_A_VERIFIER,
             self::DOSSIER_A_VERIFIER => self::DOSSIER_A_INSTRUIRE,
             self::DOSSIER_A_INSTRUIRE => self::DOSSIER_EN_INSTRUCTION,
             self::DOSSIER_EN_INSTRUCTION => isset($contexte['montantIndemnisation']) ? self::DOSSIER_OK_A_SIGNER : self::DOSSIER_KO_A_SIGNER,

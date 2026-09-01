@@ -21,9 +21,10 @@ class DecompterDossierEndpointTest extends AbstractEndpointTestCase
         $donnees = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayEquals([
+            'a-verifier' => $redacteur->nbDossiersAVerifier(),
             'a-instruire' => $redacteur->nbDossiersAInstruire(),
             'en-instruction' => $redacteur->nbDossiersEnInstruction(),
-            'a-verifier' => $redacteur->nbDossiersAVerifier(),
+            'acceptation-a-verifier' => $redacteur->nbDossiersDeclarationAcceptationAVerifier(),
             'a-transmettre' => $redacteur->nbDossiersATransmettreAFIP3(),
             'en-attente-indemnisation' => $redacteur->nbDossiersEnAttentePaiement(),
         ], $donnees);

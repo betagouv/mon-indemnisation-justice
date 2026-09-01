@@ -2,25 +2,23 @@
 
 namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
-use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
+use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\ListerDossierAVerifierEndpoint;
+use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
- * Teste le point d'entrée @ListeDossierAVerifierEndpoint de l'API, listant les dossiers dont la déclaration
- * d'acceptation vient d'être signée et retournée par le requérant et attend d'être vérifiée.
- *
- * @internal
- *
- * @coversNothing
+ * Teste le point d'entrée @ListerDossierAVerifierEndpoint de l'API, listant les dossiers à vérifier.
  */
-class ListerDossierAVerifierEndpointTest extends APIEndpointTestCase
+#[CoversClass(ListerDossierAVerifierEndpoint::class)]
+class ListerDossierAVerifierEndpointTest extends AbstractEndpointTestCase
 {
     /**
-     * ETQ agent attributeur, je dois pouvoir charger la liste des dossiers à attribuer.
+     * ETQ rédacteur, je dois pouvoir charger la liste de mes dossiers à vérifier.
      */
     public function testListeOk(): void
     {
         $this->connexion('redacteur@justice.gouv.fr');
-        $this->apiGet();
+        $this->client->request('GET', '/api/agent/fip6/dossiers/liste/a-verifier');
 
         $this->assertTrue($this->client->getResponse()->isOk());
 
@@ -32,6 +30,6 @@ class ListerDossierAVerifierEndpointTest extends APIEndpointTestCase
 
     protected function getApiRoute(): string
     {
-        return '/api/agent/fip6/dossiers/liste/a-verifier';
+        return '/api/agent/fip6/dossiers/liste/a-instruire';
     }
 }

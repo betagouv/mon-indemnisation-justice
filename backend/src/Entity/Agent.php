@@ -262,6 +262,19 @@ class Agent implements UserInterface
         return $this->dossiers->filter(fn (Dossier $dossier) => $dossier->getEtatDossier()->getEtat() === $etatActuel)->getValues();
     }
 
+    public function nbDossiersAVerifier(): int
+    {
+        return count($this->getDossiersAVerifier());
+    }
+
+    /**
+     * @return Dossier[]
+     */
+    public function getDossiersAVerifier(): array
+    {
+        return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_A_VERIFIER) : [];
+    }
+
     public function nbDossiersAInstruire(): int
     {
         return count($this->getDossiersAInstruire());
@@ -288,15 +301,15 @@ class Agent implements UserInterface
         return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_EN_INSTRUCTION) : [];
     }
 
-    public function nbDossiersAVerifier(): int
+    public function nbDossiersDeclarationAcceptationAVerifier(): int
     {
-        return count($this->getDossiersAVerifier());
+        return count($this->getDossiersDeclarationAcceptationAVerifier());
     }
 
     /**
      * @return Dossier[]
      */
-    public function getDossiersAVerifier(): array
+    public function getDossiersDeclarationAcceptationAVerifier(): array
     {
         return $this->hasRole(Agent::ROLE_AGENT_REDACTEUR) ? $this->getDossiersParEtatActuel(EtatDossierType::DOSSIER_OK_A_VERIFIER) : [];
     }

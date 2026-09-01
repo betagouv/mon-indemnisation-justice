@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\Fip6\Dossier\Endpoint;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier\AjouterPieceJointeEndpoint;
+use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\APIEndpointTestCase;
@@ -85,9 +86,13 @@ class AjouterPieceJointeEndpointTest extends APIEndpointTestCase
 
         $this->em->refresh($dossier);
         $factures = $dossier->getDocumentsParType(DocumentType::TYPE_FACTURE);
+
         $this->assertCount(2, $factures);
-        $this->assertEquals('Facture 1.png', $factures[0]->getOriginalFilename());
-        $this->assertEquals('Facture 2.pdf', $factures[1]->getOriginalFilename());
+
+        $this->assertEqualsCanonicalizing(
+            ['Facture 1.png', 'Facture 2.pdf'],
+            array_map(fn (Document $document) => $document->getOriginalFilename(), $factures)
+        );
     }
 
     protected function getApiRoute(): string

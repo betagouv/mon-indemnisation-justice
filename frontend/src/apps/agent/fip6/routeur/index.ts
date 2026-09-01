@@ -4,6 +4,7 @@ import { routeTree } from "@fip6/routeur/routeur-fip6.gen.ts";
 import * as Sentry from "@sentry/browser";
 import { createRouter } from "@tanstack/react-router";
 import { container } from "../container.ts";
+import { AgentFIP6Contexte } from "@fip6/routeur/contexte.ts";
 
 const creerRouteurFIP6 = (context: AgentContext) =>
   createRouter({
@@ -36,14 +37,14 @@ let RouteurFIP6: ReturnType<typeof creerRouteurFIP6>;
 await container
   .get(AgentManagerInterface.$)
   .moi()
-  .then((context: AgentContext) => {
+  .then((contexte: AgentFIP6Contexte) => {
     Sentry.setTag("app", "fip6");
     Sentry.setUser({
-      id: context.agent.id,
-      email: context.agent.courriel,
-      username: context.agent.nom,
+      id: contexte.agent.id,
+      email: contexte.agent.courriel,
+      username: contexte.agent.nom,
     });
-    RouteurFIP6 = creerRouteurFIP6(context);
+    RouteurFIP6 = creerRouteurFIP6(contexte);
   });
 
 declare module "@tanstack/react-router" {

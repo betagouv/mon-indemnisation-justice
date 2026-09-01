@@ -1,11 +1,15 @@
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { dateSimple, periode } from "@common/services/date.ts";
+import { periode } from "@common/services/date.ts";
 import { plainToInstance } from "class-transformer";
 import React, { useEffect, useState } from "react";
 import "./liste/dossier-liste-element.css";
-import { DossierAInstruire } from "./liste/DossierAInstruire.ts";
+import { DossierDeclarationAcceptationAVerifier } from "./liste/DossierDeclarationAcceptationAVerifier";
 
-function DossierAVerifierLigne({ dossier }: { dossier: DossierAInstruire }) {
+function DossierDeclarationAcceptationAVerifierLigne({
+  dossier,
+}: {
+  dossier: DossierDeclarationAcceptationAVerifier;
+}) {
   return (
     <div className="fr-grid-row mij-dossier-liste-element">
       <div className="fr-col-3">
@@ -17,26 +21,8 @@ function DossierAVerifierLigne({ dossier }: { dossier: DossierAInstruire }) {
       <div className="fr-col-7 mij-dossier-details">
         <ul>
           <li>{dossier.requerant}</li>
-          <li>
-            {dossier.adresse ? (
-              dossier.adresse
-            ) : (
-              <>
-                adresse <i>non renseignée</i>
-              </>
-            )}
-          </li>
-          <li>
-            intervention{" "}
-            {dossier.dateOperation ? (
-              <>le {dateSimple(dossier.dateOperation)}</>
-            ) : (
-              <>
-                à une date <i>non renseignée</i>
-              </>
-            )}
-          </li>
-          <li>publié il y a {periode(dossier.datePublication)}</li>
+          <li>{dossier.montantIndemnisation}</li>
+          <li>accepté il y a {periode(dossier.dateAcceptation)}</li>
         </ul>
       </div>
 
@@ -68,26 +54,35 @@ function DossierAVerifierLigne({ dossier }: { dossier: DossierAInstruire }) {
   );
 }
 
-export function ListeDossierAVerifier() {
+export function ListeDossierDeclarationAcceptationAVerifier() {
   const [dossiers, setDossiers]: [
-    DossierAInstruire[],
-    (dossiers: DossierAInstruire[]) => void,
-  ] = useState<DossierAInstruire[]>([]);
+    DossierDeclarationAcceptationAVerifier[],
+    (dossiers: DossierDeclarationAcceptationAVerifier[]) => void,
+  ] = useState<DossierDeclarationAcceptationAVerifier[]>([]);
 
   // TODO utiliser une tanstack query ici (notamment en vue de la mutation)
   useEffect(() => {
     fetch("/api/agent/fip6/dossiers/liste/a-verifier")
       .then((response) => response.json())
       .then((data) =>
-        setDossiers(plainToInstance(DossierAInstruire, data as any[])),
+        setDossiers(
+          plainToInstance(
+            DossierDeclarationAcceptationAVerifier,
+            data as any[],
+          ),
+        ),
       );
   }, []);
 
   return (
     <>
-      <h1>Dossiers à vérifier</h1>
+      <h1>Dossiers en attente d'arrêté de paiement</h1>
 
-      <p>Vous êtes invités à vérifier les dossiers ci-dessous.</p>
+      <p>
+        Vos dossiers attribués, ci-dessous, ont reçu une déclaration
+        d'acceptation à vérifier et attendent un arrêté de paiement que vous
+        pouvez désormais initier.
+      </p>
 
       <h4>
         {dossiers.length ? (
@@ -100,8 +95,8 @@ export function ListeDossierAVerifier() {
       </h4>
 
       <div>
-        {dossiers.map((dossier: DossierAInstruire) => (
-          <DossierAVerifierLigne
+        {dossiers.map((dossier: DossierDeclarationAcceptationAVerifier) => (
+          <DossierDeclarationAcceptationAVerifierLigne
             key={`dossier-a-attribuer-${dossier.id}`}
             dossier={dossier}
           />

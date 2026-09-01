@@ -513,8 +513,8 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
     protected function getAgentPourEtat(Dossier $dossier, EtatDossierType $etat): ?Agent
     {
         return match ($etat) {
-            EtatDossierType::DOSSIER_A_INSTRUIRE => $this->getReference('agent-attributeur', Agent::class),
-            EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER, EtatDossierType::DOSSIER_OK_VERIFIE => $dossier->getRedacteur(),
+            EtatDossierType::DOSSIER_A_VERIFIER => $this->getReference('agent-attributeur', Agent::class),
+            EtatDossierType::DOSSIER_A_INSTRUIRE, EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER, EtatDossierType::DOSSIER_OK_VERIFIE => $dossier->getRedacteur(),
             EtatDossierType::DOSSIER_KO_REJETE, EtatDossierType::DOSSIER_OK_A_APPROUVER, EtatDossierType::DOSSIER_OK_A_INDEMNISER => $this->getReference('agent-validateur', Agent::class),
             default => null,
         };
