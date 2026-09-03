@@ -1,11 +1,6 @@
 import { ListeDossiers } from "@fip6/composants/dossiers/ListeDossiers.tsx";
 import { Loader } from "@common/composants/Loader.tsx";
-import {
-  Agent,
-  DossierApercu,
-  EtatDossierType,
-  Redacteur,
-} from "@common/models";
+import { Agent, DossierApercu, EtatDossierType, Redacteur } from "@common/models";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -14,9 +9,10 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { plainToInstance } from "class-transformer";
 import _ from "lodash";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
+import { useInjection } from "inversify-react";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 
 export type RechercheRequete = {
   etatsDossier: EtatDossierType[];
@@ -27,7 +23,7 @@ export type RechercheRequete = {
   page: number;
 };
 
-type RechercheReponse = {
+export type RechercheReponse = {
   resultats: DossierApercu[];
   taille: number;
   total: number;
@@ -99,7 +95,7 @@ export const requeteVersParametres = (
  *
  * @returns string
  */
-const requeteVersUrl = (requete: RechercheRequete): string => {
+export const requeteVersUrl = (requete: RechercheRequete): string => {
   return Object.entries(requeteVersParametres(requete))
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
@@ -122,14 +118,15 @@ export const RechercherDossierPage = ({
   }) => RegisteredLinkProps;
   activerFiltreAttributaires?: boolean;
 }) => {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
   // Fonction de navigation à partir de cette route
   const naviguer = useNavigate();
 
   // Afficher les critères de recherche ou non
   const [afficherCriteres, setAfficherCriteres] = useState(false);
-
-  // Traduire la requête de recherche en paramètres d'URL
-  const urlParametres = useMemo(() => requeteVersUrl(requete), [requete]);
 
   // Requête de récupération des dossiers
   const {
@@ -137,20 +134,8 @@ export const RechercherDossierPage = ({
     error,
     data: reponse,
   } = useQuery<RechercheReponse>({
-    queryKey: ["recherche-dossiers", urlParametres],
-    queryFn: async () => {
-      const reponse = await fetch(
-        `/api/agent/fip6/dossiers/rechercher?${urlParametres}`,
-      );
-      const data = await reponse.json();
-
-      return {
-        resultats: plainToInstance(DossierApercu, data.resultats as any[]),
-        taille: data.taille,
-        total: data.total,
-        page: data.page,
-      } as RechercheReponse;
-    },
+    queryKey: ["recherche-dossiers", requete],
+    queryFn: () => dossierManager.rechercher(requete),
   });
 
   return (

@@ -3,10 +3,16 @@ import {
   BaseDossier,
   Document,
   DocumentType,
+  DossierApercu,
   DossierDetail,
 } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
 import { dateChiffre } from "@/common/services/date.ts";
+import {
+  RechercheReponse,
+  RechercheRequete,
+  requeteVersUrl,
+} from "@fip6/composants/pages/RechercherDossierPage.tsx";
 import { queryClient } from "@fip6/query.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
@@ -27,6 +33,8 @@ export type CompteurDossiers = Record<ListeDossier, number>;
 
 export interface DossierManagerInterface {
   compteursDossiers(agent: Agent): Promise<CompteurDossiers>;
+
+  rechercher(requete: RechercheRequete): Promise<RechercheReponse>;
 
   consulter(id: number): Promise<DossierDetail>;
 
@@ -71,6 +79,20 @@ export class APIDossierManager implements DossierManagerInterface {
       },
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
+  }
+
+  async rechercher(requete: RechercheRequete): Promise<RechercheReponse> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossiers/rechercher?${requeteVersUrl(requete)}`,
+    );
+    const data = await reponse.json();
+
+    return {
+      resultats: plainToInstance(DossierApercu, data.resultats as any[]),
+      taille: data.taille,
+      total: data.total,
+      page: data.page,
+    };
   }
 
   protected recupererDossier(id: number): Promise<DossierDetail> {

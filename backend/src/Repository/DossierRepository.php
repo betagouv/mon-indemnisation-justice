@@ -71,10 +71,15 @@ class DossierRepository extends ServiceEntityRepository
 
     /**
      * @param int               $page          le numéro de la page (commence à 1)
+     * @param int               $taille        le nombre de résultats par page
+     * @param DossierType[]     $types
      * @param EtatDossierType[] $etats
      * @param Agent[]           $attributaires
+     * @param string[]          $filtres
+     *
+     * @return Paginator<Dossier[]>
      */
-    public function rechercheDossiers(int $page, int $taille, array $etats = [], array $attributaires = [], array $filtres = [], bool $nonAttribue = false): Paginator
+    public function rechercheDossiers(int $page, int $taille, array $types = [], array $etats = [], array $attributaires = [], array $filtres = [], bool $nonAttribue = false): Paginator
     {
         $qb = $this
             ->createQueryBuilder('d')
@@ -86,6 +91,12 @@ class DossierRepository extends ServiceEntityRepository
             ->leftJoin('d.requerantPersonneMorale', 'pm')
             ->leftJoin('pm.representantLegal', 'pmrl')
             ->orderBy('e.dateEntree', 'DESC');
+
+        if (!empty($types)) {
+            $qb->andWhere(
+                $qb->expr()->in('d.type', $types)
+            );
+        }
 
         if (!empty($etats)) {
             $qb
