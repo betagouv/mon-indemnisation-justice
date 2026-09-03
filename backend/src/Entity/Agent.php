@@ -345,6 +345,16 @@ class Agent implements UserInterface
         return $this->affectations->filter(fn (AffectationAgentFDO $affectation) => $affectation->estActive())->first();
     }
 
+    /**
+     * Recherche l'affectation à un établissement spécifique.
+     *
+     * Note : pour l'heure, on ne permet pas de s'affecter plusieurs fois à un même établissement.
+     */
+    public function getAffectationAEtablissement(EtablissementFDO $etablissement): ?AffectationAgentFDO
+    {
+        return $this->affectations->findFirst(fn (AffectationAgentFDO $affectation) => $affectation->getEtablissement()->getId() === $etablissement->getId());
+    }
+
     public function getAffectations(): Collection
     {
         return $this->affectations;
@@ -353,13 +363,15 @@ class Agent implements UserInterface
     public function affecter(EtablissementFDO $etablissement, ?\DateTimeImmutable $date = null): Agent
     {
         // TODO clôre l'affectation en cours
-        $this->affectations->add(
-            new AffectationAgentFDO()
-                ->setEtablissement($etablissement)
-                ->setAgent($this)
-                ->setDateAffectation($date ?? new \DateTimeImmutable())
-        );
-        $this->estExempteAffectation = false;
+        if (null === $this->getAffectationAEtablissement($etablissement)) {
+            $this->affectations->add(
+                new AffectationAgentFDO()
+                    ->setEtablissement($etablissement)
+                    ->setAgent($this)
+                    ->setDateAffectation($date ?? new \DateTimeImmutable())
+            );
+            $this->estExempteAffectation = false;
+        }
 
         return $this;
     }
