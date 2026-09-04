@@ -5,6 +5,7 @@ import {
   DocumentType,
   DossierApercu,
   DossierDetail,
+  Redacteur,
 } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
 import { dateChiffre } from "@/common/services/date.ts";
@@ -45,6 +46,8 @@ export interface DossierManagerInterface {
   ): Promise<Document>;
 
   ajouterDocument(dossier: DossierDetail, document: Document): void;
+
+  attribuer(dossier: BaseDossier, redacteur: Redacteur): Promise<void>;
 
   transmettreAFIP3(dossier: BaseDossier): Promise<void>;
 
@@ -155,6 +158,28 @@ export class APIDossierManager implements DossierManagerInterface {
 
   ajouterDocument(dossier: DossierDetail, document: Document): void {
     this.enregistrerDossier(dossier.addDocument(document));
+  }
+
+  async attribuer(dossier: BaseDossier, redacteur: Redacteur): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/attribuer`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          redacteur_id: redacteur.id,
+        }),
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
   }
 
   async transmettreAFIP3(dossier: BaseDossier): Promise<void> {

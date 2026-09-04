@@ -1,11 +1,13 @@
-"use client";
-
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { DossierDetail, EtatDossier, Redacteur } from "@common/models";
+import { DossierDetail, Redacteur } from "@common/models";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
-import { plainToInstance } from "class-transformer";
+import { RouteurFIP6 } from "@fip6/routeur";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
+import { useRouter } from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
 
@@ -13,37 +15,6 @@ const _modale = createModal({
   id: "modale-action-attribution",
   isOpenedByDefault: false,
 });
-
-const attribuer = async ({
-  dossier,
-  attributaire,
-}: {
-  dossier: DossierDetail;
-  attributaire: Redacteur;
-}) => {
-  const response = await fetch(
-    `/api/agent/fip6/dossier/${dossier.id}/attribuer`,
-    {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        redacteur_id: attributaire.id,
-      }),
-    },
-  );
-
-  if (response.ok) {
-    const data = await response.json();
-    dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-
-    return true;
-  }
-
-  return false;
-};
 
 const estAAttribuer = ({
   dossier,
@@ -67,6 +38,11 @@ export const AttribuerModale = observer(function AttribuerActionModale({
   agent: AgentFIP6;
   redacteurs: Redacteur[];
 }) {
+  const routeur = useRouter<typeof RouteurFIP6>();
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
   // Représente le rédacteur à attribuer, présentement en cours de sélection dans le menu déroulant
   const [attributaire, setAttributaire]: [
     Redacteur | undefined,
@@ -88,11 +64,9 @@ export const AttribuerModale = observer(function AttribuerActionModale({
   const valider = useCallback(async () => {
     if (!!attributaire && attributaire?.id != dossier.redacteur?.id) {
       setSauvegarderEnCours(true);
-      const succes = await attribuer({ dossier, attributaire });
 
-      if (succes) {
-        dossier.attribuer(attributaire);
-      }
+      await dossierManager.attribuer(dossier, attributaire);
+      await routeur.invalidate();
 
       setAttributaire(undefined);
       setAttributionEnCours(false);
