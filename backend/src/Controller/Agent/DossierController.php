@@ -9,7 +9,6 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\DossierRepository;
 use MonIndemnisationJustice\Service\DocumentManager;
@@ -71,33 +70,6 @@ class DossierController extends AgentController
 
         // Renvoyer vers la nouvelle page de consultation de dossier, désormais gérée par React
         return $this->redirectToRoute('agent_fip6_react', ['extra' => "dossier/{$dossier->getId()}"]);
-    }
-
-    // TODO déplacer dans une route API dédiée
-    #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
-    #[Route('/dossier/{id}/decider.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
-    public function decider(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        $agent = $this->getAgent();
-
-        if ($agent !== $dossier->getRedacteur()) {
-            return new JsonResponse(['error' => "Vous n'êtes pas attribué à l'instruction de ce dossier"], Response::HTTP_UNAUTHORIZED);
-        }
-
-        $this->dossierManager->avancer(
-            $dossier,
-            $agent,
-            contexte: $request->getPayload()->has('motifRejet') || $request->getPayload()->has('montantIndemnisation') ?
-                array_merge(
-                    $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : [],
-                    $request->getPayload()->has('motifRejet') ? ['motifRejet' => MotifRejetBrisPorte::tryFrom($request->getPayload()->get('motifRejet'))] : [],
-                ) :
-                null,
-        );
-
-        return new JsonResponse([
-            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
-        ], Response::HTTP_OK);
     }
 
     // TODO déplacer dans une route API dédiée

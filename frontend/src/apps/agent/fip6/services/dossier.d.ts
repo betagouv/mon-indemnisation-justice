@@ -1,5 +1,6 @@
 import {Agent, BaseDossier, DossierDetail} from "@common/models";
 import {RechercheReponse, RechercheRequete} from "@fip6/composants/pages/RechercherDossierPage.tsx";
+import {MotifRejetBrisPorte} from "@common/models/rejet.ts";
 
 export type ListeDossier =
     | "a-categoriser"
@@ -14,3 +15,9 @@ export type ListeDossier =
     | "en-attente-indemnisation";
 
 export type CompteurDossiers = Record<ListeDossier, number>;
+
+
+// Décision
+export type DecisionDossier = {
+    montantIndemnisation: number;
+} | { motifRejet: MotifRejetBrisPorte};
