@@ -87,7 +87,7 @@ describe("SchemaEtapePiecesProc", () => {
   it("accepte plusieurs pièces", () => {
     expect(
       SchemaEtapePiecesProc.safeParse({
-        piecesProc: ["acte_introductif", "ecritures", "convocations"],
+        piecesProc: ["acte_introductif", "ecritures", "documents_procedure"],
       }).success,
     ).toBe(true);
   });

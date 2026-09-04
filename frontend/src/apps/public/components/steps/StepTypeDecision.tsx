@@ -15,7 +15,7 @@ const TYPE_DECISION_LABELS: Record<TypeDecision, string> = {
   [TypeDecision.JugementPremiereInstance]: "Décision de première instance",
   [TypeDecision.ArretCourAppel]: "Décision de la cour d'appel",
   [TypeDecision.ArretCourCassation]: "Décision de la Cour de cassation",
-  [TypeDecision.Aucune]: "Je ne dispose pas de la décision",
+  [TypeDecision.Aucune]: "Je ne dispose d'aucune décision",
 };
 
 const DECISIONS_DISPONIBLES = [
@@ -88,8 +88,7 @@ export function StepTypeDecision({ onPrecedent, onSuivant, onAnnuler, onRetour, 
         <Alert
           className="fr-mt-2w"
           severity="error"
-          title="La décision de justice est requise"
-          description="La décision de justice concernée est nécessaire à l'examen de votre demande. Nous vous invitons à vous en munir avant de poursuivre votre démarche."
+          title="Il est nécessaire de disposer d'une décision de justice"
         />
       )}
       <formulaire.Subscribe

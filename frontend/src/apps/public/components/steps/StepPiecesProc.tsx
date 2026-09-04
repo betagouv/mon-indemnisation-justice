@@ -14,20 +14,18 @@ import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestElig
 const PIECES_LABELS: Record<PieceProcedure, string> = {
   [PieceProcedure.ActeIntroductif]:
     "Acte introductif de la procédure (requête, assignation, citation, déclaration d'appel, etc.)",
-  [PieceProcedure.Ecritures]: "Conclusions, mémoires ou autres écritures",
-  [PieceProcedure.Convocations]: "Convocations, avis d'audience ou notifications",
-  [PieceProcedure.Echanges]: "Courriers ou échanges avec la juridiction ou le greffe",
   [PieceProcedure.DocumentsProcedure]:
-    "Documents relatifs au déroulement de la procédure (renvois, calendrier de procédure, mise en état, etc.)",
+    "Documents relatifs au déroulement de la procédure (convocation, avis d'audience, renvois, calendrier de procédure, mise en état, etc.)",
+  [PieceProcedure.Echanges]: "Courriers ou échanges avec la juridiction ou le greffe",
+  [PieceProcedure.Ecritures]: "Conclusions, mémoires ou autres écritures",
   [PieceProcedure.Aucune]: "Je ne dispose d'aucun de ces documents",
 };
 
 const PIECES_DISPONIBLES = [
   PieceProcedure.ActeIntroductif,
-  PieceProcedure.Ecritures,
-  PieceProcedure.Convocations,
-  PieceProcedure.Echanges,
   PieceProcedure.DocumentsProcedure,
+  PieceProcedure.Echanges,
+  PieceProcedure.Ecritures,
 ];
 
 export function StepPiecesProc({ onPrecedent, onSuivant, onAnnuler, onRetour, isLastStep, test }: StepProps) {
@@ -94,7 +92,7 @@ export function StepPiecesProc({ onPrecedent, onSuivant, onAnnuler, onRetour, is
         <Alert
           className="fr-mt-2w"
           severity="error"
-          title="Démarche non éligible"
+          title="Vous n'êtes pas éligible à déposer un dossier"
           description="L'examen de la demande nécessite la production de documents permettant de retracer le déroulement de la procédure concernée."
         />
       )}
