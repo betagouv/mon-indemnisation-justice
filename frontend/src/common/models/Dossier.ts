@@ -160,7 +160,7 @@ export class DossierDetail extends BaseDossier {
 
   public descriptionRequerant?: string;
 
-  public notes?: string;
+  public readonly notes: string = "";
 
   @Expose()
   @Type(() => Adresse)
@@ -201,17 +201,11 @@ export class DossierDetail extends BaseDossier {
       addDocument: action,
       removeDocument: action,
       viderDocumentParType: action,
-      notes: observable,
-      annoter: action,
     });
   }
 
   estIssuDeclarationFDO(): boolean {
     return !!this.declarationFDO?.id;
-  }
-
-  annoter(notes: string): void {
-    this.notes = notes;
   }
 
   setMontantIndemnisation(montantIndemnisation: number): this {
