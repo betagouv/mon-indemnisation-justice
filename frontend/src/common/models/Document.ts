@@ -1,7 +1,8 @@
-import { Agent, DossierDetail, TypeFDO } from "@/common/models";
+import { DossierDetail, TypeFDO } from "@/common/models";
 import { TypeAttestation } from "@/common/models/Dossier.ts";
 import { estAujourdhui } from "@/common/services/date";
 import { Transform, Type } from "class-transformer";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 export class DocumentType {
   private constructor(
@@ -169,7 +170,7 @@ export class Document {
   @Transform(({ value }) => new Date(value))
   public readonly dateDerniereModification?: Date;
 
-  public estEditable(dossier: DossierDetail, agent: Agent): boolean {
+  public estEditable(dossier: DossierDetail, agent: AgentFIP6): boolean {
     return (
       this.estAjoutRequerant === false &&
       (agent.estValidateur() || agent.instruit(dossier))

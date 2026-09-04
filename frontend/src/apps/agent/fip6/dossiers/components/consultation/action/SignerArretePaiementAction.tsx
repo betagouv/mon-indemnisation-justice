@@ -1,23 +1,23 @@
-import { Loader } from "@common/composants/Loader.tsx";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { plainToInstance } from "class-transformer";
-import { useInjection } from "inversify-react";
-import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { Loader } from "@common/composants/Loader.tsx";
 import {
   Document,
   DossierDetail,
   EtatDossier,
   EtatDossierType,
 } from "@common/models";
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
-import { Upload } from "@codegouvfr/react-dsfr/Upload";
-import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { plainToInstance } from "class-transformer";
+import { useInjection } from "inversify-react";
+import { observer } from "mobx-react-lite";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 const _modale = createModal({
   id: "modale-action-generer-arrete-paiement",
@@ -41,9 +41,11 @@ export const SignerArretePaiementModale = observer(
   function SignerArretePaiementModale({
     dossier,
     agent,
+    onImprime,
   }: {
     dossier: DossierDetail;
     agent: AgentFIP6;
+    onImprime: (document: Document) => void | Promise<void>;
   }) {
     // Est-ce que l'édition de l'arrêté de paiement est en cours
     const [estEdition, setEdition] = useState(true);
@@ -84,8 +86,10 @@ export const SignerArretePaiementModale = observer(
           if (!arrete.estAJour()) {
             // ... alors on le ré-imprime
             setGenerationCourrierEnCours(true);
-            documentManager.imprimer(arrete).then((document: Document) => {
-              dossier.addDocument(document);
+            documentManager.imprimer(arrete).then(({ reponse, erreur }) => {
+              if (reponse) {
+                dossier.addDocument(reponse);
+              }
 
               setGenerationCourrierEnCours(false);
             });
@@ -159,9 +163,7 @@ export const SignerArretePaiementModale = observer(
               <EditeurDocument
                 className="fr-my-2w"
                 document={dossier.getArretePaiement() as Document}
-                onImprime={(document: Document) =>
-                  dossier.addDocument(document)
-                }
+                onImprime={onImprime}
               />
             )}
 

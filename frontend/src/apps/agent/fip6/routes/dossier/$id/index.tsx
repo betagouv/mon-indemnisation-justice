@@ -1,3 +1,5 @@
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { Frise } from "@common/composants/Frise.tsx";
 import {
   Document,
@@ -6,8 +8,6 @@ import {
   Redacteur,
 } from "@common/models";
 import { dateEtHeureSimple } from "@common/services/date";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { AgentManagerInterface } from "@fip6//services/agent";
 import { BadgeEtatDossier } from "@fip6/composants/dossiers/BadgeEtatDossier.tsx";
 import { container } from "@fip6/container";
@@ -28,6 +28,7 @@ import {
   notFound,
   useRouter,
 } from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 
@@ -81,6 +82,10 @@ const ConsultationDossier = observer(function ConsultationDossier({
   redacteurs: Redacteur[];
 }) {
   const routeur = useRouter();
+
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
 
   // Référence vers l'onglet ouvert
   const [selectedTab, selectTab] = useState(
@@ -204,6 +209,10 @@ const ConsultationDossier = observer(function ConsultationDossier({
                 dossier={dossier}
                 agent={agent}
                 redacteurs={redacteurs}
+                onImprime={async (document: Document) => {
+                  await dossierManager.ajouterDocument(dossier, document);
+                  await routeur.invalidate();
+                }}
                 onDecide={() => ouvrirSectionCourrier()}
                 onSigne={() => ouvrirSectionCourrier()}
                 onTermine={async () => await routeur.invalidate()}

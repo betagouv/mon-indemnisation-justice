@@ -230,7 +230,7 @@ export class DossierDetail extends BaseDossier {
     return this.documents.get(type.type) ?? [];
   }
 
-  public addDocument(document: Document): void {
+  public addDocument(document: Document): this {
     if (document.type) {
       if (!this.documents.has(document.type.type) || document.type.estUnique) {
         this.documents.set(document.type.type, []);
@@ -238,6 +238,8 @@ export class DossierDetail extends BaseDossier {
 
       this.documents.get(document.type.type)?.push(document);
     }
+
+    return this;
   }
 
   public removeDocument(document: Document): void {

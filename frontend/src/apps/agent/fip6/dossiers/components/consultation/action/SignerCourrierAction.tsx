@@ -1,8 +1,8 @@
-import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { Loader } from "@common/composants/Loader.tsx";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { Loader } from "@common/composants/Loader.tsx";
+import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { useInjection } from "inversify-react";
 import React, {
   InputEvent,
@@ -12,19 +12,22 @@ import React, {
   useState,
 } from "react";
 
-import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
-import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
-import { Document, DossierDetail, EtatDossier } from "@common/models";
-import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { Document, DossierDetail, EtatDossier } from "@common/models";
+import {
+  APIReponse,
+  DocumentManagerInterface,
+} from "@common/services/agent/document.ts";
+import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import { proxy, useSnapshot } from "valtio";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-confirmation",
@@ -122,10 +125,12 @@ const estEnAttenteSignatureCourrier = ({
 export const SignerCourrierModale = observer(function SignerCourrierModale({
   dossier,
   agent,
+  onImprime,
   onSigne,
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
+  onImprime: (document: Document) => void | Promise<void>;
   onSigne?: () => void;
 }) {
   // État de l"opération de signature en cours :
@@ -157,8 +162,11 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
           setGenerationCourrierEnCours(true);
           documentManager
             .imprimer(courrier, courrier.corps as string)
-            .then((document: Document) => {
-              dossier.addDocument(document);
+            .then(({ reponse, erreur }: APIReponse<Document>) => {
+              if (reponse) {
+                dossier.addDocument(reponse);
+              }
+              // TODO afficher l'erreur
 
               setGenerationCourrierEnCours(false);
             });
@@ -459,7 +467,10 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                   detecterMontantIndemnisation(corps);
                 }
               }}
-              onImprime={(courrier) => dossier.addDocument(courrier)}
+              onImprime={async (courrier) => {
+                await onImprime(courrier);
+                //dossier.addDocument(courrier);
+              }}
               onImpression={(impressionEnCours) =>
                 setSauvegardeEnCours(impressionEnCours)
               }
