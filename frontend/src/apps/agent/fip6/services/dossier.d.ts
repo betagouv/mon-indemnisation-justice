@@ -21,3 +21,10 @@ export type CompteurDossiers = Record<ListeDossier, number>;
 export type DecisionDossier = {
     montantIndemnisation: number;
 } | { motifRejet: MotifRejetBrisPorte};
+
+export type ValidationDecisionDossier = {
+    estValide: true;
+    fichierSigne: File;
+    montantIndemnisation?: number;
+} | { estValide: false;
+    fichierSigne: File;};

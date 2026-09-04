@@ -53,7 +53,7 @@ export const DossierActions = function DossierActionBar({
   redacteurs: Redacteur[];
   onImprime: (document: Document) => void | Promise<void>;
   onDecide: () => void;
-  onSigne?: () => void;
+  onSigne: () => void | Promise<void>;
   onTermine: () => void | Promise<void>;
 }) {
   return (

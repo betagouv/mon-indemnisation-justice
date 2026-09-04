@@ -14,10 +14,10 @@ import React, {
 
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
-import { Document, DossierDetail, EtatDossier } from "@common/models";
+import { Document, DossierDetail } from "@common/models";
 import {
   APIReponse,
   DocumentManagerInterface,
@@ -25,9 +25,7 @@ import {
 import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
-import { plainToInstance } from "class-transformer";
-import { observer } from "mobx-react-lite";
-import { proxy, useSnapshot } from "valtio";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 
 const _modale = createModal({
   id: "modale-action-confirmation",
@@ -101,12 +99,13 @@ const titreProchaineEtape = (
   return p ? titreEtape(dossier, p) : undefined;
 };
 
-const registreSignature = proxy<{ etape: IdEtape }>({
-  etape: "EDITION_COURRIER",
-});
+// Étape à laquelle démarrer la modale, définie par le bouton qui l'ouvre et lue une seule fois à
+// l'ouverture (cf. `onDisclose` du `useIsModalOpen` dans `SignerCourrierModale`)
+let etapeInitiale: IdEtape = "EDITION_COURRIER";
 
-const versEtape = (etape: IdEtape) => {
-  registreSignature.etape = etape;
+const ouvrirModale = (etape: IdEtape) => {
+  etapeInitiale = etape;
+  _modale.open();
 };
 
 const estTailleFichierOk = (fichier?: File) =>
@@ -125,7 +124,7 @@ const estEnAttenteSignatureCourrier = ({
   dossier.enAttenteValidation &&
   agent.estValidateur();
 
-export const SignerCourrierModale = observer(function SignerCourrierModale({
+export const SignerCourrierModale = ({
   dossier,
   agent,
   onImprime,
@@ -134,10 +133,18 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
   dossier: DossierDetail;
   agent: AgentFIP6;
   onImprime: (document: Document) => void | Promise<void>;
-  onSigne?: () => void;
-}) {
-  // État de l"opération de signature en cours :
-  const etatSignature = useSnapshot<{ etape: IdEtape }>(registreSignature);
+  onSigne: () => void | Promise<void>;
+}) => {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+  // Étape en cours dans le parcours de signature
+  const [etape, setEtape] = useState<IdEtape>("EDITION_COURRIER");
+
+  useIsModalOpen(_modale, {
+    onDisclose: () => setEtape(etapeInitiale),
+    onConceal: () => setEtape("EDITION_COURRIER"),
+  });
 
   // Marqueur "_flag_" qui permet d'éviter de vérifier la date d'impression du
   // document qu'une seule fois :
@@ -156,7 +163,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
     if (courrier && !dossier.estEnvoye()) {
       if (
         // À l'étape d'édition du courrier...
-        etatSignature.etape === "EDITION_COURRIER" &&
+        etape === "EDITION_COURRIER" &&
         // ... si la vérification de la date n'a pas encore été faite...
         verificationDateCourrier.current != dossier.id
       ) {
@@ -178,7 +185,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
         verificationDateCourrier.current = dossier.id;
       }
     }
-  }, [dossier.id, etatSignature.etape]);
+  }, [dossier.id, etape]);
 
   // Mémorise le montant de l'indemnisation
   const [montantIndemnisation, setMontantIndemnisation]: [
@@ -205,20 +212,9 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
 
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
-    File | null,
+    File | undefined,
     (fichierSigne: File) => void,
-  ] = useState<File | null>(null);
-
-  // Fichier signé à téléverser
-  const [estFichierSigne, marquerFichierSigne]: [
-    boolean,
-    (estFichierSigne: boolean) => void,
-  ] = useState(false);
-
-  // Indique que l'agent ne souhaite pas téléverser de document et envoyer le
-  // PDF existant
-  const [utiliserCourrierExistant, setUtiliserCourrierExistant] =
-    useState<boolean>(false);
+  ] = useState<File | undefined>(undefined);
 
   // Indique si la sauvegarde de la décision est en cours
   const [sauvegardeEnCours, setSauvegardeEnCours]: [
@@ -245,93 +241,29 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
     }
   };
 
-  const changerMontantIndemnisation = useCallback(
-    async (montantIndemnisation: number) => {
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/proposition-indemnisation/changer-montant.json`,
-        {
-          method: "PUT",
-          headers: {
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            montantIndemnisation,
-          }),
-        },
-      );
+  const envoyerAuRequerant = useCallback(
+    async ({
+      fichierSigne,
+      montantIndemnisation = undefined,
+    }: {
+      fichierSigne: File;
+      montantIndemnisation?: number;
+    }) => {
+      setSauvegardeEnCours(true);
 
-      if (response.ok) {
-        dossier.setMontantIndemnisation(montantIndemnisation);
-      }
+      await dossierManager.validerLaDecision(dossier, {
+        estValide: true,
+        fichierSigne,
+        montantIndemnisation,
+      });
+      await onSigne();
+      _modale.close();
+      setSauvegardeEnCours(false);
+
+      setEtape("EDITION_COURRIER");
     },
     [dossier.id],
   );
-
-  const signerCourrier = async (fichier: File) => {
-    setSauvegardeEnCours(true);
-
-    try {
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/signer-courrier.json`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-          body: (() => {
-            const data = new FormData();
-            data.append("courrier", fichier);
-
-            return data;
-          })(),
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        dossier.addDocument(plainToInstance(Document, data.document));
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSauvegardeEnCours(false);
-      marquerFichierSigne(true);
-      // Déclencher le _hook_ onSigne s'il est défini
-      onSigne?.();
-    }
-  };
-
-  const envoyerAuRequerant = async () => {
-    setSauvegardeEnCours(true);
-
-    try {
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/envoyer.json`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            montantIndemnisation,
-          }),
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSauvegardeEnCours(false);
-      marquerFichierSigne(true);
-      versEtape("EDITION_COURRIER");
-      // Déclencher le _hook_ onSigne s'il est défini
-      onSigne?.();
-    }
-  };
 
   return estEnAttenteSignatureCourrier({ dossier, agent }) ? (
     <_modale.Component
@@ -349,13 +281,13 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
       concealingBackdrop={false}
     >
       <Stepper
-        currentStep={rangEtape(dossier, etatSignature.etape)}
+        currentStep={rangEtape(dossier, etape)}
         stepCount={dossier.estAccepte() ? 4 : 3}
-        title={titreEtape(dossier, etatSignature.etape)}
-        nextTitle={titreProchaineEtape(dossier, etatSignature.etape)}
+        title={titreEtape(dossier, etape)}
+        nextTitle={titreProchaineEtape(dossier, etape)}
       />
 
-      {etatSignature.etape === "EDITION_COURRIER" && (
+      {etape === "EDITION_COURRIER" && (
         <>
           {dossier.estAccepte() && (
             <div
@@ -385,9 +317,6 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                       }
                     }
                   }}
-                  onBlur={() =>
-                    changerMontantIndemnisation(montantIndemnisation)
-                  }
                   aria-describedby="dossier-decision-acceptation-indemnisation-messages"
                   id="dossier-decision-acceptation-indemnisation-champs"
                   type="number"
@@ -505,7 +434,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 priority: "secondary",
                 iconId: "fr-icon-arrow-right-line",
                 onClick: () =>
-                  versEtape(
+                  setEtape(
                     dossier.estAccepte()
                       ? "EDITION_DECLARATION_ACCEPTATION"
                       : "SIGNATURE",
@@ -517,7 +446,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
         </>
       )}
       {/* Édition de la déclaration d'acceptation */}
-      {etatSignature.etape === "EDITION_DECLARATION_ACCEPTATION" && (
+      {etape === "EDITION_DECLARATION_ACCEPTATION" && (
         <>
           <EditeurDocument
             className="fr-input-group fr-col-12"
@@ -550,7 +479,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 children: "Valider la déclaration d'acceptation",
                 priority: "secondary",
                 iconId: "fr-icon-arrow-right-line",
-                onClick: () => versEtape("SIGNATURE"),
+                onClick: () => setEtape("SIGNATURE"),
                 disabled: sauvegardeEnCours,
               },
             ]}
@@ -558,7 +487,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
         </>
       )}
       {/* Téléversement, pour signature, du courrier */}
-      {etatSignature.etape === "SIGNATURE" && (
+      {etape === "SIGNATURE" && (
         <>
           <TelechargerPieceJointe
             pieceJointe={dossier.getCourrierDecision() as Document}
@@ -591,17 +520,6 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
             }}
           />
 
-          <ToggleSwitch
-            className="fr-my-3w"
-            label="Utiliser le document existant"
-            helperText="Évite le téléversement si le document PDF est déjà signé"
-            inputTitle="utliser-document-existant"
-            labelPosition="right"
-            showCheckedHint={false}
-            onChange={(checked) => setUtiliserCourrierExistant(checked)}
-            checked={utiliserCourrierExistant}
-          />
-
           <ButtonsGroup
             className="fr-mt-3w"
             alignment="right"
@@ -621,7 +539,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
               },
               {
                 priority: "secondary",
-                onClick: () => versEtape("EDITION_COURRIER"),
+                onClick: () => setEtape("EDITION_COURRIER"),
                 disabled: sauvegardeEnCours,
                 iconId: "fr-icon-edit-box-line",
                 children: dossier.estAccepte()
@@ -633,16 +551,12 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 priority: "secondary",
                 iconId: "fr-icon-arrow-right-line",
                 disabled:
-                  (!fichierSigne && !utiliserCourrierExistant) ||
-                  (fichierSigne &&
-                    (!estTypeFichierOk(fichierSigne) ||
-                      !estTailleFichierOk(fichierSigne))) ||
+                  !fichierSigne ||
+                  !estTypeFichierOk(fichierSigne) ||
+                  !estTailleFichierOk(fichierSigne) ||
                   sauvegardeEnCours,
                 onClick: async () => {
-                  if (!utiliserCourrierExistant) {
-                    await signerCourrier(fichierSigne as File);
-                  }
-                  versEtape("ENVOI");
+                  setEtape("ENVOI");
                 },
               },
             ]}
@@ -650,7 +564,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
         </>
       )}
       {/* }Envoi au requérant */}
-      {etatSignature.etape === "ENVOI" && (
+      {etape === "ENVOI" && (
         <>
           <Alert
             small={false}
@@ -739,7 +653,11 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
                 priority: "primary",
                 iconId: "fr-icon-send-plane-line",
                 disabled: sauvegardeEnCours,
-                onClick: () => envoyerAuRequerant(),
+                onClick: () =>
+                  envoyerAuRequerant({
+                    fichierSigne: fichierSigne as File,
+                    montantIndemnisation,
+                  }),
               },
             ]}
           />
@@ -749,7 +667,7 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
   ) : (
     <></>
   );
-});
+};
 
 export const signerCourrierBoutons = ({
   dossier,
@@ -767,20 +685,14 @@ export const signerCourrierBoutons = ({
           priority: "secondary",
           disabled: false,
           iconId: "fr-icon-edit-box-line",
-          onClick: () => {
-            versEtape("EDITION_COURRIER");
-            _modale.open();
-          },
+          onClick: () => ouvrirModale("EDITION_COURRIER"),
         } as ButtonProps,
         {
           children: "Signer et envoyer",
           priority: "primary",
           disabled: false,
           iconId: "fr-icon-upload-line",
-          onClick: () => {
-            versEtape("SIGNATURE");
-            _modale.open();
-          },
+          onClick: () => ouvrirModale("SIGNATURE"),
         } as ButtonProps,
       ]
     : [];
