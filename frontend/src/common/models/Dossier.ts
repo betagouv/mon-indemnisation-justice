@@ -200,7 +200,6 @@ export class DossierDetail extends BaseDossier {
       documents: observable,
       addDocument: action,
       removeDocument: action,
-      viderDocumentParType: action,
     });
   }
 
@@ -245,10 +244,6 @@ export class DossierDetail extends BaseDossier {
         .get(document.type.type)
         ?.filter((d) => d.id != document.id) || [],
     );
-  }
-
-  public viderDocumentParType(type: DocumentType): void {
-    this.documents.set(type.type, []);
   }
 
   get piecesJointes(): Document[] {

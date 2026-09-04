@@ -200,8 +200,14 @@ const ConsultationDossier = observer(function ConsultationDossier({
                   await dossierManager.ajouterDocument(dossier, document);
                   await routeur.invalidate();
                 }}
-                onDecide={() => ouvrirSectionCourrier()}
-                onSigne={() => ouvrirSectionCourrier()}
+                onDecide={async () => {
+                  await routeur.invalidate();
+                  ouvrirSectionCourrier();
+                }}
+                onSigne={async () => {
+                  await routeur.invalidate();
+                  ouvrirSectionCourrier();
+                }}
                 onTermine={async () => await routeur.invalidate()}
               />
 

@@ -1,47 +1,15 @@
-import { BaseDossier, DossierDetail, EtatDossier } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { plainToInstance } from "class-transformer";
-import { observer } from "mobx-react-lite";
-import React, { ChangeEvent, useState } from "react";
+import { DossierDetail } from "@common/models";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
+import { useInjection } from "inversify-react";
+import React, { ChangeEvent, useCallback, useState } from "react";
 
 const _modale = createModal({
   id: "modale-action-cloturer",
   isOpenedByDefault: false,
 });
-
-const cloturer = async ({
-  dossier,
-  motif,
-  explication,
-}: {
-  dossier: BaseDossier;
-  motif: string;
-  explication: string;
-}): Promise<null | EtatDossier> => {
-  const response = await fetch(
-    `/api/agent/fip6/dossier/${dossier.id}/cloturer`,
-    {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        motif,
-        explication,
-      }),
-    },
-  );
-
-  if (response.ok) {
-    const data = await response.json();
-    return plainToInstance(EtatDossier, data.etat);
-  }
-
-  return null;
-};
 
 type ActionCloture = "preselection" | "edition" | "sauvegarde";
 interface EtatCloture {
@@ -103,13 +71,19 @@ const estCloturable = ({
   dossier.estCloturable() &&
   (agent.estAttributeur() || agent.estValidateur() || agent.instruit(dossier));
 
-export const CloturerModale = observer(function CloturerActionModale({
+export const CloturerActionModale = ({
   dossier,
   agent,
+  onCloture,
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
-}) {
+  onCloture: () => void | Promise<void>;
+}) => {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
   // Indique l'état de l'action de clôture :
   const [etatCloture, setEtatCloture]: [
     EtatCloture,
@@ -133,17 +107,17 @@ export const CloturerModale = observer(function CloturerActionModale({
     setEtatCloture({ action: "preselection" });
   };
 
-  const valider = async (motif: string, explication: string) => {
-    setAction("sauvegarde");
+  const valider = useCallback(
+    async (motif: string, explication: string) => {
+      setAction("sauvegarde");
 
-    const etatDossier = await cloturer({ dossier, motif, explication });
+      await dossierManager.cloturer(dossier, motif, explication);
+      await onCloture();
 
-    if (etatDossier) {
-      dossier.changerEtat(etatDossier);
-    }
-
-    setEtatCloture({} as EtatCloture);
-  };
+      setEtatCloture({} as EtatCloture);
+    },
+    [dossier],
+  );
 
   return estCloturable({ dossier, agent }) ? (
     <_modale.Component title="Clôturer le dossier" size="large">
@@ -338,7 +312,7 @@ export const CloturerModale = observer(function CloturerActionModale({
   ) : (
     <></>
   );
-});
+};
 
 export const cloturerBoutons = ({
   dossier,
