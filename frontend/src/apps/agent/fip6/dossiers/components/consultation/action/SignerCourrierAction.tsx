@@ -120,7 +120,10 @@ const estEnAttenteSignatureCourrier = ({
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
-}) => dossier.enAttenteValidation && agent.estValidateur();
+}) =>
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
+  dossier.enAttenteValidation &&
+  agent.estValidateur();
 
 export const SignerCourrierModale = observer(function SignerCourrierModale({
   dossier,
@@ -163,10 +166,11 @@ export const SignerCourrierModale = observer(function SignerCourrierModale({
           documentManager
             .imprimer(courrier, courrier.corps as string)
             .then(({ reponse, erreur }: APIReponse<Document>) => {
-              if (reponse) {
+              if (!erreur) {
                 dossier.addDocument(reponse);
+              } else {
+                // TODO afficher un message
               }
-              // TODO afficher l'erreur
 
               setGenerationCourrierEnCours(false);
             });

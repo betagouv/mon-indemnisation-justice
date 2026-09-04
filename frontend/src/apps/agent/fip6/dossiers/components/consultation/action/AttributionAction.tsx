@@ -1,13 +1,13 @@
 "use client";
 
-import { DossierDetail, EtatDossier, Redacteur } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { DossierDetail, EtatDossier, Redacteur } from "@common/models";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { plainToInstance } from "class-transformer";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-attribution",
@@ -53,7 +53,10 @@ const estAAttribuer = ({
   dossier: DossierDetail;
   agent: AgentFIP6;
   redacteurs: Redacteur[];
-}) => agent.estAttributeur() && dossier.estAAttribuer();
+}) =>
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
+  agent.estAttributeur() &&
+  dossier.estAAttribuer();
 
 export const AttribuerModale = observer(function AttribuerActionModale({
   dossier,

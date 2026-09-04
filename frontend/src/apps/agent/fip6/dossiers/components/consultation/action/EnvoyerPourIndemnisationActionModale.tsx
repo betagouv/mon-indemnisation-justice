@@ -22,6 +22,7 @@ const estAEnvoyerPourIndemnisation = ({
   dossier: DossierDetail;
   agent: AgentFIP6;
 }): boolean =>
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
   (agent.instruit(dossier) || agent.estLiaisonBudget()) &&
   dossier.etat.etat === EtatDossierType.OK_A_INDEMNISER;
 
