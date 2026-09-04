@@ -38,6 +38,7 @@ export interface DossierManagerInterface {
   rechercher(requete: RechercheRequete): Promise<RechercheReponse>;
 
   consulter(id: number): Promise<DossierDetail>;
+  annoter(dossier: BaseDossier, notes: string): Promise<void>;
 
   televerserPieceJointe(
     dossier: BaseDossier,
@@ -127,7 +128,22 @@ export class APIDossierManager implements DossierManagerInterface {
     return this.recupererDossier(id);
   }
 
-  // TODO renommer en `televerserPieceJointe`
+  async annoter(dossier: BaseDossier, notes: string): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/annoter`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          notes,
+        }),
+      },
+    );
+  }
+
   async televerserPieceJointe(
     dossier: BaseDossier,
     type: DocumentType,

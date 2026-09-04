@@ -4,12 +4,9 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { DossierDetail, Redacteur } from "@common/models";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
-import { RouteurFIP6 } from "@fip6/routeur";
 import { DossierManagerInterface } from "@fip6/services/dossier.ts";
-import { useRouter } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { observer } from "mobx-react-lite";
-import React, { useCallback, useState } from "react";
+import { default as React, useCallback, useState } from "react";
 
 const _modale = createModal({
   id: "modale-action-attribution",
@@ -29,16 +26,17 @@ const estAAttribuer = ({
   agent.estAttributeur() &&
   dossier.estAAttribuer();
 
-export const AttribuerModale = observer(function AttribuerActionModale({
+export const AttribuerActionModale = ({
   dossier,
   agent,
   redacteurs,
+  onAttribue,
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
   redacteurs: Redacteur[];
-}) {
-  const routeur = useRouter<typeof RouteurFIP6>();
+  onAttribue: () => void | Promise<void>;
+}) => {
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
   );
@@ -66,7 +64,7 @@ export const AttribuerModale = observer(function AttribuerActionModale({
       setSauvegarderEnCours(true);
 
       await dossierManager.attribuer(dossier, attributaire);
-      await routeur.invalidate();
+      await onAttribue();
 
       setAttributaire(undefined);
       setAttributionEnCours(false);
@@ -131,7 +129,7 @@ export const AttribuerModale = observer(function AttribuerActionModale({
   ) : (
     <></>
   );
-});
+};
 
 export const attribuerBoutons = ({
   dossier,

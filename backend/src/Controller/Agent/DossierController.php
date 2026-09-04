@@ -213,14 +213,4 @@ class DossierController extends AgentController
             'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
         ], Response::HTTP_OK);
     }
-
-    // TODO déplacer dans une route API dédiée
-    #[Route('/dossier/{id}/annoter.json', name: 'agent_redacteur_annoter_dossier', methods: ['POST'])]
-    public function annoterDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        $dossier->setNotes($request->getPayload()->get('notes'));
-        $this->dossierRepository->save($dossier);
-
-        return new JsonResponse('', Response::HTTP_NO_CONTENT);
-    }
 }

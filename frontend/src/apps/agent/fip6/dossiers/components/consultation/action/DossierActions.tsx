@@ -28,9 +28,11 @@ import {
 } from "@fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import React from "react";
+
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import {
+  AttribuerActionModale,
   attribuerBoutons,
-  AttribuerModale as AttribuerActionModale,
 } from "./AttributionAction.tsx";
 import {
   cloturerBoutons,
@@ -94,6 +96,7 @@ export const DossierActions = function DossierActionBar({
         dossier={dossier}
         agent={agent}
         redacteurs={redacteurs}
+        onAttribue={onTermine}
       />
       <DeciderRejetModale
         dossier={dossier}
