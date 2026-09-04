@@ -1,3 +1,4 @@
+import { CompteurDossiers } from "./dossier.d";
 import {
   Agent,
   BaseDossier,
@@ -18,20 +19,6 @@ import { queryClient } from "@fip6/query.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
-export type ListeDossier =
-  | "a-categoriser"
-  | "a-attribuer"
-  | "a-instruire"
-  | "en-instruction"
-  | "rejet-a-signer"
-  | "proposition-a-signer"
-  | "a-verifier"
-  | "arrete-a-signer"
-  | "a-transmettre"
-  | "en-attente-indemnisation";
-
-export type CompteurDossiers = Record<ListeDossier, number>;
-
 export interface DossierManagerInterface {
   compteursDossiers(agent: Agent): Promise<CompteurDossiers>;
 
@@ -39,6 +26,11 @@ export interface DossierManagerInterface {
 
   consulter(id: number): Promise<DossierDetail>;
   annoter(dossier: BaseDossier, notes: string): Promise<void>;
+  cloturer(
+    dossier: BaseDossier,
+    motif: string,
+    explication: string,
+  ): Promise<void>;
 
   televerserPieceJointe(
     dossier: BaseDossier,
@@ -142,6 +134,39 @@ export class APIDossierManager implements DossierManagerInterface {
         }),
       },
     );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async cloturer(
+    dossier: BaseDossier,
+    motif: string,
+    explication: string,
+  ): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/cloturer`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          motif,
+          explication,
+        }),
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
   }
 
   async televerserPieceJointe(

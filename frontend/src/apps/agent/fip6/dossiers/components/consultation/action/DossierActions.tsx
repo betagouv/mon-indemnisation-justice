@@ -34,10 +34,7 @@ import {
   AttribuerActionModale,
   attribuerBoutons,
 } from "./AttributionAction.tsx";
-import {
-  cloturerBoutons,
-  CloturerModale as CloturerActionModale,
-} from "./CloturerAction.tsx";
+import { CloturerActionModale, cloturerBoutons } from "./CloturerAction.tsx";
 import {
   signerArretePaiementBoutons,
   SignerArretePaiementModale,
@@ -91,7 +88,11 @@ export const DossierActions = function DossierActionBar({
       />
 
       {/** Modales d'action sur le dossier */}
-      <CloturerActionModale dossier={dossier} agent={agent} />
+      <CloturerActionModale
+        dossier={dossier}
+        agent={agent}
+        onCloture={onTermine}
+      />
       <AttribuerActionModale
         dossier={dossier}
         agent={agent}
