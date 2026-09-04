@@ -9,18 +9,18 @@ import React, {
   useState,
 } from "react";
 
-import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
-import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
-import { Loader } from "@common/composants/Loader.tsx";
-import { Document, DossierDetail, EtatDossier } from "@common/models";
-import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { Loader } from "@common/composants/Loader.tsx";
+import { Document, DossierDetail, EtatDossier } from "@common/models";
+import { DocumentManagerInterface } from "@common/services/agent/document.ts";
+import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
+import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-decider-indemnisation",
@@ -115,10 +115,12 @@ export const DeciderIndemnisationModale = observer(
   function DeciderIndemnisationModale({
     dossier,
     agent,
+    onImprime,
     onDecide,
   }: {
     dossier: DossierDetail;
     agent: AgentFIP6;
+    onImprime: (document: Document) => void | Promise<void>;
     onDecide?: () => void;
   }) {
     // Le courrier de décision
@@ -291,9 +293,9 @@ export const DeciderIndemnisationModale = observer(
               <EditeurDocument
                 className="fr-my-2w"
                 document={courrier as Document}
-                onImprime={(document: Document) => {
+                onImprime={async (document: Document) => {
+                  await onImprime(document);
                   setCourrier(document);
-                  dossier.addDocument(document);
                 }}
                 onImpression={(impressionEnCours) =>
                   setGenerationEnCours(impressionEnCours)
@@ -350,9 +352,9 @@ export const DeciderIndemnisationModale = observer(
               <EditeurDocument
                 className="fr-my-2w"
                 document={declarationAcceptation as Document}
-                onImprime={(document: Document) => {
+                onImprime={async (document: Document) => {
                   setDeclarationAcceptation(document);
-                  dossier.addDocument(document);
+                  await onImprime(document);
                 }}
                 onImpression={(impressionEnCours) =>
                   setGenerationEnCours(impressionEnCours)
