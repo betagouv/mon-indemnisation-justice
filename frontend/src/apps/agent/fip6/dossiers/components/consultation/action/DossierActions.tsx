@@ -26,7 +26,6 @@ import {
   signerCourrierBoutons,
   SignerCourrierModale,
 } from "@fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import React from "react";
 
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
@@ -53,7 +52,7 @@ export const DossierActions = function DossierActionBar({
   agent: AgentFIP6;
   redacteurs: Redacteur[];
   onImprime: (document: Document) => void | Promise<void>;
-  onDecide?: () => void;
+  onDecide: () => void;
   onSigne?: () => void;
   onTermine: () => void | Promise<void>;
 }) {

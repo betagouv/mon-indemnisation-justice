@@ -83,9 +83,6 @@ const ConsultationDossier = observer(function ConsultationDossier({
   redacteurs: Redacteur[];
 }) {
   const routeur = useRouter<typeof RouteurFIP6>();
-  const dossierManager = useInjection<DossierManagerInterface>(
-    DossierManagerInterface.$,
-  );
 
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
