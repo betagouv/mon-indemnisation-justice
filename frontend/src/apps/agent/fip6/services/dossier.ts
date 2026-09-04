@@ -17,7 +17,11 @@ import {
 import { queryClient } from "@fip6/query.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
-import { type CompteurDossiers, type DecisionDossier } from "./dossier.d";
+import {
+  type CompteurDossiers,
+  type DecisionDossier,
+  type ValidationDecisionDossier,
+} from "./dossier.d";
 
 export interface DossierManagerInterface {
   compteursDossiers(agent: Agent): Promise<CompteurDossiers>;
@@ -45,6 +49,11 @@ export interface DossierManagerInterface {
   attribuer(dossier: BaseDossier, redacteur: Redacteur): Promise<void>;
 
   decider(dossier: BaseDossier, decision: DecisionDossier): Promise<void>;
+
+  validerLaDecision(
+    dossier: BaseDossier,
+    validation: ValidationDecisionDossier,
+  ): Promise<void>;
 
   transmettreAFIP3(dossier: BaseDossier): Promise<void>;
 
@@ -242,6 +251,36 @@ export class APIDossierManager implements DossierManagerInterface {
         body: JSON.stringify({
           ...decision,
         }),
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async validerLaDecision(
+    dossier: BaseDossier,
+    validation: ValidationDecisionDossier,
+  ): Promise<void> {
+    const payload = new FormData();
+    payload.append("fichierSigne", validation.fichierSigne);
+    payload.append("estValide", validation.estValide ? "true" : "false");
+
+    if (validation.estValide) {
+      payload.append(
+        "montantIndemnisation",
+        validation.montantIndemnisation.toString(),
+      );
+    }
+
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/valider-decision`,
+      {
+        method: "POST",
+        body: payload,
       },
     );
 
