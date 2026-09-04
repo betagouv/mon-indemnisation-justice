@@ -13,8 +13,10 @@ class DossierVoter extends Voter
     public const string ACTION_CONSULTER = 'dossier:consulter';
     public const string ACTION_RECHERCHER = 'dossier:rechercher';
     public const string ACTION_DECOMPTER = 'dossier:decompter';
+    public const string ACTION_ANNOTER = 'dossier:annoter';
     public const string ACTION_ATTRIBUER = 'dossier:attribuer';
     public const string ACTION_INSTRUIRE = 'dossier:instruire';
+    public const string ACTION_VALIDER_DECISION = 'dossier:valider-decision';
     public const string ACTION_CLOTURER = 'dossier:cloturer';
     public const string ACTION_AJOUTER_PIECE_JOINTE = 'dossier:ajouter-piece-jointe';
     public const string ACTION_GENERER_DOCUMENT = 'dossier:generer-document';
@@ -38,8 +40,10 @@ class DossierVoter extends Voter
             self::ACTION_CONSULTER,
             self::ACTION_RECHERCHER,
             self::ACTION_DECOMPTER,
+            self::ACTION_ANNOTER,
             self::ACTION_ATTRIBUER,
             self::ACTION_INSTRUIRE,
+            self::ACTION_VALIDER_DECISION,
             self::ACTION_CLOTURER,
             self::ACTION_AJOUTER_PIECE_JOINTE,
             self::ACTION_GENERER_DOCUMENT,
@@ -74,10 +78,13 @@ class DossierVoter extends Voter
         return match ($attribute) {
             self::ACTION_CONSULTER, => $this->agentPeutConsulter($agent, $subject),
             self::ACTION_DECOMPTER, => $agent->aRole(Agent::ROLE_AGENT_DOSSIER),
+            // L'annotation est permise aux agents rédacteur, validateur ou attributeur
+            self::ACTION_ANNOTER, => $agent->aRole(Agent::ROLE_AGENT_REDACTEUR, Agent::ROLE_AGENT_ATTRIBUTEUR, Agent::ROLE_AGENT_VALIDATEUR),
             self::ACTION_RECHERCHER, => $this->agentPeutRechercher($agent),
             self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent, $subject),
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
+            self::ACTION_VALIDER_DECISION => $this->agentPeutValider($agent, $subject),
             self::ACTION_CLOTURER => $this->agentPeutCloturer($agent, $subject),
             self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
             self::ACTION_TRANSMETTRE_A_FIP3, => $this->agentPeutTransmettreAFIP3($agent, $subject),
@@ -109,6 +116,11 @@ class DossierVoter extends Voter
     protected function agentPeutInstruire(Agent $agent, Dossier $dossier): bool
     {
         return $agent->estRedacteur() && $agent->instruit($dossier);
+    }
+
+    protected function agentPeutValider(Agent $agent, Dossier $dossier): bool
+    {
+        return $dossier->estASigner() && $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR);
     }
 
     protected function agentPeutCloturer(Agent $agent, Dossier $dossier): bool

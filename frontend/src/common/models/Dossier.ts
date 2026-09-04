@@ -19,8 +19,11 @@ export type TypeAttestation =
   | "COURRIER_FDO"
   | "PAS_ATTESTATION";
 
+export type TypeDossier = "BRI" | "DYS";
+
 export abstract class BaseDossier {
   public readonly id: number;
+  public readonly type: TypeDossier = "BRI";
   public readonly reference: string;
   public montantIndemnisation?: number;
 
@@ -41,16 +44,16 @@ export abstract class BaseDossier {
 
   abstract estIssuDeclarationFDO(): boolean;
 
+  public estBrisDePorte(): boolean {
+    return this.type === "BRI";
+  }
+
   public estAAttribuer(): boolean {
     return this.etat.etat.egal(EtatDossierType.A_ATTRIBUER);
   }
 
   estDepose(): boolean {
     return !!this.dateDepot;
-  }
-
-  attribuer(redacteur: Redacteur): void {
-    this.redacteur = redacteur;
   }
 
   enAttenteInstruction(): boolean {
@@ -157,7 +160,7 @@ export class DossierDetail extends BaseDossier {
 
   public descriptionRequerant?: string;
 
-  public notes?: string;
+  public readonly notes: string = "";
 
   @Expose()
   @Type(() => Adresse)
@@ -190,7 +193,6 @@ export class DossierDetail extends BaseDossier {
     super();
     makeObservable(this, {
       redacteur: observable,
-      attribuer: action,
       enAttenteDecision: computed,
       etat: observable,
       changerEtat: action,
@@ -198,18 +200,11 @@ export class DossierDetail extends BaseDossier {
       documents: observable,
       addDocument: action,
       removeDocument: action,
-      viderDocumentParType: action,
-      notes: observable,
-      annoter: action,
     });
   }
 
   estIssuDeclarationFDO(): boolean {
     return !!this.declarationFDO?.id;
-  }
-
-  annoter(notes: string): void {
-    this.notes = notes;
   }
 
   setMontantIndemnisation(montantIndemnisation: number): this {
@@ -230,7 +225,7 @@ export class DossierDetail extends BaseDossier {
     return this.documents.get(type.type) ?? [];
   }
 
-  public addDocument(document: Document): void {
+  public addDocument(document: Document): this {
     if (document.type) {
       if (!this.documents.has(document.type.type) || document.type.estUnique) {
         this.documents.set(document.type.type, []);
@@ -238,6 +233,8 @@ export class DossierDetail extends BaseDossier {
 
       this.documents.get(document.type.type)?.push(document);
     }
+
+    return this;
   }
 
   public removeDocument(document: Document): void {
@@ -247,10 +244,6 @@ export class DossierDetail extends BaseDossier {
         .get(document.type.type)
         ?.filter((d) => d.id != document.id) || [],
     );
-  }
-
-  public viderDocumentParType(type: DocumentType): void {
-    this.documents.set(type.type, []);
   }
 
   get piecesJointes(): Document[] {

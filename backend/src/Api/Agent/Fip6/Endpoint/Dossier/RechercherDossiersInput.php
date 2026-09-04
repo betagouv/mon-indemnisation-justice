@@ -4,12 +4,17 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
 use MonIndemnisationJustice\Api\Requerant\Dossier\Normalization\EntityResolveur;
 use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 
 class RechercherDossiersInput
 {
+    // La page (>= 1)
     public int $p = 1;
+    // La taille de la page (= le nombre de résultats par page)
     public int $t = 20;
+    /** @var DossierType[] */
+    public array $d = [DossierType::BRIS_PORTE];
     // Paramètre GET lié aux états du dossier
     public ?string $e = null;
     // Paramètre GET lié aux rédacteurs attribués

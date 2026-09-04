@@ -1,40 +1,59 @@
-import { queryClient } from "@fip6/query.ts";
 import {
   Agent,
   BaseDossier,
   Document,
   DocumentType,
+  DossierApercu,
   DossierDetail,
+  Redacteur,
 } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
 import { dateChiffre } from "@/common/services/date.ts";
+import {
+  RechercheReponse,
+  RechercheRequete,
+  requeteVersUrl,
+} from "@fip6/composants/pages/RechercherDossierPage.tsx";
+import { queryClient } from "@fip6/query.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
-
-export type ListeDossier =
-  | "a-categoriser"
-  | "a-attribuer"
-  | "a-instruire"
-  | "en-instruction"
-  | "rejet-a-signer"
-  | "proposition-a-signer"
-  | "a-verifier"
-  | "arrete-a-signer"
-  | "a-transmettre"
-  | "en-attente-indemnisation";
-
-export type CompteurDossiers = Record<ListeDossier, number>;
+import {
+  type CompteurDossiers,
+  type DecisionDossier,
+  type ValidationDecisionDossier,
+} from "./dossier.d";
 
 export interface DossierManagerInterface {
   compteursDossiers(agent: Agent): Promise<CompteurDossiers>;
 
+  rechercher(requete: RechercheRequete): Promise<RechercheReponse>;
+
   consulter(id: number): Promise<DossierDetail>;
 
-  ajouterPieceJointe(
+  annoter(dossier: BaseDossier, notes: string): Promise<void>;
+
+  cloturer(
+    dossier: BaseDossier,
+    motif: string,
+    explication: string,
+  ): Promise<void>;
+
+  televerserPieceJointe(
     dossier: BaseDossier,
     type: DocumentType,
     fichier: File,
   ): Promise<Document>;
+
+  ajouterDocument(dossier: DossierDetail, document: Document): void;
+
+  attribuer(dossier: BaseDossier, redacteur: Redacteur): Promise<void>;
+
+  decider(dossier: BaseDossier, decision: DecisionDossier): Promise<void>;
+
+  validerLaDecision(
+    dossier: BaseDossier,
+    validation: ValidationDecisionDossier,
+  ): Promise<void>;
 
   transmettreAFIP3(dossier: BaseDossier): Promise<void>;
 
@@ -71,6 +90,20 @@ export class APIDossierManager implements DossierManagerInterface {
     });
   }
 
+  async rechercher(requete: RechercheRequete): Promise<RechercheReponse> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossiers/rechercher?${requeteVersUrl(requete)}`,
+    );
+    const data = await reponse.json();
+
+    return {
+      resultats: plainToInstance(DossierApercu, data.resultats as any[]),
+      taille: data.taille,
+      total: data.total,
+      page: data.page,
+    };
+  }
+
   protected recupererDossier(id: number): Promise<DossierDetail> {
     return queryClient.fetchQuery<DossierDetail>({
       queryKey: ["DossierManagerInterface", "dossier", id],
@@ -100,7 +133,56 @@ export class APIDossierManager implements DossierManagerInterface {
     return this.recupererDossier(id);
   }
 
-  async ajouterPieceJointe(
+  async annoter(dossier: BaseDossier, notes: string): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/annoter`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          notes,
+        }),
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async cloturer(
+    dossier: BaseDossier,
+    motif: string,
+    explication: string,
+  ): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/cloturer`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          motif,
+          explication,
+        }),
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async televerserPieceJointe(
     dossier: BaseDossier,
     type: DocumentType,
     fichier: File,
@@ -126,6 +208,87 @@ export class APIDossierManager implements DossierManagerInterface {
       data?.erreur ??
         "Une erreur est survenue lors de l'envoi de la pièce jointe",
     );
+  }
+
+  ajouterDocument(dossier: DossierDetail, document: Document): void {
+    this.enregistrerDossier(dossier.addDocument(document));
+  }
+
+  async attribuer(dossier: BaseDossier, redacteur: Redacteur): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/attribuer`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          redacteur_id: redacteur.id,
+        }),
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async decider(
+    dossier: BaseDossier,
+    decision: DecisionDossier,
+  ): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/decider`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          ...decision,
+        }),
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async validerLaDecision(
+    dossier: BaseDossier,
+    validation: ValidationDecisionDossier,
+  ): Promise<void> {
+    const payload = new FormData();
+    payload.append("fichierSigne", validation.fichierSigne);
+    payload.append("estValide", validation.estValide ? "true" : "false");
+
+    if (validation.estValide) {
+      payload.append(
+        "montantIndemnisation",
+        validation.montantIndemnisation.toString(),
+      );
+    }
+
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/valider-decision`,
+      {
+        method: "POST",
+        body: payload,
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
   }
 
   async transmettreAFIP3(dossier: BaseDossier): Promise<void> {

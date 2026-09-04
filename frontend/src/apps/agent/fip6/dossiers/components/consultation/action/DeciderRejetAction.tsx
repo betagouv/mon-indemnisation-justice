@@ -1,5 +1,4 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { plainToInstance } from "class-transformer";
 import React, {
   Dispatch,
   SetStateAction,
@@ -14,7 +13,7 @@ import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { Loader } from "@common/composants/Loader.tsx";
-import { Document, DossierDetail, EtatDossier } from "@common/models";
+import { Document, DossierDetail } from "@common/models";
 import {
   getLibelleMotifRejetBrisPorte,
   MotifRejetBrisPorte,
@@ -24,8 +23,8 @@ import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 import { useInjection } from "inversify-react";
-import { observer } from "mobx-react-lite";
 
 const _modale = createModal({
   id: "modale-action-decider-rejet",
@@ -67,7 +66,10 @@ const estEnAttenteDecision = ({
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
-}) => dossier.enInstruction() && agent.instruit(dossier);
+}) =>
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
+  dossier.enInstruction() &&
+  agent.instruit(dossier);
 
 const DefinirMotifRefus = ({
   motifRejet,
@@ -106,15 +108,21 @@ const DefinirMotifRefus = ({
     </>
   );
 };
-export const DeciderRejetModale = observer(function DeciderRejetModale({
+export const DeciderRejetModale = ({
   dossier,
   agent,
+  onImprime,
   onDecide,
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
-  onDecide?: () => void;
-}) {
+  onImprime: (document: Document) => void | Promise<void>;
+  onDecide: () => void | Promise<void>;
+}) => {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
   const [courrier, setCourrier] = useState<Document | null>(
     dossier.getCourrierDecision(),
   );
@@ -184,29 +192,12 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
     async ({ motifRejet }: { motifRejet: MotifRejetBrisPorte }) => {
       setSauvegarderEnCours(true);
 
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/decider.json`,
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({ motifRejet }),
-        },
-      );
+      await dossierManager.decider(dossier, { motifRejet });
+      await onDecide();
 
-      if (response.ok) {
-        const data = await response.json();
-        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-      }
-
-      annuler();
+      _modale.close();
 
       setSauvegarderEnCours(false);
-
-      // Déclencher le hook `onDecide` s'il est défini
-      onDecide?.();
     },
     [dossier],
   );
@@ -276,7 +267,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
               regenererDocument={() =>
                 genererCourrierRejet(dossier, motifRejet as MotifRejetBrisPorte)
               }
-              onImprime={(document: Document) => dossier.addDocument(document)}
+              onImprime={onImprime}
               onImpression={(impressionEnCours) =>
                 setGenerationEnCours(impressionEnCours)
               }
@@ -378,7 +369,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
   ) : (
     <></>
   );
-});
+};
 
 export const deciderRejetBoutons = ({
   dossier,

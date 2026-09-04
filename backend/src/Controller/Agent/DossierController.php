@@ -9,16 +9,13 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Repository\DossierRepository;
 use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\DossierManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -74,51 +71,6 @@ class DossierController extends AgentController
     }
 
     // TODO déplacer dans une route API dédiée
-    #[IsGranted(Agent::ROLE_AGENT_REDACTEUR)]
-    #[Route('/dossier/{id}/decider.json', name: 'agent_redacteur_decider_accepter_dossier', methods: ['POST'])]
-    public function decider(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        $agent = $this->getAgent();
-
-        if ($agent !== $dossier->getRedacteur()) {
-            return new JsonResponse(['error' => "Vous n'êtes pas attribué à l'instruction de ce dossier"], Response::HTTP_UNAUTHORIZED);
-        }
-
-        $this->dossierManager->avancer(
-            $dossier,
-            $agent,
-            contexte: $request->getPayload()->has('motifRejet') || $request->getPayload()->has('montantIndemnisation') ?
-                array_merge(
-                    $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : [],
-                    $request->getPayload()->has('motifRejet') ? ['motifRejet' => MotifRejetBrisPorte::tryFrom($request->getPayload()->get('motifRejet'))] : [],
-                ) :
-                null,
-        );
-
-        return new JsonResponse([
-            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
-        ], Response::HTTP_OK);
-    }
-
-    // TODO déplacer dans une route API dédiée
-    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
-    #[Route('/dossier/{id}/proposition-indemnisation/changer-montant.json', name: 'agent_redacteur_editer_courrier_dossier', methods: ['PUT'])]
-    public function changerMontantIndemnisation(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        if (!$dossier->getEtatDossier()->estASigner()) {
-            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
-        }
-
-        $montantIndemnisation = floatval($request->getPayload()->get('montantIndemnisation'));
-        $dossier->setPropositionIndemnisation($montantIndemnisation);
-
-        $this->em->persist($dossier);
-        $this->em->flush();
-
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
-    // TODO déplacer dans une route API dédiée
     #[IsGranted(
         attribute: new Expression('user.instruit(subject["dossier"])'),
         subject: [
@@ -140,35 +92,6 @@ class DossierController extends AgentController
         $this->em->flush();
 
         return new JsonResponse(['etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json', ['agent:detail'])]);
-    }
-
-    // TODO déplacer dans une route API dédiée
-    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
-    #[Route('/dossier/{id}/signer-courrier.json', name: 'agent_redacteur_signer_courrier_dossier', methods: ['POST'])]
-    public function signerCourrierDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request, EventDispatcherInterface $eventDispatcher): Response
-    {
-        if (!$dossier->getEtatDossier()->estASigner()) {
-            return new JsonResponse(['error' => "Cet dossier n'est pas à valider"], Response::HTTP_BAD_REQUEST);
-        }
-
-        $document = $dossier->getCourrierDecision();
-
-        if ($request->files->has('courrier')) {
-            /** @var UploadedFile $file */
-            $file = $request->files->get('courrier');
-
-            if (null === $file?->getPathname()) {
-                throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
-            }
-
-            $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, DocumentType::TYPE_COURRIER_MINISTERE, estAjoutRequerant: false);
-        }
-
-        $this->dossierRepository->save($dossier);
-
-        return new JsonResponse([
-            'document' => $this->normalizer->normalize(PieceJointeOutput::depuisDocument($document), 'json'),
-        ], Response::HTTP_OK);
     }
 
     // TODO déplacer dans une route API dédiée
@@ -195,32 +118,5 @@ class DossierController extends AgentController
             'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
             'document' => $this->normalizer->normalize(PieceJointeOutput::depuisDocument($document), 'json'),
         ], Response::HTTP_OK);
-    }
-
-    // TODO déplacer dans une route API dédiée
-    #[IsGranted(Agent::ROLE_AGENT_VALIDATEUR)]
-    #[Route('/dossier/{id}/envoyer.json', name: 'agent_redacteur_envoyer_dossier', methods: ['POST'])]
-    public function envoyer(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        $agent = $this->getAgent();
-
-        $this->dossierManager->avancer($dossier, $agent, contexte: array_merge(
-            $request->getPayload()->has('montantIndemnisation') ? ['montantIndemnisation' => floatval($request->getPayload()->get('montantIndemnisation'))] : [],
-            $request->getPayload()->has('motifRejet') ? ['motifRejet' => $request->getPayload()->get('motifRejet')] : [],
-        ));
-
-        return new JsonResponse([
-            'etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json'),
-        ], Response::HTTP_OK);
-    }
-
-    // TODO déplacer dans une route API dédiée
-    #[Route('/dossier/{id}/annoter.json', name: 'agent_redacteur_annoter_dossier', methods: ['POST'])]
-    public function annoterDossier(#[MapEntity(id: 'id')] Dossier $dossier, Request $request): Response
-    {
-        $dossier->setNotes($request->getPayload()->get('notes'));
-        $this->dossierRepository->save($dossier);
-
-        return new JsonResponse('', Response::HTTP_NO_CONTENT);
     }
 }

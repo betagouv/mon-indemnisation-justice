@@ -10,10 +10,10 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { plainToInstance } from "class-transformer";
 import { useInjection } from "inversify-react";
 import React, { useCallback, useEffect, useState } from "react";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-verifier-acceptation",
@@ -28,7 +28,9 @@ type ValidationAcceptationEtat = {
 };
 
 const estAVerifier = ({ dossier, agent }): boolean =>
-  dossier.estAVerifier && agent.instruit(dossier);
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
+  dossier.estAVerifier &&
+  agent.instruit(dossier);
 
 /**
  * Le rédacteur vérifie la déclaration d'acceptation et la valide
@@ -37,9 +39,11 @@ export const GenererArretePaiementModale =
   function GenererArretePaiementActionModale({
     dossier,
     agent,
+    onImprime,
   }: {
     dossier: DossierDetail;
     agent: AgentFIP6;
+    onImprime: (document: Document) => void | Promise<void>;
   }) {
     // Indique l'état de la validation en cours
     const [etatValidation, setEtatValidation]: [
