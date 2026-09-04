@@ -75,7 +75,7 @@ export function critereDiligences(preuves: boolean): CritereEligibilite {
   return {
     label: "Diligences accomplies",
     rempli: preuves,
-    detail: preuves ? "Oui, j'ai des preuves" : "Non, je n'ai pas de preuves",
+    detail: preuves ? "Oui, j'ai des preuves des démarches" : "Non, je n'ai pas de preuves",
   };
 }
 

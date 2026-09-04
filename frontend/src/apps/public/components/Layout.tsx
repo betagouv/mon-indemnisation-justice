@@ -43,7 +43,7 @@ export const Layout = ({ children }: Props) => {
 
     <Footer
       accessibility="non compliant"
-      contentDescription="Mon Indemnisation Justice est un service public numérique du Ministère de la Justice permettant de déclarer un déni de justice et de suivre votre dossier d'indemnisation."
+      contentDescription="Mon Indemnisation Justice est un service public numérique du Ministère de la Justice permettant de déclarer un délai déraisonnable de procédure et de suivre votre dossier d'indemnisation."
       bottomItems={[headerFooterDisplayItem]}
       termsLinkProps={{ href: "/mentions-legales" }}
     />

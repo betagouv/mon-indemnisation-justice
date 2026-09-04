@@ -89,7 +89,7 @@ export function StepActionContentieuse({
               <Alert
                 className="fr-mt-2w"
                 severity="error"
-                title="Démarche irrecevable"
+                title="Vous n'êtes pas éligible à déposer un dossier"
                 description="Une procédure contentieuse en cours devant l'AJE rend la démarche précontentieuse irrecevable."
               />
             );

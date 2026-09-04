@@ -15,7 +15,6 @@ export type TypeDecision = (typeof TypeDecision)[keyof typeof TypeDecision];
 export const PieceProcedure = {
   ActeIntroductif: "acte_introductif",
   Ecritures: "ecritures",
-  Convocations: "convocations",
   Echanges: "echanges",
   DocumentsProcedure: "documents_procedure",
   Aucune: "aucune",

@@ -11,12 +11,12 @@ function AccueilVisiteur() {
   return (
     <Layout>
       <Breadcrumb
-        currentPageLabel="Déclarer un déni de justice"
+        currentPageLabel="Déclarer un délai déraisonnable de procédure"
         homeLinkProps={{ href: "/" }}
         segments={[]}
       />
 
-      <h1>Déclarer un déni de justice</h1>
+      <h1>Déclarer un délai déraisonnable de procédure</h1>
 
       <p className="fr-mb-3w">
        Ce service vous permet de déclarer une situation susceptible de constituer un déni de justice en raison
@@ -27,7 +27,7 @@ function AccueilVisiteur() {
 
       <CallOut
         iconId="fr-icon-information-line"
-        title="Liste des documents demandés pour une déclaration de déni de justice"
+        title="Liste des documents demandés pour une déclaration de délai déraisonnable de procédure"
         bodyAs="div"
       >
         <p>
@@ -38,8 +38,8 @@ function AccueilVisiteur() {
         </p>
 
         <p>
-          Documents et informations à fournir pour une déclaration de déni
-          de justice :
+          Documents et informations à fournir pour une déclaration d'un
+          délai déraisonnable de procédure :
         </p>
         <ul>
           <li>Pièce d'identité en cours de validité</li>
