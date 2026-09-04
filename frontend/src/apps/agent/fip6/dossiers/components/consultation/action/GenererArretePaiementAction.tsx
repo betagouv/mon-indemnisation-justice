@@ -28,7 +28,9 @@ type ValidationAcceptationEtat = {
 };
 
 const estAVerifier = ({ dossier, agent }): boolean =>
-  dossier.estAVerifier && agent.instruit(dossier);
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
+  dossier.estAVerifier &&
+  agent.instruit(dossier);
 
 /**
  * Le rédacteur vérifie la déclaration d'acceptation et la valide

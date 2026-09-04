@@ -64,7 +64,10 @@ const estEnAttenteDecision = ({
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
-}) => dossier.enInstruction() && agent.instruit(dossier);
+}) =>
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
+  dossier.enInstruction() &&
+  agent.instruit(dossier);
 
 const DefinirMontantIndemnisation = ({
   montantIndemnisation,

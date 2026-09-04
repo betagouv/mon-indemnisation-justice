@@ -19,8 +19,11 @@ export type TypeAttestation =
   | "COURRIER_FDO"
   | "PAS_ATTESTATION";
 
+export type TypeDossier = "BRI" | "DYS";
+
 export abstract class BaseDossier {
   public readonly id: number;
+  public readonly type: TypeDossier = "BRI";
   public readonly reference: string;
   public montantIndemnisation?: number;
 
@@ -40,6 +43,10 @@ export abstract class BaseDossier {
   public readonly estEligible: boolean;
 
   abstract estIssuDeclarationFDO(): boolean;
+
+  public estBrisDePorte(): boolean {
+    return this.type === "BRI";
+  }
 
   public estAAttribuer(): boolean {
     return this.etat.etat.egal(EtatDossierType.A_ATTRIBUER);

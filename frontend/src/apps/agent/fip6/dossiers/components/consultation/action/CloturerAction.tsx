@@ -99,6 +99,7 @@ const estCloturable = ({
   dossier: DossierDetail;
   agent: AgentFIP6;
 }) =>
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
   dossier.estCloturable() &&
   (agent.estAttributeur() || agent.estValidateur() || agent.instruit(dossier));
 
