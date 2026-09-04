@@ -56,10 +56,6 @@ export abstract class BaseDossier {
     return !!this.dateDepot;
   }
 
-  attribuer(redacteur: Redacteur): void {
-    this.redacteur = redacteur;
-  }
-
   enAttenteInstruction(): boolean {
     return this.etat.etat.egal(EtatDossierType.A_INSTRUIRE);
   }
@@ -197,7 +193,6 @@ export class DossierDetail extends BaseDossier {
     super();
     makeObservable(this, {
       redacteur: observable,
-      attribuer: action,
       enAttenteDecision: computed,
       etat: observable,
       changerEtat: action,
