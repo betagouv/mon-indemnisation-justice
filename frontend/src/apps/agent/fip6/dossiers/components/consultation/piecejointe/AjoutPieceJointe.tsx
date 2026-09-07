@@ -70,7 +70,7 @@ const component = function AjoutPieceJointe({
     }) => {
       setSauvegarderEnCours(true);
 
-      const document = await dossierManager.ajouterPieceJointe(
+      const document = await dossierManager.televerserPieceJointe(
         dossier,
         typePJ,
         nouvellePieceJointe,

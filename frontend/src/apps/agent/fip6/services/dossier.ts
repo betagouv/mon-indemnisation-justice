@@ -1,4 +1,3 @@
-import { queryClient } from "@fip6/query.ts";
 import {
   Agent,
   BaseDossier,
@@ -8,6 +7,7 @@ import {
 } from "@/common/models";
 import { RoleAgent } from "@/common/models/Agent.ts";
 import { dateChiffre } from "@/common/services/date.ts";
+import { queryClient } from "@fip6/query.ts";
 import { plainToInstance } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
 
@@ -30,11 +30,13 @@ export interface DossierManagerInterface {
 
   consulter(id: number): Promise<DossierDetail>;
 
-  ajouterPieceJointe(
+  televerserPieceJointe(
     dossier: BaseDossier,
     type: DocumentType,
     fichier: File,
   ): Promise<Document>;
+
+  ajouterDocument(dossier: DossierDetail, document: Document): void;
 
   transmettreAFIP3(dossier: BaseDossier): Promise<void>;
 
@@ -100,7 +102,8 @@ export class APIDossierManager implements DossierManagerInterface {
     return this.recupererDossier(id);
   }
 
-  async ajouterPieceJointe(
+  // TODO renommer en `televerserPieceJointe`
+  async televerserPieceJointe(
     dossier: BaseDossier,
     type: DocumentType,
     fichier: File,
@@ -126,6 +129,10 @@ export class APIDossierManager implements DossierManagerInterface {
       data?.erreur ??
         "Une erreur est survenue lors de l'envoi de la pièce jointe",
     );
+  }
+
+  ajouterDocument(dossier: DossierDetail, document: Document): void {
+    this.enregistrerDossier(dossier.addDocument(document));
   }
 
   async transmettreAFIP3(dossier: BaseDossier): Promise<void> {
