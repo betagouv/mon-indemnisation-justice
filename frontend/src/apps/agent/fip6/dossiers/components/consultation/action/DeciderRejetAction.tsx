@@ -109,10 +109,12 @@ const DefinirMotifRefus = ({
 export const DeciderRejetModale = observer(function DeciderRejetModale({
   dossier,
   agent,
+  onImprime,
   onDecide,
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
+  onImprime: (document: Document) => void | Promise<void>;
   onDecide?: () => void;
 }) {
   const [courrier, setCourrier] = useState<Document | null>(
@@ -276,7 +278,7 @@ export const DeciderRejetModale = observer(function DeciderRejetModale({
               regenererDocument={() =>
                 genererCourrierRejet(dossier, motifRejet as MotifRejetBrisPorte)
               }
-              onImprime={(document: Document) => dossier.addDocument(document)}
+              onImprime={onImprime}
               onImpression={(impressionEnCours) =>
                 setGenerationEnCours(impressionEnCours)
               }

@@ -1,6 +1,6 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { DossierDetail, Redacteur } from "@common/models";
+import { Document, DossierDetail, Redacteur } from "@common/models";
 import {
   deciderIndemnisationBoutons,
   DeciderIndemnisationModale,
@@ -26,6 +26,7 @@ import {
   signerCourrierBoutons,
   SignerCourrierModale,
 } from "@fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import React from "react";
 import {
   attribuerBoutons,
@@ -39,12 +40,12 @@ import {
   signerArretePaiementBoutons,
   SignerArretePaiementModale,
 } from "./SignerArretePaiementAction.tsx";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 export const DossierActions = function DossierActionBar({
   dossier,
   agent,
   redacteurs,
+  onImprime,
   onDecide,
   onSigne,
   onTermine,
@@ -52,6 +53,7 @@ export const DossierActions = function DossierActionBar({
   dossier: DossierDetail;
   agent: AgentFIP6;
   redacteurs: Redacteur[];
+  onImprime: (document: Document) => void | Promise<void>;
   onDecide?: () => void;
   onSigne?: () => void;
   onTermine: () => void | Promise<void>;
@@ -93,16 +95,35 @@ export const DossierActions = function DossierActionBar({
         agent={agent}
         redacteurs={redacteurs}
       />
-      <DeciderRejetModale dossier={dossier} agent={agent} onDecide={onDecide} />
+      <DeciderRejetModale
+        dossier={dossier}
+        agent={agent}
+        onDecide={onDecide}
+        onImprime={onImprime}
+      />
       <DeciderIndemnisationModale
         key={dossier.id}
         dossier={dossier}
         agent={agent}
         onDecide={onDecide}
+        onImprime={onImprime}
       />
-      <SignerCourrierModale dossier={dossier} agent={agent} onSigne={onSigne} />
-      <GenererArretePaiementModale dossier={dossier} agent={agent} />
-      <SignerArretePaiementModale dossier={dossier} agent={agent} />
+      <SignerCourrierModale
+        dossier={dossier}
+        agent={agent}
+        onSigne={onSigne}
+        onImprime={onImprime}
+      />
+      <GenererArretePaiementModale
+        dossier={dossier}
+        agent={agent}
+        onImprime={onImprime}
+      />
+      <SignerArretePaiementModale
+        dossier={dossier}
+        agent={agent}
+        onImprime={onImprime}
+      />
       <EnvoyerPourIndemnisationActionModale
         dossier={dossier}
         agent={agent}

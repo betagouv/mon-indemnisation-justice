@@ -36,7 +36,7 @@ export const EditeurDocument = function EditeurDocumentComponent({
   className?: string;
   lectureSeule?: boolean;
   onEdite?: (corps: string) => void;
-  onImprime?: (document: Document) => void;
+  onImprime: (document: Document) => void;
   onImpression?: (impressionEnCours: boolean) => void;
 }) {
   const documentManager: DocumentManagerInterface =
@@ -65,7 +65,7 @@ export const EditeurDocument = function EditeurDocumentComponent({
         corps,
       );
       if (null != reponse) {
-        onImprime?.(document);
+        onImprime(reponse);
         setErreur(undefined);
         setModificationsEnAttente(false);
       } else {
