@@ -12,12 +12,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/api/agent/fip6/dossier/{id}/annoter', name: 'api_agent_fip6_dossier_annoter', methods: ['POST'])]
 #[IsGranted(DossierVoter::ACTION_ANNOTER, message: 'Seul un agent autorisé peut annoter le dossier', statusCode: Response::HTTP_FORBIDDEN)]
 class AnnoterDossierEndpoint
 {
     public function __construct(
+        protected readonly NormalizerInterface $normalizer,
         protected readonly DossierRepository $dossierRepository,
     ) {
     }

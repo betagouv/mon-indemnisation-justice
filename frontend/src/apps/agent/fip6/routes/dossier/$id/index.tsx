@@ -244,7 +244,7 @@ const ConsultationDossier = ({
                         {
                           tabId: "declaration",
                           label: "Déclaration d'acceptation",
-                          disabled: !dossier.getDeclarationAcceptation(),
+                          disabled: !dossier.estAccepteRequerant(),
                         },
                         {
                           tabId: "arrete",

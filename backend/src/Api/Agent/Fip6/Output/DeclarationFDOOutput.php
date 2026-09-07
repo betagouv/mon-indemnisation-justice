@@ -19,10 +19,10 @@ class DeclarationFDOOutput
         public readonly AgentOutput $agent,
         public readonly bool $enPresenceRequerant,
         public readonly ?string $precisionsRequerant,
-        public readonly ?CoordonneesRequerantOutput $coordonneesRequerant = null,
         public readonly ProcedureJudiciaireOutput $procedure,
+        public readonly ?CoordonneesRequerantOutput $coordonneesRequerant = null,
         /** @var PieceJointeOutput[] $piecesJointes */
-        public readonly array $piecesJointes,
+        public readonly array $piecesJointes = [],
     ) {
 
     }
@@ -44,8 +44,8 @@ class DeclarationFDOOutput
             agent: AgentOutput::depuisAgent($declarationFDOBrisPorte->getAgent()),
             enPresenceRequerant: null !== $declarationFDOBrisPorte->getCoordonneesRequerant(),
             precisionsRequerant: $declarationFDOBrisPorte->getPrecisionsRequerant(),
-            coordonneesRequerant: CoordonneesRequerantOutput::depuisCoordonneesRequerant($declarationFDOBrisPorte->getCoordonneesRequerant()),
             procedure: ProcedureJudiciaireOutput::depuisProcedureJudiciaire($declarationFDOBrisPorte->getProcedure()),
+            coordonneesRequerant: CoordonneesRequerantOutput::depuisCoordonneesRequerant($declarationFDOBrisPorte->getCoordonneesRequerant()),
             piecesJointes: $declarationFDOBrisPorte->getPiecesJointes()->map(fn (Document $document) => PieceJointeOutput::depuisDocument($document))->toArray(),
         );
     }

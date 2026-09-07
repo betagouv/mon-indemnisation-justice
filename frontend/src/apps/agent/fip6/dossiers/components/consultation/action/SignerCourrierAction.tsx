@@ -14,7 +14,6 @@ import React, {
 
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Document, DossierDetail } from "@common/models";
@@ -23,6 +22,7 @@ import {
   DocumentManagerInterface,
 } from "@common/services/agent/document.ts";
 import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
+import { PrevisualiserPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe/PrevisualiserPieceJointe.tsx";
 import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { DossierManagerInterface } from "@fip6/services/dossier.ts";
@@ -99,12 +99,13 @@ const titreProchaineEtape = (
   return p ? titreEtape(dossier, p) : undefined;
 };
 
-// Étape à laquelle démarrer la modale, définie par le bouton qui l'ouvre et lue une seule fois à
-// l'ouverture (cf. `onDisclose` du `useIsModalOpen` dans `SignerCourrierModale`)
-let etapeInitiale: IdEtape = "EDITION_COURRIER";
+// Positionne l'étape courante de la modale montée (cf. l'enregistrement fait par
+// `SignerCourrierModale`), afin de permettre aux boutons de `signerCourrierBoutons`
+// de choisir sur quelle étape l'ouvrir.
+let definirEtape: (etape: IdEtape) => void = () => {};
 
 const ouvrirModale = (etape: IdEtape) => {
-  etapeInitiale = etape;
+  definirEtape(etape);
   _modale.open();
 };
 
@@ -138,13 +139,18 @@ export const SignerCourrierModale = ({
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
   );
-  // Étape en cours dans le parcours de signature
+  // Étape en cours dans le parcours de signature : modifiable aussi bien depuis
+  // l'extérieur (cf. `signerCourrierBoutons` / `ouvrirModale`) que par la modale
+  // elle-même au fil de sa navigation interne.
   const [etape, setEtape] = useState<IdEtape>("EDITION_COURRIER");
 
-  useIsModalOpen(_modale, {
-    onDisclose: () => setEtape(etapeInitiale),
-    onConceal: () => setEtape("EDITION_COURRIER"),
-  });
+  useEffect(() => {
+    definirEtape = setEtape;
+
+    return () => {
+      definirEtape = () => {};
+    };
+  }, []);
 
   // Marqueur "_flag_" qui permet d'éviter de vérifier la date d'impression du
   // document qu'une seule fois :
@@ -257,10 +263,10 @@ export const SignerCourrierModale = ({
         montantIndemnisation,
       });
       await onSigne();
-      _modale.close();
+
       setSauvegardeEnCours(false);
 
-      setEtape("EDITION_COURRIER");
+      _modale.close();
     },
     [dossier.id],
   );
@@ -563,7 +569,7 @@ export const SignerCourrierModale = ({
           />
         </>
       )}
-      {/* }Envoi au requérant */}
+      {/* Envoi au requérant */}
       {etape === "ENVOI" && (
         <>
           <Alert
@@ -606,20 +612,22 @@ export const SignerCourrierModale = ({
                   iconId: "fr-icon-checkbox-circle-line",
                   isDefault: true,
                   content: (
-                    <ChampPieceJointe
-                      pieceJointe={dossier.getCourrierDecision() as Document}
-                    />
+                    <PrevisualiserPieceJointe fichier={fichierSigne as File} />
                   ),
                 },
                 {
                   label: "Déclaration d'acceptation",
                   iconId: "fr-icon-chat-check-line",
-                  content: (
+                  content: dossier.getDeclarationAcceptation() ? (
                     <ChampPieceJointe
                       pieceJointe={
                         dossier.getDeclarationAcceptation() as Document
                       }
                     />
+                  ) : (
+                    <p>
+                      La déclaration d'acceptation n'est pas encore disponible.
+                    </p>
                   ),
                 },
               ]}

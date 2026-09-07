@@ -59,6 +59,8 @@ class ValiderDecisionEndpoint
         // TODO gérer le renvoi à l'instruction sinon
 
 
-        return new JsonResponse(DossierDetailOutput::creerDepuisDossier($dossier), Response::HTTP_OK);
+        return new JsonResponse(
+            $this->normalizer->normalize(DossierDetailOutput::creerDepuisDossier($dossier), 'json')
+        );
     }
 }
