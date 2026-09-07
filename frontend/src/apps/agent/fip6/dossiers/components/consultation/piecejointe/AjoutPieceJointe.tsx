@@ -1,9 +1,10 @@
-import { DossierManagerInterface } from "@fip6/services/dossier.ts";
-import { Agent, Document, DocumentType, DossierDetail } from "@common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
+import { Document, DocumentType, DossierDetail } from "@common/models";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 import { useInjection } from "inversify-react";
 import React, { useCallback, useRef, useState } from "react";
 
@@ -14,15 +15,15 @@ const _modale = createModal({
 
 type EtatAjout = "choix_type" | "televersement";
 
-const component = function AjoutPieceJointe({
+export const AjoutPieceJointe = ({
   dossier,
   agent,
   onAjoute,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
   onAjoute?: (nouvellePieceJointe: Document) => void;
-}) {
+}) => {
   // DossierManager
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
@@ -75,7 +76,7 @@ const component = function AjoutPieceJointe({
         typePJ,
         nouvellePieceJointe,
       );
-      dossier.addDocument(document);
+      dossierManager.ajouterDocument(dossier, document);
 
       _modale.close();
       onAjoute?.(document);
@@ -186,5 +187,3 @@ const component = function AjoutPieceJointe({
     </>
   );
 };
-
-export { component as AjoutPieceJointe };

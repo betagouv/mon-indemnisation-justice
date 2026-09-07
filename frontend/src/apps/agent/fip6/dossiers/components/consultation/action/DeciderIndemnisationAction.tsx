@@ -1,5 +1,12 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import React, { Dispatch, FormEvent, SetStateAction, useCallback, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
@@ -173,7 +180,7 @@ export const DeciderIndemnisationModale = ({
           dossier,
           montantIndemnisation,
         );
-      dossier.addDocument(courrierPI);
+      dossierManager.ajouterDocument(dossier, courrierPI);
       setCourrier(courrierPI);
       setGenerationEnCours(false);
     },
@@ -188,7 +195,7 @@ export const DeciderIndemnisationModale = ({
         dossier,
         montantIndemnisation,
       );
-      dossier.addDocument(document);
+      dossierManager.ajouterDocument(dossier, document);
       setDeclarationAcceptation(document);
       setGenerationEnCours(false);
     },

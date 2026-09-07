@@ -174,7 +174,7 @@ export const SignerCourrierModale = ({
             .imprimer(courrier, courrier.corps as string)
             .then(({ reponse, erreur }: APIReponse<Document>) => {
               if (!erreur) {
-                dossier.addDocument(reponse);
+                onImprime(reponse);
               } else {
                 // TODO afficher un message
               }
@@ -452,7 +452,7 @@ export const SignerCourrierModale = ({
             className="fr-input-group fr-col-12"
             document={dossier.getDeclarationAcceptation() as Document}
             onEdite={(corps) => {}}
-            onImprime={(courrier) => dossier.addDocument(courrier)}
+            onImprime={onImprime}
             onImpression={(impressionEnCours) =>
               setSauvegardeEnCours(impressionEnCours)
             }

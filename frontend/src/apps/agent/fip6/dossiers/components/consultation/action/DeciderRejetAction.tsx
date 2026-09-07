@@ -181,7 +181,7 @@ export const DeciderRejetModale = ({
         dossier,
         motifRejet,
       );
-      dossier.addDocument(courrierRejet);
+      dossierManager.ajouterDocument(dossier, courrierRejet);
       setCourrier(courrierRejet);
       setGenerationEnCours(false);
     },

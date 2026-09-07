@@ -39,13 +39,14 @@ import {
   SignerArretePaiementModale,
 } from "./SignerArretePaiementAction.tsx";
 
-export const DossierActions = function DossierActionBar({
+export const DossierActions = ({
   dossier,
   agent,
   redacteurs,
   onImprime,
   onDecide,
-  onSigne,
+  onSigneDecision,
+  onSigneArrete,
   onTermine,
 }: {
   dossier: DossierDetail;
@@ -53,9 +54,10 @@ export const DossierActions = function DossierActionBar({
   redacteurs: Redacteur[];
   onImprime: (document: Document) => void | Promise<void>;
   onDecide: () => void;
-  onSigne: () => void | Promise<void>;
+  onSigneDecision: () => void | Promise<void>;
+  onSigneArrete: () => void | Promise<void>;
   onTermine: () => void | Promise<void>;
-}) {
+}) => {
   return (
     <>
       {/** Actions sur le dossier */}
@@ -114,19 +116,19 @@ export const DossierActions = function DossierActionBar({
       <SignerCourrierModale
         dossier={dossier}
         agent={agent}
-        onSigne={onSigne}
+        onSigne={onSigneDecision}
         onImprime={onImprime}
       />
       <GenererArretePaiementModale
         dossier={dossier}
         agent={agent}
-        onGenere={onSigne}
+        onGenere={onSigneDecision}
         onImprime={onImprime}
       />
       <SignerArretePaiementModale
         dossier={dossier}
         agent={agent}
-        onSigne={onSigne}
+        onSigne={onSigneArrete}
         onImprime={onImprime}
       />
       <EnvoyerPourIndemnisationActionModale

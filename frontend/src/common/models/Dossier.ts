@@ -2,7 +2,6 @@ import DateTransform from "@/common/normalisation/transformers/DateTransform.ts"
 import { DeclarationFDOBrisPorte } from "@fdo/modeles/DeclarationFDOBrisPorte";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
 import { groupBy } from "lodash";
-import { action, computed, makeObservable, observable } from "mobx";
 import { Adresse } from "./Adresse";
 import { Document, DocumentType } from "./Document";
 import { EtatDossier, EtatDossierType } from "./EtatDossier";
@@ -103,10 +102,6 @@ export abstract class BaseDossier {
     ].includes(this.etat.etat);
   }
 
-  changerEtat(etat: EtatDossier): void {
-    this.etat = etat;
-  }
-
   public estDecide(): boolean {
     return this.etat.etat.estDecide();
   }
@@ -189,28 +184,8 @@ export class DossierDetail extends BaseDossier {
 
   public typeInstitutionSecuritePublique?: TypeFDO;
 
-  constructor() {
-    super();
-    makeObservable(this, {
-      redacteur: observable,
-      enAttenteDecision: computed,
-      etat: observable,
-      changerEtat: action,
-      setMontantIndemnisation: action,
-      documents: observable,
-      addDocument: action,
-      removeDocument: action,
-    });
-  }
-
   estIssuDeclarationFDO(): boolean {
     return !!this.declarationFDO?.id;
-  }
-
-  setMontantIndemnisation(montantIndemnisation: number): this {
-    this.montantIndemnisation = montantIndemnisation;
-
-    return this;
   }
 
   public hasDocumentsType(type: DocumentType): boolean {

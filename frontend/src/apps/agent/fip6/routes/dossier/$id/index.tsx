@@ -30,7 +30,6 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 
 export const Route = createFileRoute("/dossier/$id/")({
@@ -73,7 +72,7 @@ export const Route = createFileRoute("/dossier/$id/")({
  *
  * @constructor
  */
-const ConsultationDossier = observer(function ConsultationDossier({
+const ConsultationDossier = ({
   dossier,
   agent,
   redacteurs,
@@ -81,7 +80,7 @@ const ConsultationDossier = observer(function ConsultationDossier({
   dossier: DossierDetail;
   agent: AgentFIP6;
   redacteurs: Redacteur[];
-}) {
+}) => {
   const routeur = useRouter<typeof RouteurFIP6>();
 
   const dossierManager = useInjection<DossierManagerInterface>(
@@ -121,10 +120,6 @@ const ConsultationDossier = observer(function ConsultationDossier({
     await routeur.invalidate();
 
     setSauvegarderEnCours(false);
-  };
-
-  const ouvrirSectionCourrier = () => {
-    changerOnglet("courrier");
   };
 
   return (
@@ -199,11 +194,15 @@ const ConsultationDossier = observer(function ConsultationDossier({
                 }}
                 onDecide={async () => {
                   await routeur.invalidate();
-                  ouvrirSectionCourrier();
+                  changerOnglet("courrier");
                 }}
-                onSigne={async () => {
+                onSigneDecision={async () => {
                   await routeur.invalidate();
-                  ouvrirSectionCourrier();
+                  changerOnglet("courrier");
+                }}
+                onSigneArrete={async () => {
+                  await routeur.invalidate();
+                  changerOnglet("arrete");
                 }}
                 onTermine={async () => await routeur.invalidate()}
               />
@@ -404,7 +403,7 @@ const ConsultationDossier = observer(function ConsultationDossier({
       </div>
     </>
   );
-});
+};
 
 function ConsulterDossier() {
   const {
