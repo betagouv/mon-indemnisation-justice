@@ -446,11 +446,16 @@ jobs:
           yarn build --outDir=../backend/public/build --base=/build
         working-directory: frontend
 
+      - name: Installer Puppeteer, le DSFR & Firefox
+        run: |
+          yarn install
+          npx puppeteer browsers install firefox
+        working-directory: backend
+
       - name: Run migration & load data fixtures
         run: |
           bin/console -e test doctrine:migrations:migrate --no-interaction --all-or-nothing
           bin/console -e test -n doctrine:fixture:load --purge-with-truncate
-          yarn install
         working-directory: backend
 
       - name: Run end-to-end tests
