@@ -20,7 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/api/agent/fip6/dossier/{id}/signer-arrete-paiement', name: 'api_agent_fip6_dossier_signer_arrete_paiement', methods: ['POST'])]
-#[IsGranted(DossierVoter::ACTION_INSTRUIRE, 'dossier', message: "Seul l'agent validateur peut signer l'arrêté de paiement", statusCode: Response::HTTP_FORBIDDEN)]
+#[IsGranted(DossierVoter::ACTION_SIGNER_ARRETE, 'dossier', message: "Seul l'agent validateur peut signer l'arrêté de paiement", statusCode: Response::HTTP_FORBIDDEN)]
 class SignerArretePaiementEndpoint
 {
     public function __construct(

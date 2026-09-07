@@ -353,8 +353,15 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             ],
             new \DateTimeImmutable('-43 days'),
             EtatDossierType::DOSSIER_OK_VERIFIE,
+            adresse: new Adresse()
+                ->setLigne1($this->faker->streetAddress())
+                ->setCodePostal($this->faker->postcode())
+                ->setLocalite($this->faker->city()),
             redacteur: $this->getReference('agent-redacteur', Agent::class)
         )->setPropositionIndemnisation('3084.97');
+
+        $dossierArreteASigner->ajouterDocument($this->creerDocumentDepuisRessource('documents/declaration_acceptation.pdf', DocumentType::TYPE_COURRIER_REQUERANT, true));
+        $this->documentManager->generer($dossierArreteASigner, DocumentType::TYPE_ARRETE_PAIEMENT, montantIndemnisation: 1278.53);
 
         $this->addReference('dossier-arrete-a-signer-saint-malo', $dossierArreteASigner);
 

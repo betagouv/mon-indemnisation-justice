@@ -410,3 +410,5 @@ export class APIDossierManager implements DossierManagerInterface {
     }
   }
 }
+
+export { type CompteurDossiers };

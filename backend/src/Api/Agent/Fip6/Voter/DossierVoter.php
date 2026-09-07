@@ -4,6 +4,7 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Voter;
 
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\EtatDossierType;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -87,7 +88,8 @@ class DossierVoter extends Voter
             self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent, $subject),
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
-            self::ACTION_VALIDER_DECISION, self::ACTION_SIGNER_ARRETE => $this->agentPeutValider($agent, $subject),
+            self::ACTION_VALIDER_DECISION => $this->agentPeutValider($agent, $subject),
+            self::ACTION_SIGNER_ARRETE => $this->agentPeutSignerArrete($agent, $subject),
             self::ACTION_CLOTURER => $this->agentPeutCloturer($agent, $subject),
             self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
             self::ACTION_TRANSMETTRE_A_FIP3, => $this->agentPeutTransmettreAFIP3($agent, $subject),
@@ -124,6 +126,11 @@ class DossierVoter extends Voter
     protected function agentPeutValider(Agent $agent, Dossier $dossier): bool
     {
         return $dossier->estASigner() && $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR);
+    }
+
+    protected function agentPeutSignerArrete(Agent $agent, Dossier $dossier): bool
+    {
+        return EtatDossierType::DOSSIER_OK_VERIFIE === $dossier->getEtatDossier()->getEtat() && $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR);
     }
 
     protected function agentPeutCloturer(Agent $agent, Dossier $dossier): bool
