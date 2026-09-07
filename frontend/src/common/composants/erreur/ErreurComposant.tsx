@@ -14,6 +14,10 @@ export const ErreurComposant = ({
   retour?: ReactNode;
   action?: ReactNode;
 }) => {
+  if (import.meta.env.DEV) {
+    console.error(erreur);
+  }
+
   return (
     <MiseEnAvant pictogrammeUrl={artworkSystemErrorUrl} action={action}>
       <h1>{titre || <>Erreur technique</>}</h1>

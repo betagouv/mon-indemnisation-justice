@@ -337,6 +337,8 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             )
             ->setPropositionIndemnisation('2031');
 
+        $dossierAVerifier->ajouterDocument($this->creerDocumentDepuisRessource('documents/declaration_acceptation.pdf', DocumentType::TYPE_COURRIER_REQUERANT, true));
+
         $this->addReference('dossier-a-verifier-melun', $dossierAVerifier);
 
         $manager->persist($dossierAVerifier);

@@ -48,11 +48,20 @@ export interface DossierManagerInterface {
 
   attribuer(dossier: BaseDossier, redacteur: Redacteur): Promise<void>;
 
+  demarrerInstruction(dossier: BaseDossier): Promise<void>;
+
   decider(dossier: BaseDossier, decision: DecisionDossier): Promise<void>;
 
   validerLaDecision(
     dossier: BaseDossier,
     validation: ValidationDecisionDossier,
+  ): Promise<void>;
+
+  initierArretePaiement(dossier: DossierDetail): Promise<void>;
+
+  validerArretePaiement(
+    dossier: DossierDetail,
+    fichierSigne: File,
   ): Promise<void>;
 
   transmettreAFIP3(dossier: BaseDossier): Promise<void>;
@@ -236,6 +245,25 @@ export class APIDossierManager implements DossierManagerInterface {
     }
   }
 
+  async demarrerInstruction(dossier: BaseDossier): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/demarrer-instruction`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
   async decider(
     dossier: BaseDossier,
     decision: DecisionDossier,
@@ -272,7 +300,7 @@ export class APIDossierManager implements DossierManagerInterface {
     if (validation.estValide) {
       payload.append(
         "montantIndemnisation",
-        validation.montantIndemnisation.toString(),
+        validation.montantIndemnisation?.toString() || "",
       );
     }
 
@@ -281,6 +309,53 @@ export class APIDossierManager implements DossierManagerInterface {
       {
         method: "POST",
         body: payload,
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async initierArretePaiement(dossier: BaseDossier): Promise<void> {
+    // Appel à l'API pour valider le document
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/initier-arrete-paiement`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async validerArretePaiement(
+    dossier: DossierDetail,
+    fichierSigne: File,
+  ): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/signer-arrete-paiement`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        body: (() => {
+          const data = new FormData();
+          data.append("fichierSigne", fichierSigne);
+
+          return data;
+        })(),
       },
     );
 

@@ -21,6 +21,8 @@ class DossierVoter extends Voter
     public const string ACTION_AJOUTER_PIECE_JOINTE = 'dossier:ajouter-piece-jointe';
     public const string ACTION_GENERER_DOCUMENT = 'dossier:generer-document';
 
+    public const string ACTION_SIGNER_ARRETE = 'dossier:signer-arrete';
+
     public const string ACTION_TRANSMETTRE_A_FIP3 = 'dossier:transmettre:a_fip3';
 
     public const string ACTION_LISTER_A_CATEGORISER = 'dossier:lister:a-categoriser';
@@ -47,6 +49,7 @@ class DossierVoter extends Voter
             self::ACTION_CLOTURER,
             self::ACTION_AJOUTER_PIECE_JOINTE,
             self::ACTION_GENERER_DOCUMENT,
+            self::ACTION_SIGNER_ARRETE,
             self::ACTION_TRANSMETTRE_A_FIP3,
             self::ACTION_LISTER_A_CATEGORISER,
             self::ACTION_LISTER_A_ATTRIBUER,
@@ -84,7 +87,7 @@ class DossierVoter extends Voter
             self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent, $subject),
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
-            self::ACTION_VALIDER_DECISION => $this->agentPeutValider($agent, $subject),
+            self::ACTION_VALIDER_DECISION, self::ACTION_SIGNER_ARRETE => $this->agentPeutValider($agent, $subject),
             self::ACTION_CLOTURER => $this->agentPeutCloturer($agent, $subject),
             self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
             self::ACTION_TRANSMETTRE_A_FIP3, => $this->agentPeutTransmettreAFIP3($agent, $subject),

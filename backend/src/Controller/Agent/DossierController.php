@@ -2,7 +2,6 @@
 
 namespace MonIndemnisationJustice\Controller\Agent;
 
-use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Entity\Agent;
@@ -15,7 +14,6 @@ use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\DossierManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +31,6 @@ class DossierController extends AgentController
         protected readonly AgentRepository $agentRepository,
         protected readonly DossierManager $dossierManager,
         protected readonly DocumentManager $documentManager,
-        protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
         protected readonly LoggerInterface $logger,
     ) {
@@ -68,30 +65,6 @@ class DossierController extends AgentController
 
         // Renvoyer vers la nouvelle page de consultation de dossier, désormais gérée par React
         return $this->redirectToRoute('agent_fip6_react', ['extra' => "dossier/{$dossier->getId()}"]);
-    }
-
-    // TODO déplacer dans une route API dédiée
-    #[IsGranted(
-        attribute: new Expression('user.instruit(subject["dossier"])'),
-        subject: [
-            'dossier' => new Expression('args["dossier"]'),
-        ]
-    )]
-    #[Route('/dossier/{id}/arrete-paiement/valider.json', name: 'agent_redacteur_valider_arrete_paiement_dossier', methods: ['POST'])]
-    public function validerArretePaiementDossier(
-        #[MapEntity(id: 'id')]
-        Dossier $dossier,
-    ): Response {
-        if (null === $dossier->getDocumentParType(DocumentType::TYPE_ARRETE_PAIEMENT)) {
-            return new JsonResponse([], Response::HTTP_NOT_FOUND);
-        }
-
-        $dossier->changerStatut(EtatDossierType::DOSSIER_OK_VERIFIE, agent: $this->getAgent());
-
-        $this->em->persist($dossier);
-        $this->em->flush();
-
-        return new JsonResponse(['etat' => $this->normalizer->normalize(EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier()), 'json', ['agent:detail'])]);
     }
 
     // TODO déplacer dans une route API dédiée

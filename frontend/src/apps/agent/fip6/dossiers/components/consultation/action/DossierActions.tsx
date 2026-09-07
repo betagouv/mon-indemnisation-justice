@@ -120,11 +120,13 @@ export const DossierActions = function DossierActionBar({
       <GenererArretePaiementModale
         dossier={dossier}
         agent={agent}
+        onGenere={onSigne}
         onImprime={onImprime}
       />
       <SignerArretePaiementModale
         dossier={dossier}
         agent={agent}
+        onSigne={onSigne}
         onImprime={onImprime}
       />
       <EnvoyerPourIndemnisationActionModale

@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
-use MonIndemnisationJustice\Api\Agent\Fip6\Output\EtatDossierOutput;
+use MonIndemnisationJustice\Api\Agent\Fip6\Output\DossierDetailOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -43,10 +43,6 @@ class DemarrerInstructionDossierEndpoint
 
         $this->dossierRepository->save($dossier);
 
-        return new JsonResponse([
-            'etat' => $this->normalizer->normalize(
-                EtatDossierOutput::depuisEtatDossier($dossier->getEtatDossier())
-            ),
-        ]);
+        return new JsonResponse(DossierDetailOutput::creerDepuisDossier($dossier));
     }
 }

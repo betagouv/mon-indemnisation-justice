@@ -4,17 +4,12 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Loader } from "@common/composants/Loader.tsx";
-import {
-  Document,
-  DossierDetail,
-  EtatDossier,
-  EtatDossierType,
-} from "@common/models";
+import { Document, DossierDetail, EtatDossierType } from "@common/models";
 import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
-import { plainToInstance } from "class-transformer";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 import { useInjection } from "inversify-react";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -41,12 +36,18 @@ export const SignerArretePaiementModale = observer(
   function SignerArretePaiementModale({
     dossier,
     agent,
+    onSigne,
     onImprime,
   }: {
     dossier: DossierDetail;
     agent: AgentFIP6;
+    onSigne: () => void | Promise<void>;
     onImprime: (document: Document) => void | Promise<void>;
   }) {
+    const dossierManager = useInjection<DossierManagerInterface>(
+      DossierManagerInterface.$,
+    );
+
     // Est-ce que l'édition de l'arrêté de paiement est en cours
     const [estEdition, setEdition] = useState(true);
 
@@ -104,31 +105,11 @@ export const SignerArretePaiementModale = observer(
       (mode: boolean) => void,
     ] = useState(false);
 
-    const envoyer = useCallback(async () => {
+    const signerEtEnvoyer = useCallback(async () => {
       if (fichierSigne) {
         setSauvegardeEnCours(true);
-
-        const response = await fetch(
-          `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/signer.json`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-            },
-            body: (() => {
-              const data = new FormData();
-              data.append("fichierSigne", fichierSigne);
-
-              return data;
-            })(),
-          },
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-          dossier.addDocument(plainToInstance(Document, data.document));
-        }
+        await dossierManager.validerArretePaiement(dossier, fichierSigne);
+        await onSigne();
         setSauvegardeEnCours(false);
       }
     }, [dossier.id, fichierSigne]);
@@ -247,7 +228,7 @@ export const SignerArretePaiementModale = observer(
                     !fichierSigne ||
                     !estTailleFichierOk(fichierSigne) ||
                     !estTypeFichierOk(fichierSigne),
-                  onClick: () => envoyer(),
+                  onClick: () => signerEtEnvoyer(),
                   priority: "primary",
                 },
               ]}
