@@ -39,6 +39,8 @@ class InitierArretePaiementEndpoint
         $agent = $security->getUser();
         $this->dossierManager->avancer($dossier, $agent);
 
-        return new JsonResponse(DossierDetailOutput::creerDepuisDossier($dossier));
+        return new JsonResponse(
+            $this->normalizer->normalize(DossierDetailOutput::creerDepuisDossier($dossier), 'json')
+        );
     }
 }

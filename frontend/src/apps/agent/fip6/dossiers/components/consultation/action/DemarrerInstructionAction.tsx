@@ -7,9 +7,11 @@ import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 export const demarrerInstructionBoutons = ({
   dossier,
   agent,
+  onTermine,
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
+  onTermine: () => void | Promise<void>;
 }): ButtonProps[] => {
   return dossier.enAttenteInstruction() && agent.instruit(dossier)
     ? [
@@ -22,6 +24,7 @@ export const demarrerInstructionBoutons = ({
             await container
               .get<DossierManagerInterface>(DossierManagerInterface.$)
               .demarrerInstruction(dossier);
+            await onTermine();
             (e.target as HTMLButtonElement).disabled = false;
           },
         } as ButtonProps,

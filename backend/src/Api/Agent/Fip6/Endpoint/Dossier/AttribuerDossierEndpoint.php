@@ -53,6 +53,8 @@ class AttribuerDossierEndpoint
             ]);
         $this->dossierRepository->save($dossier);
 
-        return new JsonResponse(DossierDetailOutput::creerDepuisDossier($dossier));
+        return new JsonResponse(
+            $this->normalizer->normalize(DossierDetailOutput::creerDepuisDossier($dossier), 'json')
+        );
     }
 }

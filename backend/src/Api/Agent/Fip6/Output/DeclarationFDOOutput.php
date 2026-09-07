@@ -19,7 +19,7 @@ class DeclarationFDOOutput
         public readonly AgentOutput $agent,
         public readonly bool $enPresenceRequerant,
         public readonly ?string $precisionsRequerant,
-        public readonly CoordonneesRequerantOutput $coordonneesRequerant,
+        public readonly ?CoordonneesRequerantOutput $coordonneesRequerant = null,
         public readonly ProcedureJudiciaireOutput $procedure,
         /** @var PieceJointeOutput[] $piecesJointes */
         public readonly array $piecesJointes,

@@ -16,7 +16,7 @@ class CoordonneesRequerantOutput
     ) {
     }
 
-    public static function depuisCoordonneesRequerant(?CoordonneesRequerant $coordonneesRequerant): ?self
+    public static function depuisCoordonneesRequerant(?CoordonneesRequerant $coordonneesRequerant = null): ?self
     {
         if (null === $coordonneesRequerant) {
             return null;

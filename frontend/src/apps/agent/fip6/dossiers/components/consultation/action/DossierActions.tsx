@@ -70,7 +70,7 @@ export const DossierActions = ({
           [
             ...cloturerBoutons({ dossier, agent }),
             ...attribuerBoutons({ dossier, agent, redacteurs }),
-            ...demarrerInstructionBoutons({ dossier, agent }),
+            ...demarrerInstructionBoutons({ dossier, agent, onTermine }),
             ...deciderRejetBoutons({
               dossier,
               agent,

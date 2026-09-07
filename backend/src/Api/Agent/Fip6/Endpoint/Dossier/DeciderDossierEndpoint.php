@@ -37,6 +37,8 @@ class DeciderDossierEndpoint
             ? ['montantIndemnisation' => $decision->montantIndemnisation]
             : ['motifRejet' => $decision->motifRejet]);
 
-        return new JsonResponse(DossierDetailOutput::creerDepuisDossier($dossier), Response::HTTP_OK);
+        return new JsonResponse(
+            $this->normalizer->normalize(DossierDetailOutput::creerDepuisDossier($dossier), 'json')
+        );
     }
 }
