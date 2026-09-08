@@ -1,6 +1,6 @@
 FROM pierrelemee/supervisor-docker:0.1.5 AS supervisor
 
-FROM pierrelemee/mij-frankenphp AS php
+FROM pierrelemee/mij-frankenphp:latest AS php
 
 COPY --from=supervisor /opt/supervisor-api /opt/supervisor-api
 
@@ -37,8 +37,8 @@ RUN cat /app/.env.${APP_ENV}
 # Installer les dépendances composer
 RUN --mount=type=cache,target=/root/.cache/composer COMPOSER_CACHE_DIR=/root/.cache/composer composer install --no-ansi ${COMPOSER_OPTS} --no-progress --optimize-autoloader
 
-# Installer les dépendances javascript (puppeteer pour l'impression PDF)
-RUN yarn install
+# Installer les dépendances javascript (puppeteer & firefox pour l'impression PDF)
+RUN yarn install && npx puppeteer browsers install firefox
 
 # Configuration des tâches cron
 RUN cat <<EOF > /etc/cron.d/taches-mij-job

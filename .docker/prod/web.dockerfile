@@ -1,4 +1,4 @@
-FROM pierrelemee/mij-frankenphp
+FROM pierrelemee/mij-frankenphp:latest
 
 COPY backend /app/
 
@@ -28,7 +28,8 @@ ARG COMPOSER_OPTS=--no-dev
 WORKDIR /app
 
 RUN --mount=type=cache,target=/root/.cache/composer COMPOSER_CACHE_DIR=/root/.cache/composer composer install --no-ansi ${COMPOSER_OPTS} --no-progress --optimize-autoloader
-RUN yarn install # && npx puppeteer browsers install firefox
+# Installer les dépendances javascript (puppeteer & firefox pour l'impression PDF)
+RUN yarn install && npx puppeteer browsers install firefox
 
 COPY frontend/package.json frontend/yarn.lock /app/assets/
 
