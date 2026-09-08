@@ -189,7 +189,7 @@ const ConsultationDossier = ({
                 agent={agent}
                 redacteurs={redacteurs}
                 onImprime={async (document: Document) => {
-                  await dossierManager.ajouterDocument(dossier, document);
+                  dossierManager.ajouterDocument(dossier, document);
                   await routeur.invalidate();
                 }}
                 onDecide={async () => {

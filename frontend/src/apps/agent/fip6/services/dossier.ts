@@ -220,7 +220,8 @@ export class APIDossierManager implements DossierManagerInterface {
   }
 
   ajouterDocument(dossier: DossierDetail, document: Document): void {
-    this.enregistrerDossier(dossier.addDocument(document));
+    dossier.addDocument(document);
+    this.enregistrerDossier(dossier);
   }
 
   async attribuer(dossier: BaseDossier, redacteur: Redacteur): Promise<void> {

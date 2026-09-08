@@ -122,7 +122,7 @@ export const DossierActions = ({
       <GenererArretePaiementModale
         dossier={dossier}
         agent={agent}
-        onGenere={onSigneDecision}
+        onGenere={onSigneArrete}
         onImprime={onImprime}
       />
       <SignerArretePaiementModale

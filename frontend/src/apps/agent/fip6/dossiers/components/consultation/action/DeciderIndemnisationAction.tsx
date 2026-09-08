@@ -181,6 +181,7 @@ export const DeciderIndemnisationModale = ({
           montantIndemnisation,
         );
       dossierManager.ajouterDocument(dossier, courrierPI);
+      await onImprime(courrierPI);
       setCourrier(courrierPI);
       setGenerationEnCours(false);
     },
