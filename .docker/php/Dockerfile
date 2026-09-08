@@ -11,7 +11,8 @@ RUN echo "export LC_ALL=fr_FR.UTF-8" >> /root/.bashrc
 # Generic utils
 RUN apt-get update -y && \
     apt-get upgrade -y --fix-missing && \
-    apt-get install -y vim wget locales
+    apt-get install -y vim wget locales && \
+    apt-get install -y libgtk-3-0 libasound2 libx11-xcb1 # Librairies requises pour que Firefox (installé par puppeteer) fonctionne
 
 # Configurer la langue Française 🇫🇷
 RUN sed -i '/fr_FR.UTF-8/s/^#//g' /etc/locale.gen
@@ -39,22 +40,6 @@ RUN apt-get install -y nodejs
 # Contournement de l'erreur https://github.com/nodejs/node/issues/62425#issuecomment-4200715930
 RUN npm install -g npm@11
 RUN npm install --force -g yarn
-
-# Firefox
-RUN apt install -y ca-certificates curl gnupg
-RUN curl -fsSL https://packages.mozilla.org/apt/repo-signing-key.gpg | gpg --dearmor -o /usr/share/keyrings/packages.mozilla.org.gpg
-RUN gpg --show-keys --with-fingerprint /usr/share/keyrings/packages.mozilla.org.gpg | head -n 2
-
-RUN echo 'Types: deb \n\
-URIs: https://packages.mozilla.org/apt \n\
-Suites: mozilla \n\
-Components: main \n\
-Signed-By: /usr/share/keyrings/packages.mozilla.org.gpg\n' >> /etc/apt/sources.list.d/mozilla.sources
-
-RUN cat /etc/apt/sources.list.d/mozilla.sources
-RUN apt-get update -y && \
-    apt-get install -y firefox
-ENV FIREFOX_PATH=/usr/bin/firefox
 
 # Installer pdf2text pour pouvoir extraire le texte d'un fichier PDF
 RUN apt install -y poppler-utils
