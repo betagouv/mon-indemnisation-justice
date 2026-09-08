@@ -1,49 +1,17 @@
-"use client";
-
-import { DossierDetail, EtatDossier, Redacteur } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
+
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { plainToInstance } from "class-transformer";
-import { observer } from "mobx-react-lite";
-import React, { useCallback, useState } from "react";
+import { DossierDetail, Redacteur } from "@common/models";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
+import { useInjection } from "inversify-react";
+import { default as React, useCallback, useState } from "react";
 
 const _modale = createModal({
   id: "modale-action-attribution",
   isOpenedByDefault: false,
 });
-
-const attribuer = async ({
-  dossier,
-  attributaire,
-}: {
-  dossier: DossierDetail;
-  attributaire: Redacteur;
-}) => {
-  const response = await fetch(
-    `/api/agent/fip6/dossier/${dossier.id}/attribuer`,
-    {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        redacteur_id: attributaire.id,
-      }),
-    },
-  );
-
-  if (response.ok) {
-    const data = await response.json();
-    dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-
-    return true;
-  }
-
-  return false;
-};
 
 const estAAttribuer = ({
   dossier,
@@ -53,17 +21,26 @@ const estAAttribuer = ({
   dossier: DossierDetail;
   agent: AgentFIP6;
   redacteurs: Redacteur[];
-}) => agent.estAttributeur() && dossier.estAAttribuer();
+}) =>
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
+  agent.estAttributeur() &&
+  dossier.estAAttribuer();
 
-export const AttribuerModale = observer(function AttribuerActionModale({
+export const AttribuerActionModale = ({
   dossier,
   agent,
   redacteurs,
+  onAttribue,
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
   redacteurs: Redacteur[];
-}) {
+  onAttribue: () => void | Promise<void>;
+}) => {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
   // Représente le rédacteur à attribuer, présentement en cours de sélection dans le menu déroulant
   const [attributaire, setAttributaire]: [
     Redacteur | undefined,
@@ -85,11 +62,9 @@ export const AttribuerModale = observer(function AttribuerActionModale({
   const valider = useCallback(async () => {
     if (!!attributaire && attributaire?.id != dossier.redacteur?.id) {
       setSauvegarderEnCours(true);
-      const succes = await attribuer({ dossier, attributaire });
 
-      if (succes) {
-        dossier.attribuer(attributaire);
-      }
+      await dossierManager.attribuer(dossier, attributaire);
+      await onAttribue();
 
       setAttributaire(undefined);
       setAttributionEnCours(false);
@@ -154,7 +129,7 @@ export const AttribuerModale = observer(function AttribuerActionModale({
   ) : (
     <></>
   );
-});
+};
 
 export const attribuerBoutons = ({
   dossier,

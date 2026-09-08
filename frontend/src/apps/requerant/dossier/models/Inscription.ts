@@ -8,7 +8,6 @@ import {
   MinLength,
   ValidateIf,
 } from "class-validator";
-import { makeAutoObservable } from "mobx";
 
 export enum Civilite {
   M = "Monsieur",
@@ -45,10 +44,6 @@ export class Inscription {
   _confirmation?: string = undefined;
   @Equals(true)
   _cguOk: boolean = false;
-
-  constructor() {
-    makeAutoObservable(this, {}, { autoBind: true });
-  }
 
   @Transform(
     ({ value }: { value: Civilite }) =>

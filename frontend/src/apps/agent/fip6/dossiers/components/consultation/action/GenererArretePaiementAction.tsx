@@ -1,17 +1,12 @@
-import {
-  Document,
-  DocumentType,
-  DossierDetail,
-  EtatDossier,
-} from "@common/models";
-import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { Document, DocumentType, DossierDetail } from "@common/models";
+import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
-import { plainToInstance } from "class-transformer";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 import { useInjection } from "inversify-react";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -28,7 +23,9 @@ type ValidationAcceptationEtat = {
 };
 
 const estAVerifier = ({ dossier, agent }): boolean =>
-  dossier.estAVerifier && agent.instruit(dossier);
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
+  dossier.estAVerifier &&
+  agent.instruit(dossier);
 
 /**
  * Le rédacteur vérifie la déclaration d'acceptation et la valide
@@ -37,10 +34,12 @@ export const GenererArretePaiementModale =
   function GenererArretePaiementActionModale({
     dossier,
     agent,
+    onGenere,
     onImprime,
   }: {
     dossier: DossierDetail;
     agent: AgentFIP6;
+    onGenere: () => void | Promise<void>;
     onImprime: (document: Document) => void | Promise<void>;
   }) {
     // Indique l'état de la validation en cours
@@ -68,8 +67,13 @@ export const GenererArretePaiementModale =
     const documentManager: DocumentManagerInterface =
       useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
+    const dossierManager: DossierManagerInterface =
+      useInjection<DossierManagerInterface>(DossierManagerInterface.$);
+
     const genererArretePaiement = useCallback(async () => {
-      dossier.addDocument(await documentManager.genererArretePaiement(dossier));
+      const arretePaiement =
+        await documentManager.genererArretePaiement(dossier);
+      await onImprime(arretePaiement);
       setArretePaiement(arretePaiement);
     }, [dossier.id]);
 
@@ -105,23 +109,9 @@ export const GenererArretePaiementModale =
       setEtatValidation({ ...etatValidation, action: "edition" });
 
     const valider = async () => {
-      // Appel à l'API pour valider le document
-      const response = await fetch(
-        `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/valider.json`,
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-          },
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-      }
-
+      setSauvegardeEnCours(true);
+      await dossierManager.initierArretePaiement(dossier);
+      await onGenere();
       setSauvegardeEnCours(false);
       _modale.close();
     };
@@ -191,7 +181,7 @@ export const GenererArretePaiementModale =
                 onEdite={(corps: string) => (arretePaiement.corps = corps)}
                 onImprime={(arretePaiement) => {
                   setArretePaiement(arretePaiement);
-                  dossier.addDocument(arretePaiement);
+                  onImprime(arretePaiement);
                 }}
                 document={arretePaiement}
                 onImpression={(impressionEnCours) =>

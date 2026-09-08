@@ -4,19 +4,13 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { Loader } from "@common/composants/Loader.tsx";
-import {
-  Document,
-  DossierDetail,
-  EtatDossier,
-  EtatDossierType,
-} from "@common/models";
+import { Document, DossierDetail, EtatDossierType } from "@common/models";
 import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
-import { plainToInstance } from "class-transformer";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 import { useInjection } from "inversify-react";
-import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 const _modale = createModal({
@@ -37,229 +31,213 @@ const estEnAttenteSignatureArretePaiement = ({
  *
  * Le rédacteur vérifie la déclaration d'acceptation et la valide
  */
-export const SignerArretePaiementModale = observer(
-  function SignerArretePaiementModale({
-    dossier,
-    agent,
-    onImprime,
-  }: {
-    dossier: DossierDetail;
-    agent: AgentFIP6;
-    onImprime: (document: Document) => void | Promise<void>;
-  }) {
-    // Est-ce que l'édition de l'arrêté de paiement est en cours
-    const [estEdition, setEdition] = useState(true);
+export const SignerArretePaiementModale = ({
+  dossier,
+  agent,
+  onSigne,
+  onImprime,
+}: {
+  dossier: DossierDetail;
+  agent: AgentFIP6;
+  onSigne: () => void | Promise<void>;
+  onImprime: (document: Document) => void | Promise<void>;
+}) => {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
 
-    // Fichier signé à téléverser
-    const [fichierSigne, setFichierSigne]: [
-      File | null,
-      (fichierSigne: File) => void,
-    ] = useState<File | null>(null);
+  // Est-ce que l'édition de l'arrêté de paiement est en cours
+  const [estEdition, setEdition] = useState(true);
 
-    const estTailleFichierOk = (fichier?: File) =>
-      fichier && fichier.size < 10 * 1024 * 1024;
-    const estTypeFichierOk = (fichier?: File) =>
-      fichier && ["application/pdf"].includes(fichier.type);
+  // Fichier signé à téléverser
+  const [fichierSigne, setFichierSigne]: [
+    File | null,
+    (fichierSigne: File) => void,
+  ] = useState<File | null>(null);
 
-    // Marqueur "_flag_" qui permet d'éviter de vérifier la date d'impression du
-    // document qu'une seule fois :
-    const verificationDateCourrier = useRef<number>(0);
+  const estTailleFichierOk = (fichier?: File) =>
+    fichier && fichier.size < 10 * 1024 * 1024;
+  const estTypeFichierOk = (fichier?: File) =>
+    fichier && ["application/pdf"].includes(fichier.type);
 
-    const [generationCourrierEnCours, setGenerationCourrierEnCours] =
-      useState<boolean>(false);
+  // Marqueur "_flag_" qui permet d'éviter de vérifier la date d'impression du
+  // document qu'une seule fois :
+  const verificationDateCourrier = useRef<number>(0);
 
-    const documentManager: DocumentManagerInterface =
-      useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
+  const [generationCourrierEnCours, setGenerationCourrierEnCours] =
+    useState<boolean>(false);
 
-    // Relancer une impression si le document n'est pas du jour
-    useEffect(() => {
-      const arrete = dossier.getArretePaiement();
+  const documentManager: DocumentManagerInterface =
+    useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
-      if (arrete && estEnAttenteSignatureArretePaiement({ dossier, agent })) {
-        if (
-          // À l'étape d'édition de l'arrêté...
-          estEdition &&
-          // ... si la vérification de la date n'a pas encore été faite...
-          verificationDateCourrier.current != dossier.id
-        ) {
-          // ... et que l'arrêté n'a pas été généré aujourd'hui même ...
-          if (!arrete.estAJour()) {
-            // ... alors on le ré-imprime
-            setGenerationCourrierEnCours(true);
-            documentManager.imprimer(arrete).then(({ reponse, erreur }) => {
-              if (reponse) {
-                dossier.addDocument(reponse);
-              }
+  // Relancer une impression si le document n'est pas du jour
+  useEffect(() => {
+    const arrete = dossier.getArretePaiement();
 
-              setGenerationCourrierEnCours(false);
-            });
-          }
-          verificationDateCourrier.current = dossier.id;
+    if (arrete && estEnAttenteSignatureArretePaiement({ dossier, agent })) {
+      if (
+        // À l'étape d'édition de l'arrêté...
+        estEdition &&
+        // ... si la vérification de la date n'a pas encore été faite...
+        verificationDateCourrier.current != dossier.id
+      ) {
+        // ... et que l'arrêté n'a pas été généré aujourd'hui même ...
+        if (!arrete.estAJour()) {
+          // ... alors on le ré-imprime
+          setGenerationCourrierEnCours(true);
+          documentManager.imprimer(arrete).then(({ reponse, erreur }) => {
+            if (reponse) {
+              onImprime(reponse);
+            }
+
+            setGenerationCourrierEnCours(false);
+          });
         }
+        verificationDateCourrier.current = dossier.id;
       }
-    }, [dossier.id, estEdition]);
+    }
+  }, [dossier.id, estEdition]);
 
-    const [sauvegardeEnCours, setSauvegardeEnCours]: [
-      boolean,
-      (mode: boolean) => void,
-    ] = useState(false);
+  const [sauvegardeEnCours, setSauvegardeEnCours]: [
+    boolean,
+    (mode: boolean) => void,
+  ] = useState(false);
 
-    const envoyer = useCallback(async () => {
-      if (fichierSigne) {
-        setSauvegardeEnCours(true);
+  const signerEtEnvoyer = useCallback(async () => {
+    if (fichierSigne) {
+      setSauvegardeEnCours(true);
+      await dossierManager.validerArretePaiement(dossier, fichierSigne);
+      await onSigne();
+      setSauvegardeEnCours(false);
+    }
+  }, [dossier.id, fichierSigne]);
 
-        const response = await fetch(
-          `/agent/redacteur/dossier/${dossier.id}/arrete-paiement/signer.json`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-            },
-            body: (() => {
-              const data = new FormData();
-              data.append("fichierSigne", fichierSigne);
-
-              return data;
-            })(),
-          },
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-          dossier.addDocument(plainToInstance(Document, data.document));
-        }
-        setSauvegardeEnCours(false);
+  return estEnAttenteSignatureArretePaiement({ dossier, agent }) ? (
+    <_modale.Component
+      title={
+        estEdition
+          ? " Éditer l'arrêté de paiement"
+          : " Signer l'arrêté de paiement"
       }
-    }, [dossier.id, fichierSigne]);
-
-    return estEnAttenteSignatureArretePaiement({ dossier, agent }) ? (
-      <_modale.Component
-        title={
-          estEdition
-            ? " Éditer l'arrêté de paiement"
-            : " Signer l'arrêté de paiement"
-        }
-        size="large"
-        iconId="fr-icon-printer-line"
-      >
-        {estEdition ? (
-          <>
-            {generationCourrierEnCours ? (
-              <>
-                <Alert
-                  severity="info"
-                  title="Patience"
-                  description={
-                    <>
-                      L'arrêté de paiement est en train d'être re-généré pour
-                      mettre à jour la date.
-                    </>
-                  }
-                />
-                <Loader />
-              </>
-            ) : (
-              <EditeurDocument
-                className="fr-my-2w"
-                document={dossier.getArretePaiement() as Document}
-                onImprime={onImprime}
+      size="large"
+      iconId="fr-icon-printer-line"
+    >
+      {estEdition ? (
+        <>
+          {generationCourrierEnCours ? (
+            <>
+              <Alert
+                severity="info"
+                title="Patience"
+                description={
+                  <>
+                    L'arrêté de paiement est en train d'être re-généré pour
+                    mettre à jour la date.
+                  </>
+                }
               />
-            )}
+              <Loader />
+            </>
+          ) : (
+            <EditeurDocument
+              className="fr-my-2w"
+              document={dossier.getArretePaiement() as Document}
+              onImprime={onImprime}
+            />
+          )}
 
-            <ButtonsGroup
-              inlineLayoutWhen="always"
-              alignment="right"
-              buttonsIconPosition="right"
-              buttonsSize="small"
-              buttons={[
-                {
-                  children: "Annuler",
-                  priority: "tertiary no outline",
-                  onClick: () => _modale.close(),
-                },
-                {
-                  children: "Signer et envoyer",
-                  priority: "secondary",
-                  disabled: sauvegardeEnCours,
-                  iconId: "fr-icon-send-plane-line",
-                  onClick: () => setEdition(false),
-                },
-              ]}
-            />
-          </>
-        ) : (
-          <>
-            <TelechargerPieceJointe
-              pieceJointe={dossier.getArretePaiement() as Document}
-            />
+          <ButtonsGroup
+            inlineLayoutWhen="always"
+            alignment="right"
+            buttonsIconPosition="right"
+            buttonsSize="small"
+            buttons={[
+              {
+                children: "Annuler",
+                priority: "tertiary no outline",
+                onClick: () => _modale.close(),
+              },
+              {
+                children: "Signer et envoyer",
+                priority: "secondary",
+                disabled: sauvegardeEnCours,
+                iconId: "fr-icon-send-plane-line",
+                onClick: () => setEdition(false),
+              },
+            ]}
+          />
+        </>
+      ) : (
+        <>
+          <TelechargerPieceJointe
+            pieceJointe={dossier.getArretePaiement() as Document}
+          />
 
-            <Upload
-              label="Téléverser le fichier pour signature"
-              hint={
-                <>
-                  <span
-                    className={`${fichierSigne && !estTailleFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
-                  >
-                    Taille maximale : 10 Mo.&nbsp;
-                  </span>
-                  <span
-                    className={`${fichierSigne && !estTypeFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
-                  >
-                    Format pdf uniquement.&nbsp;
-                  </span>
-                </>
-              }
-              state="default"
-              stateRelatedMessage="Text de validation / d'explication de l'erreur"
-              nativeInputProps={{
-                accept: "application/pdf",
-                onChange: (e) => {
-                  if (e.target.files && e.target.files.length > 0) {
-                    setFichierSigne(e.target.files.item(0) as File);
-                  }
-                },
-              }}
-            />
+          <Upload
+            label="Téléverser le fichier pour signature"
+            hint={
+              <>
+                <span
+                  className={`${fichierSigne && !estTailleFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
+                >
+                  Taille maximale : 10 Mo.&nbsp;
+                </span>
+                <span
+                  className={`${fichierSigne && !estTypeFichierOk(fichierSigne) ? "fr-text-default--error" : ""}`}
+                >
+                  Format pdf uniquement.&nbsp;
+                </span>
+              </>
+            }
+            state="default"
+            stateRelatedMessage="Text de validation / d'explication de l'erreur"
+            nativeInputProps={{
+              accept: "application/pdf",
+              onChange: (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  setFichierSigne(e.target.files.item(0) as File);
+                }
+              },
+            }}
+          />
 
-            <ButtonsGroup
-              inlineLayoutWhen="always"
-              alignment="right"
-              buttonsIconPosition="right"
-              buttonsSize="small"
-              buttons={[
-                {
-                  children: "Annuler",
-                  priority: "tertiary no outline",
-                  onClick: () => _modale.close(),
-                },
-                {
-                  children: "Éditer l'arrêté de paiement",
-                  iconId: "fr-icon-pencil-line",
-                  onClick: () => setEdition(true),
-                  priority: "secondary",
-                },
-                {
-                  children: "Signer et envoyer pour paiement",
-                  iconId: "fr-icon-send-plane-line",
-                  disabled:
-                    sauvegardeEnCours ||
-                    !fichierSigne ||
-                    !estTailleFichierOk(fichierSigne) ||
-                    !estTypeFichierOk(fichierSigne),
-                  onClick: () => envoyer(),
-                  priority: "primary",
-                },
-              ]}
-            />
-          </>
-        )}
-      </_modale.Component>
-    ) : (
-      <></>
-    );
-  },
-);
+          <ButtonsGroup
+            inlineLayoutWhen="always"
+            alignment="right"
+            buttonsIconPosition="right"
+            buttonsSize="small"
+            buttons={[
+              {
+                children: "Annuler",
+                priority: "tertiary no outline",
+                onClick: () => _modale.close(),
+              },
+              {
+                children: "Éditer l'arrêté de paiement",
+                iconId: "fr-icon-pencil-line",
+                onClick: () => setEdition(true),
+                priority: "secondary",
+              },
+              {
+                children: "Signer et envoyer pour paiement",
+                iconId: "fr-icon-send-plane-line",
+                disabled:
+                  sauvegardeEnCours ||
+                  !fichierSigne ||
+                  !estTailleFichierOk(fichierSigne) ||
+                  !estTypeFichierOk(fichierSigne),
+                onClick: () => signerEtEnvoyer(),
+                priority: "primary",
+              },
+            ]}
+          />
+        </>
+      )}
+    </_modale.Component>
+  ) : (
+    <></>
+  );
+};
 
 export const signerArretePaiementBoutons = ({
   dossier,
