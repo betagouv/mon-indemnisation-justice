@@ -1,4 +1,4 @@
-FROM pierrelemee/mij-frankenphp:latest
+FROM pierrelemee/mij-frankenphp:0.4
 
 # Parce que l'application de dev est amenée à discuter directement avec franceconnect.gouv.test et proconnect.gouv.test,
 # le conteneur doit disposer du cartificat racine qui a été utilisé pour générer les certificats HTTPS des sites sous

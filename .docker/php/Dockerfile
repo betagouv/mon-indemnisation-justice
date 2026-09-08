@@ -40,22 +40,6 @@ RUN apt-get install -y nodejs
 RUN npm install -g npm@11
 RUN npm install --force -g yarn
 
-# Firefox
-RUN apt install -y ca-certificates curl gnupg
-RUN curl -fsSL https://packages.mozilla.org/apt/repo-signing-key.gpg | gpg --dearmor -o /usr/share/keyrings/packages.mozilla.org.gpg
-RUN gpg --show-keys --with-fingerprint /usr/share/keyrings/packages.mozilla.org.gpg | head -n 2
-
-RUN echo 'Types: deb \n\
-URIs: https://packages.mozilla.org/apt \n\
-Suites: mozilla \n\
-Components: main \n\
-Signed-By: /usr/share/keyrings/packages.mozilla.org.gpg\n' >> /etc/apt/sources.list.d/mozilla.sources
-
-RUN cat /etc/apt/sources.list.d/mozilla.sources
-RUN apt-get update -y && \
-    apt-get install -y firefox
-ENV FIREFOX_PATH=/usr/bin/firefox
-
 # Installer pdf2text pour pouvoir extraire le texte d'un fichier PDF
 RUN apt install -y poppler-utils
 
