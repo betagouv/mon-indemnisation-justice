@@ -18,11 +18,13 @@ export const CheckSuggestedInput = <TSuggestion extends {} = {}>({
   rafraichisseur,
   rafraichisseurDebounceMs,
   estARafraichir,
+  className,
   nativeInputProps,
   ...inputProps
 }: CheckSuggestedInputProps<TSuggestion>) => {
   return (
     <BaseSuggestedInput
+      className={className}
       renderInput={({ onFocus, onBlur, onChange }) => (
         <CheckInput
           nativeInputProps={{
