@@ -7,12 +7,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { ChampsBaseInscription } from "./ChampsBaseInscription";
 import { listerBarreaux } from "./BarreauService";
 import { rechercherAvocats } from "./AvocatService";
-import { appliquerErreursChamps, ErreurInscription, inscrireAvocat } from "./AuthentificationService";
-import { AvocatTrouve, Barreau, InscriptionAvocat, SchemaInscriptionAvocat } from "./authentification.schemas";
-
-type FormulaireInscriptionAvocatProps = {
-  onSucces: () => void;
-};
+import {
+  appliquerErreursChamps,
+  ErreurInscription,
+  inscrireAvocat,
+} from "./AuthentificationService";
+import {
+  AvocatTrouve,
+  Barreau,
+  InscriptionAvocat,
+  SchemaInscriptionAvocat,
+} from "./authentification.schemas"; // Les noms de barreaux du CNB sont en capitales ("AGEN") ; on les met en forme pour l'affichage.
 
 // Les noms de barreaux du CNB sont en capitales ("AGEN") ; on les met en forme pour l'affichage.
 function libelleBarreau(barreau: Barreau): string {
@@ -37,7 +42,11 @@ const VALEURS_INITIALES: InscriptionAvocat = {
   numeroCnbf: "",
 };
 
-export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionAvocatProps) {
+export const FormulaireInscriptionAvocat = ({
+  onSucces,
+}: {
+  onSucces: () => void;
+}) => {
   const [erreurGenerale, setErreurGenerale] = useState<string | null>(null);
   const barreauxRef = useRef<Barreau[]>([]);
 
@@ -63,10 +72,15 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
         await inscrireAvocat(value);
         onSucces();
       } catch (erreur) {
-        if (erreur instanceof ErreurInscription && Object.keys(erreur.erreursChamps).length > 0) {
+        if (
+          erreur instanceof ErreurInscription &&
+          Object.keys(erreur.erreursChamps).length > 0
+        ) {
           // Le backend valide `barreauId` (c'est ce qui est envoyé sur le fil, cf. AuthentificationService.inscrireAvocat)
           // mais le champ du formulaire s'appelle `barreau` (il porte l'objet Barreau complet, pas seulement son id).
-          appliquerErreursChamps(formulaire, erreur.erreursChamps, { barreauId: "barreau" });
+          appliquerErreursChamps(formulaire, erreur.erreursChamps, {
+            barreauId: "barreau",
+          });
         } else {
           setErreurGenerale("Une erreur est survenue, veuillez réessayer.");
         }
@@ -81,7 +95,8 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
     formulaire.setFieldValue("barreau", avocat.barreau);
     formulaire.setFieldValue("numeroCnbf", avocat.numeroCnbf);
     if (avocat.civilite) formulaire.setFieldValue("civilite", avocat.civilite);
-    if (avocat.telephone) formulaire.setFieldValue("telephone", avocat.telephone);
+    if (avocat.telephone)
+      formulaire.setFieldValue("telephone", avocat.telephone);
     if (avocat.email) formulaire.setFieldValue("courriel", avocat.email);
   };
 
@@ -145,7 +160,10 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
                   className="fr-col-6"
                   champ={field}
                   estRequis
-                  nativeInputProps={{ value: field.state.value, onChange: (e) => field.handleChange(e.target.value) }}
+                  nativeInputProps={{
+                    value: field.state.value,
+                    onChange: (e) => field.handleChange(e.target.value),
+                  }}
                 />
               )}
             />
@@ -166,7 +184,9 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
                   nativeInputProps={{
                     placeholder: "Paris, Lyon, ...",
                     autoComplete: "off",
-                    defaultValue: field.state.value ? libelleBarreau(field.state.value) : "",
+                    defaultValue: field.state.value
+                      ? libelleBarreau(field.state.value)
+                      : "",
                   }}
                   estARafraichir={() => true}
                   rafraichisseurDebounceMs={0}
@@ -174,8 +194,13 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
                     const recherche = valeur.trim().toLowerCase();
 
                     return barreauxRef.current
-                      .filter((barreau) => barreau.nom.toLowerCase().startsWith(recherche))
-                      .map((barreau) => ({ libelle: libelleBarreau(barreau), valeur: barreau }));
+                      .filter((barreau) =>
+                        barreau.nom.toLowerCase().startsWith(recherche),
+                      )
+                      .map((barreau) => ({
+                        libelle: libelleBarreau(barreau),
+                        valeur: barreau,
+                      }));
                   }}
                   onSelectionne={(barreau) => {
                     field.setValue(barreau);
@@ -206,13 +231,17 @@ export function FormulaireInscriptionAvocat({ onSucces }: FormulaireInscriptionA
         }
       />
 
-      {erreurGenerale && <Alert className="fr-mb-3w" severity="error" title={erreurGenerale} />}
+      {erreurGenerale && (
+        <Alert className="fr-mb-3w" severity="error" title={erreurGenerale} />
+      )}
 
       <ButtonsGroup
         inlineLayoutWhen="always"
         alignment="right"
-        buttons={[{ nativeButtonProps: { type: "submit" }, children: "S'inscrire" }]}
+        buttons={[
+          { nativeButtonProps: { type: "submit" }, children: "S'inscrire" },
+        ]}
       />
     </form>
   );
-}
+};
