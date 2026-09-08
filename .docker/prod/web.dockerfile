@@ -1,4 +1,4 @@
-FROM pierrelemee/mij-frankenphp:0.4
+FROM pierrelemee/mij-frankenphp:latest
 
 COPY backend /app/
 

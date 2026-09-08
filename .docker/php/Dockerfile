@@ -11,7 +11,8 @@ RUN echo "export LC_ALL=fr_FR.UTF-8" >> /root/.bashrc
 # Generic utils
 RUN apt-get update -y && \
     apt-get upgrade -y --fix-missing && \
-    apt-get install -y vim wget locales
+    apt-get install -y vim wget locales && \
+    apt-get install -y libgtk-3-0 libasound2 libx11-xcb1 # Librairies requises pour que Firefox (installé par puppeteer) fonctionne
 
 # Configurer la langue Française 🇫🇷
 RUN sed -i '/fr_FR.UTF-8/s/^#//g' /etc/locale.gen

@@ -1,6 +1,6 @@
 FROM pierrelemee/supervisor-docker:0.1.5 AS supervisor
 
-FROM pierrelemee/mij-frankenphp AS php
+FROM pierrelemee/mij-frankenphp:latest AS php
 
 COPY --from=supervisor /opt/supervisor-api /opt/supervisor-api
 
