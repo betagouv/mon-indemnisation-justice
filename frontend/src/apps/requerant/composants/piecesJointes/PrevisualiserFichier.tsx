@@ -3,8 +3,6 @@ import { DocumentPDF } from "@/common/composants/document/DocumentPDF.tsx";
 import { contenuFichier } from "@/common/services/fichier.ts";
 import React, { useEffect, useState } from "react";
 
-const fileReader = new FileReader();
-
 export const PrevisualiserFichier = ({ fichier }: { fichier: File }) => {
   const [lectureEnCours, setLectureEnCours] = useState(false);
   const [urlFichier, setUrlFichier] = useState<string | undefined>(undefined);

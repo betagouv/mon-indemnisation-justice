@@ -6,7 +6,6 @@ import Download from "@codegouvfr/react-dsfr/Download";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { useInjection } from "inversify-react";
-import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
@@ -22,10 +21,11 @@ const estAEnvoyerPourIndemnisation = ({
   dossier: DossierDetail;
   agent: AgentFIP6;
 }): boolean =>
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
   (agent.instruit(dossier) || agent.estLiaisonBudget()) &&
   dossier.etat.etat === EtatDossierType.OK_A_INDEMNISER;
 
-const component = observer(function EnvoyerPourIndemnisationActionModale({
+export const EnvoyerPourIndemnisationActionModale = ({
   dossier,
   agent,
   onTermine,
@@ -33,7 +33,7 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
   dossier: DossierDetail;
   agent: AgentFIP6;
   onTermine: () => void | Promise<void>;
-}) {
+}) => {
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
   );
@@ -54,13 +54,13 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
     setSauvegarderEnCours(true);
 
     await dossierManager.transmettreAFIP3(dossier);
-
     await onTermine();
+
     _modale.close();
     setSauvegarderEnCours(false);
   }, [dossier.id]);
 
-  return (
+  return estAEnvoyerPourIndemnisation({ dossier, agent }) ? (
     <_modale.Component
       size="large"
       title=" Envoyer pour indemnisation"
@@ -111,8 +111,10 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
         ]}
       />
     </_modale.Component>
+  ) : (
+    <></>
   );
-});
+};
 
 export const envoyerPourIndemnisationBoutons = ({
   dossier,
@@ -131,5 +133,3 @@ export const envoyerPourIndemnisationBoutons = ({
       ]
     : [];
 };
-
-export { component as EnvoyerPourIndemnisationActionModale };

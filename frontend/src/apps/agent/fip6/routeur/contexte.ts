@@ -1,7 +1,7 @@
-import { Agent } from "@common/models";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 export interface AgentFIP6Contexte {
-  agent: Agent;
+  agent: AgentFIP6;
   incarnePar?: string;
   urlDeconnexion: string;
 }

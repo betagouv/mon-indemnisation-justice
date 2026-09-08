@@ -26,38 +26,38 @@ import {
   signerCourrierBoutons,
   SignerCourrierModale,
 } from "@fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import React from "react";
+
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import {
+  AttribuerActionModale,
   attribuerBoutons,
-  AttribuerModale as AttribuerActionModale,
 } from "./AttributionAction.tsx";
-import {
-  cloturerBoutons,
-  CloturerModale as CloturerActionModale,
-} from "./CloturerAction.tsx";
+import { CloturerActionModale, cloturerBoutons } from "./CloturerAction.tsx";
 import {
   signerArretePaiementBoutons,
   SignerArretePaiementModale,
 } from "./SignerArretePaiementAction.tsx";
 
-export const DossierActions = function DossierActionBar({
+export const DossierActions = ({
   dossier,
   agent,
   redacteurs,
   onImprime,
   onDecide,
-  onSigne,
+  onSigneDecision,
+  onSigneArrete,
   onTermine,
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
   redacteurs: Redacteur[];
   onImprime: (document: Document) => void | Promise<void>;
-  onDecide?: () => void;
-  onSigne?: () => void;
+  onDecide: () => void;
+  onSigneDecision: () => void | Promise<void>;
+  onSigneArrete: () => void | Promise<void>;
   onTermine: () => void | Promise<void>;
-}) {
+}) => {
   return (
     <>
       {/** Actions sur le dossier */}
@@ -70,7 +70,7 @@ export const DossierActions = function DossierActionBar({
           [
             ...cloturerBoutons({ dossier, agent }),
             ...attribuerBoutons({ dossier, agent, redacteurs }),
-            ...demarrerInstructionBoutons({ dossier, agent }),
+            ...demarrerInstructionBoutons({ dossier, agent, onTermine }),
             ...deciderRejetBoutons({
               dossier,
               agent,
@@ -89,11 +89,16 @@ export const DossierActions = function DossierActionBar({
       />
 
       {/** Modales d'action sur le dossier */}
-      <CloturerActionModale dossier={dossier} agent={agent} />
+      <CloturerActionModale
+        dossier={dossier}
+        agent={agent}
+        onCloture={onTermine}
+      />
       <AttribuerActionModale
         dossier={dossier}
         agent={agent}
         redacteurs={redacteurs}
+        onAttribue={onTermine}
       />
       <DeciderRejetModale
         dossier={dossier}
@@ -111,17 +116,19 @@ export const DossierActions = function DossierActionBar({
       <SignerCourrierModale
         dossier={dossier}
         agent={agent}
-        onSigne={onSigne}
+        onSigne={onSigneDecision}
         onImprime={onImprime}
       />
       <GenererArretePaiementModale
         dossier={dossier}
         agent={agent}
+        onGenere={onSigneArrete}
         onImprime={onImprime}
       />
       <SignerArretePaiementModale
         dossier={dossier}
         agent={agent}
+        onSigne={onSigneArrete}
         onImprime={onImprime}
       />
       <EnvoyerPourIndemnisationActionModale

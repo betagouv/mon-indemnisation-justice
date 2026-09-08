@@ -21,6 +21,7 @@ import {
 } from "@fip6/dossiers/components/consultation/piecejointe";
 import { PiecesJointes } from "@fip6/dossiers/components/consultation/PiecesJointes";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { RouteurFIP6 } from "@fip6/routeur";
 import { DossierManagerInterface } from "@fip6/services/dossier";
 import {
   createFileRoute,
@@ -29,7 +30,6 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 
 export const Route = createFileRoute("/dossier/$id/")({
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/dossier/$id/")({
   loader: async ({ params, context }) => {
     const dossier = await container
       .get<DossierManagerInterface>(DossierManagerInterface.$)
-      .consulter(params.id);
+      ?.consulter(params.id);
 
     if (!dossier) {
       throw notFound({
@@ -72,7 +72,7 @@ export const Route = createFileRoute("/dossier/$id/")({
  *
  * @constructor
  */
-const ConsultationDossier = observer(function ConsultationDossier({
+const ConsultationDossier = ({
   dossier,
   agent,
   redacteurs,
@@ -80,8 +80,8 @@ const ConsultationDossier = observer(function ConsultationDossier({
   dossier: DossierDetail;
   agent: AgentFIP6;
   redacteurs: Redacteur[];
-}) {
-  const routeur = useRouter();
+}) => {
+  const routeur = useRouter<typeof RouteurFIP6>();
 
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
@@ -113,34 +113,13 @@ const ConsultationDossier = observer(function ConsultationDossier({
     (mode: boolean) => void,
   ] = useState(false);
 
-  const annoterCourrier = async () => {
+  const annoterDossier = async () => {
     setSauvegarderEnCours(true);
 
-    const response = await fetch(
-      `/agent/redacteur/dossier/${dossier.id}/annoter.json`,
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          notes,
-        }),
-      },
-    );
-
-    if (!response.ok) {
-      const message = await response.text();
-      console.error(`${response.status} ${response.statusText} - ${message}`);
-    }
+    await dossierManager.annoter(dossier, notes);
+    await routeur.invalidate();
 
     setSauvegarderEnCours(false);
-    dossier.annoter(notes);
-  };
-
-  const ouvrirSectionCourrier = () => {
-    changerOnglet("courrier");
   };
 
   return (
@@ -210,11 +189,21 @@ const ConsultationDossier = observer(function ConsultationDossier({
                 agent={agent}
                 redacteurs={redacteurs}
                 onImprime={async (document: Document) => {
-                  await dossierManager.ajouterDocument(dossier, document);
+                  dossierManager.ajouterDocument(dossier, document);
                   await routeur.invalidate();
                 }}
-                onDecide={() => ouvrirSectionCourrier()}
-                onSigne={() => ouvrirSectionCourrier()}
+                onDecide={async () => {
+                  await routeur.invalidate();
+                  changerOnglet("courrier");
+                }}
+                onSigneDecision={async () => {
+                  await routeur.invalidate();
+                  changerOnglet("courrier");
+                }}
+                onSigneArrete={async () => {
+                  await routeur.invalidate();
+                  changerOnglet("arrete");
+                }}
                 onTermine={async () => await routeur.invalidate()}
               />
 
@@ -255,7 +244,7 @@ const ConsultationDossier = observer(function ConsultationDossier({
                         {
                           tabId: "declaration",
                           label: "Déclaration d'acceptation",
-                          disabled: !dossier.getDeclarationAcceptation(),
+                          disabled: !dossier.estAccepteRequerant(),
                         },
                         {
                           tabId: "arrete",
@@ -289,7 +278,7 @@ const ConsultationDossier = observer(function ConsultationDossier({
                             sauvegarderEnCours ||
                             !notes?.trim() ||
                             dossier.notes == notes,
-                          onClick: () => annoterCourrier(),
+                          onClick: () => annoterDossier(),
                           children: sauvegarderEnCours
                             ? "Sauvegarde en cours ..."
                             : dossier.notes == notes
@@ -414,7 +403,7 @@ const ConsultationDossier = observer(function ConsultationDossier({
       </div>
     </>
   );
-});
+};
 
 function ConsulterDossier() {
   const {

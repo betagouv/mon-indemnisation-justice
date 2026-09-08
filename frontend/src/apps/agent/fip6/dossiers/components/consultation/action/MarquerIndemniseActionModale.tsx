@@ -8,11 +8,10 @@ import {
   dateDansNJours,
   dateSimple,
 } from "@common/services/date.ts";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { DossierManagerInterface } from "@fip6/services/dossier";
 import { useInjection } from "inversify-react";
-import { observer } from "mobx-react-lite";
 import React, { useCallback, useState } from "react";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-emarquer-indemnise",
@@ -26,10 +25,11 @@ const estEnAttenteIndemnisation = ({
   dossier: DossierDetail;
   agent: AgentFIP6;
 }): boolean =>
+  dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
   dossier.etat.etat === EtatDossierType.OK_EN_ATTENTE_PAIEMENT &&
   (agent.estLiaisonBudget() || agent.instruit(dossier));
 
-const component = observer(function EnvoyerPourIndemnisationActionModale({
+export const MarquerIndemniseActionModale = ({
   dossier,
   agent,
   onTermine,
@@ -37,7 +37,7 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
   dossier: DossierDetail;
   agent: AgentFIP6;
   onTermine: () => void | Promise<void>;
-}) {
+}) => {
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
   );
@@ -113,7 +113,7 @@ const component = observer(function EnvoyerPourIndemnisationActionModale({
       />
     </_modale.Component>
   );
-});
+};
 
 export const marquerIndemniseBoutons = ({
   dossier,
@@ -132,5 +132,3 @@ export const marquerIndemniseBoutons = ({
       ]
     : [];
 };
-
-export { component as MarquerIndemniseActionModale };

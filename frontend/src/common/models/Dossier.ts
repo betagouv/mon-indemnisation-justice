@@ -2,7 +2,6 @@ import DateTransform from "@/common/normalisation/transformers/DateTransform.ts"
 import { DeclarationFDOBrisPorte } from "@fdo/modeles/DeclarationFDOBrisPorte";
 import { Expose, plainToInstance, Transform, Type } from "class-transformer";
 import { groupBy } from "lodash";
-import { action, computed, makeObservable, observable } from "mobx";
 import { Adresse } from "./Adresse";
 import { Document, DocumentType } from "./Document";
 import { EtatDossier, EtatDossierType } from "./EtatDossier";
@@ -19,8 +18,11 @@ export type TypeAttestation =
   | "COURRIER_FDO"
   | "PAS_ATTESTATION";
 
+export type TypeDossier = "BRI" | "DYS";
+
 export abstract class BaseDossier {
   public readonly id: number;
+  public readonly type: TypeDossier = "BRI";
   public readonly reference: string;
   public montantIndemnisation?: number;
 
@@ -41,16 +43,16 @@ export abstract class BaseDossier {
 
   abstract estIssuDeclarationFDO(): boolean;
 
+  public estBrisDePorte(): boolean {
+    return this.type === "BRI";
+  }
+
   public estAAttribuer(): boolean {
     return this.etat.etat.egal(EtatDossierType.A_ATTRIBUER);
   }
 
   estDepose(): boolean {
     return !!this.dateDepot;
-  }
-
-  attribuer(redacteur: Redacteur): void {
-    this.redacteur = redacteur;
   }
 
   enAttenteInstruction(): boolean {
@@ -98,10 +100,6 @@ export abstract class BaseDossier {
       EtatDossierType.OK_A_INDEMNISER,
       EtatDossierType.OK_EN_ATTENTE_PAIEMENT,
     ].includes(this.etat.etat);
-  }
-
-  changerEtat(etat: EtatDossier): void {
-    this.etat = etat;
   }
 
   public estDecide(): boolean {
@@ -157,7 +155,7 @@ export class DossierDetail extends BaseDossier {
 
   public descriptionRequerant?: string;
 
-  public notes?: string;
+  public readonly notes: string = "";
 
   @Expose()
   @Type(() => Adresse)
@@ -186,36 +184,8 @@ export class DossierDetail extends BaseDossier {
 
   public typeInstitutionSecuritePublique?: TypeFDO;
 
-  constructor() {
-    super();
-    makeObservable(this, {
-      redacteur: observable,
-      attribuer: action,
-      enAttenteDecision: computed,
-      etat: observable,
-      changerEtat: action,
-      setMontantIndemnisation: action,
-      documents: observable,
-      addDocument: action,
-      removeDocument: action,
-      viderDocumentParType: action,
-      notes: observable,
-      annoter: action,
-    });
-  }
-
   estIssuDeclarationFDO(): boolean {
     return !!this.declarationFDO?.id;
-  }
-
-  annoter(notes: string): void {
-    this.notes = notes;
-  }
-
-  setMontantIndemnisation(montantIndemnisation: number): this {
-    this.montantIndemnisation = montantIndemnisation;
-
-    return this;
   }
 
   public hasDocumentsType(type: DocumentType): boolean {
@@ -249,10 +219,6 @@ export class DossierDetail extends BaseDossier {
         .get(document.type.type)
         ?.filter((d) => d.id != document.id) || [],
     );
-  }
-
-  public viderDocumentParType(type: DocumentType): void {
-    this.documents.set(type.type, []);
   }
 
   get piecesJointes(): Document[] {

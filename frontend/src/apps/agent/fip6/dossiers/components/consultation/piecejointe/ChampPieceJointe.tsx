@@ -23,12 +23,13 @@ export const ChampPieceJointe = function PieceJointe({
 
     // @deprecated préférer la méthode `lienTelechargement`
     return pieceJointe.url;
-  }, [pieceJointe.id, lienTelechargement]);
+  }, [pieceJointe.id, pieceJointe.fileHash, lienTelechargement]);
 
   return (
     <div className={`${fr.cx("fr-grid-row")} ${className ?? ""}`}>
       {pieceJointe.estPDF() ? (
         <object
+          key={url}
           data={url}
           type="application/pdf"
           style={{
@@ -38,6 +39,7 @@ export const ChampPieceJointe = function PieceJointe({
         ></object>
       ) : (
         <img
+          key={url}
           src={url}
           alt={pieceJointe.originalFilename}
           style={{

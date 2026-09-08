@@ -1,31 +1,17 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import { Agent, DossierDetail, EtatDossier } from "@common/models";
-import { plainToInstance } from "class-transformer";
-
-const demarrerInstruction = async ({ dossier }: { dossier: DossierDetail }) => {
-  const response = await fetch(
-    `/api/agent/fip6/dossier/${dossier.id}/demarrer-instruction`,
-    {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        Accept: "application/json",
-      },
-    },
-  );
-
-  if (response.ok) {
-    const data = await response.json();
-    dossier.changerEtat(plainToInstance(EtatDossier, data.etat));
-  }
-};
+import { DossierDetail } from "@common/models";
+import { container } from "@fip6/container.ts";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 
 export const demarrerInstructionBoutons = ({
   dossier,
   agent,
+  onTermine,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
+  onTermine: () => void | Promise<void>;
 }): ButtonProps[] => {
   return dossier.enAttenteInstruction() && agent.instruit(dossier)
     ? [
@@ -35,7 +21,11 @@ export const demarrerInstructionBoutons = ({
           iconId: "fr-icon-play-line",
           onClick: async (e) => {
             (e.target as HTMLButtonElement).disabled = true;
-            await demarrerInstruction({ dossier });
+            await container
+              .get<DossierManagerInterface>(DossierManagerInterface.$)
+              .demarrerInstruction(dossier);
+            await onTermine();
+            (e.target as HTMLButtonElement).disabled = false;
           },
         } as ButtonProps,
       ]
