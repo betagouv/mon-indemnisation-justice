@@ -74,7 +74,7 @@ const DysfonctionnementAccueilPage = () => {
                   {
                     children: "Tester mon éligibilité",
                     linkProps: {
-                      to: "/dysfonctionnement/teter-mon-eligibilite",
+                      to: "/dysfonctionnement/tester-mon-eligibilite",
                       disabled: undefined === estAvocat,
                     },
                   },
