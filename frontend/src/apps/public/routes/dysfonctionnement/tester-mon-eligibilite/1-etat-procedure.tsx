@@ -1,24 +1,36 @@
-import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
+import { Layout } from "@/apps/public/components/Layout";
+import {
+  BlockedNavButtons,
+  NavButtons,
+  TOTAL_STEPS,
+} from "@/apps/public/components/steps";
+import { container } from "@/apps/public/container";
+import { RouteurPublic } from "@/apps/public/routeur";
+import {
+  clearCriteres,
+  critereProcedureTerminee,
+  saveCritere,
+} from "@/apps/public/services/eligibiliteStore";
+import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { NavButtons, BlockedNavButtons, TOTAL_STEPS } from "@/apps/public/components/steps";
+import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { Layout } from "@/apps/public/components/Layout";
-import { usePublicNavigate } from "@/apps/public/routeur";
-import { createFileRoute } from "@tanstack/react-router";
-import React, { useState } from "react";
-import { saveCritere, critereProcedureTerminee, clearCriteres } from "@/apps/public/services/eligibiliteStore";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { container } from "@/apps/public/container";
-import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
+import React, { useState } from "react";
 
 function TestEligibiliteRoute() {
-  const navigate = usePublicNavigate();
-  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
-  const { test } = Route.useLoaderData();
-  const [procedureTerminee, setProcedureTerminee] = useState<boolean | undefined>(
-    () => test?.procedureTerminee,
+  const navigate = useNavigate<typeof RouteurPublic>({
+    from: Route.fullPath,
+  });
+  const manager = useInjection<TestEligibiliteManagerInterface>(
+    TestEligibiliteManagerInterface.$,
   );
+  const { test } = Route.useLoaderData();
+  const [procedureTerminee, setProcedureTerminee] = useState<
+    boolean | undefined
+  >(() => test?.procedureTerminee);
   const [submitted, setSubmitted] = useState(false);
 
   const nonEligible = submitted && procedureTerminee === false;
@@ -39,8 +51,10 @@ function TestEligibiliteRoute() {
       <h1>Test d'éligibilité</h1>
 
       <p className="fr-mb-3w">
-       Ce test vous permet de vérifier si votre situation est susceptible de relever d’un délai déraisonnable de procédure et de faire l’objet d’une demande de réparation.
-       Répondez aux questions suivantes pour poursuivre votre démarche. 
+        Ce test vous permet de vérifier si votre situation est susceptible de
+        relever d’un délai déraisonnable de procédure et de faire l’objet d’une
+        demande de réparation. Répondez aux questions suivantes pour poursuivre
+        votre démarche.
       </p>
 
       {nonEligible ? (
@@ -51,17 +65,29 @@ function TestEligibiliteRoute() {
             title="Vous n’êtes pas éligible à déposer un dossier."
             description={
               <>
-                <p>La procédure concernée par votre demande est toujours en cours.</p>
                 <p>
-                  Une demande de réparation au titre d’un délai déraisonnable de procédure ne peut être déposée qu’après que la juridiction concernée a statué.
+                  La procédure concernée par votre demande est toujours en
+                  cours.
                 </p>
                 <p>
-                  Vous pourrez renouveler votre démarche une fois la décision rendue.
+                  Une demande de réparation au titre d’un délai déraisonnable de
+                  procédure ne peut être déposée qu’après que la juridiction
+                  concernée a statué.
+                </p>
+                <p>
+                  Vous pourrez renouveler votre démarche une fois la décision
+                  rendue.
                 </p>
               </>
             }
           />
-          <BlockedNavButtons onRetour={() => { manager.effacer(); clearCriteres(); navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" }); }} />
+          <BlockedNavButtons
+            onRetour={() => {
+              manager.effacer();
+              clearCriteres();
+              navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" });
+            }}
+          />
         </>
       ) : (
         <>
@@ -79,7 +105,9 @@ function TestEligibiliteRoute() {
               manager.modifier({ procedureTerminee: procedureTerminee! });
               if (procedureTerminee) {
                 saveCritere("procedureTerminee", critereProcedureTerminee());
-                navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/1-date-decision" });
+                navigate({
+                  to: "/dysfonctionnement/tester-mon-eligibilite/2-date-decision",
+                });
               } else {
                 setSubmitted(true);
               }
@@ -108,7 +136,9 @@ function TestEligibiliteRoute() {
               ]}
             />
             <NavButtons
-              onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
+              onAnnuler={() =>
+                navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })
+              }
               peutContinuer={procedureTerminee !== undefined}
             />
           </form>
@@ -118,9 +148,13 @@ function TestEligibiliteRoute() {
   );
 }
 
-export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/test-eligibilite")({
+export const Route = createFileRoute(
+  "/dysfonctionnement/tester-mon-eligibilite/1-etat-procedure",
+)({
   component: TestEligibiliteRoute,
   loader: () => ({
-    test: container.get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$).get(),
+    test: container
+      .get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$)
+      .get(),
   }),
 });
