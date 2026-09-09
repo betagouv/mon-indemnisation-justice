@@ -1,13 +1,15 @@
+import { Layout } from "@/apps/public/components/Layout";
+import { RouteurPublic } from "@/apps/public/routeur";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
-import { Layout } from "@/apps/public/components/Layout";
-import { usePublicNavigate } from "@/apps/public/routeur";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import React from "react";
 
 const AccueilVisiteur = () => {
-  const navigate = usePublicNavigate();
+  const navigate = useNavigate<typeof RouteurPublic>({
+    from: Route.fullPath,
+  });
   return (
     <Layout>
       <Breadcrumb
@@ -75,7 +77,7 @@ const AccueilVisiteur = () => {
           size="large"
           onClick={() =>
             navigate({
-              to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite",
+              to: "/dysfonctionnement/tester-mon-eligibilite/1-etat-procedure",
             })
           }
         >

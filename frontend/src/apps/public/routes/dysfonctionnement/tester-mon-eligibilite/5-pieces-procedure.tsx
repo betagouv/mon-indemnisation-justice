@@ -1,7 +1,6 @@
 import React from "react";
-import { usePublicNavigate } from "@/apps/public/routeur";
 import { TOTAL_STEPS } from "@/apps/public/components/steps";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { Layout } from "@/apps/public/components/Layout";
@@ -10,11 +9,15 @@ import { container } from "@/apps/public/container";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 import { useInjection } from "inversify-react";
 import { clearCriteres } from "@/apps/public/services/eligibiliteStore";
-
+import { RouteurPublic } from "@/apps/public/routeur";
 
 function PiecesProcedureRoute() {
-  const navigate = usePublicNavigate();
-  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
+  const navigate = useNavigate<typeof RouteurPublic>({
+    from: Route.fullPath,
+  });
+  const manager = useInjection<TestEligibiliteManagerInterface>(
+    TestEligibiliteManagerInterface.$,
+  );
   const { test } = Route.useLoaderData();
 
   return (
@@ -38,18 +41,36 @@ function PiecesProcedureRoute() {
       />
       <StepPiecesProc
         test={test}
-        onPrecedent={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/3-type-decision" })}
-        onSuivant={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/5-diligences" })}
-        onAnnuler={() => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })}
-        onRetour={() => { manager.effacer(); clearCriteres(); navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" }); }}
+        onPrecedent={() =>
+          navigate({
+            to: "/dysfonctionnement/tester-mon-eligibilite/4-type-decision",
+          })
+        }
+        onSuivant={() =>
+          navigate({
+            to: "/dysfonctionnement/tester-mon-eligibilite/6-diligences",
+          })
+        }
+        onAnnuler={() =>
+          navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" })
+        }
+        onRetour={() => {
+          manager.effacer();
+          clearCriteres();
+          navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/" });
+        }}
       />
     </Layout>
   );
 }
 
-export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure")({
+export const Route = createFileRoute(
+  "/dysfonctionnement/tester-mon-eligibilite/5-pieces-procedure",
+)({
   component: PiecesProcedureRoute,
   loader: () => ({
-    test: container.get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$).get(),
+    test: container
+      .get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$)
+      .get(),
   }),
 });
