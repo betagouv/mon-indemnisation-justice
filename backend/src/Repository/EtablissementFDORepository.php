@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Persistence\ManagerRegistry;
 use MonIndemnisationJustice\Entity\Administration;
+use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\FDO\EtablissementFDO;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 
@@ -42,9 +43,11 @@ class EtablissementFDORepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<EtablissementFDO>
+     * @var array<AdministrationType>
+     * @var string
+     * @var int
      */
-    public function rechercher(Administration $administration, string $recherche, int $limit = 10): array
+    public function rechercher(array $administrations, string $recherche, int $limit = 10): array
     {
         $qb = $this->createQueryBuilder('e');
         $mots = array_filter(
@@ -57,7 +60,8 @@ class EtablissementFDORepository extends ServiceEntityRepository
 
         return $qb
             ->join('e.codePostal', 'cp')
-            ->where('e.administration = :administration')
+            ->join('e.administration', 'a')
+            ->where('a.type in (:administrations)')
             ->andWhere(
                 $qb->expr()->orX(
                     'cp.codePostal = :codePostal',
@@ -71,7 +75,7 @@ class EtablissementFDORepository extends ServiceEntityRepository
             ->setParameters(
                 new ArrayCollection(
                     [
-                        new Parameter('administration', $administration),
+                        new Parameter('administrations', $administrations),
                         new Parameter('codePostal', $recherche),
                         ...array_map(
                             fn (string $mot, int $index) => new Parameter("mot$index", '%'.strtolower($mot).'%'),

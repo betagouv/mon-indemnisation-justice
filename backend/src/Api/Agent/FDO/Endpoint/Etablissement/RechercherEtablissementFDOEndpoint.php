@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\Etablissement;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Output\EtablissementFDOOutput;
+use MonIndemnisationJustice\Entity\AdministrationType;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\FDO\EtablissementFDO;
 use MonIndemnisationJustice\Repository\EtablissementFDORepository;
@@ -36,7 +37,14 @@ class RechercherEtablissementFDOEndpoint
         $agent = $security->getUser();
         $recherche = $request->query->get('r');
 
-        $etablissements = !empty($recherche) ? $this->repository->rechercher($agent->getAdministration(), $recherche) : [];
+        $administrations = match ($agent->getAdministration()->getType()) {
+            AdministrationType::GENDARMERIE_NATIONALE => [AdministrationType::GENDARMERIE_NATIONALE],
+            // Puisque ProConnect associe tous les agents PP ou PN à la police nationale, ceux-ci doivent pouvoir rechercher des établissements de ces 2 administrations
+            AdministrationType::POLICE_NATIONALE, AdministrationType::PREFECTURE_DE_POLICE => [AdministrationType::POLICE_NATIONALE, AdministrationType::PREFECTURE_DE_POLICE],
+            default => [],
+        };
+
+        $etablissements = !empty($recherche) && !empty($administrations) ? $this->repository->rechercher($administrations, $recherche, 25) : [];
 
         return new JsonResponse(
             $this->normalizer->normalize(
