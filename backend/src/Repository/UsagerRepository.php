@@ -38,6 +38,20 @@ class UsagerRepository extends ServiceEntityRepository implements PasswordUpgrad
         $this->getEntityManager()->flush();
     }
 
+    public function findAvocat(string $email): ?Usager
+    {
+        if (empty($email)) {
+            return null;
+        }
+
+        return $this->createQueryBuilder('u')
+            ->where('u.email = :email')
+            ->andWhere('u.avocat is not null')
+            ->setParameter('email', $email)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findByEmailOrSub(?string $email, ?string $sub): ?Usager
     {
         return $this
