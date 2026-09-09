@@ -1,18 +1,20 @@
 import { Layout } from "@/apps/public/components/Layout";
 import { TOTAL_STEPS } from "@/apps/public/components/steps";
-import { StepDateDecision } from "@/apps/public/components/steps/StepDateDecision";
+import { StepTypeDecision } from "@/apps/public/components/steps/StepTypeDecision";
 import { container } from "@/apps/public/container";
-import { usePublicNavigate } from "@/apps/public/routeur";
+import { RouteurPublic } from "@/apps/public/routeur";
 import { clearCriteres } from "@/apps/public/services/eligibiliteStore";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
 import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React from "react";
 
-const DateDecisionRoute = () => {
-  const navigate = usePublicNavigate();
+function TypeDecisionRoute() {
+  const navigate = useNavigate<typeof RouteurPublic>({
+    from: Route.fullPath,
+  });
   const manager = useInjection<TestEligibiliteManagerInterface>(
     TestEligibiliteManagerInterface.$,
   );
@@ -32,21 +34,21 @@ const DateDecisionRoute = () => {
       />
       <h1>Test d'éligibilité</h1>
       <Stepper
-        currentStep={2}
+        currentStep={4}
         stepCount={TOTAL_STEPS}
-        title="Date de la décision de justice "
-        nextTitle="État de la procédure"
+        title="Décisions de justice"
+        nextTitle="Pièces de procédure"
       />
-      <StepDateDecision
+      <StepTypeDecision
         test={test}
         onPrecedent={() =>
           navigate({
-            to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite",
+            to: "/dysfonctionnement/tester-mon-eligibilite/3-action-contentieuse",
           })
         }
         onSuivant={() =>
           navigate({
-            to: "/dysfonctionnement/tester-mon-eligibilite/2-action-contentieuse",
+            to: "/dysfonctionnement/tester-mon-eligibilite/5-pieces-procedure",
           })
         }
         onAnnuler={() =>
@@ -60,12 +62,12 @@ const DateDecisionRoute = () => {
       />
     </Layout>
   );
-};
+}
 
 export const Route = createFileRoute(
-  "/dysfonctionnement/tester-mon-eligibilite/1-date-decision",
+  "/dysfonctionnement/tester-mon-eligibilite/4-type-decision",
 )({
-  component: DateDecisionRoute,
+  component: TypeDecisionRoute,
   loader: () => ({
     test: container
       .get<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$)

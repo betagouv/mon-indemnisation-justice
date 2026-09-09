@@ -1,18 +1,25 @@
-import React from "react";
-import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Layout } from "@/apps/public/components/Layout";
-import { usePublicNavigate } from "@/apps/public/routeur";
 import { TOTAL_STEPS } from "@/apps/public/components/steps";
-import { getCriteres, clearCriteres } from "@/apps/public/services/eligibiliteStore";
-import { createFileRoute } from "@tanstack/react-router";
-import { useInjection } from "inversify-react";
+import {
+  clearCriteres,
+  getCriteres,
+} from "@/apps/public/services/eligibiliteStore";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import Breadcrumb from "@codegouvfr/react-dsfr/Breadcrumb";
+import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useInjection } from "inversify-react";
+import React from "react";
+import { RouteurPublic } from "@/apps/public/routeur";
 
 function ResultatEligibiliteRoute() {
-  const navigate = usePublicNavigate();
-  const manager = useInjection<TestEligibiliteManagerInterface>(TestEligibiliteManagerInterface.$);
+  const navigate = useNavigate<typeof RouteurPublic>({
+    from: Route.fullPath,
+  });
+  const manager = useInjection<TestEligibiliteManagerInterface>(
+    TestEligibiliteManagerInterface.$,
+  );
   const criteres = getCriteres();
   const eligible = criteres.length > 0 && criteres.every((c) => c.rempli);
 
@@ -31,7 +38,11 @@ function ResultatEligibiliteRoute() {
 
       <div
         className="fr-stepper fr-mb-2w"
-        style={{ "--background-active-blue-france": "var(--background-flat-success)" } as React.CSSProperties}
+        style={
+          {
+            "--background-active-blue-france": "var(--background-flat-success)",
+          } as React.CSSProperties
+        }
       >
         <div
           className="fr-stepper__steps"
@@ -44,7 +55,11 @@ function ResultatEligibiliteRoute() {
 
       <div
         className="fr-mb-3w"
-        style={{ border: "1px solid var(--border-default-grey)", borderRadius: "4px", overflow: "hidden" }}
+        style={{
+          border: "1px solid var(--border-default-grey)",
+          borderRadius: "4px",
+          overflow: "hidden",
+        }}
       >
         {criteres.map(({ label, rempli, detail }, index) => (
           <div
@@ -54,7 +69,8 @@ function ResultatEligibiliteRoute() {
               alignItems: "flex-start",
               gap: "0.75rem",
               padding: "0.75rem 1rem",
-              borderTop: index > 0 ? "1px solid var(--border-default-grey)" : undefined,
+              borderTop:
+                index > 0 ? "1px solid var(--border-default-grey)" : undefined,
               backgroundColor: "var(--background-default-grey)",
             }}
           >
@@ -68,9 +84,13 @@ function ResultatEligibiliteRoute() {
               style={{ flexShrink: 0, marginTop: "2px" }}
             />
             <div>
-              <strong style={{ color: "var(--text-default-grey)" }}>{label}</strong>
+              <strong style={{ color: "var(--text-default-grey)" }}>
+                {label}
+              </strong>
               <br />
-              <span className={`fr-text--sm ${rempli ? "fr-text-default--success" : "fr-text-default--error"}`}>
+              <span
+                className={`fr-text--sm ${rempli ? "fr-text-default--success" : "fr-text-default--error"}`}
+              >
                 {detail}
               </span>
             </div>
@@ -82,7 +102,11 @@ function ResultatEligibiliteRoute() {
         <Alert
           className="fr-mb-3w"
           severity={eligible ? "success" : "error"}
-          title={eligible ? "Vous pouvez déposer votre dossier" : "Demande non éligible en l'état"}
+          title={
+            eligible
+              ? "Vous pouvez déposer votre dossier"
+              : "Demande non éligible en l'état"
+          }
           description={
             eligible
               ? undefined
@@ -102,12 +126,15 @@ function ResultatEligibiliteRoute() {
             onClick: () => {
               manager.effacer();
               clearCriteres();
-              navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite" });
+              navigate({
+                to: "/dysfonctionnement/tester-mon-eligibilite/test-eligibilite",
+              });
             },
             children: "Recommencer le test",
           },
           {
-            onClick: () => navigate({ to: "/dysfonctionnement/tester-mon-eligibilite/inscription" }),
+            onClick: () =>
+              navigate({ to: "/dysfonctionnement/s-identifier/usagers" }),
             children: "Déposer un dossier",
           },
         ]}
@@ -116,6 +143,8 @@ function ResultatEligibiliteRoute() {
   );
 }
 
-export const Route = createFileRoute("/dysfonctionnement/tester-mon-eligibilite/resultat")({
+export const Route = createFileRoute(
+  "/dysfonctionnement/tester-mon-eligibilite/resultat",
+)({
   component: ResultatEligibiliteRoute,
 });
