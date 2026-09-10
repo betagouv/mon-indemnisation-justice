@@ -456,7 +456,7 @@ export const SignerCourrierModale = ({
         <>
           <EditeurDocument
             className="fr-input-group fr-col-12"
-            document={dossier.getDeclarationAcceptation() as Document}
+            document={dossier.getFormulaireDeclarationAcceptation() as Document}
             onEdite={(corps) => {}}
             onImprime={onImprime}
             onImpression={(impressionEnCours) =>
@@ -618,10 +618,10 @@ export const SignerCourrierModale = ({
                 {
                   label: "Déclaration d'acceptation",
                   iconId: "fr-icon-chat-check-line",
-                  content: dossier.getDeclarationAcceptation() ? (
+                  content: dossier.getFormulaireDeclarationAcceptation() ? (
                     <ChampPieceJointe
                       pieceJointe={
-                        dossier.getDeclarationAcceptation() as Document
+                        dossier.getFormulaireDeclarationAcceptation() as Document
                       }
                     />
                   ) : (

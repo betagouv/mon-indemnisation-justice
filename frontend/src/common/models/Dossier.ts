@@ -241,6 +241,10 @@ export class DossierDetail extends BaseDossier {
     return this.getDocumentType(DocumentType.TYPE_COURRIER_MINISTERE);
   }
 
+  public getFormulaireDeclarationAcceptation(): Document | null {
+    return this.getDocumentType(DocumentType.TYPE_FORMULAIRE_ACCEPTATION);
+  }
+
   public getDeclarationAcceptation(): Document | null {
     return this.getDocumentType(DocumentType.TYPE_COURRIER_REQUERANT);
   }

@@ -337,7 +337,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             )
             ->setPropositionIndemnisation('2031');
 
-        $dossierAVerifier->ajouterDocument($this->creerDocumentDepuisRessource('documents/declaration_acceptation.pdf', DocumentType::TYPE_COURRIER_REQUERANT, true));
+        $dossierAVerifier->ajouterDocument($this->creerDocumentDepuisRessource('documents/declaration_acceptation.pdf', DocumentType::TYPE_FORMULAIRE_ACCEPTATION, true));
 
         $this->addReference('dossier-a-verifier-melun', $dossierAVerifier);
 
@@ -360,7 +360,7 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
             redacteur: $this->getReference('agent-redacteur', Agent::class)
         )->setPropositionIndemnisation('3084.97');
 
-        $dossierArreteASigner->ajouterDocument($this->creerDocumentDepuisRessource('documents/declaration_acceptation.pdf', DocumentType::TYPE_COURRIER_REQUERANT, true));
+        $dossierArreteASigner->ajouterDocument($this->creerDocumentDepuisRessource('documents/declaration_acceptation.pdf', DocumentType::TYPE_FORMULAIRE_ACCEPTATION, true));
         $this->documentManager->generer($dossierArreteASigner, DocumentType::TYPE_ARRETE_PAIEMENT, montantIndemnisation: 1278.53);
 
         $this->addReference('dossier-arrete-a-signer-saint-malo', $dossierArreteASigner);

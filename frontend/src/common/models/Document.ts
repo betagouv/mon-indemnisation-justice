@@ -131,9 +131,15 @@ export class DocumentType {
     true,
   );
 
+  public static readonly TYPE_FORMULAIRE_ACCEPTATION = new DocumentType(
+    "formulaire_acceptation",
+    "Formulaire de déclaration d'acceptation",
+    true,
+  );
+
   public static readonly TYPE_COURRIER_REQUERANT = new DocumentType(
     "courrier_requerant",
-    "Courrier de décision signé du requérant",
+    "Déclaration d'acceptation signée du requérant",
     true,
     true,
   );
@@ -245,6 +251,7 @@ export class Document {
     DocumentType.TYPE_DECLARATION_RNA_JOAFE,
     DocumentType.TYPE_IDENTIFICATION_ETABLISSEMENT_PUBLIQUE,
     DocumentType.TYPE_COURRIER_MINISTERE,
+    DocumentType.TYPE_FORMULAIRE_ACCEPTATION,
     DocumentType.TYPE_COURRIER_REQUERANT,
     DocumentType.TYPE_ARRETE_PAIEMENT,
   ];
