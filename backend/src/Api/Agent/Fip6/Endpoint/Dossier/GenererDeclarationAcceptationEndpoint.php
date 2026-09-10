@@ -4,8 +4,8 @@ namespace MonIndemnisationJustice\Api\Agent\Fip6\Endpoint\Dossier;
 
 use MonIndemnisationJustice\Api\Agent\Fip6\Output\PieceJointeOutput;
 use MonIndemnisationJustice\Api\Agent\Fip6\Voter\DossierVoter;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,7 +33,7 @@ class GenererDeclarationAcceptationEndpoint
         #[MapRequestPayload]
         GenererCourrierPropositionIndemnisationInput $input,
     ) {
-        $declarationAcceptation = $this->documentManager->generer($dossier, DocumentType::TYPE_COURRIER_REQUERANT, montantIndemnisation: $input->montantIndemnisation);
+        $declarationAcceptation = $this->documentManager->generer($dossier, DocumentType::TYPE_FORMULAIRE_ACCEPTATION, montantIndemnisation: $input->montantIndemnisation);
 
         return new JsonResponse(
             ['document' => $this->normalizer->normalize(

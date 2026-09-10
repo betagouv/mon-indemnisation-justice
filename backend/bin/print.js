@@ -11,7 +11,6 @@ const destination = process.argv.at(-1);
     headless: true,
     timeout: 30000,
     browser: "firefox",
-    executablePath: process.env.FIREFOX_PATH,
   });
   const page = await browser.newPage();
 

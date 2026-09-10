@@ -34,7 +34,7 @@ class GenererDeclarationAcceptationEndpointTest extends APIEndpointTestCase
         $this->assertObjectHasProperty('document', $output);
         $this->assertObjectHasProperty('type', $output->document);
 
-        $this->assertEquals(DocumentType::TYPE_COURRIER_REQUERANT->value, $output->document->type);
+        $this->assertEquals(DocumentType::TYPE_FORMULAIRE_ACCEPTATION->value, $output->document->type);
     }
 
     protected function genererDeclarationAcceptation(Dossier $dossier, float $montantIndemnisation): void

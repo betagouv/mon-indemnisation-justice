@@ -36,6 +36,7 @@ enum DocumentType: string
     // Documents émis après la décision
     case TYPE_COURRIER_MINISTERE = 'courrier_ministere';
     // a.k.a. la déclaration d'acceptation
+    case TYPE_FORMULAIRE_ACCEPTATION = 'formulaire_acceptation';
     case TYPE_COURRIER_REQUERANT = 'courrier_requerant';
     case TYPE_ARRETE_PAIEMENT = 'arrete_paiement';
 
@@ -53,6 +54,7 @@ enum DocumentType: string
     {
         return match ($this) {
             self::TYPE_COURRIER_MINISTERE,
+            self::TYPE_FORMULAIRE_ACCEPTATION,
             self::TYPE_COURRIER_REQUERANT,
             self::TYPE_ARRETE_PAIEMENT => true,
 
@@ -72,7 +74,7 @@ enum DocumentType: string
     {
         return match ($this) {
             self::TYPE_COURRIER_MINISTERE => 'courrier/decision.html.twig',
-            self::TYPE_COURRIER_REQUERANT => 'courrier/declarationAcceptation.html.twig',
+            self::TYPE_FORMULAIRE_ACCEPTATION => 'courrier/declarationAcceptation.html.twig',
             self::TYPE_ARRETE_PAIEMENT => 'courrier/arretePaiement.html.twig',
 
             default => null,
@@ -86,7 +88,7 @@ enum DocumentType: string
     {
         return match ($this) {
             self::TYPE_COURRIER_MINISTERE => 'courrier/decision/_corps_decision.html.twig',
-            self::TYPE_COURRIER_REQUERANT => 'courrier/declarationAcceptation/_corps_declaration_acceptation.html.twig',
+            self::TYPE_FORMULAIRE_ACCEPTATION => 'courrier/declarationAcceptation/_corps_declaration_acceptation.html.twig',
             self::TYPE_ARRETE_PAIEMENT => 'courrier/arretePaiement/_corps_arrete_paiement.html.twig',
 
             default => null,
@@ -100,7 +102,7 @@ enum DocumentType: string
     {
         return match ($this) {
             self::TYPE_COURRIER_MINISTERE => "Lettre décision dossier {$dossier->getReference()}.pdf",
-            self::TYPE_COURRIER_REQUERANT => "Acceptation requérant dossier {$dossier->getReference()}.pdf",
+            self::TYPE_FORMULAIRE_ACCEPTATION => "Acceptation requérant dossier {$dossier->getReference()}.pdf",
             self::TYPE_ARRETE_PAIEMENT => "Arrêté de paiement dossier {$dossier->getReference()}.pdf",
 
             default => null,

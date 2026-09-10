@@ -84,7 +84,7 @@ class PrevisualiserController extends AbstractController
                 'dossier' => $dossier,
                 'corps' => $this->documentManager->genererCorps(
                     $dossier,
-                    DocumentType::TYPE_COURRIER_REQUERANT,
+                    DocumentType::TYPE_FORMULAIRE_ACCEPTATION,
                     montantIndemnisation: $request->query->has('montant') ?
                         floatval($request->query->get('montant')) :
                         $dossier->getMontantIndemnisation() ?? 1234.56

@@ -88,7 +88,7 @@ class DossierEtatAvancerCommand extends Command
     {
         return match ($dossier->getEtatDossier()->getEtat()) {
             EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER => DocumentType::TYPE_COURRIER_MINISTERE,
-            EtatDossierType::DOSSIER_OK_A_APPROUVER => DocumentType::TYPE_COURRIER_REQUERANT,
+            EtatDossierType::DOSSIER_OK_A_APPROUVER => DocumentType::TYPE_FORMULAIRE_ACCEPTATION,
             EtatDossierType::DOSSIER_OK_A_VERIFIER => DocumentType::TYPE_ARRETE_PAIEMENT,
             default => null,
         };

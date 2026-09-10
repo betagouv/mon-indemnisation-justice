@@ -67,7 +67,6 @@ services:
       - SERVER_NAME=:80
       - HTTPS=true;
       - REQUEST_SCHEME=https
-      - FIREFOX_PATH=/usr/bin/firefox
       - INSTANCE_NUMBER=0
       - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/dev
     restart: always
