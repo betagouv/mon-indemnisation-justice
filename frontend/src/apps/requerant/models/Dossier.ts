@@ -3,8 +3,8 @@ import {
   PieceJointeType,
   TypePieceJointe,
 } from "@/apps/requerant/models/TypePieceJointe.ts";
-import DateTransform from "@common/normalisation/transformers/DateTransform.ts";
 import UndefinedTransform from "@/common/normalisation/transformers/UndefinedTransform.ts";
+import DateTransform from "@common/normalisation/transformers/DateTransform.ts";
 import { Type } from "class-transformer";
 import { Adresse } from "./Adresse";
 import { EtatDossier } from "./EtatDossier";
@@ -110,6 +110,10 @@ export class Dossier extends BaseDossier {
 
   public getCourrierDecision(): PieceJointe | undefined {
     return this.getPieceJointeDeType("courrier_ministere");
+  }
+
+  public getFormulaireDeclarationAcceptation(): PieceJointe | undefined {
+    return this.getPieceJointeDeType("formulaire_acceptation");
   }
 
   public getDeclarationAcceptation(): PieceJointe | undefined {

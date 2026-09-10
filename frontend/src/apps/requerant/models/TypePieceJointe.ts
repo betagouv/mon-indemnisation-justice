@@ -25,6 +25,7 @@ export const PieceJointeTypes = [
   "identification_etablissement_publique",
   // Courrier d'échange requérant / Ministère
   "courrier_ministere",
+  "formulaire_acceptation",
   "courrier_requerant",
   "arrete_paiement",
 ] as const;
@@ -491,6 +492,12 @@ export class TypePieceJointe {
     courrier_ministere: new TypePieceJointe(
       "courrier_ministere",
       (contexte) => "Lettre décision dossier",
+      true,
+      true,
+    ),
+    formulaire_acceptation: new TypePieceJointe(
+      "formulaire_acceptation",
+      (contexte) => "Déclaration d'acceptation",
       true,
       true,
     ),

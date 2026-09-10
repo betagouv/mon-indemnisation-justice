@@ -140,7 +140,7 @@ export const DeciderIndemnisationModale = ({
 
   // La déclaration d'acceptation
   const [declarationAcceptation, setDeclarationAcceptation] =
-    useState<Document | null>(dossier.getDeclarationAcceptation());
+    useState<Document | null>(dossier.getFormulaireDeclarationAcceptation());
 
   // L'étape en cours :
   const [etape, setEtape] = useState<IdEtape>("CHOIX_MONTANT_INDEMNISATION");
@@ -413,7 +413,7 @@ export const DeciderIndemnisationModale = ({
                 content: (
                   <ChampPieceJointe
                     pieceJointe={
-                      dossier.getDeclarationAcceptation() as Document
+                      dossier.getFormulaireDeclarationAcceptation() as Document
                     }
                   />
                 ),

@@ -211,7 +211,7 @@ function ConsulterDecisionBrisPorte() {
                     <a
                       className="fr-link fr-link--download"
                       download={`Lettre décision dossier ${dossier.reference}`}
-                      href={dossier.getDeclarationAcceptation()?.url}
+                      href={dossier.getFormulaireDeclarationAcceptation()?.url}
                     >
                       Télécharger le formulaire d'acceptation
                     </a>
@@ -415,14 +415,16 @@ function ConsulterDecisionBrisPorte() {
                       label: "Déclaration d'acceptation",
                       isDefault: false,
                       iconId: "fr-icon-chat-check-line" as FrIconClassName,
-                      content: dossier.getDeclarationAcceptation() && (
-                        <AfficherPieceJointe
-                          pieceJointe={
-                            dossier.getDeclarationAcceptation() as PieceJointe
-                          }
-                          telecharger={false}
-                        />
-                      ),
+                      content:
+                        dossier.getFormulaireDeclarationAcceptation() && (
+                          <AfficherPieceJointe
+                            pieceJointe={
+                              dossier.getDeclarationAcceptation() ??
+                              (dossier.getFormulaireDeclarationAcceptation() as PieceJointe)
+                            }
+                            telecharger={false}
+                          />
+                        ),
                     },
                   ]
                 : []),

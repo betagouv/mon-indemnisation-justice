@@ -3,6 +3,7 @@ import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { Frise } from "@common/composants/Frise.tsx";
 import {
   Document,
+  DocumentType,
   DossierDetail,
   EtatDossier,
   Redacteur,
@@ -244,7 +245,12 @@ const ConsultationDossier = ({
                         {
                           tabId: "declaration",
                           label: "Déclaration d'acceptation",
-                          disabled: !dossier.estAccepteRequerant(),
+                          disabled: !(
+                            dossier.estAccepteRequerant() ||
+                            dossier.getDocumentType(
+                              DocumentType.TYPE_FORMULAIRE_ACCEPTATION,
+                            )
+                          ),
                         },
                         {
                           tabId: "arrete",
@@ -360,24 +366,52 @@ const ConsultationDossier = ({
                   </section>
                 )}
 
-                {selectedTab == "declaration" &&
-                  dossier.estAccepteRequerant() && (
-                    <section>
-                      <h3>Déclaration d'acceptation</h3>
-                      <TelechargerPieceJointe
-                        className="fr-grid-row fr-col-12"
-                        pieceJointe={
-                          dossier.getDeclarationAcceptation() as Document
-                        }
-                      />
-                      <ChampPieceJointe
-                        className="fr-col-12"
-                        pieceJointe={
-                          dossier.getDeclarationAcceptation() as Document
-                        }
-                      />
-                    </section>
-                  )}
+                {selectedTab == "declaration" && (
+                  <section>
+                    {dossier.estAccepteRequerant() && (
+                      <>
+                        <h3>Déclaration d'acceptation</h3>
+                        <TelechargerPieceJointe
+                          className="fr-grid-row fr-col-12"
+                          pieceJointe={
+                            dossier.getDeclarationAcceptation() as Document
+                          }
+                        />
+                        <ChampPieceJointe
+                          className="fr-col-12"
+                          pieceJointe={
+                            dossier.getDeclarationAcceptation() as Document
+                          }
+                        />
+                      </>
+                    )}
+
+                    {!dossier.estAccepteRequerant() &&
+                      dossier.getDocumentType(
+                        DocumentType.TYPE_FORMULAIRE_ACCEPTATION,
+                      ) && (
+                        <>
+                          <h3>Formulaire de déclaration d'acceptation</h3>
+                          <TelechargerPieceJointe
+                            className="fr-grid-row fr-col-12"
+                            pieceJointe={
+                              dossier.getDocumentType(
+                                DocumentType.TYPE_FORMULAIRE_ACCEPTATION,
+                              ) as Document
+                            }
+                          />
+                          <ChampPieceJointe
+                            className="fr-col-12"
+                            pieceJointe={
+                              dossier.getDocumentType(
+                                DocumentType.TYPE_FORMULAIRE_ACCEPTATION,
+                              ) as Document
+                            }
+                          />
+                        </>
+                      )}
+                  </section>
+                )}
 
                 {selectedTab == "arrete" && (
                   <section>

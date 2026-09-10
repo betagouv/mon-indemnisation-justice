@@ -459,11 +459,6 @@ class Dossier
         return $this->getOrCreateDocument(DocumentType::TYPE_ARRETE_PAIEMENT);
     }
 
-    public function getOrCreateDeclarationAcceptation(): Document
-    {
-        return $this->getOrCreateDocument(DocumentType::TYPE_COURRIER_REQUERANT);
-    }
-
     /**
      * @return Document[]
      */
