@@ -89,30 +89,16 @@ class DocumentController extends AbstractController
     #[Route('/dossier/{id}/documents-a-transmettre', name: 'agent_document_telecharger_a_transmettre_a_fip3', methods: ['GET'])]
     public function documentsATransmettreAFIP3(#[MapEntity] Dossier $dossier, Request $request): Response
     {
-        $zip = new \ZipArchive();
-        $zipName = tempnam(sys_get_temp_dir(), "zip_dossier_{$dossier->getId()}");
+        $zip = $this->documentManager->genererListeDocumentsATransmettre($dossier);
 
-        if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
-            throw new \RuntimeException('Cannot open '.$zipName);
-        }
-
-        /** @var Document $document */
-        foreach ($dossier->getDocumentsATransmettre()->getValues() as $document) {
-            try {
-                $contenu = $this->documentManager->getContenuTexte($document);
-                $zip->addFromString(preg_replace('#/#', '', $document->getOriginalFilename()), $contenu);
-            } catch (FilesystemException|UnableToReadFile $e) {
-                $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
-                // $this->documentManager->supprimer($document);
-            }
-        }
+        $response = new BinaryFileResponse($zip->filename, headers: [
+            'Content-Type' => 'application/zip',
+            'Content-Length' => filesize($zip->filename),
+        ])
+            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
 
         $zip->close();
 
-        return new BinaryFileResponse($zipName, headers: [
-            'Content-Type' => 'application/zip',
-            'Content-Length' => filesize($zipName),
-        ])
-            ->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, preg_replace('/\//', '', "Dossier {$dossier->getReference()}.zip"));
+        return $response;
     }
 }

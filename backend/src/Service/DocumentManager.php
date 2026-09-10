@@ -11,6 +11,7 @@ use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Filesystem\Path;
@@ -26,6 +27,8 @@ class DocumentManager
         protected readonly EntityManagerInterface $em,
         protected readonly ImprimanteCourrier $imprimanteCourrier,
         protected readonly Environment $twig,
+        protected readonly FusionneurDocuments $fusionneurDocuments,
+        protected readonly LoggerInterface $logger,
     ) {
     }
 
@@ -178,5 +181,43 @@ class DocumentManager
             'image/jpeg', 'image/png', 'image/gif', 'image/webp' => preg_replace('image/', '', $mime),
             default => 'txt',
         };
+    }
+
+    public function genererListeDocumentsATransmettre(Dossier $dossier): \ZipArchive
+    {
+        $zip = new \ZipArchive();
+        $zipName = tempnam(sys_get_temp_dir(), "zip_dossier_{$dossier->getId()}");
+
+        if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
+            throw new \RuntimeException('Cannot open '.$zipName);
+        }
+
+        // Ajouter la déclaration d'acceptation et l'arrêté de paiement
+        /* @var DocumentType $typeDocument */
+        foreach ([DocumentType::TYPE_COURRIER_REQUERANT, DocumentType::TYPE_ARRETE_PAIEMENT] as $typeDocument) {
+            /* @var Document $document */
+            if (null !== ($document = $dossier->getDocumentParType($typeDocument))) {
+                try {
+                    $zip->addFromString(str_replace('/', '_', $typeDocument->nommerFichier($dossier)), $this->getContenuTexte($document));
+                } catch (FilesystemException|UnableToReadFile $e) {
+                    $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
+                }
+            }
+
+        }
+        // Ajouter la pièce d'identité ...
+        if (count($dossier->getDocumentsParType(DocumentType::TYPE_CARTE_IDENTITE)) > 0) {
+            $zip->addFromString("Pièce d'identité.pdf", $this->fusionneurDocuments->fusionner($dossier->getDocumentsParType(DocumentType::TYPE_CARTE_IDENTITE)));
+        }
+        // ...  le RIB ...
+        if (count($dossier->getDocumentsParType(DocumentType::TYPE_RIB)) > 0) {
+            $zip->addFromString("Relevé d'identité bancaire.pdf", $this->fusionneurDocuments->fusionner($dossier->getDocumentsParType(DocumentType::TYPE_RIB)));
+        }
+        // ... et le K-Bis
+        if (count($dossier->getDocumentsParType(DocumentType::TYPE_EXTRAIT_KBIS)) > 0) {
+            $zip->addFromString('Extrait K-bis.pdf', $this->fusionneurDocuments->fusionner($dossier->getDocumentsParType(DocumentType::TYPE_EXTRAIT_KBIS)));
+        }
+
+        return $zip;
     }
 }
