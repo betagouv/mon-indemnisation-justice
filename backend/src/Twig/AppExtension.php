@@ -13,6 +13,7 @@ class AppExtension extends AbstractExtension
         return [
             new TwigFilter('montant_litteral', [AppRuntime::class, 'montantLitteral']),
             new TwigFilter('url_deconnexion', [AppRuntime::class, 'urlDeconnexion']),
+            new TwigFilter('codeDepartemental', [AppRuntime::class, 'codeDepartemental']),
         ];
     }
 

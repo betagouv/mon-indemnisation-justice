@@ -20,7 +20,7 @@
 </p>
 <p>
     Considérant que le préjudice subi par {{ dossier.requerantPersonne.nomComplet }}, relatif aux dommages causés à la porte
-    du logement sis {{ dossier.brisPorte.adresse.ligne1 }} à {{ dossier.brisPorte.adresse.localite|upper }} {% if dossier.brisPorte.adresse.codeDepartemental %}({{ dossier.brisPorte.adresse.codeDepartemental }}){% endif %},
+    du logement sis {{ dossier.brisPorte.adresse.ligne1 }} à {{ dossier.brisPorte.adresse.localite|upper }} ({{ dossier.brisPorte.adresse|codeDepartemental }}),
     résulte d’une opération de police judiciaire menée le {{ dossier.brisPorte.dateOperation|format_datetime(locale='fr',pattern="d MMMM yyyy", timezone: 'Europe/Paris') }};
 </p>
 
