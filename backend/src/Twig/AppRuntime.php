@@ -3,6 +3,9 @@
 namespace MonIndemnisationJustice\Twig;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Entity\Adresse;
+use MonIndemnisationJustice\Entity\GeoCodePostal;
+use MonIndemnisationJustice\Entity\GeoDepartement;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Security\Authenticator\FranceConnectAuthenticator;
 use MonIndemnisationJustice\Service\MontantAfficheur;
@@ -46,6 +49,21 @@ class AppRuntime implements RuntimeExtensionInterface
     {
         return $this->montantAfficheur->afficherMontantLitteral($amount);
 
+    }
+
+    public function codeDepartemental(Adresse $adresse): string
+    {
+        /** @var GeoDepartement|null $departement */
+        $departement = $adresse->getCommune()?->getDepartement();
+        if (null === $departement) {
+            $departement = $this->em->getRepository(GeoCodePostal::class)
+                ->findOneBy(['codePostal' => $adresse->getCodePostal()])
+                ?->getCommune()
+                ?->getDepartement();
+
+        }
+
+        return $departement?->getCode() ?? $adresse->getCodeDepartemental() ?? '';
     }
 
     public function estViteServerActif(): bool

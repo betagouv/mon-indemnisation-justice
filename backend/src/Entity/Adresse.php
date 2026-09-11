@@ -91,7 +91,12 @@ class Adresse
 
     public function getCodeDepartemental(): ?string
     {
-        return $this->codePostal ? substr($this->codePostal, 0, strlen($this->codePostal) - 3) : null;
+        if (empty($this->codePostal)) {
+            return null;
+        }
+
+
+        return substr($this->codePostal, 0, preg_match('/^(97|98)/', $this->codePostal) ? 3 : 2);
     }
 
     public function setCodePostal(?string $codePostal): static
