@@ -1,13 +1,13 @@
-import { DossierManagerInterface } from "@fip6/services/dossier";
-import { DossierDetail, EtatDossierType } from "@common/models";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Download from "@codegouvfr/react-dsfr/Download";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
+import { DossierDetail, EtatDossierType } from "@common/models";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
+import { DossierManagerInterface } from "@fip6/services/dossier";
 import { useInjection } from "inversify-react";
 import React, { useCallback, useState } from "react";
-import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 
 const _modale = createModal({
   id: "modale-action-envoyer-pour-indemnisation",
@@ -56,8 +56,9 @@ export const EnvoyerPourIndemnisationActionModale = ({
     await dossierManager.transmettreAFIP3(dossier);
     await onTermine();
 
-    _modale.close();
     setSauvegarderEnCours(false);
+
+    _modale?.close();
   }, [dossier.id]);
 
   return estAEnvoyerPourIndemnisation({ dossier, agent }) ? (

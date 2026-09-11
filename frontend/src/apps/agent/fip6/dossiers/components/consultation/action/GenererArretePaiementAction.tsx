@@ -110,10 +110,13 @@ export const GenererArretePaiementModale =
 
     const valider = async () => {
       setSauvegardeEnCours(true);
+
       await dossierManager.initierArretePaiement(dossier);
       await onGenere();
+
       setSauvegardeEnCours(false);
-      _modale.close();
+
+      _modale?.close();
     };
 
     return estAVerifier({ dossier, agent }) ? (

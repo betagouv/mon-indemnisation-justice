@@ -18,6 +18,13 @@ opctim_csp_bundle:
     object-src:
       - "'self'"
       - "blob:"
+    # Le visualiseur PDF intégré des navigateurs (utilisé par `<object type="application/pdf">`
+    # pour prévisualiser un `File` local, cf. `PrevisualiserPieceJointe`) ouvre le contenu
+    # `blob:` dans un contexte de navigation imbriqué soumis à `frame-src` (et non `object-src`
+    # seul) sur les navigateurs Chromium (Edge, Chrome).
+    frame-src:
+      - "'self'"
+      - "blob:"
     script-src:
       - "'self'"
       - 'stats.beta.gouv.fr'

@@ -68,6 +68,8 @@ export const AttribuerActionModale = ({
 
       setAttributaire(undefined);
       setAttributionEnCours(false);
+
+      _modale?.close();
     }
   }, [dossier, attributaire]);
 

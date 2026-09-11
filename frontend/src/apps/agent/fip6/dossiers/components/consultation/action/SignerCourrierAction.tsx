@@ -211,7 +211,7 @@ export const SignerCourrierModale = ({
 
       setSauvegardeEnCours(false);
 
-      _modale.close();
+      _modale?.close();
     },
     [dossier.id],
   );
