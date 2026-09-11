@@ -7,6 +7,7 @@ export type CoteEvenement = "gauche" | "droite";
 
 export type EvenementFrise = {
   libelle: ReactNode;
+  description?: ReactNode;
   date: Date;
   dateFin?: Date;
   auteur?: ReactNode;
@@ -28,6 +29,10 @@ const FriseContenu = ({
       className={`frise__contenu${alignDroit ? " frise__contenu--aligne-droite" : ""}`}
     >
       <span className="frise__libelle">{evenement.libelle}</span>
+      {evenement.description && (
+        <p className="frise__description">{evenement.description}</p>
+      )}
+
       {evenement.date && (
         <span className="frise__date">
           {dateEtHeureSimple(evenement.date)}{" "}

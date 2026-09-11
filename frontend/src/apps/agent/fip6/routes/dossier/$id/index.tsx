@@ -159,6 +159,7 @@ const ConsultationDossier = ({
                 >
                   {dossier.usager.nomSimple()}
                 </Link>
+                .
               </p>
 
               <div className="fr-my-1v">
@@ -186,6 +187,13 @@ const ConsultationDossier = ({
                   </>
                 )}
               </p>
+
+              {dossier.etat.estCloture() && dossier.etat.contexte?.motif && (
+                <p className="fr-my-1w">
+                  Clôturé le {dateEtHeureSimple(dossier.etat.dateEntree)}
+                  &nbsp;au motif "{dossier.etat.contexte?.motif}"
+                </p>
+              )}
 
               {/** Actions sur le dossier */}
               <DossierActions
@@ -317,6 +325,14 @@ const ConsultationDossier = ({
                             libelle: (
                               <BadgeEtatDossier etat={etat} grand={false} />
                             ),
+                            description:
+                              etat.estCloture() &&
+                              etat.contexte?.explication ? (
+                                <>
+                                  <u>Raison de la clôture :</u>{" "}
+                                  {etat.contexte.explication}
+                                </>
+                              ) : undefined,
                             date: etat.dateEntree,
                             dateFin: etats.at(index + 1)?.dateEntree,
                             afficherDuree: !etat.estTerminal(),

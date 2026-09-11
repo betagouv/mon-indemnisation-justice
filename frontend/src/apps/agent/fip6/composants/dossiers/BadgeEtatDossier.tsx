@@ -1,6 +1,6 @@
 import { EtatDossier } from "@common/models";
-import React from "react";
 import { getLibelleMotifRejetBrisPorte } from "@common/models/rejet.ts";
+import React from "react";
 
 export const BadgeEtatDossier = ({
   etat,
@@ -35,7 +35,7 @@ export const BadgeEtatDossier = ({
         id={`tooltip-etat-dossier-${etat.id}`}
         role="tooltip"
       >
-        {etat.contexte?.motifRejet || <i>Aucun motif</i>}
+        {etat.contexte?.motif || <i>Aucun motif</i>}
       </span>
     )}
     {etat.contexte?.motifRejet && (
