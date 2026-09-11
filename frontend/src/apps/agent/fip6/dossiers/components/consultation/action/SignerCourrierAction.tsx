@@ -4,13 +4,7 @@ import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { Loader } from "@common/composants/Loader.tsx";
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { useInjection } from "inversify-react";
-import React, {
-  InputEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
@@ -193,29 +187,6 @@ export const SignerCourrierModale = ({
     }
   }, [dossier.id, etape]);
 
-  // Mémorise le montant de l'indemnisation
-  const [montantIndemnisation, setMontantIndemnisation]: [
-    number,
-    (montant: number) => void,
-  ] = useState<number>(
-    dossier.montantIndemnisation ||
-      (dossier.getCourrierDecision()?.metaDonnees
-        ?.montantIndemnisation as number),
-  );
-
-  // Mémorise le montant de l'indemnisation lu dans le courrier
-  const [montantIndemnisationLu, setMontantIndemnisationLu]: [
-    number | null,
-    (montant: number | null) => void,
-  ] = useState<number | null>(null);
-
-  // Corps du courrier (permet de chercher le montant de l'indemnisation en
-  // chiffre et le comparer à la valeur saisie
-  const [corpsCourrier, setCorpsCourrier]: [
-    string,
-    (corpsCourrier: string) => void,
-  ] = useState<string>(dossier.getCourrierDecision()?.corps || "");
-
   // Fichier signé à téléverser
   const [fichierSigne, setFichierSigne]: [
     File | undefined,
@@ -228,39 +199,13 @@ export const SignerCourrierModale = ({
     (mode: boolean) => void,
   ] = useState(false);
 
-  // Actions
-  const detecterMontantIndemnisation = (texte: string) => {
-    const montantBrut = texte
-      .match(new RegExp("(\\s?\\d)+(,[0-9]{1,2})\\s*EUR", "g"))
-      ?.at(0);
-
-    if (montantBrut) {
-      setMontantIndemnisationLu(
-        parseFloat(
-          montantBrut
-            .replace(" ", "")
-            .replace("EUR", "")
-            .trim()
-            .replace(",", "."),
-        ),
-      );
-    }
-  };
-
   const envoyerAuRequerant = useCallback(
-    async ({
-      fichierSigne,
-      montantIndemnisation = undefined,
-    }: {
-      fichierSigne: File;
-      montantIndemnisation?: number;
-    }) => {
+    async ({ fichierSigne }: { fichierSigne: File }) => {
       setSauvegardeEnCours(true);
 
       await dossierManager.validerLaDecision(dossier, {
         estValide: true,
         fichierSigne,
-        montantIndemnisation,
       });
       await onSigne();
 
@@ -295,93 +240,6 @@ export const SignerCourrierModale = ({
 
       {etape === "EDITION_COURRIER" && (
         <>
-          {dossier.estAccepte() && (
-            <div
-              className="fr-input-group fr-my-2w fr-grid-row"
-              style={{ alignItems: "center" }}
-            >
-              <label
-                className="fr-label fr-col-6"
-                htmlFor="dossier-decision-acceptation-indemnisation-champs"
-              >
-                Montant de l'indemnisation
-              </label>
-              <div className="fr-input-wrap fr-icon-money-euro-circle-line fr-col-6">
-                <input
-                  className="fr-input"
-                  defaultValue={montantIndemnisation}
-                  onInput={(e: InputEvent<HTMLInputElement>) => {
-                    const value = (e.target as HTMLInputElement).value;
-
-                    if (value?.match(/^\d+(.\d{0,2})?$/)) {
-                      setMontantIndemnisation(
-                        parseFloat(value?.replace(",", ".")),
-                      );
-
-                      if (dossier.estAccepte()) {
-                        detecterMontantIndemnisation(corpsCourrier);
-                      }
-                    }
-                  }}
-                  aria-describedby="dossier-decision-acceptation-indemnisation-messages"
-                  id="dossier-decision-acceptation-indemnisation-champs"
-                  type="number"
-                  step=".01"
-                  inputMode="numeric"
-                />
-              </div>
-
-              {dossier.estAccepte() &&
-                montantIndemnisationLu &&
-                montantIndemnisation !== montantIndemnisationLu && (
-                  <Alert
-                    className="fr-my-2w"
-                    small={false}
-                    closable={false}
-                    severity="warning"
-                    title="Attention : risque d'ambigüité sur le montant de
-                      l'indemnisation"
-                    description={
-                      <>
-                        <p>
-                          Vous indiquez indemniser à hauteur de{" "}
-                          <span className={"fr-text--bold"}>
-                            {montantIndemnisation} €
-                          </span>
-                          , pourtant le courrier mentionne un montant
-                          <i> en chiffres</i> de{" "}
-                          <span className={"fr-text--bold"}>
-                            {montantIndemnisationLu} €
-                          </span>
-                          .
-                        </p>
-                        <p>
-                          Puisque la valeur déclarée dans le champs "Montant de
-                          l'indemnisation" sera également mentionnée sur le
-                          formulaire de déclaration d'acceptation, il y a un
-                          risque d'ambigüité pour le requérant.
-                        </p>
-                        <p>
-                          Veillez donc à bien accorder les montants dans le
-                          courrier (en chiffres ainsi qu'en toutes lettres).
-                        </p>
-                      </>
-                    }
-                  />
-                )}
-
-              {!montantIndemnisation && (
-                <div
-                  className="fr-messages-group fr-message--error fr-my-1w"
-                  id="dossier-decision-acceptation-indemnisation-messages"
-                  aria-live="polite"
-                >
-                  <span>Vous devez définir un montant d'indemnisation</span>
-                </div>
-              )}
-            </div>
-          )}
-
           {generationCourrierEnCours ? (
             <>
               <Alert
@@ -400,12 +258,6 @@ export const SignerCourrierModale = ({
             <EditeurDocument
               className="fr-input-group fr-col-12"
               document={dossier.getCourrierDecision() as Document}
-              onEdite={(corps) => {
-                if (dossier.estAccepte()) {
-                  setCorpsCourrier(corps);
-                  detecterMontantIndemnisation(corps);
-                }
-              }}
               onImprime={async (courrier) => {
                 await onImprime(courrier);
                 //dossier.addDocument(courrier);
@@ -633,9 +485,9 @@ export const SignerCourrierModale = ({
               ]}
             />
           ) : (
-            <ChampPieceJointe
+            <PrevisualiserPieceJointe
               className="fr-my-3w"
-              pieceJointe={dossier.getCourrierDecision() as Document}
+              fichier={fichierSigne as File}
             />
           )}
 
@@ -664,7 +516,6 @@ export const SignerCourrierModale = ({
                 onClick: () =>
                   envoyerAuRequerant({
                     fichierSigne: fichierSigne as File,
-                    montantIndemnisation,
                   }),
               },
             ]}
