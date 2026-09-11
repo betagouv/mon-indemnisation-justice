@@ -88,6 +88,9 @@ const ConsultationDossier = ({
     DossierManagerInterface.$,
   );
 
+  const rafraichirPage = () =>
+    routeur.invalidate({ filter: (match) => match.routeId === Route.id });
+
   // Référence vers l'onglet ouvert
   const [selectedTab, selectTab] = useState(
     window.location.hash?.replace(/^#/, "") || "infos",
@@ -118,7 +121,7 @@ const ConsultationDossier = ({
     setSauvegarderEnCours(true);
 
     await dossierManager.annoter(dossier, notes);
-    await routeur.invalidate();
+    await rafraichirPage();
 
     setSauvegarderEnCours(false);
   };
@@ -191,21 +194,21 @@ const ConsultationDossier = ({
                 redacteurs={redacteurs}
                 onImprime={async (document: Document) => {
                   dossierManager.ajouterDocument(dossier, document);
-                  await routeur.invalidate();
+                  await rafraichirPage();
                 }}
                 onDecide={async () => {
-                  await routeur.invalidate();
+                  await rafraichirPage();
                   changerOnglet("courrier");
                 }}
                 onSigneDecision={async () => {
-                  await routeur.invalidate();
+                  await rafraichirPage();
                   changerOnglet("courrier");
                 }}
                 onSigneArrete={async () => {
-                  await routeur.invalidate();
+                  await rafraichirPage();
                   changerOnglet("arrete");
                 }}
-                onTermine={async () => await routeur.invalidate()}
+                onTermine={async () => await rafraichirPage()}
               />
             </div>
 
