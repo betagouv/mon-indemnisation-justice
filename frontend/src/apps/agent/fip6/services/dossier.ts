@@ -30,6 +30,15 @@ export interface DossierManagerInterface {
 
   consulter(id: number): Promise<DossierDetail>;
 
+  /** Options `tanstack-query` (clé, fonction de récupération, durée de
+   * fraîcheur) permettant à un composant de s'abonner aux mises à jour d'un
+   * dossier, alimentées par les autres méthodes de ce service. */
+  dossierQueryOptions(id: number): {
+    queryKey: ReturnType<typeof DossierManagerInterface.dossierQueryKey>;
+    queryFn: () => Promise<DossierDetail>;
+    staleTime: number;
+  };
+
   annoter(dossier: BaseDossier, notes: string): Promise<void>;
 
   cloturer(
@@ -76,6 +85,13 @@ export namespace DossierManagerInterface {
   export const $: ServiceIdentifier<DossierManagerInterface> = Symbol(
     "DossierManagerInterface",
   );
+
+  /** Clé de cache `tanstack-query` d'un dossier, partagée entre le service
+   * (qui l'alimente à chaque mutation) et les composants qui souhaitent
+   * s'abonner aux mises à jour d'un dossier sans dépendre du cycle de vie
+   * des loaders du routeur. */
+  export const dossierQueryKey = (id: number) =>
+    ["DossierManagerInterface", "dossier", id] as const;
 }
 
 export class APIDossierManager implements DossierManagerInterface {
@@ -113,9 +129,9 @@ export class APIDossierManager implements DossierManagerInterface {
     };
   }
 
-  protected recupererDossier(id: number): Promise<DossierDetail> {
-    return queryClient.fetchQuery<DossierDetail>({
-      queryKey: ["DossierManagerInterface", "dossier", id],
+  dossierQueryOptions(id: number) {
+    return {
+      queryKey: DossierManagerInterface.dossierQueryKey(id),
       queryFn: async (): Promise<DossierDetail> => {
         const reponse = await fetch(`/api/agent/fip6/dossier/${id}`);
 
@@ -128,12 +144,16 @@ export class APIDossierManager implements DossierManagerInterface {
         return plainToInstance(DossierDetail, donnees);
       },
       staleTime: 5 * 60 * 1000, // 5 minutes
-    });
+    };
+  }
+
+  protected recupererDossier(id: number): Promise<DossierDetail> {
+    return queryClient.fetchQuery<DossierDetail>(this.dossierQueryOptions(id));
   }
 
   protected enregistrerDossier(dossier: DossierDetail): void {
     queryClient.setQueryData(
-      ["DossierManagerInterface", "dossier", dossier.id],
+      DossierManagerInterface.dossierQueryKey(dossier.id),
       () => dossier,
     );
   }

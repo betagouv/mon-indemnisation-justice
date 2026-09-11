@@ -73,11 +73,18 @@ export class APIAgentManager implements AgentManagerInterface {
   }
 
   async redacteurs(): Promise<Redacteur[]> {
-    const reponse = await fetch("/api/agent/fip6/agents/redacteurs");
+    return queryClient.fetchQuery({
+      queryKey: [referenceService, "redacteurs"],
+      queryFn: async (): Promise<Redacteur[]> => {
+        const reponse = await fetch("/api/agent/fip6/agents/redacteurs");
 
-    const data = await reponse.json();
+        const data = await reponse.json();
 
-    return data as Redacteur[];
+        return data as Redacteur[];
+      },
+      // Garder le cache
+      staleTime: 60 * 60_000,
+    });
   }
 
   async editerAgent({
