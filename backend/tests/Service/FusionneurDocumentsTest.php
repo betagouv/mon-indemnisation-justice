@@ -5,6 +5,7 @@ namespace MonIndemnisationJustice\Tests\Service;
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
+use MonIndemnisationJustice\Service\FusionDocumentException;
 use MonIndemnisationJustice\Service\FusionneurDocuments;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -52,14 +53,18 @@ class FusionneurDocumentsTest extends WebTestCase
 
     public function testFusionnerRejetteUnTypeMimeNonSupporte(): void
     {
+        $documentNonSupporte = $this->creerDocument('pieces_jointes/photo-1.jpg', 'text/plain');
         $documents = [
             $this->creerDocument('documents/declaration_acceptation.pdf', 'application/pdf'),
-            $this->creerDocument('pieces_jointes/photo-1.jpg', 'text/plain'),
+            $documentNonSupporte,
         ];
 
-        $this->expectException(\InvalidArgumentException::class);
-
-        $this->fusionneur->fusionner($documents);
+        try {
+            $this->fusionneur->fusionner($documents);
+            $this->fail('Une '.FusionDocumentException::class.' aurait dû être levée');
+        } catch (FusionDocumentException $e) {
+            $this->assertSame($documentNonSupporte, $e->getDocument());
+        }
     }
 
     public function testFusionnerRejetteUneListeVide(): void

@@ -37,8 +37,8 @@ class FusionneurDocuments
      *
      * @return string Le contenu binaire du PDF fusionné
      *
-     * @throws \InvalidArgumentException            si la liste est vide ou si un document a un type MIME non supporté
-     * @throws FilesystemException|UnableToReadFile si un document ne peut pas être lu depuis le stockage
+     * @throws \InvalidArgumentException si la liste est vide
+     * @throws FusionDocumentException   si un document empêche la fusion (type MIME non supporté, illisible, etc.)
      */
     public function fusionner(array $documents): string
     {
@@ -57,12 +57,16 @@ class FusionneurDocuments
             $pdf = new Fpdi();
 
             foreach ($documents as $document) {
-                $cheminFichier = $this->telechargerDocument($document, $repertoireTemporaire);
+                try {
+                    $cheminFichier = $this->telechargerDocument($document, $repertoireTemporaire);
 
-                if (self::MIME_PDF === $document->getMime()) {
-                    $this->ajouterPagesPdf($pdf, $cheminFichier);
-                } else {
-                    $this->ajouterPageImage($pdf, $cheminFichier, $document->getMime());
+                    if (self::MIME_PDF === $document->getMime()) {
+                        $this->ajouterPagesPdf($pdf, $cheminFichier);
+                    } else {
+                        $this->ajouterPageImage($pdf, $cheminFichier, $document->getMime());
+                    }
+                } catch (\Throwable $e) {
+                    throw new FusionDocumentException($document, sprintf('La fusion du document #%s a échoué : %s', $document->getId(), $e->getMessage()), $e);
                 }
             }
 
@@ -80,7 +84,7 @@ class FusionneurDocuments
             return;
         }
 
-        throw new \InvalidArgumentException(sprintf("Le document #%s a un type MIME non supporté pour la fusion ('%s'), seuls un PDF ou une image (%s) sont acceptés", $document->getId(), $mime ?? 'inconnu', implode(', ', self::MIMES_IMAGE_SUPPORTEES)));
+        throw new FusionDocumentException($document, sprintf("Le document #%s a un type MIME non supporté pour la fusion ('%s'), seuls un PDF ou une image (%s) sont acceptés", $document->getId(), $mime ?? 'inconnu', implode(', ', self::MIMES_IMAGE_SUPPORTEES)));
     }
 
     private function telechargerDocument(Document $document, string $repertoireTemporaire): string

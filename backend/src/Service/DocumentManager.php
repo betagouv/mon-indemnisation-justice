@@ -206,18 +206,45 @@ class DocumentManager
 
         }
         // Ajouter la pièce d'identité ...
-        if (count($dossier->getDocumentsParType(DocumentType::TYPE_CARTE_IDENTITE)) > 0) {
-            $zip->addFromString("Pièce d'identité.pdf", $this->fusionneurDocuments->fusionner($dossier->getDocumentsParType(DocumentType::TYPE_CARTE_IDENTITE)));
-        }
+        $this->fusionnerEtAjouterAuZip($zip, "Pièce d'identité.pdf", $dossier->getDocumentsParType(DocumentType::TYPE_CARTE_IDENTITE));
         // ...  le RIB ...
-        if (count($dossier->getDocumentsParType(DocumentType::TYPE_RIB)) > 0) {
-            $zip->addFromString("Relevé d'identité bancaire.pdf", $this->fusionneurDocuments->fusionner($dossier->getDocumentsParType(DocumentType::TYPE_RIB)));
-        }
+        $this->fusionnerEtAjouterAuZip($zip, "Relevé d'identité bancaire.pdf", $dossier->getDocumentsParType(DocumentType::TYPE_RIB));
         // ... et le K-Bis
-        if (count($dossier->getDocumentsParType(DocumentType::TYPE_EXTRAIT_KBIS)) > 0) {
-            $zip->addFromString('Extrait K-bis.pdf', $this->fusionneurDocuments->fusionner($dossier->getDocumentsParType(DocumentType::TYPE_EXTRAIT_KBIS)));
-        }
+        $this->fusionnerEtAjouterAuZip($zip, 'Extrait K-bis.pdf', $dossier->getDocumentsParType(DocumentType::TYPE_EXTRAIT_KBIS));
 
         return $zip;
+    }
+
+    /**
+     * Fusionne une liste de documents en un unique PDF ajouté au zip sous le nom donné. Si la fusion échoue à
+     * cause d'un document en particulier, celui-ci est retiré de la liste et la fusion est retentée avec les
+     * documents restants ; les documents ainsi écartés sont ensuite ajoutés au zip directement, comme c'est fait
+     * ci-dessus pour les documents de type TYPE_COURRIER_REQUERANT et TYPE_ARRETE_PAIEMENT.
+     *
+     * @param Document[] $documents
+     */
+    private function fusionnerEtAjouterAuZip(\ZipArchive $zip, string $nomFichier, array $documents): void
+    {
+        $documentsEnEchec = [];
+
+        while ([] !== $documents) {
+            try {
+                $zip->addFromString($nomFichier, $this->fusionneurDocuments->fusionner($documents));
+                break;
+            } catch (FusionDocumentException $e) {
+                $this->logger->warning('Échec de la fusion d\'un document, nouvelle tentative sans celui-ci', ['id' => $e->getDocument()->getId(), 'erreur' => $e->getMessage()]);
+
+                $documentsEnEchec[] = $e->getDocument();
+                $documents = array_values(array_filter($documents, static fn (Document $document) => $document !== $e->getDocument()));
+            }
+        }
+
+        foreach ($documentsEnEchec as $document) {
+            try {
+                $zip->addFromString(str_replace('/', '_', $document->getOriginalFilename()), $this->getContenuTexte($document));
+            } catch (FilesystemException|UnableToReadFile $e) {
+                $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
+            }
+        }
     }
 }

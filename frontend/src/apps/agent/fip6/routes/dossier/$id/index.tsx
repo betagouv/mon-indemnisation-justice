@@ -207,9 +207,6 @@ const ConsultationDossier = ({
                 }}
                 onTermine={async () => await routeur.invalidate()}
               />
-
-              {/* L'agent validateur génère et signe l'arrêté de paiement */}
-              {dossier.enAttentePaiement && agent.estValidateur() && <></>}
             </div>
 
             <div className="fr-my-2w">
