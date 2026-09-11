@@ -57,8 +57,6 @@ export const EnvoyerPourIndemnisationActionModale = ({
     await onTermine();
 
     setSauvegarderEnCours(false);
-
-    _modale?.close();
   }, [dossier.id]);
 
   return estAEnvoyerPourIndemnisation({ dossier, agent }) ? (

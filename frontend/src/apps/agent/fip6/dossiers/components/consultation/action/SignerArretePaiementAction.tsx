@@ -111,8 +111,6 @@ export const SignerArretePaiementModale = ({
       await onSigne();
 
       setSauvegardeEnCours(false);
-
-      _modale?.close();
     }
   }, [dossier.id, fichierSigne]);
 

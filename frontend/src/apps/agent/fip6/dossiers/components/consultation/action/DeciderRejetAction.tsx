@@ -197,8 +197,6 @@ export const DeciderRejetModale = ({
       await onDecide();
 
       setSauvegarderEnCours(false);
-
-      _modale.close();
     },
     [dossier],
   );

@@ -57,9 +57,6 @@ export const MarquerIndemniseActionModale = ({
     await onTermine();
 
     setSauvegarderEnCours(false);
-
-    _modale?.close();
-
   }, [dossier.id]);
 
   return (

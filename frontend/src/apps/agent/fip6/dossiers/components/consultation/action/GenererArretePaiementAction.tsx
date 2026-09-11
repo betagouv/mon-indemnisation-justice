@@ -115,8 +115,6 @@ export const GenererArretePaiementModale =
       await onGenere();
 
       setSauvegardeEnCours(false);
-
-      _modale?.close();
     };
 
     return estAVerifier({ dossier, agent }) ? (
