@@ -210,9 +210,9 @@ export const DeciderIndemnisationModale = ({
       await dossierManager.decider(dossier, { montantIndemnisation });
       await onDecide();
 
-      _modale.close();
-
       setSauvegarderEnCours(false);
+
+      _modale?.close();
     },
     [dossier],
   );

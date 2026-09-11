@@ -52,11 +52,14 @@ export const MarquerIndemniseActionModale = ({
 
   const marquerIndemnise = useCallback(async () => {
     setSauvegarderEnCours(true);
+
     await dossierManager.marquerIndemnise(dossier, dateIndemnisation);
     await onTermine();
 
-    _modale.close();
     setSauvegarderEnCours(false);
+
+    _modale?.close();
+
   }, [dossier.id]);
 
   return (

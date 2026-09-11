@@ -106,9 +106,13 @@ export const SignerArretePaiementModale = ({
   const signerEtEnvoyer = useCallback(async () => {
     if (fichierSigne) {
       setSauvegardeEnCours(true);
+
       await dossierManager.validerArretePaiement(dossier, fichierSigne);
       await onSigne();
+
       setSauvegardeEnCours(false);
+
+      _modale?.close();
     }
   }, [dossier.id, fichierSigne]);
 

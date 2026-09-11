@@ -115,6 +115,8 @@ export const CloturerActionModale = ({
       await onCloture();
 
       setEtatCloture({} as EtatCloture);
+
+      _modale?.close();
     },
     [dossier],
   );

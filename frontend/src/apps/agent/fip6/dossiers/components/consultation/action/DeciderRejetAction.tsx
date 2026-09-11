@@ -196,9 +196,9 @@ export const DeciderRejetModale = ({
       await dossierManager.decider(dossier, { motifRejet });
       await onDecide();
 
-      _modale.close();
-
       setSauvegarderEnCours(false);
+
+      _modale.close();
     },
     [dossier],
   );
