@@ -11,6 +11,7 @@ use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\MotifRejetBrisPorte;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Filesystem\Path;
@@ -26,6 +27,8 @@ class DocumentManager
         protected readonly EntityManagerInterface $em,
         protected readonly ImprimanteCourrier $imprimanteCourrier,
         protected readonly Environment $twig,
+        protected readonly FusionneurDocuments $fusionneurDocuments,
+        protected readonly LoggerInterface $logger,
     ) {
     }
 
@@ -178,5 +181,67 @@ class DocumentManager
             'image/jpeg', 'image/png', 'image/gif', 'image/webp' => preg_replace('image/', '', $mime),
             default => 'txt',
         };
+    }
+
+    public function genererListeDocumentsATransmettre(Dossier $dossier): \ZipArchive
+    {
+        $zip = new \ZipArchive();
+        $zipName = tempnam(sys_get_temp_dir(), "zip_dossier_{$dossier->getId()}");
+
+        if (true !== $zip->open($zipName, \ZipArchive::CREATE)) {
+            throw new \RuntimeException('Cannot open '.$zipName);
+        }
+
+        // Ajouter la déclaration d'acceptation et l'arrêté de paiement
+        /* @var DocumentType $typeDocument */
+        foreach ([DocumentType::TYPE_COURRIER_REQUERANT, DocumentType::TYPE_ARRETE_PAIEMENT] as $typeDocument) {
+            /* @var Document $document */
+            if (null !== ($document = $dossier->getDocumentParType($typeDocument))) {
+                try {
+                    $zip->addFromString(str_replace('/', '_', $typeDocument->nommerFichier($dossier)), $this->getContenuTexte($document));
+                } catch (FilesystemException|UnableToReadFile $e) {
+                    $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
+                }
+            }
+
+        }
+        // Ajouter la pièce d'identité ...
+        $this->fusionnerEtAjouterAuZip($zip, "Pièce d'identité.pdf", $dossier->getDocumentsParType(DocumentType::TYPE_CARTE_IDENTITE));
+        // ...  le RIB ...
+        $this->fusionnerEtAjouterAuZip($zip, "Relevé d'identité bancaire.pdf", $dossier->getDocumentsParType(DocumentType::TYPE_RIB));
+        // ... et le K-Bis
+        $this->fusionnerEtAjouterAuZip($zip, 'Extrait K-bis.pdf', $dossier->getDocumentsParType(DocumentType::TYPE_EXTRAIT_KBIS));
+
+        return $zip;
+    }
+
+    /**
+     * Fusionne une liste de documents en un unique fichier PDF ajouté au zip sous le nom donné.
+     *
+     * Les documents n'ayant pas pu être intégrés à la fusion, notamment parce que la compression du document PDF source
+     * n'est pas compatible (voie https://www.setasign.com/fpdi-pdf-parser), sont ensuite ajoutés au zip directement,
+     * comme pièce jointe brute.
+     *
+     * @param Document[] $documents
+     */
+    private function fusionnerEtAjouterAuZip(\ZipArchive $zip, string $nomFichier, array $documents): void
+    {
+        if ([] === $documents) {
+            return;
+        }
+
+        [$contenuFusionne, $documentsEnEchec] = $this->fusionneurDocuments->fusionner($documents);
+
+        if (null !== $contenuFusionne) {
+            $zip->addFromString($nomFichier, $contenuFusionne);
+        }
+
+        foreach ($documentsEnEchec as $document) {
+            try {
+                $zip->addFromString(str_replace('/', '_', $document->getOriginalFilename()), $this->getContenuTexte($document));
+            } catch (FilesystemException|UnableToReadFile $e) {
+                $this->logger->warning('Fichier de pièce jointe introuvable', ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
+            }
+        }
     }
 }

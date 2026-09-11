@@ -25,7 +25,8 @@ RUN install-php-extensions \
     intl \
     calendar \
     pdo pdo_pgsql pgsql \
-    bcmath
+    bcmath \
+    gd
 
 # PHP config
 RUN echo 'date.timezone = "Europe/Paris"' >> $PHP_INI_DIR/php.ini

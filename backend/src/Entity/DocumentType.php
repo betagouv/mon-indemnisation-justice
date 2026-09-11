@@ -102,7 +102,8 @@ enum DocumentType: string
     {
         return match ($this) {
             self::TYPE_COURRIER_MINISTERE => "Lettre décision dossier {$dossier->getReference()}.pdf",
-            self::TYPE_FORMULAIRE_ACCEPTATION => "Acceptation requérant dossier {$dossier->getReference()}.pdf",
+            self::TYPE_FORMULAIRE_ACCEPTATION => "Formulaire déclaration d'acceptation dossier {$dossier->getReference()}.pdf",
+            self::TYPE_COURRIER_REQUERANT => "Acceptation requérant dossier {$dossier->getReference()}.pdf",
             self::TYPE_ARRETE_PAIEMENT => "Arrêté de paiement dossier {$dossier->getReference()}.pdf",
 
             default => null,
