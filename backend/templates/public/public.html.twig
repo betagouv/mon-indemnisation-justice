@@ -19,6 +19,13 @@
     {% endblock stylesheets %}
 </head>
 <body>
+<div id="react-app"></div>
+
+{# Jetons CSRF de la SPA (test d'éligibilité + inscription/connexion), générés une fois pour toutes au premier
+   chargement — même mécanisme que brisPorte/creation_de_compte.html.twig. #}
+<script id="react-arguments" type="application/json">
+{{ react|default({})|json_encode()|raw }}
+</script>
 </body>
 </html>
 
