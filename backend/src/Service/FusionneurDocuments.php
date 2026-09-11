@@ -2,10 +2,9 @@
 
 namespace MonIndemnisationJustice\Service;
 
-use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
-use League\Flysystem\UnableToReadFile;
 use MonIndemnisationJustice\Entity\Document;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use setasign\Fpdi\Fpdi;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -28,26 +27,30 @@ class FusionneurDocuments
     public function __construct(
         #[Target('default.storage')]
         private readonly FilesystemOperator $storage,
+        private readonly LoggerInterface $logger,
     ) {
         $this->filesystem = new Filesystem();
     }
 
     /**
+     * Essaie de fusionner la liste des `Document` donnée en un seul fichier PDF et retourne le contenu binaire du fichier
+     * produit, sous réserve qu'au moins un fichier ait pu être intégré, ainsi que la liste des documents n'ayant pu être
+     * inclus.
+     *
+     * Les fichiers images sont intégrés sur une page seule, en essayant de les centrer sur la page.
+     *
      * @param Document[] $documents
      *
-     * @return string Le contenu binaire du PDF fusionné
+     * @return array{0: ?string, 1: Document[]} Le contenu binaire du PDF fusionné (`null` si aucun document n'a pu
+     *                                          être intégré) et la liste des documents n'ayant pas pu l'être
+     *                                          (type MIME non supporté, illisible, etc.)
      *
      * @throws \InvalidArgumentException si la liste est vide
-     * @throws FusionDocumentException   si un document empêche la fusion (type MIME non supporté, illisible, etc.)
      */
-    public function fusionner(array $documents): string
+    public function fusionner(array $documents): array
     {
         if ([] === $documents) {
             throw new \InvalidArgumentException('Aucun document à fusionner');
-        }
-
-        foreach ($documents as $document) {
-            $this->verifierTypeMimeSupporte($document);
         }
 
         $repertoireTemporaire = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
@@ -55,9 +58,12 @@ class FusionneurDocuments
 
         try {
             $pdf = new Fpdi();
+            $documentsEnEchec = [];
+            $auMoinsUnDocumentIntegre = false;
 
             foreach ($documents as $document) {
                 try {
+                    $this->verifierTypeMimeSupporte($document);
                     $cheminFichier = $this->telechargerDocument($document, $repertoireTemporaire);
 
                     if (self::MIME_PDF === $document->getMime()) {
@@ -65,12 +71,15 @@ class FusionneurDocuments
                     } else {
                         $this->ajouterPageImage($pdf, $cheminFichier, $document->getMime());
                     }
+
+                    $auMoinsUnDocumentIntegre = true;
                 } catch (\Throwable $e) {
-                    throw new FusionDocumentException($document, sprintf('La fusion du document #%s a échoué : %s', $document->getId(), $e->getMessage()), $e);
+                    $this->logger->warning("Le document #{$document->getId()} n'a pas pu être intégré à la fusion, il sera ignoré", ['id' => $document->getId(), 'erreur' => $e->getMessage()]);
+                    $documentsEnEchec[] = $document;
                 }
             }
 
-            return $pdf->Output('S');
+            return [$auMoinsUnDocumentIntegre ? $pdf->Output('S') : null, $documentsEnEchec];
         } finally {
             $this->filesystem->remove($repertoireTemporaire);
         }
@@ -84,7 +93,7 @@ class FusionneurDocuments
             return;
         }
 
-        throw new FusionDocumentException($document, sprintf("Le document #%s a un type MIME non supporté pour la fusion ('%s'), seuls un PDF ou une image (%s) sont acceptés", $document->getId(), $mime ?? 'inconnu', implode(', ', self::MIMES_IMAGE_SUPPORTEES)));
+        throw new \InvalidArgumentException(sprintf("Le document #%s a un type MIME non supporté pour la fusion ('%s'), seuls un PDF ou une image (%s) sont acceptés", $document->getId(), $mime ?? 'inconnu', implode(', ', self::MIMES_IMAGE_SUPPORTEES)));
     }
 
     private function telechargerDocument(Document $document, string $repertoireTemporaire): string

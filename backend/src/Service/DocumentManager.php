@@ -216,27 +216,24 @@ class DocumentManager
     }
 
     /**
-     * Fusionne une liste de documents en un unique PDF ajouté au zip sous le nom donné. Si la fusion échoue à
-     * cause d'un document en particulier, celui-ci est retiré de la liste et la fusion est retentée avec les
-     * documents restants ; les documents ainsi écartés sont ensuite ajoutés au zip directement, comme c'est fait
-     * ci-dessus pour les documents de type TYPE_COURRIER_REQUERANT et TYPE_ARRETE_PAIEMENT.
+     * Fusionne une liste de documents en un unique fichier PDF ajouté au zip sous le nom donné.
+     *
+     * Les documents n'ayant pas pu être intégrés à la fusion, notamment parce que la compression du document PDF source
+     * n'est pas compatible (voie https://www.setasign.com/fpdi-pdf-parser), sont ensuite ajoutés au zip directement,
+     * comme pièce jointe brute.
      *
      * @param Document[] $documents
      */
     private function fusionnerEtAjouterAuZip(\ZipArchive $zip, string $nomFichier, array $documents): void
     {
-        $documentsEnEchec = [];
+        if ([] === $documents) {
+            return;
+        }
 
-        while ([] !== $documents) {
-            try {
-                $zip->addFromString($nomFichier, $this->fusionneurDocuments->fusionner($documents));
-                break;
-            } catch (FusionDocumentException $e) {
-                $this->logger->warning('Échec de la fusion d\'un document, nouvelle tentative sans celui-ci', ['id' => $e->getDocument()->getId(), 'erreur' => $e->getMessage()]);
+        [$contenuFusionne, $documentsEnEchec] = $this->fusionneurDocuments->fusionner($documents);
 
-                $documentsEnEchec[] = $e->getDocument();
-                $documents = array_values(array_filter($documents, static fn (Document $document) => $document !== $e->getDocument()));
-            }
+        if (null !== $contenuFusionne) {
+            $zip->addFromString($nomFichier, $contenuFusionne);
         }
 
         foreach ($documentsEnEchec as $document) {
