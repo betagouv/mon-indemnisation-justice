@@ -55,8 +55,7 @@ export function StepActionContentieuse({
         name="actionContentieuse"
         children={(field) => (
           <FormRadioButtons
-            legend="Avez-vous engagé une action contentieuse pour des délais déraisonnables dirigée contre l'agent judiciaire de l'État ?"
-            hintText="La délivrance d'une assignation à l'Agent Judiciaire de l'État (AJE) met fin à la phase précontentieuse."
+            legend="Avez-vous engagé une action contentieuse pour des délais déraisonnables dirigée contre l’agent judiciaire de l’État (AJE) ? "
             options={[
               {
                 label: "Non, aucune action contentieuse",
@@ -90,7 +89,7 @@ export function StepActionContentieuse({
                 className="fr-mt-2w"
                 severity="error"
                 title="Vous n'êtes pas éligible à déposer un dossier"
-                description="Une procédure contentieuse en cours devant l'AJE rend la démarche précontentieuse irrecevable."
+                description="Une procédure contentieuse en cours dirigée contre l’agent judiciaire de l’État (AJE) rend votre demande précontentieuse irrecevable."
               />
             );
           }

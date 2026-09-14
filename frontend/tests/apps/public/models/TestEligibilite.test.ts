@@ -23,13 +23,21 @@ describe("TestEligibilite", () => {
 
       expect(test.dateDecision).toEqual(new Date("2023-06-15"));
       expect(test.actionContentieuse).toBe(ActionContentieuse.Non);
-      expect(test.typeDecision).toEqual([TypeDecision.JugementPremiereInstance]);
-      expect(test.piecesProc).toEqual([PieceProcedure.ActeIntroductif, PieceProcedure.Ecritures]);
+      expect(test.typeDecision).toEqual([
+        TypeDecision.JugementPremiereInstance,
+      ]);
+      expect(test.piecesProc).toEqual([
+        PieceProcedure.ActeIntroductif,
+        PieceProcedure.Ecritures,
+      ]);
       expect(test.preuvesDiligences).toBe(true);
     });
 
     it("dénormalise un tableau de pièces vide", () => {
-      const test = plainToInstance(TestEligibilite, { ...plainEligible, piecesProc: [] });
+      const test = plainToInstance(TestEligibilite, {
+        ...plainEligible,
+        piecesProc: [],
+      });
       expect(test.piecesProc).toEqual([]);
     });
 
@@ -58,32 +66,50 @@ describe("TestEligibilite", () => {
     });
 
     it("est non éligible si la date est prescrite", () => {
-      const test = plainToInstance(TestEligibilite, { ...plainEligible, dateDecision: "2015-01-01" });
+      const test = plainToInstance(TestEligibilite, {
+        ...plainEligible,
+        dateDecision: "2015-01-01",
+      });
       expect(test.estEligible).toBe(false);
     });
 
     it("est non éligible si action contentieuse en cours", () => {
-      const test = plainToInstance(TestEligibilite, { ...plainEligible, actionContentieuse: "oui" });
+      const test = plainToInstance(TestEligibilite, {
+        ...plainEligible,
+        actionContentieuse: "oui",
+      });
       expect(test.estEligible).toBe(false);
     });
 
     it("est non éligible si aucune décision de justice", () => {
-      const test = plainToInstance(TestEligibilite, { ...plainEligible, typeDecision: [] });
+      const test = plainToInstance(TestEligibilite, {
+        ...plainEligible,
+        typeDecision: [],
+      });
       expect(test.estEligible).toBe(false);
     });
 
     it("est non éligible si typeDecision contient 'aucune'", () => {
-      const test = plainToInstance(TestEligibilite, { ...plainEligible, typeDecision: ["aucune"] });
+      const test = plainToInstance(TestEligibilite, {
+        ...plainEligible,
+        typeDecision: ["aucune"],
+      });
       expect(test.estEligible).toBe(false);
     });
 
     it("est non éligible si aucune pièce de procédure", () => {
-      const test = plainToInstance(TestEligibilite, { ...plainEligible, piecesProc: [] });
+      const test = plainToInstance(TestEligibilite, {
+        ...plainEligible,
+        piecesProc: [],
+      });
       expect(test.estEligible).toBe(false);
     });
 
     it("est non éligible sans preuve de diligences", () => {
-      const test = plainToInstance(TestEligibilite, { ...plainEligible, preuvesDiligences: false });
+      const test = plainToInstance(TestEligibilite, {
+        ...plainEligible,
+        preuvesDiligences: "pas_de_demarche",
+      });
       expect(test.estEligible).toBe(false);
     });
   });

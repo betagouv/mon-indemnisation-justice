@@ -72,11 +72,7 @@ function TestEligibiliteRoute() {
                 <p>
                   Une demande de réparation au titre d’un délai déraisonnable de
                   procédure ne peut être déposée qu’après que la juridiction
-                  concernée a statué.
-                </p>
-                <p>
-                  Vous pourrez renouveler votre démarche une fois la décision
-                  rendue.
+                  concernée a rendu sa décision.
                 </p>
               </>
             }

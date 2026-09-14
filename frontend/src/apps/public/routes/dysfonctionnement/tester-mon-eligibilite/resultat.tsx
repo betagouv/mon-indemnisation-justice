@@ -1,5 +1,6 @@
 import { Layout } from "@/apps/public/components/Layout";
 import { TOTAL_STEPS } from "@/apps/public/components/steps";
+import { RouteurPublic } from "@/apps/public/routeur";
 import {
   clearCriteres,
   getCriteres,
@@ -11,7 +12,6 @@ import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import React from "react";
-import { RouteurPublic } from "@/apps/public/routeur";
 
 function ResultatEligibiliteRoute() {
   const navigate = useNavigate<typeof RouteurPublic>({

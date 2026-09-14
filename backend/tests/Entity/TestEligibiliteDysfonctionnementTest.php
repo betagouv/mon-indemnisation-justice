@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Tests\Entity;
 
+use MonIndemnisationJustice\Entity\PreuvesDiligenceType;
 use MonIndemnisationJustice\Entity\TestEligibiliteDysfonctionnement;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -14,11 +15,11 @@ class TestEligibiliteDysfonctionnementTest extends TestCase
     {
         return [
             'procedureTerminee' => true,
-            'dateDecision' => new \DateTimeImmutable(date('Y', strtotime('-1 year')) . '-06-15'),
+            'dateDecision' => new \DateTimeImmutable(date('Y', strtotime('-1 year')).'-06-15'),
             'aUneActionContentieuse' => false,
             'typesDecision' => ['jugement_premiere_instance'],
             'piecesProcedure' => ['acte_introductif', 'ecritures'],
-            'preuvesDiligences' => true,
+            'preuvesDiligences' => PreuvesDiligenceType::AVEC_JUSTIFICATIFS,
         ];
     }
 
@@ -103,7 +104,7 @@ class TestEligibiliteDysfonctionnementTest extends TestCase
     {
         $test = TestEligibiliteDysfonctionnement::fromArray([
             ...$this->eligibleParDefaut(),
-            'preuvesDiligences' => false,
+            'preuvesDiligences' => PreuvesDiligenceType::PAS_DE_DEMARCHE,
         ]);
 
         $this->assertFalse($test->estEligible());
