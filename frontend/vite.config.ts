@@ -104,6 +104,7 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
+        "@public": fileURLToPath(new URL("./src/apps/public", import.meta.url)),
         "@common": fileURLToPath(new URL("./src/common", import.meta.url)),
         "@fdo": fileURLToPath(new URL("./src/apps/agent/fdo", import.meta.url)),
         "@fip6": fileURLToPath(

@@ -91,15 +91,18 @@ export const dateSimple = function (
     jourDeLaSemaine: false,
   },
 ): string {
-  return date.toLocaleString("fr-FR", {
-    weekday: jourDeLaSemaine ? "long" : undefined,
-    day: "numeric",
-    month: "long",
-    year:
-      masquerAnneeSiCourante && date.getFullYear() === new Date().getFullYear()
-        ? undefined
-        : "numeric",
-  });
+  return date
+    .toLocaleString("fr-FR", {
+      weekday: jourDeLaSemaine ? "long" : undefined,
+      day: "numeric",
+      month: "long",
+      year:
+        masquerAnneeSiCourante &&
+        date.getFullYear() === new Date().getFullYear()
+          ? undefined
+          : "numeric",
+    })
+    .replace(/^1 /, "1er ");
 };
 
 export const heureSimple = function (

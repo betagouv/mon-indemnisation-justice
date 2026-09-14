@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Api\Public\Dysfonctionnement\Input;
 
+use MonIndemnisationJustice\Entity\PreuvesDiligenceType;
 use MonIndemnisationJustice\Entity\TestEligibiliteDysfonctionnement;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -46,7 +47,7 @@ class TestEligibiliteDysfonctionnementInput
     public ?array $piecesProcedure = null;
 
     #[Assert\NotNull(message: 'Veuillez indiquer si vous disposez de preuves de diligences')]
-    public ?bool $preuvesDiligences = null;
+    public ?PreuvesDiligenceType $preuvesDiligences = null;
 
     public function versTestEligibiliteDysfonctionnement(?TestEligibiliteDysfonctionnement $source = null): TestEligibiliteDysfonctionnement
     {

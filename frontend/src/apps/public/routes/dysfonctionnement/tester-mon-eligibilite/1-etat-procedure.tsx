@@ -74,10 +74,6 @@ function TestEligibiliteRoute() {
                   procédure ne peut être déposée qu’après que la juridiction
                   concernée a statué.
                 </p>
-                <p>
-                  Vous pourrez renouveler votre démarche une fois la décision
-                  rendue.
-                </p>
               </>
             }
           />

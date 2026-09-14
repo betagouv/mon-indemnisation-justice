@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Tests\Api\Public\Dysfonctionnement;
 
 use MonIndemnisationJustice\Api\Public\Dysfonctionnement\SauvegarderTestEligibiliteDysfonctionnementEndpoint;
+use MonIndemnisationJustice\Entity\PreuvesDiligenceType;
 use MonIndemnisationJustice\Entity\TestEligibiliteDysfonctionnement;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -20,7 +21,7 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
         'aUneActionContentieuse' => false,
         'typesDecision' => ['jugement_premiere_instance'],
         'piecesProcedure' => ['acte_introductif', 'ecritures'],
-        'preuvesDiligences' => true,
+        'preuvesDiligences' => PreuvesDiligenceType::AVEC_JUSTIFICATIFS,
     ];
 
     public function testCreerUnNouveauTestSansSession(): void
@@ -63,7 +64,7 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
 
         $this->put([
             ...self::PAYLOAD_ELIGIBLE,
-            'preuvesDiligences' => false,
+            'preuvesDiligences' => PreuvesDiligenceType::PAS_DE_DEMARCHE,
         ]);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
@@ -74,7 +75,7 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
 
         $this->em->clear();
         $test = $this->em->getRepository(TestEligibiliteDysfonctionnement::class)->find($testExistant->id);
-        $this->assertFalse($test->preuvesDiligences);
+        $this->assertEquals(PreuvesDiligenceType::PAS_DE_DEMARCHE, $test->preuvesDiligences);
     }
 
     public function testRetourneNonEligibleSiCritereManquant(): void
@@ -97,7 +98,7 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
             'aUneActionContentieuse' => false,
             'typesDecision' => ['jugement_premiere_instance'],
             'piecesProcedure' => ['acte_introductif'],
-            'preuvesDiligences' => true,
+            'preuvesDiligences' => PreuvesDiligenceType::SANS_JUSTIFICATIF,
         ]);
 
         $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
