@@ -1,5 +1,3 @@
-
-
 import { z } from "zod";
 import { ActionContentieuse, PieceProcedure, TypeDecision } from "../types";
 
@@ -17,14 +15,14 @@ const valeursPieceProcedure = [
 ] as const;
 
 export const SchemaEtapeDateDecision = z.object({
-  dateDecision: z
-    .string({ error: "Veuillez indiquer la date de la décision" })
-    .min(1, { error: "Veuillez indiquer la date de la décision" }),
+  dateDecision: z.date({ error: "Veuillez indiquer la date de la décision" }),
 });
 
 export const SchemaEtapeActionContentieuse = z
   .object({
-    actionContentieuse: z.enum([ActionContentieuse.Non, ActionContentieuse.Oui] as const).optional(),
+    actionContentieuse: z
+      .enum([ActionContentieuse.Non, ActionContentieuse.Oui] as const)
+      .optional(),
   })
   .superRefine((donnees, contexte) => {
     if (!donnees.actionContentieuse) {
@@ -48,16 +46,9 @@ export const SchemaEtapePiecesProc = z.object({
     .min(1, { error: "Veuillez sélectionner au moins une pièce de procédure" }),
 });
 
-export const SchemaEtapeDiligences = z
-  .object({
-    preuvesDiligences: z.boolean().optional(),
-  })
-  .superRefine((donnees, contexte) => {
-    if (donnees.preuvesDiligences === undefined) {
-      contexte.addIssue({
-        code: "custom",
-        path: ["preuvesDiligences"],
-        message: "Veuillez répondre à cette question",
-      });
-    }
-  });
+export const SchemaEtapeDiligences = z.object({
+  preuvesDiligences: z.enum(
+    ["avec_justificatifs", "sans_justificatif", "pas_de_demarche"],
+    { error: "Veuillez répondre à cette question" },
+  ),
+});

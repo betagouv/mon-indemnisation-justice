@@ -2,15 +2,18 @@ import {
   criterePrescription,
   saveCritere,
 } from "@/apps/public/services/eligibiliteStore";
-import { calculerPrescription } from "@/apps/public/services/prescription";
+import {
+  calculerDateFin,
+  calculerPrescription,
+} from "@/apps/public/services/prescription";
 import { TestEligibiliteManagerInterface } from "@/apps/public/services/TestEligibiliteManager";
-import { dateChiffre } from "@/common/services/date";
+import { dateChiffre, dateSimple } from "@/common/services/date";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { CheckInput } from "@common/composants/dsfr/champs/check/CheckInput.tsx";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useInjection } from "inversify-react";
-import React from "react";
+import React, { useMemo } from "react";
 import { SchemaEtapeDateDecision } from "../formulaires/eligibilite.schemas";
 import type { StepProps } from "../types";
 import { BlockedNavButtons } from "./BlockedNavButtons";
@@ -31,10 +34,10 @@ export function StepDateDecision({
 
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeDateDecision },
-    defaultValues: { dateDecision: dateChiffre(test?.dateDecision) },
+    defaultValues: { dateDecision: test?.dateDecision },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        const critere = criterePrescription(new Date(value.dateDecision));
+        const critere = criterePrescription(value.dateDecision as Date);
         if (!critere.rempli) return;
         manager.modifier({
           dateDecision: value.dateDecision as unknown as Date,
@@ -49,8 +52,20 @@ export function StepDateDecision({
     formulaire.store,
     (state) => state.values.dateDecision,
   );
-  const prescription = calculerPrescription(
-    dateDecision ? new Date(dateDecision) : undefined,
+
+  const datePrescription = useMemo(
+    () => (dateDecision ? calculerPrescription(dateDecision) : undefined),
+    [dateDecision],
+  );
+
+  const estRecevable = useMemo<boolean | undefined>(
+    () => (datePrescription ? new Date() < datePrescription : undefined),
+    [datePrescription],
+  );
+
+  const dateFin = useMemo(
+    () => (datePrescription ? calculerDateFin(datePrescription) : undefined),
+    [dateDecision],
   );
 
   return (
@@ -72,9 +87,14 @@ export function StepDateDecision({
                 validation={false}
                 nativeInputProps={{
                   type: "date",
-                  value: field.state.value,
-                  onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                    field.handleChange(e.target.value),
+                  defaultValue: dateChiffre(field.state.value),
+                  onChange: (e) => {
+                    const date = new Date(e.target.value);
+
+                    if (!isNaN(date.getTime())) {
+                      field.setValue(date);
+                    }
+                  },
                 }}
               />
             )}
@@ -98,17 +118,20 @@ export function StepDateDecision({
             );
           }
           if (dateDecision) {
-            const prescription = calculerPrescription(new Date(dateDecision));
             return (
               <Alert
                 className="fr-mt-2w"
-                severity={prescription.rempli ? "success" : "error"}
+                severity={estRecevable ? "success" : "error"}
                 title={
-                  prescription.rempli
-                    ? "Vous êtes dans les délais"
-                    : "Le délai de prescription est dépassé"
+                  estRecevable
+                    ? "Votre demande est recevable"
+                    : "Votre demande est prescrite"
                 }
-                description={prescription.detail}
+                description={
+                  estRecevable
+                    ? `Vous pouvez présenter votre demande jusqu’au ${dateSimple(dateFin as Date)} inclus.`
+                    : `Le délai pour présenter votre demande a expiré le  ${dateSimple(datePrescription as Date)}.`
+                }
               />
             );
           }
@@ -125,8 +148,8 @@ export function StepDateDecision({
           aria-hidden="true"
         />{" "}
         La prescription est quadriennale : vous disposez de 4 ans à compter du
-        1er janvier de l'année suivant celle de la décision pour effectuer une
-        demande d'indemnisation suite à un délai déraisonnable de procédure.
+        1er janvier de l’année suivant celle où la décision a été rendue pour
+        présenter votre demande d’indemnisation.
       </p>
 
       <Accordion
@@ -146,14 +169,14 @@ export function StepDateDecision({
         </div>
       </Accordion>
 
-      {dateDecision && !prescription.rempli && onRetour ? (
+      {dateDecision && !estRecevable && onRetour ? (
         <BlockedNavButtons onRetour={onRetour} />
       ) : (
         <NavButtons
           onPrecedent={onPrecedent}
           onAnnuler={onAnnuler}
           isLastStep={isLastStep}
-          peutContinuer={!dateDecision || prescription.rempli}
+          peutContinuer={estRecevable}
         />
       )}
     </form>

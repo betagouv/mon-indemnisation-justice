@@ -102,7 +102,7 @@ export const dateSimple = function (
           ? undefined
           : "numeric",
     })
-    .replace(/^1\s/, "1er ");
+    .replace(/^1 /, "1er ");
 };
 
 export const heureSimple = function (

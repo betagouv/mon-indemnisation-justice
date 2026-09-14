@@ -16,17 +16,15 @@
       "vitest/globals",
       "@vitest/browser/providers/playwright"
     ],
-    "typeRoots": [
-      "./node_modules/@types",
-      ".@types"
-    ],
+    "typeRoots": ["./node_modules/@types", ".@types"],
     "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      "@commonpublic/*": ["./src/apps/public/*"],
       "@common/*": ["./src/common/*"],
       "@fip6/*": ["./src/apps/agent/fip6/*"],
-      "@fdo/*": ["./src/apps/agent/fdo/*"],
+      "@fdo/*": ["./src/apps/agent/fdo/*"]
     }
   },
   "include": [
@@ -40,6 +38,7 @@
   "references": [
     { "path": "src/apps/agent/fdo" },
     { "path": "src/apps/agent/fip6" },
+    { "path": "src/apps/public" },
     { "path": "src/apps/requerant" }
   ]
 }

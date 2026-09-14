@@ -1,3 +1,4 @@
+import { TypePreuveDiligence } from "@/apps/public/models/TestEligibilite.ts";
 import {
   critereDiligences,
   saveCritere,
@@ -26,7 +27,7 @@ export function StepDiligences({
   const formulaire = useForm({
     validators: { onSubmit: SchemaEtapeDiligences },
     defaultValues: { preuvesDiligences: test?.preuvesDiligences } as {
-      preuvesDiligences?: boolean;
+      preuvesDiligences?: TypePreuveDiligence;
     },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
@@ -66,19 +67,32 @@ export function StepDiligences({
               hintText="Ces éléments peuvent être utiles pour apprécier le déroulement de la procédure."
               options={[
                 {
-                  label: "Oui, j'ai des preuves de mes démarches",
+                  label: "Je dispose de justificatifs de mes démarches",
                   nativeInputProps: {
-                    value: "oui",
-                    checked: field.state.value === true,
-                    onChange: () => field.handleChange(true),
+                    value: "avec_justificatifs",
+                    checked: field.state.value === "avec_justificatifs",
+                    onChange: (e) =>
+                      field.handleChange(e.target.value as TypePreuveDiligence),
                   },
                 },
                 {
-                  label: "Non, je n'ai pas de traces écrites",
+                  label:
+                    "J’ai effectué des démarches, mais je ne dispose pas de justificatifs",
                   nativeInputProps: {
-                    value: "non",
-                    checked: field.state.value === false,
-                    onChange: () => field.handleChange(false),
+                    value: "sans_justificatif",
+                    checked: field.state.value === "sans_justificatif",
+                    onChange: (e) =>
+                      field.handleChange(e.target.value as TypePreuveDiligence),
+                  },
+                },
+                {
+                  label:
+                    "Je n’ai effectué aucune démarche auprès de la juridiction",
+                  nativeInputProps: {
+                    value: "pas_de_demarche",
+                    checked: field.state.value === "pas_de_demarche",
+                    onChange: (e) =>
+                      field.handleChange(e.target.value as TypePreuveDiligence),
                   },
                 },
               ]}

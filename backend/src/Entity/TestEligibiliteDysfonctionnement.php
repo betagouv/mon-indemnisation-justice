@@ -32,8 +32,8 @@ class TestEligibiliteDysfonctionnement
     #[ORM\Column(type: Types::JSON, nullable: true)]
     public ?array $piecesProcedure = null;
 
-    #[ORM\Column(nullable: true)]
-    public ?bool $preuvesDiligences = null;
+    #[ORM\Column(length: 20, nullable: true, enumType: PreuvesDiligenceType::class)]
+    public ?PreuvesDiligenceType $preuvesDiligences = null;
 
     #[ORM\ManyToOne(targetEntity: Usager::class, cascade: ['persist'])]
     #[ORM\JoinColumn(unique: false, nullable: true, onDelete: 'CASCADE')]
@@ -53,12 +53,12 @@ class TestEligibiliteDysfonctionnement
     public function estEligible(): bool
     {
         return $this->estDansLesDelais()
-            && $this->aUneActionContentieuse === false
+            && false === $this->aUneActionContentieuse
             && !empty($this->typesDecision)
             && !in_array('aucune', $this->typesDecision ?? [])
             && !empty($this->piecesProcedure)
             && !in_array('aucune', $this->piecesProcedure ?? [])
-            && $this->preuvesDiligences === true;
+            && $this->preuvesDiligences->estRecevable();
     }
 
     public function getDateExpiration(): ?\DateTimeImmutable
@@ -82,7 +82,7 @@ class TestEligibiliteDysfonctionnement
     public static function fromArray(array $values): self
     {
         $test = new self();
-        $test->procedureTerminee = $values['procedureTerminee'] ?? null;
+        $test->procedureTerminee = PreuvesDiligenceType::tryFrom($values['procedureTerminee']);
         $test->dateDecision = $values['dateDecision'] ?? null;
         $test->aUneActionContentieuse = $values['aUneActionContentieuse'] ?? null;
         $test->typesDecision = $values['typesDecision'] ?? null;
