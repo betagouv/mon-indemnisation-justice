@@ -50,7 +50,7 @@ stateDiagram-v2
     classDef ko_rejete font-weight:bold,text-transform:uppercase,color:#ce0500,fill:#ffe9e9
 
     A_FINALISER: À finaliser
-    A_ATTRIBUER: À instruire
+    A_ATTRIBUER: À attribuer
     A_INSTRUIRE: Attribué - à instruire
     EN_INSTRUCTION: En instruction
     CLOTURE: Clôturé
@@ -65,7 +65,7 @@ stateDiagram-v2
     KO_REJETE: Rejeté - envoyé
 
     [*] --> A_FINALISER :::a_finaliser : Requérant initie son dossier
-    A_FINALISER --> A_ATTRIBUER ::: a_instruire : Requérant dépose son dossier
+    A_FINALISER --> A_ATTRIBUER ::: a_attribuer : Requérant dépose son dossier
     A_ATTRIBUER --> A_INSTRUIRE ::: a_instruire : Attributeur attribue le dossier à un rédacteur
     A_INSTRUIRE --> EN_INSTRUCTION ::: en_instruction : Rédacteur démarre l'instruction
     A_INSTRUIRE --> CLOTURE ::: cloture : Rédacteur clos le dossier
@@ -76,8 +76,8 @@ stateDiagram-v2
     OK_A_APPROUVER --> OK_A_VERIFIER ::: ok_a_verifier : Requérant accepte l'indemnisation
     OK_A_VERIFIER --> OK_VERIFIE ::: ok_verifie : Rédacteur édite l'arrêté
     OK_VERIFIE --> OK_A_INDEMNISER ::: ok_a_indemniser : Validateur signe l'arrêté
-    OK_A_INDEMNISER --> OK_EN_ATTENTE_PAIEMENT ::: ok_en_attente_paiement : Agent de liaison transmet les documents à FIP3
-    OK_EN_ATTENTE_PAIEMENT --> OK_INDEMNISE ::: ok_indemnise : Agent de liaison marque comme indemnisé
+    OK_A_INDEMNISER --> OK_EN_ATTENTE_PAIEMENT ::: ok_en_attente_paiement : Rédacteur transmet les documents à FIP3
+    OK_EN_ATTENTE_PAIEMENT --> OK_INDEMNISE ::: ok_indemnise : Rédacteur marque comme indemnisé
     OK_INDEMNISE --> [*]
     EN_INSTRUCTION --> KO_A_SIGNER ::: ko_a_signer : Rédacteur propose le rejet
     KO_A_SIGNER --> KO_REJETE ::: ko_a_signer : Validateur signe le courrier de rejet
