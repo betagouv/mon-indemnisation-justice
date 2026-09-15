@@ -41,7 +41,7 @@ class RevenirInstructionDossierEndpoint
             ],
             true
         )) {
-            return new JsonResponse(['erreur' => "Ce dossier ne peut revenir à l'instruction car n'est pas en attente de signature ou d'approbation par le requérant"], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['erreur' => "Ce dossier n'est pas éligible pour revenir à l'instruction"], Response::HTTP_BAD_REQUEST);
         }
 
         $dossier->changerStatut(EtatDossierType::DOSSIER_EN_INSTRUCTION, agent: $security->getUser(), contexte: [
