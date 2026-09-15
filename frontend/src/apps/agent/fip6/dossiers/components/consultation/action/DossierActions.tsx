@@ -112,7 +112,6 @@ export const DossierActions = ({
         onImprime={onImprime}
       />
       <DeciderIndemnisationModale
-        key={dossier.id}
         dossier={dossier}
         agent={agent}
         onDecide={onDecide}

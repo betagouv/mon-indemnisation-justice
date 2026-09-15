@@ -3,7 +3,8 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { DossierDetail, EtatDossierType } from "@common/models";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
-import { delay } from "lodash";
+import { DossierManagerInterface } from "@fip6/services/dossier.ts";
+import { useInjection } from "inversify-react";
 import React, { useCallback, useState } from "react";
 
 const peutRevenirAInstruction = ({
@@ -16,7 +17,6 @@ const peutRevenirAInstruction = ({
   [
     EtatDossierType.KO_A_SIGNER,
     EtatDossierType.OK_A_SIGNER,
-    EtatDossierType.KO_REJETE,
     EtatDossierType.OK_A_APPROUVER,
   ].includes(dossier.etat.etat) && agent.instruit(dossier);
 
@@ -33,19 +33,22 @@ export const RevenirInstructionModale = ({
   agent: AgentFIP6;
   onRevenu: () => void | Promise<void>;
 }) => {
+  const dossierManager = useInjection<DossierManagerInterface>(
+    DossierManagerInterface.$,
+  );
+
   // Indique si la sauvegarde de la décision est en cours
   const [sauvegardeEnCours, setSauvegardeEnCours]: [
     boolean,
     (mode: boolean) => void,
   ] = useState<boolean>(false);
 
-  const revenirAInstruction = useCallback(() => {
+  const revenirAInstruction = useCallback(async () => {
     setSauvegardeEnCours(true);
 
-    delay(() => {
-      onRevenu();
-      setSauvegardeEnCours(false);
-    }, 2500);
+    await dossierManager.revenirAInstruction(dossier);
+    onRevenu();
+    setSauvegardeEnCours(false);
   }, [dossier.id]);
 
   return peutRevenirAInstruction({ dossier, agent }) ? (
