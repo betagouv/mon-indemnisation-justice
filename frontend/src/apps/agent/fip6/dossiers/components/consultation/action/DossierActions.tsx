@@ -28,6 +28,10 @@ import {
 } from "@fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
 import React from "react";
 
+import {
+  revenirInstructionBoutons,
+  RevenirInstructionModale,
+} from "@fip6/dossiers/components/consultation/action/RevenirInstructionAction.tsx";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import {
   AttribuerActionModale,
@@ -80,6 +84,7 @@ export const DossierActions = ({
               agent,
             }),
             ...signerCourrierBoutons({ dossier, agent }),
+            ...revenirInstructionBoutons({ dossier, agent }),
             ...genererArretePaiementBoutons({ dossier, agent }),
             ...signerArretePaiementBoutons({ dossier, agent }),
             ...envoyerPourIndemnisationBoutons({ dossier, agent }),
@@ -118,6 +123,11 @@ export const DossierActions = ({
         agent={agent}
         onSigne={onSigneDecision}
         onImprime={onImprime}
+      />
+      <RevenirInstructionModale
+        dossier={dossier}
+        agent={agent}
+        onRevenu={onTermine}
       />
       <GenererArretePaiementModale
         dossier={dossier}

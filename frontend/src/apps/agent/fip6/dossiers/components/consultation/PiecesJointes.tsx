@@ -1,5 +1,5 @@
-import { Agent, Document, DossierDetail } from "@common/models";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Document, DossierDetail } from "@common/models";
 import {
   AjoutPieceJointe,
   ChampPieceJointe,
@@ -10,6 +10,7 @@ import {
   ouvrirModaleSuppressionPieceJointe,
   SuppressionPieceJointe,
 } from "@fip6/dossiers/components/consultation/piecejointe/SuppressionPieceJointe";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import React, { ReactNode, useCallback, useState } from "react";
 
 export const PiecesJointes = ({
@@ -17,7 +18,7 @@ export const PiecesJointes = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }): ReactNode => {
   const selectionnerPremierePieceJointe = useCallback(
     () =>
