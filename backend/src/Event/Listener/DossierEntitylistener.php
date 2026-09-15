@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Event\Listener;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
-use Doctrine\ORM\Event\PrePersistEventArgs;
+use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
@@ -19,7 +19,7 @@ class DossierEntitylistener
     ) {
     }
 
-    public function prePersist(Dossier $dossier, PrePersistEventArgs $args)
+    public function postPersist(Dossier $dossier, PostPersistEventArgs $args)
     {
         $evenement = $dossier->getEtatDossier()->getEtat()->creerTransitionEvent($dossier);
 

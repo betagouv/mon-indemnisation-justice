@@ -154,8 +154,7 @@ class DossierVoter extends Voter
 
     protected function agentPeutRevenirInstruction(Agent $agent, Dossier $dossier): bool
     {
-        return in_array($dossier->getEtatDossier()->getEtat(), [EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_OK_A_APPROUVER], true)
-            && $agent->instruit($dossier);
+        return $agent->instruit($dossier);
     }
 
     protected function agentPeutLister(Agent $agent, string $action): bool
