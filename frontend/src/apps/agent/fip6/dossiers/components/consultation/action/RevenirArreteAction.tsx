@@ -7,7 +7,7 @@ import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 import { useInjection } from "inversify-react";
 import React, { useCallback, useState } from "react";
 
-const peutRevenirAInstruction = ({
+const peutRevenirALArrete = ({
   dossier,
   agent,
 }: {
@@ -15,16 +15,16 @@ const peutRevenirAInstruction = ({
   agent: AgentFIP6;
 }): boolean =>
   [
-    EtatDossierType.KO_A_SIGNER,
-    EtatDossierType.OK_A_SIGNER,
-    EtatDossierType.OK_A_APPROUVER,
+    EtatDossierType.OK_VERIFIE,
+    EtatDossierType.OK_A_INDEMNISER,
+    EtatDossierType.OK_EN_ATTENTE_PAIEMENT,
   ].includes(dossier.etat.etat) && agent.instruit(dossier);
 
 const _modale = createModal({
-  id: "modale-action-revenir-instruction",
+  id: "modale-action-revenir-arrete",
   isOpenedByDefault: false,
 });
-export const RevenirInstructionModale = ({
+export const RevenirArreteModale = ({
   dossier,
   agent,
   onRevenu,
@@ -43,23 +43,24 @@ export const RevenirInstructionModale = ({
     (mode: boolean) => void,
   ] = useState<boolean>(false);
 
-  const revenirAInstruction = useCallback(async () => {
+  const revenirALArrete = useCallback(async () => {
     setSauvegardeEnCours(true);
 
-    await dossierManager.revenirAInstruction(dossier);
+    await dossierManager.revenirArrete(dossier);
     onRevenu();
     setSauvegardeEnCours(false);
   }, [dossier.id]);
 
-  return peutRevenirAInstruction({ dossier, agent }) ? (
+  return peutRevenirALArrete({ dossier, agent }) ? (
     <_modale.Component
-      title=" Faire revenir le dossier à l'instruction"
+      title=" Faire revenir le dossier à l'édition de l'arrêté"
       iconId="fr-icon-arrow-go-back-line"
     >
       <p>
         Faire revenir le dossier{" "}
         <pre style={{ display: "inline" }}>{dossier.reference}</pre>, concernant{" "}
-        <b>{dossier.requerant.nomComplet()}</b>, à l'instruction ?
+        <b>{dossier.requerant.nomComplet()}</b>, à la phase d'édition de
+        l'arrêté de paiement ?
       </p>
 
       <ButtonsGroup
@@ -80,11 +81,11 @@ export const RevenirInstructionModale = ({
             disabled: sauvegardeEnCours,
           },
           {
-            children: "Revenir à l'instruction",
+            children: "Revenir à l'arrêté",
             priority: "primary",
             iconId: "fr-icon-arrow-go-back-line",
             disabled: sauvegardeEnCours,
-            onClick: () => revenirAInstruction(),
+            onClick: () => revenirALArrete(),
           },
         ]}
       />
@@ -94,17 +95,17 @@ export const RevenirInstructionModale = ({
   );
 };
 
-export const revenirInstructionBoutons = ({
+export const revenirArreteBoutons = ({
   dossier,
   agent,
 }: {
   dossier: DossierDetail;
   agent: AgentFIP6;
 }): ButtonProps[] => {
-  return peutRevenirAInstruction({ dossier, agent })
+  return peutRevenirALArrete({ dossier, agent })
     ? [
         {
-          children: "Revenir à l'instruction",
+          children: "Revenir à l'arrêté",
           priority: "secondary",
           iconId: "fr-icon-arrow-go-back-line",
           onClick: () => _modale.open(),

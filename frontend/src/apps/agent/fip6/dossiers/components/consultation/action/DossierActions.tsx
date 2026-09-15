@@ -23,6 +23,10 @@ import {
   marquerIndemniseBoutons,
 } from "@fip6/dossiers/components/consultation/action/MarquerIndemniseActionModale.tsx";
 import {
+  revenirArreteBoutons,
+  RevenirArreteModale,
+} from "@fip6/dossiers/components/consultation/action/RevenirArreteAction.tsx";
+import {
   signerCourrierBoutons,
   SignerCourrierModale,
 } from "@fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
@@ -86,6 +90,7 @@ export const DossierActions = ({
             ...signerCourrierBoutons({ dossier, agent }),
             ...revenirInstructionBoutons({ dossier, agent }),
             ...genererArretePaiementBoutons({ dossier, agent }),
+            ...revenirArreteBoutons({ dossier, agent }),
             ...signerArretePaiementBoutons({ dossier, agent }),
             ...envoyerPourIndemnisationBoutons({ dossier, agent }),
             ...marquerIndemniseBoutons({ dossier, agent }),
@@ -133,6 +138,11 @@ export const DossierActions = ({
         agent={agent}
         onGenere={onSigneArrete}
         onImprime={onImprime}
+      />
+      <RevenirArreteModale
+        dossier={dossier}
+        agent={agent}
+        onRevenu={onTermine}
       />
       <SignerArretePaiementModale
         dossier={dossier}
