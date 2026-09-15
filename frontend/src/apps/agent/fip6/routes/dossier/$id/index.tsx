@@ -197,6 +197,7 @@ const ConsultationDossier = ({
 
               {/** Actions sur le dossier */}
               <DossierActions
+                key={`actions-dossier-${dossier.id}-${dossier.etat.id}`}
                 dossier={dossier}
                 agent={agent}
                 redacteurs={redacteurs}

@@ -59,6 +59,8 @@ export interface DossierManagerInterface {
 
   demarrerInstruction(dossier: BaseDossier): Promise<void>;
 
+  revenirAInstruction(dossier: BaseDossier): Promise<void>;
+
   decider(dossier: BaseDossier, decision: DecisionDossier): Promise<void>;
 
   validerLaDecision(
@@ -269,6 +271,25 @@ export class APIDossierManager implements DossierManagerInterface {
   async demarrerInstruction(dossier: BaseDossier): Promise<void> {
     const reponse = await fetch(
       `/api/agent/fip6/dossier/${dossier.id}/demarrer-instruction`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async revenirAInstruction(dossier: BaseDossier): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/revenir-instruction`,
       {
         method: "POST",
         headers: {

@@ -20,6 +20,7 @@ import { PrevisualiserPieceJointe } from "@fip6/dossiers/components/consultation
 import { TelechargerPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe/TelechargerPieceJointe.tsx";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { DossierManagerInterface } from "@fip6/services/dossier.ts";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 
 const _modale = createModal({
   id: "modale-action-confirmation",
@@ -156,33 +157,39 @@ export const SignerCourrierModale = ({
   const documentManager: DocumentManagerInterface =
     useInjection<DocumentManagerInterface>(DocumentManagerInterface.$);
 
+  const estModaleOuverte = useIsModalOpen(_modale, {
+    onConceal: () => setEtape("EDITION_COURRIER"),
+  });
+
   // Relancer une impression si le document n'est pas du jour
   useEffect(() => {
-    const courrier = dossier.getCourrierDecision();
+    if (estModaleOuverte) {
+      const courrier = dossier.getCourrierDecision();
 
-    if (courrier && !dossier.estEnvoye()) {
-      if (
-        // À l'étape d'édition du courrier...
-        etape === "EDITION_COURRIER" &&
-        // ... si la vérification de la date n'a pas encore été faite...
-        verificationDateCourrier.current != dossier.id
-      ) {
-        // ... et que le courrier n'a pas été généré aujourd'hui même ...
-        if (!courrier.estAJour()) {
-          setGenerationCourrierEnCours(true);
-          documentManager
-            .imprimer(courrier, courrier.corps as string)
-            .then(({ reponse, erreur }: APIReponse<Document>) => {
-              if (!erreur) {
-                onImprime(reponse);
-              } else {
-                // TODO afficher un message
-              }
+      if (courrier && !dossier.estEnvoye()) {
+        if (
+          // À l'étape d'édition du courrier...
+          etape === "EDITION_COURRIER" &&
+          // ... si la vérification de la date n'a pas encore été faite...
+          verificationDateCourrier.current != dossier.id
+        ) {
+          // ... et que le courrier n'a pas été généré aujourd'hui même ...
+          if (!courrier.estAJour()) {
+            setGenerationCourrierEnCours(true);
+            documentManager
+              .imprimer(courrier, courrier.corps as string)
+              .then(({ reponse, erreur }: APIReponse<Document>) => {
+                if (!erreur) {
+                  onImprime(reponse);
+                } else {
+                  // TODO afficher un message
+                }
 
-              setGenerationCourrierEnCours(false);
-            });
+                setGenerationCourrierEnCours(false);
+              });
+          }
+          verificationDateCourrier.current = dossier.id;
         }
-        verificationDateCourrier.current = dossier.id;
       }
     }
   }, [dossier.id, etape]);
