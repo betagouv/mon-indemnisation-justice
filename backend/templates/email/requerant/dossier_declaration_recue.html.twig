@@ -1,0 +1,31 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% block subject %}Mon Indemnisation Justice: nous avons bien reçu votre déclaration{% endblock subject %}
+
+{% block entete %}
+    <b>Nous avons bien reçu votre déclaration</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+    Bonjour {{ dossier.usager.nomCourant(true, true) }},
+    <br/>
+    <br/>
+    <p>
+        Nous avons bien reçu votre déclaration d’acceptation. Celle-ci va être vérifiée par nos services.
+    </p>
+    <p>
+        Si elle est conforme, vous recevrez une nouvelle notification pour vous informer de la transmission de votre dossier au bureau du budget et du délai prévisionnel de versement de l’indemnité.
+    </p>
+    <p>
+        Si un complément ou une correction est nécessaire, nos services reviendront vers vous.
+    </p>
+    <p>
+        Aucune démarche complémentaire n’est requise de votre part à ce stade.
+    </p>
+    <br/>
+    Cordialement,<br/>
+    L'équipe Mon Indemnisation Justice
+{% endblock contenu %}
