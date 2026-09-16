@@ -14,6 +14,7 @@ use MonIndemnisationJustice\Event\Event\DossierInstruitPropositionEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionAccepteeEvent;
 use MonIndemnisationJustice\Event\Event\DossierPropositionEnvoyeeEvent;
 use MonIndemnisationJustice\Event\Event\DossierRejeteEvent;
+use MonIndemnisationJustice\Event\Event\DossierTransmisBudgetEvent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -28,6 +29,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: DossierPropositionAccepteeEvent::class, method: 'dossierPropositionAcceptee')]
 #[AsEventListener(event: DossierArreteEditeEvent::class, method: 'dossierArreteEdite')]
 #[AsEventListener(event: DossierArreteSigneEvent::class, method: 'dossierArreteSigne')]
+#[AsEventListener(event: DossierTransmisBudgetEvent::class, method: 'dossierTransmisFIP3')]
 #[AsEventListener(event: DossierIndemniseEvent::class, method: 'dossierIndemnise')]
 class DossierTransitionListener
 {
@@ -63,7 +65,7 @@ class DossierTransitionListener
             $this->mailer
                 ->toAgent($attributeur)
                 ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à attribuer')
-                ->htmlTemplate('email/agent/fip6/dossier_a_attribuer.twig', [
+                ->htmlTemplate('email/agent/fip6/dossier_a_attribuer.html.twig', [
                     'agent' => $attributeur,
                     'dossier' => $evenement->dossier,
                 ])
@@ -77,7 +79,7 @@ class DossierTransitionListener
         $this->mailer
             ->toAgent($evenement->dossier->getRedacteur())
             ->subject('Mon Indemnisation Justice: vous avez un nouveau dossier à instruire')
-            ->htmlTemplate('email/agent/fip6/dossier_a_instruire.twig', [
+            ->htmlTemplate('email/agent/fip6/dossier_a_instruire.html.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
             ])
@@ -120,7 +122,7 @@ class DossierTransitionListener
             $this->mailer
                 ->toAgent($validateur)
                 ->subject("Mon Indemnisation Justice: vous avez une nouvelle proposition d'indemnisation à signer")
-                ->htmlTemplate('email/agent/fip6/dossier_proposition_a_signer.twig', [
+                ->htmlTemplate('email/agent/fip6/dossier_proposition_a_signer.html.twig', [
                     'agent' => $validateur,
                     'dossier' => $evenement->dossier,
                 ])
@@ -134,7 +136,7 @@ class DossierTransitionListener
         $this->mailer
             ->toRequerant($evenement->dossier->getUsager())
             ->subject("Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse")
-            ->htmlTemplate('email/requerant/dossier_decide.twig', [
+            ->htmlTemplate('email/requerant/dossier_decide.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
             ->send();
@@ -146,10 +148,18 @@ class DossierTransitionListener
         $this->mailer
             ->toAgent($evenement->dossier->getRedacteur())
             ->subject("Mon Indemnisation Justice: vous avez reçu une déclaration d'acceptation à vérifier")
-            ->htmlTemplate('email/agent/fip6/dossier_proposition_acceptee.twig', [
+            ->htmlTemplate('email/agent/fip6/dossier_proposition_acceptee.html.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
             ])->send();
+        // Notifier le requérant que sa déclaration d'acceptation a bien été reçue
+        $this->mailer
+            ->toRequerant($evenement->dossier->getUsager())
+            ->subject('Mon Indemnisation Justice: nous avons bien reçu votre déclaration')
+            ->htmlTemplate('email/requerant/dossier_declaration_recue.html.twig', [
+                'dossier' => $evenement->dossier,
+            ])
+            ->send();
     }
 
     public function dossierArreteEdite(DossierArreteEditeEvent $evenement): void
@@ -159,7 +169,7 @@ class DossierTransitionListener
             $this->mailer
                 ->toAgent($validateur)
                 ->subject('Mon Indemnisation Justice: vous avez un nouvel arrêté de paiement à signer')
-                ->htmlTemplate('email/agent/fip6/dossier_arrete_a_signer.twig', [
+                ->htmlTemplate('email/agent/fip6/dossier_arrete_a_signer.html.twig', [
                     'agent' => $validateur,
                     'dossier' => $evenement->dossier,
                 ])
@@ -173,7 +183,7 @@ class DossierTransitionListener
         $this->mailer
             ->toAgent($evenement->dossier->getRedacteur())
             ->subject('Mon Indemnisation Justice: votre dossier peut être transmis à FIP3 ')
-            ->htmlTemplate('email/agent/fip6/dossier_a_transmettre.twig', [
+            ->htmlTemplate('email/agent/fip6/dossier_a_transmettre.html.twig', [
                 'agent' => $evenement->dossier->getRedacteur(),
                 'dossier' => $evenement->dossier,
             ])
@@ -186,7 +196,19 @@ class DossierTransitionListener
         $this->mailer
             ->toRequerant($evenement->dossier->getUsager())
             ->subject("Mon Indemnisation Justice: votre demande d'indemnisation a obtenu une réponse")
-            ->htmlTemplate('email/requerant/dossier_decide.twig', [
+            ->htmlTemplate('email/requerant/dossier_decide.html.twig', [
+                'dossier' => $evenement->dossier,
+            ])
+            ->send();
+    }
+
+    public function dossierTransmisFIP3(DossierTransmisBudgetEvent $evenement): void
+    {
+        // Prévenir le requérant que le versement de son indemnisation a bien été fait
+        $this->mailer
+            ->toRequerant($evenement->dossier->getUsager())
+            ->subject('Mon Indemnisation Justice: votre dossier a été transmis au bureau du budget')
+            ->htmlTemplate('email/requerant/dossier_transmis_a_fip3.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
             ->send();
@@ -198,7 +220,7 @@ class DossierTransitionListener
         $this->mailer
             ->toRequerant($evenement->dossier->getUsager())
             ->subject('Mon Indemnisation Justice: le versement de votre indemnisation a été effectué')
-            ->htmlTemplate('email/requerant/dossier_indemnise.twig', [
+            ->htmlTemplate('email/requerant/dossier_indemnise.html.twig', [
                 'dossier' => $evenement->dossier,
             ])
             ->send();

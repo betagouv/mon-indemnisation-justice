@@ -1,0 +1,28 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% block subject %}Mon Indemnisation Justice: votre dossier a été transmis au bureau du budget{% endblock subject %}
+
+{% block entete %}
+    <b>Votre dossier a été transmis au bureau du budget</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+    Bonjour {{ dossier.usager.nomCourant(true, true) }},
+    <br/>
+    <br/>
+    <p>
+        Votre déclaration d’acceptation a été validée et votre dossier a été transmis au bureau du budget pour la mise en paiement de votre indemnité.
+    </p>
+    <p>
+        Le délai de paiement est estimé à quatre semaines au maximum.
+    </p>
+    <p>
+        Vous recevrez une dernière notification lorsque le versement de l’indemnité aura été effectué.
+    </p>
+    <br/>
+    Cordialement,<br/>
+    L'équipe Mon Indemnisation Justice
+{% endblock contenu %}
