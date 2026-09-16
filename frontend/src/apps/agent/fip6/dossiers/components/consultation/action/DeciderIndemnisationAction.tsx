@@ -165,7 +165,6 @@ export const DeciderIndemnisationModale = ({
 
   const annuler = () => {
     _modale.close();
-    setEtape("CHOIX_MONTANT_INDEMNISATION");
   };
 
   const documentManager: DocumentManagerInterface =
@@ -180,12 +179,11 @@ export const DeciderIndemnisationModale = ({
           dossier,
           montantIndemnisation,
         );
-      dossierManager.ajouterDocument(dossier, courrierPI);
       await onImprime(courrierPI);
       setCourrier(courrierPI);
       setGenerationEnCours(false);
     },
-    [dossier.id],
+    [],
   );
 
   const genererDeclarationAcceptation = useCallback(
@@ -200,24 +198,28 @@ export const DeciderIndemnisationModale = ({
       setDeclarationAcceptation(document);
       setGenerationEnCours(false);
     },
-    [dossier],
+    [],
   );
 
   const deciderDossier = useCallback(
-    async ({ montantIndemnisation }: { montantIndemnisation: number }) => {
+    async ({
+      dossier,
+      montantIndemnisation,
+    }: {
+      dossier: DossierDetail;
+      montantIndemnisation: number;
+    }) => {
       setSauvegarderEnCours(true);
 
       await dossierManager.decider(dossier, { montantIndemnisation });
       await onDecide();
 
       setSauvegarderEnCours(false);
-
-      _modale?.close();
     },
-    [dossier],
+    [],
   );
 
-  return estEnAttenteDecision({ dossier, agent }) ? (
+  return estEnAttenteDecision({ dossier, agent }) /* || estModaleOuverte*/ ? (
     <_modale.Component
       title=" Accepter la demande d'indemnisation"
       iconId="fr-icon-checkbox-circle-line"
@@ -428,7 +430,11 @@ export const DeciderIndemnisationModale = ({
             buttonsSize="small"
             buttons={[
               {
-                children: "Annuler",
+                children: sauvegardeEnCours ? (
+                  <i>Sauvegarde en cours ...</i>
+                ) : (
+                  "Annuler"
+                ),
                 priority: "tertiary no outline",
                 onClick: () => {
                   annuler();
@@ -441,9 +447,10 @@ export const DeciderIndemnisationModale = ({
                 onClick: () => setEtape("EDITION_DECLARATION_ACCEPTATION"),
               },
               {
-                disabled: !courrier,
+                disabled: !courrier || sauvegardeEnCours,
                 iconId: "fr-icon-send-plane-fill",
-                onClick: () => deciderDossier({ montantIndemnisation }),
+                onClick: () =>
+                  deciderDossier({ dossier, montantIndemnisation }),
                 children: "Valider et envoyer pour signature",
               },
             ]}

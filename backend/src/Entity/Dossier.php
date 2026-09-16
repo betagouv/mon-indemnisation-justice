@@ -279,6 +279,11 @@ class Dossier
         return $this->getEtatDossier();
     }
 
+    public function getEtatPrecedent(): ?EtatDossier
+    {
+        return $this->historiqueEtats->filter(fn (EtatDossier $etat) => $etat->getDateEntree() < $this->etatDossier->getDateEntree())->last();
+    }
+
     public function getEtatDossier(): ?EtatDossier
     {
         return $this->etatDossier;

@@ -308,6 +308,39 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
 
         $manager->persist($dossierPropositionASigner);
 
+        $dossierAAccepter = $this->creerDossier(
+            $this->getReference('requerant-ancenis', Usager::class),
+            [
+                'rapportAuLogement' => RapportAuLogement::LOCATAIRE,
+                'estVise' => false,
+                'estHebergeant' => false,
+                'aContacteAssurance' => false,
+                'aContacteBailleur' => true,
+            ],
+            new \DateTimeImmutable('-17 days'),
+            EtatDossierType::DOSSIER_OK_A_APPROUVER,
+            adresse: new Adresse()
+                ->setLigne1($this->faker->streetAddress())
+                ->setCodePostal($this->faker->postcode())
+                ->setLocalite($this->faker->city()),
+            redacteur: $this->getReference('agent-redacteur', Agent::class)
+        )
+            ->setRequerant(
+                new PersonnePhysique()
+                    ->setPersonne(
+                        $this->getReference('requerant-ancenis', Usager::class)->getPersonne()
+                    )
+                    ->setCommuneNaissance($this->getReference('code-postal-44150', GeoCodePostal::class))
+                    ->setPaysNaissance($this->getReference('pays-france', GeoPays::class))
+            )
+            ->setPropositionIndemnisation('1165.44');
+
+        $dossierAAccepter
+            ->ajouterDocument($this->creerDocumentDepuisRessource('documents/declaration_acceptation.pdf', DocumentType::TYPE_FORMULAIRE_ACCEPTATION, true));
+
+        $this->addReference('dossier-a-accepter-ancenis', $dossierAAccepter);
+
+        $manager->persist($dossierAAccepter);
 
         $dossierAVerifier = $this->creerDossier(
             $this->getReference('requerant-melun', Usager::class),

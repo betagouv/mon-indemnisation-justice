@@ -59,6 +59,8 @@ export interface DossierManagerInterface {
 
   demarrerInstruction(dossier: BaseDossier): Promise<void>;
 
+  revenirAInstruction(dossier: BaseDossier): Promise<void>;
+
   decider(dossier: BaseDossier, decision: DecisionDossier): Promise<void>;
 
   validerLaDecision(
@@ -67,6 +69,8 @@ export interface DossierManagerInterface {
   ): Promise<void>;
 
   initierArretePaiement(dossier: DossierDetail): Promise<void>;
+
+  revenirArrete(dossier: BaseDossier): Promise<void>;
 
   validerArretePaiement(
     dossier: DossierDetail,
@@ -285,6 +289,25 @@ export class APIDossierManager implements DossierManagerInterface {
     }
   }
 
+  async revenirAInstruction(dossier: BaseDossier): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/revenir-instruction`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
   async decider(
     dossier: BaseDossier,
     decision: DecisionDossier,
@@ -344,6 +367,25 @@ export class APIDossierManager implements DossierManagerInterface {
     // Appel à l'API pour valider le document
     const reponse = await fetch(
       `/api/agent/fip6/dossier/${dossier.id}/initier-arrete-paiement`,
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (reponse.ok) {
+      const donnees = await reponse.json();
+
+      this.enregistrerDossier(plainToInstance(DossierDetail, donnees));
+    }
+  }
+
+  async revenirArrete(dossier: BaseDossier): Promise<void> {
+    const reponse = await fetch(
+      `/api/agent/fip6/dossier/${dossier.id}/revenir-arrete`,
       {
         method: "POST",
         headers: {
