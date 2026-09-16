@@ -52,7 +52,7 @@ class DocumentController extends AbstractController
             throw new BadRequestException('Impossible de lire le contenu de la pièce jointe');
         }
 
-        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, $type, estAjoutRequerant: true);
+        $document = $this->documentManager->ajouterFichierTeleverse($dossier, $file, $type);
 
         return new JsonResponse([
             'id' => $document->getId(),
@@ -76,10 +76,10 @@ class DocumentController extends AbstractController
         return JsonResponse::fromJsonString('', Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/{id}/{filename}', name: 'document_download', methods: ['GET'])]
-    public function download(#[MapEntity(id: 'id')] Document $document, string $filename, Request $request): Response
+    #[Route('/{id}/{hash}', name: 'document_download', methods: ['GET'])]
+    public function download(#[MapEntity(id: 'id')] Document $document, string $hash, Request $request): Response
     {
-        if ($document->getFilename() !== $filename) {
+        if ($document->getHash() !== $hash || $document->getDossier()->getUsager() !== $request->getUser()) {
             throw new NotFoundHttpException('Document non trouvé');
         }
 

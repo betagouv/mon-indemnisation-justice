@@ -5,7 +5,6 @@ namespace MonIndemnisationJustice\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Entity\Metadonnees\MetadonneesAttestation;
@@ -77,14 +76,12 @@ class Document
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $originalFilename = null;
 
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $hash = null;
+
     public function __construct()
     {
         $this->dossiers = new ArrayCollection();
-    }
-
-    #[ORM\PrePersist]
-    public function onPersist(PrePersistEventArgs $args): void
-    {
         $this->dateAjout = new \DateTimeImmutable();
     }
 
@@ -211,6 +208,25 @@ class Document
     public function setOriginalFilename(string $originalFilename): static
     {
         $this->originalFilename = $originalFilename;
+
+        return $this;
+    }
+
+    public function getHash(): ?string
+    {
+        return $this->hash;
+    }
+
+    public function calculerHash(string $donnees): Document
+    {
+        $this->hash = hash('sha256', $donnees);
+
+        return $this;
+    }
+
+    public function setHash(?string $hash): Document
+    {
+        $this->hash = $hash;
 
         return $this;
     }

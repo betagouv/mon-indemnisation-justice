@@ -472,6 +472,11 @@ class Dossier
         return $this->documentsParType[$type->value] ?? [];
     }
 
+    public function getNbDocumentsParType(DocumentType $type): int
+    {
+        return count($this->documentsParType[$type->value] ?? []);
+    }
+
     public function getCourrierDecision(): ?Document
     {
         return $this->getDocumentParType(DocumentType::TYPE_COURRIER_MINISTERE);

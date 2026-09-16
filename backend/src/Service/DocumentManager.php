@@ -43,7 +43,6 @@ class DocumentManager
         }
 
         $mime = $this->calculerTypeMime($cheminFichier);
-        $extension = $this->calculerExtension($cheminFichier);
 
         $this->ajouterDocument(
             $dossier,
@@ -53,7 +52,6 @@ class DocumentManager
                 ->setMime($mime)
                 ->setAjoutRequerant($estAjoutRequerant),
             $contenu,
-            $extension
         );
     }
 
@@ -66,14 +64,14 @@ class DocumentManager
                 ->setType($type)
                 ->setMime($fichierTeleverse->getClientMimeType())
                 ->setAjoutRequerant($estAjoutRequerant),
-            $fichierTeleverse->getContent(),
-            $fichierTeleverse->guessExtension() ?? $fichierTeleverse->getExtension()
+            $fichierTeleverse->getContent()
         );
     }
 
-    public function ajouterDocument(Dossier $dossier, Document $document, string $contenu, string $extension): Document
+    public function ajouterDocument(Dossier $dossier, Document $document, string $contenu): Document
     {
-        $document = $this->enregistrerDocument($document, $contenu);
+        $document->ajouterAuDossier($dossier);
+        $this->enregistrerDocument($document, $contenu);
 
         $this->em->persist($dossier);
         $this->em->flush();
@@ -81,24 +79,31 @@ class DocumentManager
         return $document;
     }
 
-    public function enregistrerDocument(Document $document, string $contenu): Document
+    public function enregistrerDocument(Document $document, string $contenu): void
     {
         try {
-            $nom = sprintf('%s.%s', hash('sha256', $contenu), $this->calculerExtension($document->getOriginalFilename()));
-            $this->storage->write($nom, $contenu);
+            $cheminFichier = $this->genererCheminFichier($document);
+            $this->storage->write($cheminFichier, $contenu);
 
-            if (!$this->storage->fileExists($nom)) {
+            if (!$this->storage->fileExists($cheminFichier)) {
                 throw new FileException("L'enregistrement du fichier a échoué");
             }
 
             $document
-                ->setFilename($nom)
-                ->setSize($this->storage->fileSize($nom));
-
-            return $document;
+                ->setFilename($cheminFichier)
+                ->calculerHash("{$cheminFichier}-{$contenu}")
+                ->setSize($this->storage->fileSize($cheminFichier));
         } catch (FilesystemException|UnableToWriteFile $e) {
             throw new FileException("La sauvegarde du fichier a échoué: {$e->getMessage()}");
         }
+    }
+
+    public function genererCheminFichier(Document $document): string
+    {
+        $rang = str_pad($document->getDossier()->getNbDocumentsParType($document->getType()) + 1, 3, '0');
+        $extension = $this->calculerExtension($document->getOriginalFilename());
+
+        return "{$document->getDossier()->getId()}/{$document->getType()->value}-{$document->getDateAjout()->format('YmdHis')}-{$rang}.{$extension}";
     }
 
     public function supprimer(Document $document)
