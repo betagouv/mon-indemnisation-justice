@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Event\Listener;
 
+use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Event\Event\DossierArreteEditeEvent;
 use MonIndemnisationJustice\Event\Event\DossierArreteSigneEvent;
 use MonIndemnisationJustice\Event\Event\DossierAttribueEvent;
@@ -85,14 +86,31 @@ class DossierTransitionListener
 
     public function dossierEnInstruction(DossierEnCoursInstructionEvent $evenement): void
     {
-        // Informer le requérant que son dossier est bien déposé :
-        $this->mailer
-            ->toRequerant($evenement->dossier->getUsager())
-            ->subject("Votre dossier de demande d'indemnisation entre en instruction")
-            ->htmlTemplate('email/requerant/dossier_en_instruction.html.twig', [
-                'dossier' => $evenement->dossier,
-            ])
-            ->send();
+        /* @var $estRetour bool */
+        $estRetour = $evenement->dossier->getEtatDossier()->getElementContexte('retour');
+        if ($estRetour) {
+            if (null !== ($etatPrecedent = $evenement->dossier->getEtatPrecedent())) {
+                if (EtatDossierType::DOSSIER_OK_A_APPROUVER === $etatPrecedent->getEtat()) {
+                    // Notifier le requérant que son dossier revient en instruction :
+                    $this->mailer
+                        ->toRequerant($evenement->dossier->getUsager())
+                        ->subject("Votre dossier de demande d'indemnisation va être ré-examiné")
+                        ->htmlTemplate('email/requerant/dossier_retour_en_instruction.html.twig', [
+                            'dossier' => $evenement->dossier,
+                        ])
+                        ->send();
+                }
+            }
+        } else {
+            // Informer le requérant que son dossier entre en instruction :
+            $this->mailer
+                ->toRequerant($evenement->dossier->getUsager())
+                ->subject("Votre dossier de demande d'indemnisation entre en instruction")
+                ->htmlTemplate('email/requerant/dossier_en_instruction.html.twig', [
+                    'dossier' => $evenement->dossier,
+                ])
+                ->send();
+        }
     }
 
     public function dossierInstruitProposition(DossierInstruitPropositionEvent $evenement): void
@@ -151,7 +169,7 @@ class DossierTransitionListener
 
     public function dossierArreteSigne(DossierArreteSigneEvent $evenement): void
     {
-        // Prévenir le rédacteur que son dossier est prêt à être transmis à FIP3:
+        // Prévenir le rédacteur que son dossier est prêt à être transmis à FIP3 :
         $this->mailer
             ->toAgent($evenement->dossier->getRedacteur())
             ->subject('Mon Indemnisation Justice: votre dossier peut être transmis à FIP3 ')

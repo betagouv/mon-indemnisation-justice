@@ -7,14 +7,16 @@ L'application **Mon Indemnisation Justice** vise à améliorer la qualité du se
 Les préjudices éligibles à une indemnisation sont:
 * ✅ les bris de portes : les portes fracturées à tort par les forces de l'ordre lors d'une opération
 * 🕥 les mises sous scellé
-* 🕥 les dysfonctionnements
+* 🚧 les dysfonctionnements
 * 🕥 les sinistres
 
 ## Documentation technique
 
-- [Installation](/docs/001-Installation.md)
-- [Structure du projet](/docs/002-Structure%20du%20projet.md)
-- [Base de données](/docs/003-Base%20de%20données.md)
-- [Cycle de vie d'un dossier](/docs/004-Cycle%20de%20vie%20d'un%20dossier.md)
-- [Tests](/docs/005-Tests.md)
-- [Manipulations diverses](/docs/006-Manipulations%20diverses.md)
+1. [Installation](/docs/001-Installation.md)
+2. [Structure du projet](/docs/002-Structure%20du%20projet.md)
+3. [Base de données](/docs/003-Base%20de%20données.md)
+4. [Cycle de vie d'un dossier](/docs/004-Cycle%20de%20vie%20d'un%20dossier.md)
+5. [Tests](/docs/005-Tests.md)
+6. [CI et déploiement](/docs/006-CI%20et%20déploiement.md)
+7. [Outils opérationnels](/docs/007-Outils%20opérationnels.md)
+8. [Manipulations diverses](/docs/008-Manipulations%20diverses.md)

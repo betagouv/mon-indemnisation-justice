@@ -26,6 +26,10 @@ class DossierVoter extends Voter
 
     public const string ACTION_TRANSMETTRE_A_FIP3 = 'dossier:transmettre:a_fip3';
 
+    public const string ACTION_REVENIR_INSTRUCTION = 'dossier:revenir-instruction';
+
+    public const string ACTION_REVENIR_ARRETE = 'dossier:revenir-arrete';
+
     public const string ACTION_LISTER_A_CATEGORISER = 'dossier:lister:a-categoriser';
     public const string ACTION_LISTER_A_ATTRIBUER = 'dossier:lister:a-attribuer';
     public const string ACTION_LISTER_A_INSTRUIRE = 'dossier:lister:a-instruire';
@@ -52,6 +56,8 @@ class DossierVoter extends Voter
             self::ACTION_GENERER_DOCUMENT,
             self::ACTION_SIGNER_ARRETE,
             self::ACTION_TRANSMETTRE_A_FIP3,
+            self::ACTION_REVENIR_INSTRUCTION,
+            self::ACTION_REVENIR_ARRETE,
             self::ACTION_LISTER_A_CATEGORISER,
             self::ACTION_LISTER_A_ATTRIBUER,
             self::ACTION_LISTER_A_INSTRUIRE,
@@ -93,6 +99,8 @@ class DossierVoter extends Voter
             self::ACTION_CLOTURER => $this->agentPeutCloturer($agent, $subject),
             self::ACTION_GENERER_DOCUMENT, => $this->agentPeutGenererDocument($agent, $subject),
             self::ACTION_TRANSMETTRE_A_FIP3, => $this->agentPeutTransmettreAFIP3($agent, $subject),
+            self::ACTION_REVENIR_INSTRUCTION, => $this->agentPeutRevenirInstruction($agent, $subject),
+            self::ACTION_REVENIR_ARRETE, => $this->agentPeutRevenirArrete($agent, $subject),
             self::ACTION_LISTER_A_CATEGORISER, self::ACTION_LISTER_A_ATTRIBUER, self::ACTION_LISTER_A_INSTRUIRE, self::ACTION_LISTER_EN_INSTRUCTION, self::ACTION_LISTER_REJET_A_SIGNER, self::ACTION_LISTER_PROPOSITION_A_SIGNER, self::ACTION_LISTER_A_VERIFIER, self::ACTION_LISTER_ARRETE_A_SIGNER, self::ACTION_LISTER_A_TRANSMETTRE, self::ACTION_LISTER_EN_ATTENTE_INDEMNISATION => $this->agentPeutLister($agent, $attribute),
             default => false,
         };
@@ -146,6 +154,16 @@ class DossierVoter extends Voter
     protected function agentPeutTransmettreAFIP3(Agent $agent, Dossier $dossier): bool
     {
         return $agent->aRole(Agent::ROLE_AGENT_LIAISON_BUDGET) || $agent->instruit($dossier);
+    }
+
+    protected function agentPeutRevenirInstruction(Agent $agent, Dossier $dossier): bool
+    {
+        return $agent->instruit($dossier);
+    }
+
+    protected function agentPeutRevenirArrete(Agent $agent, Dossier $dossier): bool
+    {
+        return $agent->instruit($dossier);
     }
 
     protected function agentPeutLister(Agent $agent, string $action): bool

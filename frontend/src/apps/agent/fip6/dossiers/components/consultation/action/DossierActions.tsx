@@ -23,11 +23,19 @@ import {
   marquerIndemniseBoutons,
 } from "@fip6/dossiers/components/consultation/action/MarquerIndemniseActionModale.tsx";
 import {
+  revenirArreteBoutons,
+  RevenirArreteModale,
+} from "@fip6/dossiers/components/consultation/action/RevenirArreteAction.tsx";
+import {
   signerCourrierBoutons,
   SignerCourrierModale,
 } from "@fip6/dossiers/components/consultation/action/SignerCourrierAction.tsx";
 import React from "react";
 
+import {
+  revenirInstructionBoutons,
+  RevenirInstructionModale,
+} from "@fip6/dossiers/components/consultation/action/RevenirInstructionAction.tsx";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import {
   AttribuerActionModale,
@@ -80,7 +88,9 @@ export const DossierActions = ({
               agent,
             }),
             ...signerCourrierBoutons({ dossier, agent }),
+            ...revenirInstructionBoutons({ dossier, agent }),
             ...genererArretePaiementBoutons({ dossier, agent }),
+            ...revenirArreteBoutons({ dossier, agent }),
             ...signerArretePaiementBoutons({ dossier, agent }),
             ...envoyerPourIndemnisationBoutons({ dossier, agent }),
             ...marquerIndemniseBoutons({ dossier, agent }),
@@ -107,7 +117,6 @@ export const DossierActions = ({
         onImprime={onImprime}
       />
       <DeciderIndemnisationModale
-        key={dossier.id}
         dossier={dossier}
         agent={agent}
         onDecide={onDecide}
@@ -119,11 +128,21 @@ export const DossierActions = ({
         onSigne={onSigneDecision}
         onImprime={onImprime}
       />
+      <RevenirInstructionModale
+        dossier={dossier}
+        agent={agent}
+        onRevenu={onTermine}
+      />
       <GenererArretePaiementModale
         dossier={dossier}
         agent={agent}
         onGenere={onSigneArrete}
         onImprime={onImprime}
+      />
+      <RevenirArreteModale
+        dossier={dossier}
+        agent={agent}
+        onRevenu={onTermine}
       />
       <SignerArretePaiementModale
         dossier={dossier}
