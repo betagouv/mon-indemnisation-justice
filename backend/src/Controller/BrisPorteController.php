@@ -136,7 +136,7 @@ class BrisPorteController extends AbstractController
     {
         if (!preg_match('/[A-Z0-9]{6}/', $reference)) {
             // TODO compter la tentative pour le rate limiter
-            return $this->redirectToRoute('app_homepage');
+            return $this->redirectToRoute('bris_porte_accueil');
         }
 
         $preinscription = $this->getPreinscription($request);
@@ -144,7 +144,7 @@ class BrisPorteController extends AbstractController
 
         if (null === $declaration || $declaration->estAttribue()) {
             // TODO compter la tentative pour le rate limiter
-            return $this->redirectToRoute('app_homepage');
+            return $this->redirectToRoute('bris_porte_accueil');
         }
 
         $preinscription->declarationErreurOperationnelle = $declaration;

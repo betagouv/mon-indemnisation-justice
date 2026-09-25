@@ -65,36 +65,49 @@
                      aria-label="Menu principal" data-fr-js-navigation="true">
                     <ul class="fr-nav__list">
 
+                        <li class="fr-nav__item" data-fr-js-navigation-item="true">
+                            <a href="{{ path('app_homepage') }}" class="fr-nav__link" {% if app.current_route == 'app_homepage' %}aria-current="page" {% endif%}>Accueil</a>
+                        </li>
+
                         <li class="fr-nav__item">
-                            <button id="navigation-1" aria-expanded="false" aria-controls="navigation-accueil" {% if app.current_route == 'app_homepage' %}aria-current="true" {% endif%}type="button" class="fr-nav__btn">
-                                Accueil
+                            <button id="navigation-1" aria-expanded="false" aria-controls="navigation-bris-de-porte" {% if app.current_route in ['bris_porte_accueil', 'app_category'] %}aria-current="true" {% endif%}type="button" class="fr-nav__btn">
+                                Bris de porte
                             </button>
-                            <div class="fr-collapse fr-menu" id="navigation-accueil">
+                            <div class="fr-collapse fr-menu" id="navigation-bris-de-porte">
                                 <ul class="fr-menu__list">
                                     <li>
-                                        <a type="link" href="/#comment-utiliser-notre-service" class="fr-nav__link">
+                                        <a type="link" href="{{ path('bris_porte_accueil') }}#comment-utiliser-notre-service" class="fr-nav__link">
                                             Comment utiliser notre service en ligne ?
                                         </a>
                                     </li>
                                     <li>
-                                        <a type="link" href="/#conditions-d-indemnisation"
+                                        <a type="link" href="{{ path('bris_porte_accueil') }}#conditions-d-indemnisation"
                                            class="fr-nav__link">
                                             Les conditions d'indemnisation
                                         </a>
                                     </li>
                                     <li>
-                                        <a type="link" href="/#les-bons-reflexes"
+                                        <a type="link" href="{{ path('bris_porte_accueil') }}#les-bons-reflexes"
                                            class="fr-nav__link">
                                             Les bons réflexes
                                         </a>
                                     </li>
                                     <li>
-                                        <a type="link" href="/#comment-se-passe-le-traitement" class="fr-nav__link">
+                                        <a type="link" href="{{ path('bris_porte_accueil') }}#comment-se-passe-le-traitement" class="fr-nav__link">
                                             Comment se passe le traitement de votre demande d'indemnisation ?
                                         </a>
                                     </li>
                                 </ul>
                             </div>
+                        </li>
+
+                        <li class="fr-nav__item" data-fr-js-navigation-item="true">
+                            {# Même règle que pour les routes `/dysfonctionnement/...` (voir `PublicController`) #}
+                            {% if app.environment in ['dev', 'test', 'ci', 'develop'] %}
+                                <a href="/dysfonctionnement/" class="fr-nav__link" {% if (app.current_route|default('')) starts with 'public_dysfonctionnement' %}aria-current="true" {% endif%}>Déni de justice</a>
+                            {% else %}
+                                <a class="fr-nav__link" role="link" aria-disabled="true">Déni de justice</a>
+                            {% endif %}
                         </li>
 
                         <li class="fr-nav__item" data-fr-js-navigation-item="true">

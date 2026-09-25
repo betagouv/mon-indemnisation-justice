@@ -135,6 +135,7 @@ services:
         - APP_SECRET=bafc23a0315b735289c499a886798934
         - DATABASE_URL=postgresql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&charset=utf8
         - BASE_URL=https://mon-indemnisation.justice.gouv.test
+        - PRECONTENTIEUX_COURRIEL_EQUIPE=equipe@precontentieux.anje-justice.dev
         - COMPOSER_OPTS=
         - VITE_CRISP_WEBSITE_ID=${VITE_CRISP_WEBSITE_ID:-}
         - VITE_SENTRY_URL=${VITE_SENTRY_URL:-}

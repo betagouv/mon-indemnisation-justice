@@ -17,6 +17,6 @@ class AtterrissageController extends AbstractController
     {
         $request->getSession()->set(self::SESSION_KEY, true);
 
-        return $this->redirectToRoute('app_homepage');
+        return $this->redirectToRoute('bris_porte_accueil');
     }
 }
