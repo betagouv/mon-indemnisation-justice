@@ -1,7 +1,7 @@
 import {expect, test} from "@playwright/test";
 
 test("test éligibilité", async ({page}) => {
-    await page.goto("/");
+    await page.goto("/bris-de-porte/");
 
     await page.getByText("Cas n°3 : vous avez reçu une attestation papier des forces de l'ordre").click();
     await page.getByText("Tester mon éligibilité à l'indemnisation").click();

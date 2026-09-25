@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+    <div class="fr-container fr-my-6w">
+        <h1>Bienvenue sur Mon Indemnisation Justice</h1>
+
+        <hr>
+
+        <p class="fr-text--lead">
+            Cet espace vous permet de retrouver et de suivre l'ensemble de vos déclarations en ligne, qu'il s'agisse
+            d'un bris de porte ou d'un déni de justice. Vous pouvez y consulter l'état d'avancement de vos demandes,
+            accéder aux informations associées à chaque dossier et effectuer, si nécessaire, des mises à jour ou des
+            compléments. Cet espace centralisé facilite la gestion de vos démarches et vous offre une vision claire et
+            accessible de vos demandes en cours et passées.
+        </p>
+
+        <h2 class="fr-h6 fr-mt-6w">Que souhaitez-vous faire ?</h2>
+
+        {% set tiles = [
+            {
+                id: 'bris-de-porte',
+                direction: 'horizontal',
+                title: 'Déclarer un bris de porte',
+                url: path('bris_porte_accueil'),
+                activate: true,
+                desc: "Ce service vous permet de faire une demande d'indemnisation pour un bris de porte ou tout autre dégât matériel causé dans le cadre d'une opération de police judiciaire.",
+                icon: 'digital/mail-send'
+            },
+            {
+                id: 'deni-de-justice',
+                direction: 'horizontal',
+                title: 'Déclarer un déni de justice',
+                url: dysfonctionnementDisponible ? path('public_dysfonctionnement_react', {extra: ''}) : '',
+                activate: dysfonctionnementDisponible,
+                badge: dysfonctionnementDisponible ? null : 'Bientôt disponible',
+                desc: "Ce service vous permet de signaler une situation de déni de justice afin de faire valoir vos droits et, le cas échéant, engager des démarches pour obtenir qu'une juridiction statue dans un délai raisonnable ou sur votre affaire.",
+                icon: 'document/document-add'
+            }
+        ] %}
+        <div class="fr-grid-row fr-grid-row--gutters">
+            {% for tile in tiles %}
+                <div class="fr-col-12 fr-col-md-6">
+                    {% include 'composant/tile.html.twig' with tile only %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="fr-callout fr-mt-6w">
+            <h3 class="fr-callout__title">À savoir</h3>
+            <p class="fr-callout__text">
+                Les demandes effectuées apparaîtront ensuite automatiquement dans cet espace. Vous pourrez suivre leur
+                avancement et retrouver les documents associés.
+            </p>
+        </div>
+    </div>
+{% endblock main %}

@@ -1,0 +1,38 @@
+<div class="fr-tile fr-tile--{{ direction }} fr-enlarge-link" id="{{ id }}">
+    <div class="fr-tile__body">
+        <div class="fr-tile__content">
+            {% if badge is defined and badge %}
+                <div class="fr-tile__start">
+                    <p class="fr-badge fr-badge--sm fr-badge--info">{{ badge }}</p>
+                </div>
+            {% endif %}
+            <h3 class="fr-tile__title">
+                {% if activate %}
+                    <a href="{{ url }}">{{ title }}</a>
+                {% else %}
+                    <a role="link" aria-disabled="true">{{ title }}</a>
+                {% endif %}
+            </h3>
+            {% if desc is defined and desc %}
+            <p class="fr-tile__desc">
+                {{ desc }}
+            </p>
+            {% endif %}
+            {% if detail is defined and detail %}
+            <p class="fr-tile__detail">
+                {{ detail }}
+            </p>
+            {% endif %}
+        </div>
+    </div>
+    {% set linkIcon = asset('dsfr/artwork/pictograms/'~icon~'.svg')~'#artwork-' %}
+    <div class="fr-tile__header">
+        <div class="fr-tile__pictogram">
+            <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
+                <use class="fr-artwork-decorative" href="{{ linkIcon~'decorative' }}"></use>
+                <use class="fr-artwork-minor" href="{{ linkIcon~'minor' }}"></use>
+                <use class="fr-artwork-major" href="{{ linkIcon~'major' }}"></use>
+            </svg>
+        </div>
+    </div>
+</div>

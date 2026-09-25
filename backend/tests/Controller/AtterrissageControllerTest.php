@@ -16,14 +16,14 @@ class AtterrissageControllerTest extends WebTestCase
     }
 
     /**
-     * ETQ visiteur, si je scanne le QR code je dois atterrir sur une page dédiée qui me renvoie vers la page d'accueil,
+     * ETQ visiteur, si je scanne le QR code je dois atterrir sur une page dédiée qui me renvoie vers la page d'accueil du bris de porte,
      * avec le drapeau idoine défini en session.
      */
     public function testBrisDePorte(): void
     {
         $this->client->request('GET', '/atterrissage/bris-de-porte');
 
-        $this->assertTrue($this->client->getResponse()->isRedirect('/'));
+        $this->assertTrue($this->client->getResponse()->isRedirect('/bris-de-porte/'));
         $this->assertTrue($this->client->getRequest()->getSession()->has(AtterrissageController::SESSION_KEY));
     }
 }

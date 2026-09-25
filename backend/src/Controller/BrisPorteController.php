@@ -145,14 +145,14 @@ class BrisPorteController extends AbstractController
     ): Response {
         if (!preg_match('/^[a-f0-9]{32}$/', $reference)) {
             // TODO compter la tentative pour le rate limiter
-            return $this->redirectToRoute('app_homepage');
+            return $this->redirectToRoute('bris_porte_accueil');
         }
 
         $declaration = $this->entityManager->getRepository(DeclarationFDOBrisPorte::class)->findARattacher($reference);
 
         if (null === $declaration) {
             // TODO compter la tentative pour le rate limiter
-            return $this->redirectToRoute('app_homepage');
+            return $this->redirectToRoute('bris_porte_accueil');
         }
 
         // Portée en session le temps de l'aller-retour vers FranceConnect : FranceConnectAuthenticator vérifiera que

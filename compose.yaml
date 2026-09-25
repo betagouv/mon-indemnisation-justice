@@ -92,6 +92,12 @@ services:
         - DATABASE_URL=postgresql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&charset=utf8
         - BASE_URL=https://mon-indemnisation.justice.gouv.test
         - VITE_TELEPHONE_SERRURIER=${TELEPHONE_SERRURIER:-0123456789}
+        - PRECONTENTIEUX_COURRIEL_EQUIPE=equipe@precontentieux.anje-justice.dev
+        - COMPOSER_OPTS=
+        - VITE_CRISP_WEBSITE_ID=${VITE_CRISP_WEBSITE_ID:-}
+        - VITE_SENTRY_URL=${VITE_SENTRY_URL:-}
+        - VITE_SENTRY_DSN=${VITE_SENTRY_DSN:-}
+        - MATOMO_SITE_ID=${MATOMO_SITE_ID:-}
     environment:
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025

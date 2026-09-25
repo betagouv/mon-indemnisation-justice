@@ -8,12 +8,28 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
+    /**
+     * Environnements dans lesquels les routes `/dysfonctionnement/...` sont exposées (voir `PublicController`).
+     */
+    private const ENVIRONNEMENTS_DYSFONCTIONNEMENT = ['dev', 'test', 'ci', 'develop'];
+
     #[Route('/', name: 'app_homepage')]
-    #[Route('/declarer-un-prejudice', name: 'app_category')]
     public function index(): Response
     {
-        return $this->render('index.html.twig', [
+        return $this->render('home/index.html.twig', [
+            'dysfonctionnementDisponible' => in_array(
+                $this->getParameter('kernel.environment'),
+                self::ENVIRONNEMENTS_DYSFONCTIONNEMENT,
+                true
+            ),
         ]);
+    }
+
+    #[Route('/bris-de-porte/', name: 'bris_porte_accueil')]
+    #[Route('/declarer-un-prejudice', name: 'app_category')]
+    public function brisDePorte(): Response
+    {
+        return $this->render('bris-de-porte.html.twig');
     }
 
     #[Route('/faq', name: 'public_faq')]
