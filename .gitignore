@@ -1,5 +1,6 @@
 # Docker
 .docker/postgres/data/
+compose.override.yaml
 
 # Playwright
 node_modules/
@@ -19,3 +20,6 @@ node_modules/
 
 /.php-cs-fixer.php
 .php-cs-fixer.cache
+
+# IDE
+.idea/
