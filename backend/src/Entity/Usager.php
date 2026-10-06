@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Repository\UsagerRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UsagerRepository::class)]
 #[ORM\Table(name: 'usagers')]
@@ -39,6 +40,8 @@ class Usager implements UserInterface, PasswordAuthenticatedUserInterface
     protected bool $estVerifieCourriel = false;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(message: 'L\'adresse courriel est obligatoire')]
+    #[Assert\Email(message: "L'adresse courriel n'est pas valide")]
     protected ?string $email = null;
 
     /**

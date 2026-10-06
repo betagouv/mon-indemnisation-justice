@@ -37,6 +37,7 @@ const token: string = args.token;
 const routes: Routes = args.routes as Routes;
 const inscriptionInitiale = plainToInstance(Inscription, args.inscription);
 const proposerFranceConnect = !!(args.franceConnect || false);
+const courrielConnu = !!(args.courrielConnu || false);
 
 const valeursParDefaut: ValeursInscription = {
   civilite: inscriptionInitiale.civilite,
@@ -357,7 +358,7 @@ const CreationDeCompteApp = ({
                               />
                             </div>
                           </div>
-                          <div className="fr-col-6">
+                          <div className={courrielConnu ? "fr-col-6 fr-hidden" : "fr-col-6"}>
                             <formulaire.Field
                               name="courriel"
                               children={(field) => {

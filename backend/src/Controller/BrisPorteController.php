@@ -27,6 +27,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class PreInscription
@@ -134,7 +135,7 @@ class BrisPorteController extends AbstractController
      */
     public function demarrerDepuisInvitation(Request $request, string $reference): Response
     {
-        if (!preg_match('/[A-Z0-9]{6}/', $reference)) {
+        if (!preg_match('/^[A-F0-9]{32}$/', $reference)) {
             // TODO compter la tentative pour le rate limiter
             return $this->redirectToRoute('bris_porte_accueil');
         }
@@ -176,14 +177,16 @@ class BrisPorteController extends AbstractController
                 return $this->redirectToRoute('bris_porte_tester_eligibilite');
             }
         } else {
-            if (null !== ($coordoneesRequerant = $preinscription->declarationErreurOperationnelle->getCoordonneesRequerant())) {
-                $inscription->civilite = $coordoneesRequerant->getCivilite();
-                $inscription->nom = $coordoneesRequerant->getNom();
-                $inscription->nomNaissance = $coordoneesRequerant->getNom();
-                $inscription->prenom = $coordoneesRequerant->getPrenom();
-                $inscription->courriel = $coordoneesRequerant->getCourriel();
-                $inscription->telephone = $coordoneesRequerant->getTelephone();
-            }
+            // Pré-remplissage désactivé : le code d'invitation seul ne doit pas donner accès aux données personnelles
+            // du requérant. Il saisit ses informations lui-même.
+            // if (null !== ($coordoneesRequerant = $preinscription->declarationErreurOperationnelle->getCoordonneesRequerant())) {
+            //     $inscription->civilite = $coordoneesRequerant->getCivilite();
+            //     $inscription->nom = $coordoneesRequerant->getNom();
+            //     $inscription->nomNaissance = $coordoneesRequerant->getNom();
+            //     $inscription->prenom = $coordoneesRequerant->getPrenom();
+            //     $inscription->courriel = $coordoneesRequerant->getCourriel();
+            //     $inscription->telephone = $coordoneesRequerant->getTelephone();
+            // }
         }
 
         return $this->render('brisPorte/creation_de_compte.html.twig', [
@@ -196,6 +199,8 @@ class BrisPorteController extends AbstractController
                 'token' => $csrfTokenManager->getToken('creation-de-compte')->getValue(),
                 'inscription' => $normalizer->normalize($inscription, 'json'),
                 'franceConnect' => !(RapportAuLogement::BAILLEUR_SOCIAL === $preinscription->testEligibilite?->rapportAuLogement),
+                // Le courriel est celui de la déclaration en base : il n'est ni affiché ni saisi
+                'courrielConnu' => null !== $preinscription->declarationErreurOperationnelle,
             ],
         ]);
     }
@@ -206,6 +211,7 @@ class BrisPorteController extends AbstractController
         Inscription $inscription,
         Request $request,
         CsrfTokenManagerInterface $csrfTokenManager,
+        ValidatorInterface $validator,
     ): Response {
         if (!$csrfTokenManager->isTokenValid(new CsrfToken('creation-de-compte', $request->headers->get('X-Csrf-Token')))) {
             return new JsonResponse('Le jeton CSRF est invalide.', Response::HTTP_NOT_ACCEPTABLE);
@@ -217,18 +223,29 @@ class BrisPorteController extends AbstractController
         /** @var DeclarationFDOBrisPorte $declaration */
         $declaration = $preinscription->declarationErreurOperationnelle;
 
+        // Suite à une invitation, le courriel est celui de la déclaration en base : la saisie du formulaire est ignorée
+        $courriel = null !== $declaration
+            ? $declaration->getCoordonneesRequerant()?->getCourriel()
+            : $inscription->courriel;
+
         // Création du compte requérant
         $usager = new Usager()
-            ->setEmail($inscription->courriel)
+            ->setEmail($courriel ?? '')
             ->setPersonne(
                 new Personne()
                     ->setCivilite($inscription->civilite)
                     ->setPrenom($inscription->prenom)
-                    ->setCourriel($inscription->courriel)
+                    ->setCourriel($courriel ?? '')
                     ->setTelephone($inscription->telephone)
                     ->setNom($inscription->nom)
                     ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom)
             );
+
+        // La validation du courriel (obligatoire, valide, unique) est portée par l'entité
+        $violations = $validator->validate($usager);
+        if (count($violations) > 0) {
+            return new JsonResponse($violations->get(0)->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
 
         $usager->setPassword(
