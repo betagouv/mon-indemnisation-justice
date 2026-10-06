@@ -63,15 +63,17 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
         }
 
+        $mime = $this->documentManager->verifierFichierTeleverse($fichierTeleverse);
+
         // 1. Créer le document
         $pieceJointe = (new Document())
             ->setType($documentType)
             ->setOriginalFilename($fichierTeleverse->getClientOriginalName())
             ->setAjoutRequerant(false)
-            ->setMime($fichierTeleverse->getClientMimeType())
+            ->setMime($mime)
         ;
 
-        $pieceJointe = $this->documentManager->enregistrerDocument($pieceJointe, $fichierTeleverse->getContent());
+        $pieceJointe = $this->documentManager->enregistrerDocument($pieceJointe, $fichierTeleverse->getContent(), DocumentManager::TYPES_AUTORISES[$mime]);
 
         $this->em->persist($pieceJointe);
         $this->em->flush();
