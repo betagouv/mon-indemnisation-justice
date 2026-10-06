@@ -117,6 +117,130 @@ class BrisPorteControllerTest extends WebTestCase
     }
 
     /**
+     * ETQ visiteur, un lien d'invitation à l'ancien format (code de 6 caractères) ne doit plus être accepté.
+     */
+    public function testDemarrerDepuisInvitationKoAncienFormatDeCode(): void
+    {
+        $this->client->request('GET', '/bris-de-porte/invitation/G286QC');
+
+        $this->assertResponseRedirects('/bris-de-porte/', 302);
+    }
+
+    /**
+     * ETQ visiteur, un code au bon format mais qui ne correspond à aucune déclaration doit être refusé.
+     */
+    public function testDemarrerDepuisInvitationKoCodeInconnuDeMemeFormat(): void
+    {
+        $this->client->request('GET', '/bris-de-porte/invitation/'.str_repeat('A', 32));
+
+        $this->assertResponseRedirects('/bris-de-porte/', 302);
+    }
+
+    /**
+     * ETQ requérant invité, le formulaire de création de compte ne doit pas révéler les données de la déclaration.
+     */
+    public function testCreationDeCompteNePreRemplitPasLesDonneesDeLaDeclaration(): void
+    {
+        $declaration = $this->getDeclarationAvecCourriel();
+        $this->initializeSession([BrisPorteController::CLEF_SESSION_PREINSCRIPTION => [
+            'testEligibilite' => null,
+            'declarationErreurOperationnelle' => $declaration->getId(),
+        ]]);
+
+        $this->client->request('GET', '/bris-de-porte/creation-de-compte');
+
+        $this->assertResponseIsSuccessful();
+        $reactArgs = json_decode(trim($this->client->getCrawler()->filter('#react-arguments')->first()->text()), true);
+        $this->assertTrue($reactArgs['courrielConnu']);
+        $this->assertEmpty($reactArgs['inscription']['courriel'] ?? null);
+        $this->assertEmpty($reactArgs['inscription']['nom'] ?? null);
+        $this->assertEmpty($reactArgs['inscription']['prenom'] ?? null);
+        $this->assertEmpty($reactArgs['inscription']['telephone'] ?? null);
+        $this->assertStringNotContainsString($declaration->getCoordonneesRequerant()->getCourriel(), $this->client->getResponse()->getContent());
+    }
+
+    /**
+     * ETQ requérant invité, la création de compte utilise le courriel de la déclaration, même si le formulaire envoie
+     * une autre adresse.
+     */
+    public function testCreerCompteUtiliseLeCourrielDeLaDeclaration(): void
+    {
+        $declaration = $this->getDeclarationAvecCourriel();
+        $courrielDeclaration = $declaration->getCoordonneesRequerant()->getCourriel();
+        $this->initializeSession([BrisPorteController::CLEF_SESSION_PREINSCRIPTION => [
+            'testEligibilite' => null,
+            'declarationErreurOperationnelle' => $declaration->getId(),
+        ]]);
+        $token = $this->getTokenCreationDeCompte();
+
+        $this->client->request('POST', '/bris-de-porte/creer-compte', $this->donneesInscription('attaquant@courriel.fr'), [], [
+            'HTTP_X-Csrf-Token' => $token,
+        ]);
+
+        $this->assertResponseStatusCodeSame(201);
+        $this->em->clear();
+        $this->assertNull($this->em->getRepository(Usager::class)->findOneBy(['email' => 'attaquant@courriel.fr']));
+        $this->assertNotNull($this->em->getRepository(Usager::class)->findOneBy(['email' => $courrielDeclaration]));
+    }
+
+    /**
+     * ETQ visiteur sans invitation, le courriel saisi est obligatoire : sans lui, la création de compte est refusée.
+     */
+    public function testCreerCompteSansInvitationCourrielObligatoire(): void
+    {
+        $testEligibilite = self::getTestEligibiliteEnXpIncomplet()($this->em);
+        $this->initializePreinscription($testEligibilite);
+        $token = $this->getTokenCreationDeCompte();
+
+        $this->client->request('POST', '/bris-de-porte/creer-compte', $this->donneesInscription(''), [], [
+            'HTTP_X-Csrf-Token' => $token,
+        ]);
+
+        $this->assertResponseStatusCodeSame(422);
+    }
+
+    protected function getDeclarationAvecCourriel(): DeclarationFDOBrisPorte
+    {
+        // Une déclaration de fixture avec des coordonnées requérant, donc avec un courriel
+        $declaration = $this->em->getRepository(DeclarationFDOBrisPorte::class)
+            ->createQueryBuilder('d')
+            ->andWhere('d.coordonneesRequerant IS NOT NULL')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        $this->assertNotNull($declaration?->getCoordonneesRequerant()?->getCourriel(), 'La déclaration de fixture doit avoir un courriel requérant');
+
+        return $declaration;
+    }
+
+    protected function getTokenCreationDeCompte(): string
+    {
+        $this->client->request('GET', '/bris-de-porte/creation-de-compte');
+        $reactArgs = json_decode(trim($this->client->getCrawler()->filter('#react-arguments')->first()->text()), true);
+
+        return $reactArgs['token'];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function donneesInscription(string $courriel): array
+    {
+        return [
+            'cguOk' => true,
+            'civilite' => 'M',
+            'prenom' => 'Rick',
+            'nomNaissance' => 'Hérent',
+            'nom' => 'Hérent',
+            'courriel' => $courriel,
+            'telephone' => '06123456789',
+            'motDePasse' => 'P4ssword',
+            'confirmation' => 'P4ssword',
+        ];
+    }
+
+    /**
      * ETQ visiteur, après avoir rempli le formulaire de test d'éligibilité, si j'ai choisi un département en
      * expérimentation, je dois être invité à créer mon compte.
      */

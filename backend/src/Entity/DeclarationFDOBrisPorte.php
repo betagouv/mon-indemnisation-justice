@@ -28,7 +28,7 @@ class DeclarationFDOBrisPorte
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     protected ?Uuid $id = null;
 
-    #[ORM\Column(length: 6)]
+    #[ORM\Column(length: 32)]
     protected string $reference;
 
     #[ORM\Column(name: 'est_erreur', length: 6, enumType: DeclarationFDOBrisPorteErreurType::class)]
