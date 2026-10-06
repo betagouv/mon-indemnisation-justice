@@ -3,7 +3,6 @@
 namespace MonIndemnisationJustice\Dto;
 
 use MonIndemnisationJustice\Entity\Civilite;
-use MonIndemnisationJustice\Validation\Constraint\UniqueRequerantCourriel;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class Inscription
@@ -18,10 +17,11 @@ class Inscription
 
     public ?string $nomNaissance = null;
 
-    #[Assert\NotBlank(message: '', allowNull: false)]
-    #[Assert\Email(message: "L'adresse courriel n'est pas valide")]
-    #[UniqueRequerantCourriel]
-    public string $courriel;
+    /**
+     * Le courriel n'est pas contraint ici : il est validé dans le contrôleur, selon qu'il provient d'une invitation
+     * (courriel de la déclaration en base) ou d'une saisie libre.
+     */
+    public ?string $courriel = null;
 
     #[Assert\NotBlank(message: 'Le numéro de téléphone est manquant', allowNull: false)]
     public string $telephone;
