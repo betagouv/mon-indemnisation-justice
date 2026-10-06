@@ -44,6 +44,7 @@ const token: string = args.token;
 const routes: Routes = args.routes as Routes;
 const inscriptionInitiale = plainToInstance(Inscription, args.inscription ?? {});
 const proposerFranceConnect = !!(args.franceConnect || false);
+const courrielConnu = !!(args.courrielConnu || false);
 
 // Venue d'un lien d'invitation : les informations du requérant sont déjà connues, seul un mot de passe est demandé.
 const routesCreerEspace: RoutesCreerEspace | undefined = args.routes?.creerEspace
@@ -369,7 +370,7 @@ const CreationDeCompteApp = ({
                               />
                             </div>
                           </div>
-                          <div className="fr-col-6">
+                          <div className={courrielConnu ? "fr-col-6 fr-hidden" : "fr-col-6"}>
                             <formulaire.Field
                               name="courriel"
                               children={(field) => {

@@ -8,9 +8,8 @@ use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
-use MonIndemnisationJustice\Entity\EnvoiCourrielType;
 use MonIndemnisationJustice\Service\GenerateurCodeInvitation;
-use MonIndemnisationJustice\Service\Mailer;
+use MonIndemnisationJustice\Service\Mail\EnvoiInvitationDeposer;
 
 #[AsEntityListener(DeclarationFDOBrisPorte::class)]
 #[AsDoctrineListener(event: Events::postFlush)]
@@ -34,7 +33,7 @@ class DeclarationBrisPorteFDOEntitylistener
 
     public function __construct(
         protected readonly GenerateurCodeInvitation $generateurCodeInvitation,
-        protected readonly Mailer $mailer,
+        protected readonly EnvoiInvitationDeposer $envoiInvitationDeposer
     ) {
     }
 
@@ -97,7 +96,7 @@ class DeclarationBrisPorteFDOEntitylistener
         $this->envoiEnCours = true;
         try {
             foreach ($declarations as $declaration) {
-                $this->envoyerCourrielInvitation($declaration);
+                $this->envoiInvitationDeposer->envoyer($declaration);
             }
 
             // Un seul flush pour enregistrer l'ensemble des `EnvoiCourriel` créés
@@ -105,24 +104,5 @@ class DeclarationBrisPorteFDOEntitylistener
         } finally {
             $this->envoiEnCours = false;
         }
-    }
-
-    protected function envoyerCourrielInvitation(DeclarationFDOBrisPorte $declaration): void
-    {
-        if (null === $declaration->getCoordonneesRequerant()) {
-            return;
-        }
-
-        $this->mailer
-            ->to($declaration->getCoordonneesRequerant()->getCourriel(), $declaration->getCoordonneesRequerant()->getPrenom().' '.$declaration->getCoordonneesRequerant()->getNom())
-            ->subject("Mon Indemnisation Justice: vous pouvez faire une demande d'indemnisation")
-            ->htmlTemplate('email/invitation_a_deposer.html.twig', [
-                'declaration' => $declaration,
-            ])
-            ->send(
-                EnvoiCourrielType::INVITATION_FDO,
-                $declaration,
-                flush: false,
-            );
     }
 }
