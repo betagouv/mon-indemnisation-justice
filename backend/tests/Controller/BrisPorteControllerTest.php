@@ -201,8 +201,13 @@ class BrisPorteControllerTest extends WebTestCase
 
     protected function getDeclarationAvecCourriel(): DeclarationFDOBrisPorte
     {
-        $policier = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'policier@interieur.gouv.fr']);
-        $declaration = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
+        // Une déclaration de fixture avec des coordonnées requérant, donc avec un courriel
+        $declaration = $this->em->getRepository(DeclarationFDOBrisPorte::class)
+            ->createQueryBuilder('d')
+            ->andWhere('d.coordonneesRequerant IS NOT NULL')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
 
         $this->assertNotNull($declaration?->getCoordonneesRequerant()?->getCourriel(), 'La déclaration de fixture doit avoir un courriel requérant');
 
