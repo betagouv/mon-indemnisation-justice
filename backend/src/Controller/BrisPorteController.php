@@ -15,6 +15,7 @@ use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Forms\TestEligibiliteBrisPorteType;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
+use MonIndemnisationJustice\Service\ConstructeurUsagerDepuisDeclaration;
 use MonIndemnisationJustice\Service\Mailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -27,6 +28,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -45,6 +47,7 @@ class BrisPorteController extends AbstractController
 {
     public const CLEF_SESSION_TEST_ELIGIBILITE = 'testEligibilite';
     public const CLEF_SESSION_PREINSCRIPTION = 'preinscription';
+    public const CLEF_SESSION_INVITATION_FRANCE_CONNECT = 'invitation_france_connect';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -52,6 +55,7 @@ class BrisPorteController extends AbstractController
         private readonly Mailer $mailer,
         #[Autowire(service: 'oidc_client_france_connect')]
         protected readonly OidcClient $oidcClientFranceConnect,
+        private readonly ConstructeurUsagerDepuisDeclaration $constructeurUsagerDepuisDeclaration,
     ) {
     }
 
@@ -133,14 +137,17 @@ class BrisPorteController extends AbstractController
      * Idem avec la `$reference` pour laquelle aucun `requirement` n'est défini sur la route puisqu'on souhaite intégrer
      * toutes les tentatives au quota de l'utilisateur courant.
      */
-    public function demarrerDepuisInvitation(Request $request, string $reference): Response
-    {
-        if (!preg_match('/^[A-F0-9]{32}$/', $reference)) {
+    public function demarrerDepuisInvitation(
+        Request $request,
+        string $reference,
+        UrlGeneratorInterface $router,
+        CsrfTokenManagerInterface $csrfTokenManager,
+    ): Response {
+        if (!preg_match('/^[a-f0-9]{32}$/', $reference)) {
             // TODO compter la tentative pour le rate limiter
             return $this->redirectToRoute('app_homepage');
         }
 
-        $preinscription = $this->getPreinscription($request);
         $declaration = $this->entityManager->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['reference' => $reference]);
 
         if (null === $declaration || $declaration->estAttribue()) {
@@ -148,10 +155,103 @@ class BrisPorteController extends AbstractController
             return $this->redirectToRoute('app_homepage');
         }
 
-        $preinscription->declarationErreurOperationnelle = $declaration;
+        // Portée en session le temps de l'aller-retour vers FranceConnect : FranceConnectAuthenticator vérifiera que
+        // l'identité obtenue correspond à celle de cette déclaration.
+        $request->getSession()->set(self::CLEF_SESSION_INVITATION_FRANCE_CONNECT, $reference);
+
+        // Pas de redirection : l'URL de l'invitation reste affichée, et porte elle-même le lien avec la déclaration.
+        // Les informations du requérant sont déjà connues (saisies par l'agent) : seul un mot de passe est demandé.
+        return $this->render('brisPorte/creation_de_compte.html.twig', [
+            'react' => [
+                'routes' => [
+                    'creerEspace' => $router->generate('bris_porte_creer_espace_json', ['reference' => $reference]),
+                    'finaliserLaCreation' => $router->generate('bris_porte_finaliser_la_creation'),
+                    'inscriptionFranceConnect' => $this->oidcClientFranceConnect->buildAuthorizeUrl($request, 'securite_usager_inscription'),
+                    'cgu' => $router->generate('public_cgu'),
+                ],
+                'token' => $csrfTokenManager->getToken('creer-espace')->getValue(),
+                'identifiant' => $declaration->getCoordonneesRequerant()?->getCourriel(),
+                'erreur' => $request->getSession()->getFlashBag()->get('erreur_identification')[0] ?? null,
+            ],
+        ]);
+    }
+
+    /**
+     * Création du compte à partir d'une invitation : les informations du requérant viennent uniquement de la
+     * déclaration en base (saisies par l'agent). Seuls le mot de passe et l'acceptation des CGU sont demandés, donc
+     * pas de DTO dédié : les trois valeurs sont lues et validées directement.
+     *
+     * Le mot de passe est encodé en base64 côté client avant l'envoi, puis décodé ici avant d'être haché par Symfony.
+     */
+    #[Route(path: '/invitation/{reference}/creer-espace', name: 'bris_porte_creer_espace_json', methods: ['POST'], format: 'json')]
+    public function creerEspaceJson(Request $request, string $reference, CsrfTokenManagerInterface $csrfTokenManager, ValidatorInterface $validator): Response
+    {
+        if (!$csrfTokenManager->isTokenValid(new CsrfToken('creer-espace', $request->headers->get('X-Csrf-Token')))) {
+            return new JsonResponse('Le jeton CSRF est invalide.', Response::HTTP_NOT_ACCEPTABLE);
+        }
+
+        if (!preg_match('/^[a-f0-9]{32}$/', $reference)) {
+            return new JsonResponse('Lien d\'invitation invalide.', Response::HTTP_NOT_FOUND);
+        }
+
+        $declaration = $this->entityManager->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['reference' => $reference]);
+
+        if (null === $declaration || $declaration->estAttribue()) {
+            return new JsonResponse('Lien d\'invitation invalide.', Response::HTTP_NOT_FOUND);
+        }
+
+        $coordonneesRequerant = $declaration->getCoordonneesRequerant();
+        if (null === $coordonneesRequerant) {
+            return new JsonResponse('Aucune information n\'est associée à cette invitation.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $donnees = $request->getPayload();
+        $motDePasse = base64_decode($donnees->get('motDePasse', ''), true) ?: '';
+        $confirmation = base64_decode($donnees->get('confirmation', ''), true) ?: '';
+        $cguOk = true === $donnees->get('cguOk');
+
+        $violations = $validator->validate($motDePasse, [
+            new Assert\Length(min: 8, minMessage: 'Votre mot de passe doit contenir au moins 8 caractères'),
+            new Assert\Regex('/\d/', message: 'Votre mot de passe doit contenir au moins 1 chiffre'),
+            new Assert\Regex('/[^a-zA-Z0-9]/', message: 'Votre mot de passe doit contenir au moins 1 caractère spécial'),
+        ]);
+        if (count($violations) > 0) {
+            return new JsonResponse($violations->get(0)->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        if ($motDePasse !== $confirmation) {
+            return new JsonResponse('Les deux mots de passe doivent être identiques', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        if (!$cguOk) {
+            return new JsonResponse('Vous devez accepter les conditions générales d\'utilisation', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $usager = $this->constructeurUsagerDepuisDeclaration->construire($declaration);
+
+        $violations = $validator->validate($usager);
+        if (count($violations) > 0) {
+            return new JsonResponse($violations->get(0)->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Le mot de passe décodé est haché par Symfony, comme pour la création de compte générale
+        $usager->setPassword($this->userPasswordHasher->hashPassword($usager, $motDePasse));
+        $usager->genererJetonVerification();
+
+        $this->entityManager->persist($usager);
+        $this->entityManager->flush();
+
+        $preinscription = $this->getPreinscription($request);
+        $preinscription->requerant = $usager;
         $this->setPreinscription($request, $preinscription);
 
-        return $this->redirectToRoute('bris_porte_creation_de_compte');
+        $this->mailer
+            ->toRequerant($usager)
+            ->subject("Activation de votre compte sur l'application Mon Indemnisation Justice")
+            ->htmlTemplate('email/inscription_a_finaliser.html.twig', [
+                'usager' => $usager,
+            ])
+            ->send();
+
+        return new JsonResponse('', Response::HTTP_CREATED);
     }
 
     #[Route(path: '/creation-de-compte', name: 'bris_porte_creation_de_compte', methods: ['GET'])]
@@ -172,21 +272,8 @@ class BrisPorteController extends AbstractController
             return $this->redirectToRoute('bris_porte_finaliser_la_creation');
         }
 
-        if (null === $preinscription->declarationErreurOperationnelle) {
-            if (null === $preinscription->testEligibilite) {
-                return $this->redirectToRoute('bris_porte_tester_eligibilite');
-            }
-        } else {
-            // Pré-remplissage désactivé : le code d'invitation seul ne doit pas donner accès aux données personnelles
-            // du requérant. Il saisit ses informations lui-même.
-            // if (null !== ($coordoneesRequerant = $preinscription->declarationErreurOperationnelle->getCoordonneesRequerant())) {
-            //     $inscription->civilite = $coordoneesRequerant->getCivilite();
-            //     $inscription->nom = $coordoneesRequerant->getNom();
-            //     $inscription->nomNaissance = $coordoneesRequerant->getNom();
-            //     $inscription->prenom = $coordoneesRequerant->getPrenom();
-            //     $inscription->courriel = $coordoneesRequerant->getCourriel();
-            //     $inscription->telephone = $coordoneesRequerant->getTelephone();
-            // }
+        if (null === $preinscription->testEligibilite) {
+            return $this->redirectToRoute('bris_porte_tester_eligibilite');
         }
 
         return $this->render('brisPorte/creation_de_compte.html.twig', [
@@ -199,8 +286,6 @@ class BrisPorteController extends AbstractController
                 'token' => $csrfTokenManager->getToken('creation-de-compte')->getValue(),
                 'inscription' => $normalizer->normalize($inscription, 'json'),
                 'franceConnect' => !(RapportAuLogement::BAILLEUR_SOCIAL === $preinscription->testEligibilite?->rapportAuLogement),
-                // Le courriel est celui de la déclaration en base : il n'est ni affiché ni saisi
-                'courrielConnu' => null !== $preinscription->declarationErreurOperationnelle,
             ],
         ]);
     }
@@ -220,22 +305,14 @@ class BrisPorteController extends AbstractController
         $preinscription = $this->getPreinscription($request);
         $testEligibilite = $preinscription->testEligibilite;
 
-        /** @var DeclarationFDOBrisPorte $declaration */
-        $declaration = $preinscription->declarationErreurOperationnelle;
-
-        // Suite à une invitation, le courriel est celui de la déclaration en base : la saisie du formulaire est ignorée
-        $courriel = null !== $declaration
-            ? $declaration->getCoordonneesRequerant()?->getCourriel()
-            : $inscription->courriel;
-
         // Création du compte requérant
         $usager = new Usager()
-            ->setEmail($courriel ?? '')
+            ->setEmail($inscription->courriel ?? '')
             ->setPersonne(
                 new Personne()
                     ->setCivilite($inscription->civilite)
                     ->setPrenom($inscription->prenom)
-                    ->setCourriel($courriel ?? '')
+                    ->setCourriel($inscription->courriel ?? '')
                     ->setTelephone($inscription->telephone)
                     ->setNom($inscription->nom)
                     ->setNomNaissance($inscription->nomNaissance ?? $inscription->nom)
@@ -257,7 +334,6 @@ class BrisPorteController extends AbstractController
         $usager->genererJetonVerification();
         $usager->setNavigation(new NavigationRequerant(
             idTestEligibilite: $testEligibilite?->id,
-            idDeclaration: $declaration?->getId(),
         ));
 
         $this->entityManager->persist($usager);
@@ -303,14 +379,12 @@ class BrisPorteController extends AbstractController
     {
         $preinscription = $this->getPreinscription($request);
 
-        if (null === $preinscription->declarationErreurOperationnelle) {
+        if (null === $preinscription->requerant) {
             if (null === $preinscription->testEligibilite) {
                 return $this->redirectToRoute('bris_porte_tester_eligibilite');
             }
 
-            if (null === $preinscription->requerant) {
-                return $this->redirectToRoute('bris_porte_creation_de_compte');
-            }
+            return $this->redirectToRoute('bris_porte_creation_de_compte');
         }
 
         return $this->render(

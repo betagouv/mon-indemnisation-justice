@@ -3,13 +3,16 @@
 namespace MonIndemnisationJustice\Security\Authenticator;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Controller\BrisPorteController;
 use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\GeoCodePostal;
 use MonIndemnisationJustice\Entity\GeoPays;
 use MonIndemnisationJustice\Entity\Personne;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Repository\UsagerRepository;
+use MonIndemnisationJustice\Service\ConstructeurUsagerDepuisDeclaration;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -42,6 +45,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
         protected readonly LoggerInterface $logger,
         protected readonly EntityManagerInterface $em,
         protected readonly UsagerRepository $usagerRepository,
+        protected readonly ConstructeurUsagerDepuisDeclaration $constructeurUsagerDepuisDeclaration,
     ) {
     }
 
@@ -70,10 +74,34 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
             $userInfo = $this->oidcClient->fetchUserInfo($accessToken);
             $courriel = strtolower($userInfo['email'] ?? '');
 
+            // Venue d'une invitation : l'identité FranceConnect doit correspondre à celle de la déclaration
+            $referenceInvitation = $request->getSession()->get(BrisPorteController::CLEF_SESSION_INVITATION_FRANCE_CONNECT);
+            $declarationInvitation = null;
+
+            if (null !== $referenceInvitation) {
+                $declarationInvitation = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['reference' => $referenceInvitation]);
+                $coordonneesRequerant = $declarationInvitation?->getCoordonneesRequerant();
+
+                if (null === $declarationInvitation || $declarationInvitation->estAttribue() || null === $coordonneesRequerant) {
+                    throw new CustomUserMessageAuthenticationException("Ce lien d'invitation n'est plus valide.");
+                }
+
+                if (strtolower($coordonneesRequerant->getCourriel()) !== $courriel) {
+                    throw new CustomUserMessageAuthenticationException("L'identité FranceConnect ne correspond pas à celle de l'invitation. Utilisez le compte FranceConnect associé à l'adresse {$coordonneesRequerant->getCourriel()}.");
+                }
+            }
+
             $usager = $this->usagerRepository->findByEmailOrSub($courriel, $userInfo['sub'] ?? null);
 
             if (null === $usager) {
-                if ($this->httpUtils->checkRequestPath($request, $this->signupCheckRoute)) {
+                if (null !== $declarationInvitation) {
+                    $usager = $this->constructeurUsagerDepuisDeclaration->construire($declarationInvitation)
+                        ->setSub($userInfo['sub'])
+                        ->setVerifieCourriel();
+
+                    $this->em->persist($usager);
+                    $this->em->flush();
+                } elseif ($this->httpUtils->checkRequestPath($request, $this->signupCheckRoute)) {
                     // Inscription
                     $prenoms = $userInfo['given_name_array'] ?? explode(' ', $userInfo['given_name']);
 
@@ -140,12 +168,21 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $request->getSession()->remove(BrisPorteController::CLEF_SESSION_INVITATION_FRANCE_CONNECT);
+
         return new RedirectResponse($this->urlGenerator->generate($this->loginSuccessRoute));
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         $request->getSession()->getFlashBag()->add('erreur_identification', $exception->getMessage());
+
+        $referenceInvitation = $request->getSession()->get(BrisPorteController::CLEF_SESSION_INVITATION_FRANCE_CONNECT);
+        if (null !== $referenceInvitation) {
+            $request->getSession()->remove(BrisPorteController::CLEF_SESSION_INVITATION_FRANCE_CONNECT);
+
+            return new RedirectResponse($this->urlGenerator->generate('bris_porte_demarrer_depuis_invitation', ['reference' => $referenceInvitation]));
+        }
 
         return new RedirectResponse($this->urlGenerator->generate($this->loginPageRoute));
     }
