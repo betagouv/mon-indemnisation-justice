@@ -16,6 +16,6 @@ class GenerateurCodeInvitation
      */
     public function generer(): string
     {
-        return strtoupper(bin2hex(random_bytes(16)));
+        return strtolower(bin2hex(random_bytes(16)));
     }
 }
