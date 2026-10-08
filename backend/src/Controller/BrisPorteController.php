@@ -286,8 +286,6 @@ class BrisPorteController extends AbstractController
                 'token' => $csrfTokenManager->getToken('creation-de-compte')->getValue(),
                 'inscription' => $normalizer->normalize($inscription, 'json'),
                 'franceConnect' => !(RapportAuLogement::BAILLEUR_SOCIAL === $preinscription->testEligibilite?->rapportAuLogement),
-                // Le courriel est celui de la déclaration en base : il n'est ni affiché ni saisi
-                'courrielConnu' => null !== $preinscription->declarationErreurOperationnelle,
             ],
         ]);
     }
