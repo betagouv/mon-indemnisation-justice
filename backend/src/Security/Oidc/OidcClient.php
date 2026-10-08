@@ -121,6 +121,12 @@ class OidcClient
         $this->configure();
 
         if (null !== $error = $request->query->get('error')) {
+            if ('access_denied' === $error) {
+                throw new AuthenticationException('La connexion a été annulée.');
+            }
+
+            // Les autres codes d'erreur viennent du fournisseur d'identité : on ne peut pas garantir qu'ils soient en
+            // français.
             throw new AuthenticationException("{$error} - ".$request->query->get('error_description'));
         }
 
@@ -129,7 +135,7 @@ class OidcClient
         $code = $request->query->get('code');
 
         if (null === $context || $state !== ($context['state'] ?? null)) {
-            throw new AuthenticationException('Invalid state.');
+            throw new AuthenticationException("La vérification de la requête d'authentification a échoué (état invalide).");
         }
 
         try {
@@ -153,11 +159,11 @@ class OidcClient
 
             $this->logger->warning("OidcClient : {$e->getMessage()} - {$e->getResponse()->getBody()->getContents()}");
 
-            throw new AuthenticationException('Authorization failed.', previous: $e);
+            throw new AuthenticationException("Échec de l'autorisation.", previous: $e);
         } catch (GuzzleException $e) {
 
             $this->logger->warning("OidcClient : {$e->getMessage()}");
-            throw new AuthenticationException('Authorization failed.', previous: $e);
+            throw new AuthenticationException("Échec de l'autorisation.", previous: $e);
         }
 
         $credentials = json_decode($response->getBody()->getContents());
@@ -166,11 +172,11 @@ class OidcClient
         try {
             $idToken = JWT::decode($credentials->id_token, $this->jwks);
         } catch (BeforeValidException|SignatureInvalidException) {
-            throw new AuthenticationException('Authorization failed (invalid id token).');
+            throw new AuthenticationException("Échec de l'autorisation (jeton d'identité invalide).");
         }
 
         if ($idToken->nonce !== $context['nonce']) {
-            throw new AuthenticationException('Authorization failed (nonce does not match).');
+            throw new AuthenticationException("Échec de l'autorisation (le nonce ne correspond pas).");
         }
 
         return [$accessToken, $credentials->id_token];
@@ -187,7 +193,7 @@ class OidcClient
         ]);
 
         if (200 !== $response->getStatusCode()) {
-            throw new AuthenticationException('User info fetching failed.');
+            throw new AuthenticationException('La récupération des informations utilisateur a échoué.');
         }
 
         // Si les données utilisateurs renvoyées sont au format JSON, on les renvoie décodées
@@ -222,7 +228,7 @@ class OidcClient
 
                     return json_decode($response->getBody()->getContents(), true);
                 } catch (GuzzleException $e) {
-                    throw new AuthenticationException('Fetch of OIDC server well known configuration failed.', previous: $e);
+                    throw new AuthenticationException("La récupération de la configuration du fournisseur d'identité a échoué.", previous: $e);
                 }
             });
         }
@@ -237,7 +243,7 @@ class OidcClient
                         true
                     );
                 } catch (GuzzleException $e) {
-                    throw new AuthenticationException('Fetch of OIDC JWKs failed.');
+                    throw new AuthenticationException("La récupération des clés de signature du fournisseur d'identité a échoué.");
                 }
             }));
         }

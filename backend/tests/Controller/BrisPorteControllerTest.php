@@ -100,12 +100,14 @@ class BrisPorteControllerTest extends WebTestCase
     }
 
     /**
-     * ETQ visiteur invité, le lien affiche directement le formulaire de création d'espace, sans redirection, et sans
-     * révéler les informations de la déclaration.
+     * ETQ visiteur invité, le lien affiche directement le formulaire de création d'espace, sans redirection. Seul le
+     * courriel (l'identifiant, en lecture seule) est affiché ; les autres informations de la déclaration ne le sont
+     * pas.
      */
     public function testDemarrerDepuisInvitationOk(): void
     {
         $declaration = $this->getDeclarationNonAttribueeAvecCourriel();
+        $coordonneesRequerant = $declaration->getCoordonneesRequerant();
 
         $this->client->request('GET', "/bris-de-porte/invitation/{$declaration->getReference()}");
 
@@ -113,7 +115,10 @@ class BrisPorteControllerTest extends WebTestCase
         $reactArgs = json_decode(trim($this->client->getCrawler()->filter('#react-arguments')->first()->text()), true);
         $this->assertStringContainsString($declaration->getReference(), $reactArgs['routes']['creerEspace']);
         $this->assertArrayNotHasKey('inscription', $reactArgs);
-        $this->assertStringNotContainsString($declaration->getCoordonneesRequerant()->getCourriel(), $this->client->getResponse()->getContent());
+        $this->assertSame($coordonneesRequerant->getCourriel(), $reactArgs['identifiant']);
+        $this->assertArrayNotHasKey('nom', $reactArgs);
+        $this->assertArrayNotHasKey('prenom', $reactArgs);
+        $this->assertArrayNotHasKey('telephone', $reactArgs);
     }
 
     public function testDemarrerDepuisInvitationKoReferenceInconnue(): void
@@ -160,8 +165,8 @@ class BrisPorteControllerTest extends WebTestCase
             [],
             ['HTTP_X-Csrf-Token' => $token, 'CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'motDePasse' => base64_encode('P4ssword'),
-                'confirmation' => base64_encode('P4ssword'),
+                'motDePasse' => base64_encode('P4$sword'),
+                'confirmation' => base64_encode('P4$sword'),
                 'cguOk' => true,
             ])
         );
@@ -170,7 +175,7 @@ class BrisPorteControllerTest extends WebTestCase
         $this->em->clear();
         $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => $courriel]);
         $this->assertNotNull($usager);
-        $this->assertTrue(self::getContainer()->get(UserPasswordHasherInterface::class)->isPasswordValid($usager, 'P4ssword'));
+        $this->assertTrue(self::getContainer()->get(UserPasswordHasherInterface::class)->isPasswordValid($usager, 'P4$sword'));
     }
 
     /**
@@ -188,8 +193,8 @@ class BrisPorteControllerTest extends WebTestCase
             [],
             ['HTTP_X-Csrf-Token' => $token, 'CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'motDePasse' => base64_encode('P4ssword'),
-                'confirmation' => base64_encode('Autre1234'),
+                'motDePasse' => base64_encode('P4$sword'),
+                'confirmation' => base64_encode('Autre1234$'),
                 'cguOk' => true,
             ])
         );
@@ -212,8 +217,8 @@ class BrisPorteControllerTest extends WebTestCase
             [],
             ['HTTP_X-Csrf-Token' => $token, 'CONTENT_TYPE' => 'application/json'],
             json_encode([
-                'motDePasse' => base64_encode('P4ssword'),
-                'confirmation' => base64_encode('P4ssword'),
+                'motDePasse' => base64_encode('P4$sword'),
+                'confirmation' => base64_encode('P4$sword'),
                 'cguOk' => true,
             ])
         );
