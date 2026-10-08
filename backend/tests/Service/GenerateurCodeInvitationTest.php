@@ -10,13 +10,13 @@ use PHPUnit\Framework\TestCase;
 class GenerateurCodeInvitationTest extends TestCase
 {
     /**
-     * ETQ système, le code d'invitation doit faire 32 caractères hexadécimaux majuscules (128 bits).
+     * ETQ système, le code d'invitation doit faire 32 caractères hexadécimaux minuscules (128 bits).
      */
-    public function testCodeDe32CaracteresHexadecimauxMajuscules(): void
+    public function testCodeDe32CaracteresHexadecimauxMinuscules(): void
     {
         $code = new GenerateurCodeInvitation()->generer();
 
-        $this->assertMatchesRegularExpression('/^[A-F0-9]{32}$/', $code);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{32}$/', $code);
     }
 
     /**
