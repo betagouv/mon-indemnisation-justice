@@ -44,7 +44,7 @@ class DossierDto
             ->setRequerant(
                 $this->estPersonneMorale ?
                     $this->personneMorale?->versPersonneMorale($dossier?->getRequerantPersonneMorale()) :
-                    $this->personnePhysique->versPersonnePhysique($dossier?->getRequerantPersonnePhysique())
+                    $this->personnePhysique?->versPersonnePhysique($dossier?->getRequerantPersonnePhysique())
             )
             ->setBrisPorte(
                 $dossier->getBrisPorte()
