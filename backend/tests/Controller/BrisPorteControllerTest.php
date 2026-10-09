@@ -4,7 +4,6 @@ namespace MonIndemnisationJustice\Tests\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Controller\BrisPorteController;
-use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\RapportAuLogement;
 use MonIndemnisationJustice\Entity\TestEligibiliteBrisPorte;
@@ -14,6 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * @internal
@@ -99,14 +99,26 @@ class BrisPorteControllerTest extends WebTestCase
         ];
     }
 
+    /**
+     * ETQ visiteur invité, le lien affiche directement le formulaire de création d'espace, sans redirection. Seul le
+     * courriel (l'identifiant, en lecture seule) est affiché ; les autres informations de la déclaration ne le sont
+     * pas.
+     */
     public function testDemarrerDepuisInvitationOk(): void
     {
-        $policier = $this->em->getRepository(Agent::class)->findOneBy(['email' => 'policier@interieur.gouv.fr']);
-        $declaration = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
+        $declaration = $this->getDeclarationNonAttribueeAvecCourriel();
+        $coordonneesRequerant = $declaration->getCoordonneesRequerant();
 
         $this->client->request('GET', "/bris-de-porte/invitation/{$declaration->getReference()}");
 
-        $this->assertResponseRedirects('/bris-de-porte/creation-de-compte', 302);
+        $this->assertResponseIsSuccessful();
+        $reactArgs = json_decode(trim($this->client->getCrawler()->filter('#react-arguments')->first()->text()), true);
+        $this->assertStringContainsString($declaration->getReference(), $reactArgs['routes']['creerEspace']);
+        $this->assertArrayNotHasKey('inscription', $reactArgs);
+        $this->assertSame($coordonneesRequerant->getCourriel(), $reactArgs['identifiant']);
+        $this->assertArrayNotHasKey('nom', $reactArgs);
+        $this->assertArrayNotHasKey('prenom', $reactArgs);
+        $this->assertArrayNotHasKey('telephone', $reactArgs);
     }
 
     public function testDemarrerDepuisInvitationKoReferenceInconnue(): void
@@ -114,6 +126,170 @@ class BrisPorteControllerTest extends WebTestCase
         $this->client->request('GET', '/bris-de-porte/invitation/NONNON');
 
         $this->assertResponseRedirects('', 302);
+    }
+
+    /**
+     * ETQ visiteur, un lien d'invitation à l'ancien format (code de 6 caractères) ne doit plus être accepté.
+     */
+    public function testDemarrerDepuisInvitationKoAncienFormatDeCode(): void
+    {
+        $this->client->request('GET', '/bris-de-porte/invitation/G286QC');
+
+        $this->assertResponseRedirects('/', 302);
+    }
+
+    /**
+     * ETQ visiteur, un code au bon format mais qui ne correspond à aucune déclaration doit être refusé.
+     */
+    public function testDemarrerDepuisInvitationKoCodeInconnuDeMemeFormat(): void
+    {
+        $this->client->request('GET', '/bris-de-porte/invitation/'.str_repeat('a', 32));
+
+        $this->assertResponseRedirects('/', 302);
+    }
+
+    /**
+     * ETQ visiteur invité, créer mon espace crée le compte avec les informations de la déclaration (jamais celles du
+     * formulaire, puisqu'il n'y en a pas), et le mot de passe envoyé encodé est bien décodé puis haché.
+     */
+    public function testCreerEspaceJsonOk(): void
+    {
+        $declaration = $this->getDeclarationNonAttribueeAvecCourriel();
+        $courriel = $declaration->getCoordonneesRequerant()->getCourriel();
+        $token = $this->getTokenCreerEspace($declaration);
+
+        $this->client->request(
+            'POST',
+            "/bris-de-porte/invitation/{$declaration->getReference()}/creer-espace",
+            [],
+            [],
+            ['HTTP_X-Csrf-Token' => $token, 'CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'motDePasse' => base64_encode('P4$sword'),
+                'confirmation' => base64_encode('P4$sword'),
+                'cguOk' => true,
+            ])
+        );
+
+        $this->assertResponseStatusCodeSame(201);
+        $this->em->clear();
+        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => $courriel]);
+        $this->assertNotNull($usager);
+        $this->assertTrue(self::getContainer()->get(UserPasswordHasherInterface::class)->isPasswordValid($usager, 'P4$sword'));
+    }
+
+    /**
+     * ETQ visiteur invité, une confirmation de mot de passe différente doit être refusée.
+     */
+    public function testCreerEspaceJsonKoConfirmationDifferente(): void
+    {
+        $declaration = $this->getDeclarationNonAttribueeAvecCourriel();
+        $token = $this->getTokenCreerEspace($declaration);
+
+        $this->client->request(
+            'POST',
+            "/bris-de-porte/invitation/{$declaration->getReference()}/creer-espace",
+            [],
+            [],
+            ['HTTP_X-Csrf-Token' => $token, 'CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'motDePasse' => base64_encode('P4$sword'),
+                'confirmation' => base64_encode('Autre1234$'),
+                'cguOk' => true,
+            ])
+        );
+
+        $this->assertResponseStatusCodeSame(422);
+    }
+
+    /**
+     * ETQ visiteur, une référence qui ne correspond à aucune déclaration doit être refusée.
+     */
+    public function testCreerEspaceJsonKoReferenceInconnue(): void
+    {
+        $declaration = $this->getDeclarationNonAttribueeAvecCourriel();
+        $token = $this->getTokenCreerEspace($declaration);
+
+        $this->client->request(
+            'POST',
+            '/bris-de-porte/invitation/'.str_repeat('a', 32).'/creer-espace',
+            [],
+            [],
+            ['HTTP_X-Csrf-Token' => $token, 'CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'motDePasse' => base64_encode('P4$sword'),
+                'confirmation' => base64_encode('P4$sword'),
+                'cguOk' => true,
+            ])
+        );
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    /**
+     * ETQ visiteur sans invitation, le courriel saisi est obligatoire : sans lui, la création de compte est refusée.
+     */
+    public function testCreerCompteSansInvitationCourrielObligatoire(): void
+    {
+        $testEligibilite = self::getTestEligibiliteEnXpIncomplet()($this->em);
+        $this->initializePreinscription($testEligibilite);
+        $token = $this->getTokenCreationDeCompte();
+
+        $this->client->request('POST', '/bris-de-porte/creer-compte', $this->donneesInscription(''), [], [
+            'HTTP_X-Csrf-Token' => $token,
+        ]);
+
+        $this->assertResponseStatusCodeSame(422);
+    }
+
+    protected function getDeclarationNonAttribueeAvecCourriel(): DeclarationFDOBrisPorte
+    {
+        // Une déclaration de fixture avec des coordonnées requérant (donc un courriel), pas encore attribuée à un dossier
+        $declaration = $this->em->getRepository(DeclarationFDOBrisPorte::class)
+            ->createQueryBuilder('d')
+            ->andWhere('d.coordonneesRequerant IS NOT NULL')
+            ->andWhere('d.brisPorte IS NULL')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        $this->assertNotNull($declaration?->getCoordonneesRequerant()?->getCourriel(), 'La déclaration de fixture doit avoir un courriel requérant');
+
+        return $declaration;
+    }
+
+    protected function getTokenCreationDeCompte(): string
+    {
+        $this->client->request('GET', '/bris-de-porte/creation-de-compte');
+        $reactArgs = json_decode(trim($this->client->getCrawler()->filter('#react-arguments')->first()->text()), true);
+
+        return $reactArgs['token'];
+    }
+
+    protected function getTokenCreerEspace(DeclarationFDOBrisPorte $declaration): string
+    {
+        $this->client->request('GET', "/bris-de-porte/invitation/{$declaration->getReference()}");
+        $reactArgs = json_decode(trim($this->client->getCrawler()->filter('#react-arguments')->first()->text()), true);
+
+        return $reactArgs['token'];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function donneesInscription(string $courriel): array
+    {
+        return [
+            'cguOk' => true,
+            'civilite' => 'M',
+            'prenom' => 'Rick',
+            'nomNaissance' => 'Hérent',
+            'nom' => 'Hérent',
+            'courriel' => $courriel,
+            'telephone' => '06123456789',
+            'motDePasse' => 'P4ssword',
+            'confirmation' => 'P4ssword',
+        ];
     }
 
     /**

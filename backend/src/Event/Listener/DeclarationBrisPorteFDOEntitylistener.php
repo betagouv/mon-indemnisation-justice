@@ -5,35 +5,31 @@ namespace MonIndemnisationJustice\Event\Listener;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
-use MonIndemnisationJustice\Service\GenerateurReferenceCourte;
-use MonIndemnisationJustice\Service\Mailer;
+use MonIndemnisationJustice\Service\GenerateurCodeInvitation;
+use MonIndemnisationJustice\Service\Mail\EnvoiInvitationDeposer;
 
 #[AsEntityListener(DeclarationFDOBrisPorte::class)]
 class DeclarationBrisPorteFDOEntitylistener
 {
     public function __construct(
-        protected readonly GenerateurReferenceCourte $generateurReferenceCourte,
-        protected readonly Mailer $mailer,
+        protected readonly GenerateurCodeInvitation $generateurCodeInvitation,
+        protected readonly EnvoiInvitationDeposer $envoiInvitationDeposer,
     ) {
     }
 
     public function prePersist(DeclarationFDOBrisPorte $declaration, PrePersistEventArgs $args)
     {
-        // Génération de la référence courte de dossier
+        // Génération du code d'invitation, unique parmi les déclarations existantes
         $repository = $args->getObjectManager()->getRepository(DeclarationFDOBrisPorte::class);
 
-        $declaration->setReference($this->generateurReferenceCourte->genererJusque(fn ($reference) => null === $repository->findOneBy(['reference' => $reference]), nbTentatives: 5));
+        do {
+            $reference = $this->generateurCodeInvitation->generer();
+        } while (null !== $repository->findOneBy(['reference' => $reference]));
+
+        $declaration->setReference($reference);
         $declaration->setDateSoumission(new \DateTimeImmutable());
 
         // Envoi du mail d'invitation à déclarer
-        if (null !== ($coordonneesRequerant = $declaration->getCoordonneesRequerant())) {
-            $this->mailer
-                ->to($coordonneesRequerant->getCourriel(), $coordonneesRequerant->getPrenom().' '.$coordonneesRequerant->getNom())
-                ->subject("Mon Indemnisation Justice: vous pouvez faire une demande d'indemnisation")
-                ->htmlTemplate('email/invitation_a_deposer.html.twig', [
-                    'declaration' => $declaration,
-                ])
-                ->send();
-        }
+        $this->envoiInvitationDeposer->envoyer($declaration);
     }
 }
