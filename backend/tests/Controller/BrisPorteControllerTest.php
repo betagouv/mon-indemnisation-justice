@@ -135,7 +135,7 @@ class BrisPorteControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/bris-de-porte/invitation/G286QC');
 
-        $this->assertResponseRedirects('/bris-de-porte/', 302);
+        $this->assertResponseRedirects('/', 302);
     }
 
     /**
@@ -145,7 +145,7 @@ class BrisPorteControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/bris-de-porte/invitation/'.str_repeat('a', 32));
 
-        $this->assertResponseRedirects('/bris-de-porte/', 302);
+        $this->assertResponseRedirects('/', 302);
     }
 
     /**
