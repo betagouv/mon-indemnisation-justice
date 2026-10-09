@@ -21,6 +21,13 @@ interface Routes {
   cgu: string;
 }
 
+interface RoutesCreerEspace {
+  creerEspace: string;
+  finaliserLaCreation: string;
+  inscriptionFranceConnect: string;
+  cgu: string;
+}
+
 interface ValeursInscription {
   civilite?: Civilite;
   prenom: string;
@@ -35,8 +42,15 @@ interface ValeursInscription {
 
 const token: string = args.token;
 const routes: Routes = args.routes as Routes;
-const inscriptionInitiale = plainToInstance(Inscription, args.inscription);
+const inscriptionInitiale = plainToInstance(Inscription, args.inscription ?? {});
 const proposerFranceConnect = !!(args.franceConnect || false);
+
+// Venue d'un lien d'invitation : les informations du requérant sont déjà connues, seul un mot de passe est demandé.
+const routesCreerEspace: RoutesCreerEspace | undefined = args.routes?.creerEspace
+  ? (args.routes as RoutesCreerEspace)
+  : undefined;
+const identifiantCreerEspace: string | undefined = args.identifiant ?? undefined;
+const erreurCreerEspace: string | undefined = args.erreur ?? undefined;
 
 const valeursParDefaut: ValeursInscription = {
   civilite: inscriptionInitiale.civilite,
@@ -212,9 +226,7 @@ const CreationDeCompteApp = ({
                           />
                         </div>
 
-                        <div className="fr-section-separateur--ligne">
-                          <span>ou</span>
-                        </div>
+                        <p className="fr-hr-or">ou</p>
 
                         {!inscriptionParEmail && (
                           <div className="fr-grid-row fr-grid-row--center">
@@ -620,10 +632,362 @@ const CreationDeCompteApp = ({
   );
 };
 
+// Encode le mot de passe avant l'envoi : il est décodé côté serveur puis haché par Symfony. Ce n'est pas un
+// chiffrement, juste un encodage réversible.
+const encoderMotDePasse = (motDePasse: string): string => btoa(motDePasse);
+
+const motDePasseValide = (motDePasse: string): string | undefined => {
+  if (motDePasse.length < 8) {
+    return "Le mot de passe doit contenir au moins 8 caractères";
+  }
+  if (!/\d/.test(motDePasse)) {
+    return "Le mot de passe doit contenir au moins 1 chiffre";
+  }
+  if (!/[^a-zA-Z0-9]/.test(motDePasse)) {
+    return "Le mot de passe doit contenir au moins 1 caractère spécial";
+  }
+  return undefined;
+};
+
+const CreerEspaceApp = ({
+  token,
+  routes,
+  identifiant,
+}: {
+  token: string;
+  routes: RoutesCreerEspace;
+  identifiant?: string;
+}) => {
+  const [motDePasse, setMotDePasse] = useState("");
+  const [confirmation, setConfirmation] = useState("");
+  const [cguOk, setCguOk] = useState(false);
+  const [motDePasseRevele, setMotDePasseRevele] = useState(false);
+  const [confirmationRevelee, setConfirmationRevelee] = useState(false);
+  const [erreur, setErreur] = useState<string | undefined>(erreurCreerEspace);
+  const [envoiEnCours, setEnvoiEnCours] = useState(false);
+  const [vueFranceConnect, setVueFranceConnect] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const erreurMotDePasse = motDePasseValide(motDePasse);
+    if (erreurMotDePasse) {
+      setErreur(erreurMotDePasse);
+      return;
+    }
+    if (motDePasse !== confirmation) {
+      setErreur("Les deux mots de passe doivent être identiques");
+      return;
+    }
+    if (!cguOk) {
+      setErreur("Vous devez accepter les conditions générales d'utilisation");
+      return;
+    }
+
+    setErreur(undefined);
+    setEnvoiEnCours(true);
+
+    const response = await fetch(routes.creerEspace, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-Csrf-Token": token,
+      },
+      body: JSON.stringify({
+        motDePasse: encoderMotDePasse(motDePasse),
+        confirmation: encoderMotDePasse(confirmation),
+        cguOk,
+      }),
+    });
+
+    if (response.ok) {
+      window.location.href = routes.finaliserLaCreation;
+      return;
+    }
+
+    setEnvoiEnCours(false);
+    setErreur((await response.text()) || "La création de votre espace a échoué");
+  };
+
+  if (vueFranceConnect) {
+    return (
+      <div className="fr-container fr-my-3w">
+        <h1>Mon Indemnisation Justice</h1>
+
+        <div className="fr-grid-row fr-grid-row--center">
+          <div className="fr-col-12">
+            <section
+              className="pr-form-subscribe fr-p-4w"
+              style={{ border: "1px solid var(--border-default-grey)" }}
+            >
+
+              <div className="fr-grid-row fr-grid-row--center">
+                <div className="fr-col-lg-8 fr-col-10">
+                  <button
+                    type="button"
+                    className="fr-link fr-icon-arrow-left-line fr-link--icon-left"
+                    onClick={() => setVueFranceConnect(false)}
+                  >
+                    Choisir un autre moyen d'identifier
+                  </button>
+
+                  <div className="fr-highlight fr-my-3w">
+                    <p>
+                      Attention ! Ici, si vous vous inscrivez à la suite d'une
+                      déclaration des forces de l'ordre, assurez-vous que
+                      l'adresse mail fournie est associée à votre compte
+                      FranceConnect{identifiantCreerEspace ? ` (${identifiantCreerEspace})` : ""}.
+                    </p>
+                  </div>
+
+                  {erreur && (
+                    <div className="fr-alert fr-alert--error fr-alert--sm fr-mb-2w">
+                      <p>{erreur}</p>
+                    </div>
+                  )}
+
+                  <div className="fr-grid-row fr-grid-row--center">
+                    <div className="fr-col-lg-6 fr-col-8">
+
+                      <div className="fr-grid-row fr-grid-row--center">
+                        <h2 className="fr-h5">Se connecter avec FranceConnect</h2>
+                      </div>
+                      <div className="fr-grid-row fr-grid-row--center">
+                        <p className="fr-text--sm">
+                          FranceConnect est la solution proposée par l'État pour
+                          sécuriser et simplifier la connexion aux services en ligne.
+                        </p>
+                      </div>
+                      <div className="fr-grid-row fr-grid-row--center">
+                        <FranceConnectButton url={routes.inscriptionFranceConnect} />
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </section>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fr-container fr-my-3w">
+      <h1>Mon Indemnisation Justice</h1>
+
+      <div className="fr-grid-row fr-grid-row--center">
+        <div className="fr-col-lg-10 fr-col-12">
+          <section
+            className="pr-form-subscribe"
+            style={{ border: "1px solid var(--border-default-grey)" }}
+          >
+            <div className="fr-grid-row fr-grid-row--center">
+              <div className="fr-col-lg-6 fr-col-8">
+                <div className="fr-p-4w">
+                  <h2 className="fr-h4">Créer mon espace</h2>
+                  <div className="fr-alert fr-alert--info fr-alert--sm fr-mb-2w">
+                    <p>
+                      Vos informations ont déjà été transmises par les forces de
+                      l'ordre. Il ne vous reste qu'à choisir un mot de passe pour
+                      créer votre espace.
+                    </p>
+                  </div>
+
+                  <form onSubmit={onSubmit}>
+                    {erreur && (
+                      <div className="fr-alert fr-alert--error fr-alert--sm fr-mb-2w">
+                        <p>{erreur}</p>
+                      </div>
+                    )}
+
+                    {identifiant && (
+                      <div className="fr-input-group">
+                        <label className="fr-label" htmlFor="creer-espace-identifiant">
+                          Identifiant
+                        </label>
+                        <input
+                          id="creer-espace-identifiant"
+                          className="fr-input"
+                          type="text"
+                          value={identifiant}
+                          disabled
+                          readOnly
+                        />
+                      </div>
+                    )}
+
+                    <div className="fr-input-group">
+                      <div className="fr-password" data-fr-js-password="true">
+                        <label
+                          className="fr-label"
+                          htmlFor="creer-espace-mot-de-passe"
+                        >
+                          Mot de passe
+                        </label>
+                        <div className="fr-input-wrap">
+                          <input
+                            name="motDePasse"
+                            id="creer-espace-mot-de-passe"
+                            className="fr-password__input fr-input"
+                            type={motDePasseRevele ? "text" : "password"}
+                            value={motDePasse}
+                            onChange={(e) => setMotDePasse(e.target.value)}
+                          />
+                        </div>
+                        <div className="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
+                          <input
+                            aria-label="Afficher le mot de passe"
+                            id="creer-espace-mot-de-passe-toggle"
+                            type="checkbox"
+                            checked={motDePasseRevele}
+                            onChange={() => setMotDePasseRevele(!motDePasseRevele)}
+                          />
+                          <label
+                            className="fr-password__checkbox fr-label"
+                            htmlFor="creer-espace-mot-de-passe-toggle"
+                          >
+                            {motDePasseRevele ? "Masquer" : "Afficher"}
+                          </label>
+                        </div>
+                      </div>
+                      <div className="fr-messages-group">
+                        <p className="fr-message">
+                          Votre mot de passe doit contenir au moins :
+                        </p>
+                        <p className="fr-message fr-message--info">8 caractères minimum</p>
+                        <p className="fr-message fr-message--info">1 caractère spécial minimum</p>
+                        <p className="fr-message fr-message--info">1 chiffre minimum</p>
+                      </div>
+                    </div>
+
+                    <div className="fr-input-group">
+                      <div className="fr-password" data-fr-js-password="true">
+                        <label
+                          className="fr-label"
+                          htmlFor="creer-espace-confirmation"
+                        >
+                          Confirmation du mot de passe
+                        </label>
+                        <div className="fr-input-wrap">
+                          <input
+                            name="confirmation"
+                            id="creer-espace-confirmation"
+                            className="fr-password__input fr-input"
+                            type={confirmationRevelee ? "text" : "password"}
+                            value={confirmation}
+                            onChange={(e) => setConfirmation(e.target.value)}
+                          />
+                        </div>
+                        <div className="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
+                          <input
+                            aria-label="Afficher la confirmation du mot de passe"
+                            id="creer-espace-confirmation-toggle"
+                            type="checkbox"
+                            checked={confirmationRevelee}
+                            onChange={() => setConfirmationRevelee(!confirmationRevelee)}
+                          />
+                          <label
+                            className="fr-password__checkbox fr-label"
+                            htmlFor="creer-espace-confirmation-toggle"
+                          >
+                            {confirmationRevelee ? "Masquer" : "Afficher"}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="fr-fieldset fr-my-2w">
+                      <div className="fr-fieldset__content">
+                        <div className="fr-checkbox-group">
+                          <input
+                            type="checkbox"
+                            id="creer-espace-cgu-ok"
+                            name="cguOk"
+                            checked={cguOk}
+                            onChange={(e) => setCguOk(e.target.checked)}
+                          />
+                          <label className="fr-label" htmlFor="creer-espace-cgu-ok">
+                            Je certifie avoir lu et accepté les&nbsp;
+                            <a
+                              className="fr-link"
+                              href={routes.cgu}
+                              target="_blank"
+                            >
+                              Conditions générales d'utilisation
+                            </a>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      className="fr-btn"
+                      type="submit"
+                      disabled={envoiEnCours}
+                      style={{ width: "100%", justifyContent: "center" }}
+                    >
+                      {envoiEnCours ? "Création en cours" : "Créer mon espace"}
+                    </button>
+
+                    <p className="fr-hr-or fr-my-3w">ou</p>
+
+                    <div className="fr-tile fr-tile--horizontal fr-enlarge-link">
+                      <div className="fr-tile__body">
+                        <div className="fr-tile__content">
+                          <h3 className="fr-tile__title">
+                            <a
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setVueFranceConnect(true);
+                              }}
+                            >
+                              Avec FranceConnect
+                            </a>
+                          </h3>
+                          <p className="fr-tile__detail">
+                            Vous êtes résident et/ou citoyen français.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="fr-tile__header">
+                        <div className="fr-tile__pictogram">
+                          <svg aria-hidden="true" className="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
+                            <use className="fr-artwork-decorative" href="/dsfr/artwork/pictograms/digital/avatar.svg#artwork-decorative"></use>
+                            <use className="fr-artwork-minor" href="/dsfr/artwork/pictograms/digital/avatar.svg#artwork-minor"></use>
+                            <use className="fr-artwork-major" href="/dsfr/artwork/pictograms/digital/avatar.svg#artwork-major"></use>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 ReactDOM.createRoot(document.getElementById("react-app") as HTMLElement).render(
   <React.StrictMode>
     <>
-      <CreationDeCompteApp token={token} routes={routes} />
+      {routesCreerEspace ? (
+        <CreerEspaceApp
+          token={token}
+          routes={routesCreerEspace}
+          identifiant={identifiantCreerEspace}
+        />
+      ) : (
+        <CreationDeCompteApp token={token} routes={routes} />
+      )}
     </>
   </React.StrictMode>,
 );

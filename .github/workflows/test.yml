@@ -229,9 +229,7 @@ jobs:
           node-version: 24.x
 
       - name: Install system packages
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: poppler-utils
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
 
       - name: Cache composer dependencies
         uses: actions/cache@v5
