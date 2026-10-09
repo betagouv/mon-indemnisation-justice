@@ -17,10 +17,21 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Twig\Environment;
 
 class DocumentManager
 {
+    /**
+     * Types de fichiers acceptés en pièce jointe, associés à leur extension de stockage.
+     */
+    public const array TYPES_AUTORISES = [
+        'application/pdf' => 'pdf',
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+
     public function __construct(
         #[Target('default.storage')]
         protected readonly FilesystemOperator $storage,
@@ -57,23 +68,43 @@ class DocumentManager
         );
     }
 
+    /**
+     * Vérifie le contenu réel du fichier téléversé et renvoie son type MIME, qui doit faire partie de TYPES_AUTORISES.
+     *
+     * Le type est détecté dans le contenu, et non d'après le nom ou le type annoncés par le client.
+     *
+     * @throws BadRequestHttpException
+     */
+    public function verifierFichierTeleverse(UploadedFile $fichierTeleverse): string
+    {
+        $mime = $fichierTeleverse->getMimeType() ?? '';
+
+        if (!array_key_exists($mime, self::TYPES_AUTORISES)) {
+            throw new BadRequestHttpException('Le format du fichier n\'est pas valide (jpg, png, webp, pdf)');
+        }
+
+        return $mime;
+    }
+
     public function ajouterFichierTeleverse(Dossier $dossier, UploadedFile $fichierTeleverse, DocumentType $type, bool $estAjoutRequerant = true): Document
     {
+        $mime = $this->verifierFichierTeleverse($fichierTeleverse);
+
         return $this->ajouterDocument(
             $dossier,
             $dossier->getOrCreateDocument($type)
                 ->setOriginalFilename($fichierTeleverse->getClientOriginalName())
                 ->setType($type)
-                ->setMime($fichierTeleverse->getClientMimeType())
+                ->setMime($mime)
                 ->setAjoutRequerant($estAjoutRequerant),
             $fichierTeleverse->getContent(),
-            $fichierTeleverse->guessExtension() ?? $fichierTeleverse->getExtension()
+            self::TYPES_AUTORISES[$mime]
         );
     }
 
     public function ajouterDocument(Dossier $dossier, Document $document, string $contenu, string $extension): Document
     {
-        $document = $this->enregistrerDocument($document, $contenu);
+        $document = $this->enregistrerDocument($document, $contenu, $extension);
 
         $this->em->persist($dossier);
         $this->em->flush();
@@ -81,10 +112,10 @@ class DocumentManager
         return $document;
     }
 
-    public function enregistrerDocument(Document $document, string $contenu): Document
+    public function enregistrerDocument(Document $document, string $contenu, ?string $extension = null): Document
     {
         try {
-            $nom = sprintf('%s.%s', hash('sha256', $contenu), $this->calculerExtension($document->getOriginalFilename()));
+            $nom = sprintf('%s.%s', hash('sha256', $contenu), $extension ?? $this->calculerExtension($document->getOriginalFilename()));
             $this->storage->write($nom, $contenu);
 
             if (!$this->storage->fileExists($nom)) {
@@ -176,11 +207,33 @@ class DocumentManager
 
     public function calculerExtension(string $cheminFichier): string
     {
-        return pathinfo($cheminFichier, PATHINFO_EXTENSION) ?? match ($mime = $this->calculerTypeMime($cheminFichier)) {
-            'application/pdf' => 'pdf',
-            'image/jpeg', 'image/png', 'image/gif', 'image/webp' => preg_replace('image/', '', $mime),
-            default => 'txt',
-        };
+        $extension = pathinfo($cheminFichier, PATHINFO_EXTENSION);
+
+        return '' !== $extension ? $extension : 'bin';
+    }
+
+    /**
+     * En-têtes de restitution d'une pièce jointe. Seuls les PDF et les images sont affichés dans le navigateur ; les
+     * autres types sont forcés en téléchargement, pour qu'un contenu actif (HTML, SVG) ne soit jamais exécuté dans
+     * l'application.
+     *
+     * @return array<string, string>
+     */
+    public function entetesRestitution(Document $document, bool $telechargement = false): array
+    {
+        $mime = $document->getMime() ?? '';
+        $affichageDansNavigateur = array_key_exists($mime, self::TYPES_AUTORISES);
+        $nomFichier = str_replace(['"', "\r", "\n"], '', $document->getOriginalFilename());
+
+        return [
+            'Content-Type' => $affichageDansNavigateur ? $mime : 'application/octet-stream',
+            'Content-Disposition' => sprintf(
+                '%sfilename="%s"',
+                $telechargement || !$affichageDansNavigateur ? 'attachment;' : '',
+                mb_convert_encoding($nomFichier, 'ISO-8859-1', 'UTF-8')
+            ),
+            'X-Content-Type-Options' => 'nosniff',
+        ];
     }
 
     public function genererListeDocumentsATransmettre(Dossier $dossier): \ZipArchive
