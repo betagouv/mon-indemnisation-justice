@@ -24,5 +24,5 @@ jobs:
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
         run: |
-          clever link $CC_APP_ID --alias app-develop-web
-          clever deploy --alias app-develop-web --force --same-commit-policy restart
+          clever link $CC_APP_ID --alias mij-develop
+          clever deploy --alias mij-develop --force --same-commit-policy restart
