@@ -36,4 +36,3 @@ insert into agents (email, nom, prenom, roles, identifiant, uid, administration_
 EOF
 fi
 
-frankenphp php-server -r /app/public -a /app/public/index.php

@@ -14,4 +14,3 @@ if [ -z "${INSTANCE_NUMBER}" ] || [ ${INSTANCE_NUMBER} == '0' ]; then
   "${SYMFONY_ROOT}/bin/console" doctrine:fixtures:load --no-interaction --purge-with-truncate
 fi
 
-frankenphp php-server -r /app/public -a /app/public/index.php

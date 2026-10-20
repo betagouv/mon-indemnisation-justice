@@ -23,7 +23,12 @@ yarn install --prod --frozen-lockfile
 yarn build --outDir="${ROOT}/backend/public/build" --base=/build
 
 # 4. Préparation du script de lancement
-if [ -f "${ROOT}/clevercloud/demarrage_${APP_ENV}.sh" ]; then
-  cp "${ROOT}/clevercloud/demarrage_${APP_ENV}.sh" "${ROOT}/clevercloud/hooks/pre_run.sh"
+if [ -f "${ROOT}/clevercloud/scripts/demarrage_${APP_ENV}.sh" ]; then
+  cp "${ROOT}/clevercloud/scripts/demarrage_${APP_ENV}.sh" "${ROOT}/clevercloud/hooks/pre_run.sh"
   chmod +x "${ROOT}/clevercloud/hooks/pre_run.sh"
+else
+  echo "Fichier ${ROOT}/clevercloud/scripts/demarrage_${APP_ENV}.sh introuvable"
+  ls -la "${ROOT}/clevercloud/scripts/"
 fi
+
+ls -la "${ROOT}/clevercloud/hooks/"

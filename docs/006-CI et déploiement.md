@@ -33,9 +33,11 @@ développement permettant de jouer les fixtures de test
 * `CC_PRE_BUILD_HOOK` : avant d'installer les dépendances Composer, joue [le script `clevercloud/hooks/pre_build.sh`](../clever/hooks/pre_build.sh)
 qui
 * 1. installe les dépendances Node et génère les assets frontend
-* 2. installe `firefox` en version _headless_ nécessaire à l'impression des documents en PDF via `puppeteer`
+* 2. installe `firefox` en version _headless_ nécessaire à l'impression des documents en PDF via `puppeteer`. Pour garder
+le binaire téléchargé dans le cache du conteneur qui sera construit, on définit `PUPPETEER_CACHE_DIR` à `$ROOT/.puppeteer`
 * 3. prépare le script de lancement spécifique à l'environnement, si défini dans `clevercloud/scripts`, ce dossier étant, par
-sécurité, exclu du cache de CleverCloud pour ne pas risquer d'être exécuté à tort  
+sécurité, exclu du cache de CleverCloud pour ne pas risquer d'être exécuté à tort (via la valeur `clevercloud/scripts` pour
+`CC_IGNORE_FROM_BUILDCACHE`)
 * `CC_PRE_RUN_HOOK` : pointe vers le script `clevercloud/hooks/pre_run.sh` préparé à l'étape précédente
 * `CC_WEBROOT` : informe FrankenPHP que le point d'entrée se situe sous `/backend/public`
 
