@@ -30,13 +30,13 @@ Celui-ci est configuré de la manière suivante :
 * `CC_PHP_DEV_DEPENDENCIES` : défini _uniquement_ sur le site de recette avec `install` pour installer les dépendances de
 développement permettant de jouer les fixtures de test
 * `CC_PHP_VERSION` : PHP tourne en  version `8.5`
-* `CC_PRE_BUILD_HOOK` : avant d'installer les dépendances Compposer, joue [le script `clever/hooks/pre_build.sh`](../clever/hooks/pre_build.sh)
+* `CC_PRE_BUILD_HOOK` : avant d'installer les dépendances Composer, joue [le script `clevercloud/hooks/pre_build.sh`](../clever/hooks/pre_build.sh)
 qui
 * 1. installe les dépendances Node et génère les assets frontend
 * 2. installe `firefox` en version _headless_ nécessaire à l'impression des documents en PDF via `puppeteer`
-* 3. prépare le script de lancement spécifique à l'environnement, si défini dans `clever/scripts`, ce dossier étant, par
+* 3. prépare le script de lancement spécifique à l'environnement, si défini dans `clevercloud/scripts`, ce dossier étant, par
 sécurité, exclu du cache de CleverCloud pour ne pas risquer d'être exécuté à tort  
-* `CC_PRE_RUN_HOOK` : pointe vers le script `clever/hooks/pre_run.sh` préparé à l'étape précédente
+* `CC_PRE_RUN_HOOK` : pointe vers le script `clevercloud/hooks/pre_run.sh` préparé à l'étape précédente
 * `CC_WEBROOT` : informe FrankenPHP que le point d'entrée se situe sous `/backend/public`
 
 

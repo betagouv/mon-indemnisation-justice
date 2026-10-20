@@ -2,6 +2,7 @@
 
 # ROOT fait référence à la racine du dépôt
 ROOT=$(cd $(dirname ${BASH_SOURCE[0]})/../.. && pwd)
+SYMFONY_ROOT="${ROOT}/backend"
 
 echo "Démarrage de l'instance #${INSTANCE_NUMBER} sur l'environnement ${APP_ENV}";
 
@@ -15,7 +16,7 @@ if [ -z "${INSTANCE_NUMBER}" ] || [ ${INSTANCE_NUMBER} == '0' ]; then
   done
 
   # 2: jouer les migrations Doctrine
-  "${ROOT}/bin/console" doctrine:migration:migrate --no-interaction --all-or-nothing;
+  "${SYMFONY_ROOT}/bin/console" doctrine:migration:migrate --no-interaction --all-or-nothing;
 
   # 3: charger les données de test
   psql "${DATABASE_URL/\?*/}" << EOF
