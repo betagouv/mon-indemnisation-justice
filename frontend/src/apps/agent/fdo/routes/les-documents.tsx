@@ -1,5 +1,4 @@
 import urlAvisIntervention from "@fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte.pdf";
-import urlAvisInterventionGN from "@fdo/fichiers/documents/avis-d-intervention-en-cas-de-bris-de-porte_gn.pdf";
 import urlGuideDeclarationPN from "@fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre-pn.pdf";
 import urlGuideDeclaration from "@fdo/fichiers/documents/guide-de-declaration-de-bris-de-porte-a-destination-des-Forces-de-l-ordre.pdf";
 import urlGuideRemiseAvis from "@fdo/fichiers/documents/guide-de-remise-de-l-avis-d-intervention-apres-un-bris-de-porte.pdf";
@@ -50,7 +49,7 @@ export const Route = createFileRoute("/les-documents")({
                     label="Avis d’intervention à remettre à l’usager"
                     details={""}
                     linkProps={{
-                      href: `${window.location.origin}${estGN ? urlAvisInterventionGN : urlAvisIntervention}`,
+                      href: `${window.location.origin}${urlAvisIntervention}`,
                       target: "_self",
                       download: true,
                     }}
@@ -58,7 +57,7 @@ export const Route = createFileRoute("/les-documents")({
 
                   <div className="fr-grid-row fr-col-12">
                     <object
-                      data={estGN ? urlAvisInterventionGN : urlAvisIntervention}
+                      data={urlAvisIntervention}
                       type="application/pdf"
                       style={{ width: "100%", aspectRatio: "210/297" }}
                     ></object>
