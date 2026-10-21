@@ -1,0 +1,23 @@
+{
+  "name": "maintenance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "public/index.html",
+  "scripts": {
+    "postinstall": "cp -r ./node_modules/@gouvfr/dsfr/dist public/dsfr"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.15.1",
+      "onFail": "download"
+    }
+  },
+  "type": "module",
+  "dependencies": {
+    "@gouvfr/dsfr": "^1.15.4"
+  }
+}
