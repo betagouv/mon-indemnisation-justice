@@ -38,15 +38,6 @@ docker compose build
 docker compose up -d
 ```
 
-Comme l'image de base de `symfony` peut être amenée à évoluer (elle est construite en CI par
-[le workflow `build-docker-image.yml`](../.github/workflows/build-docker-image.yml)), il est nécessaire de reconstruire
-le conteneur régulièrement:
-
-```bash
-docker compose build --pull symfony 
-docker compose up -d --force-recreate symfony 
-```
-
 Pour exécuter une commande, exemple ici `cat composer.json`, sur le conteneur du service `symfony`, lancez :
 
 ```bash

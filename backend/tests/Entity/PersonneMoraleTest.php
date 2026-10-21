@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Entity;
+namespace MonIndemnisationJustice\Tests\Entity;
 
 use MonIndemnisationJustice\Entity\PersonneMorale;
 use MonIndemnisationJustice\Entity\PersonneMoraleType;
