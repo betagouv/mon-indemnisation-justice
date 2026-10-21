@@ -1,0 +1,4 @@
+[
+  "17 5 * * * $ROOT/backend/bin/console mij:importer:geo",
+  "31 5 * * * $ROOT/bin/console mij:importer:fdo"
+]
