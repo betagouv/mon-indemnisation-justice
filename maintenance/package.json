@@ -1,0 +1,13 @@
+{
+  "name": "maintenance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "public/index.html",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@gouvfr/dsfr": "^1.15.4"
+  }
+}
