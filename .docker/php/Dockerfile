@@ -56,3 +56,41 @@ ENV TZ=Europe/Paris
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /app
+
+FROM frankenphp AS dev
+
+ENV APP_ENV=dev
+
+# Hors de /app pour ne pas être masqué par le volume `./backend:/app` en dev
+COPY .docker/php/demarrage.sh /usr/local/bin/demarrage.sh
+
+RUN chmod +x /usr/local/bin/demarrage.sh
+
+ENTRYPOINT ["/usr/local/bin/demarrage.sh"]
+
+CMD ["frankenphp", "php-server", "-r", "/app/public", "-a", "/app/public/index.php"]
+
+FROM dev AS test
+
+ENV APP_ENV=test
+
+COPY backend /app
+
+RUN --mount=type=cache,target=/root/.cache/composer COMPOSER_CACHE_DIR=/root/.cache/composer composer install --no-ansi ${COMPOSER_OPTS} --no-progress --optimize-autoloader
+# Installer les dépendances javascript (puppeteer & firefox pour l'impression PDF)
+RUN yarn install && npx puppeteer browsers install firefox
+
+COPY frontend/package.json frontend/yarn.lock /app/assets/
+
+WORKDIR /app/assets
+
+RUN --mount=type=cache,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn yarn install --prod --frozen-lockfile
+
+COPY frontend /app/assets
+
+RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build --outDir=/app/public/build --base=/build
+
+RUN rm -Rf /app/assets
+
+WORKDIR /app
+
