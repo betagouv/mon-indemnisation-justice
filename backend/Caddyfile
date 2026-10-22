@@ -1,0 +1,29 @@
+(common) {
+  header -Server
+}
+
+
+{
+	frankenphp
+}
+
+:{$CC_FRANKENPHP_PORT:8080} {
+	root * ./public
+	encode zstd br gzip
+
+	# Logs d'accès (format JSON, sur la sortie standard)
+	log {
+		output stdout
+		format json
+	}
+
+	header {
+		# Suppression des headers `Server` et `X-Powered-By` jugés sensibles
+		-Server
+		-X-Powered-By
+		# HSTS : force l'usage de HTTPS côté navigateur pendant 1 an
+		Strict-Transport-Security "max-age=31536000"
+	}
+
+	php_server
+}
