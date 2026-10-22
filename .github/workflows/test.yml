@@ -223,7 +223,7 @@ jobs:
       PRO_CONNECT_CLIENT_SECRET: 99b05ed4b5ae45c21e25c75ddd91e48b0d97f388
       MAILPIT_BASE_URL: http://localhost:8025
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 24.x
@@ -300,7 +300,7 @@ jobs:
   test-frontend:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 24.x
@@ -382,7 +382,7 @@ jobs:
       PRO_CONNECT_CLIENT_SECRET: 99b05ed4b5ae45c21e25c75ddd91e48b0d97f388
       MAILPIT_BASE_URL: http://localhost:8025
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 24.x
