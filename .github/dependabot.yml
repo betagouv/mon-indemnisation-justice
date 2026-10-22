@@ -1,0 +1,24 @@
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "06:00" # UTC
+
+  - package-ecosystem: "composer"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "06:00" # UTC
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "06:00" # UTC
