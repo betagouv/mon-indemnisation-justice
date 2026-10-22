@@ -93,6 +93,7 @@ services:
       - INSTANCE_NUMBER=0
       - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/test
       - CC_FRANKENPHP_PORT=80
+      - APP_HOME=/app
     volumes:
       - .docker/php/fichiers:/app/fichiers
       - ./backend/.env.test:/app/.env.test
