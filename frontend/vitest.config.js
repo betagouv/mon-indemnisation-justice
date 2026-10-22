@@ -7,6 +7,14 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts"],
   },
+  // Vite 8 transpile via Oxc (et non plus esbuild) : les décorateurs "legacy" (class-validator, inversify, ...) doivent
+  // être explicitement activés, `tests/` n'étant pas couvert par le `tsconfig.json`
+  oxc: {
+    decorator: {
+      legacy: true,
+      emitDecoratorMetadata: true,
+    },
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
