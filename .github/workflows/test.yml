@@ -224,7 +224,7 @@ jobs:
       MAILPIT_BASE_URL: http://localhost:8025
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.x
 
@@ -301,7 +301,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.x
 
@@ -383,7 +383,7 @@ jobs:
       MAILPIT_BASE_URL: http://localhost:8025
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.x
 
