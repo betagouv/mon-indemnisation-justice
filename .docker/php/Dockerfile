@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:1.12.7-php8.5-trixie AS frankenphp
+FROM dunglas/frankenphp:1.13-php8.5.12-trixie AS frankenphp
 
 # Extra .bashrc config
 RUN echo "alias ll='ls -l'" > /root/.bashrc
@@ -91,6 +91,8 @@ COPY frontend /app/assets
 RUN --mount=type=cache,target=/root/.vite VITE_CACHE_DIR=/root/.vite yarn build --outDir=/app/public/build --base=/build
 
 RUN rm -Rf /app/assets
+
+CMD ["frankenphp", "run", "--config", "/app/Caddyfile"]
 
 WORKDIR /app
 
