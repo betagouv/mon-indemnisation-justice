@@ -1,14 +1,20 @@
-(common) {
-  header -Server
-}
-
-
 {
 	frankenphp
 }
 
+(headers_securite) {
+	header {
+		# Suppression des headers `Server` et `X-Powered-By` jugés sensibles
+		-Server
+		-X-Powered-By
+		# HSTS : force l'usage de HTTPS côté navigateur pendant 1 an
+		Strict-Transport-Security "max-age=31536000"
+	}
+}
+
 :{$CC_FRANKENPHP_PORT:8080} {
-	root * ./public
+	# Sur CleverCloud : `$APP_HOME` + `$CC_WEBROOT` (`/backend/public`), en local (Docker) : `/app/public`
+	root * {$APP_HOME:/app}{$CC_WEBROOT:/public}
 	encode zstd br gzip
 
 	# Logs d'accès (format JSON, sur la sortie standard)
@@ -17,13 +23,14 @@
 		format json
 	}
 
-	header {
-		# Suppression des headers `Server` et `X-Powered-By` jugés sensibles
-		-Server
-		-X-Powered-By
-		# HSTS : force l'usage de HTTPS côté navigateur pendant 1 an
-		Strict-Transport-Security "max-age=31536000"
-	}
+	import headers_securite
 
 	php_server
+
+	# Les réponses d'erreur générées par Caddy (404, 500…) court-circuitent la directive `header` ci-dessus : il faut
+	# donc la réappliquer ici
+	handle_errors {
+		import headers_securite
+		respond "{err.status_code} {err.status_text}"
+	}
 }
