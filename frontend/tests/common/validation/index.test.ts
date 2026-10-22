@@ -1,8 +1,7 @@
-import { Inscription } from "@/apps/requerant/dossier/models/Inscription.ts";
 import { IsEqualTo } from "@/common/validation";
 import { plainToInstance } from "class-transformer";
-import { validate, validateSync, ValidationOptions } from "class-validator";
-import { assert, describe, expect, it } from "vitest";
+import { validateSync } from "class-validator";
+import { describe, expect, it } from "vitest";
 
 describe("La contrainte IsEqualTo", () => {
   it("doit être satisfaite quand les valeurs sont égales", () => {

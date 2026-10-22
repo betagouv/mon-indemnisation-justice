@@ -40,7 +40,7 @@ sécurité, exclu du cache de CleverCloud pour ne pas risquer d'être exécuté 
 `CC_IGNORE_FROM_BUILDCACHE`)
 * `CC_PRE_RUN_HOOK` : pointe vers le script `clevercloud/hooks/pre_run.sh` préparé à l'étape précédente
 * `CC_WEBROOT` : informe FrankenPHP que le point d'entrée se situe sous `/backend/public`
-
+* `CC_RUN_COMMAND` : précise comment est configuré FrankenPHP
 
 > [!NOTE]  
 > Le déploiement s'appuie [l'application CLI `clever-tools`](https://github.com/CleverCloud/clever-tools) qui pourrait de
