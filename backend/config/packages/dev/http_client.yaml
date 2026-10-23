@@ -1,0 +1,8 @@
+framework:
+  http_client:
+    scoped_clients:
+      yousign.client:
+        base_uri: 'https://api-sandbox.yousign.app/v3/'
+        headers:
+          Accept: 'application/json'
+          Authorization: 'Bearer %env(YOUSIGN_SANDBOX_API_KEY)%'

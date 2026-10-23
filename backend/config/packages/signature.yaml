@@ -1,0 +1,3 @@
+services:
+  MonIndemnisationJustice\Service\Signature\GestionnaireSignatureRequerantInterface:
+    '@MonIndemnisationJustice\Service\Signature\GestionnaireSignatureRequerantYoutrust'

@@ -36,7 +36,7 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   # The Symfony app
-  symfony: &sf
+  symfony:
     hostname: symfony
     build:
       context: .
