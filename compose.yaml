@@ -36,7 +36,7 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   # The Symfony app
-  symfony: &sf
+  symfony:
     hostname: symfony
     build:
       context: .
@@ -146,6 +146,22 @@ services:
     working_dir: /app
     volumes:
       - ./.docker/idconnect:/app/data/
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    depends_on:
+      - symfony
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+      - NGROK_DOMAIN=${NGROK_DOMAIN}
+    # Renvoie le domaine $NGROK_DOMAIN vers Symfony
+    command: http symfony:80 --url=${NGROK_DOMAIN} --log=stdout
+    ports:
+      # Restreindre l'accès au port à l'hôte uniquement
+      - "127.0.0.1:4040:4040"
+    profiles:
+      - webhooks
 
   playwright:
     profiles:
