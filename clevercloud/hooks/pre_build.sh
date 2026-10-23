@@ -32,3 +32,8 @@ else
 fi
 
 ls -la "${ROOT}/clevercloud/hooks/"
+
+# 5. Utilitaires diverses
+
+# Ouvrir un shell `psql` sur la base de données
+echo 'alias database="psql \${DATABASE_URL/\?*/}"' >> ~/.bashrc
