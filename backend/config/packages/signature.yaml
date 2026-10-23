@@ -1,0 +1,3 @@
+services:
+  MonIndemnisationJustice\Service\Signature\GestionnaireSignatureRequerantInterface:
+    factory: [ '@MonIndemnisationJustice\Service\Signature\GestionnaireSignatureRequerantFactory', 'creerGestionnaireSignatureRequerant' ]
