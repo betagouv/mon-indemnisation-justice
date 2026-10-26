@@ -229,7 +229,7 @@ jobs:
       MAILPIT_BASE_URL: http://localhost:8025
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.x
 
@@ -237,7 +237,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y poppler-utils
 
       - name: Cache composer dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: vendor
           key: backend-composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
@@ -253,13 +253,13 @@ jobs:
         working-directory: backend
 
       - name: Cache backend yarn dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: backend/node_modules
           key: backend-yarn-backend-${{ runner.os }}-${{ hashFiles('backend/yarn.lock') }}
 
       - name: Cache frontend yarn dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: frontend/node_modules
           key: backend-yarn-frontend-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
@@ -306,12 +306,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.x
 
       - name: Cache yarn dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: frontend/node_modules
           key: frontend-yarn-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
@@ -388,7 +388,7 @@ jobs:
       MAILPIT_BASE_URL: http://localhost:8025
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.x
 
@@ -405,7 +405,7 @@ jobs:
 
       - name: Cache composer dependencies
         id: cache-composer
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: backend/vendor
           key: end2end-composer-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
@@ -417,7 +417,7 @@ jobs:
 
       - name: Cache frontend yarn dependencies
         id: cache-yarn-frontend
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: frontend/node_modules
           key: end2end-yarn-frontend-${{ runner.os }}-${{ hashFiles('frontend/yarn.lock') }}
@@ -429,7 +429,7 @@ jobs:
 
       - name: Cache yarn dependencies
         id: cache-yarn-end2end
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             end2end/node_modules
