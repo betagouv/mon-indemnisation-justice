@@ -14,6 +14,11 @@ permissions:
   checks: write
   pull-requests: write
 
+# Annuler les tests sur une branche si un commit vient d'être poussé par dessus (ex: rebase, merge en rafale sur les branches dependabot)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test-backend:
     runs-on: ubuntu-24.04
