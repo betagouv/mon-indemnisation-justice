@@ -18,7 +18,7 @@
     "doctrine/doctrine-migrations-bundle": "^4.0",
     "doctrine/orm": "^3.6",
     "firebase/php-jwt": "^7.0",
-    "guzzlehttp/guzzle": "^7.9",
+    "guzzlehttp/guzzle": "^8.3",
     "league/flysystem-aws-s3-v3": "^3.0",
     "league/flysystem-bundle": "^3.3",
     "nelmio/cors-bundle": "^2.4",
