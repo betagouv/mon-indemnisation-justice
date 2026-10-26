@@ -330,7 +330,7 @@ jobs:
 
       - name: Report frontend test result
         if: ${{ !cancelled() }}
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         with:
           name: "Rapport des tests frontend"
           report-title: "Rapport des tests frontend"
@@ -470,7 +470,7 @@ jobs:
 
       - name: Report end2end test result
         if: ${{ !cancelled() }}
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         with:
           name: "Rapport des tests fonctionnels"
           report-title: "Rapport des tests fonctionnels"
