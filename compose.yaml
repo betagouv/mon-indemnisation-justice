@@ -62,6 +62,7 @@ services:
       - mailpit
       - vite
       - idconnect
+      - nginx
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
       - ./backend:/app
@@ -85,6 +86,12 @@ services:
         - APP_SECRET=bafc23a0315b735289c499a886798934
         - DATABASE_URL=postgresql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&charset=utf8
         - BASE_URL=https://mon-indemnisation.justice.gouv.test
+    depends_on:
+      - postgres
+      - mailpit
+      - idconnect
+      - nginx
+      - docuseal
     environment:
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
@@ -146,6 +153,26 @@ services:
     working_dir: /app
     volumes:
       - ./.docker/idconnect:/app/data/
+
+  # DocuSeal: fournisseur de signature électronique local (alternative à Youtrust)
+  docuseal:
+    image: docuseal/docuseal:3.3.4
+    hostname: docuseal
+    depends_on:
+      - mailpit
+    environment:
+      # Base SQLite stockée dans le volume `/data/docuseal`
+      SECRET_KEY_BASE: ${DOCUSEAL_SECRET_KEY_BASE:-docuseal-dev-secret-key-base-0123456789abcdef}
+      # Envoi des emails via Mailpit
+      SMTP_ADDRESS: mailpit
+      SMTP_PORT: 1025
+      SMTP_DOMAIN: mon-indemnisation.justice.gouv.dev
+      SMTP_FROM: docuseal@mon-indemnisation.justice.gouv.dev
+      SMTP_ENABLE_STARTTLS: false
+    volumes:
+      - ./.docker/docuseal:/data/docuseal
+    ports:
+      - "8081:3000"
 
   ngrok:
     image: ngrok/ngrok:latest

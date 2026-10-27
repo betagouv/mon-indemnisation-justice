@@ -2,6 +2,8 @@
 
 ## Signature électronique requérant
 
+### En production
+
 Nous utilisons Youtrust comme prestataire de signature électronique.
 
 Pour les environnements de développement et de recette, l'application interagit avec [l'environnement "bac à sable"](https://developers.youtrust.com/docs/environments-new).
@@ -35,3 +37,10 @@ La liste de tous les évènements est disponible [ici](https://developers.youtru
 L'intégration sur un poste de développement nécessitant d'être joignable par les serveurs de bac à sable de Youtrust, il est
 utile d'ouvrir un tunnel vers un nom de domaine accessible sur le net. Un service `ngrok` est disponible en ce sens, à configurer
 localement par chaque développeur.
+
+### En test
+
+Sur l'environnement de test, pour éviter de dépendre d'un service externe susceptible de bloquer la CI, nous utilisons un
+prestataire local via [DocuSeal](https://www.docuseal.com/signing-api) qui permet les mêmes fonctionnalités que Youtrust.
+
+À noter que si Youtrust n'est pas configuré sur l'environnement de développement, c'est DocuSeal qui sera attribué.
