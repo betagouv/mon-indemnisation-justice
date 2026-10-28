@@ -10,11 +10,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Signature électronique via une instance DocuSeal auto-hébergée, alternative locale à Youtrust.
- *
- * Le document à signer est le modèle DocuSeal `DOCUSEAL_TEMPLATE_ID`, créé au préalable dans l'interface de DocuSeal
- * avec un unique signataire : l'édition open source ne permet pas de soumettre la déclaration d'acceptation générée
- * pour le dossier.
+ * Signature électronique via DocuSeal, dans son édition Pro (voir {@see DocusealClient}) : la déclaration d'acceptation
+ * générée pour le dossier est téléversée à chaque soumission.
  */
 class GestionnaireSignatureRequerantDocuseal implements GestionnaireSignatureRequerantInterface
 {
@@ -31,11 +28,15 @@ class GestionnaireSignatureRequerantDocuseal implements GestionnaireSignatureReq
      */
     protected const int TOLERANCE_SIGNATURE_SECONDES = 5 * 60;
 
+    /**
+     * Zone du champ de signature sur la dernière page de la déclaration d'acceptation, en pixels (page A4 de 595 x 842).
+     */
+    protected const array ZONE_SIGNATURE = ['x' => 56, 'y' => 620, 'w' => 200, 'h' => 60];
+
     public function __construct(
         protected readonly DocusealClient $docusealClient,
+        protected readonly GenerateurDocumentASigner $generateurDocumentASigner,
         protected readonly EntityManagerInterface $em,
-        #[Autowire(env: 'int:DOCUSEAL_TEMPLATE_ID')]
-        protected readonly int $templateId,
         // Secret HMAC du webhook, visible dans DocuSeal sous Paramètres > Webhooks > Sécurité > HMAC
         #[Autowire(env: 'default::DOCUSEAL_WEBHOOK_HMAC_SECRET')]
         protected readonly ?string $secretHmacWebhook = null,
@@ -45,10 +46,13 @@ class GestionnaireSignatureRequerantDocuseal implements GestionnaireSignatureReq
     public function creerRequeteSignature(Dossier $dossier): RequeteSignatureRequerant
     {
         $requerant = $dossier->getRequerantPersonne();
+        $declarationAcceptation = $this->generateurDocumentASigner->genererDeclarationAcceptation($dossier);
 
-        $idSoumission = $this->docusealClient->creerSoumission(
-            $this->templateId,
+        $idSoumission = $this->docusealClient->creerSoumissionDepuisPdf(
             "Acceptation de l'indemnisation {$dossier->getReference()}",
+            "Déclaration d'acceptation {$dossier->getReference()}",
+            $declarationAcceptation->contenu,
+            self::ZONE_SIGNATURE + ['page' => $declarationAcceptation->nombrePages],
             "{$requerant->getPrenom()} {$requerant->getNom()}",
             $requerant->getCourriel() ?? $dossier->getUsager()->getEmail(),
             $dossier->getReference(),

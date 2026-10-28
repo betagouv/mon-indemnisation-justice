@@ -8,10 +8,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
- * Client de l'API d'une instance DocuSeal auto-hébergée (https://www.docuseal.com/docs/api).
- *
- * L'édition open source ne permet de créer des soumissions qu'à partir d'un modèle (template) existant : la création
- * depuis un PDF (`POST /submissions/pdf`) est réservée à l'édition Pro.
+ * Client de l'API DocuSeal (https://www.docuseal.com/docs/api), dans son édition Pro (instance auto-hébergée sous
+ * licence, ou offre cloud via https://api.docuseal.eu) : seule cette édition permet de créer une soumission depuis un
+ * PDF (`POST /submissions/pdf`).
  */
 class DocusealClient
 {
@@ -34,26 +33,53 @@ class DocusealClient
     }
 
     /**
-     * Crée une soumission à partir du modèle `$templateId` pour un unique signataire, et retourne l'identifiant de
-     * la soumission.
+     * Crée une soumission à partir du document PDF `$contenuPdf`, pour un unique signataire dont le champ de signature
+     * est positionné par `$zoneSignature` (clés `x`, `y`, `w`, `h` et `page`, numérotée à partir de 1), et retourne
+     * l'identifiant de la soumission.
      *
-     * Voir https://www.docuseal.com/docs/api#create-a-submission
+     * Voir https://www.docuseal.com/docs/api#create-a-submission-from-pdf
+     *
+     * @param array{x: float, y: float, w: float, h: float, page: int} $zoneSignature
      *
      * @throws TransportExceptionInterface
      * @throws \Exception
      */
-    public function creerSoumission(int $templateId, string $nom, string $nomSignataire, string $courrielSignataire, ?string $identifiantExterne = null): int
-    {
+    public function creerSoumissionDepuisPdf(
+        string $nom,
+        string $nomDocument,
+        string $contenuPdf,
+        array $zoneSignature,
+        string $nomSignataire,
+        string $courrielSignataire,
+        ?string $identifiantExterne = null,
+    ): int {
+        $role = 'Requérant';
+
         $response = $this->httpClient->request(
             'POST',
-            'submissions',
+            'submissions/pdf',
             [
                 'json' => [
-                    'template_id' => $templateId,
                     'name' => $nom,
                     'send_email' => true,
+                    'documents' => [
+                        [
+                            'name' => $nomDocument,
+                            'file' => base64_encode($contenuPdf),
+                            'fields' => [
+                                [
+                                    'name' => 'Signature',
+                                    'type' => 'signature',
+                                    'role' => $role,
+                                    'required' => true,
+                                    'areas' => [$zoneSignature],
+                                ],
+                            ],
+                        ],
+                    ],
                     'submitters' => [
                         array_filter([
+                            'role' => $role,
                             'name' => $nomSignataire,
                             'email' => $courrielSignataire,
                             'external_id' => $identifiantExterne,
@@ -63,14 +89,16 @@ class DocusealClient
             ]
         );
 
-        // La réponse est la liste des signataires créés, chacun portant l'identifiant de sa soumission
         $data = $this->extraireDonneesReponse($response);
 
-        if (!isset($data[0]['submission_id'])) {
+        // La réponse est la soumission créée ; on accepte aussi la liste de signataires renvoyée par `POST /submissions`
+        $idSoumission = $data['id'] ?? $data[0]['submission_id'] ?? null;
+
+        if (null === $idSoumission) {
             throw new \Exception("Réponse inattendue de l'API DocuSeal lors de la création de la soumission.");
         }
 
-        return (int) $data[0]['submission_id'];
+        return (int) $idSoumission;
     }
 
     protected function extraireDonneesReponse(ResponseInterface $response): array

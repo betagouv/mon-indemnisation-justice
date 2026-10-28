@@ -41,6 +41,21 @@ localement par chaque développeur.
 ### En test
 
 Sur l'environnement de test, pour éviter de dépendre d'un service externe susceptible de bloquer la CI, nous utilisons un
-prestataire local via [DocuSeal](https://www.docuseal.com/signing-api) qui permet les mêmes fonctionnalités que Youtrust.
+prestataire local via [Documenso](https://github.com/documenso/documenso) (service `documenso` de `compose.yaml`), qui
+permet les mêmes fonctionnalités que Youtrust : téléversement du PDF à signer par API et notification par webhook.
 
-À noter que si Youtrust n'est pas configuré sur l'environnement de développement, c'est DocuSeal qui sera attribué.
+Au premier démarrage, le conteneur génère un certificat auto-signé de scellement des documents dans
+`.docker/documenso/certificat`. Il faut ensuite, depuis l'interface sur http://localhost:8082 :
+
+1. créer un compte (les courriels de confirmation arrivent dans Mailpit, http://localhost:8025) ;
+2. créer un jeton d'API (Paramètres de l'équipe > Jetons d'API) et le reporter dans `DOCUMENSO_API_KEY` ;
+3. créer un webhook vers `http://symfony/webhooks/signature/evenement` pour l'évènement `DOCUMENT_COMPLETED`, avec pour
+   secret la valeur de `DOCUMENSO_WEBHOOK_SECRET`.
+
+À noter que si Youtrust n'est pas configuré sur l'environnement de développement, c'est Documenso qui sera attribué.
+
+### DocuSeal
+
+Une implémentation via [DocuSeal](https://www.docuseal.com/signing-api) est également disponible, activée par
+`DOCUSEAL_BASE_API_URI` si ni Youtrust ni Documenso ne sont configurés. Elle requiert l'édition **Pro** de DocuSeal (cloud
+ou auto-hébergée sous licence) : l'édition open source ne permet pas de créer une soumission depuis un PDF.

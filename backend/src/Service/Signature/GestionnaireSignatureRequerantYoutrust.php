@@ -3,10 +3,8 @@
 namespace MonIndemnisationJustice\Service\Signature;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
-use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\Signature\Youtrust\YoutrustClient;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 class GestionnaireSignatureRequerantYoutrust implements GestionnaireSignatureRequerantInterface
 {
     public function __construct(
-        protected readonly DocumentManager $documentManager,
+        protected readonly GenerateurDocumentASigner $generateurDocumentASigner,
         protected readonly YoutrustClient $youtrustClient,
         #[Autowire(env: 'YOUTRUST_WEBHOOK_ENCRYPTION_SECRET')]
         protected readonly ?string $secretChiffrementWebhook,
@@ -28,27 +26,13 @@ class GestionnaireSignatureRequerantYoutrust implements GestionnaireSignatureReq
     public function creerRequeteSignature(Dossier $dossier): RequeteSignatureRequerant
     {
         // 1. Générer la déclaration d'acceptation en mode signature
-        $declarationAcceptation = $this->documentManager
-            ->generer(
-                $dossier,
-                DocumentType::TYPE_FORMULAIRE_ACCEPTATION,
-                montantIndemnisation: $dossier->getMontantIndemnisation(),
-                contexte: [
-                    'signature' => [
-                        'date' => new \DateTimeImmutable(),
-                        'lieu' => $dossier->getRequerantPersonnePhysique()?->getAdresse()?->getLocalite() ?? $dossier->getRequerantPersonneMorale()?->getAdresse()?->getLocalite() ?? $dossier->getBrisPorte()->getAdresse()->getLocalite() ?? '',
-                        'rib' => [
-                            'type' => 'personnel',
-                        ],
-                    ],
-                ]
-            );
+        $declarationAcceptation = $this->generateurDocumentASigner->genererDeclarationAcceptation($dossier);
 
         // 2. Créer la requête de signature
         $requete = $this->youtrustClient->initiateSignatureRequest("Acceptation de l'indemnisation {$dossier->getReference()}");
 
         // 3. Téléverser le document
-        $requete = $this->youtrustClient->uploadDocument($requete, $this->documentManager->getContenuRessource($declarationAcceptation), $declarationAcceptation->getFilename());
+        $requete = $this->youtrustClient->uploadDocument($requete, $declarationAcceptation->contenu, $declarationAcceptation->nomFichier);
 
         // 4. Déclarer le requérant comme signataire
         $requete = $this->youtrustClient->addSigner(
