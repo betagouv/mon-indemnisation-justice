@@ -81,6 +81,9 @@ class Dossier
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
 
+    #[ORM\OneToOne(targetEntity: RequeteSignatureRequerant::class, mappedBy: 'dossier', cascade: ['persist', 'remove'])]
+    protected ?RequeteSignatureRequerant $requeteSignatureRequerant = null;
+
     public function __construct()
     {
         $this->brisPorte = new BrisPorte();
@@ -495,6 +498,18 @@ class Dossier
     public function setPropositionIndemnisation(float $propositionIndemnisation): self
     {
         $this->propositionIndemnisation = $propositionIndemnisation;
+
+        return $this;
+    }
+
+    public function getRequeteSignatureRequerant(): ?RequeteSignatureRequerant
+    {
+        return $this->requeteSignatureRequerant;
+    }
+
+    public function setRequeteSignatureRequerant(?RequeteSignatureRequerant $requeteSignatureRequerant): Dossier
+    {
+        $this->requeteSignatureRequerant = $requeteSignatureRequerant;
 
         return $this;
     }

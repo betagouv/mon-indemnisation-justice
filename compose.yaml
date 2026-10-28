@@ -36,7 +36,7 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   # The Symfony app
-  symfony: &sf
+  symfony:
     hostname: symfony
     build:
       context: .
@@ -62,6 +62,7 @@ services:
       - mailpit
       - vite
       - idconnect
+      - nginx
     volumes:
       # Ce partage, via un volume, est requis afin que Symfony puisse lire les manifestes produits par `encore`
       - ./backend:/app
@@ -85,6 +86,12 @@ services:
         - APP_SECRET=bafc23a0315b735289c499a886798934
         - DATABASE_URL=postgresql://precontentieux:precontentieux@postgres:5432/precontest?serverVersion=15&charset=utf8
         - BASE_URL=https://mon-indemnisation.justice.gouv.test
+    depends_on:
+      - postgres
+      - mailpit
+      - idconnect
+      - nginx
+      - documenso
     environment:
       - SYMFONY_DEPRECATIONS_HELPER=disabled
       - MAILPIT_URL=http://mailpit:8025
@@ -146,6 +153,85 @@ services:
     working_dir: /app
     volumes:
       - ./.docker/idconnect:/app/data/
+
+  # Documenso: fournisseur de signature électronique local (alternative à Youtrust), interface sur http://localhost:8082
+  documenso:
+    image: documenso/documenso:v2.20.0
+    hostname: documenso
+    restart: unless-stopped
+    depends_on:
+      documenso-postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      PORT: 3000
+      NEXTAUTH_SECRET: ${DOCUMENSO_NEXTAUTH_SECRET:-documenso-dev-nextauth-secret}
+      NEXT_PRIVATE_ENCRYPTION_KEY: ${DOCUMENSO_ENCRYPTION_KEY:-documenso-dev-encryption-key-0123456789}
+      NEXT_PRIVATE_ENCRYPTION_SECONDARY_KEY: ${DOCUMENSO_ENCRYPTION_SECONDARY_KEY:-documenso-dev-encryption-key-9876543210}
+      # URL publique, utilisée dans les liens des courriels de signature
+      NEXT_PUBLIC_WEBAPP_URL: http://localhost:8082
+      NEXT_PRIVATE_INTERNAL_WEBAPP_URL: http://localhost:3000
+      NEXT_PRIVATE_DATABASE_URL: postgresql://documenso:documenso@documenso-postgres:5432/documenso
+      # Documents stockés en base de données plutôt que sur S3
+      NEXT_PUBLIC_UPLOAD_TRANSPORT: database
+      # Envoi des emails via Mailpit
+      NEXT_PRIVATE_SMTP_TRANSPORT: smtp-auth
+      NEXT_PRIVATE_SMTP_HOST: mailpit
+      NEXT_PRIVATE_SMTP_PORT: 1025
+      NEXT_PRIVATE_SMTP_UNSAFE_IGNORE_TLS: "true"
+      NEXT_PRIVATE_SMTP_FROM_NAME: Documenso
+      NEXT_PRIVATE_SMTP_FROM_ADDRESS: documenso@mon-indemnisation.justice.gouv.dev
+      # Certificat de scellement des documents signés, auto-signé et généré au premier démarrage
+      NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH: /opt/documenso/certificat/cert.p12
+      NEXT_PRIVATE_SIGNING_PASSPHRASE: documenso
+      # Autorise les webhooks vers les conteneurs Symfony, refusés par défaut car résolus en adresses privées
+      NEXT_PRIVATE_WEBHOOK_SSRF_BYPASS_HOSTS: symfony,test
+    command:
+      - sh
+      - -c
+      - |
+        if [ ! -f /opt/documenso/certificat/cert.p12 ]; then
+          openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj "/CN=Documenso dev" -keyout /tmp/cle.pem -out /tmp/cert.pem
+          openssl pkcs12 -export -inkey /tmp/cle.pem -in /tmp/cert.pem -out /opt/documenso/certificat/cert.p12 -passout pass:documenso
+          rm /tmp/cle.pem /tmp/cert.pem
+        fi
+        exec sh start.sh
+    volumes:
+      - ./.docker/documenso/certificat:/opt/documenso/certificat
+    ports:
+      - "8082:3000"
+
+  documenso-postgres:
+    image: postgres:15.8-alpine
+    hostname: documenso-postgres
+    environment:
+      POSTGRES_DB: documenso
+      POSTGRES_USER: documenso
+      POSTGRES_PASSWORD: documenso
+    volumes:
+      - ./.docker/documenso/postgres:/var/lib/postgresql/data:rw
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U documenso -d documenso" ]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    depends_on:
+      - symfony
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+      - NGROK_DOMAIN=${NGROK_DOMAIN}
+    # Renvoie le domaine $NGROK_DOMAIN vers Symfony
+    command: http symfony:80 --url=${NGROK_DOMAIN} --log=stdout
+    ports:
+      # Restreindre l'accès au port à l'hôte uniquement
+      - "127.0.0.1:4040:4040"
+    profiles:
+      - webhooks
 
   playwright:
     profiles:
