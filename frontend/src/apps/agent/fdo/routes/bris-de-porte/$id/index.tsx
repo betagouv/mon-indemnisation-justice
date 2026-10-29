@@ -6,23 +6,13 @@ export const Route = createFileRoute("/bris-de-porte/$id/")({
   beforeLoad: async ({ params }) => {
     // Logique de redirection : si brouillon alors première étape non complète, sinon première étape
     const declarationManager = container.get(DeclarationManagerInterface.$);
-    console.log(params.id);
-
-    if (!declarationManager.aDeclaration(params.id)) {
-      throw redirect({
-        to: "/bris-de-porte/mes-declarations",
-        replace: true,
-        params,
-      });
-    }
-
     const declaration = await declarationManager.getDeclaration(params.id);
 
     if (!declaration) {
       // TODO jeter une erreur "not found" à la place
-
       throw redirect({
         to: "/bris-de-porte/mes-declarations",
+        replace: true,
         params,
       });
     }

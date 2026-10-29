@@ -32,9 +32,18 @@ class DeclarationBrisPorteFDOEntitylistener
 
         // Déclaration déjà soumise : on renvoie l'invitation uniquement si l'adresse courriel est définie et a changé
         if (null !== $declaration->getReference()) {
-            if (!empty($nouvelleAdresseCourriel = $declaration->getCoordonneesRequerant()?->getCourriel())) {
-                $adresseCourrielExistante = $declaration->getCoordonneesRequerant() ? $args->getObjectManager()->getUnitOfWork()->getOriginalEntityData($declaration->getCoordonneesRequerant())['courriel'] ?? null : null;
-                if ($adresseCourrielExistante !== $nouvelleAdresseCourriel) {
+            $coordonnees = $declaration->getCoordonneesRequerant();
+            if (!empty($nouvelleAdresseCourriel = $coordonnees?->getCourriel())) {
+                $unitOfWork = $args->getObjectManager()->getUnitOfWork();
+                $courrielModifie =
+                    // Coordonnées nouvellement créées ...
+                    !$unitOfWork->isInIdentityMap($coordonnees) || $unitOfWork->isScheduledForInsert($coordonnees)
+                    // ... ou changeset déjà calculé ...
+                    || isset($unitOfWork->getEntityChangeSet($coordonnees)['courriel'])
+                    // ... ou sinon comparaison avec les données d'origine
+                    || ($unitOfWork->getOriginalEntityData($coordonnees)['courriel'] ?? null) !== $nouvelleAdresseCourriel;
+
+                if ($courrielModifie) {
                     // Envoi du courriel d'invitation à déclarer
                     $this->envoyerCourrielInvitation($declaration);
                 }

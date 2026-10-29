@@ -129,6 +129,9 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         ]));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        // Le courriel d'invitation est renvoyé à la nouvelle adresse
+        $this->assertEmailCount(1);
+        $this->assertEmailAddressContains($this->getMailerMessage(), 'To', 'nouveau@courriel.fr');
 
         $declaration = $this->em->find(DeclarationFDOBrisPorte::class, $declaration->getId());
         $this->assertEquals('nouveau@courriel.fr', $declaration->getCoordonneesRequerant()?->getCourriel());
@@ -177,6 +180,51 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->em->clear();
         $brouillon = $this->em->find(DeclarationFDOBrisPorte::class, $brouillon->getId());
         $this->assertNull($brouillon->getCoordonneesRequerant());
+    }
+
+    /**
+     * ETQ agent des FDO, si je modifie les coordonnées du requérant d'une déclaration déjà soumise sans changer son
+     * courriel, l'invitation ne doit pas être renvoyée.
+     */
+    public function testEditerOkCoordonneesRequerantSansChangementCourrielDejaSoumise(): void
+    {
+        $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
+        $declaration = $this->creerDeclarationSoumiseAvecCoordonneesRequerant($gendarme);
+
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$declaration->getId()}/editer", content: json_encode([
+            'coordonneesRequerant' => ['telephone' => '0611111111'],
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        // Le courriel n'ayant pas changé, l'invitation n'est pas renvoyée
+        $this->assertEmailCount(0);
+    }
+
+    /**
+     * ETQ agent des FDO, si j'ajoute les coordonnées du requérant à une déclaration déjà soumise qui n'en avait pas,
+     * le courriel d'invitation doit partir.
+     */
+    public function testEditerOkAjouterCoordonneesRequerantDejaSoumise(): void
+    {
+        $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
+        $declaration = $this->creerBrouillon($gendarme, DeclarationFDOBrisPorteErreurType::DOUTE, '2025-12-14');
+        $declaration->setDateSoumission(new \DateTimeImmutable());
+        $this->em->flush();
+        $this->assertNotNull($declaration->getReference());
+
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$declaration->getId()}/editer", content: json_encode([
+            'coordonneesRequerant' => [
+                'civilite' => 'M',
+                'nom' => 'RENTE',
+                'prenom' => 'Pierre',
+                'telephone' => '0600000000',
+                'courriel' => 'pierre.rente@courriel.fr',
+            ],
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertEmailCount(1);
+        $this->assertEmailAddressContains($this->getMailerMessage(), 'To', 'pierre.rente@courriel.fr');
     }
 
     public function testEditerKoDateOperationInvalide(): void
@@ -310,6 +358,8 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
             ->setDateSoumission(new \DateTimeImmutable());
 
         $this->em->flush();
+        // Ignorer le courriel d'invitation envoyé lors de la soumission initiale
+        static::getContainer()->get('mailer.message_logger_listener')->reset();
 
         return $declaration;
     }

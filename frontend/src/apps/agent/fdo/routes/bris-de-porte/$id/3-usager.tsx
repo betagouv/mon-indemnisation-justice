@@ -23,11 +23,11 @@ import React, { ChangeEvent, useMemo, useState } from "react";
 import { z } from "zod";
 
 export const Route = createFileRoute("/bris-de-porte/$id/3-usager")({
-  beforeLoad: ({ params }) => {
+  beforeLoad: async ({ params }) => {
     if (
-      !container
+      !(await container
         .get(DeclarationManagerInterface.$)
-        .aDeclaration(params.reference)
+        .aDeclaration(params.id))
     ) {
       throw redirect({
         to: "/bris-de-porte/mes-declarations",

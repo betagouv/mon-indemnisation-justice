@@ -48,7 +48,7 @@ export const Route = createFileRoute("/bris-de-porte/$id/1-bris-de-porte")({
     return {
       declaration: (await container
         .get(DeclarationManagerInterface.$)
-        .getDeclaration(params.reference)) as DeclarationFDOBrisPorte,
+        .getDeclaration(params.id)) as DeclarationFDOBrisPorte,
     };
   },
   component: () => <Page />,

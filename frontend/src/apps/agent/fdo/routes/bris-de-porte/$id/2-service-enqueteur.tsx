@@ -31,8 +31,12 @@ import React, { useMemo, useRef } from "react";
 import { z } from "zod";
 
 export const Route = createFileRoute("/bris-de-porte/$id/2-service-enqueteur")({
-  beforeLoad: ({ params }) => {
-    if (!container.get(DeclarationManagerInterface.$).aDeclaration(params.id)) {
+  beforeLoad: async ({ params }) => {
+    if (
+      !(await container
+        .get(DeclarationManagerInterface.$)
+        .aDeclaration(params.id))
+    ) {
       throw redirect({
         to: "/bris-de-porte/mes-declarations",
         replace: true,
