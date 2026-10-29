@@ -7,9 +7,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Event\Listener\DeclarationBrisPorteFDOEntitylistener;
+use MonIndemnisationJustice\Repository\DeclarationFDOBrisPorteRepository;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DeclarationFDOBrisPorteRepository::class)]
 #[ORM\Table(name: 'declarations_fdo_bris_porte')]
 #[ORM\Index(
     name: 'declarations_fdo_bris_porte_agent_idx',

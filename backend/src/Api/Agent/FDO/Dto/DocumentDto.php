@@ -1,6 +1,6 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
+namespace MonIndemnisationJustice\Api\Agent\FDO\Dto;
 
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;

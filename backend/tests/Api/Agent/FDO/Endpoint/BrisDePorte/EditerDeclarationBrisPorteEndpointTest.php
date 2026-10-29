@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -143,6 +144,42 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         ['erreur' => $erreur] = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals('Champ non reconnu: champInconnu', $erreur);
+    }
+
+    public static function champsLectureSeule(): array
+    {
+        return [
+            'id' => ['id', '01a1862f-0000-7000-8000-000000000001'],
+            'reference' => ['reference', 'abcdef'],
+            'agent' => ['agent', ['id' => 1]],
+            'dateCreation' => ['dateCreation', '2025-12-14T00:00:00+01:00'],
+            'dateSoumission' => ['dateSoumission', '2025-12-14T00:00:00+01:00'],
+            'piecesJointes' => ['piecesJointes', []],
+        ];
+    }
+
+    /**
+     * ETQ agent des FDO, je ne dois pas pouvoir modifier les champs en lecture seule d'une déclaration, comme son code
+     * d'invitation ou sa date de soumission.
+     */
+    #[DataProvider('champsLectureSeule')]
+    public function testEditerKoChampLectureSeule(string $champ, mixed $valeur): void
+    {
+        $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
+        $brouillon = $this->creerBrouillon($gendarme);
+
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
+            $champ => $valeur,
+        ]));
+
+        $this->assertTrue($this->client->getResponse()->isClientError());
+
+        ['erreur' => $erreur] = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals("Champ non reconnu: {$champ}", $erreur);
+
+        $this->em->refresh($brouillon);
+        $this->assertTrue($brouillon->estBrouillon());
+        $this->assertNull($brouillon->getReference());
     }
 
     /**

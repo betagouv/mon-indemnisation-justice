@@ -3,17 +3,16 @@
 namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\FDO\Output\DeclarationFDOBrisPorteOutput;
+use MonIndemnisationJustice\Api\Agent\FDO\Dto\DeclarationFDOBrisPorteDto;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Serialize;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * Route API qui permet à un agent des FDO de supprimer une pièce jointe du brouillon d'une déclaration d'erreur
@@ -26,11 +25,11 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
     message: "La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
+#[Serialize(code: Response::HTTP_CREATED)]
 class SupprimerPieceJointeDeclarationBrisPorteEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly NormalizerInterface $normalizer,
     ) {
     }
 
@@ -40,7 +39,7 @@ class SupprimerPieceJointeDeclarationBrisPorteEndpoint
         #[MapEntity(id: 'pieceJointeId', message: 'Document inconnu')]
         Document $pieceJointe,
         string $hash,
-    ): Response {
+    ): DeclarationFDOBrisPorteDto {
         if ($pieceJointe->getFileHash() !== $hash || !$declaration->getPiecesJointes()->contains($pieceJointe)) {
             throw new NotFoundHttpException('Document inconnu');
         }
@@ -51,12 +50,6 @@ class SupprimerPieceJointeDeclarationBrisPorteEndpoint
         $this->em->remove($pieceJointe);
         $this->em->flush();
 
-        return new JsonResponse(
-            $this->normalizer->normalize(
-                DeclarationFDOBrisPorteOutput::depuisDeclarationFDO($declaration),
-                'json'
-            ),
-            Response::HTTP_CREATED
-        );
+        return DeclarationFDOBrisPorteDto::depuisDeclaration($declaration);
     }
 }

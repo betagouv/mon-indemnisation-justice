@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\SoumettreDeclarationBrisPorteEndpoint;
-use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
+use MonIndemnisationJustice\Api\Agent\FDO\Dto\DeclarationFDOBrisPorteDto;
 use MonIndemnisationJustice\Entity\Agent;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Document;
@@ -300,9 +300,9 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         $input = $this->getContainer()->get(DenormalizerInterface::class)->denormalize(
             $donnees,
-            DeclarationFDOBrisPorteInput::class,
+            DeclarationFDOBrisPorteDto::class,
             context: [
-                AbstractNormalizer::OBJECT_TO_POPULATE => DeclarationFDOBrisPorteInput::depuisDeclaration($brouillon),
+                AbstractNormalizer::OBJECT_TO_POPULATE => DeclarationFDOBrisPorteDto::depuisDeclaration($brouillon),
                 AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true,
             ]
         );

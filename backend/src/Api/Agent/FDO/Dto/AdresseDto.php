@@ -1,11 +1,11 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
+namespace MonIndemnisationJustice\Api\Agent\FDO\Dto;
 
 use MonIndemnisationJustice\Entity\Adresse;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class AdresseInput
+class AdresseDto
 {
     #[Assert\NotBlank(message: "L'adresse est requise")]
     public ?string $ligne1 = null;
@@ -18,13 +18,13 @@ class AdresseInput
 
     public static function depuisAdresse(Adresse $adresse): self
     {
-        $input = new self();
-        $input->ligne1 = $adresse->getLigne1();
-        $input->ligne2 = $adresse->getLigne2();
-        $input->codePostal = $adresse->getCodePostal();
-        $input->localite = $adresse->getLocalite();
+        $dto = new self();
+        $dto->ligne1 = $adresse->getLigne1();
+        $dto->ligne2 = $adresse->getLigne2();
+        $dto->codePostal = $adresse->getCodePostal();
+        $dto->localite = $adresse->getLocalite();
 
-        return $input;
+        return $dto;
     }
 
     public function versAdresse(?Adresse $adresse = null): Adresse

@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Api\Agent\FDO\Output\DeclarationFDOBrisPorteOutput;
+use MonIndemnisationJustice\Api\Agent\FDO\Dto\DeclarationFDOBrisPorteDto;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Document;
@@ -11,13 +11,12 @@ use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Serialize;
 use Symfony\Component\HttpKernel\Attribute\MapUploadedFile;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * Route API qui permet à un agent des FDO de téléverser une pièce jointe au brouillon d'une déclaration d'erreur
@@ -30,11 +29,11 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
     message: "La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
+#[Serialize(code: Response::HTTP_CREATED)]
 class TeleverserPieceJointeDeclarationBrisPorteEndpoint
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly NormalizerInterface $normalizer,
         protected readonly DocumentManager $documentManager,
     ) {
     }
@@ -45,7 +44,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
         string $type,
         #[MapUploadedFile(name: 'pieceJointe')]
         UploadedFile $fichierTeleverse,
-    ): Response {
+    ): DeclarationFDOBrisPorteDto {
         if (null === ($documentType = DocumentType::tryFrom($type)) || !in_array($documentType, [DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_FDO])) {
             throw new BadRequestHttpException('Type de pièce jointe non reconnu');
         }
@@ -69,12 +68,6 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpoint
         $this->em->persist($declaration);
         $this->em->flush();
 
-        return new JsonResponse(
-            $this->normalizer->normalize(
-                DeclarationFDOBrisPorteOutput::depuisDeclarationFDO($declaration),
-                'json'
-            ),
-            Response::HTTP_CREATED
-        );
+        return DeclarationFDOBrisPorteDto::depuisDeclaration($declaration);
     }
 }

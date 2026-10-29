@@ -148,9 +148,9 @@ class BrisPorteController extends AbstractController
             return $this->redirectToRoute('app_homepage');
         }
 
-        $declaration = $this->entityManager->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['reference' => $reference]);
+        $declaration = $this->entityManager->getRepository(DeclarationFDOBrisPorte::class)->findARattacher($reference);
 
-        if (null === $declaration || $declaration->estBrouillon() || $declaration->estAttribue()) {
+        if (null === $declaration) {
             // TODO compter la tentative pour le rate limiter
             return $this->redirectToRoute('app_homepage');
         }
@@ -194,9 +194,9 @@ class BrisPorteController extends AbstractController
             return new JsonResponse('Lien d\'invitation invalide.', Response::HTTP_NOT_FOUND);
         }
 
-        $declaration = $this->entityManager->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['reference' => $reference]);
+        $declaration = $this->entityManager->getRepository(DeclarationFDOBrisPorte::class)->findARattacher($reference);
 
-        if (null === $declaration || $declaration->estBrouillon() || $declaration->estAttribue()) {
+        if (null === $declaration) {
             return new JsonResponse('Lien d\'invitation invalide.', Response::HTTP_NOT_FOUND);
         }
 

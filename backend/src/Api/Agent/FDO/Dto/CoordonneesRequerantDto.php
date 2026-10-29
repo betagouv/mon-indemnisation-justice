@@ -1,12 +1,12 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
+namespace MonIndemnisationJustice\Api\Agent\FDO\Dto;
 
 use MonIndemnisationJustice\Entity\Civilite;
 use MonIndemnisationJustice\Entity\CoordonneesRequerant;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CoordonneesRequerantInput
+class CoordonneesRequerantDto
 {
     public ?Civilite $civilite = null;
     #[Assert\NotBlank(message: 'Le nom du requérant est requis')]
@@ -20,14 +20,14 @@ class CoordonneesRequerantInput
 
     public static function depuisCoordonneesRequerant(CoordonneesRequerant $coordonnees): self
     {
-        $input = new self();
-        $input->civilite = $coordonnees->getCivilite();
-        $input->nom = $coordonnees->getNom();
-        $input->prenom = $coordonnees->getPrenom();
-        $input->telephone = $coordonnees->getTelephone();
-        $input->courriel = $coordonnees->getCourriel();
+        $dto = new self();
+        $dto->civilite = $coordonnees->getCivilite();
+        $dto->nom = $coordonnees->getNom();
+        $dto->prenom = $coordonnees->getPrenom();
+        $dto->telephone = $coordonnees->getTelephone();
+        $dto->courriel = $coordonnees->getCourriel();
 
-        return $input;
+        return $dto;
     }
 
     public function versCoordonneesRequerant(?CoordonneesRequerant $coordonnees = null): CoordonneesRequerant

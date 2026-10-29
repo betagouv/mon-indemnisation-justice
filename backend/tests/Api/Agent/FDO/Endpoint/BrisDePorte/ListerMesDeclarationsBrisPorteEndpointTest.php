@@ -31,6 +31,21 @@ class ListerMesDeclarationsBrisPorteEndpointTest extends AbstractEndpointTestCas
 
         $this->assertIsArray($output);
         $this->assertCount(2, $output);
+
+        // Le brouillon est exposé avec le même format que la déclaration soumise
+        $brouillons = array_values(array_filter($output, fn (object $declaration) => null === $declaration->dateSoumission));
+        $this->assertCount(1, $brouillons);
+        [$brouillon] = $brouillons;
+
+        $this->assertNull($brouillon->reference);
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}$/', $brouillon->dateOperation);
+        $this->assertEquals('DOUTE', $brouillon->estErreur);
+        $this->assertEquals('PARIS', $brouillon->adresse->localite);
+        $this->assertEquals('PRO1653', $brouillon->procedure->numeroProcedure);
+        $this->assertEquals('policier@interieur.gouv.fr', $brouillon->agent->courriel);
+        $this->assertNotFalse(\DateTimeImmutable::createFromFormat(\DateTimeInterface::W3C, $brouillon->dateCreation));
+        $this->assertCount(2, $brouillon->piecesJointes);
+        $this->assertEquals('pv_fdo', $brouillon->piecesJointes[0]->type);
     }
 
     /**

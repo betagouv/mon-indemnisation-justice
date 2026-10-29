@@ -18,12 +18,11 @@ class DeclarationBrisPorteFDOEntitylistener
     }
 
     /**
-     * Appelé avant le calcul du changeset : contrairement à `preUpdate`, les modifications apportées ici à la déclaration
-     * sont bien persistées, que la déclaration soit nouvelle ou déjà en base.
+     * Si la déclaration est soumise, alors on génère la référence et on fait partir l'email d'invitation.
      */
     public function preFlush(DeclarationFDOBrisPorte $declaration, PreFlushEventArgs $args)
     {
-        // Un brouillon n'est jamais envoyé : le code d'invitation n'est généré qu'à la soumission, et une seule fois
+        // Si la déclaration est en brouillon ou a déjà une référence alors rien à faire
         if ($declaration->estBrouillon() || null !== $declaration->getReference()) {
             return;
         }

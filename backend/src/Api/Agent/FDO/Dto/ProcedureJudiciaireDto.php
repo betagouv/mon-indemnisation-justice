@@ -1,11 +1,11 @@
 <?php
 
-namespace MonIndemnisationJustice\Api\Agent\FDO\Input;
+namespace MonIndemnisationJustice\Api\Agent\FDO\Dto;
 
 use MonIndemnisationJustice\Entity\ProcedureJudiciaire;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class ProcedureJudiciaireInput
+class ProcedureJudiciaireDto
 {
     #[Assert\NotBlank(message: 'Le numéro de procédure est requis')]
     public ?string $numeroProcedure = null;
@@ -19,14 +19,14 @@ class ProcedureJudiciaireInput
 
     public static function depuisProcedureJudiciaire(ProcedureJudiciaire $procedure): self
     {
-        $input = new self();
-        $input->numeroProcedure = $procedure->getNumeroProcedure();
-        $input->serviceEnqueteur = $procedure->getServiceEnqueteur();
-        $input->telephone = $procedure->getTelephone();
-        $input->juridictionOuParquet = $procedure->getJuridictionOuParquet();
-        $input->nomMagistrat = $procedure->getNomMagistrat();
+        $dto = new self();
+        $dto->numeroProcedure = $procedure->getNumeroProcedure();
+        $dto->serviceEnqueteur = $procedure->getServiceEnqueteur();
+        $dto->telephone = $procedure->getTelephone();
+        $dto->juridictionOuParquet = $procedure->getJuridictionOuParquet();
+        $dto->nomMagistrat = $procedure->getNomMagistrat();
 
-        return $input;
+        return $dto;
     }
 
     public function versProcedureJudiciaire(?ProcedureJudiciaire $procedure = null): ProcedureJudiciaire
