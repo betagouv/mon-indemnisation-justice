@@ -1,8 +1,8 @@
 import { dateSimple } from "@/common/services/date";
-import Badge from "@codegouvfr/react-dsfr/Badge";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Table from "@codegouvfr/react-dsfr/Table";
+import { BadgeEtatDeclaration } from "@fdo/components/BadgeEtatDeclaration.tsx";
 import { container } from "@fdo/container";
 import { DeclarationFDOBrisPorte } from "@fdo/modeles/DeclarationFDOBrisPorte.ts";
 import { DeclarationManagerInterface } from "@fdo/services";
@@ -50,17 +50,17 @@ const Page = () => {
             fixed={true}
             headers={["État", "Date opération", "Adresse", ""]}
             data={declarations.map((declaration) => [
-              declaration.estBrouillon() ? (
-                <Badge>Brouillon</Badge>
-              ) : (
-                <>
-                  sauvegardé le{" "}
-                  {dateSimple(
-                    declaration.dateSoumission ?? declaration.dateCreation,
-                    { masquerAnneeSiCourante: true },
-                  )}
-                </>
-              ),
+              <>
+                <BadgeEtatDeclaration etat={declaration.etat} />
+                {declaration.etat.date && (
+                  <p className={"fr-text--sm"}>
+                    le{" "}
+                    {dateSimple(declaration.etat.date, {
+                      masquerAnneeSiCourante: true,
+                    })}
+                  </p>
+                )}
+              </>,
               declaration.dateOperation ? (
                 dateSimple(declaration.dateOperation, {
                   masquerAnneeSiCourante: true,

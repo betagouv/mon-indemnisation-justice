@@ -100,7 +100,7 @@ export namespace DossierManagerInterface {
 
 export class APIDossierManager implements DossierManagerInterface {
   compteursDossiers(agent: Agent): Promise<CompteurDossiers> {
-    return queryClient.fetchQuery({
+    return queryClient.query({
       queryKey: ["DossierManagerInterface", "compteursDossiers"],
       queryFn: async (): Promise<CompteurDossiers> => {
         // Si l'agent n'a pas le rôle DOSSIER, évitons un appel inutile à l'API
@@ -152,7 +152,7 @@ export class APIDossierManager implements DossierManagerInterface {
   }
 
   protected recupererDossier(id: number): Promise<DossierDetail> {
-    return queryClient.fetchQuery<DossierDetail>(this.dossierQueryOptions(id));
+    return queryClient.query<DossierDetail>(this.dossierQueryOptions(id));
   }
 
   protected enregistrerDossier(dossier: DossierDetail): void {

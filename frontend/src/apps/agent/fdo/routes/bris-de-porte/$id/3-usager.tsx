@@ -1,4 +1,3 @@
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
@@ -142,7 +141,7 @@ function Page() {
     onSubmit: async ({ formApi }) => {
       setSauvegardeEnCours(true);
       try {
-        if (declaration.estBrouillon()) {
+        if (formApi.state.isValid) {
           await declarationManager.enregistrer(declaration, {
             precisionsRequerant: formApi.state.values.precisionsRequerant,
             coordonneesRequerant: formApi.state.values.enPresenceRequerant
@@ -480,39 +479,20 @@ function Page() {
                   } as any,
                 }),
             },
-            ...(declaration.estBrouillon()
-              ? [
-                  {
-                    children: sauvegardeEnCours
-                      ? "Sauvegarde en cours..."
-                      : "Envoyer",
-                    disabled: sauvegardeEnCours || declaration.estSoumise(),
-                    priority: sauvegardeEnCours ? "tertiary" : "primary",
-                    nativeButtonProps: {
-                      type: "submit",
-                      role: "submit",
-                    },
-                    className: "fr-mr-0",
-                  } as ButtonProps,
-                ]
-              : [
-                  {
-                    children: "Mes déclarations",
-                    priority: "secondary",
-                    nativeButtonProps: {
-                      type: "button",
-                      role: "link",
-                    },
-                    className: "fr-mr-0",
-                    onClick: () =>
-                      naviguer({
-                        to: "/bris-de-porte/mes-declarations",
-                        params: {
-                          id: declaration.id,
-                        } as any,
-                      }),
-                  } as ButtonProps,
-                ]),
+            {
+              children: sauvegardeEnCours
+                ? "Sauvegarde en cours..."
+                : declaration.estSoumise()
+                  ? "Enregistrer"
+                  : "Envoyer",
+              disabled: sauvegardeEnCours,
+              priority: sauvegardeEnCours ? "tertiary" : "primary",
+              nativeButtonProps: {
+                type: "submit",
+                role: "submit",
+              },
+              className: "fr-mr-0",
+            },
           ]}
         />
       </div>
