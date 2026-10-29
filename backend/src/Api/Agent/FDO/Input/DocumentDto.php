@@ -19,16 +19,19 @@ final class DocumentDto
 
     public ?\DateTimeInterface $dateDerniereModification = null;
 
-    public function versDocument(): Document
+    public static function depuisDocument(Document $document): self
     {
-        return new Document()
-            ->setId($this->id)
-            ->setType($this->type)
-            ->setFilename($this->filename)
-            ->setOriginalFilename($this->originalFilename)
-            ->setMime($this->id)
-            ->setSize($this->size)
-            ->setAjoutRequerant($this->estAjoutRequerant)
-            ->setDateDerniereModification($this->dateDerniereModification);
+        $dto = new self();
+        $dto->id = $document->getId();
+        $dto->filename = $document->getFilename();
+        $dto->originalFilename = $document->getOriginalFilename();
+        $dto->mime = $document->getMime();
+        $dto->size = $document->getSize();
+        $dto->estAjoutRequerant = $document->estAjoutRequerant();
+        $dto->fileHash = $document->getFileHash();
+        $dto->type = $document->getType();
+        $dto->dateDerniereModification = $document->getDateDerniereModification();
+
+        return $dto;
     }
 }

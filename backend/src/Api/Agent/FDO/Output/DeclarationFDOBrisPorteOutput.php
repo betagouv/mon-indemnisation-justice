@@ -2,8 +2,10 @@
 
 namespace MonIndemnisationJustice\Api\Agent\FDO\Output;
 
+use MonIndemnisationJustice\Api\Agent\FDO\Input\DocumentDto;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
+use MonIndemnisationJustice\Entity\Document;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;
@@ -34,6 +36,7 @@ class DeclarationFDOBrisPorteOutput
         public ?\DateTimeInterface $dateCreation = null,
         #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTimeInterface::W3C])]
         public ?\DateTimeInterface $dateSoumission = null,
+        /** @var DocumentDto[] */
         public array $piecesJointes = [],
     ) {
     }
@@ -53,6 +56,7 @@ class DeclarationFDOBrisPorteOutput
             agent: AgentOutput::depuisAgent($declarationFDOBrisPorte->getAgent()),
             dateCreation: $declarationFDOBrisPorte->getDateCreation(),
             dateSoumission: $declarationFDOBrisPorte->getDateSoumission(),
+            piecesJointes: $declarationFDOBrisPorte->getPiecesJointes()->map(fn (Document $pieceJointe) => DocumentDto::depuisDocument($pieceJointe))->getValues(),
         );
     }
 }

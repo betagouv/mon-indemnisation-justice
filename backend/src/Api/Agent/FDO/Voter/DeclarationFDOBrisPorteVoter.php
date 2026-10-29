@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Api\Agent\FDO\Voter;
 
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -52,12 +52,10 @@ class DeclarationFDOBrisPorteVoter extends Voter
         }
 
         // Les actions d'édition / suppression / soumissions / ajout PJ / suppression PJ sont liées à un brouillon
-        if (!$subject instanceof BrouillonDeclarationFDOBrisPorte) {
+        if (!$subject instanceof DeclarationFDOBrisPorte || !$subject->estBrouillon()) {
             return false;
         }
 
-        $brouillon = $subject;
-
-        return $brouillon->getAgent() === $agent;
+        return $subject->getAgent() === $agent;
     }
 }

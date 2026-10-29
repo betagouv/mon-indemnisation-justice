@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Output\DeclarationFDOBrisPorteOutput;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -39,18 +38,12 @@ class ListerMesDeclarationsEndpoint
         $declarations = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findBy(['agent' => $agent]);
 
         return new JsonResponse(
-            array_merge(
-                $this->normalizer->normalize(
-                    array_map(
-                        fn (DeclarationFDOBrisPorte $declaration) => DeclarationFDOBrisPorteOutput::depuisDeclarationFDO($declaration),
-                        $declarations
-                    ),
-                    'json'
-                ),
+            $this->normalizer->normalize(
                 array_map(
-                    fn (BrouillonDeclarationFDOBrisPorte $brouillon) => (object) $brouillon->getDonnees(),
-                    $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findBy(['agent' => $agent])
+                    fn (DeclarationFDOBrisPorte $declaration) => DeclarationFDOBrisPorteOutput::depuisDeclarationFDO($declaration),
+                    $declarations
                 ),
+                'json'
             )
         );
     }

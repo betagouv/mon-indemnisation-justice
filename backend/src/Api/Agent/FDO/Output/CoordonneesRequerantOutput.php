@@ -10,7 +10,7 @@ use Symfony\Component\ObjectMapper\Attribute\Map;
 class CoordonneesRequerantOutput
 {
     public function __construct(
-        public readonly Civilite $civilite,
+        public readonly ?Civilite $civilite,
         public readonly string $nom,
         public readonly string $prenom,
         public readonly string $telephone,

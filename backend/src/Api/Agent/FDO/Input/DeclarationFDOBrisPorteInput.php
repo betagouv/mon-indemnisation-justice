@@ -19,6 +19,7 @@ class DeclarationFDOBrisPorteInput
     public ?DeclarationFDOBrisPorteErreurType $estErreur = null;
     public ?string $descriptionErreur = null;
     #[Assert\NotNull(message: "L'adresse du bris de porte est requise")]
+    #[Assert\Valid]
     public ?AdresseInput $adresse = null;
     #[Assert\NotNull(message: 'La procédure judiciaire est requise')]
     #[Assert\Valid]
@@ -27,38 +28,36 @@ class DeclarationFDOBrisPorteInput
     #[Assert\Valid]
     public ?CoordonneesRequerantInput $coordonneesRequerant = null;
 
-    protected array $piecesJointes = [];
-
-    public function getPiecesJointes(): array
+    public static function depuisDeclaration(DeclarationFDOBrisPorte $declaration): self
     {
-        return $this->piecesJointes;
+        $input = new self();
+        $input->id = $declaration->getId();
+        $input->dateOperation = $declaration->getDateOperation();
+        $input->estErreur = $declaration->getEstErreur();
+        $input->descriptionErreur = $declaration->getDescriptionErreur();
+        $input->adresse = $declaration->getAdresse() ? AdresseInput::depuisAdresse($declaration->getAdresse()) : null;
+        $input->procedure = $declaration->getProcedure() ? ProcedureJudiciaireInput::depuisProcedureJudiciaire($declaration->getProcedure()) : null;
+        $input->precisionsRequerant = $declaration->getPrecisionsRequerant();
+        $input->coordonneesRequerant = $declaration->getCoordonneesRequerant() ? CoordonneesRequerantInput::depuisCoordonneesRequerant($declaration->getCoordonneesRequerant()) : null;
+
+        return $input;
     }
 
-    /** @param DocumentDto[] $piecesJointes */
-    public function setPiecesJointes(array $piecesJointes): DeclarationFDOBrisPorteInput
+    /**
+     * Reporte les valeurs de l'input sur la déclaration (et ses entités liées) fournie.
+     */
+    public function versDeclaration(DeclarationFDOBrisPorte $declaration): DeclarationFDOBrisPorte
     {
-        $this->piecesJointes = $piecesJointes;
+        if (null !== $this->dateOperation) {
+            $declaration->setDateOperation($this->dateOperation);
+        }
 
-        return $this;
-    }
-
-    public function versDeclaration(DeclarationFDOBrisPorte $declarationFDOBrisPorte): DeclarationFDOBrisPorte
-    {
-        return $declarationFDOBrisPorte
-            ->setId($this->id)
-            ->setDateOperation($this->dateOperation)
+        return $declaration
             ->setEstErreur($this->estErreur)
             ->setDescriptionErreur($this->descriptionErreur)
-            ->setAdresse($this->adresse->versAdresse())
-            ->setProcedure($this->procedure->versProcedureJudiciaire())
-            ->setCoordonneesRequerant($this->coordonneesRequerant?->versCoordonneesRequerant())
-            ->setPrecisionsRequerant($this->precisionsRequerant)
-            ->setPiecesJointes(
-                array_map(
-                    fn (DocumentDto $documentDto) => $documentDto->versDocument(),
-                    $this->piecesJointes
-                )
-            );
-
+            ->setAdresse($this->adresse?->versAdresse($declaration->getAdresse()))
+            ->setProcedure($this->procedure?->versProcedureJudiciaire($declaration->getProcedure()))
+            ->setCoordonneesRequerant($this->coordonneesRequerant?->versCoordonneesRequerant($declaration->getCoordonneesRequerant()))
+            ->setPrecisionsRequerant($this->precisionsRequerant);
     }
 }

@@ -52,7 +52,7 @@ class MijInvitationsRegenererCommand extends Command
         // Calcul de tous les nouveaux codes avant toute écriture
         $declarationsModifiees = [];
         foreach ($declarations as $declaration) {
-            if (strlen($declaration->getReference()) <= 6) {
+            if (!$declaration->estBrouillon() && strlen($declaration->getReference()) <= 6) {
 
                 do {
                     $code = $this->generateurCodeInvitation->generer();

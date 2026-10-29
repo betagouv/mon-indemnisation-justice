@@ -9,22 +9,34 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CoordonneesRequerantInput
 {
     public ?Civilite $civilite = null;
-    #[Assert\NotNull(message: 'Le nom du requérant est requis')]
+    #[Assert\NotBlank(message: 'Le nom du requérant est requis')]
     public ?string $nom = null;
-    #[Assert\NotNull(message: 'Le prénom du requérant est requis')]
+    #[Assert\NotBlank(message: 'Le prénom du requérant est requis')]
     public ?string $prenom = null;
     public ?string $telephone = null;
-    #[Assert\NotNull(message: "L'adresse courriel du requérant est requise")]
+    #[Assert\NotBlank(message: "L'adresse courriel du requérant est requise")]
     #[Assert\Email(message: "L'adresse courriel du requérant est invalide")]
     public ?string $courriel = null;
 
-    public function versCoordonneesRequerant(): CoordonneesRequerant
+    public static function depuisCoordonneesRequerant(CoordonneesRequerant $coordonnees): self
     {
-        return new CoordonneesRequerant()
+        $input = new self();
+        $input->civilite = $coordonnees->getCivilite();
+        $input->nom = $coordonnees->getNom();
+        $input->prenom = $coordonnees->getPrenom();
+        $input->telephone = $coordonnees->getTelephone();
+        $input->courriel = $coordonnees->getCourriel();
+
+        return $input;
+    }
+
+    public function versCoordonneesRequerant(?CoordonneesRequerant $coordonnees = null): CoordonneesRequerant
+    {
+        return ($coordonnees ?? new CoordonneesRequerant())
             ->setCivilite($this->civilite)
-            ->setNom($this->nom)
-            ->setPrenom($this->prenom)
-            ->setTelephone($this->telephone)
-            ->setCourriel($this->courriel);
+            ->setNom($this->nom ?? '')
+            ->setPrenom($this->prenom ?? '')
+            ->setTelephone($this->telephone ?? '')
+            ->setCourriel($this->courriel ?? '');
     }
 }

@@ -249,6 +249,7 @@ class BrisPorteControllerTest extends WebTestCase
             ->createQueryBuilder('d')
             ->andWhere('d.coordonneesRequerant IS NOT NULL')
             ->andWhere('d.brisPorte IS NULL')
+            ->andWhere('d.dateSoumission IS NOT NULL')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();

@@ -4,7 +4,8 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\EditerDeclarationBrisPorteEndpoint;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -41,10 +42,7 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->assertEquals($brouillon->getId(), $input->id);
 
         $this->em->refresh($brouillon);
-        $input = $brouillon->getDonnees();
-
-        $this->assertArrayHasKey('dateOperation', $input);
-        $this->assertEquals($input['dateOperation'], '2025-12-14');
+        $this->assertEquals('2025-12-14', $brouillon->getDateOperation()->format('Y-m-d'));
     }
 
     /**
@@ -53,9 +51,7 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     public function testEditerOkRemplacerDateOperation(): void
     {
         $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
-        $brouillon = $this->creerBrouillon($gendarme, [
-            'dateOperation' => '2025-12-15',
-        ]);
+        $brouillon = $this->creerBrouillon($gendarme, dateOperation: '2025-12-15');
 
         $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
             'dateOperation' => '2025-12-14',
@@ -72,10 +68,50 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->assertEquals($brouillon->getId(), $input->id);
 
         $this->em->refresh($brouillon);
-        $input = $brouillon->getDonnees();
+        $this->assertEquals('2025-12-14', $brouillon->getDateOperation()->format('Y-m-d'));
+    }
 
-        $this->assertArrayHasKey('dateOperation', $input);
-        $this->assertEquals($input['dateOperation'], '2025-12-14');
+    /**
+     * ETQ agent des FDO, je dois pouvoir éditer partiellement les données imbriquées d'un brouillon de déclaration, sans
+     * écraser celles déjà renseignées.
+     */
+    public function testEditerOkProcedurePartielle(): void
+    {
+        $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
+        $brouillon = $this->creerBrouillon($gendarme);
+
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
+            'procedure' => ['numeroProcedure' => 'PRO123'],
+        ]));
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
+            'procedure' => ['serviceEnqueteur' => 'GPNV'],
+            'coordonneesRequerant' => ['nom' => 'RENTE'],
+        ]));
+        $this->assertTrue($this->client->getResponse()->isSuccessful());
+
+        $brouillon = $this->em->find(DeclarationFDOBrisPorte::class, $brouillon->getId());
+        $this->assertEquals('PRO123', $brouillon->getProcedure()->getNumeroProcedure());
+        $this->assertEquals('GPNV', $brouillon->getProcedure()->getServiceEnqueteur());
+        $this->assertEquals('RENTE', $brouillon->getCoordonneesRequerant()?->getNom());
+    }
+
+    /**
+     * ETQ agent des FDO, je ne dois pas pouvoir modifier une déclaration déjà soumise.
+     */
+    public function testEditerKoDejaSoumise(): void
+    {
+        $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
+        $brouillon = $this->creerBrouillon($gendarme, DeclarationFDOBrisPorteErreurType::DOUTE, '2025-12-14');
+        $brouillon->setDateSoumission(new \DateTimeImmutable());
+        $this->em->flush();
+
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
+            'estErreur' => 'OUI',
+        ]));
+
+        $this->assertEquals(403, $this->client->getResponse()->getStatusCode());
     }
 
     public function testEditerKoDateOperationInvalide(): void
@@ -96,9 +132,7 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     public function testEditerKoChampInconnu(): void
     {
         $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
-        $brouillon = $this->creerBrouillon($gendarme, [
-            'dateOperation' => '2025-12-14',
-        ]);
+        $brouillon = $this->creerBrouillon($gendarme, dateOperation: '2025-12-14');
 
         $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
             'estErreur' => 'OUI',
@@ -118,10 +152,7 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     {
         $gendarme = $this->getAgent('gendarme@gendarmerie.interieur.gouv.fr');
 
-        $brouillon = $this->creerBrouillon($gendarme, [
-            'estErreur' => 'DOUTE',
-            'dateOperation' => '2025-12-14',
-        ]);
+        $brouillon = $this->creerBrouillon($gendarme, DeclarationFDOBrisPorteErreurType::DOUTE, '2025-12-14');
 
         $this->connexion('policier@interieur.gouv.fr');
         $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
@@ -141,10 +172,7 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     public function testEditerKoPasFDO(): void
     {
         $gendarme = $this->getAgent('gendarme@gendarmerie.interieur.gouv.fr');
-        $brouillon = $this->creerBrouillon($gendarme, [
-            'estErreur' => 'DOUTE',
-            'dateOperation' => '2025-12-14',
-        ]);
+        $brouillon = $this->creerBrouillon($gendarme, DeclarationFDOBrisPorteErreurType::DOUTE, '2025-12-14');
 
         $this->connexion('redacteur@justice.gouv.fr');
         $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
@@ -158,12 +186,15 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->assertEquals("La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre", $erreur);
     }
 
-    protected function creerBrouillon(Agent $agent, array $donnees = []): BrouillonDeclarationFDOBrisPorte
+    protected function creerBrouillon(Agent $agent, ?DeclarationFDOBrisPorteErreurType $estErreur = null, ?string $dateOperation = null): DeclarationFDOBrisPorte
     {
-        $brouillon = (new BrouillonDeclarationFDOBrisPorte())
+        $brouillon = new DeclarationFDOBrisPorte()
             ->setAgent($agent)
-            ->setDonnees($donnees)
-        ;
+            ->setEstErreur($estErreur);
+
+        if (null !== $dateOperation) {
+            $brouillon->setDateOperation(new \DateTimeImmutable($dateOperation));
+        }
 
         $this->em->persist($brouillon);
         $this->em->flush();

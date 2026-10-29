@@ -3,14 +3,17 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\SoumettreDeclarationBrisPorteEndpoint;
+use MonIndemnisationJustice\Api\Agent\FDO\Input\DeclarationFDOBrisPorteInput;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Document;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 /**
  * Teste le point d'entrée @SoumettreDeclarationBrisPorteEndpoint de l'API, permettant à l'agent des FDO de soumettre un
@@ -26,7 +29,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     {
         $policier = $this->connexion('policier@interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier, 'dateSoumission' => null]);
 
         $id = $brouillon->getId();
 
@@ -50,10 +53,12 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->assertInstanceOf(DeclarationFDOBrisPorte::class, $declaration);
         $this->assertEquals($policier, $declaration->getAgent());
 
-        // Le brouillon doit être supprimé
-        $this->assertNull($this->em->find(DeclarationFDOBrisPorte::class, $id));
+        // Le brouillon doit être devenu une déclaration soumise
+        $this->assertEquals($id, $declaration->getId());
+        $this->assertFalse($declaration->estBrouillon());
+        $this->assertNotEmpty($declaration->getReference());
 
-        // La déclaration doit avoir récupéré les pièces jointes du brouillon
+        // La déclaration doit avoir conservé les pièces jointes du brouillon
         $this->assertEquals(2, $declaration->getPiecesJointes()->count());
         $this->assertEquals([DocumentType::TYPE_PV_FDO, DocumentType::TYPE_PHOTO_FDO], $declaration->getPiecesJointes()->map(fn (Document $document) => $document->getType())->toArray());
     }
@@ -66,7 +71,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     {
         $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $gendarme]);
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $gendarme, 'dateSoumission' => null]);
 
         $id = $brouillon->getId();
 
@@ -90,50 +95,41 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->assertInstanceOf(DeclarationFDOBrisPorte::class, $declaration);
         $this->assertEquals($gendarme, $declaration->getAgent());
 
-        // Le brouillon doit être supprimé
-        $this->assertNull($this->em->find(DeclarationFDOBrisPorte::class, $id));
+        // Le brouillon doit être devenu une déclaration soumise
+        $this->assertEquals($id, $declaration->getId());
+        $this->assertFalse($declaration->estBrouillon());
+        $this->assertNotEmpty($declaration->getReference());
 
-        // La déclaration doit avoir récupéré les pièces jointes du brouillon
+        // La déclaration doit avoir conservé les pièces jointes du brouillon
         $this->assertEquals(2, $declaration->getPiecesJointes()->count());
         $this->assertEquals([DocumentType::TYPE_PHOTO_FDO, DocumentType::TYPE_PHOTO_FDO], $declaration->getPiecesJointes()->map(fn (Document $document) => $document->getType())->toArray());
     }
 
     /**
-     * ETQ agent des FDOs, je ne dois pas pouvoir soumettre une déclaration dont la date d'opération est manquante.
+     * ETQ agent des FDOs, je ne dois pas pouvoir soumettre une déclaration vide, telle qu'initiée.
      */
-    public function testSoumettreKoDateOperationManquante(): void
+    public function testSoumettreKoDeclarationVide(): void
     {
         $policier = $this->connexion('policier@interieur.gouv.fr');
 
-        $brouillon = $this->creerBrouillon($policier, [
-            'estErreur' => 'DOUTE',
-            'descriptionErreur' => 'Cassé la porte',
-            'adresse' => [
-                'ligne1' => '127 boulevard des Fleurs',
-                'ligne2' => 'Porte B',
-                'codePostal' => '75021',
-                'localite' => 'PARIS',
-            ],
-            'procedure' => [
-                'numeroProcedure' => 'PRO1653',
-                'serviceEnqueteur' => 'DPNC',
-                'telephone' => '0123456789',
-                'nomMagistrat' => null,
-            ],
-            'piecesJointes' => [],
-            'precisionsRequerant' => 'Logement vide lors de la perquisition',
-            'coordonneesRequerant' => null,
-        ]);
+        $brouillon = new DeclarationFDOBrisPorte()->setAgent($policier);
+        $this->em->persist($brouillon);
+        $this->em->flush();
 
         $this->client->request('POST', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/soumettre");
 
         $this->assertTrue($this->client->getResponse()->isClientError());
 
         ['erreurs' => $erreurs] = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertIsArray($erreurs);
         $this->assertEquals([
-            'dateOperation' => "La date de l'opération ayant conduit au bris de porte est requise",
+            'estErreur' => "Veuillez-nous indiquer s'il s'agit d'une erreur",
+            'adresse' => "L'adresse du bris de porte est requise",
+            'procedure' => 'La procédure judiciaire est requise',
         ], $erreurs);
+
+        $this->em->refresh($brouillon);
+        $this->assertTrue($brouillon->estBrouillon());
+        $this->assertNull($brouillon->getReference());
     }
 
     /**
@@ -274,7 +270,7 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $policier = $this->getAgent('policier@interieur.gouv.fr');
         $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier, 'dateSoumission' => null]);
 
         $this->client->request('POST', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/soumettre");
 
@@ -289,20 +285,29 @@ class SoumettreDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $policier = $this->getAgent('policier@interieur.gouv.fr');
         $this->connexion('redacteur@justice.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier, 'dateSoumission' => null]);
 
         $this->client->request('POST', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/soumettre");
 
         $this->assertTrue(Response::HTTP_FORBIDDEN === $this->client->getResponse()->getStatusCode());
     }
 
-    protected function creerBrouillon(Agent $agent, array $donnees = []): BrouillonDeclarationFDOBrisPorte
+    protected function creerBrouillon(Agent $agent, array $donnees = []): DeclarationFDOBrisPorte
     {
-        $brouillon = (new BrouillonDeclarationFDOBrisPorte())
-            ->setAgent($agent)
-            ->setDonnees($donnees);
-
+        $brouillon = new DeclarationFDOBrisPorte()->setAgent($agent);
         $this->em->persist($brouillon);
+        $this->em->flush();
+
+        $input = $this->getContainer()->get(DenormalizerInterface::class)->denormalize(
+            $donnees,
+            DeclarationFDOBrisPorteInput::class,
+            context: [
+                AbstractNormalizer::OBJECT_TO_POPULATE => DeclarationFDOBrisPorteInput::depuisDeclaration($brouillon),
+                AbstractObjectNormalizer::DEEP_OBJECT_TO_POPULATE => true,
+            ]
+        );
+        $input->versDeclaration($brouillon);
+
         $this->em->flush();
 
         return $brouillon;

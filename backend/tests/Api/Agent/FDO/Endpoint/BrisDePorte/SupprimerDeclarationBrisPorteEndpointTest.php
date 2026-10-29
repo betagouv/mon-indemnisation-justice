@@ -3,7 +3,6 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\SupprimerDeclarationBrisPorteEndpoint;
-use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 
@@ -24,8 +23,9 @@ class SupprimerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     {
         $policier = $this->connexion('policier@interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy([
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy([
             'agent' => $policier,
+            'dateSoumission' => null,
         ]);
 
         $id = $brouillon->getId();
@@ -36,5 +36,23 @@ class SupprimerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 
         // Le brouillon doit être supprimé
         $this->assertNull($this->em->find(DeclarationFDOBrisPorte::class, $id));
+    }
+
+    /**
+     * ETQ agent des FDO, je ne dois pas pouvoir supprimer une déclaration que j'ai déjà soumise.
+     */
+    public function testSupprimerKoDejaSoumise(): void
+    {
+        $policier = $this->connexion('policier@interieur.gouv.fr');
+
+        $declaration = array_values(array_filter(
+            $this->em->getRepository(DeclarationFDOBrisPorte::class)->findBy(['agent' => $policier]),
+            fn (DeclarationFDOBrisPorte $d) => !$d->estBrouillon()
+        ))[0];
+
+        $this->client->request('DELETE', "/api/agent/fdo/bris-de-porte/{$declaration->getId()}/supprimer");
+
+        $this->assertEquals(403, $this->client->getResponse()->getStatusCode());
+        $this->assertNotNull($this->em->find(DeclarationFDOBrisPorte::class, $declaration->getId()));
     }
 }
