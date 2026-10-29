@@ -82,7 +82,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                 $declarationInvitation = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['reference' => $referenceInvitation]);
                 $coordonneesRequerant = $declarationInvitation?->getCoordonneesRequerant();
 
-                if (null === $declarationInvitation || $declarationInvitation->estAttribue() || null === $coordonneesRequerant) {
+                if (null === $declarationInvitation || $declarationInvitation->estBrouillon() || $declarationInvitation->estAttribue() || null === $coordonneesRequerant) {
                     throw new CustomUserMessageAuthenticationException("Ce lien d'invitation n'est plus valide.");
                 }
 

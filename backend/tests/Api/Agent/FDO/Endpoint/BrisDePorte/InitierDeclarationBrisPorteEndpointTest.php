@@ -33,6 +33,12 @@ class InitierDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->assertObjectHasProperty('id', $input);
 
         $this->assertTrue(Uuid::isValid($input->id));
+
+        // Un brouillon n'a ni code d'invitation, ni adresse, ni procédure
+        $this->assertNull($input->reference);
+        $this->assertNull($input->adresse);
+        $this->assertNull($input->procedure);
+        $this->assertNull($input->dateSoumission);
     }
 
     /**

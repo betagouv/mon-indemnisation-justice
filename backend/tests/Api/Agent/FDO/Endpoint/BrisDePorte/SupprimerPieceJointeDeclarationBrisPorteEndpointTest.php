@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
-use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,10 +23,10 @@ class SupprimerPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndpo
     {
         $policier = $this->connexion('policier@interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
-        $pieceJointe = $brouillon->getPiecesJointes()[0];
-
-        ['id' => $pieceJointeId, 'fileHash' => $hash] = $pieceJointe;
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier, 'dateSoumission' => null]);
+        $pieceJointe = $brouillon->getPiecesJointes()->first();
+        $pieceJointeId = $pieceJointe->getId();
+        $hash = $pieceJointe->getFileHash();
 
         $this->client->request(
             'DELETE',
@@ -51,9 +51,8 @@ class SupprimerPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndpo
     {
         $policier = $this->connexion('policier@interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
-        $pieceJointe = $brouillon->getPiecesJointes()[0] ?? [];
-        ['id' => $pieceJointeId] = $pieceJointe;
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier, 'dateSoumission' => null]);
+        $pieceJointeId = $brouillon->getPiecesJointes()->first()->getId();
         $hash = 'abc123';
 
         $this->client->request(
@@ -75,9 +74,10 @@ class SupprimerPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndpo
         $this->connexion('redacteur@justice.gouv.fr');
         $policier = $this->getAgent('policier@interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
-        $pieceJointe = $brouillon->getPiecesJointes()[0] ?? [];
-        ['id' => $pieceJointeId, 'fileHash' => $hash] = $pieceJointe;
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier, 'dateSoumission' => null]);
+        $pieceJointe = $brouillon->getPiecesJointes()->first();
+        $pieceJointeId = $pieceJointe->getId();
+        $hash = $pieceJointe->getFileHash();
 
         $this->client->request(
             'DELETE',
