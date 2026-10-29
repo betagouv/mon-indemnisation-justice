@@ -65,7 +65,7 @@ class MijInvitationsRegenererCommand extends Command
             }
         }
 
-        $sansDossier = array_filter($declarationsModifiees, fn (DeclarationFDOBrisPorte $declaration) => !$declaration->estAttribue());
+        $sansDossier = array_filter($declarationsModifiees, fn (DeclarationFDOBrisPorte $declaration) => !$declaration->estAttribuee());
 
         $io->section($execute ? 'Application' : 'Simulation');
         $io->listing([

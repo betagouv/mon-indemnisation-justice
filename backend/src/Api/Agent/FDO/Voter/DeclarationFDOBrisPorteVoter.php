@@ -52,10 +52,17 @@ class DeclarationFDOBrisPorteVoter extends Voter
         }
 
         // Les actions d'édition / suppression / soumissions / ajout PJ / suppression PJ sont liées à un brouillon
-        if (!$subject instanceof DeclarationFDOBrisPorte || !$subject->estBrouillon()) {
-            return false;
+        if ($subject instanceof DeclarationFDOBrisPorte) {
+            // TODO étendre le périmètre aux agents de la même affectation
+            if ($subject->getAgent() === $agent) {
+                if (self::ACTION_SUPPRIMER === $attribute) {
+                    return $subject->estBrouillon();
+                }
+
+                return true;
+            }
         }
 
-        return $subject->getAgent() === $agent;
+        return false;
     }
 }

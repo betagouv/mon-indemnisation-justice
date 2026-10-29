@@ -89,9 +89,9 @@ const Page = () => {
                     nativeButtonProps: {
                       onClick: () =>
                         naviguer({
-                          to: "/bris-de-porte/$reference",
+                          to: "/bris-de-porte/$id",
                           params: {
-                            reference: declaration.reference,
+                            id: declaration.id,
                           } as any,
                         }),
                     },

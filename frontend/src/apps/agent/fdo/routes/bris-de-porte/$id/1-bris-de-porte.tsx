@@ -1,3 +1,10 @@
+import { dateChiffre } from "@/common/services/date.ts";
+import "@/style/index.css";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
+import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { container } from "@fdo/container.ts";
 import {
   Adresse,
@@ -6,13 +13,6 @@ import {
 } from "@fdo/modeles/DeclarationFDOBrisPorte.ts";
 import { RouteurFDO } from "@fdo/routeur";
 import { DeclarationManagerInterface } from "@fdo/services";
-import { dateChiffre } from "@/common/services/date.ts";
-import "@/style/index.css";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { useForm } from "@tanstack/react-form";
 import {
   createFileRoute,
@@ -21,17 +21,15 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useMemo } from "react";
 import { z } from "zod";
 
-export const Route = createFileRoute(
-  "/bris-de-porte/$reference/1-bris-de-porte",
-)({
+export const Route = createFileRoute("/bris-de-porte/$id/1-bris-de-porte")({
   beforeLoad: async ({ params }) => {
     if (
       !(await container
         .get(DeclarationManagerInterface.$)
-        .aDeclaration(params.reference))
+        .aDeclaration(params.id))
     ) {
       throw redirect({
         to: "/bris-de-porte/mes-declarations",
@@ -46,10 +44,8 @@ export const Route = createFileRoute(
     params: any;
   }): Promise<{
     declaration: DeclarationFDOBrisPorte;
-    reference: string;
   }> => {
     return {
-      reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
         .getDeclaration(params.reference)) as DeclarationFDOBrisPorte,
@@ -119,12 +115,17 @@ const Page = () => {
     },
     onSubmit: async ({ value }) => {
       await naviguer({
-        to: "/bris-de-porte/$reference/2-service-enqueteur",
-        params: { reference: declaration.id } as any,
+        to: "/bris-de-porte/$id/2-service-enqueteur",
+        params: { id: declaration.id } as any,
         search: {} as any,
       });
     },
   });
+
+  const estEditable = useMemo<boolean>(
+    () => declaration.etat.estDeclarationEditable(),
+    [declaration.etat],
+  );
 
   return (
     <form
@@ -174,7 +175,7 @@ const Page = () => {
                   }
                   small={false}
                   orientation="vertical"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   options={[
                     {
                       label: "Oui",
@@ -244,7 +245,7 @@ const Page = () => {
                   label="Décrivez l’opération"
                   textArea
                   className="fr-col-12"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeTextAreaProps={{
                     defaultValue: declaration.descriptionErreur ?? "",
                     onChange: (e) => field.handleChange(e.target.value),
@@ -266,7 +267,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-4 fr-my-0 fr-champ-requis"
                   label="Date de l'opération"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     value: dateChiffre(field.state.value),
                     onChange: (e) => {
@@ -299,7 +300,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-8 fr-my-0 fr-champ-requis"
                   label="Adresse du logement ayant subi le bris de porte"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "Numéro de voie, rue",
@@ -326,7 +327,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-6 fr-m-0"
                   label="Complément d'adresse"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "Étage, escalier",
@@ -345,7 +346,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-3 fr-m-0 fr-champ-requis"
                   label="Code postal"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,
@@ -371,7 +372,7 @@ const Page = () => {
                 <Input
                   className="fr-col-lg-3 fr-m-0 fr-champ-requis"
                   label="Ville"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,

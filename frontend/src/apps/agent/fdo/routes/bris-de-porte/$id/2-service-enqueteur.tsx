@@ -27,18 +27,12 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { z } from "zod";
 
-export const Route = createFileRoute(
-  "/bris-de-porte/$reference/2-service-enqueteur",
-)({
+export const Route = createFileRoute("/bris-de-porte/$id/2-service-enqueteur")({
   beforeLoad: ({ params }) => {
-    if (
-      !container
-        .get(DeclarationManagerInterface.$)
-        .aDeclaration(params.reference)
-    ) {
+    if (!container.get(DeclarationManagerInterface.$).aDeclaration(params.id)) {
       throw redirect({
         to: "/bris-de-porte/mes-declarations",
         replace: true,
@@ -54,14 +48,12 @@ export const Route = createFileRoute(
     context: AgentContext;
   }): Promise<{
     declaration: DeclarationFDOBrisPorte;
-    reference: string;
     contexte: AgentContext;
   }> => {
     return {
-      reference: params.reference,
       declaration: (await container
         .get(DeclarationManagerInterface.$)
-        .getDeclaration(params.reference)) as DeclarationFDOBrisPorte,
+        .getDeclaration(params.id)) as DeclarationFDOBrisPorte,
       contexte: context,
     };
   },
@@ -89,11 +81,9 @@ const schemaInfosJuridiques = z.object({
 function Page() {
   const {
     declaration,
-    reference,
     contexte,
   }: {
     declaration: DeclarationFDOBrisPorte;
-    reference: string;
     contexte: AgentContext;
   } = Route.useLoaderData();
 
@@ -140,16 +130,21 @@ function Page() {
     onSubmit: async ({ value }) => {
       // TODO
       await naviguer({
-        to: "/bris-de-porte/$reference/3-usager",
-        params: { reference } as any,
+        to: "/bris-de-porte/$id/3-usager",
+        params: { id: declaration.id } as any,
         search: {} as any,
       });
     },
   });
 
+  const estEditable = useMemo<boolean>(
+    () => declaration.etat.estDeclarationEditable(),
+    [declaration.etat],
+  );
+
   return (
     <>
-      {!declaration.estSoumise() && (
+      {estEditable && (
         <>
           <ModaleAjoutPieceJointe
             ref={refModaleAjoutPJ}
@@ -230,11 +225,16 @@ function Page() {
               >
                 {p.originalFilename}
               </a>
-              {!declaration.estSoumise() && (
-                <button
-                  role={"button"}
-                  type={"button"}
-                  className="fr-btn fr-btn--sm fr-icon-delete-line fr-btn--tertiary-no-outline fr-mx-1w"
+              {estEditable && (
+                <Button
+                  nativeButtonProps={{
+                    role: "button",
+                    type: "button",
+                  }}
+                  size="small"
+                  iconId="fr-icon-delete-line"
+                  priority="tertiary no outline"
+                  className="fr-mx-1w"
                   onClick={() =>
                     refModalePrevisualiserPJ.current?.previsualiserPieceJointe(
                       p,
@@ -242,12 +242,12 @@ function Page() {
                   }
                 >
                   Retirer
-                </button>
+                </Button>
               )}
             </div>
           ))}
 
-          {!declaration.estSoumise() && (
+          {estEditable && (
             <div className="fr-col-lg-4">
               <Button
                 children="Ajouter un document"
@@ -279,7 +279,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-6 fr-m-0 fr-champ-requis"
                   label="Service enquêteur"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     type: "text",
                     autoFocus: true,
@@ -306,7 +306,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-3 fr-m-0  fr-champ-requis"
                   label="Téléphone du service ou de l'agent"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value ?? "",
@@ -342,7 +342,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4 fr-m-0"
                   label="Numéro de procédure *"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,
@@ -368,7 +368,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4 fr-m-0"
                   label="Juridiction / parquet (le cas échéant)"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,
@@ -386,7 +386,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4 fr-m-0"
                   label="Nom du magistrat (le cas échéant)"
-                  disabled={declaration.estSoumise()}
+                  disabled={!estEditable}
                   nativeInputProps={{
                     type: "text",
                     value: field.state.value,
@@ -412,9 +412,9 @@ function Page() {
                 iconPosition: "left",
                 onClick: () =>
                   naviguer({
-                    to: "/bris-de-porte/$reference/1-bris-de-porte",
+                    to: "/bris-de-porte/$id/1-bris-de-porte",
                     params: {
-                      reference,
+                      id: declaration.id,
                     } as any,
                     search: {} as any,
                   }),

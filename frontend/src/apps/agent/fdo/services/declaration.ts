@@ -8,11 +8,9 @@ import { AgentManagerInterface } from "@fdo//services/agent";
 export interface DeclarationManagerInterface {
   getListe(): Promise<DeclarationFDOBrisPorte[]>;
 
-  aDeclaration(reference: string): Promise<boolean>;
+  aDeclaration(id: string): Promise<boolean>;
 
-  getDeclaration(
-    reference: string,
-  ): Promise<DeclarationFDOBrisPorte | undefined>;
+  getDeclaration(id: string): Promise<DeclarationFDOBrisPorte | undefined>;
 
   nouvelleDeclaration(): Promise<DeclarationFDOBrisPorte>;
 
@@ -78,25 +76,21 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     return this._declarations;
   }
 
-  async aDeclaration(reference: string): Promise<boolean> {
+  async aDeclaration(id: string): Promise<boolean> {
     await this.chargerListeDeclarations();
 
     return Promise.resolve(
-      this._declarations.some(
-        (declaration) => declaration.reference == reference,
-      ),
+      this._declarations.some((declaration) => declaration.id == id),
     );
   }
 
   async getDeclaration(
-    reference: string,
+    id: string,
   ): Promise<DeclarationFDOBrisPorte | undefined> {
     await this.chargerListeDeclarations();
 
     return Promise.resolve(
-      this._declarations.find(
-        (declaration) => declaration.reference == reference,
-      ),
+      this._declarations.find((declaration) => declaration.id == id),
     );
   }
 
@@ -125,11 +119,11 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
   }
 
   protected setDeclaration(
-    reference: string,
+    id: string,
     declaration: DeclarationFDOBrisPorte,
   ): void {
     this._declarations = this._declarations.map((d: DeclarationFDOBrisPorte) =>
-      d.id === reference ? declaration : d,
+      d.id === id ? declaration : d,
     );
   }
 
@@ -138,7 +132,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     miseAJour?: Partial<DeclarationFDOBrisPorte> | DeclarationFDOBrisPorte,
   ): void {
     this.setDeclaration(
-      declaration.reference,
+      declaration.id,
       // Si la mise à jour concerne une déclaration complète...
       miseAJour instanceof DeclarationFDOBrisPorte
         ? // ... alors, on la remplace dans la liste
@@ -190,7 +184,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
     if (response.ok) {
       this.setDeclaration(
-        declaration.reference,
+        declaration.id,
         plainToInstance(DeclarationFDOBrisPorte, await response.json()),
       );
     }
@@ -198,7 +192,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   ajouter(declaration: DeclarationFDOBrisPorte): void {
     this._declarations = this._declarations
-      .filter((d) => d.reference !== declaration.reference)
+      .filter((d) => d.id !== declaration.id)
       .concat(declaration);
   }
 
@@ -216,7 +210,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     );
     if (response.ok) {
       this._declarations = this._declarations.filter(
-        (d) => d.reference !== declaration.reference,
+        (d) => d.id !== declaration.id,
       );
     }
   }
@@ -235,7 +229,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     );
     if (response.ok) {
       this._declarations = this._declarations.filter(
-        (d) => d.reference !== declaration.reference,
+        (d) => d.id !== declaration.id,
       );
       this.ajouter(
         plainToInstance(DeclarationFDOBrisPorte, await response.json()),

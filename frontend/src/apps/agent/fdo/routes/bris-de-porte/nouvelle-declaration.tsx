@@ -10,9 +10,9 @@ export const Route = createFileRoute("/bris-de-porte/nouvelle-declaration")({
         .nouvelleDeclaration();
 
       throw redirect({
-        to: "/bris-de-porte/$reference",
+        to: "/bris-de-porte/$id",
         params: {
-          reference: brouillon.reference,
+          id: brouillon.id,
         },
       });
     }

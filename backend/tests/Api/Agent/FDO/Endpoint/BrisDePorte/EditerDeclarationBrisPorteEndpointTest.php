@@ -4,20 +4,21 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\EditerDeclarationBrisPorteEndpoint;
 use MonIndemnisationJustice\Entity\Agent;
+use MonIndemnisationJustice\Entity\Civilite;
+use MonIndemnisationJustice\Entity\CoordonneesRequerant;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorteErreurType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
 /**
  * Teste le point d'entrée @EditerDeclarationBrisPorteEndpoint de l'API, permettant à l'agent des FDO de patcher les données
  * d'un brouillon de déclaration de bris de porte.
- *
- * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\EditerDeclarationBrisPorteEndpoint
  */
+#[CoversClass(EditerDeclarationBrisPorteEndpoint::class)]
 class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 {
     /**
@@ -99,9 +100,9 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
     }
 
     /**
-     * ETQ agent des FDO, je ne dois pas pouvoir modifier une déclaration déjà soumise.
+     * ETQ agent des FDO, je peux modifier une déclaration déjà soumise.
      */
-    public function testEditerKoDejaSoumise(): void
+    public function testEditerOkDejaSoumise(): void
     {
         $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
         $brouillon = $this->creerBrouillon($gendarme, DeclarationFDOBrisPorteErreurType::DOUTE, '2025-12-14');
@@ -112,7 +113,70 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
             'estErreur' => 'OUI',
         ]));
 
-        $this->assertEquals(403, $this->client->getResponse()->getStatusCode());
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
+
+    /**
+     * ETQ agent des FDO, je peux corriger les coordonnées du requérant d'une déclaration déjà soumise.
+     */
+    public function testEditerOkCoordonneesRequerantDejaSoumise(): void
+    {
+        $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
+        $declaration = $this->creerDeclarationSoumiseAvecCoordonneesRequerant($gendarme);
+
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$declaration->getId()}/editer", content: json_encode([
+            'coordonneesRequerant' => ['courriel' => 'nouveau@courriel.fr'],
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $declaration = $this->em->find(DeclarationFDOBrisPorte::class, $declaration->getId());
+        $this->assertEquals('nouveau@courriel.fr', $declaration->getCoordonneesRequerant()?->getCourriel());
+        $this->assertEquals('RENTE', $declaration->getCoordonneesRequerant()?->getNom());
+    }
+
+    /**
+     * ETQ agent des FDO, je ne dois pas pouvoir supprimer les coordonnées du requérant d'une déclaration déjà soumise.
+     */
+    public function testEditerKoSupprimerCoordonneesRequerantDejaSoumise(): void
+    {
+        $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
+        $declaration = $this->creerDeclarationSoumiseAvecCoordonneesRequerant($gendarme);
+
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$declaration->getId()}/editer", content: json_encode([
+            'coordonneesRequerant' => null,
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+
+        ['erreur' => $erreur] = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals("Les coordonnées du requérant d'une déclaration déjà soumise ne peuvent pas être supprimées", $erreur);
+
+        $this->em->clear();
+        $declaration = $this->em->find(DeclarationFDOBrisPorte::class, $declaration->getId());
+        $this->assertNotNull($declaration->getCoordonneesRequerant());
+        $this->assertEquals('RENTE', $declaration->getCoordonneesRequerant()->getNom());
+    }
+
+    /**
+     * ETQ agent des FDO, je peux supprimer les coordonnées du requérant d'un brouillon de déclaration.
+     */
+    public function testEditerOkSupprimerCoordonneesRequerantBrouillon(): void
+    {
+        $gendarme = $this->connexion('gendarme@gendarmerie.interieur.gouv.fr');
+        $brouillon = $this->creerBrouillon($gendarme);
+        $brouillon->setCoordonneesRequerant($this->creerCoordonneesRequerant());
+        $this->em->flush();
+
+        $this->client->request('PATCH', "/api/agent/fdo/bris-de-porte/{$brouillon->getId()}/editer", content: json_encode([
+            'coordonneesRequerant' => null,
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->em->clear();
+        $brouillon = $this->em->find(DeclarationFDOBrisPorte::class, $brouillon->getId());
+        $this->assertNull($brouillon->getCoordonneesRequerant());
     }
 
     public function testEditerKoDateOperationInvalide(): void
@@ -237,5 +301,26 @@ class EditerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
         $this->em->flush();
 
         return $brouillon;
+    }
+
+    protected function creerDeclarationSoumiseAvecCoordonneesRequerant(Agent $agent): DeclarationFDOBrisPorte
+    {
+        $declaration = $this->creerBrouillon($agent, DeclarationFDOBrisPorteErreurType::DOUTE, '2025-12-14')
+            ->setCoordonneesRequerant($this->creerCoordonneesRequerant())
+            ->setDateSoumission(new \DateTimeImmutable());
+
+        $this->em->flush();
+
+        return $declaration;
+    }
+
+    protected function creerCoordonneesRequerant(): CoordonneesRequerant
+    {
+        return new CoordonneesRequerant()
+            ->setCivilite(Civilite::M)
+            ->setNom('RENTE')
+            ->setPrenom('Pierre')
+            ->setTelephone('0600000000')
+            ->setCourriel('pierre.rente@courriel.fr');
     }
 }

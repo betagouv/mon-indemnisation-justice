@@ -34,7 +34,25 @@ class MapDeclarationFDOResolver implements ValueResolverInterface
         foreach ($argument->getAttributes(MapDeclarationFDO::class) as $attribut) {
             $declaration = $this->getDeclaration($request, $attribut->id);
 
-            yield $attribut->modifie ? $this->getDto($request, $declaration)->versDeclaration($declaration) : $declaration;
+            if ($attribut->modifie) {
+                $dto = $this->getDto($request, $declaration);
+                $this->verifierModifications($declaration, $dto);
+
+                yield $dto->versDeclaration($declaration);
+            } else {
+                yield $declaration;
+            }
+        }
+    }
+
+    /**
+     * Vérifie que les modifications portées par le DTO sont autorisées compte tenu de l'état de la déclaration.
+     */
+    protected function verifierModifications(DeclarationFDOBrisPorte $declaration, DeclarationFDOBrisPorteDto $dto): void
+    {
+        // Une déclaration déjà soumise ne peut pas perdre les coordonnées du requérant
+        if (!$declaration->estBrouillon() && null !== $declaration->getCoordonneesRequerant() && null === $dto->coordonneesRequerant) {
+            throw new BadRequestHttpException("Les coordonnées du requérant d'une déclaration déjà soumise ne peuvent pas être supprimées");
         }
     }
 
