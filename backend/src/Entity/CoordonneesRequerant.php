@@ -14,7 +14,7 @@ class CoordonneesRequerant
     protected ?int $id;
 
     #[ORM\Column(type: 'string', length: 3, nullable: true, enumType: Civilite::class)]
-    protected Civilite $civilite;
+    protected ?Civilite $civilite = null;
     #[ORM\Column(length: 255)]
     protected string $nom;
     #[ORM\Column(length: 255)]

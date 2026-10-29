@@ -4,21 +4,20 @@ namespace MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Agent\FDO\Voter\DeclarationFDOBrisPorteVoter;
-use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Route API qui permet à un agent des FDO de déclarer une erreur opérationnelle.
+ * Route API qui permet à un agent des FDO de supprimer le brouillon d'une déclaration d'erreur opérationnelle.
  */
 #[Route('/api/agent/fdo/bris-de-porte/{declarationId}/supprimer', name: 'api_agent_fdo_bris_porte_supprimer', methods: ['DELETE'])]
 #[IsGranted(
     DeclarationFDOBrisPorteVoter::ACTION_SUPPRIMER,
-    'brouillon',
+    'declaration',
     message: "La déclaration d'une erreur opérationnelle est retreinte aux agents des Forces de l'Ordre",
     statusCode: Response::HTTP_FORBIDDEN
 )]
@@ -31,10 +30,9 @@ class SupprimerDeclarationBrisPorteEndpoint
 
     public function __invoke(
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
-        BrouillonDeclarationFDOBrisPorte $brouillon,
-        Security $security,
+        DeclarationFDOBrisPorte $declaration,
     ): Response {
-        $this->em->remove($brouillon);
+        $this->em->remove($declaration);
         $this->em->flush();
 
         return new JsonResponse(

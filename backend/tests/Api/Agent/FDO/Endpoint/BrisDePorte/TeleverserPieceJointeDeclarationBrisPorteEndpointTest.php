@@ -3,7 +3,7 @@
 namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\TeleverserPieceJointeDeclarationBrisPorteEndpoint;
-use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
+use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -24,7 +24,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndp
     {
         $policier = $this->connexion('policier@interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier, 'dateSoumission' => null]);
         $type = DocumentType::TYPE_PHOTO_FDO;
 
         $this->client->request(
@@ -59,7 +59,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndp
     {
         $policier = $this->connexion('policier@interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier, 'dateSoumission' => null]);
         $type = DocumentType::TYPE_CARTE_IDENTITE;
         $this->client->request(
             'POST',
@@ -81,7 +81,7 @@ class TeleverserPieceJointeDeclarationBrisPorteEndpointTest extends AbstractEndp
         $this->connexion('redacteur@justice.gouv.fr');
         $policier = $this->getAgent('policier@interieur.gouv.fr');
 
-        $brouillon = $this->em->getRepository(BrouillonDeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier]);
+        $brouillon = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['agent' => $policier, 'dateSoumission' => null]);
         $type = DocumentType::TYPE_PHOTO_FDO;
 
         $this->client->request(

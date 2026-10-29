@@ -7,9 +7,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use MonIndemnisationJustice\Event\Listener\DeclarationBrisPorteFDOEntitylistener;
+use MonIndemnisationJustice\Repository\DeclarationFDOBrisPorteRepository;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DeclarationFDOBrisPorteRepository::class)]
 #[ORM\Table(name: 'declarations_fdo_bris_porte')]
 #[ORM\Index(
     name: 'declarations_fdo_bris_porte_agent_idx',
@@ -28,11 +29,14 @@ class DeclarationFDOBrisPorte
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     protected ?Uuid $id = null;
 
-    #[ORM\Column(length: 32)]
-    protected string $reference;
+    /**
+     * @var string|null le code d'invitation à déposer, généré lors de la soumission de la déclaration
+     */
+    #[ORM\Column(length: 32, nullable: true)]
+    protected ?string $reference = null;
 
-    #[ORM\Column(name: 'est_erreur', length: 6, enumType: DeclarationFDOBrisPorteErreurType::class)]
-    protected DeclarationFDOBrisPorteErreurType $estErreur;
+    #[ORM\Column(name: 'est_erreur', length: 6, nullable: true, enumType: DeclarationFDOBrisPorteErreurType::class)]
+    protected ?DeclarationFDOBrisPorteErreurType $estErreur = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     protected ?string $descriptionErreur = null;
@@ -44,12 +48,12 @@ class DeclarationFDOBrisPorte
      * @var Adresse l'adresse du logement dans laquelle
      */
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    protected Adresse $adresse;
+    #[ORM\JoinColumn(name: 'adresse_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    protected ?Adresse $adresse = null;
 
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'procedure_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    protected ProcedureJudiciaire $procedure;
+    #[ORM\JoinColumn(name: 'procedure_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    protected ?ProcedureJudiciaire $procedure = null;
 
     #[ORM\ManyToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'coordonnees_requerant_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
@@ -64,8 +68,11 @@ class DeclarationFDOBrisPorte
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     protected \DateTimeImmutable $dateCreation;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    protected \DateTimeImmutable $dateSoumission;
+    /**
+     * @var \DateTimeImmutable|null la date de soumission de la déclaration, `null` tant qu'elle est à l'état de brouillon
+     */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    protected ?\DateTimeImmutable $dateSoumission = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     protected ?\DateTimeImmutable $dateSuppression = null;
@@ -84,8 +91,16 @@ class DeclarationFDOBrisPorte
     /** @var Collection<Document> */
     protected Collection $piecesJointes;
 
+    /**
+     * Construit une déclaration "vide", à l'état de brouillon : les champs textes sont initialisés à `""` et la date
+     * d'opération à la date du jour.
+     */
     public function __construct()
     {
+        $this->dateCreation = new \DateTimeImmutable();
+        $this->dateOperation = new \DateTimeImmutable('today');
+        $this->descriptionErreur = '';
+        $this->precisionsRequerant = '';
         $this->piecesJointes = new ArrayCollection([]);
     }
 
@@ -101,24 +116,24 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getReference(): string
+    public function getReference(): ?string
     {
         return $this->reference;
     }
 
-    public function setReference(string $reference): static
+    public function setReference(?string $reference): static
     {
         $this->reference = $reference;
 
         return $this;
     }
 
-    public function getEstErreur(): DeclarationFDOBrisPorteErreurType
+    public function getEstErreur(): ?DeclarationFDOBrisPorteErreurType
     {
         return $this->estErreur;
     }
 
-    public function setEstErreur(DeclarationFDOBrisPorteErreurType $estErreur): DeclarationFDOBrisPorte
+    public function setEstErreur(?DeclarationFDOBrisPorteErreurType $estErreur): DeclarationFDOBrisPorte
     {
         $this->estErreur = $estErreur;
 
@@ -149,24 +164,24 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getAdresse(): Adresse
+    public function getAdresse(): ?Adresse
     {
         return $this->adresse;
     }
 
-    public function setAdresse(Adresse $adresse): static
+    public function setAdresse(?Adresse $adresse): static
     {
         $this->adresse = $adresse;
 
         return $this;
     }
 
-    public function getProcedure(): ProcedureJudiciaire
+    public function getProcedure(): ?ProcedureJudiciaire
     {
         return $this->procedure;
     }
 
-    public function setProcedure(ProcedureJudiciaire $procedure): static
+    public function setProcedure(?ProcedureJudiciaire $procedure): static
     {
         $this->procedure = $procedure;
 
@@ -219,12 +234,17 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateSoumission(): \DateTimeImmutable
+    public function getDateSoumission(): ?\DateTimeImmutable
     {
         return $this->dateSoumission;
     }
 
-    public function setDateSoumission(\DateTimeImmutable $dateSoumission): static
+    public function estBrouillon(): bool
+    {
+        return null === $this->dateSoumission;
+    }
+
+    public function setDateSoumission(?\DateTimeImmutable $dateSoumission): static
     {
         $this->dateSoumission = $dateSoumission;
 
@@ -255,7 +275,7 @@ class DeclarationFDOBrisPorte
         return $this;
     }
 
-    public function getDateSuppression(): \DateTimeImmutable
+    public function getDateSuppression(): ?\DateTimeImmutable
     {
         return $this->dateSuppression;
     }
@@ -277,6 +297,22 @@ class DeclarationFDOBrisPorte
         foreach ($piecesJointes as $pieceJointe) {
             $this->piecesJointes->add($pieceJointe);
         }
+
+        return $this;
+    }
+
+    public function ajouterPieceJointe(Document $pieceJointe): DeclarationFDOBrisPorte
+    {
+        if (!$this->piecesJointes->contains($pieceJointe)) {
+            $this->piecesJointes->add($pieceJointe);
+        }
+
+        return $this;
+    }
+
+    public function supprimerPieceJointe(Document $pieceJointe): DeclarationFDOBrisPorte
+    {
+        $this->piecesJointes->removeElement($pieceJointe);
 
         return $this;
     }

@@ -9,7 +9,6 @@ use MonIndemnisationJustice\DataFixtures\Helpers\MailpitManager;
 use MonIndemnisationJustice\Entity\Administration;
 use MonIndemnisationJustice\Entity\Adresse;
 use MonIndemnisationJustice\Entity\Agent;
-use MonIndemnisationJustice\Entity\BrouillonDeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Entity\Civilite;
 use MonIndemnisationJustice\Entity\CoordonneesRequerant;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
@@ -77,32 +76,29 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
         $manager->persist($gendarme);
 
         // Déclarations de bris de porte
-        $brouillonPolice = new BrouillonDeclarationFDOBrisPorte()
-            ->setDateCreation(new \DateTimeImmutable())
+        $brouillonPolice = new DeclarationFDOBrisPorte()
             ->setAgent($this->getReference('agent-policier', Agent::class))
-            ->setDonnees([
-                'estErreur' => 'DOUTE',
-                'dateOperation' => new \DateTimeImmutable()->sub(\DateInterval::createFromDateString('3 days'))->format('Y-m-d'),
-                'descriptionErreur' => 'Cassé la porte',
-                'adresse' => [
-                    'ligne1' => '127 boulevard des Fleurs',
-                    'ligne2' => 'Porte B',
-                    'codePostal' => '75021',
-                    'localite' => 'PARIS',
-                ],
-                'procedure' => [
-                    'numeroProcedure' => 'PRO1653',
-                    'serviceEnqueteur' => 'DPNC',
-                    'telephone' => '0123456789',
-                    'nomMagistrat' => null,
-                ],
-                'piecesJointes' => [
-                    self::normaliserPieceJointe($this->getReference('document-agent-fdo-pv-1', Document::class)),
-                    self::normaliserPieceJointe($this->getReference('document-agent-fdo-photo-2', Document::class)),
-                ],
-                'precisionsRequerant' => 'Logement vide lors de la perquisition',
-                'coordonneesRequerant' => null,
-            ]);
+            ->setEstErreur(DeclarationFDOBrisPorteErreurType::DOUTE)
+            ->setDateOperation(new \DateTimeImmutable('today')->sub(\DateInterval::createFromDateString('3 days')))
+            ->setDescriptionErreur('Cassé la porte')
+            ->setAdresse(
+                new Adresse()
+                    ->setLigne1('127 boulevard des Fleurs')
+                    ->setLigne2('Porte B')
+                    ->setCodePostal('75021')
+                    ->setLocalite('PARIS')
+            )
+            ->setProcedure(
+                new ProcedureJudiciaire()
+                    ->setNumeroProcedure('PRO1653')
+                    ->setServiceEnqueteur('DPNC')
+                    ->setTelephone('0123456789')
+            )
+            ->setPiecesJointes([
+                $this->getReference('document-agent-fdo-pv-1', Document::class),
+                $this->getReference('document-agent-fdo-photo-2', Document::class),
+            ])
+            ->setPrecisionsRequerant('Logement vide lors de la perquisition');
         $manager->persist($brouillonPolice);
 
         $declarationPolice = new DeclarationFDOBrisPorte()
@@ -135,38 +131,39 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
             ]);
         $manager->persist($declarationPolice);
 
-        $brouillonGendarmerie = new BrouillonDeclarationFDOBrisPorte()
+        $brouillonGendarmerie = new DeclarationFDOBrisPorte()
             ->setDateCreation(new \DateTimeImmutable()->sub(\DateInterval::createFromDateString('5 days')))
             ->setAgent($this->getReference('agent-gendarme', Agent::class))
-            ->setDonnees([
-                'estErreur' => 'DOUTE',
-                'dateOperation' => new \DateTimeImmutable()->sub(\DateInterval::createFromDateString('6 days'))->format('Y-m-d'),
-                'descriptionErreur' => 'Trompé de porte',
-                'adresse' => [
-                    'ligne1' => '127 boulevard des Fleurs',
-                    'codePostal' => '69004',
-                    'localite' => 'LYON',
-                ],
-                'procedure' => [
-                    'numeroProcedure' => 'PRO3491',
-                    'serviceEnqueteur' => 'GPNV',
-                    'telephone' => '0234567891',
-                    'nomMagistrat' => 'MARTEAU',
-                    'juridictionOuParquet' => 'APPEL PARIS',
-                ],
-                'piecesJointes' => [
-                    self::normaliserPieceJointe($this->getReference('document-agent-fdo-photo-1', Document::class)),
-                    self::normaliserPieceJointe($this->getReference('document-agent-fdo-photo-3', Document::class)),
-                ],
-                'precisionsRequerant' => 'Logement vide lors de la perquisition',
-                'coordonneesRequerant' => [
-                    'civilite' => 'MME',
-                    'nom' => 'RENTE',
-                    'prenom' => 'Rekke',
-                    'telephone' => '06 11 11 11 11',
-                    'courriel' => 'rekke@courriel.fr',
-                ],
-            ]);
+            ->setEstErreur(DeclarationFDOBrisPorteErreurType::DOUTE)
+            ->setDateOperation(new \DateTimeImmutable('today')->sub(\DateInterval::createFromDateString('6 days')))
+            ->setDescriptionErreur('Trompé de porte')
+            ->setAdresse(
+                new Adresse()
+                    ->setLigne1('127 boulevard des Fleurs')
+                    ->setCodePostal('69004')
+                    ->setLocalite('LYON')
+            )
+            ->setProcedure(
+                new ProcedureJudiciaire()
+                    ->setNumeroProcedure('PRO3491')
+                    ->setServiceEnqueteur('GPNV')
+                    ->setTelephone('0234567891')
+                    ->setNomMagistrat('MARTEAU')
+                    ->setJuridictionOuParquet('APPEL PARIS')
+            )
+            ->setPiecesJointes([
+                $this->getReference('document-agent-fdo-photo-1', Document::class),
+                $this->getReference('document-agent-fdo-photo-3', Document::class),
+            ])
+            ->setPrecisionsRequerant('Logement vide lors de la perquisition')
+            ->setCoordonneesRequerant(
+                new CoordonneesRequerant()
+                    ->setCivilite(Civilite::MME)
+                    ->setNom('RENTE')
+                    ->setPrenom('Rekke')
+                    ->setTelephone('06 11 11 11 11')
+                    ->setCourriel('rekke@courriel.fr')
+            );
 
         $manager->persist($brouillonGendarmerie);
 
@@ -206,19 +203,5 @@ class FDOFixture extends Fixture implements DependentFixtureInterface
         $manager->persist($declarationGendarmerie);
 
         $manager->flush();
-    }
-
-    private static function normaliserPieceJointe(Document $pieceJointe): array
-    {
-        return [
-            'id' => $pieceJointe->getId(),
-            'filename' => $pieceJointe->getFilename(),
-            'type' => $pieceJointe->getType()->value,
-            'originalFilename' => $pieceJointe->getOriginalFilename(),
-            'mime' => $pieceJointe->getMime(),
-            'size' => $pieceJointe->getSize(),
-            'fileHash' => $pieceJointe->getFileHash(),
-            'estAjoutRequerant' => $pieceJointe->estAjoutRequerant(),
-        ];
     }
 }
