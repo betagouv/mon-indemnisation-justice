@@ -62,9 +62,9 @@ export const Route = createFileRoute("/requisition-serrurier")({
               </p>
               <div className="fr-col-12 fr-grid-row fr-grid-row--center">
                 <a
-                  className="fr-btn"
+                  className="fr-btn fr-btn--icon-right fr-icon-phone-line"
                   href={`tel:${telephoneSerrurier}`}
-                  target="_blank"
+                  target="_self"
                 >
                   Trouver un serrurier labellisé
                 </a>

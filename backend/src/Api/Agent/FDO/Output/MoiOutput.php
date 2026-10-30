@@ -18,7 +18,7 @@ class MoiOutput
         public readonly array $roles,
         public readonly ?\DateTimeImmutable $dateCreation = null,
         /** @var array<AffectationAgentFDOOutput>|false $affectations */
-        public readonly array|false $affectations = [],
+        public readonly array|false|null $affectations = [],
     ) {
     }
 
@@ -39,8 +39,12 @@ class MoiOutput
             dateCreation: $agent->getDateCreation(),
             affectations: $agent->estExempteAffectation() ?
                 false :
-                $agent->getAffectations()
-                    ->map(fn (AffectationAgentFDO $affectation) => AffectationAgentFDOOutput::depuisAffectation($affectation))->toArray(),
+                (
+                    $agent->getAffectations()->count() ?
+                    $agent->getAffectations()
+                        ->map(fn (AffectationAgentFDO $affectation) => AffectationAgentFDOOutput::depuisAffectation($affectation))->toArray()
+                    : null
+                ),
         );
     }
 }

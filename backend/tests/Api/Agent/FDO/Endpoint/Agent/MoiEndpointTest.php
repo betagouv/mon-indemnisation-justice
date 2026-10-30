@@ -54,7 +54,7 @@ class MoiEndpointTest extends AbstractEndpointTestCase
         $donnees = json_decode($this->client->getResponse()->getContent());
 
         $this->assertEquals($commissaire->getId(), $donnees->agent->id);
-        $this->assertEmpty($donnees->agent->affectations);
+        $this->assertNull($donnees->agent->affectations);
     }
 
     public function testAgentFIP6Ko(): void

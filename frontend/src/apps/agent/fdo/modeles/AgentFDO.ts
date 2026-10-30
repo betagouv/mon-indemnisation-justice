@@ -12,12 +12,12 @@ export class AgentFDO extends Agent {
       return false;
     }
 
-    return [];
+    return undefined;
   })
-  public affectations: AffectationAgentFDO[] | false;
+  public affectations?: AffectationAgentFDO[] | false | undefined;
 
   public estAffecte(): boolean {
-    return !!this.getAffectationActive();
+    return this.affectations !== undefined;
   }
 
   public getAffectationActive(): AffectationAgentFDO | undefined {
@@ -25,7 +25,7 @@ export class AgentFDO extends Agent {
       return undefined;
     }
 
-    return this.affectations.find(
+    return this.affectations?.find(
       (affectation: AffectationAgentFDO) => affectation.estActive,
     );
   }
