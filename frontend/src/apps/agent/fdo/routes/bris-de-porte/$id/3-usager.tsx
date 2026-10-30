@@ -1,4 +1,3 @@
-import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
@@ -20,15 +19,15 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useMemo, useState } from "react";
 import { z } from "zod";
 
-export const Route = createFileRoute("/bris-de-porte/$reference/3-usager")({
-  beforeLoad: ({ params }) => {
+export const Route = createFileRoute("/bris-de-porte/$id/3-usager")({
+  beforeLoad: async ({ params }) => {
     if (
-      !container
+      !(await container
         .get(DeclarationManagerInterface.$)
-        .aDeclaration(params.reference)
+        .aDeclaration(params.id))
     ) {
       throw redirect({
         to: "/bris-de-porte/mes-declarations",
@@ -43,11 +42,10 @@ export const Route = createFileRoute("/bris-de-porte/$reference/3-usager")({
     params: any;
   }): Promise<{
     declaration: DeclarationFDOBrisPorte;
-    reference: string;
   }> => {
     const declaration = (await container
       .get(DeclarationManagerInterface.$)
-      .getDeclaration(params.reference)) as DeclarationFDOBrisPorte;
+      .getDeclaration(params.id)) as DeclarationFDOBrisPorte;
 
     if (!declaration) {
       throw redirect({
@@ -58,7 +56,6 @@ export const Route = createFileRoute("/bris-de-porte/$reference/3-usager")({
     }
 
     return {
-      reference: params.reference,
       declaration,
     };
   },
@@ -99,10 +96,7 @@ const schemaRequerant = z.discriminatedUnion("enPresenceRequerant", [
 ]);
 
 function Page() {
-  const {
-    declaration,
-    reference,
-  }: { declaration: DeclarationFDOBrisPorte; reference: string } =
+  const { declaration }: { declaration: DeclarationFDOBrisPorte } =
     Route.useLoaderData();
 
   const routeur = useRouter<typeof RouteurFDO>();
@@ -117,6 +111,11 @@ function Page() {
 
   const [declarationEnPresenceRequerant, setDeclarationEnPresenceRequerant] =
     useState<boolean | undefined>(declaration.enPresenceRequerant || undefined);
+
+  // Une fois la déclaration soumise avec les coordonnées de l'usager, celles-ci ne peuvent plus être retirées
+  const [presenceRequerantVerrouillee] = useState<boolean>(
+    () => declaration.estSoumise() && declaration.enPresenceRequerant === true,
+  );
 
   const [sauvegardeEnCours, setSauvegardeEnCours] = useState<boolean>(false);
 
@@ -142,7 +141,7 @@ function Page() {
     onSubmit: async ({ formApi }) => {
       setSauvegardeEnCours(true);
       try {
-        if (declaration.estBrouillon()) {
+        if (formApi.state.isValid) {
           await declarationManager.enregistrer(declaration, {
             precisionsRequerant: formApi.state.values.precisionsRequerant,
             coordonneesRequerant: formApi.state.values.enPresenceRequerant
@@ -161,6 +160,11 @@ function Page() {
       }
     },
   });
+
+  const estEditable = useMemo<boolean>(
+    () => declaration.etat.estDeclarationEditable(),
+    [declaration.etat],
+  );
 
   return (
     <form
@@ -216,8 +220,13 @@ function Page() {
               <RadioButtons
                 className="fr-col-12 fr-m-0 fr-champ-requis"
                 legend="J’ai les coordonnées de l’usager"
+                hintText={
+                  presenceRequerantVerrouillee
+                    ? "Les coordonnées de l'usager ayant déjà été transmises, elles peuvent être corrigées mais pas retirées."
+                    : undefined
+                }
                 orientation="horizontal"
-                disabled={declaration.estSoumise()}
+                disabled={!estEditable || presenceRequerantVerrouillee}
                 state={!field.state.meta.isValid ? "error" : "default"}
                 stateRelatedMessage={
                   !field.state.meta.isValid ? (
@@ -269,7 +278,7 @@ function Page() {
                 <Select
                   className="fr-col-lg-2 fr-m-0 fr-champ-requis"
                   label="Civilité"
-                  disabled={sauvegardeEnCours || declaration.estSoumise()}
+                  disabled={sauvegardeEnCours || !estEditable}
                   nativeSelectProps={{
                     autoFocus: true,
                     value: field.state.value?.id ?? "",
@@ -304,7 +313,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-3 fr-m-0 fr-champ-requis"
                   label="Nom"
-                  disabled={sauvegardeEnCours || declaration.estSoumise()}
+                  disabled={sauvegardeEnCours || !estEditable}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "DUPONT",
@@ -331,7 +340,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-3 fr-m-0 fr-champ-requis"
                   label="Prénom"
-                  disabled={sauvegardeEnCours || declaration.estSoumise()}
+                  disabled={sauvegardeEnCours || !estEditable}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "Martin",
@@ -358,7 +367,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4 fr-m-0 fr-champ-requis"
                   label="Téléphone"
-                  disabled={sauvegardeEnCours || declaration.estSoumise()}
+                  disabled={sauvegardeEnCours || !estEditable}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "06 00 00 00 00",
@@ -385,7 +394,7 @@ function Page() {
                 <Input
                   className="fr-col-lg-4 fr-m-0 fr-champ-requis"
                   label="Courriel"
-                  disabled={sauvegardeEnCours || declaration.estSoumise()}
+                  disabled={sauvegardeEnCours || !estEditable}
                   nativeInputProps={{
                     type: "text",
                     placeholder: "martin.dupont@courriel.fr",
@@ -433,7 +442,7 @@ function Page() {
                   }
                   className="fr-col-lg-12"
                   textArea={true}
-                  disabled={sauvegardeEnCours || declaration.estSoumise()}
+                  disabled={sauvegardeEnCours || !estEditable}
                   nativeTextAreaProps={{
                     defaultValue: declaration.precisionsRequerant ?? "",
                     onChange: (e) => field.handleChange(e.target.value),
@@ -464,45 +473,26 @@ function Page() {
               iconPosition: "left",
               onClick: () =>
                 naviguer({
-                  to: "/bris-de-porte/$reference/2-service-enqueteur",
+                  to: "/bris-de-porte/$id/2-service-enqueteur",
                   params: {
-                    reference,
+                    id: declaration.id,
                   } as any,
                 }),
             },
-            ...(declaration.estBrouillon()
-              ? [
-                  {
-                    children: sauvegardeEnCours
-                      ? "Sauvegarde en cours..."
-                      : "Envoyer",
-                    disabled: sauvegardeEnCours || declaration.estSoumise(),
-                    priority: sauvegardeEnCours ? "tertiary" : "primary",
-                    nativeButtonProps: {
-                      type: "submit",
-                      role: "submit",
-                    },
-                    className: "fr-mr-0",
-                  } as ButtonProps,
-                ]
-              : [
-                  {
-                    children: "Mes déclarations",
-                    priority: "secondary",
-                    nativeButtonProps: {
-                      type: "button",
-                      role: "link",
-                    },
-                    className: "fr-mr-0",
-                    onClick: () =>
-                      naviguer({
-                        to: "/bris-de-porte/mes-declarations",
-                        params: {
-                          reference,
-                        } as any,
-                      }),
-                  } as ButtonProps,
-                ]),
+            {
+              children: sauvegardeEnCours
+                ? "Sauvegarde en cours..."
+                : declaration.estSoumise()
+                  ? "Enregistrer"
+                  : "Envoyer",
+              disabled: sauvegardeEnCours,
+              priority: sauvegardeEnCours ? "tertiary" : "primary",
+              nativeButtonProps: {
+                type: "submit",
+                role: "submit",
+              },
+              className: "fr-mr-0",
+            },
           ]}
         />
       </div>

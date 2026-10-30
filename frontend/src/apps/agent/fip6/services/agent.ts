@@ -54,7 +54,7 @@ export namespace AgentManagerInterface {
 
 export class APIAgentManager implements AgentManagerInterface {
   async moi(): Promise<AgentFIP6Contexte> {
-    return queryClient.fetchQuery({
+    return queryClient.query({
       queryKey: [referenceService, "moi"],
       queryFn: async (): Promise<AgentFIP6Contexte> => {
         const reponse = await fetch("/api/agent/fip6/moi");
@@ -73,7 +73,7 @@ export class APIAgentManager implements AgentManagerInterface {
   }
 
   async redacteurs(): Promise<Redacteur[]> {
-    return queryClient.fetchQuery({
+    return queryClient.query({
       queryKey: [referenceService, "redacteurs"],
       queryFn: async (): Promise<Redacteur[]> => {
         const reponse = await fetch("/api/agent/fip6/agents/redacteurs");

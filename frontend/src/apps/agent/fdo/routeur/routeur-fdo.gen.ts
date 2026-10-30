@@ -17,10 +17,10 @@ import { Route as IndexRouteImport } from './../routes/index'
 import { Route as BrisDePorteIndexRouteImport } from './../routes/bris-de-porte/index'
 import { Route as BrisDePorteNouvelleDeclarationRouteImport } from './../routes/bris-de-porte/nouvelle-declaration'
 import { Route as BrisDePorteMesDeclarationsRouteImport } from './../routes/bris-de-porte/mes-declarations'
-import { Route as BrisDePorteReferenceIndexRouteImport } from './../routes/bris-de-porte/$reference/index'
-import { Route as BrisDePorteReference3UsagerRouteImport } from './../routes/bris-de-porte/$reference/3-usager'
-import { Route as BrisDePorteReference2ServiceEnqueteurRouteImport } from './../routes/bris-de-porte/$reference/2-service-enqueteur'
-import { Route as BrisDePorteReference1BrisDePorteRouteImport } from './../routes/bris-de-porte/$reference/1-bris-de-porte'
+import { Route as BrisDePorteIdIndexRouteImport } from './../routes/bris-de-porte/$id/index'
+import { Route as BrisDePorteId3UsagerRouteImport } from './../routes/bris-de-porte/$id/3-usager'
+import { Route as BrisDePorteId2ServiceEnqueteurRouteImport } from './../routes/bris-de-porte/$id/2-service-enqueteur'
+import { Route as BrisDePorteId1BrisDePorteRouteImport } from './../routes/bris-de-porte/$id/1-bris-de-porte'
 
 const RequisitionSerrurierRoute = RequisitionSerrurierRouteImport.update({
   id: '/requisition-serrurier',
@@ -64,28 +64,26 @@ const BrisDePorteMesDeclarationsRoute =
     path: '/bris-de-porte/mes-declarations',
     getParentRoute: () => rootRouteImport,
   } as any)
-const BrisDePorteReferenceIndexRoute =
-  BrisDePorteReferenceIndexRouteImport.update({
-    id: '/bris-de-porte/$reference/',
-    path: '/bris-de-porte/$reference/',
+const BrisDePorteIdIndexRoute = BrisDePorteIdIndexRouteImport.update({
+  id: '/bris-de-porte/$id/',
+  path: '/bris-de-porte/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrisDePorteId3UsagerRoute = BrisDePorteId3UsagerRouteImport.update({
+  id: '/bris-de-porte/$id/3-usager',
+  path: '/bris-de-porte/$id/3-usager',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrisDePorteId2ServiceEnqueteurRoute =
+  BrisDePorteId2ServiceEnqueteurRouteImport.update({
+    id: '/bris-de-porte/$id/2-service-enqueteur',
+    path: '/bris-de-porte/$id/2-service-enqueteur',
     getParentRoute: () => rootRouteImport,
   } as any)
-const BrisDePorteReference3UsagerRoute =
-  BrisDePorteReference3UsagerRouteImport.update({
-    id: '/bris-de-porte/$reference/3-usager',
-    path: '/bris-de-porte/$reference/3-usager',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const BrisDePorteReference2ServiceEnqueteurRoute =
-  BrisDePorteReference2ServiceEnqueteurRouteImport.update({
-    id: '/bris-de-porte/$reference/2-service-enqueteur',
-    path: '/bris-de-porte/$reference/2-service-enqueteur',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const BrisDePorteReference1BrisDePorteRoute =
-  BrisDePorteReference1BrisDePorteRouteImport.update({
-    id: '/bris-de-porte/$reference/1-bris-de-porte',
-    path: '/bris-de-porte/$reference/1-bris-de-porte',
+const BrisDePorteId1BrisDePorteRoute =
+  BrisDePorteId1BrisDePorteRouteImport.update({
+    id: '/bris-de-porte/$id/1-bris-de-porte',
+    path: '/bris-de-porte/$id/1-bris-de-porte',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -98,10 +96,10 @@ export interface FileRoutesByFullPath {
   '/bris-de-porte/mes-declarations': typeof BrisDePorteMesDeclarationsRoute
   '/bris-de-porte/nouvelle-declaration': typeof BrisDePorteNouvelleDeclarationRoute
   '/bris-de-porte': typeof BrisDePorteIndexRoute
-  '/bris-de-porte/$reference/1-bris-de-porte': typeof BrisDePorteReference1BrisDePorteRoute
-  '/bris-de-porte/$reference/2-service-enqueteur': typeof BrisDePorteReference2ServiceEnqueteurRoute
-  '/bris-de-porte/$reference/3-usager': typeof BrisDePorteReference3UsagerRoute
-  '/bris-de-porte/$reference': typeof BrisDePorteReferenceIndexRoute
+  '/bris-de-porte/$id/1-bris-de-porte': typeof BrisDePorteId1BrisDePorteRoute
+  '/bris-de-porte/$id/2-service-enqueteur': typeof BrisDePorteId2ServiceEnqueteurRoute
+  '/bris-de-porte/$id/3-usager': typeof BrisDePorteId3UsagerRoute
+  '/bris-de-porte/$id': typeof BrisDePorteIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -112,10 +110,10 @@ export interface FileRoutesByTo {
   '/bris-de-porte/mes-declarations': typeof BrisDePorteMesDeclarationsRoute
   '/bris-de-porte/nouvelle-declaration': typeof BrisDePorteNouvelleDeclarationRoute
   '/bris-de-porte': typeof BrisDePorteIndexRoute
-  '/bris-de-porte/$reference/1-bris-de-porte': typeof BrisDePorteReference1BrisDePorteRoute
-  '/bris-de-porte/$reference/2-service-enqueteur': typeof BrisDePorteReference2ServiceEnqueteurRoute
-  '/bris-de-porte/$reference/3-usager': typeof BrisDePorteReference3UsagerRoute
-  '/bris-de-porte/$reference': typeof BrisDePorteReferenceIndexRoute
+  '/bris-de-porte/$id/1-bris-de-porte': typeof BrisDePorteId1BrisDePorteRoute
+  '/bris-de-porte/$id/2-service-enqueteur': typeof BrisDePorteId2ServiceEnqueteurRoute
+  '/bris-de-porte/$id/3-usager': typeof BrisDePorteId3UsagerRoute
+  '/bris-de-porte/$id': typeof BrisDePorteIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -127,10 +125,10 @@ export interface FileRoutesById {
   '/bris-de-porte/mes-declarations': typeof BrisDePorteMesDeclarationsRoute
   '/bris-de-porte/nouvelle-declaration': typeof BrisDePorteNouvelleDeclarationRoute
   '/bris-de-porte/': typeof BrisDePorteIndexRoute
-  '/bris-de-porte/$reference/1-bris-de-porte': typeof BrisDePorteReference1BrisDePorteRoute
-  '/bris-de-porte/$reference/2-service-enqueteur': typeof BrisDePorteReference2ServiceEnqueteurRoute
-  '/bris-de-porte/$reference/3-usager': typeof BrisDePorteReference3UsagerRoute
-  '/bris-de-porte/$reference/': typeof BrisDePorteReferenceIndexRoute
+  '/bris-de-porte/$id/1-bris-de-porte': typeof BrisDePorteId1BrisDePorteRoute
+  '/bris-de-porte/$id/2-service-enqueteur': typeof BrisDePorteId2ServiceEnqueteurRoute
+  '/bris-de-porte/$id/3-usager': typeof BrisDePorteId3UsagerRoute
+  '/bris-de-porte/$id/': typeof BrisDePorteIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -143,10 +141,10 @@ export interface FileRouteTypes {
     | '/bris-de-porte/mes-declarations'
     | '/bris-de-porte/nouvelle-declaration'
     | '/bris-de-porte'
-    | '/bris-de-porte/$reference/1-bris-de-porte'
-    | '/bris-de-porte/$reference/2-service-enqueteur'
-    | '/bris-de-porte/$reference/3-usager'
-    | '/bris-de-porte/$reference'
+    | '/bris-de-porte/$id/1-bris-de-porte'
+    | '/bris-de-porte/$id/2-service-enqueteur'
+    | '/bris-de-porte/$id/3-usager'
+    | '/bris-de-porte/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -157,10 +155,10 @@ export interface FileRouteTypes {
     | '/bris-de-porte/mes-declarations'
     | '/bris-de-porte/nouvelle-declaration'
     | '/bris-de-porte'
-    | '/bris-de-porte/$reference/1-bris-de-porte'
-    | '/bris-de-porte/$reference/2-service-enqueteur'
-    | '/bris-de-porte/$reference/3-usager'
-    | '/bris-de-porte/$reference'
+    | '/bris-de-porte/$id/1-bris-de-porte'
+    | '/bris-de-porte/$id/2-service-enqueteur'
+    | '/bris-de-porte/$id/3-usager'
+    | '/bris-de-porte/$id'
   id:
     | '__root__'
     | '/'
@@ -171,10 +169,10 @@ export interface FileRouteTypes {
     | '/bris-de-porte/mes-declarations'
     | '/bris-de-porte/nouvelle-declaration'
     | '/bris-de-porte/'
-    | '/bris-de-porte/$reference/1-bris-de-porte'
-    | '/bris-de-porte/$reference/2-service-enqueteur'
-    | '/bris-de-porte/$reference/3-usager'
-    | '/bris-de-porte/$reference/'
+    | '/bris-de-porte/$id/1-bris-de-porte'
+    | '/bris-de-porte/$id/2-service-enqueteur'
+    | '/bris-de-porte/$id/3-usager'
+    | '/bris-de-porte/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -186,10 +184,10 @@ export interface RootRouteChildren {
   BrisDePorteMesDeclarationsRoute: typeof BrisDePorteMesDeclarationsRoute
   BrisDePorteNouvelleDeclarationRoute: typeof BrisDePorteNouvelleDeclarationRoute
   BrisDePorteIndexRoute: typeof BrisDePorteIndexRoute
-  BrisDePorteReference1BrisDePorteRoute: typeof BrisDePorteReference1BrisDePorteRoute
-  BrisDePorteReference2ServiceEnqueteurRoute: typeof BrisDePorteReference2ServiceEnqueteurRoute
-  BrisDePorteReference3UsagerRoute: typeof BrisDePorteReference3UsagerRoute
-  BrisDePorteReferenceIndexRoute: typeof BrisDePorteReferenceIndexRoute
+  BrisDePorteId1BrisDePorteRoute: typeof BrisDePorteId1BrisDePorteRoute
+  BrisDePorteId2ServiceEnqueteurRoute: typeof BrisDePorteId2ServiceEnqueteurRoute
+  BrisDePorteId3UsagerRoute: typeof BrisDePorteId3UsagerRoute
+  BrisDePorteIdIndexRoute: typeof BrisDePorteIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -250,32 +248,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrisDePorteMesDeclarationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bris-de-porte/$reference/': {
-      id: '/bris-de-porte/$reference/'
-      path: '/bris-de-porte/$reference'
-      fullPath: '/bris-de-porte/$reference'
-      preLoaderRoute: typeof BrisDePorteReferenceIndexRouteImport
+    '/bris-de-porte/$id/': {
+      id: '/bris-de-porte/$id/'
+      path: '/bris-de-porte/$id'
+      fullPath: '/bris-de-porte/$id'
+      preLoaderRoute: typeof BrisDePorteIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bris-de-porte/$reference/3-usager': {
-      id: '/bris-de-porte/$reference/3-usager'
-      path: '/bris-de-porte/$reference/3-usager'
-      fullPath: '/bris-de-porte/$reference/3-usager'
-      preLoaderRoute: typeof BrisDePorteReference3UsagerRouteImport
+    '/bris-de-porte/$id/3-usager': {
+      id: '/bris-de-porte/$id/3-usager'
+      path: '/bris-de-porte/$id/3-usager'
+      fullPath: '/bris-de-porte/$id/3-usager'
+      preLoaderRoute: typeof BrisDePorteId3UsagerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bris-de-porte/$reference/2-service-enqueteur': {
-      id: '/bris-de-porte/$reference/2-service-enqueteur'
-      path: '/bris-de-porte/$reference/2-service-enqueteur'
-      fullPath: '/bris-de-porte/$reference/2-service-enqueteur'
-      preLoaderRoute: typeof BrisDePorteReference2ServiceEnqueteurRouteImport
+    '/bris-de-porte/$id/2-service-enqueteur': {
+      id: '/bris-de-porte/$id/2-service-enqueteur'
+      path: '/bris-de-porte/$id/2-service-enqueteur'
+      fullPath: '/bris-de-porte/$id/2-service-enqueteur'
+      preLoaderRoute: typeof BrisDePorteId2ServiceEnqueteurRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bris-de-porte/$reference/1-bris-de-porte': {
-      id: '/bris-de-porte/$reference/1-bris-de-porte'
-      path: '/bris-de-porte/$reference/1-bris-de-porte'
-      fullPath: '/bris-de-porte/$reference/1-bris-de-porte'
-      preLoaderRoute: typeof BrisDePorteReference1BrisDePorteRouteImport
+    '/bris-de-porte/$id/1-bris-de-porte': {
+      id: '/bris-de-porte/$id/1-bris-de-porte'
+      path: '/bris-de-porte/$id/1-bris-de-porte'
+      fullPath: '/bris-de-porte/$id/1-bris-de-porte'
+      preLoaderRoute: typeof BrisDePorteId1BrisDePorteRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -290,11 +288,10 @@ const rootRouteChildren: RootRouteChildren = {
   BrisDePorteMesDeclarationsRoute: BrisDePorteMesDeclarationsRoute,
   BrisDePorteNouvelleDeclarationRoute: BrisDePorteNouvelleDeclarationRoute,
   BrisDePorteIndexRoute: BrisDePorteIndexRoute,
-  BrisDePorteReference1BrisDePorteRoute: BrisDePorteReference1BrisDePorteRoute,
-  BrisDePorteReference2ServiceEnqueteurRoute:
-    BrisDePorteReference2ServiceEnqueteurRoute,
-  BrisDePorteReference3UsagerRoute: BrisDePorteReference3UsagerRoute,
-  BrisDePorteReferenceIndexRoute: BrisDePorteReferenceIndexRoute,
+  BrisDePorteId1BrisDePorteRoute: BrisDePorteId1BrisDePorteRoute,
+  BrisDePorteId2ServiceEnqueteurRoute: BrisDePorteId2ServiceEnqueteurRoute,
+  BrisDePorteId3UsagerRoute: BrisDePorteId3UsagerRoute,
+  BrisDePorteIdIndexRoute: BrisDePorteIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

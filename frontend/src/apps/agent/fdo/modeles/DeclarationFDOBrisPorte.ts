@@ -2,6 +2,7 @@ import { Exclude, Expose, Transform, Type } from "class-transformer";
 import { Agent } from "@/common/models/Agent";
 import { Document, DocumentType } from "@/common/models/Document";
 import DateTransform from "@/common/normalisation/transformers/DateTransform.ts";
+import { EtatDeclaration } from "@fdo/modeles/EtatDeclaration.ts";
 
 export class Adresse {
   public ligne1: string = "";
@@ -66,6 +67,9 @@ export type DeclarationFDOBrisPorteErreurType =
 
 export class DeclarationFDOBrisPorte {
   public readonly id: string;
+  public readonly reference?: string;
+  @Type(() => EtatDeclaration)
+  public readonly etat: EtatDeclaration;
 
   @DateTransform()
   public readonly dateCreation: Date;
@@ -112,10 +116,6 @@ export class DeclarationFDOBrisPorte {
 
   public constructor() {
     this.dateCreation = new Date();
-  }
-
-  public get reference(): string {
-    return this.id;
   }
 
   public estSoumise(): boolean {

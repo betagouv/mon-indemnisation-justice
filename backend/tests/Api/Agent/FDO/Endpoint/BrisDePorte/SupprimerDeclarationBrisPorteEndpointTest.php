@@ -5,15 +5,13 @@ namespace MonIndemnisationJustice\Tests\Api\Agent\FDO\Endpoint\BrisDePorte;
 use MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\SupprimerDeclarationBrisPorteEndpoint;
 use MonIndemnisationJustice\Entity\DeclarationFDOBrisPorte;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Teste le point d'entrée @SupprimerDeclarationBrisPorteEndpoint de l'API, qui donne le droit à l'agent des FDOs à
  * l'origine d'un brouillon de déclaration de bris de porte de le supprimer.
- *
- * @internal
- *
- * @covers \MonIndemnisationJustice\Api\Agent\FDO\Endpoint\BrisDePorte\SupprimerDeclarationBrisPorteEndpoint
  */
+#[CoversClass(SupprimerDeclarationBrisPorteEndpoint::class)]
 class SupprimerDeclarationBrisPorteEndpointTest extends AbstractEndpointTestCase
 {
     /**

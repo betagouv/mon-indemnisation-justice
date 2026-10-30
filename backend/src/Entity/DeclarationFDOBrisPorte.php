@@ -205,7 +205,7 @@ class DeclarationFDOBrisPorte
         return $this->brisPorte?->getDossier();
     }
 
-    public function estAttribue(): bool
+    public function estAttribuee(): bool
     {
         return null !== $this->brisPorte;
     }

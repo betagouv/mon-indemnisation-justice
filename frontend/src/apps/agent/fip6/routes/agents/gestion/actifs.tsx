@@ -1,14 +1,14 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
-import { ValidationAgentPage } from "@fip6/composants/gestion";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
+import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link";
+import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import {
   Administration,
   RoleAgent,
   TypeAdministration,
 } from "@common/models/Agent.ts";
-import { RechercheAgentRequete } from "@common/services/agent/agent";
-import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link";
-import Tabs from "@codegouvfr/react-dsfr/Tabs";
+import { ValidationAgentPage } from "@fip6/composants/gestion";
+import { RechercheAgentRequete } from "@fip6/services/agent";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import React, { useMemo } from "react";
 
@@ -49,7 +49,8 @@ function GestionAgentsActifs() {
       actifs: true,
       administrations: a
         ?.split("|")
-        .map((valeur) => Administration.pourType(valeur as TypeAdministration)),
+        .map((valeur) => Administration.pourType(valeur as TypeAdministration))
+        .filter((a) => !!a),
       requete: r,
     }),
     [p, a, r],
