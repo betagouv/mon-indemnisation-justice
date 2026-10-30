@@ -1,21 +1,19 @@
 import { DeclarationFDOBrisPorte } from "@fdo/modeles/DeclarationFDOBrisPorte";
-import { inject, ServiceIdentifier } from "inversify";
+import { queryClient } from "@fdo/query";
 import { instanceToPlain, plainToInstance } from "class-transformer";
-//import * as Sentry from "@sentry/browser";
+import { ServiceIdentifier } from "inversify";
 import { merge } from "ts-deepmerge";
-import { AgentManagerInterface } from "@fdo//services/agent";
 
 export interface DeclarationManagerInterface {
   getListe(): Promise<DeclarationFDOBrisPorte[]>;
 
-  aDeclaration(reference: string): Promise<boolean>;
+  aDeclaration(id: string): Promise<boolean>;
 
-  getDeclaration(
-    reference: string,
-  ): Promise<DeclarationFDOBrisPorte | undefined>;
+  getDeclaration(id: string): Promise<DeclarationFDOBrisPorte | undefined>;
 
   nouvelleDeclaration(): Promise<DeclarationFDOBrisPorte>;
 
+  /** Met à jour la déclaration en mémoire uniquement (aucun appel à l'API). */
   mettreAJour(
     declaration: DeclarationFDOBrisPorte,
     miseAJour?: Partial<DeclarationFDOBrisPorte> | DeclarationFDOBrisPorte,
@@ -29,6 +27,9 @@ export interface DeclarationManagerInterface {
   soumettre(declaration: DeclarationFDOBrisPorte): Promise<void>;
 
   supprimer(declaration: DeclarationFDOBrisPorte): Promise<void>;
+
+  /** Force le rechargement des déclarations depuis l'API au prochain accès. */
+  invalider(): Promise<void>;
 }
 
 export namespace DeclarationManagerInterface {
@@ -38,71 +39,86 @@ export namespace DeclarationManagerInterface {
 }
 
 export class APIDeclarationManager implements DeclarationManagerInterface {
-  static CLEF_STOCKAGE = "_declarations";
+  /** Clé de cache `tanstack-query` de la liste des déclarations de l'agent,
+   * alimentée par chaque mutation de ce service. */
+  protected static readonly CLEF_CACHE = [
+    "DeclarationManagerInterface",
+    "declarations",
+  ] as const;
 
-  protected _declarations: DeclarationFDOBrisPorte[];
-
-  public constructor(
-    @inject(AgentManagerInterface.$)
-    protected readonly agentManager: AgentManagerInterface,
-  ) {}
-
-  protected async chargerListeDeclarations(): Promise<void> {
-    const { agent } = await this.agentManager.moi();
-    // Suppression des brouillons non individuels
-    localStorage.removeItem(APIDeclarationManager.CLEF_STOCKAGE);
-    localStorage.removeItem(
-      `${APIDeclarationManager.CLEF_STOCKAGE}_${agent.id}`,
-    );
-
-    if (!this._declarations) {
-      const response = await fetch(
-        "/api/agent/fdo/bris-de-porte/mes-declarations",
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
+  protected recupererDeclarations(): Promise<DeclarationFDOBrisPorte[]> {
+    return queryClient.query({
+      queryKey: APIDeclarationManager.CLEF_CACHE,
+      queryFn: async (): Promise<DeclarationFDOBrisPorte[]> => {
+        const reponse = await fetch(
+          "/api/agent/fdo/bris-de-porte/mes-declarations",
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+            },
           },
-        },
-      );
+        );
 
-      this._declarations = plainToInstance(
-        DeclarationFDOBrisPorte,
-        (await response.json()) as any[],
-      ).sort((a, b) => a.dateCreation.getTime() - b.dateCreation.getTime());
-    }
+        if (!reponse.ok) {
+          throw new Error(
+            `Échec de la récupération des déclarations : ${reponse.status}`,
+          );
+        }
+
+        return plainToInstance(
+          DeclarationFDOBrisPorte,
+          (await reponse.json()) as any[],
+        ).sort(
+          // Tri par date de dernier changement du plus récent au plus ancien
+          (a, b) =>
+            (b.etat.date || b.dateCreation).getTime() -
+            (a.etat.date || a.dateCreation).getTime(),
+        );
+      },
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+  }
+
+  /** Remplace (ou ajoute, si absente) la déclaration dans le cache. */
+  protected enregistrerDeclaration(declaration: DeclarationFDOBrisPorte): void {
+    queryClient.setQueryData<DeclarationFDOBrisPorte[]>(
+      APIDeclarationManager.CLEF_CACHE,
+      (declarations = []) =>
+        declarations.some((d) => d.id === declaration.id)
+          ? declarations.map((d) => (d.id === declaration.id ? declaration : d))
+          : [...declarations, declaration],
+    );
+  }
+
+  /** Retire la déclaration du cache. */
+  protected retirerDeclaration(declaration: DeclarationFDOBrisPorte): void {
+    queryClient.setQueryData<DeclarationFDOBrisPorte[]>(
+      APIDeclarationManager.CLEF_CACHE,
+      (declarations = []) =>
+        declarations.filter((d) => d.id !== declaration.id),
+    );
   }
 
   async getListe(): Promise<DeclarationFDOBrisPorte[]> {
-    await this.chargerListeDeclarations();
-    return this._declarations;
+    return this.recupererDeclarations();
   }
 
-  async aDeclaration(reference: string): Promise<boolean> {
-    await this.chargerListeDeclarations();
-
-    return Promise.resolve(
-      this._declarations.some(
-        (declaration) => declaration.reference == reference,
-      ),
+  async aDeclaration(id: string): Promise<boolean> {
+    return (await this.recupererDeclarations()).some(
+      (declaration) => declaration.id == id,
     );
   }
 
   async getDeclaration(
-    reference: string,
+    id: string,
   ): Promise<DeclarationFDOBrisPorte | undefined> {
-    await this.chargerListeDeclarations();
-
-    return Promise.resolve(
-      this._declarations.find(
-        (declaration) => declaration.reference == reference,
-      ),
+    return (await this.recupererDeclarations()).find(
+      (declaration) => declaration.id == id,
     );
   }
 
   async nouvelleDeclaration(): Promise<DeclarationFDOBrisPorte> {
-    await this.chargerListeDeclarations();
-
     // Appel à la route API `api_agent_fdo_bris_porte_initier` :
     const response = await fetch(`/api/agent/fdo/bris-de-porte/initier`, {
       method: "PUT",
@@ -116,7 +132,9 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         DeclarationFDOBrisPorte,
         await response.json(),
       );
-      this._declarations.push(declaration);
+      // S'assurer que la liste est chargée avant d'y ajouter le nouveau brouillon
+      await this.recupererDeclarations();
+      this.enregistrerDeclaration(declaration);
 
       return declaration;
     }
@@ -124,41 +142,29 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     throw new Error("Erreur lors de la création d'un nouveau brouillon");
   }
 
-  protected setDeclaration(
-    reference: string,
-    declaration: DeclarationFDOBrisPorte,
-  ): void {
-    this._declarations = this._declarations.map((d: DeclarationFDOBrisPorte) =>
-      d.id === reference ? declaration : d,
-    );
-  }
-
   mettreAJour(
     declaration: DeclarationFDOBrisPorte,
-    miseAJour?: Partial<DeclarationFDOBrisPorte> | DeclarationFDOBrisPorte,
+    miseAJour?: Partial<DeclarationFDOBrisPorte>,
   ): void {
-    this.setDeclaration(
-      declaration.reference,
-      // Si la mise à jour concerne une déclaration complète...
-      miseAJour instanceof DeclarationFDOBrisPorte
-        ? // ... alors, on la remplace dans la liste
-          miseAJour
-        : // ... sinon on fusionne la mise à jour partielle avec les valeurs déjà existantes
-          plainToInstance(
-            DeclarationFDOBrisPorte,
-            merge.withOptions(
-              { mergeArrays: false },
-              instanceToPlain(declaration),
-              miseAJour as any,
-            ),
+    if (!!miseAJour) {
+      this.enregistrerDeclaration(
+        plainToInstance(
+          DeclarationFDOBrisPorte,
+          merge.withOptions(
+            { mergeArrays: false },
+            instanceToPlain(declaration),
+            miseAJour,
           ),
-    );
+        ),
+      );
+    }
   }
 
   async enregistrer(
     declaration: DeclarationFDOBrisPorte,
     miseAJour: Partial<DeclarationFDOBrisPorte>,
   ): Promise<void> {
+    // Appel à la route API `api_agent_fdo_bris_porte_editer` :
     const response = await fetch(
       `/api/agent/fdo/bris-de-porte/${declaration.id}/editer`,
       {
@@ -189,17 +195,10 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     );
 
     if (response.ok) {
-      this.setDeclaration(
-        declaration.reference,
+      this.enregistrerDeclaration(
         plainToInstance(DeclarationFDOBrisPorte, await response.json()),
       );
     }
-  }
-
-  ajouter(declaration: DeclarationFDOBrisPorte): void {
-    this._declarations = this._declarations
-      .filter((d) => d.reference !== declaration.reference)
-      .concat(declaration);
   }
 
   async supprimer(declaration: DeclarationFDOBrisPorte): Promise<void> {
@@ -214,10 +213,9 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         },
       },
     );
+
     if (response.ok) {
-      this._declarations = this._declarations.filter(
-        (d) => d.reference !== declaration.reference,
-      );
+      this.retirerDeclaration(declaration);
     }
   }
 
@@ -233,13 +231,17 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         },
       },
     );
+
     if (response.ok) {
-      this._declarations = this._declarations.filter(
-        (d) => d.reference !== declaration.reference,
-      );
-      this.ajouter(
+      this.enregistrerDeclaration(
         plainToInstance(DeclarationFDOBrisPorte, await response.json()),
       );
     }
+  }
+
+  async invalider(): Promise<void> {
+    await queryClient.invalidateQueries({
+      queryKey: APIDeclarationManager.CLEF_CACHE,
+    });
   }
 }

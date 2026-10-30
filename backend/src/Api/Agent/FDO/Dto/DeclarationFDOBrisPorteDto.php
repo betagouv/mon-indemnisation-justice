@@ -18,6 +18,7 @@ class DeclarationFDOBrisPorteDto
     // Les champs `readonly` sont exclus de la dénormalisation (erreur s'ils sont renseignés)
     public readonly Uuid $id;
     public readonly ?string $reference;
+    public readonly EtatDeclarationDto $etat;
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[Assert\NotNull(message: "La date de l'opération ayant conduit au bris de porte est requise")]
     public ?\DateTimeImmutable $dateOperation = null;
@@ -45,6 +46,7 @@ class DeclarationFDOBrisPorteDto
     {
         $dto = new self();
         $dto->id = $declaration->getId();
+        $dto->etat = EtatDeclarationDto::depuisDeclaration($declaration);
         $dto->reference = $declaration->getReference();
         $dto->dateOperation = $declaration->getDateOperation();
         $dto->estErreur = $declaration->getEstErreur();

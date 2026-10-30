@@ -32,7 +32,7 @@ class EditerDeclarationBrisPorteEndpoint
     ) {
     }
 
-    #[Serialize(code: Response::HTTP_CREATED)]
+    #[Serialize]
     public function __invoke(
         #[MapDeclarationFDO]
         DeclarationFDOBrisPorte $declaration,

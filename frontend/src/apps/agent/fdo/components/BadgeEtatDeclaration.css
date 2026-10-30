@@ -1,0 +1,39 @@
+:root {
+    /* BROUILLON, ENVOYEE = 'grey' */
+    --var-couleur-pp-declaration-grise: #3a3a3a;
+    --var-couleur-ap-declaration-grise: #eeeeee;
+    /* DEMANDE_INITIEE, DEMANDE_DEPOSEE, DEMANDE_EN_INSTRUCTION = 'info' */
+    --var-couleur-pp-declaration-bleue: #0063cb;
+    --var-couleur-ap-declaration-bleue: #e8edff;
+    /* DEMANDE_ACCEPTEE = 'success' */
+    --var-couleur-pp-declaration-verte: #18753c;
+    --var-couleur-ap-declaration-verte: #b8fec9;
+    /* DEMANDE_REJETEE = 'error' */
+    --var-couleur-pp-declaration-rouge: #ce0500;
+    --var-couleur-ap-declaration-rouge: #ffe9e9;
+}
+
+.fr-badge--declaration-etat {
+    &.fr-badge--declaration-etat--brouillon,
+    &.fr-badge--declaration-etat--envoyee {
+        color: var(--var-couleur-pp-declaration-grise);
+        background-color: var(--var-couleur-ap-declaration-grise);
+    }
+
+    &.fr-badge--declaration-etat--demande-initiee,
+    &.fr-badge--declaration-etat--demande-deposee,
+    &.fr-badge--declaration-etat--demande-en-instruction {
+        color: var(--var-couleur-pp-declaration-bleue);
+        background-color: var(--var-couleur-ap-declaration-bleue);
+    }
+
+    &.fr-badge--declaration-etat--demande-acceptee {
+        color: var(--var-couleur-pp-declaration-verte);
+        background-color: var(--var-couleur-ap-declaration-verte);
+    }
+
+    &.fr-badge--declaration-etat--demande-rejetee {
+        color: var(--var-couleur-pp-declaration-rouge);
+        background-color: var(--var-couleur-ap-declaration-rouge);
+    }
+}

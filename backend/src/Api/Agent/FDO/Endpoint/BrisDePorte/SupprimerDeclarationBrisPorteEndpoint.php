@@ -32,6 +32,10 @@ class SupprimerDeclarationBrisPorteEndpoint
         #[MapEntity(id: 'declarationId', message: 'Déclaration inconnue')]
         DeclarationFDOBrisPorte $declaration,
     ): Response {
+        if (!$declaration->estBrouillon()) {
+            return new JsonResponse(['erreur' => 'Cette déclaration ne peut plus être supprimée'], Response::HTTP_FORBIDDEN);
+        }
+
         $this->em->remove($declaration);
         $this->em->flush();
 
