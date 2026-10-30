@@ -165,12 +165,14 @@ class Dossier
         return $this->getRequerantPersonne()->getCourriel();
     }
 
-    public function setRequerant(PersonnePhysique|PersonneMorale $requerant): self
+    public function setRequerant(null|PersonnePhysique|PersonneMorale $requerant): self
     {
-        if ($requerant instanceof PersonneMorale) {
-            $this->requerantPersonneMorale = $requerant;
-        } else {
-            $this->requerantPersonnePhysique = $requerant;
+        if (null !== $requerant) {
+            if ($requerant instanceof PersonneMorale) {
+                $this->requerantPersonneMorale = $requerant;
+            } else {
+                $this->requerantPersonnePhysique = $requerant;
+            }
         }
 
         return $this;
