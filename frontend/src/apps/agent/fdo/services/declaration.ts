@@ -47,7 +47,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
   ] as const;
 
   protected recupererDeclarations(): Promise<DeclarationFDOBrisPorte[]> {
-    return queryClient.fetchQuery({
+    return queryClient.query({
       queryKey: APIDeclarationManager.CLEF_CACHE,
       queryFn: async (): Promise<DeclarationFDOBrisPorte[]> => {
         const reponse = await fetch(
@@ -69,7 +69,12 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         return plainToInstance(
           DeclarationFDOBrisPorte,
           (await reponse.json()) as any[],
-        ).sort((a, b) => a.dateCreation.getTime() - b.dateCreation.getTime());
+        ).sort(
+          // Tri par date de dernier changement du plus récent au plus ancien
+          (a, b) =>
+            (b.etat.date || b.dateCreation).getTime() -
+            (a.etat.date || a.dateCreation).getTime(),
+        );
       },
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
@@ -139,23 +144,20 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
 
   mettreAJour(
     declaration: DeclarationFDOBrisPorte,
-    miseAJour?: Partial<DeclarationFDOBrisPorte> | DeclarationFDOBrisPorte,
+    miseAJour?: Partial<DeclarationFDOBrisPorte>,
   ): void {
-    this.enregistrerDeclaration(
-      // Si la mise à jour concerne une déclaration complète...
-      miseAJour instanceof DeclarationFDOBrisPorte
-        ? // ... alors, on la remplace dans la liste
-          miseAJour
-        : // ... sinon on fusionne la mise à jour partielle avec les valeurs déjà existantes
-          plainToInstance(
-            DeclarationFDOBrisPorte,
-            merge.withOptions(
-              { mergeArrays: false },
-              instanceToPlain(declaration),
-              miseAJour as any,
-            ),
+    if (!!miseAJour) {
+      this.enregistrerDeclaration(
+        plainToInstance(
+          DeclarationFDOBrisPorte,
+          merge.withOptions(
+            { mergeArrays: false },
+            instanceToPlain(declaration),
+            miseAJour,
           ),
-    );
+        ),
+      );
+    }
   }
 
   async enregistrer(

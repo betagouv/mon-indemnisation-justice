@@ -38,7 +38,7 @@ export class EtatDeclaration {
   }
 
   estTerminal(): boolean {
-    return ["DEMANDE_ACCEPTEE", "DEMANDE_ACCEPTEE"].includes(this.etat);
+    return ["DEMANDE_ACCEPTEE", "DEMANDE_REJETEE"].includes(this.etat);
   }
 
   estDeclarationEditable(): boolean {

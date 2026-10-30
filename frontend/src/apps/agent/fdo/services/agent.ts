@@ -30,7 +30,7 @@ export namespace AgentManagerInterface {
 
 export class APIAgentManager implements AgentManagerInterface {
   async moi(): Promise<AgentFDOContexte> {
-    return queryClient.fetchQuery({
+    return queryClient.query({
       queryKey: [referenceService, "moi"],
       queryFn: async (): Promise<AgentFDOContexte> => {
         const reponse = await fetch("/api/agent/fdo/moi");
