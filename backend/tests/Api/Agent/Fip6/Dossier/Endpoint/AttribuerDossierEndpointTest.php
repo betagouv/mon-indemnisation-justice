@@ -42,10 +42,10 @@ class AttribuerDossierEndpointTest extends APIEndpointTestCase
     }
 
     /**
-     * ETQ agent attributeur, si j'essaie d'attribuer un dossier pas à attribuer à un agent rédacteur, je dois obtenir
+     * ETQ agent attributeur, si j'essaie d'attribuer un dossier à un agent qui en est déjà le rédacteur, je dois obtenir
      * un message d'erreur.
      */
-    public function testAttributionKoDossierPasAAttribuer(): void
+    public function testAttributionKoDejaRedacteur(): void
     {
         $this->connexion('attributeur@justice.gouv.fr');
         $redacteur = $this->getAgent('redacteur@justice.gouv.fr');
@@ -60,7 +60,7 @@ class AttribuerDossierEndpointTest extends APIEndpointTestCase
 
         $this->assertObjectHasProperty('erreur', $output);
 
-        $this->assertEquals("Ce dossier n'est pas à attribuer", $output->erreur);
+        $this->assertEquals('Ce dossier est déjà attribué à ce rédacteur', $output->erreur);
     }
 
     /**
@@ -82,7 +82,7 @@ class AttribuerDossierEndpointTest extends APIEndpointTestCase
 
         $this->assertObjectHasProperty('erreur', $output);
 
-        $this->assertEquals('Seul un agent attributeur peut attribuer un dossier', $output->erreur);
+        $this->assertEquals('Seul un agent attributeur peut attribuer un dossier attribuable', $output->erreur);
     }
 
     /**
