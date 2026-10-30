@@ -62,7 +62,8 @@ class DeclarationFDOBrisPorte
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     protected ?string $precisionsRequerant = null;
 
-    #[ORM\OneToOne(targetEntity: BrisPorte::class, inversedBy: 'declarationFDO', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: BrisPorte::class, inversedBy: 'declarationFDO', cascade: ['persist'])]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     protected ?BrisPorte $brisPorte = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
