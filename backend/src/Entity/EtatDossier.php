@@ -94,6 +94,11 @@ class EtatDossier
         return $this->etat->estAAttribuer();
     }
 
+    public function peutEtreReattribue(): bool
+    {
+        return $this->etat->peutEtreReattribue();
+    }
+
     public function estASigner(): bool
     {
         return $this->etat->estASigner();

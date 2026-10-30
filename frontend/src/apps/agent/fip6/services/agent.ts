@@ -80,7 +80,7 @@ export class APIAgentManager implements AgentManagerInterface {
 
         const data = await reponse.json();
 
-        return data as Redacteur[];
+        return plainToInstance(Redacteur, data as any[]);
       },
       // Garder le cache
       staleTime: 60 * 60_000,

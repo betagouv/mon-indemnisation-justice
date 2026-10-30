@@ -1,12 +1,14 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { Select } from "@codegouvfr/react-dsfr/Select";
 import { DossierDetail, Redacteur } from "@common/models";
 import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { DossierManagerInterface } from "@fip6/services/dossier.ts";
 import { useInjection } from "inversify-react";
-import { default as React, useCallback, useState } from "react";
+import { default as React, useCallback, useMemo, useState } from "react";
 
 const _modale = createModal({
   id: "modale-action-attribution",
@@ -24,7 +26,7 @@ const estAAttribuer = ({
 }) =>
   dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
   agent.estAttributeur() &&
-  dossier.estAAttribuer();
+  (dossier.estAAttribuer() || dossier.peutEtreReattribue());
 
 export const AttribuerActionModale = ({
   dossier,
@@ -39,6 +41,11 @@ export const AttribuerActionModale = ({
 }) => {
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
+  );
+
+  const estReattribution = useMemo<boolean>(
+    () => !!dossier.redacteur,
+    [dossier.id, dossier.redacteur?.id],
   );
 
   // Représente le rédacteur à attribuer, présentement en cours de sélection dans le menu déroulant
@@ -66,7 +73,11 @@ export const AttribuerActionModale = ({
       await dossierManager.attribuer(dossier, attributaire);
       await onAttribue();
 
-      setAttributaire(undefined);
+      if (estReattribution) {
+        _modale.close();
+      }
+
+      setSauvegarderEnCours(false);
       setAttributionEnCours(false);
     }
   }, [dossier, attributaire]);
@@ -75,32 +86,40 @@ export const AttribuerActionModale = ({
     <_modale.Component title="Attribuer le dossier">
       <>
         <div className="fr-select-group fr-col-12 fr-mb-0">
-          <label className="fr-label" htmlFor="dossier-select-attributaire">
-            Rédacteur :
-          </label>
-          <select
-            className="fr-select"
-            id="dossier-select-attributaire"
-            disabled={sauvegarderEnCours}
-            defaultValue={attributaire?.id || ""}
-            onChange={(e) => {
-              !!e.target.value &&
+          {dossier.estAttribue() && (
+            <Alert
+              description={`Le dossier est actuellement attribué à ${dossier.redacteur?.nom}. Une notification lui indiquera que le dossier est ré-attribué.`}
+              onClose={function noRefCheck() {}}
+              severity="info"
+              small
+            />
+          )}
+          <Select
+            className="fr-my-2w"
+            label="Rédacteur"
+            nativeSelectProps={{
+              defaultValue: dossier.redacteur ? "" : attributaire?.id || "",
+              onChange: (e) =>
+                !!e.target.value &&
                 setAttributaire(
                   redacteurs.find(
                     (redacteur) => redacteur.id === parseInt(e.target.value),
                   ),
-                );
+                ),
             }}
           >
             <option value="" disabled hidden>
               Sélectionnez un rédacteur
             </option>
-            {redacteurs.map((redacteur: Redacteur) => (
-              <option value={redacteur.id} key={redacteur.id}>
-                {redacteur.nom}
-              </option>
-            ))}
-          </select>
+            {redacteurs
+              // Exclure le rédacteur déjà attribué
+              .filter((redacteur) => !redacteur.equals(dossier.redacteur))
+              .map((redacteur: Redacteur) => (
+                <option value={redacteur.id} key={redacteur.id}>
+                  {redacteur.nom}
+                </option>
+              ))}
+          </Select>
         </div>
 
         <ButtonsGroup
@@ -143,7 +162,7 @@ export const attribuerBoutons = ({
   return estAAttribuer({ dossier, agent, redacteurs })
     ? [
         {
-          children: "Attribuer",
+          children: dossier.estAttribue() ? "Ré-attribuer" : "Attribuer",
           iconId: "fr-icon-user-star-line",
           onClick: () => _modale.open(),
         } as ButtonProps,

@@ -47,8 +47,26 @@ export abstract class BaseDossier {
     return this.type === "BRI";
   }
 
+  public estAttribue(): boolean {
+    return (
+      !!this.redacteur &&
+      ![EtatDossierType.A_FINALISER, EtatDossierType.A_ATTRIBUER].includes(
+        this.etat.etat,
+      )
+    );
+  }
+
   public estAAttribuer(): boolean {
     return this.etat.etat.egal(EtatDossierType.A_ATTRIBUER);
+  }
+
+  public peutEtreReattribue(): boolean {
+    return ![
+      EtatDossierType.A_FINALISER,
+      EtatDossierType.A_ATTRIBUER,
+      EtatDossierType.OK_INDEMNISE,
+      EtatDossierType.KO_REJETE,
+    ].includes(this.etat.etat);
   }
 
   estDepose(): boolean {

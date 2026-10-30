@@ -513,7 +513,7 @@ class Agent implements UserInterface
 
     public function getNomComplet($capital = false): ?string
     {
-        return sprintf('%s %s', $this->prenom, $capital ? strtoupper(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $this->nom)) : $this->nom);
+        return sprintf('%s %s', ucfirst($this->prenom), $capital ? strtoupper(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $this->nom)) : $this->nom);
     }
 
     public function getDateCreation(): ?\DateTimeImmutable

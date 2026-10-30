@@ -86,12 +86,12 @@ class DossierVoter extends Voter
         }
 
         return match ($attribute) {
-            self::ACTION_CONSULTER, => $this->agentPeutConsulter($agent, $subject),
+            self::ACTION_CONSULTER, => $this->agentPeutConsulter($agent),
             self::ACTION_DECOMPTER, => $agent->aRole(Agent::ROLE_AGENT_DOSSIER),
             // L'annotation est permise aux agents rédacteur, validateur ou attributeur
             self::ACTION_ANNOTER, => $agent->aRole(Agent::ROLE_AGENT_REDACTEUR, Agent::ROLE_AGENT_ATTRIBUTEUR, Agent::ROLE_AGENT_VALIDATEUR),
             self::ACTION_RECHERCHER, => $this->agentPeutRechercher($agent),
-            self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent, $subject),
+            self::ACTION_AJOUTER_PIECE_JOINTE, => $this->agentPeutAjouterPieceJointe($agent),
             self::ACTION_ATTRIBUER => $this->agentPeutAttribuer($agent),
             self::ACTION_INSTRUIRE => $this->agentPeutInstruire($agent, $subject),
             self::ACTION_VALIDER_DECISION => $this->agentPeutValider($agent, $subject),
@@ -106,7 +106,7 @@ class DossierVoter extends Voter
         };
     }
 
-    protected function agentPeutConsulter(Agent $agent, Dossier $dossier): bool
+    protected function agentPeutConsulter(Agent $agent): bool
     {
         return $agent->aRole(Agent::ROLE_AGENT_DOSSIER);
     }
@@ -116,7 +116,7 @@ class DossierVoter extends Voter
         return $agent->aRole(Agent::ROLE_AGENT_DOSSIER);
     }
 
-    protected function agentPeutAjouterPieceJointe(Agent $agent, Dossier $dossier): bool
+    protected function agentPeutAjouterPieceJointe(Agent $agent): bool
     {
         return $agent->aRole(Agent::ROLE_AGENT_VALIDATEUR, Agent::ROLE_AGENT_ATTRIBUTEUR, Agent::ROLE_AGENT_REDACTEUR);
     }

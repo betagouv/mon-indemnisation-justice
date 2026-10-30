@@ -1,0 +1,33 @@
+{% extends 'email/base_email.html.twig' %}
+
+{% import "email/_macros.twig" as email %}
+
+{% block subject %}Mon Indemnisation Justice: un dossier vous a été ré-attribué{% endblock subject %}
+
+{% block entete %}
+    <b>Mon Indemnisation Justice: un dossier vous a été ré-attribué</b>
+{% endblock entete %}
+
+
+{% block contenu %}
+    Bonjour {{ agent.prenom }},
+    <br/>
+    <br/>
+    <p>
+        Le dossier <b>{{ dossier.reference }} - {{ dossier.detailReference }}</b> vous a été ré-attribué.
+    </p>
+    <p>
+        Vous pourrez retrouver les notes de suivi sur la fiche dossier, et voir avec {{ predecesseur.nomComplet }}, qui
+        instruisait le dossier précédemment et ici en copie, pour faire une passation si besoin.
+    </p>
+    <p>
+        Vous pouvez consulter le dossier en cliquant sur le bouton ci-dessous :
+    </p>
+    <br/>
+    <p>
+        {{ email.bouton("Dossier " ~ dossier.reference ~ " - " ~ dossier.detailReference, url('agent_fip6_react', {'extra': "dossier/" ~ dossier.id})) }}
+        <br/>
+    </p>
+    <br/>
+    Cordialement,<br/>
+{% endblock contenu %}
