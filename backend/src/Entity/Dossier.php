@@ -129,6 +129,14 @@ class Dossier
         return $this->reference ?? strval($this->id);
     }
 
+    /**
+     * Détail à rajouter à la référence : nom prénom de la personne physique ou raison sociale de la personne morale.
+     */
+    public function getDetailReference(): string
+    {
+        return $this->estPersonneMorale ? $this->requerantPersonneMorale->getRaisonSociale() : $this->requerantPersonnePhysique->getNomCourant(capital: true);
+    }
+
     public function estPersonneMorale(): ?bool
     {
         return $this->estPersonneMorale;
@@ -324,6 +332,11 @@ class Dossier
     public function estAAttribuer(): bool
     {
         return $this->etatDossier->estAAttribuer();
+    }
+
+    public function peutEtreReattribue(): bool
+    {
+        return $this->etatDossier->peutEtreReattribue();
     }
 
     public function estASigner(): bool

@@ -159,6 +159,19 @@ enum EtatDossierType: string
         return self::DOSSIER_A_ATTRIBUER === $this;
     }
 
+    public function peutEtreReattribue(): bool
+    {
+        return !in_array(
+            $this,
+            [
+                EtatDossierType::DOSSIER_A_FINALISER,
+                EtatDossierType::DOSSIER_A_ATTRIBUER,
+                EtatDossierType::DOSSIER_OK_INDEMNISE,
+                EtatDossierType::DOSSIER_KO_REJETE,
+            ]
+        );
+    }
+
     public function estASigner(): bool
     {
         return str_ends_with($this->value, 'A_SIGNER');

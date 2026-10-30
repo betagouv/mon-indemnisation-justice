@@ -30,16 +30,30 @@ class Mailer
         return $this->to($requerant->getEmail());
     }
 
-    public function toAgent(Agent $agent): self
+    /**
+     * @param Agent[] $copies
+     *
+     * @return $this
+     */
+    public function toAgent(Agent $agent, array $copies = []): self
     {
-        return $this->to($agent->getEmail());
+        return $this->to($agent->getEmail(), copies: array_map(fn (Agent $a) => new Address($a->getEmail(), $a->getNomComplet(true)), $copies));
     }
 
-    public function to(string $email, ?string $nom = null): static
+    /**
+     * @param array<Address|string> $copies
+     *
+     * @return $this
+     */
+    public function to(string $email, ?string $nom = null, array $copies = []): static
     {
         $this->email = new TemplatedEmail();
         $this->email->from(new Address($this->emailFrom, $this->emailFromLabel));
         $this->email->to($nom ? new Address($email, $nom) : $email);
+
+        foreach ($copies as $copie) {
+            $this->email->cc($copie);
+        }
 
         return $this;
     }

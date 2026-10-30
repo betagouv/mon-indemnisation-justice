@@ -4,7 +4,6 @@ import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { Chargement } from "@/common/composants/dsfr/Chargement";
 import { ErreurComposant } from "@/common/composants/erreur/ErreurComposant";
 import { NonTrouveComposant } from "@/common/composants/erreur/NonTrouveComposant";
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import * as Sentry from "@sentry/react";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -17,7 +16,6 @@ import ReactDOM from "react-dom/client";
 
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { ColorScheme } from "@codegouvfr/react-dsfr/useIsDark";
-import { Crisp } from "crisp-sdk-web";
 import { CacheBuster } from "react-cache-refresh";
 
 let theme: ColorScheme | "system" = "system";
@@ -31,10 +29,6 @@ startReactDsfr({
   defaultColorScheme: theme,
   Link,
 });
-
-if (import.meta.env?.VITE_CRISP_WEBSITE_ID) {
-  Crisp.configure(import.meta.env?.VITE_CRISP_WEBSITE_ID);
-}
 
 declare global {
   interface Window {
@@ -74,16 +68,7 @@ root.render(
             defaultErrorComponent={({ error, info, reset }) => (
               <ErreurComposant
                 erreur={error}
-                retour={
-                  Crisp.isCrispInjected() ? (
-                    <Button
-                      className="fr-my-2w"
-                      onClick={() => Crisp.chat.show()}
-                    >
-                      Contactez-nous
-                    </Button>
-                  ) : undefined
-                }
+                retour={<Link to={"/requerant/"}>Revenir à l'accueil</Link>}
                 action={
                   <ButtonsGroup
                     inlineLayoutWhen="always"
