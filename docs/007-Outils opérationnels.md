@@ -17,7 +17,3 @@ navigateur.
 
 C'est ce que nous permet LambdaTest (désormais TestMu AI) : jouer des sessions sur différents appareils, OS et navigateurs.
 Il est également possible de jouer l'environnement de dev grâce à la [mise en place d'un tunnel SSH](https://www.testmuai.com/support/docs/sharing-lambda-tunnel/).
-
-## Boîte de dialogue avec les utilisateurs
-
-Nous avons également mis [Crisp](https://crisp.chat) en place, qui permet aux requérants identifiés sur leur espace.  
