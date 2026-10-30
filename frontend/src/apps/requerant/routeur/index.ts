@@ -2,7 +2,6 @@ import { ContexteUsager } from "@/apps/requerant/routeur/contexte.ts";
 import { UsagerManagerInterface } from "@/apps/requerant/services/UsagerManager.ts";
 import * as Sentry from "@sentry/browser";
 import { createRouter } from "@tanstack/react-router";
-import { Crisp } from "crisp-sdk-web";
 import { container } from "../container";
 import { routeTree } from "./routeur-requerant.gen";
 
@@ -29,14 +28,6 @@ await container
       defaultStaleTime: 5000,
       scrollRestoration: true,
       context,
-    });
-    Crisp.user.setEmail(context.usager.courriel);
-    Crisp.user.setPhone(context.usager.telephone);
-    Crisp.user.setNickname(context.usager.nom);
-
-    Crisp.session.setData({
-      // Route vers @./../routes/dossiers/usager/$uid.tsx
-      Dossiers: `${window.location.origin}/agent/fip6/dossiers/usager/${context.usager.id}`,
     });
   });
 
