@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@eslint/css": "^0.11.1",
-    "@eslint/json": "^0.13.2",
+    "@eslint/json": "^2.1.1",
     "@playwright/test": "^1.52.0",
     "@types/lodash": "^4.17.24",
     "@types/node": "^24.1.0",
