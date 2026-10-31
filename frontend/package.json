@@ -28,7 +28,7 @@
     "inversify": "^8.1.0",
     "inversify-react": "^1.2.0",
     "lodash": "4.17.23",
-    "mobx-react-lite": "^4.1.0",
+    "mobx-react-lite": "^5.1.2",
     "postcss": "8.5.23",
     "postcss-mixins": "^12.0.0",
     "postcss-nesting": "^14.0.3",
