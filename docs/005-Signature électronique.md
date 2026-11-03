@@ -4,7 +4,13 @@
 
 ### En production
 
-Nous utilisons **LegalySpace** comme prestataire de signature électronique (voir [la documentation de l'API](https://esign-api.legalyspace.com/v1/)).
+Nous utilisons **LegalySpace** comme prestataire de signature électronique, via son API B2B e-Sign ([spécification
+OpenAPI](https://esign-api.legalyspace.com/v1/openapi)).
+
+L'implémentation LegalySpace est activée sur la présence d'une variable d'environnement `LEGALYSPACE_API_KEY`renseignée.
+
+En pré-production, les courriels sont réellement envoyés (utiliser ses propres adresses) mais pas les SMS : le code à
+saisir est toujours `123456`.
 
 ### En test
 
