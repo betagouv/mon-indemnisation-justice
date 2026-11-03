@@ -50,15 +50,14 @@ export const Route = createFileRoute("/requisition-serrurier")({
                 du Label « Serruriers de France ».
               </p>
               <p>
-                🔎 Trouver un serrurier Accédez aux serruriers qualifiés
-                disponibles dans votre secteur.
+                🔎 Accédez aux serruriers qualifiés disponibles dans votre
+                secteur.
               </p>
               <p>
-                📞 Appeler un serrurier Un serveur téléphonique est disponible
-                24h/24, 7j/7 au {telephoneSerrurierFormate} (appel non surtaxé).
-                Indiquez votre besoin et votre code postal : vous recevez
-                immédiatement par SMS les coordonnées des serruriers disponibles
-                dans votre secteur.
+                📞 Un serveur téléphonique est disponible 24h/24, 7j/7 au{" "}
+                {telephoneSerrurierFormate} (appel non surtaxé). Indiquez votre
+                besoin et votre code postal : vous recevez immédiatement par SMS
+                les coordonnées des serruriers disponibles dans votre secteur.
               </p>
               <div className="fr-col-12 fr-grid-row fr-grid-row--center">
                 <a
