@@ -12,23 +12,32 @@ use Symfony\Component\DependencyInjection\Attribute\AutowireServiceClosure;
  * Les implémentations sont injectées sous forme de closures : elles ne sont instanciées (avec leurs propres
  * dépendances autowirées) que si elles sont effectivement retenues.
  *
- * Par ordre de priorité, selon ceux qui sont configurés : Documenso sinon rien.
+ * Par ordre de priorité, selon ceux qui sont configurés : LegalySpace, sinon Documenso, sinon rien.
  */
 class GestionnaireSignatureRequerantFactory
 {
     /**
-     * @param \Closure(): GestionnaireSignatureRequerantDocumenso $gestionnaireDocumenso
+     * @param \Closure(): GestionnaireSignatureRequerantLegalySpace $gestionnaireLegalySpace
+     * @param \Closure(): GestionnaireSignatureRequerantDocumenso   $gestionnaireDocumenso
      */
     public function __construct(
+        #[AutowireServiceClosure(GestionnaireSignatureRequerantLegalySpace::class)]
+        protected readonly \Closure $gestionnaireLegalySpace,
         #[AutowireServiceClosure(GestionnaireSignatureRequerantDocumenso::class)]
         protected readonly \Closure $gestionnaireDocumenso,
         #[Autowire(env: 'default::DOCUMENSO_BASE_API_URI')]
         protected readonly ?string $documensoBaseApiUri = null,
+        #[Autowire(env: 'default::LEGALYSPACE_API_KEY')]
+        protected readonly ?string $legalySpaceApiKey = null,
     ) {
     }
 
     public function creerGestionnaireSignatureRequerant(): ?GestionnaireSignatureRequerantInterface
     {
+        if (!empty($this->legalySpaceApiKey)) {
+            return ($this->gestionnaireLegalySpace)();
+        }
+
         if (!empty($this->documensoBaseApiUri)) {
             return ($this->gestionnaireDocumenso)();
         }
