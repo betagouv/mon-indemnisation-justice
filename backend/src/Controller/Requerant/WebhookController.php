@@ -22,7 +22,7 @@ class WebhookController extends AbstractController
 
     }
 
-    #[Route('/signature/evenement/{hash?}', requirements: ['hash' => '.{0,65'], defaults: ['hash' => ''])]
+    #[Route('/signature/evenement/{hash?}', requirements: ['hash' => '[0-9a-f]{0,64}'], defaults: ['hash' => ''])]
     public function evenementSignatureRequerant(
         Request $request,
         string $hash,
