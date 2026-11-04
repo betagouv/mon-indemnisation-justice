@@ -52,8 +52,9 @@ class SoumettreDeclarationBrisPorteEndpoint
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // La soumission déclenche l'envoi du mail d'invitation à déposer (cf. DeclarationBrisPorteFDOEntitylistener)
-        $declaration->setDateSoumission(new \DateTimeImmutable());
+        if (null === $declaration->getDateSoumission()) {
+            $declaration->setDateSoumission(new \DateTimeImmutable());
+        }
 
         $this->em->persist($declaration);
         $this->em->flush();

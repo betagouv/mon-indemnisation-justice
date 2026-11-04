@@ -20,8 +20,12 @@ class AppExpressionProvider implements ExpressionFunctionProviderInterface
 
             new ExpressionFunction(
                 'est_fonctionnalite_active',
+                // compilation : doit produire du *code PHP* (exécuté par le matcher compilé), et non une expression.
+                // On passe par le localisateur des services `#[AsRoutingConditionService]`, exposé par Symfony via la
+                // fonction `service` dans le paramètre `_functions` du contexte de routage.
                 static fn (string $feature): string => \sprintf(
-                    "service('MonIndemnisationJustice\\Routing\\VerificateurFonctionnaliteActive').estActive(%s)",
+                    "(\$context->getParameter('_functions')->get('service')(%s)->estActive(%s))",
+                    var_export(VerificateurFonctionnaliteActive::class, true),
                     $feature
                 ),
                 // évaluation directe : même logique
