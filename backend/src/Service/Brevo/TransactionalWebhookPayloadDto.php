@@ -7,6 +7,9 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Object modélisant les évènements transmis par Brevo via les webhooks https://developers.brevo.com/docs/transactional-webhooks.
+ */
 class TransactionalWebhookPayloadDto
 {
     #[Assert\NotBlank]
@@ -24,6 +27,13 @@ class TransactionalWebhookPayloadDto
      * On récupère l'`EnvoiCourriel` par son id via `X-Mailin-Custom` https://developers.brevo.com/docs/transactional-webhooks#sent.
      * */
     public ?string $idCourriel = null;
+
+    /**
+     * On attribue une description par défaut à l'évènement `invalid_email`.
+     */
+    public ?string $description = null {
+        get => $this->description ?? (isset($this->event) && 'invalid_email' === $this->event ? 'Invalid email' : null);
+    }
 
     #[SerializedName('user_agent')]
     public ?string $userAgent = null;

@@ -137,7 +137,7 @@ class EnvoiCourriel
     public function ajouterEvenement(EnvoiCourrielEvenement $evenement): self
     {
         // Si pas doublon
-        if (!$this->evenements->findFirst(fn (EnvoiCourrielEvenement $e) => $e->equivautA($evenement))) {
+        if (!$this->evenements->exists(fn (int|string $cle, EnvoiCourrielEvenement $e) => $e->equivautA($evenement))) {
             $this->evenements->add($evenement);
 
             // On recalcule la date impactée

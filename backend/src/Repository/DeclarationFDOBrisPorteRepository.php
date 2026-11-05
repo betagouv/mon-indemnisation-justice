@@ -37,4 +37,17 @@ class DeclarationFDOBrisPorteRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findParCourrielRequerant(string $courriel): ?DeclarationFDOBrisPorte
+    {
+        $declarations = $this->createQueryBuilder('d')
+            ->select('d')
+            ->join('d.coordonneesRequerant', 'cr')
+            ->where('cr.courriel = :courriel')
+            ->setParameter('courriel', $courriel)
+            ->getQuery()
+            ->getResult();
+
+        return count($declarations) === 1 ? $declarations[0] : null;
+    }
 }

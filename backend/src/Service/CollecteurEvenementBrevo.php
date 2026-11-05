@@ -99,10 +99,9 @@ class CollecteurEvenementBrevo
             'request' => EnvoiCourrielEvenementType::EXPEDIE,
             // https://developers.brevo.com/docs/transactional-webhooks#delivered
             'delivered', 'spam' => EnvoiCourrielEvenementType::RECU,
-            'soft_bounce', 'hard_bounce', 'blocked', 'error' => EnvoiCourrielEvenementType::REJETE,
+            'soft_bounce', 'hard_bounce', 'blocked', 'error', 'invalid_email' => EnvoiCourrielEvenementType::REJETE,
             // https://developers.brevo.com/docs/transactional-webhooks#opened
-            'opened' => EnvoiCourrielEvenementType::OUVERT,
-
+            'unique_opened', 'opened' => EnvoiCourrielEvenementType::OUVERT,
             'clic' => EnvoiCourrielEvenementType::CLIQUE,
         };
     }
