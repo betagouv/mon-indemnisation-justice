@@ -2,6 +2,7 @@
 
 namespace MonIndemnisationJustice\Routing;
 
+use MonIndemnisationJustice\Service\RegistreFonctionnalites;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
@@ -9,7 +10,7 @@ use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 #[AutoconfigureTag('routing.expression_language_provider')]
 class AppExpressionProvider implements ExpressionFunctionProviderInterface
 {
-    public function __construct(protected readonly VerificateurFonctionnaliteActive $verificateurFonctionnaliteActive)
+    public function __construct(protected readonly RegistreFonctionnalites $verificateurFonctionnaliteActive)
     {
 
     }
@@ -25,7 +26,7 @@ class AppExpressionProvider implements ExpressionFunctionProviderInterface
                 // fonction `service` dans le paramètre `_functions` du contexte de routage.
                 static fn (string $feature): string => \sprintf(
                     "(\$context->getParameter('_functions')->get('service')(%s)->estActive(%s))",
-                    var_export(VerificateurFonctionnaliteActive::class, true),
+                    var_export(RegistreFonctionnalites::class, true),
                     $feature
                 ),
                 // évaluation directe : même logique

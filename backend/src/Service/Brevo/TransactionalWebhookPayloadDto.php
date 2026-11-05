@@ -14,11 +14,10 @@ class TransactionalWebhookPayloadDto
 
     #[SerializedName('ts_event')]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'U'])]
-    #[Assert\DateTime]
-    #[Assert\GreaterThanOrEqual('2026-01-01')]
+    #[Assert\NotNull]
     public \DateTimeImmutable $tsEvent;
 
-    #[SerializedName('X-Mailin-custom')]
+    #[SerializedName('X-Mailin-Custom')]
     #[Assert\NotNull]
     #[Assert\NotBlank]
     /**
