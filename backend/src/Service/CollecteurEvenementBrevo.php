@@ -18,11 +18,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class CollecteurEvenementBrevo
 {
     public function __construct(
-        #[Autowire(env: 'default::BREVO_TOKEN_VERIFICATION')]
-        protected readonly ?string $tokenVerification = null,
         protected readonly EnvoiCourrielRepository $envoiCourrielRepository,
         protected readonly DenormalizerInterface $denormalizer,
         protected readonly ValidatorInterface $validator,
+        #[Autowire(env: 'default::BREVO_TOKEN_VERIFICATION')]
+        protected readonly ?string $tokenVerification = null,
     ) {
 
     }
