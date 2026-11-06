@@ -83,7 +83,7 @@ class Agent implements UserInterface
     protected array $roles = [];
 
     #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'redacteur', cascade: ['detach'])]
-    #[ORM\OrderBy(['dateCreation' => 'ASC'])]
+    #[ORM\OrderBy(['dateCreation' => \SortDirection::Ascending])]
     /** @var Collection<Dossier> */
     protected Collection $dossiers;
 
