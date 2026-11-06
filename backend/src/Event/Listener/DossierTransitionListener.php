@@ -17,6 +17,7 @@ use MonIndemnisationJustice\Event\Event\DossierRejeteEvent;
 use MonIndemnisationJustice\Event\Event\DossierTransmisBudgetEvent;
 use MonIndemnisationJustice\Repository\AgentRepository;
 use MonIndemnisationJustice\Service\Mailer;
+use MonIndemnisationJustice\Service\RegistreFonctionnalites;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: DossierClotureEvent::class, method: 'dossierCloture')]
@@ -33,12 +34,26 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: DossierIndemniseEvent::class, method: 'dossierIndemnise')]
 class DossierTransitionListener
 {
-    public function __construct(protected readonly Mailer $mailer, protected readonly AgentRepository $agentRepository)
+    public function __construct(
+        protected readonly Mailer $mailer,
+        protected readonly AgentRepository $agentRepository,
+        protected readonly RegistreFonctionnalites $registreFonctionnalites,
+    ) {
+    }
+
+    protected function doitNotifier(): bool
     {
+        return $this->registreFonctionnalites->estActive(
+            RegistreFonctionnalites::COURRIEL_DOSSIER
+        );
     }
 
     public function dossierCloture(DossierClotureEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Informer le requérant que son dossier est clos :
         // Envoi du mail de confirmation.
         $this->mailer
@@ -52,6 +67,10 @@ class DossierTransitionListener
 
     public function dossierDepose(DossierDeposeEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Informer le requérant que son dossier est bien déposé :
         $this->mailer
             ->toRequerant($evenement->dossier->getUsager())
@@ -75,6 +94,10 @@ class DossierTransitionListener
 
     public function dossierAttribue(DossierAttribueEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Prévenir le rédacteur qu'il / elle a été attribué à un nouveau dossier qu'il / elle doit instruire :
         $this->mailer
             ->toAgent($evenement->dossier->getRedacteur())
@@ -88,6 +111,10 @@ class DossierTransitionListener
 
     public function dossierEnInstruction(DossierEnCoursInstructionEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         /* @var $estRetour bool */
         $estRetour = $evenement->dossier->getEtatDossier()->getElementContexte('retour');
         if ($estRetour) {
@@ -117,6 +144,10 @@ class DossierTransitionListener
 
     public function dossierInstruitProposition(DossierInstruitPropositionEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Prévenir le validateur qu'il doit signer le courrier de proposition d'indemnisation :
         foreach ($this->agentRepository->getValidateurs() as $validateur) {
             $this->mailer
@@ -132,6 +163,10 @@ class DossierTransitionListener
 
     public function dossierPropositionEnvoyee(DossierPropositionEnvoyeeEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Prévenir le requérant qu'une décision l'attend sur son espace :
         $this->mailer
             ->toRequerant($evenement->dossier->getUsager())
@@ -144,6 +179,10 @@ class DossierTransitionListener
 
     public function dossierPropositionAcceptee(DossierPropositionAccepteeEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Prévenir le rédacteur qu'une déclaration d'acceptation lui a été retournée sur son dossier :
         $this->mailer
             ->toAgent($evenement->dossier->getRedacteur())
@@ -164,6 +203,10 @@ class DossierTransitionListener
 
     public function dossierArreteEdite(DossierArreteEditeEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Prévenir le validateur qu'un arrêté de paiement attend sa signature :
         foreach ($this->agentRepository->getValidateurs() as $validateur) {
             $this->mailer
@@ -179,6 +222,10 @@ class DossierTransitionListener
 
     public function dossierArreteSigne(DossierArreteSigneEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Prévenir le rédacteur que son dossier est prêt à être transmis à FIP3 :
         $this->mailer
             ->toAgent($evenement->dossier->getRedacteur())
@@ -192,6 +239,10 @@ class DossierTransitionListener
 
     public function dossierRejete(DossierRejeteEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Prévenir le requérant qu'une décision l'attend sur son espace :
         $this->mailer
             ->toRequerant($evenement->dossier->getUsager())
@@ -204,6 +255,10 @@ class DossierTransitionListener
 
     public function dossierTransmisFIP3(DossierTransmisBudgetEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Prévenir le requérant que le versement de son indemnisation a bien été fait
         $this->mailer
             ->toRequerant($evenement->dossier->getUsager())
@@ -216,6 +271,10 @@ class DossierTransitionListener
 
     public function dossierIndemnise(DossierIndemniseEvent $evenement): void
     {
+        if (!$this->doitNotifier()) {
+            return;
+        }
+
         // Prévenir le requérant que le versement de son indemnisation a bien été fait
         $this->mailer
             ->toRequerant($evenement->dossier->getUsager())
