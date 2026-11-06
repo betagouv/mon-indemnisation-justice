@@ -130,7 +130,9 @@ test("dépôt de dossier", async ({ browser }) => {
   ).toBeVisible();
 
   // Cliquer élément menu "Attestation complétée par les forces de l'ordres" puis bouton "Ajouter attestations complétées par les forces de l'ordres"
-  await page.getByText("Photo de la porte endommagée").click();
+  await page
+    .getByRole("link", { name: /Photo de la porte endommagée/ })
+    .click();
 
   await page
     .locator("button", { hasText: "Ajouter des photos de la porte endommagée" })

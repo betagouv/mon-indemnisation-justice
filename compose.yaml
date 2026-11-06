@@ -21,6 +21,12 @@ services:
     build:
       dockerfile: .docker/nginx/Dockerfile
       context: .
+    networks:
+      default:
+        # Permet aux autres conteneurs de résoudre les domaines
+        aliases:
+          - mon-indemnisation.justice.gouv.dev
+          - mon-indemnisation.justice.gouv.test
     ports:
       - "80:80"
       - "443:443"
@@ -156,8 +162,11 @@ services:
       context: .
     hostname: playwright
     command: npx playwright test --ui-port=8080 --ui-host=0.0.0.0 --project firefox
+    environment:
+      APP_BASE_URL: "https://mon-indemnisation.justice.gouv.test"
     volumes:
       - ./end2end/tests:/app/tests
+      - ./end2end/playwright.config.ts:/app/playwright.config.ts
     ports:
       - "8080:8080"
       - "3000:3000"
