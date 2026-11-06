@@ -192,6 +192,11 @@ function Etape3PiecesJointes() {
     },
   });
 
+  // Automatiquement rafraichir le formulaire lorsque le dossier est changé suite à une invalidation du routeur
+  useEffect(() => {
+    formulaire.setFieldValue("piecesJointes", dossier.piecesJointes);
+  }, [dossier]);
+
   // Forcer tous les boutons sans attributs `type` explicitement définis à être de type "button".
   // Il s'agit d'un patch temporaire pour éviter au bouton d'affichage / masquage du `SideMenu` de déclencher la soumission du formulaire.
   // TODO supprimer ceci dès que `react-dsfr` sera à jour avec le correctif de https://github.com/codegouvfr/react-dsfr/issues/500
@@ -233,7 +238,13 @@ function Etape3PiecesJointes() {
           // routeur pour le forcer à récupérer le dossier à jour.
           await routeur.invalidate();
 
-          // Alors, on peut valider le formulaire, sur le dossier à jour
+          // Alors, on peut valider le formulaire, sur le dossier à jour (sans attendre le prochain rendu)
+          if (dossierModifie) {
+            formulaire.setFieldValue(
+              "piecesJointes",
+              dossierModifie.piecesJointes,
+            );
+          }
           await formulaire.validate("submit");
         }}
         typesPiecesjointes={typesPiecesJointesDemandes}
