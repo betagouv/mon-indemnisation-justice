@@ -92,7 +92,8 @@ test("FDO - Gendarme - déclarer bris de porte", async ({browser}) => {
     // Attendre que la requête xhr soit terminée
     await page.waitForLoadState("networkidle");
 
-    const ligneDeclaration = page.locator('div.fr-table table').locator('tbody').locator('tr:last-child');
+    // Cibler la ligne par son contenu : l'ordre du tableau ne doit pas conditionner le test
+    const ligneDeclaration = page.locator('div.fr-table table tbody tr', {hasText: "125 boulevard des Fleurs 75021 PARIS"});
 
     await expect(ligneDeclaration).toBeVisible();
 
@@ -182,7 +183,8 @@ test("FDO - Policier - déclarer bris de porte", async ({browser}) => {
     // Attendre que la requête xhr soit terminée
     await page.waitForLoadState("networkidle");
 
-    const ligneDeclaration = page.locator('div.fr-table table tbody tr:last-child')
+    // Cibler la ligne par son contenu : l'ordre du tableau ne doit pas conditionner le test
+    const ligneDeclaration = page.locator('div.fr-table table tbody tr', {hasText: "4 allée des Fruits 69010 LYON"})
 
     await expect(ligneDeclaration).toBeVisible();
 

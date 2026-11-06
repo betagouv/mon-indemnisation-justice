@@ -46,6 +46,17 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     "declarations",
   ] as const;
 
+  /** Tri par date de dernier changement, du plus récent au plus ancien. */
+  protected static comparer(
+    a: DeclarationFDOBrisPorte,
+    b: DeclarationFDOBrisPorte,
+  ): number {
+    return (
+      (b.etat.date || b.dateCreation).getTime() -
+      (a.etat.date || a.dateCreation).getTime()
+    );
+  }
+
   protected recupererDeclarations(): Promise<DeclarationFDOBrisPorte[]> {
     return queryClient.query({
       queryKey: APIDeclarationManager.CLEF_CACHE,
@@ -69,12 +80,7 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
         return plainToInstance(
           DeclarationFDOBrisPorte,
           (await reponse.json()) as any[],
-        ).sort(
-          // Tri par date de dernier changement du plus récent au plus ancien
-          (a, b) =>
-            (b.etat.date || b.dateCreation).getTime() -
-            (a.etat.date || a.dateCreation).getTime(),
-        );
+        ).sort(APIDeclarationManager.comparer);
       },
       staleTime: 5 * 60 * 1000, // 5 minutes
     });
@@ -85,9 +91,11 @@ export class APIDeclarationManager implements DeclarationManagerInterface {
     queryClient.setQueryData<DeclarationFDOBrisPorte[]>(
       APIDeclarationManager.CLEF_CACHE,
       (declarations = []) =>
-        declarations.some((d) => d.id === declaration.id)
+        // Conserver le même ordre que la liste issue de l'API
+        (declarations.some((d) => d.id === declaration.id)
           ? declarations.map((d) => (d.id === declaration.id ? declaration : d))
-          : [...declarations, declaration],
+          : [...declarations, declaration]
+        ).sort(APIDeclarationManager.comparer),
     );
   }
 
