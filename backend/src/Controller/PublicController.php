@@ -3,6 +3,7 @@
 namespace MonIndemnisationJustice\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Api\Public\Dysfonctionnement\InscrireUsagerEndpoint;
 use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -12,6 +13,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class PublicController extends AbstractController
 {
@@ -20,16 +22,33 @@ class PublicController extends AbstractController
         #[Autowire(service: 'security.password_hasher')]
         protected readonly UserPasswordHasherInterface $hasher,
         protected readonly TokenStorageInterface $tokenStorage,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
     ) {
-
     }
 
     #[Route('/dysfonctionnement/{extra}', name: 'public_dysfonctionnement_react', requirements: ['extra' => '.*'], env: ['dev', 'test', 'ci', 'develop'])]
     #[Route('/delai-deraisonnable/{extra}', name: 'public_delai_resaisonnable_react', requirements: ['extra' => '.*'], env: ['dev', 'test', 'ci', 'develop'])]
-    public function react(): Response
+    public function react(string $extra = ''): Response
     {
+        $usager = $this->getUser();
+
+        if ($usager instanceof Usager && '' === $extra) {
+            return $this->redirectToRoute('requerant_home_index');
+        }
+
+        if (!$usager instanceof Usager && str_starts_with($extra, 'tester-mon-eligibilite')) {
+            return $this->redirectToRoute('public_dysfonctionnement_react', ['extra' => '']);
+        }
+
         return $this->render('public/public.html.twig', [
-            'react' => [],
+            'react' => [
+                'jetonsCsrf' => [
+                    'authenticate' => $this->csrfTokenManager->getToken('authenticate')->getValue(),
+                    InscrireUsagerEndpoint::CSRF_INTENTION => $this->csrfTokenManager
+                        ->getToken(InscrireUsagerEndpoint::CSRF_INTENTION)->getValue(),
+                ],
+            ],
+            'title' => 'test'
         ]);
     }
 

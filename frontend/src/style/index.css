@@ -38,3 +38,16 @@ blockquote.fr-citation {
     border-left: .3rem solid var(--background-active-blue-france);
     padding-left: 1.5rem;
 }
+
+.mij-fieldset-legende-externe .fr-fieldset__content {
+    margin-top: 0 !important;
+}
+
+.fr-tile.fr-tile--horizontal.mij-tuile-franceconnect {
+    height: auto;
+}
+
+.mij-bouton-pleine-largeur {
+    width: 100%;
+    justify-content: center;
+}

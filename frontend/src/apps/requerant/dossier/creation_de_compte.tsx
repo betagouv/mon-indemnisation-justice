@@ -2,6 +2,15 @@ import {
   Civilite,
   Inscription,
 } from "@/apps/requerant/dossier/models/Inscription";
+import {
+  CreationDeCompte,
+  motDePasseValide,
+  RegleMotDePasse,
+} from "@common/composants/authentification/CreationDeCompte.tsx";
+import {
+  EcranFranceConnect,
+  TuileFranceConnect,
+} from "@common/composants/authentification/EcranFranceConnect.tsx";
 import FranceConnectButton from "@codegouvfr/react-dsfr/FranceConnectButton";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
@@ -10,6 +19,15 @@ import { useForm, useStore } from "@tanstack/react-form";
 import "reflect-metadata"; // En attente de React 19
 import ReactDOM from "react-dom/client";
 import React, { useState } from "react";
+
+// Règle historique du parcours bris-de-porte (8 caractères minimum) — volontairement différente de
+// la règle par défaut du composant partagé (12 caractères minimum), pour ne rien changer au
+// comportement de production de ce parcours.
+const REGLES_MOT_DE_PASSE_BRIS_DE_PORTE: RegleMotDePasse[] = [
+  { label: "8 caractères", test: (m) => m.length >= 8 },
+  { label: "1 chiffre", test: (m) => /\d/.test(m) },
+  { label: "1 caractère spécial", test: (m) => /[^a-zA-Z0-9]/.test(m) },
+];
 
 const args = JSON.parse(
   document.getElementById("react-arguments")?.textContent ?? "{}",
@@ -636,19 +654,6 @@ const CreationDeCompteApp = ({
 // chiffrement, juste un encodage réversible.
 const encoderMotDePasse = (motDePasse: string): string => btoa(motDePasse);
 
-const motDePasseValide = (motDePasse: string): string | undefined => {
-  if (motDePasse.length < 8) {
-    return "Le mot de passe doit contenir au moins 8 caractères";
-  }
-  if (!/\d/.test(motDePasse)) {
-    return "Le mot de passe doit contenir au moins 1 chiffre";
-  }
-  if (!/[^a-zA-Z0-9]/.test(motDePasse)) {
-    return "Le mot de passe doit contenir au moins 1 caractère spécial";
-  }
-  return undefined;
-};
-
 const CreerEspaceApp = ({
   token,
   routes,
@@ -661,8 +666,6 @@ const CreerEspaceApp = ({
   const [motDePasse, setMotDePasse] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [cguOk, setCguOk] = useState(false);
-  const [motDePasseRevele, setMotDePasseRevele] = useState(false);
-  const [confirmationRevelee, setConfirmationRevelee] = useState(false);
   const [erreur, setErreur] = useState<string | undefined>(erreurCreerEspace);
   const [envoiEnCours, setEnvoiEnCours] = useState(false);
   const [vueFranceConnect, setVueFranceConnect] = useState(false);
@@ -670,7 +673,7 @@ const CreerEspaceApp = ({
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const erreurMotDePasse = motDePasseValide(motDePasse);
+    const erreurMotDePasse = motDePasseValide(motDePasse, REGLES_MOT_DE_PASSE_BRIS_DE_PORTE);
     if (erreurMotDePasse) {
       setErreur(erreurMotDePasse);
       return;
@@ -724,48 +727,19 @@ const CreerEspaceApp = ({
 
               <div className="fr-grid-row fr-grid-row--center">
                 <div className="fr-col-lg-8 fr-col-10">
-                  <button
-                    type="button"
-                    className="fr-link fr-icon-arrow-left-line fr-link--icon-left"
-                    onClick={() => setVueFranceConnect(false)}
-                  >
-                    Choisir un autre moyen d'identifier
-                  </button>
-
-                  <div className="fr-highlight fr-my-3w">
-                    <p>
-                      Attention ! Ici, si vous vous inscrivez à la suite d'une
-                      déclaration des forces de l'ordre, assurez-vous que
-                      l'adresse mail fournie est associée à votre compte
-                      FranceConnect{identifiantCreerEspace ? ` (${identifiantCreerEspace})` : ""}.
-                    </p>
-                  </div>
-
-                  {erreur && (
-                    <div className="fr-alert fr-alert--error fr-alert--sm fr-mb-2w">
-                      <p>{erreur}</p>
-                    </div>
-                  )}
-
-                  <div className="fr-grid-row fr-grid-row--center">
-                    <div className="fr-col-lg-6 fr-col-8">
-
-                      <div className="fr-grid-row fr-grid-row--center">
-                        <h2 className="fr-h5">Se connecter avec FranceConnect</h2>
-                      </div>
-                      <div className="fr-grid-row fr-grid-row--center">
-                        <p className="fr-text--sm">
-                          FranceConnect est la solution proposée par l'État pour
-                          sécuriser et simplifier la connexion aux services en ligne.
-                        </p>
-                      </div>
-                      <div className="fr-grid-row fr-grid-row--center">
-                        <FranceConnectButton url={routes.inscriptionFranceConnect} />
-                      </div>
-
-                    </div>
-                  </div>
-
+                  <EcranFranceConnect
+                    onRetour={() => setVueFranceConnect(false)}
+                    erreur={erreur}
+                    avertissement={
+                      <p>
+                        Attention ! Ici, si vous vous inscrivez à la suite d'une
+                        déclaration des forces de l'ordre, assurez-vous que
+                        l'adresse mail fournie est associée à votre compte
+                        FranceConnect{identifiantCreerEspace ? ` (${identifiantCreerEspace})` : ""}.
+                      </p>
+                    }
+                    bouton={<FranceConnectButton url={routes.inscriptionFranceConnect} />}
+                  />
                 </div>
               </div>
 
@@ -799,172 +773,27 @@ const CreerEspaceApp = ({
                   </div>
 
                   <form onSubmit={onSubmit}>
-                    {erreur && (
-                      <div className="fr-alert fr-alert--error fr-alert--sm fr-mb-2w">
-                        <p>{erreur}</p>
-                      </div>
-                    )}
-
-                    {identifiant && (
-                      <div className="fr-input-group">
-                        <label className="fr-label" htmlFor="creer-espace-identifiant">
-                          Identifiant
-                        </label>
-                        <input
-                          id="creer-espace-identifiant"
-                          className="fr-input"
-                          type="text"
-                          value={identifiant}
-                          disabled
-                          readOnly
-                        />
-                      </div>
-                    )}
-
-                    <div className="fr-input-group">
-                      <div className="fr-password" data-fr-js-password="true">
-                        <label
-                          className="fr-label"
-                          htmlFor="creer-espace-mot-de-passe"
-                        >
-                          Mot de passe
-                        </label>
-                        <div className="fr-input-wrap">
-                          <input
-                            name="motDePasse"
-                            id="creer-espace-mot-de-passe"
-                            className="fr-password__input fr-input"
-                            type={motDePasseRevele ? "text" : "password"}
-                            value={motDePasse}
-                            onChange={(e) => setMotDePasse(e.target.value)}
-                          />
-                        </div>
-                        <div className="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
-                          <input
-                            aria-label="Afficher le mot de passe"
-                            id="creer-espace-mot-de-passe-toggle"
-                            type="checkbox"
-                            checked={motDePasseRevele}
-                            onChange={() => setMotDePasseRevele(!motDePasseRevele)}
-                          />
-                          <label
-                            className="fr-password__checkbox fr-label"
-                            htmlFor="creer-espace-mot-de-passe-toggle"
-                          >
-                            {motDePasseRevele ? "Masquer" : "Afficher"}
-                          </label>
-                        </div>
-                      </div>
-                      <div className="fr-messages-group">
-                        <p className="fr-message">
-                          Votre mot de passe doit contenir au moins :
-                        </p>
-                        <p className="fr-message fr-message--info">8 caractères minimum</p>
-                        <p className="fr-message fr-message--info">1 caractère spécial minimum</p>
-                        <p className="fr-message fr-message--info">1 chiffre minimum</p>
-                      </div>
-                    </div>
-
-                    <div className="fr-input-group">
-                      <div className="fr-password" data-fr-js-password="true">
-                        <label
-                          className="fr-label"
-                          htmlFor="creer-espace-confirmation"
-                        >
-                          Confirmation du mot de passe
-                        </label>
-                        <div className="fr-input-wrap">
-                          <input
-                            name="confirmation"
-                            id="creer-espace-confirmation"
-                            className="fr-password__input fr-input"
-                            type={confirmationRevelee ? "text" : "password"}
-                            value={confirmation}
-                            onChange={(e) => setConfirmation(e.target.value)}
-                          />
-                        </div>
-                        <div className="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
-                          <input
-                            aria-label="Afficher la confirmation du mot de passe"
-                            id="creer-espace-confirmation-toggle"
-                            type="checkbox"
-                            checked={confirmationRevelee}
-                            onChange={() => setConfirmationRevelee(!confirmationRevelee)}
-                          />
-                          <label
-                            className="fr-password__checkbox fr-label"
-                            htmlFor="creer-espace-confirmation-toggle"
-                          >
-                            {confirmationRevelee ? "Masquer" : "Afficher"}
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="fr-fieldset fr-my-2w">
-                      <div className="fr-fieldset__content">
-                        <div className="fr-checkbox-group">
-                          <input
-                            type="checkbox"
-                            id="creer-espace-cgu-ok"
-                            name="cguOk"
-                            checked={cguOk}
-                            onChange={(e) => setCguOk(e.target.checked)}
-                          />
-                          <label className="fr-label" htmlFor="creer-espace-cgu-ok">
-                            Je certifie avoir lu et accepté les&nbsp;
-                            <a
-                              className="fr-link"
-                              href={routes.cgu}
-                              target="_blank"
-                            >
-                              Conditions générales d'utilisation
-                            </a>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <button
-                      className="fr-btn"
-                      type="submit"
-                      disabled={envoiEnCours}
-                      style={{ width: "100%", justifyContent: "center" }}
-                    >
-                      {envoiEnCours ? "Création en cours" : "Créer mon espace"}
-                    </button>
+                    <CreationDeCompte
+                      identifiant={identifiant}
+                      motDePasse={motDePasse}
+                      confirmation={confirmation}
+                      cguOk={cguOk}
+                      cguUrl={routes.cgu}
+                      onMotDePasseChange={setMotDePasse}
+                      onConfirmationChange={setConfirmation}
+                      onCguOkChange={setCguOk}
+                      erreur={erreur}
+                      libelleSubmit="Créer mon espace"
+                      enCours={envoiEnCours}
+                      regles={REGLES_MOT_DE_PASSE_BRIS_DE_PORTE}
+                    />
 
                     <p className="fr-hr-or fr-my-3w">ou</p>
 
-                    <div className="fr-tile fr-tile--horizontal fr-enlarge-link">
-                      <div className="fr-tile__body">
-                        <div className="fr-tile__content">
-                          <h3 className="fr-tile__title">
-                            <a
-                              href="#"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setVueFranceConnect(true);
-                              }}
-                            >
-                              Avec FranceConnect
-                            </a>
-                          </h3>
-                          <p className="fr-tile__detail">
-                            Vous êtes résident et/ou citoyen français.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="fr-tile__header">
-                        <div className="fr-tile__pictogram">
-                          <svg aria-hidden="true" className="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
-                            <use className="fr-artwork-decorative" href="/dsfr/artwork/pictograms/digital/avatar.svg#artwork-decorative"></use>
-                            <use className="fr-artwork-minor" href="/dsfr/artwork/pictograms/digital/avatar.svg#artwork-minor"></use>
-                            <use className="fr-artwork-major" href="/dsfr/artwork/pictograms/digital/avatar.svg#artwork-major"></use>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
+                    <TuileFranceConnect
+                      detail="Vous êtes résident et/ou citoyen français."
+                      onClick={() => setVueFranceConnect(true)}
+                    />
                   </form>
                 </div>
               </div>

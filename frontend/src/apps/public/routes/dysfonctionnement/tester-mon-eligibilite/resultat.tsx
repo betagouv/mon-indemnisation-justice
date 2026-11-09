@@ -133,8 +133,7 @@ function ResultatEligibiliteRoute() {
             children: "Recommencer le test",
           },
           {
-            onClick: () =>
-              navigate({ to: "/dysfonctionnement/s-identifier/usagers" }),
+            nativeButtonProps: { type: "button", disabled: true },
             children: "Déposer un dossier",
           },
         ]}

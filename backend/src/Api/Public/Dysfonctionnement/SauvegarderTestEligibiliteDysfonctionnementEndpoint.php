@@ -5,14 +5,17 @@ namespace MonIndemnisationJustice\Api\Public\Dysfonctionnement;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Public\Dysfonctionnement\Input\TestEligibiliteDysfonctionnementInput;
 use MonIndemnisationJustice\Entity\TestEligibiliteDysfonctionnement;
+use MonIndemnisationJustice\Entity\Usager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/api/public/dysfonctionnement/test-eligibilite', name: 'api_public_dysfonctionnement_test_eligibilite', methods: ['PUT'], env: ['dev', 'test', 'ci', 'develop'])]
+#[IsGranted(Usager::ROLE_REQUERANT)]
 class SauvegarderTestEligibiliteDysfonctionnementEndpoint
 {
     public const CLEF_SESSION = 'dysfonctionnement_test_eligibilite';
