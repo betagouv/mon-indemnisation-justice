@@ -8,6 +8,10 @@ updates:
       interval: "weekly"
       day: "saturday"
       time: "06:00" # UTC
+    groups:
+      npm:
+        patterns:
+          - "*"
 
   - package-ecosystem: "composer"
     directory: "/backend"
@@ -15,6 +19,10 @@ updates:
       interval: "weekly"
       day: "saturday"
       time: "06:00" # UTC
+    groups:
+      composer:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -22,3 +30,7 @@ updates:
       interval: "weekly"
       day: "saturday"
       time: "06:00" # UTC
+    groups:
+      github-actions:
+        patterns:
+          - "*"

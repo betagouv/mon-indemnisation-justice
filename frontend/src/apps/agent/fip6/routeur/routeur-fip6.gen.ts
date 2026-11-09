@@ -9,47 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './../routes/__root'
-import { Route as MonCompteRouteImport } from './../routes/mon-compte'
 import { Route as IndexRouteImport } from './../routes/index'
-import { Route as DossiersIndexRouteImport } from './../routes/dossiers/index'
-import { Route as DossierIndexRouteImport } from './../routes/dossier/index'
+import { Route as MonCompteRouteImport } from './../routes/mon-compte'
 import { Route as AgentsIndexRouteImport } from './../routes/agents/index'
-import { Route as DossiersRejetASignerRouteImport } from './../routes/dossiers/rejet-a-signer'
-import { Route as DossiersRechercherRouteImport } from './../routes/dossiers/rechercher'
-import { Route as DossiersPropositionASignerRouteImport } from './../routes/dossiers/proposition-a-signer'
-import { Route as DossiersMesDossiersRouteImport } from './../routes/dossiers/mes-dossiers'
-import { Route as DossiersEnInstructionRouteImport } from './../routes/dossiers/en-instruction'
-import { Route as DossiersEnAttenteIndemnisationRouteImport } from './../routes/dossiers/en-attente-indemnisation'
-import { Route as DossiersArreteASignerRouteImport } from './../routes/dossiers/arrete-a-signer'
-import { Route as DossiersAVerifierRouteImport } from './../routes/dossiers/a-verifier'
-import { Route as DossiersATransmettreRouteImport } from './../routes/dossiers/a-transmettre'
-import { Route as DossiersAInstruireRouteImport } from './../routes/dossiers/a-instruire'
-import { Route as DossiersACategoriserRouteImport } from './../routes/dossiers/a-categoriser'
+import { Route as DossierIndexRouteImport } from './../routes/dossier/index'
+import { Route as DossiersIndexRouteImport } from './../routes/dossiers/index'
 import { Route as DossiersAAttribuerRouteImport } from './../routes/dossiers/a-attribuer'
-import { Route as DossierIdIndexRouteImport } from './../routes/dossier/$id/index'
+import { Route as DossiersACategoriserRouteImport } from './../routes/dossiers/a-categoriser'
+import { Route as DossiersAInstruireRouteImport } from './../routes/dossiers/a-instruire'
+import { Route as DossiersATransmettreRouteImport } from './../routes/dossiers/a-transmettre'
+import { Route as DossiersAVerifierRouteImport } from './../routes/dossiers/a-verifier'
+import { Route as DossiersArreteASignerRouteImport } from './../routes/dossiers/arrete-a-signer'
+import { Route as DossiersEnAttenteIndemnisationRouteImport } from './../routes/dossiers/en-attente-indemnisation'
+import { Route as DossiersEnInstructionRouteImport } from './../routes/dossiers/en-instruction'
+import { Route as DossiersMesDossiersRouteImport } from './../routes/dossiers/mes-dossiers'
+import { Route as DossiersPropositionASignerRouteImport } from './../routes/dossiers/proposition-a-signer'
+import { Route as DossiersRechercherRouteImport } from './../routes/dossiers/rechercher'
+import { Route as DossiersRejetASignerRouteImport } from './../routes/dossiers/rejet-a-signer'
 import { Route as AgentsGestionIndexRouteImport } from './../routes/agents/gestion/index'
-import { Route as DossiersUsagerIdRouteImport } from './../routes/dossiers/usager/$id'
-import { Route as AgentsGestionInactifsRouteImport } from './../routes/agents/gestion/inactifs'
 import { Route as AgentsGestionActifsRouteImport } from './../routes/agents/gestion/actifs'
+import { Route as AgentsGestionInactifsRouteImport } from './../routes/agents/gestion/inactifs'
+import { Route as DossierIdIndexRouteImport } from './../routes/dossier/$id/index'
+import { Route as DossiersUsagerIdRouteImport } from './../routes/dossiers/usager/$id'
 
-const MonCompteRoute = MonCompteRouteImport.update({
-  id: '/mon-compte',
-  path: '/mon-compte',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DossiersIndexRoute = DossiersIndexRouteImport.update({
-  id: '/dossiers/',
-  path: '/dossiers/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DossierIndexRoute = DossierIndexRouteImport.update({
-  id: '/dossier/',
-  path: '/dossier/',
+const MonCompteRoute = MonCompteRouteImport.update({
+  id: '/mon-compte',
+  path: '/mon-compte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentsIndexRoute = AgentsIndexRouteImport.update({
@@ -57,30 +47,44 @@ const AgentsIndexRoute = AgentsIndexRouteImport.update({
   path: '/agents/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DossiersRejetASignerRoute = DossiersRejetASignerRouteImport.update({
-  id: '/dossiers/rejet-a-signer',
-  path: '/dossiers/rejet-a-signer',
+const DossierIndexRoute = DossierIndexRouteImport.update({
+  id: '/dossier/',
+  path: '/dossier/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DossiersRechercherRoute = DossiersRechercherRouteImport.update({
-  id: '/dossiers/rechercher',
-  path: '/dossiers/rechercher',
+const DossiersIndexRoute = DossiersIndexRouteImport.update({
+  id: '/dossiers/',
+  path: '/dossiers/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DossiersPropositionASignerRoute =
-  DossiersPropositionASignerRouteImport.update({
-    id: '/dossiers/proposition-a-signer',
-    path: '/dossiers/proposition-a-signer',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DossiersMesDossiersRoute = DossiersMesDossiersRouteImport.update({
-  id: '/dossiers/mes-dossiers',
-  path: '/dossiers/mes-dossiers',
+const DossiersAAttribuerRoute = DossiersAAttribuerRouteImport.update({
+  id: '/dossiers/a-attribuer',
+  path: '/dossiers/a-attribuer',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DossiersEnInstructionRoute = DossiersEnInstructionRouteImport.update({
-  id: '/dossiers/en-instruction',
-  path: '/dossiers/en-instruction',
+const DossiersACategoriserRoute = DossiersACategoriserRouteImport.update({
+  id: '/dossiers/a-categoriser',
+  path: '/dossiers/a-categoriser',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersAInstruireRoute = DossiersAInstruireRouteImport.update({
+  id: '/dossiers/a-instruire',
+  path: '/dossiers/a-instruire',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersATransmettreRoute = DossiersATransmettreRouteImport.update({
+  id: '/dossiers/a-transmettre',
+  path: '/dossiers/a-transmettre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersAVerifierRoute = DossiersAVerifierRouteImport.update({
+  id: '/dossiers/a-verifier',
+  path: '/dossiers/a-verifier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersArreteASignerRoute = DossiersArreteASignerRouteImport.update({
+  id: '/dossiers/arrete-a-signer',
+  path: '/dossiers/arrete-a-signer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DossiersEnAttenteIndemnisationRoute =
@@ -89,39 +93,30 @@ const DossiersEnAttenteIndemnisationRoute =
     path: '/dossiers/en-attente-indemnisation',
     getParentRoute: () => rootRouteImport,
   } as any)
-const DossiersArreteASignerRoute = DossiersArreteASignerRouteImport.update({
-  id: '/dossiers/arrete-a-signer',
-  path: '/dossiers/arrete-a-signer',
+const DossiersEnInstructionRoute = DossiersEnInstructionRouteImport.update({
+  id: '/dossiers/en-instruction',
+  path: '/dossiers/en-instruction',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DossiersAVerifierRoute = DossiersAVerifierRouteImport.update({
-  id: '/dossiers/a-verifier',
-  path: '/dossiers/a-verifier',
+const DossiersMesDossiersRoute = DossiersMesDossiersRouteImport.update({
+  id: '/dossiers/mes-dossiers',
+  path: '/dossiers/mes-dossiers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DossiersATransmettreRoute = DossiersATransmettreRouteImport.update({
-  id: '/dossiers/a-transmettre',
-  path: '/dossiers/a-transmettre',
+const DossiersPropositionASignerRoute =
+  DossiersPropositionASignerRouteImport.update({
+    id: '/dossiers/proposition-a-signer',
+    path: '/dossiers/proposition-a-signer',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DossiersRechercherRoute = DossiersRechercherRouteImport.update({
+  id: '/dossiers/rechercher',
+  path: '/dossiers/rechercher',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DossiersAInstruireRoute = DossiersAInstruireRouteImport.update({
-  id: '/dossiers/a-instruire',
-  path: '/dossiers/a-instruire',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DossiersACategoriserRoute = DossiersACategoriserRouteImport.update({
-  id: '/dossiers/a-categoriser',
-  path: '/dossiers/a-categoriser',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DossiersAAttribuerRoute = DossiersAAttribuerRouteImport.update({
-  id: '/dossiers/a-attribuer',
-  path: '/dossiers/a-attribuer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DossierIdIndexRoute = DossierIdIndexRouteImport.update({
-  id: '/dossier/$id/',
-  path: '/dossier/$id/',
+const DossiersRejetASignerRoute = DossiersRejetASignerRouteImport.update({
+  id: '/dossiers/rejet-a-signer',
+  path: '/dossiers/rejet-a-signer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentsGestionIndexRoute = AgentsGestionIndexRouteImport.update({
@@ -129,9 +124,9 @@ const AgentsGestionIndexRoute = AgentsGestionIndexRouteImport.update({
   path: '/agents/gestion/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DossiersUsagerIdRoute = DossiersUsagerIdRouteImport.update({
-  id: '/dossiers/usager/$id',
-  path: '/dossiers/usager/$id',
+const AgentsGestionActifsRoute = AgentsGestionActifsRouteImport.update({
+  id: '/agents/gestion/actifs',
+  path: '/agents/gestion/actifs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentsGestionInactifsRoute = AgentsGestionInactifsRouteImport.update({
@@ -139,9 +134,14 @@ const AgentsGestionInactifsRoute = AgentsGestionInactifsRouteImport.update({
   path: '/agents/gestion/inactifs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AgentsGestionActifsRoute = AgentsGestionActifsRouteImport.update({
-  id: '/agents/gestion/actifs',
-  path: '/agents/gestion/actifs',
+const DossierIdIndexRoute = DossierIdIndexRouteImport.update({
+  id: '/dossier/$id/',
+  path: '/dossier/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DossiersUsagerIdRoute = DossiersUsagerIdRouteImport.update({
+  id: '/dossiers/usager/$id',
+  path: '/dossiers/usager/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -160,14 +160,14 @@ export interface FileRoutesByFullPath {
   '/dossiers/proposition-a-signer': typeof DossiersPropositionASignerRoute
   '/dossiers/rechercher': typeof DossiersRechercherRoute
   '/dossiers/rejet-a-signer': typeof DossiersRejetASignerRoute
-  '/agents': typeof AgentsIndexRoute
-  '/dossier': typeof DossierIndexRoute
-  '/dossiers': typeof DossiersIndexRoute
+  '/agents/': typeof AgentsIndexRoute
+  '/dossier/': typeof DossierIndexRoute
+  '/dossiers/': typeof DossiersIndexRoute
   '/agents/gestion/actifs': typeof AgentsGestionActifsRoute
   '/agents/gestion/inactifs': typeof AgentsGestionInactifsRoute
   '/dossiers/usager/$id': typeof DossiersUsagerIdRoute
-  '/agents/gestion': typeof AgentsGestionIndexRoute
-  '/dossier/$id': typeof DossierIdIndexRoute
+  '/agents/gestion/': typeof AgentsGestionIndexRoute
+  '/dossier/$id/': typeof DossierIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -235,14 +235,14 @@ export interface FileRouteTypes {
     | '/dossiers/proposition-a-signer'
     | '/dossiers/rechercher'
     | '/dossiers/rejet-a-signer'
-    | '/agents'
-    | '/dossier'
-    | '/dossiers'
+    | '/agents/'
+    | '/dossier/'
+    | '/dossiers/'
     | '/agents/gestion/actifs'
     | '/agents/gestion/inactifs'
     | '/dossiers/usager/$id'
-    | '/agents/gestion'
-    | '/dossier/$id'
+    | '/agents/gestion/'
+    | '/dossier/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -320,13 +320,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/mon-compte': {
-      id: '/mon-compte'
-      path: '/mon-compte'
-      fullPath: '/mon-compte'
-      preLoaderRoute: typeof MonCompteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -334,102 +327,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dossiers/': {
-      id: '/dossiers/'
-      path: '/dossiers'
-      fullPath: '/dossiers'
-      preLoaderRoute: typeof DossiersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossier/': {
-      id: '/dossier/'
-      path: '/dossier'
-      fullPath: '/dossier'
-      preLoaderRoute: typeof DossierIndexRouteImport
+    '/mon-compte': {
+      id: '/mon-compte'
+      path: '/mon-compte'
+      fullPath: '/mon-compte'
+      preLoaderRoute: typeof MonCompteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents/': {
       id: '/agents/'
       path: '/agents'
-      fullPath: '/agents'
+      fullPath: '/agents/'
       preLoaderRoute: typeof AgentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dossiers/rejet-a-signer': {
-      id: '/dossiers/rejet-a-signer'
-      path: '/dossiers/rejet-a-signer'
-      fullPath: '/dossiers/rejet-a-signer'
-      preLoaderRoute: typeof DossiersRejetASignerRouteImport
+    '/dossier/': {
+      id: '/dossier/'
+      path: '/dossier'
+      fullPath: '/dossier/'
+      preLoaderRoute: typeof DossierIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dossiers/rechercher': {
-      id: '/dossiers/rechercher'
-      path: '/dossiers/rechercher'
-      fullPath: '/dossiers/rechercher'
-      preLoaderRoute: typeof DossiersRechercherRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossiers/proposition-a-signer': {
-      id: '/dossiers/proposition-a-signer'
-      path: '/dossiers/proposition-a-signer'
-      fullPath: '/dossiers/proposition-a-signer'
-      preLoaderRoute: typeof DossiersPropositionASignerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossiers/mes-dossiers': {
-      id: '/dossiers/mes-dossiers'
-      path: '/dossiers/mes-dossiers'
-      fullPath: '/dossiers/mes-dossiers'
-      preLoaderRoute: typeof DossiersMesDossiersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossiers/en-instruction': {
-      id: '/dossiers/en-instruction'
-      path: '/dossiers/en-instruction'
-      fullPath: '/dossiers/en-instruction'
-      preLoaderRoute: typeof DossiersEnInstructionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossiers/en-attente-indemnisation': {
-      id: '/dossiers/en-attente-indemnisation'
-      path: '/dossiers/en-attente-indemnisation'
-      fullPath: '/dossiers/en-attente-indemnisation'
-      preLoaderRoute: typeof DossiersEnAttenteIndemnisationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossiers/arrete-a-signer': {
-      id: '/dossiers/arrete-a-signer'
-      path: '/dossiers/arrete-a-signer'
-      fullPath: '/dossiers/arrete-a-signer'
-      preLoaderRoute: typeof DossiersArreteASignerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossiers/a-verifier': {
-      id: '/dossiers/a-verifier'
-      path: '/dossiers/a-verifier'
-      fullPath: '/dossiers/a-verifier'
-      preLoaderRoute: typeof DossiersAVerifierRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossiers/a-transmettre': {
-      id: '/dossiers/a-transmettre'
-      path: '/dossiers/a-transmettre'
-      fullPath: '/dossiers/a-transmettre'
-      preLoaderRoute: typeof DossiersATransmettreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossiers/a-instruire': {
-      id: '/dossiers/a-instruire'
-      path: '/dossiers/a-instruire'
-      fullPath: '/dossiers/a-instruire'
-      preLoaderRoute: typeof DossiersAInstruireRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dossiers/a-categoriser': {
-      id: '/dossiers/a-categoriser'
-      path: '/dossiers/a-categoriser'
-      fullPath: '/dossiers/a-categoriser'
-      preLoaderRoute: typeof DossiersACategoriserRouteImport
+    '/dossiers/': {
+      id: '/dossiers/'
+      path: '/dossiers'
+      fullPath: '/dossiers/'
+      preLoaderRoute: typeof DossiersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dossiers/a-attribuer': {
@@ -439,25 +362,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DossiersAAttribuerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dossier/$id/': {
-      id: '/dossier/$id/'
-      path: '/dossier/$id'
-      fullPath: '/dossier/$id'
-      preLoaderRoute: typeof DossierIdIndexRouteImport
+    '/dossiers/a-categoriser': {
+      id: '/dossiers/a-categoriser'
+      path: '/dossiers/a-categoriser'
+      fullPath: '/dossiers/a-categoriser'
+      preLoaderRoute: typeof DossiersACategoriserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/a-instruire': {
+      id: '/dossiers/a-instruire'
+      path: '/dossiers/a-instruire'
+      fullPath: '/dossiers/a-instruire'
+      preLoaderRoute: typeof DossiersAInstruireRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/a-transmettre': {
+      id: '/dossiers/a-transmettre'
+      path: '/dossiers/a-transmettre'
+      fullPath: '/dossiers/a-transmettre'
+      preLoaderRoute: typeof DossiersATransmettreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/a-verifier': {
+      id: '/dossiers/a-verifier'
+      path: '/dossiers/a-verifier'
+      fullPath: '/dossiers/a-verifier'
+      preLoaderRoute: typeof DossiersAVerifierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/arrete-a-signer': {
+      id: '/dossiers/arrete-a-signer'
+      path: '/dossiers/arrete-a-signer'
+      fullPath: '/dossiers/arrete-a-signer'
+      preLoaderRoute: typeof DossiersArreteASignerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/en-attente-indemnisation': {
+      id: '/dossiers/en-attente-indemnisation'
+      path: '/dossiers/en-attente-indemnisation'
+      fullPath: '/dossiers/en-attente-indemnisation'
+      preLoaderRoute: typeof DossiersEnAttenteIndemnisationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/en-instruction': {
+      id: '/dossiers/en-instruction'
+      path: '/dossiers/en-instruction'
+      fullPath: '/dossiers/en-instruction'
+      preLoaderRoute: typeof DossiersEnInstructionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/mes-dossiers': {
+      id: '/dossiers/mes-dossiers'
+      path: '/dossiers/mes-dossiers'
+      fullPath: '/dossiers/mes-dossiers'
+      preLoaderRoute: typeof DossiersMesDossiersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/proposition-a-signer': {
+      id: '/dossiers/proposition-a-signer'
+      path: '/dossiers/proposition-a-signer'
+      fullPath: '/dossiers/proposition-a-signer'
+      preLoaderRoute: typeof DossiersPropositionASignerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/rechercher': {
+      id: '/dossiers/rechercher'
+      path: '/dossiers/rechercher'
+      fullPath: '/dossiers/rechercher'
+      preLoaderRoute: typeof DossiersRechercherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/rejet-a-signer': {
+      id: '/dossiers/rejet-a-signer'
+      path: '/dossiers/rejet-a-signer'
+      fullPath: '/dossiers/rejet-a-signer'
+      preLoaderRoute: typeof DossiersRejetASignerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents/gestion/': {
       id: '/agents/gestion/'
       path: '/agents/gestion'
-      fullPath: '/agents/gestion'
+      fullPath: '/agents/gestion/'
       preLoaderRoute: typeof AgentsGestionIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dossiers/usager/$id': {
-      id: '/dossiers/usager/$id'
-      path: '/dossiers/usager/$id'
-      fullPath: '/dossiers/usager/$id'
-      preLoaderRoute: typeof DossiersUsagerIdRouteImport
+    '/agents/gestion/actifs': {
+      id: '/agents/gestion/actifs'
+      path: '/agents/gestion/actifs'
+      fullPath: '/agents/gestion/actifs'
+      preLoaderRoute: typeof AgentsGestionActifsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents/gestion/inactifs': {
@@ -467,11 +460,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentsGestionInactifsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agents/gestion/actifs': {
-      id: '/agents/gestion/actifs'
-      path: '/agents/gestion/actifs'
-      fullPath: '/agents/gestion/actifs'
-      preLoaderRoute: typeof AgentsGestionActifsRouteImport
+    '/dossier/$id/': {
+      id: '/dossier/$id/'
+      path: '/dossier/$id'
+      fullPath: '/dossier/$id/'
+      preLoaderRoute: typeof DossierIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dossiers/usager/$id': {
+      id: '/dossiers/usager/$id'
+      path: '/dossiers/usager/$id'
+      fullPath: '/dossiers/usager/$id'
+      preLoaderRoute: typeof DossiersUsagerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
