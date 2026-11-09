@@ -36,15 +36,19 @@ export function FranceConnectOuEmail({ action, labelBoutonEmail, children }: Fra
         <LienFranceConnect action={action} />
       </div>
 
-      <div
-        style={{ display: "flex", alignItems: "center", gap: "1rem", margin: "1.5rem 0", color: "var(--text-mention-grey)" }}
-      >
-        <hr style={{ flex: 1, border: 0, borderTop: "1px solid var(--border-default-grey)" }} />
-        ou
-        <hr style={{ flex: 1, border: 0, borderTop: "1px solid var(--border-default-grey)" }} />
-      </div>
+        <div
+            style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+                margin: "1.5rem 0",
+                color: "var(--text-mention-grey)"
+            }}
+        >
+            <p className="fr-hr-or">ou</p>
+        </div>
 
-      <div className="fr-grid-row fr-grid-row--center">
+        <div className="fr-grid-row fr-grid-row--center">
         <Button priority="secondary" size="large" onClick={() => setAfficherEmail(true)} nativeButtonProps={{ type: "button" }}>
           {labelBoutonEmail}
         </Button>

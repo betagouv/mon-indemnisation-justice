@@ -1,7 +1,4 @@
 import "@/style/index.css";
-import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
-import Footer from "@codegouvfr/react-dsfr/Footer";
-import { Header } from "@codegouvfr/react-dsfr/Header";
 import { useLocation } from "@tanstack/react-router";
 import React, { useEffect, useRef } from "react";
 
@@ -9,46 +6,24 @@ type Props = {
   children: React.ReactNode;
 };
 
+/**
+ * Le header et le footer du site sont déjà rendus par le gabarit Twig qui enveloppe cette SPA
+ * (base.html.twig -> _header.html.twig / _footer.html.twig, hérité par public.html.twig) : ce
+ * composant ne doit donc fournir que le contenu de la page, sans dupliquer header/footer/landmark
+ * `main` (le Twig parent a déjà son propre `<main role="main">`).
+ */
 export const Layout = ({ children }: Props) => {
-  const mainRef = useRef<HTMLElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
-  // Ramène le scroll en haut du contenu principal à chaque changement de page
+  // Ramène le scroll en haut du contenu à chaque changement de page
   useEffect(() => {
-    mainRef.current?.scrollIntoView({ behavior: "instant" });
+    scrollRef.current?.scrollIntoView({ behavior: "instant" });
   }, [location.pathname]);
 
   return (
-    <>
-      <Header
-        brandTop={
-          <>
-            Ministère
-            <br /> Justice
-          </>
-        }
-        homeLinkProps={{
-          href: "/",
-          title: "Accueil - Mon Indemnisation Justice",
-        }}
-        serviceTitle="Mon Indemnisation Justice"
-        navigation={[
-          {
-            text: "Accueil",
-            linkProps: { href: "/" },
-          },
-        ]}
-      />
-
-      <main ref={mainRef} role="main" className="fr-p-2w">
-        <div className="fr-container fr-container--fluid">{children}</div>
-      </main>
-
-      <Footer
-        accessibility="non compliant"
-        bottomItems={[headerFooterDisplayItem]}
-        termsLinkProps={{ href: "/mentions-legales" }}
-      />
-    </>
+    <div ref={scrollRef} className="fr-p-2w">
+      <div className="fr-container fr-container--fluid">{children}</div>
+    </div>
   );
 };

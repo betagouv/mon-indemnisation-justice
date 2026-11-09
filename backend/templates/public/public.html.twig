@@ -1,35 +1,21 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+{% extends 'base.html.twig' %}
 
-    <link rel="apple-touch-icon" href="{{ asset('dsfr/favicon/apple-touch-icon.png') }}"/>
-    <link rel="icon" href="{{ asset('dsfr/favicon/favicon.svg') }}" type="image/svg+xml"/>
-    <link rel="shortcut icon" href="{{ asset('/dsfr/favicon/favicon.ico') }}" type="image/x-icon"/>
+{% block stylesheets %}
+    {{ vite_entry_link_tags('public') }}
+{% endblock stylesheets %}
 
-    <link rel="manifest" href="{{ asset('dsfr/favicon/manifest.webmanifest') }}" crossorigin="use-credentials"/>
-    <link rel="stylesheet" href="{{ asset('dsfr/utility/utility.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('dsfr/dsfr.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('remixicon/fonts/remixicon.css') }}"/>
+{% block title %}{{ parent() }} - {{ title }}{% endblock %}
 
-    <title>Mon indemnisation justice</title>
-    {% block stylesheets %}
-        {{ vite_entry_link_tags('public') }}
-    {% endblock stylesheets %}
-</head>
-<body>
-<div id="react-app"></div>
-
-{# Jetons CSRF de la SPA (test d'éligibilité + inscription/connexion), générés une fois pour toutes au premier
-   chargement — même mécanisme que brisPorte/creation_de_compte.html.twig. #}
-<script id="react-arguments" type="application/json">
-{{ react|default({})|json_encode()|raw }}
-</script>
-</body>
-</html>
+{% block main %}
+    <div id="react-app"></div>
+{% endblock main %}
 
 {% block javascripts %}
+    {# Jetons CSRF de la SPA (test d'éligibilité + inscription/connexion), générés une fois pour toutes au premier
+   chargement — même mécanisme que brisPorte/creation_de_compte.html.twig. #}
+    <script id="react-arguments" type="application/json">
+      {{ react|default({})|json_encode()|raw }}
+    </script>
     {% if est_vite_server_actif() %}
         {% include '_vite_hmr_extra.html.twig' %}
     {% endif %}

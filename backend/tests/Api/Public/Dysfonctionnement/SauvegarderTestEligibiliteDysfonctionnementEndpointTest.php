@@ -7,6 +7,7 @@ namespace MonIndemnisationJustice\Tests\Api\Public\Dysfonctionnement;
 use MonIndemnisationJustice\Api\Public\Dysfonctionnement\SauvegarderTestEligibiliteDysfonctionnementEndpoint;
 use MonIndemnisationJustice\Entity\PreuvesDiligenceType;
 use MonIndemnisationJustice\Entity\TestEligibiliteDysfonctionnement;
+use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Tests\Api\Agent\Fip6\AbstractEndpointTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\BrowserKit\Cookie;
@@ -23,6 +24,17 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
         'piecesProcedure' => ['acte_introductif', 'ecritures'],
         'preuvesDiligences' => PreuvesDiligenceType::AVEC_JUSTIFICATIFS,
     ];
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        // L'accès à cet endpoint requiert désormais un usager connecté (cf. PublicController::react()
+        // qui bloque l'accès anonyme au test d'éligibilité) ; on se connecte par défaut pour ne pas
+        // dupliquer ce login dans chaque test, sauf celui qui vérifie explicitement le rejet anonyme.
+        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
+        $this->client->loginUser($usager, 'requerant');
+    }
 
     public function testCreerUnNouveauTestSansSession(): void
     {
@@ -61,6 +73,11 @@ class SauvegarderTestEligibiliteDysfonctionnementEndpointTest extends AbstractEn
         $this->em->flush();
 
         $this->initializeSession([SauvegarderTestEligibiliteDysfonctionnementEndpoint::CLEF_SESSION => $testExistant->id]);
+
+        // initializeSession() crée une toute nouvelle session (distincte de celle que setUp() a pu
+        // amorcer via loginUser()) : sans ce second login, la requête qui suit n'est plus authentifiée.
+        $usager = $this->em->getRepository(Usager::class)->findOneBy(['email' => 'raquel.randt@courriel.fr']);
+        $this->client->loginUser($usager, 'requerant');
 
         $this->put([
             ...self::PAYLOAD_ELIGIBLE,
