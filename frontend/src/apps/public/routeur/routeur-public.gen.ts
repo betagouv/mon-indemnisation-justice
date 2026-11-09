@@ -10,13 +10,13 @@
 
 import { Route as rootRouteImport } from './../routes/__root'
 import { Route as DysfonctionnementTesterMonEligibiliteIndexRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/index'
-import { Route as DysfonctionnementTesterMonEligibiliteTestEligibiliteRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/test-eligibilite'
-import { Route as DysfonctionnementTesterMonEligibiliteResultatRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/resultat'
-import { Route as DysfonctionnementTesterMonEligibilite5DiligencesRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/5-diligences'
-import { Route as DysfonctionnementTesterMonEligibilite4PiecesProcedureRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure'
-import { Route as DysfonctionnementTesterMonEligibilite3TypeDecisionRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/3-type-decision'
-import { Route as DysfonctionnementTesterMonEligibilite2ActionContentieuseRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/2-action-contentieuse'
 import { Route as DysfonctionnementTesterMonEligibilite1DateDecisionRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/1-date-decision'
+import { Route as DysfonctionnementTesterMonEligibilite2ActionContentieuseRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/2-action-contentieuse'
+import { Route as DysfonctionnementTesterMonEligibilite3TypeDecisionRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/3-type-decision'
+import { Route as DysfonctionnementTesterMonEligibilite4PiecesProcedureRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure'
+import { Route as DysfonctionnementTesterMonEligibilite5DiligencesRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/5-diligences'
+import { Route as DysfonctionnementTesterMonEligibiliteResultatRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/resultat'
+import { Route as DysfonctionnementTesterMonEligibiliteTestEligibiliteRouteImport } from './../routes/dysfonctionnement/tester-mon-eligibilite/test-eligibilite'
 
 const DysfonctionnementTesterMonEligibiliteIndexRoute =
   DysfonctionnementTesterMonEligibiliteIndexRouteImport.update({
@@ -24,34 +24,10 @@ const DysfonctionnementTesterMonEligibiliteIndexRoute =
     path: '/dysfonctionnement/tester-mon-eligibilite/',
     getParentRoute: () => rootRouteImport,
   } as any)
-const DysfonctionnementTesterMonEligibiliteTestEligibiliteRoute =
-  DysfonctionnementTesterMonEligibiliteTestEligibiliteRouteImport.update({
-    id: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite',
-    path: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DysfonctionnementTesterMonEligibiliteResultatRoute =
-  DysfonctionnementTesterMonEligibiliteResultatRouteImport.update({
-    id: '/dysfonctionnement/tester-mon-eligibilite/resultat',
-    path: '/dysfonctionnement/tester-mon-eligibilite/resultat',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DysfonctionnementTesterMonEligibilite5DiligencesRoute =
-  DysfonctionnementTesterMonEligibilite5DiligencesRouteImport.update({
-    id: '/dysfonctionnement/tester-mon-eligibilite/5-diligences',
-    path: '/dysfonctionnement/tester-mon-eligibilite/5-diligences',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DysfonctionnementTesterMonEligibilite4PiecesProcedureRoute =
-  DysfonctionnementTesterMonEligibilite4PiecesProcedureRouteImport.update({
-    id: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure',
-    path: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DysfonctionnementTesterMonEligibilite3TypeDecisionRoute =
-  DysfonctionnementTesterMonEligibilite3TypeDecisionRouteImport.update({
-    id: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision',
-    path: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision',
+const DysfonctionnementTesterMonEligibilite1DateDecisionRoute =
+  DysfonctionnementTesterMonEligibilite1DateDecisionRouteImport.update({
+    id: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision',
+    path: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision',
     getParentRoute: () => rootRouteImport,
   } as any)
 const DysfonctionnementTesterMonEligibilite2ActionContentieuseRoute =
@@ -60,10 +36,34 @@ const DysfonctionnementTesterMonEligibilite2ActionContentieuseRoute =
     path: '/dysfonctionnement/tester-mon-eligibilite/2-action-contentieuse',
     getParentRoute: () => rootRouteImport,
   } as any)
-const DysfonctionnementTesterMonEligibilite1DateDecisionRoute =
-  DysfonctionnementTesterMonEligibilite1DateDecisionRouteImport.update({
-    id: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision',
-    path: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision',
+const DysfonctionnementTesterMonEligibilite3TypeDecisionRoute =
+  DysfonctionnementTesterMonEligibilite3TypeDecisionRouteImport.update({
+    id: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision',
+    path: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DysfonctionnementTesterMonEligibilite4PiecesProcedureRoute =
+  DysfonctionnementTesterMonEligibilite4PiecesProcedureRouteImport.update({
+    id: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure',
+    path: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DysfonctionnementTesterMonEligibilite5DiligencesRoute =
+  DysfonctionnementTesterMonEligibilite5DiligencesRouteImport.update({
+    id: '/dysfonctionnement/tester-mon-eligibilite/5-diligences',
+    path: '/dysfonctionnement/tester-mon-eligibilite/5-diligences',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DysfonctionnementTesterMonEligibiliteResultatRoute =
+  DysfonctionnementTesterMonEligibiliteResultatRouteImport.update({
+    id: '/dysfonctionnement/tester-mon-eligibilite/resultat',
+    path: '/dysfonctionnement/tester-mon-eligibilite/resultat',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DysfonctionnementTesterMonEligibiliteTestEligibiliteRoute =
+  DysfonctionnementTesterMonEligibiliteTestEligibiliteRouteImport.update({
+    id: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite',
+    path: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -75,7 +75,7 @@ export interface FileRoutesByFullPath {
   '/dysfonctionnement/tester-mon-eligibilite/5-diligences': typeof DysfonctionnementTesterMonEligibilite5DiligencesRoute
   '/dysfonctionnement/tester-mon-eligibilite/resultat': typeof DysfonctionnementTesterMonEligibiliteResultatRoute
   '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite': typeof DysfonctionnementTesterMonEligibiliteTestEligibiliteRoute
-  '/dysfonctionnement/tester-mon-eligibilite': typeof DysfonctionnementTesterMonEligibiliteIndexRoute
+  '/dysfonctionnement/tester-mon-eligibilite/': typeof DysfonctionnementTesterMonEligibiliteIndexRoute
 }
 export interface FileRoutesByTo {
   '/dysfonctionnement/tester-mon-eligibilite/1-date-decision': typeof DysfonctionnementTesterMonEligibilite1DateDecisionRoute
@@ -108,7 +108,7 @@ export interface FileRouteTypes {
     | '/dysfonctionnement/tester-mon-eligibilite/5-diligences'
     | '/dysfonctionnement/tester-mon-eligibilite/resultat'
     | '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite'
-    | '/dysfonctionnement/tester-mon-eligibilite'
+    | '/dysfonctionnement/tester-mon-eligibilite/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/dysfonctionnement/tester-mon-eligibilite/1-date-decision'
@@ -147,43 +147,15 @@ declare module '@tanstack/react-router' {
     '/dysfonctionnement/tester-mon-eligibilite/': {
       id: '/dysfonctionnement/tester-mon-eligibilite/'
       path: '/dysfonctionnement/tester-mon-eligibilite'
-      fullPath: '/dysfonctionnement/tester-mon-eligibilite'
+      fullPath: '/dysfonctionnement/tester-mon-eligibilite/'
       preLoaderRoute: typeof DysfonctionnementTesterMonEligibiliteIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite': {
-      id: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite'
-      path: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite'
-      fullPath: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite'
-      preLoaderRoute: typeof DysfonctionnementTesterMonEligibiliteTestEligibiliteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dysfonctionnement/tester-mon-eligibilite/resultat': {
-      id: '/dysfonctionnement/tester-mon-eligibilite/resultat'
-      path: '/dysfonctionnement/tester-mon-eligibilite/resultat'
-      fullPath: '/dysfonctionnement/tester-mon-eligibilite/resultat'
-      preLoaderRoute: typeof DysfonctionnementTesterMonEligibiliteResultatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dysfonctionnement/tester-mon-eligibilite/5-diligences': {
-      id: '/dysfonctionnement/tester-mon-eligibilite/5-diligences'
-      path: '/dysfonctionnement/tester-mon-eligibilite/5-diligences'
-      fullPath: '/dysfonctionnement/tester-mon-eligibilite/5-diligences'
-      preLoaderRoute: typeof DysfonctionnementTesterMonEligibilite5DiligencesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure': {
-      id: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure'
-      path: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure'
-      fullPath: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure'
-      preLoaderRoute: typeof DysfonctionnementTesterMonEligibilite4PiecesProcedureRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dysfonctionnement/tester-mon-eligibilite/3-type-decision': {
-      id: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision'
-      path: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision'
-      fullPath: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision'
-      preLoaderRoute: typeof DysfonctionnementTesterMonEligibilite3TypeDecisionRouteImport
+    '/dysfonctionnement/tester-mon-eligibilite/1-date-decision': {
+      id: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision'
+      path: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision'
+      fullPath: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision'
+      preLoaderRoute: typeof DysfonctionnementTesterMonEligibilite1DateDecisionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dysfonctionnement/tester-mon-eligibilite/2-action-contentieuse': {
@@ -193,11 +165,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DysfonctionnementTesterMonEligibilite2ActionContentieuseRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dysfonctionnement/tester-mon-eligibilite/1-date-decision': {
-      id: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision'
-      path: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision'
-      fullPath: '/dysfonctionnement/tester-mon-eligibilite/1-date-decision'
-      preLoaderRoute: typeof DysfonctionnementTesterMonEligibilite1DateDecisionRouteImport
+    '/dysfonctionnement/tester-mon-eligibilite/3-type-decision': {
+      id: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision'
+      path: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision'
+      fullPath: '/dysfonctionnement/tester-mon-eligibilite/3-type-decision'
+      preLoaderRoute: typeof DysfonctionnementTesterMonEligibilite3TypeDecisionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure': {
+      id: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure'
+      path: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure'
+      fullPath: '/dysfonctionnement/tester-mon-eligibilite/4-pieces-procedure'
+      preLoaderRoute: typeof DysfonctionnementTesterMonEligibilite4PiecesProcedureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dysfonctionnement/tester-mon-eligibilite/5-diligences': {
+      id: '/dysfonctionnement/tester-mon-eligibilite/5-diligences'
+      path: '/dysfonctionnement/tester-mon-eligibilite/5-diligences'
+      fullPath: '/dysfonctionnement/tester-mon-eligibilite/5-diligences'
+      preLoaderRoute: typeof DysfonctionnementTesterMonEligibilite5DiligencesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dysfonctionnement/tester-mon-eligibilite/resultat': {
+      id: '/dysfonctionnement/tester-mon-eligibilite/resultat'
+      path: '/dysfonctionnement/tester-mon-eligibilite/resultat'
+      fullPath: '/dysfonctionnement/tester-mon-eligibilite/resultat'
+      preLoaderRoute: typeof DysfonctionnementTesterMonEligibiliteResultatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite': {
+      id: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite'
+      path: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite'
+      fullPath: '/dysfonctionnement/tester-mon-eligibilite/test-eligibilite'
+      preLoaderRoute: typeof DysfonctionnementTesterMonEligibiliteTestEligibiliteRouteImport
       parentRoute: typeof rootRouteImport
     }
   }

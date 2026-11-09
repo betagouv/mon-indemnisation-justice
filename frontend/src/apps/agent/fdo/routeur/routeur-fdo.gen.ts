@@ -9,32 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './../routes/__root'
-import { Route as RequisitionSerrurierRouteImport } from './../routes/requisition-serrurier'
-import { Route as MonCompteRouteImport } from './../routes/mon-compte'
-import { Route as LesDocumentsRouteImport } from './../routes/les-documents'
-import { Route as FoireAuxQuestionsRouteImport } from './../routes/foire-aux-questions'
 import { Route as IndexRouteImport } from './../routes/index'
+import { Route as FoireAuxQuestionsRouteImport } from './../routes/foire-aux-questions'
+import { Route as LesDocumentsRouteImport } from './../routes/les-documents'
+import { Route as MonCompteRouteImport } from './../routes/mon-compte'
+import { Route as RequisitionSerrurierRouteImport } from './../routes/requisition-serrurier'
 import { Route as BrisDePorteIndexRouteImport } from './../routes/bris-de-porte/index'
-import { Route as BrisDePorteNouvelleDeclarationRouteImport } from './../routes/bris-de-porte/nouvelle-declaration'
 import { Route as BrisDePorteMesDeclarationsRouteImport } from './../routes/bris-de-porte/mes-declarations'
+import { Route as BrisDePorteNouvelleDeclarationRouteImport } from './../routes/bris-de-porte/nouvelle-declaration'
 import { Route as BrisDePorteIdIndexRouteImport } from './../routes/bris-de-porte/$id/index'
-import { Route as BrisDePorteId3UsagerRouteImport } from './../routes/bris-de-porte/$id/3-usager'
-import { Route as BrisDePorteId2ServiceEnqueteurRouteImport } from './../routes/bris-de-porte/$id/2-service-enqueteur'
 import { Route as BrisDePorteId1BrisDePorteRouteImport } from './../routes/bris-de-porte/$id/1-bris-de-porte'
+import { Route as BrisDePorteId2ServiceEnqueteurRouteImport } from './../routes/bris-de-porte/$id/2-service-enqueteur'
+import { Route as BrisDePorteId3UsagerRouteImport } from './../routes/bris-de-porte/$id/3-usager'
 
-const RequisitionSerrurierRoute = RequisitionSerrurierRouteImport.update({
-  id: '/requisition-serrurier',
-  path: '/requisition-serrurier',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MonCompteRoute = MonCompteRouteImport.update({
-  id: '/mon-compte',
-  path: '/mon-compte',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LesDocumentsRoute = LesDocumentsRouteImport.update({
-  id: '/les-documents',
-  path: '/les-documents',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FoireAuxQuestionsRoute = FoireAuxQuestionsRouteImport.update({
@@ -42,9 +32,19 @@ const FoireAuxQuestionsRoute = FoireAuxQuestionsRouteImport.update({
   path: '/foire-aux-questions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const LesDocumentsRoute = LesDocumentsRouteImport.update({
+  id: '/les-documents',
+  path: '/les-documents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MonCompteRoute = MonCompteRouteImport.update({
+  id: '/mon-compte',
+  path: '/mon-compte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequisitionSerrurierRoute = RequisitionSerrurierRouteImport.update({
+  id: '/requisition-serrurier',
+  path: '/requisition-serrurier',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrisDePorteIndexRoute = BrisDePorteIndexRouteImport.update({
@@ -52,16 +52,16 @@ const BrisDePorteIndexRoute = BrisDePorteIndexRouteImport.update({
   path: '/bris-de-porte/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrisDePorteNouvelleDeclarationRoute =
-  BrisDePorteNouvelleDeclarationRouteImport.update({
-    id: '/bris-de-porte/nouvelle-declaration',
-    path: '/bris-de-porte/nouvelle-declaration',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const BrisDePorteMesDeclarationsRoute =
   BrisDePorteMesDeclarationsRouteImport.update({
     id: '/bris-de-porte/mes-declarations',
     path: '/bris-de-porte/mes-declarations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const BrisDePorteNouvelleDeclarationRoute =
+  BrisDePorteNouvelleDeclarationRouteImport.update({
+    id: '/bris-de-porte/nouvelle-declaration',
+    path: '/bris-de-porte/nouvelle-declaration',
     getParentRoute: () => rootRouteImport,
   } as any)
 const BrisDePorteIdIndexRoute = BrisDePorteIdIndexRouteImport.update({
@@ -69,23 +69,23 @@ const BrisDePorteIdIndexRoute = BrisDePorteIdIndexRouteImport.update({
   path: '/bris-de-porte/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BrisDePorteId3UsagerRoute = BrisDePorteId3UsagerRouteImport.update({
-  id: '/bris-de-porte/$id/3-usager',
-  path: '/bris-de-porte/$id/3-usager',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BrisDePorteId2ServiceEnqueteurRoute =
-  BrisDePorteId2ServiceEnqueteurRouteImport.update({
-    id: '/bris-de-porte/$id/2-service-enqueteur',
-    path: '/bris-de-porte/$id/2-service-enqueteur',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const BrisDePorteId1BrisDePorteRoute =
   BrisDePorteId1BrisDePorteRouteImport.update({
     id: '/bris-de-porte/$id/1-bris-de-porte',
     path: '/bris-de-porte/$id/1-bris-de-porte',
     getParentRoute: () => rootRouteImport,
   } as any)
+const BrisDePorteId2ServiceEnqueteurRoute =
+  BrisDePorteId2ServiceEnqueteurRouteImport.update({
+    id: '/bris-de-porte/$id/2-service-enqueteur',
+    path: '/bris-de-porte/$id/2-service-enqueteur',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const BrisDePorteId3UsagerRoute = BrisDePorteId3UsagerRouteImport.update({
+  id: '/bris-de-porte/$id/3-usager',
+  path: '/bris-de-porte/$id/3-usager',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -95,11 +95,11 @@ export interface FileRoutesByFullPath {
   '/requisition-serrurier': typeof RequisitionSerrurierRoute
   '/bris-de-porte/mes-declarations': typeof BrisDePorteMesDeclarationsRoute
   '/bris-de-porte/nouvelle-declaration': typeof BrisDePorteNouvelleDeclarationRoute
-  '/bris-de-porte': typeof BrisDePorteIndexRoute
+  '/bris-de-porte/': typeof BrisDePorteIndexRoute
   '/bris-de-porte/$id/1-bris-de-porte': typeof BrisDePorteId1BrisDePorteRoute
   '/bris-de-porte/$id/2-service-enqueteur': typeof BrisDePorteId2ServiceEnqueteurRoute
   '/bris-de-porte/$id/3-usager': typeof BrisDePorteId3UsagerRoute
-  '/bris-de-porte/$id': typeof BrisDePorteIdIndexRoute
+  '/bris-de-porte/$id/': typeof BrisDePorteIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -140,11 +140,11 @@ export interface FileRouteTypes {
     | '/requisition-serrurier'
     | '/bris-de-porte/mes-declarations'
     | '/bris-de-porte/nouvelle-declaration'
-    | '/bris-de-porte'
+    | '/bris-de-porte/'
     | '/bris-de-porte/$id/1-bris-de-porte'
     | '/bris-de-porte/$id/2-service-enqueteur'
     | '/bris-de-porte/$id/3-usager'
-    | '/bris-de-porte/$id'
+    | '/bris-de-porte/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -192,25 +192,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/requisition-serrurier': {
-      id: '/requisition-serrurier'
-      path: '/requisition-serrurier'
-      fullPath: '/requisition-serrurier'
-      preLoaderRoute: typeof RequisitionSerrurierRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mon-compte': {
-      id: '/mon-compte'
-      path: '/mon-compte'
-      fullPath: '/mon-compte'
-      preLoaderRoute: typeof MonCompteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/les-documents': {
-      id: '/les-documents'
-      path: '/les-documents'
-      fullPath: '/les-documents'
-      preLoaderRoute: typeof LesDocumentsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/foire-aux-questions': {
@@ -220,25 +206,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FoireAuxQuestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/les-documents': {
+      id: '/les-documents'
+      path: '/les-documents'
+      fullPath: '/les-documents'
+      preLoaderRoute: typeof LesDocumentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mon-compte': {
+      id: '/mon-compte'
+      path: '/mon-compte'
+      fullPath: '/mon-compte'
+      preLoaderRoute: typeof MonCompteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/requisition-serrurier': {
+      id: '/requisition-serrurier'
+      path: '/requisition-serrurier'
+      fullPath: '/requisition-serrurier'
+      preLoaderRoute: typeof RequisitionSerrurierRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bris-de-porte/': {
       id: '/bris-de-porte/'
       path: '/bris-de-porte'
-      fullPath: '/bris-de-porte'
+      fullPath: '/bris-de-porte/'
       preLoaderRoute: typeof BrisDePorteIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bris-de-porte/nouvelle-declaration': {
-      id: '/bris-de-porte/nouvelle-declaration'
-      path: '/bris-de-porte/nouvelle-declaration'
-      fullPath: '/bris-de-porte/nouvelle-declaration'
-      preLoaderRoute: typeof BrisDePorteNouvelleDeclarationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bris-de-porte/mes-declarations': {
@@ -248,18 +241,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrisDePorteMesDeclarationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bris-de-porte/nouvelle-declaration': {
+      id: '/bris-de-porte/nouvelle-declaration'
+      path: '/bris-de-porte/nouvelle-declaration'
+      fullPath: '/bris-de-porte/nouvelle-declaration'
+      preLoaderRoute: typeof BrisDePorteNouvelleDeclarationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bris-de-porte/$id/': {
       id: '/bris-de-porte/$id/'
       path: '/bris-de-porte/$id'
-      fullPath: '/bris-de-porte/$id'
+      fullPath: '/bris-de-porte/$id/'
       preLoaderRoute: typeof BrisDePorteIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bris-de-porte/$id/3-usager': {
-      id: '/bris-de-porte/$id/3-usager'
-      path: '/bris-de-porte/$id/3-usager'
-      fullPath: '/bris-de-porte/$id/3-usager'
-      preLoaderRoute: typeof BrisDePorteId3UsagerRouteImport
+    '/bris-de-porte/$id/1-bris-de-porte': {
+      id: '/bris-de-porte/$id/1-bris-de-porte'
+      path: '/bris-de-porte/$id/1-bris-de-porte'
+      fullPath: '/bris-de-porte/$id/1-bris-de-porte'
+      preLoaderRoute: typeof BrisDePorteId1BrisDePorteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bris-de-porte/$id/2-service-enqueteur': {
@@ -269,11 +269,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrisDePorteId2ServiceEnqueteurRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bris-de-porte/$id/1-bris-de-porte': {
-      id: '/bris-de-porte/$id/1-bris-de-porte'
-      path: '/bris-de-porte/$id/1-bris-de-porte'
-      fullPath: '/bris-de-porte/$id/1-bris-de-porte'
-      preLoaderRoute: typeof BrisDePorteId1BrisDePorteRouteImport
+    '/bris-de-porte/$id/3-usager': {
+      id: '/bris-de-porte/$id/3-usager'
+      path: '/bris-de-porte/$id/3-usager'
+      fullPath: '/bris-de-porte/$id/3-usager'
+      preLoaderRoute: typeof BrisDePorteId3UsagerRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
