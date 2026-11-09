@@ -25,6 +25,10 @@ export const DocumentPDF = ({ url }: { url: string }) => {
     () => ({
       cMapUrl: "/cmaps/",
       standardFontDataUrl: "/standard_fonts/",
+      // Requis par pdf.js pour décoder certaines images (JPX, JBIG2) et les profils ICC.
+      // Ce chemin est valable en dev (servi par Vite) comme au build (copié par vite-plugin-static-copy,
+      // qui conserve l'arborescence). `BASE_URL` n'a pas de slash final avec vite-plugin-symfony.
+      wasmUrl: `${import.meta.env.BASE_URL.replace(/\/$/, "")}/node_modules/pdfjs-dist/wasm/`,
     }),
     [1],
   );

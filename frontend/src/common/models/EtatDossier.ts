@@ -180,22 +180,22 @@ export type ContexteEtatDossier = any & {
 };
 
 export class EtatDossier implements EtatInterface {
-  public readonly id: number;
+  public readonly id!: number;
   @Transform(({ value }: { value: string }) => EtatDossierType.resoudre(value))
-  public readonly etat: EtatDossierType;
+  public readonly etat!: EtatDossierType;
   @Transform(({ value }) => {
     if (!value) {
       return null;
     }
     return value instanceof Date ? value : new Date(value);
   })
-  public readonly dateEntree: Date;
+  public readonly dateEntree!: Date;
   @Type(() => Redacteur)
   @Expose()
   public readonly redacteur?: Redacteur;
   @Expose()
   @Type(() => Requerant)
-  public readonly requerant: boolean;
+  public readonly requerant!: boolean;
   public readonly contexte?: ContexteEtatDossier;
 
   get libelle(): string {

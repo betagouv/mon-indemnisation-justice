@@ -21,16 +21,16 @@ export type TypeAttestation =
 export type TypeDossier = "BRI" | "DYS";
 
 export abstract class BaseDossier {
-  public readonly id: number;
+  public readonly id!: number;
   public readonly type: TypeDossier = "BRI";
-  public readonly reference: string;
+  public readonly reference!: string;
   public montantIndemnisation?: number;
 
   @Type(() => EtatDossier)
   @Expose()
-  public etat: EtatDossier;
+  public etat!: EtatDossier;
   @Type(() => EtatDossier)
-  public readonly historique: EtatDossier[];
+  public readonly historique!: EtatDossier[];
   @DateTransform()
   @Type(() => Date)
   public dateDepot?: Date;
@@ -39,7 +39,7 @@ export abstract class BaseDossier {
   public redacteur?: Redacteur = undefined;
   public typeAttestation?: TypeAttestation;
   public qualiteRequerant?: string;
-  public readonly estEligible: boolean;
+  public readonly estEligible!: boolean;
 
   abstract estIssuDeclarationFDO(): boolean;
 
@@ -146,9 +146,9 @@ export abstract class BaseDossier {
 }
 
 export class DossierApercu extends BaseDossier {
-  public readonly issuDeclarationFDO: boolean;
-  public readonly requerant: string; // Prénom NOM
-  public readonly adresse: string;
+  public readonly issuDeclarationFDO!: boolean;
+  public readonly requerant!: string; // Prénom NOM
+  public readonly adresse!: string;
 
   estIssuDeclarationFDO(): boolean {
     return this.issuDeclarationFDO;
@@ -158,10 +158,10 @@ export class DossierApercu extends BaseDossier {
 export class DossierDetail extends BaseDossier {
   @Expose()
   @Type(() => Usager)
-  public readonly usager: Usager;
+  public readonly usager!: Usager;
   @Expose()
   @Type(() => Requerant)
-  public readonly requerant: Requerant;
+  public readonly requerant!: Requerant;
 
   @Expose()
   @Type(() => TestEligibiliteBrisPorte)
@@ -180,9 +180,9 @@ export class DossierDetail extends BaseDossier {
   public readonly adresse?: Adresse;
 
   @DateTransform()
-  public dateOperation: Date | null;
+  public dateOperation!: Date | null;
 
-  public estPorteBlindee: boolean | null;
+  public estPorteBlindee!: boolean | null;
 
   @Transform(({ value }: { value: any[] }) => {
     return new Map(

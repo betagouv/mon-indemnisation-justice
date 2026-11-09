@@ -3,16 +3,16 @@ import { Transform, Type } from "class-transformer";
 import { Adresse, Document } from "@/common/models";
 
 export class DossierACategoriser {
-  readonly id: number;
-  readonly reference: string;
-  readonly requerant: string;
-  readonly adresse: string;
+  readonly id!: number;
+  readonly reference!: string;
+  readonly requerant!: string;
+  readonly adresse!: string;
   @Transform(({ value }: { value: string }) =>
     value ? new Date(value) : undefined,
   )
   readonly dateOperation?: Date;
   @Transform(({ value }: { value: string }) => new Date(value))
-  readonly datePublication: Date;
+  readonly datePublication!: Date;
   @Type(() => Document)
-  attestations: Document[];
+  attestations!: Document[];
 }

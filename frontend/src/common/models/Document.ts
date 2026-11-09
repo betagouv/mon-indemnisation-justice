@@ -158,20 +158,20 @@ export interface MetaDonneesAttestation {
 }
 
 export class Document {
-  public readonly id: number;
-  public readonly originalFilename: string;
-  public readonly mime: string;
+  public readonly id!: number;
+  public readonly originalFilename!: string;
+  public readonly mime!: string;
   public readonly size?: number;
   public readonly estAjoutRequerant?: boolean;
 
   public corps?: string;
-  public readonly filename: string;
-  public fileHash: string;
+  public readonly filename!: string;
+  public fileHash!: string;
   @Transform(({ value }: { value: string }): DocumentType | undefined =>
     Document.types.find((type: DocumentType) => type.type === value),
   )
   @Type(() => DocumentType)
-  public readonly type: DocumentType;
+  public readonly type!: DocumentType;
   public metaDonnees: MetaDonneesAttestation | any;
   @Transform(({ value }) => new Date(value))
   public readonly dateDerniereModification?: Date;

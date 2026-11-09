@@ -1,7 +1,5 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import React, {
-  Dispatch,
-  SetStateAction,
   useCallback,
   useEffect,
   useState,
@@ -76,7 +74,7 @@ const DefinirMotifRefus = ({
   setMotifRejet,
 }: {
   motifRejet?: MotifRejetBrisPorte;
-  setMotifRejet: Dispatch<SetStateAction<MotifRejetBrisPorte>>;
+  setMotifRejet: (motifRejet: MotifRejetBrisPorte) => void;
 }) => {
   return (
     <>

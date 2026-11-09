@@ -67,8 +67,8 @@ root.render(
             router={RouteurRequerant}
             defaultErrorComponent={({ error, info, reset }) => (
               <ErreurComposant
-                erreur={error}
-                retour={<Link to={"/requerant/"}>Revenir à l'accueil</Link>}
+                erreur={error as Error}
+                retour={<Link to={"/requerant"}>Revenir à l'accueil</Link>}
                 action={
                   <ButtonsGroup
                     inlineLayoutWhen="always"

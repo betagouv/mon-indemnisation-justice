@@ -96,7 +96,7 @@ const ConsultationDossier = ({
     window.location.hash?.replace(/^#/, "") || "infos",
   );
 
-  const changerOnglet = (tab) => {
+  const changerOnglet = (tab: string) => {
     selectTab(tab);
     history.replaceState({}, "", `#${tab}`);
   };

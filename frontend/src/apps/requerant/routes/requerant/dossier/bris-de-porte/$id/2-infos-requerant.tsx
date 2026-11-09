@@ -69,8 +69,7 @@ export const Route = createFileRoute(
 
     if (dossier.estDecide) {
       return redirect<typeof RouteurRequerant>({
-        from: Route.fullPath,
-        to: "../consulter-la-decision",
+        to: "/requerant/dossier/bris-de-porte/$id/consulter-la-decision",
         params,
       });
     }

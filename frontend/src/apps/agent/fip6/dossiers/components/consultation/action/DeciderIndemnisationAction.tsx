@@ -1,12 +1,5 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
-import React, {
-  Dispatch,
-  FormEvent,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { FormEvent, useCallback, useEffect, useState } from "react";
 
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
@@ -73,7 +66,7 @@ const DefinirMontantIndemnisation = ({
   setMontantIndemnisation,
 }: {
   montantIndemnisation: number;
-  setMontantIndemnisation: Dispatch<SetStateAction<number>>;
+  setMontantIndemnisation: (montantIndemnisation: number) => void;
 }) => {
   return (
     <div className="fr-input-group fr-col-12">

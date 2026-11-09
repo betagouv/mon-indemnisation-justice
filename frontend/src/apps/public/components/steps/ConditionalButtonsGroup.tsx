@@ -20,5 +20,11 @@ export function ConditionalButtonsGroup({ buttons, ...props }: ConditionalButton
 
   if (resolved.length === 0) return null;
 
-  return <ButtonsGroup {...props} buttons={resolved as [ButtonProps, ...ButtonProps[]]} />;
+  // `Omit` aplatit l'union discriminée de `ButtonsGroupProps` : on la restaure ici.
+  const groupProps = {
+    ...props,
+    buttons: resolved as [ButtonProps, ...ButtonProps[]],
+  } as ButtonsGroupProps;
+
+  return <ButtonsGroup {...groupProps} />;
 }

@@ -1,4 +1,7 @@
-export function recursivePatch(original: object, patch: object): object {
+export function recursivePatch(
+  original: Record<string, any>,
+  patch: Record<string, any>,
+): object {
   return Object.fromEntries(
     Object.entries(original).map(([key, value]) => {
       if (patch.hasOwnProperty(key)) {
@@ -19,7 +22,10 @@ export function recursivePatch(original: object, patch: object): object {
   );
 }
 
-export function recursiveMerge(original: object, addition: object): object {
+export function recursiveMerge(
+  original: Record<string, any>,
+  addition: Record<string, any>,
+): object {
   return Object.fromEntries(
     Object
       // Parcours des clefs définis dans `original` et / ou `addition` ...

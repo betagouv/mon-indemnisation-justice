@@ -40,7 +40,7 @@ createRoot(document.body).render(
           router={RouteurFDO}
           defaultErrorComponent={({ error, info, reset }) => (
             <ErreurComposant
-              erreur={error}
+              erreur={error as Error}
               action={
                 <ButtonsGroup
                   inlineLayoutWhen="always"

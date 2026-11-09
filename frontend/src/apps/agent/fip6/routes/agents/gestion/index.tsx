@@ -6,5 +6,5 @@ export const Route = createFileRoute("/agents/gestion/")({
 });
 
 function RouteComponent() {
-  return <Navigate to="./actifs" />;
+  return <Navigate to="/agents/gestion/actifs" />;
 }

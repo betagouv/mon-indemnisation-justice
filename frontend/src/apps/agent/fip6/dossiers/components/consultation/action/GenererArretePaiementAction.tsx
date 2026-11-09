@@ -22,7 +22,13 @@ type ValidationAcceptationEtat = {
   sauvegardeEnCours: boolean;
 };
 
-const estAVerifier = ({ dossier, agent }): boolean =>
+const estAVerifier = ({
+  dossier,
+  agent,
+}: {
+  dossier: DossierDetail;
+  agent: AgentFIP6;
+}): boolean =>
   dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
   dossier.estAVerifier &&
   agent.instruit(dossier);

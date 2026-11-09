@@ -268,14 +268,14 @@ const CreationDeCompteApp = ({
                                       field.state.value
                                         ? Object.keys(Civilite).find(
                                             (key) =>
-                                              Civilite[key] ===
+                                              Civilite[key as keyof typeof Civilite] ===
                                               field.state.value,
                                           )
                                         : ""
                                     }
                                     onChange={(e) =>
                                       field.handleChange(
-                                        Civilite[e.target.value] as Civilite,
+                                        Civilite[e.target.value as keyof typeof Civilite],
                                       )
                                     }
                                   >

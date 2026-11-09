@@ -54,7 +54,7 @@ export class Procedure {
   serviceEnqueteur: string = "";
   juridictionOuParquet: string = "";
   nomMagistrat: string = "";
-  telephone: string;
+  telephone!: string;
 }
 
 export const DeclarationFDOBrisPorteErreurTypes = <const>[
@@ -66,10 +66,10 @@ export type DeclarationFDOBrisPorteErreurType =
   (typeof DeclarationFDOBrisPorteErreurTypes)[number];
 
 export class DeclarationFDOBrisPorte {
-  public readonly id: string;
+  public readonly id!: string;
   public readonly reference?: string;
   @Type(() => EtatDeclaration)
-  public readonly etat: EtatDeclaration;
+  public readonly etat!: EtatDeclaration;
 
   @DateTransform()
   public readonly dateCreation: Date;

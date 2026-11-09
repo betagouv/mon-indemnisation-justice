@@ -1,3 +1,4 @@
+import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link.tsx";
 import { Tableau } from "@common/composants/dsfr/Tableau.tsx";
 import { DossierApercu } from "@common/models";
 import { dateEtHeureSimple, periode } from "@common/services/date.ts";
@@ -123,10 +124,12 @@ export const ListeDossiers = ({
                   iconId: "fr-icon-eye-line",
                   iconPosition: "right",
                   className: "fr-m-0",
+                  // Ce composant est aussi compilé dans le projet FDO (via `services/dossier.ts`), où `to` est
+                  // vérifié par rapport aux routes FDO
                   linkProps: {
                     to: "/dossier/$id",
                     params: { id: dossier.id },
-                  },
+                  } as RegisteredLinkProps,
                 },
               ]}
             />

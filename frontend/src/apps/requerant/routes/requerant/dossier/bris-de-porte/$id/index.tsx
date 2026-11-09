@@ -25,35 +25,35 @@ export const Route = createFileRoute("/requerant/dossier/bris-de-porte/$id/")({
     }
 
     if (dossier.estDecide) {
-      return redirect<typeof RouteurRequerant>({
-        to: "./consulter-la-decision",
+      throw redirect<typeof RouteurRequerant>({
+        to: "/requerant/dossier/bris-de-porte/$id/consulter-la-decision",
         params,
       });
     }
 
     // Renvoi à la première étape non complète
     if (!estDossierOkBrisDePorte(dossier)) {
-      return redirect<typeof RouteurRequerant>({
-        to: "./1-bris-porte",
+      throw redirect<typeof RouteurRequerant>({
+        to: "/requerant/dossier/bris-de-porte/$id/1-bris-porte",
         params,
       });
     }
 
     if (!estDossierOkInfosRequerant(dossier)) {
-      return redirect<typeof RouteurRequerant>({
-        to: "./2-infos-requerant",
+      throw redirect<typeof RouteurRequerant>({
+        to: "/requerant/dossier/bris-de-porte/$id/2-infos-requerant",
         params,
       });
     }
 
     if (!estDossierOkPiecesJointes(dossier)) {
-      return redirect<typeof RouteurRequerant>({
-        to: "./3-pieces-jointes",
+      throw redirect<typeof RouteurRequerant>({
+        to: "/requerant/dossier/bris-de-porte/$id/3-pieces-jointes",
         params,
       });
     }
-    return redirect<typeof RouteurRequerant>({
-      to: "./4-recapitulatif",
+    throw redirect<typeof RouteurRequerant>({
+      to: "/requerant/dossier/bris-de-porte/$id/4-recapitulatif",
       params,
     });
   },
