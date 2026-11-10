@@ -37,7 +37,6 @@ import {
   notFound,
   redirect,
   useNavigate,
-  useRouter,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
 import { default as React, useEffect, useMemo, useRef, useState } from "react";
@@ -102,11 +101,13 @@ function Etape3PiecesJointes() {
     DossierManagerInterface.$,
   );
 
-  // Récupérer la référence depuis le paramètre de la route
-  const { dossier }: { dossier: Dossier } = Route.useLoaderData();
-
-  // Récupération du routeur, uniquement pour pouvoir invalider son cache
-  const routeur = useRouter<typeof RouteurRequerant>();
+  // On récupère le dossier du loader...
+  const { dossier: dossierCharge }: { dossier: Dossier } =
+    Route.useLoaderData();
+  // ... pour en conserver une copie en état de page...
+  const [dossier, setDossier] = useState<Dossier>(dossierCharge);
+  // ... que l'on écrase lorsque le routeur la met à jour après invalidation tout en évitant l'affichage du loader
+  useEffect(() => setDossier(dossierCharge), [dossierCharge]);
 
   // La référence vers la modale d'ajout de pièce jointe
   const refModaleAjoutPieceJointe = useRef<AjouterPiecesJointesModaleRef>(null);
@@ -219,31 +220,31 @@ function Etape3PiecesJointes() {
             piecesJointes,
           );
 
-          // On sélectionne la dernière pièce jointe ajoutée
-          if (dossierModifie) {
-            const dernierePieceJointeAjoutee = dossierModifie.piecesJointes
-              .sort(
-                (a, b) =>
-                  (b.dateAjout?.getTime() || 0) - (a.dateAjout?.getTime() || 0),
-              )
-              .at(-1);
-
-            if (dernierePieceJointeAjoutee) {
-              selectionnerPieceJointe(dernierePieceJointeAjoutee);
-              selectionnerTypePieceJointe(dernierePieceJointeAjoutee.type);
-            }
+          if (!dossierModifie) {
+            return;
           }
-          // On sait que le dossier a changé, il faut donc invalider le cache du
-          // routeur pour le forcer à récupérer le dossier à jour.
-          await routeur.invalidate();
+
+          // On sélectionne la dernière pièce jointe ajoutée (sans trier le tableau du dossier en place)
+          const dernierePieceJointeAjoutee = [...dossierModifie.piecesJointes]
+            .sort(
+              (a, b) =>
+                (b.dateAjout?.getTime() || 0) - (a.dateAjout?.getTime() || 0),
+            )
+            .at(0);
+
+          if (dernierePieceJointeAjoutee) {
+            selectionnerPieceJointe(dernierePieceJointeAjoutee);
+            selectionnerTypePieceJointe(dernierePieceJointeAjoutee.type);
+          }
+
+          // Mise à jour locale du dossier, sans recharger la route
+          setDossier(dossierModifie);
 
           // Alors, on peut valider le formulaire, sur le dossier à jour (sans attendre le prochain rendu)
-          if (dossierModifie) {
-            formulaire.setFieldValue(
-              "piecesJointes",
-              dossierModifie.piecesJointes,
-            );
-          }
+          formulaire.setFieldValue(
+            "piecesJointes",
+            dossierModifie.piecesJointes,
+          );
           await formulaire.validate("submit");
         }}
         typesPiecesjointes={typesPiecesJointesDemandes}
@@ -409,23 +410,29 @@ function Etape3PiecesJointes() {
                               dossier.id,
                               pieceJointe,
                             );
+                            // Le store du DossierManager a été mis à jour par le retrait
+                            const dossierModifie =
+                              await dossierManager.getDossier(dossier.id);
+
                             // Sélection de la pièce jointe précédente
-                            const index =
-                              dossier.piecesJointes.indexOf(pieceJointe);
-                            if (index >= 0) {
-                              selectionnerPieceJointe(
-                                dossier.piecesJointes.at(index - 1),
-                              );
-                              selectionnerTypePieceJointe(
-                                dossier.piecesJointes.at(index - 1)?.type ||
-                                  (typesPiecesJointesDemandes.at(
-                                    0,
-                                  ) as TypePieceJointe),
-                              );
+                            const index = dossier.piecesJointes.findIndex(
+                              (pj) => pj.id === pieceJointe.id,
+                            );
+                            const precedente =
+                              index > 0
+                                ? dossierModifie?.piecesJointes.at(index - 1)
+                                : dossierModifie?.piecesJointes.at(0);
+                            selectionnerPieceJointe(precedente);
+                            selectionnerTypePieceJointe(
+                              precedente?.type ||
+                                (typesPiecesJointesDemandes.at(
+                                  0,
+                                ) as TypePieceJointe),
+                            );
+
+                            if (dossierModifie) {
+                              setDossier(dossierModifie);
                             }
-                            await (
-                              routeur as typeof RouteurRequerant
-                            ).invalidate();
                           }
                         : undefined
                     }
