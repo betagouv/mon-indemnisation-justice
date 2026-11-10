@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 #[CoversClass(DocumentManager::class)]
 class DocumentManagerSecuriteTest extends WebTestCase
@@ -53,6 +54,23 @@ class DocumentManagerSecuriteTest extends WebTestCase
         $this->expectException(BadRequestHttpException::class);
 
         $this->documentManager->verifierFichierTeleverse($fichier);
+    }
+
+    /**
+     * ETQ requérant, un fichier rejeté par PHP car trop volumineux doit donner lieu à une erreur 413 explicite, et non
+     * à une erreur de détection du type MIME sur un fichier temporaire inexistant.
+     */
+    public function testFichierTropVolumineuxRefuse(): void
+    {
+        $fichier = new UploadedFile('', 'photo.jpg', 'image/jpeg', UPLOAD_ERR_INI_SIZE, true);
+
+        try {
+            $this->documentManager->verifierFichierTeleverse($fichier);
+            $this->fail('Une exception était attendue');
+        } catch (HttpException $e) {
+            $this->assertSame(413, $e->getStatusCode());
+            $this->assertStringContainsString('photo.jpg', $e->getMessage());
+        }
     }
 
     /**
