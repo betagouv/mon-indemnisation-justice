@@ -17,7 +17,9 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Twig\Environment;
 
 class DocumentManager
@@ -73,10 +75,30 @@ class DocumentManager
      *
      * Le type est détecté dans le contenu, et non d'après le nom ou le type annoncés par le client.
      *
-     * @throws BadRequestHttpException
+     * @throws BadRequestHttpException         si le type n'est pas autorisé ou le fichier incomplet
+     * @throws HttpException             (413) si le fichier dépasse la taille autorisée par PHP
+     * @throws FileException                   si PHP n'a pas pu enregistrer le fichier (configuration serveur)
      */
     public function verifierFichierTeleverse(UploadedFile $fichierTeleverse): string
     {
+        // On s'assure d'abord que le fichier téléversé est bien arrivé et pas trop volumineux :
+        if (!$fichierTeleverse->isValid()) {
+            $this->logger->warning("Erreur lors du téléversement d'une pièce jointe", [
+                'erreur' => [
+                    'cause' => $fichierTeleverse->getError(),
+                    'message' => $fichierTeleverse->getErrorMessage(),
+                ],
+            ]);
+            throw match ($fichierTeleverse->getError()) {
+                // Fichier trop volumineux
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => new HttpException(Response::HTTP_REQUEST_ENTITY_TOO_LARGE, "Le fichier \"{$fichierTeleverse->getClientOriginalName()}\" est trop volumineux"),
+                // Téléversement interrompu
+                UPLOAD_ERR_PARTIAL, UPLOAD_ERR_NO_FILE => new BadRequestHttpException("Le fichier \"{$fichierTeleverse->getClientOriginalName()}\" n'a pas été reçu intégralement"),
+                // Autre error
+                default => new FileException($fichierTeleverse->getErrorMessage()),
+            };
+        }
+
         $mime = $fichierTeleverse->getMimeType() ?? '';
 
         if (!array_key_exists($mime, self::TYPES_AUTORISES)) {
