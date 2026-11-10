@@ -19,7 +19,7 @@ export class PersonnePhysique {
   adresse: Adresse;
   // L'état civil
   @DateTransform(true)
-  dateNaissance: Date;
+  dateNaissance!: Date;
   @Type(() => Pays)
   paysNaissance: Pays = new Pays();
   /** La commune de naissance ne peut être déclarée que pour les usagers nés en France, puisque seules les communes
@@ -30,7 +30,7 @@ export class PersonnePhysique {
     { toClassOnly: true },
   )
   @Type(() => Commune)
-  communeNaissance: Commune;
+  communeNaissance!: Commune;
   // Pour les autres usagers, le nom de la ville de naissance doit être renseigné
   villeNaissance?: string;
   //raisonSociale: unknown;

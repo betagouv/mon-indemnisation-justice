@@ -4,11 +4,11 @@ import DateTransform from "@/common/normalisation/transformers/DateTransform.ts"
 
 export class PieceJointe {
   id?: number;
-  chemin: string;
-  url: string;
-  nom: string;
-  mime: string;
-  taille: number;
+  chemin!: string;
+  url!: string;
+  nom!: string;
+  mime!: string;
+  taille!: number;
   @Transform(
     ({ value }: { value: PieceJointeType | string }) => {
       return TypePieceJointe.depuis(value as PieceJointeType);
@@ -21,7 +21,7 @@ export class PieceJointe {
     },
     { toPlainOnly: true },
   )
-  type: TypePieceJointe;
+  type!: TypePieceJointe;
   @DateTransform()
   dateAjout?: Date;
 

@@ -47,11 +47,14 @@ export class Inscription {
 
   @Transform(
     ({ value }: { value: Civilite }) =>
-      Object.keys(Civilite).find((key) => Civilite[key] === value),
+      Object.keys(Civilite).find(
+        (key) => Civilite[key as keyof typeof Civilite] === value,
+      ),
     { toPlainOnly: true },
   )
   @Transform(
-    ({ value }: { value?: string }) => (value ? Civilite[value] : undefined),
+    ({ value }: { value?: string }) =>
+      value ? Civilite[value as keyof typeof Civilite] : undefined,
     {
       toClassOnly: true,
     },

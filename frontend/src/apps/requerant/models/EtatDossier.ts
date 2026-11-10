@@ -100,7 +100,9 @@ export type EtatDossierContexteCloture = {
 export class EtatDossier {
   @Transform(
     ({ value }: { value: string | EtatDossierType }) => {
-      return value instanceof EtatDossierType ? value : EtatDossierTypes[value];
+      return value instanceof EtatDossierType
+        ? value
+        : EtatDossierTypes[value as keyof typeof EtatDossierTypes];
     },
     {
       toClassOnly: true,
@@ -109,9 +111,9 @@ export class EtatDossier {
   @Transform(({ value }: { value: EtatDossierType }) => value?.type, {
     toPlainOnly: true,
   })
-  etat: EtatDossierType;
+  etat!: EtatDossierType;
   @DateTransform()
-  date: Date;
+  date!: Date;
   agent?: { id: number; nom: string };
   requerant?: { id: number; nom: string };
   contexte?: EtatDossierContexteCloture | any;

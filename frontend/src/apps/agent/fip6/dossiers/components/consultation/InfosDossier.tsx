@@ -1,4 +1,5 @@
-import { Agent, DossierDetail } from "@common/models";
+import { DossierDetail } from "@common/models";
+import { AgentFIP6 } from "@fip6/modeles/AgentFIP6.ts";
 import { dateSimple } from "@common/services/date.ts";
 import { capitaliser } from "@common/services/divers.ts";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -9,7 +10,7 @@ export const InfosDossier = ({
   agent,
 }: {
   dossier: DossierDetail;
-  agent: Agent;
+  agent: AgentFIP6;
 }) => {
   const e = useMemo(() => dossier.requerant.estFeminin(), [dossier.id]);
 

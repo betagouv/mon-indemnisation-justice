@@ -55,8 +55,7 @@ export const Route = createFileRoute(
 
     if (dossier.estDecide) {
       return redirect<typeof RouteurRequerant>({
-        from: Route.fullPath,
-        to: "../consulter-la-decision",
+        to: "/requerant/dossier/bris-de-porte/$id/consulter-la-decision",
         params,
       });
     }
@@ -246,8 +245,8 @@ function Etape4Recapitulatif() {
                     children: "Modifier",
                     iconId: "fr-icon-pencil-line",
                     linkProps: {
-                      from: Route.fullPath,
-                      to: "../1-bris-porte",
+                      to: "/requerant/dossier/bris-de-porte/$id/1-bris-porte",
+                      params: { id: dossier.id },
                     },
                   },
                 ]}
@@ -296,8 +295,8 @@ function Etape4Recapitulatif() {
                       children: "Modifier",
                       iconId: "fr-icon-pencil-line",
                       linkProps: {
-                        from: Route.fullPath,
-                        to: "../3-pieces-jointes",
+                        to: "/requerant/dossier/bris-de-porte/$id/3-pieces-jointes",
+                        params: { id: dossier.id },
                       },
                     },
                   ]}

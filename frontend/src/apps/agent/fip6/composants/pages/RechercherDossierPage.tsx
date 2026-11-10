@@ -239,7 +239,7 @@ export const RechercherDossierPage = ({
                             redacteur.nom
                           ),
                         nativeInputProps: {
-                          onChange: async (e) => {
+                          onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
                             await naviguer(
                               construireLien({
                                 changement: {
