@@ -1,5 +1,5 @@
 import { AgentContext } from "@/apps/agent/_commun/contexts/AgentContext.ts";
-import { RouteurRequerant } from "@/apps/requerant/routeur";
+import { RouteurFIP6 } from "@fip6/routeur";
 import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link";
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import {
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/agents/gestion/actifs")({
 
 function GestionAgentsActifs() {
   const { context }: { context: AgentContext } = Route.useLoaderData();
-  const naviguer = useNavigate<typeof RouteurRequerant>({
+  const naviguer = useNavigate<typeof RouteurFIP6>({
     from: Route.fullPath,
   });
 

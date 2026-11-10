@@ -16,12 +16,12 @@ import { Usager } from "./Usager";
 
 export abstract class BaseDossier {
   // Référence du dossier ou id du brouillon
-  public readonly id: number;
+  public readonly id!: number;
   // TODO enrichir ce type afin d'introduire la notion de type de demande
   public readonly type: "BRI" | "DYS" = "BRI";
   public readonly reference?: string;
   @Type(() => EtatDossier)
-  etatActuel: EtatDossier;
+  etatActuel!: EtatDossier;
   @DateTransform()
   dateDepot?: Date;
 
@@ -64,9 +64,9 @@ export abstract class BaseDossier {
 
 export class Dossier extends BaseDossier {
   // '`Usager` = `Requerant`
-  initiePar: Usager;
+  initiePar!: Usager;
   @DateTransform()
-  dateCreation: Date;
+  dateCreation!: Date;
 
   estPersonneMorale: boolean = false;
 
@@ -78,16 +78,16 @@ export class Dossier extends BaseDossier {
   @Type(() => Adresse)
   adresse: Adresse = new Adresse();
   // `RapportAuLogement` = `QualiteRequerant`
-  rapportAuLogement: RapportAuLogement;
+  rapportAuLogement!: RapportAuLogement;
   @UndefinedTransform()
   descriptionRapportAuLogement?: string;
   @DateTransform(true)
-  dateOperation: Date;
+  dateOperation!: Date;
   @UndefinedTransform()
   description?: string;
   estPorteBlindee: boolean = false;
   @Type(() => PieceJointe)
-  piecesJointes: PieceJointe[];
+  piecesJointes!: PieceJointe[];
   montantIndemnisation?: number;
   idTestEligibilite?: number;
   idDeclarationFDO?: string;

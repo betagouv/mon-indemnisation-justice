@@ -22,9 +22,9 @@ const libellesEtatDeclaration: Record<EtatDeclarationType, string> = {
 };
 
 export class EtatDeclaration {
-  etat: EtatDeclarationType;
+  etat!: EtatDeclarationType;
   @DateTransform()
-  date: Date;
+  date!: Date;
 
   get libelle(): string {
     return libellesEtatDeclaration[this.etat];

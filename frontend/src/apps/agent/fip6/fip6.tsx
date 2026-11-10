@@ -61,7 +61,7 @@ ReactDOM.createRoot(document.body, {
             router={RouteurFIP6}
             defaultErrorComponent={({ error, info, reset }) => (
               <ErreurComposant
-                erreur={error}
+                erreur={error as Error}
                 action={
                   <ButtonsGroup
                     inlineLayoutWhen="always"

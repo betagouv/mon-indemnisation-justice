@@ -27,5 +27,7 @@ const libellesMotifsRejetBrisPorte = {
 export const getLibelleMotifRejetBrisPorte = (
   motifRejetBrisPorte: MotifRejetBrisPorte | string,
 ): string => {
-  return libellesMotifsRejetBrisPorte[motifRejetBrisPorte];
+  return libellesMotifsRejetBrisPorte[
+    motifRejetBrisPorte as MotifRejetBrisPorte
+  ];
 };

@@ -8,21 +8,21 @@ import { Expose, Transform } from "class-transformer";
 export type Civilite = "M" | "MME";
 
 export class Requerant {
-  public readonly civilite: Civilite;
-  public readonly nom: string;
-  public readonly nomNaissance: string | null;
-  public readonly prenoms: string[];
-  public readonly courriel: string;
+  public readonly civilite!: Civilite;
+  public readonly nom!: string;
+  public readonly nomNaissance!: string | null;
+  public readonly prenoms!: string[];
+  public readonly courriel!: string;
   public readonly telephone?: string;
-  protected _dateNaissance: Date | null;
-  public readonly communeNaissance: string | null;
-  public readonly paysNaissance: string | null;
+  protected _dateNaissance!: Date | null;
+  public readonly communeNaissance!: string | null;
+  public readonly paysNaissance!: string | null;
   @Transform(({ value }) =>
     TypesPersonneMorale.includes(value) ? value : undefined,
   )
   public readonly typePersonneMorale?: TypePersonneMoraleType;
-  public readonly raisonSociale: string | null;
-  public readonly siren: string | null;
+  public readonly raisonSociale!: string | null;
+  public readonly siren!: string | null;
 
   estFeminin(): boolean {
     return this.civilite == "MME";

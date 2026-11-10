@@ -4,15 +4,15 @@ import { Exclude } from "class-transformer";
 import { Civilite, getCiviliteLibelle } from "./Civilite.ts";
 
 export class Personne {
-  id: string;
-  civilite: Civilite;
-  nom: string;
-  nomNaissance: string;
-  prenom: string;
+  id!: string;
+  civilite!: Civilite;
+  nom!: string;
+  nomNaissance!: string;
+  prenom!: string;
   @Exclude()
   prenoms?: string[];
-  courriel: string;
-  telephone: string;
+  courriel!: string;
+  telephone!: string;
 
   personnePhysique?: PersonnePhysique;
 

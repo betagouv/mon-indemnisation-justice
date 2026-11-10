@@ -9,19 +9,14 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "strictNullChecks": true,
+    "strict": true,
     "types": [
       "node",
       "vite/client",
-      "vitest/globals",
-      "@vitest/browser/providers/playwright"
-    ],
-    "typeRoots": [
-      "./node_modules/@types",
-      ".@types"
+      "vitest/globals"
     ],
     "allowImportingTsExtensions": true,
-    "baseUrl": ".",
+    "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"],
       "@common/*": ["./src/common/*"],

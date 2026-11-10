@@ -10,26 +10,25 @@ export type ErreurResourceInconnue = {
   message: string;
 };
 
+const context: ContexteUsager = await container
+  .get<UsagerManagerInterface>(UsagerManagerInterface.$)
+  .moi();
+
+Sentry.setTag("app", "requerant");
+Sentry.setUser({
+  id: context.usager.id,
+  email: context.usager.courriel,
+  username: context.usager.nom,
+});
+
 // Création du router Tanstack
-let RouteurRequerant;
-await container
-  .get(UsagerManagerInterface.$)
-  .moi()
-  .then((context: ContexteUsager) => {
-    Sentry.setTag("app", "requerant");
-    Sentry.setUser({
-      id: context.usager.id,
-      email: context.usager.courriel,
-      username: context.usager.nom,
-    });
-    RouteurRequerant = createRouter({
-      routeTree,
-      defaultPreload: "intent",
-      defaultStaleTime: 5000,
-      scrollRestoration: true,
-      context,
-    });
-  });
+export const RouteurRequerant = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  defaultStaleTime: 5000,
+  scrollRestoration: true,
+  context,
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -54,5 +53,3 @@ declare module "@tanstack/react-router" {
     };
   }
 }
-
-export { RouteurRequerant };

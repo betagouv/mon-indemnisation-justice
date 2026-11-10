@@ -1,6 +1,6 @@
 export class Pays {
-  code: string;
-  nom: string;
+  code!: string;
+  nom!: string;
 
   estFrance(): boolean {
     return this.code === "FRA";

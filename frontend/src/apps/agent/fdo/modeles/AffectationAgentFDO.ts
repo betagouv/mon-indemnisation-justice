@@ -4,9 +4,9 @@ import { Type } from "class-transformer";
 
 export class AffectationAgentFDO {
   @Type(() => EtablissementFDO)
-  public readonly etablissement: EtablissementFDO;
+  public readonly etablissement!: EtablissementFDO;
   @DateTransform(true)
-  public readonly dateAffectation: Date;
+  public readonly dateAffectation!: Date;
   @DateTransform(true)
   public readonly dateMutation?: Date;
 

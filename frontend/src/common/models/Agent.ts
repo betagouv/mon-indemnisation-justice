@@ -157,12 +157,12 @@ export class Administration {
 }
 
 export class Agent {
-  public id: number;
-  public prenom: string;
-  public nom: string;
-  public courriel: string;
+  public id!: number;
+  public prenom!: string;
+  public nom!: string;
+  public courriel!: string;
   public telephone?: string;
-  public identifiant: string;
+  public identifiant!: string;
 
   @Expose({ name: "roles" })
   @Transform(({ value }: { value: string[] }) => {
@@ -174,9 +174,9 @@ export class Agent {
   @Transform(({ value }: { value: string }) =>
     Administration.pourType(value as TypeAdministration),
   )
-  public administration: Administration;
+  public administration!: Administration;
   @DateTransform()
-  public readonly dateCreation: Date;
+  public readonly dateCreation!: Date;
 
   get roles(): RoleAgent[] {
     return this._roles;
