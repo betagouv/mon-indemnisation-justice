@@ -57,7 +57,7 @@ class Dossier
     protected ?EtatDossier $etatDossier = null;
 
     #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
-    #[ORM\OrderBy(['dateEntree' => 'ASC'])]
+    #[ORM\OrderBy(['dateEntree' => \SortDirection::Ascending])]
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 

@@ -62,6 +62,7 @@ services:
       - REQUEST_SCHEME=https
       - INSTANCE_NUMBER=0
       - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/dev
+      - LEGALYSPACE_BASE_APP_URI=https://esign.ppr.legalyspace.com
     restart: always
     depends_on:
       - postgres

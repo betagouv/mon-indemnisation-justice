@@ -20,7 +20,7 @@ final class Version20261110162500 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE signature_requetes_requerant (id UUID NOT NULL, identifiant_exterieur VARCHAR(255) NOT NULL, date_creation TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, date_signature TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, dossier_id INT DEFAULT NULL, PRIMARY KEY (id))');
+        $this->addSql('CREATE TABLE signature_requetes_requerant (id UUID NOT NULL, identifiant_exterieur VARCHAR(255) NOT NULL, date_creation TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, url_signature_externe VARCHAR(255) DEFAULT NULL, date_signature TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, dossier_id INT DEFAULT NULL, PRIMARY KEY (id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_45CF7189611C0C56 ON signature_requetes_requerant (dossier_id)');
         $this->addSql('ALTER TABLE signature_requetes_requerant ADD CONSTRAINT FK_45CF7189611C0C56 FOREIGN KEY (dossier_id) REFERENCES dossiers (id)');
     }
