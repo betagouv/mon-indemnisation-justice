@@ -12,8 +12,8 @@ use MonIndemnisationJustice\Entity\Personne;
 use MonIndemnisationJustice\Entity\PersonnePhysique;
 use MonIndemnisationJustice\Entity\Usager;
 use MonIndemnisationJustice\Repository\UsagerRepository;
-use MonIndemnisationJustice\Service\ConstructeurUsagerDepuisDeclaration;
 use MonIndemnisationJustice\Security\Oidc\OidcClient;
+use MonIndemnisationJustice\Service\ConstructeurUsagerDepuisDeclaration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -82,7 +82,7 @@ class FranceConnectAuthenticator extends AbstractAuthenticator
                 $declarationInvitation = $this->em->getRepository(DeclarationFDOBrisPorte::class)->findOneBy(['reference' => $referenceInvitation]);
                 $coordonneesRequerant = $declarationInvitation?->getCoordonneesRequerant();
 
-                if (null === $declarationInvitation || $declarationInvitation->estBrouillon() || $declarationInvitation->estAttribue() || null === $coordonneesRequerant) {
+                if (null === $declarationInvitation || $declarationInvitation->estBrouillon() || $declarationInvitation->estAttribuee() || null === $coordonneesRequerant) {
                     throw new CustomUserMessageAuthenticationException("Ce lien d'invitation n'est plus valide.");
                 }
 
