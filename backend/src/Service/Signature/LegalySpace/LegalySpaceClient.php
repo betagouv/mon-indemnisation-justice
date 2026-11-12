@@ -102,7 +102,6 @@ class LegalySpaceClient
         string $nom,
         string $courriel,
         ?string $telephone,
-        bool $sansSms = false,
     ): string {
         return $this->extraireIdentifiantCree(
             $this->httpClient->request('POST', "processes/{$idProcess}/signers", [
@@ -110,8 +109,8 @@ class LegalySpaceClient
                     'firstName' => $prenom,
                     'lastName' => $nom,
                     'email' => $courriel,
-                    'phone' => $sansSms ? null : $telephone,
-                    'withoutSms' => $sansSms ?: null,
+                    'phone' => null,
+                    'withoutSms' => true,
                 ], fn ($valeur) => null !== $valeur),
             ])
         );
@@ -226,6 +225,9 @@ class LegalySpaceClient
         if (isset($data['id'])) {
             return (string) $data['id'];
         }
+
+        // TODO extraire `externalLink`
+
 
         throw new LegalySpaceException("Réponse inattendue de l'API LegalySpace : identifiant de la ressource créée introuvable.");
     }
