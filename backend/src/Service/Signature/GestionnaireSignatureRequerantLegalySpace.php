@@ -9,6 +9,7 @@ use MonIndemnisationJustice\Service\Signature\LegalySpace\LegalySpaceClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Signature électronique via l'API B2B e-Sign de LegalySpace, prestataire retenu en production.
@@ -35,14 +36,23 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
     public const string EVENEMENT_COURRIEL_INVALIDE = 'signer_invalid_mail';
     public const string EVENEMENT_PROCESS_PERIME = 'process_outdated';
 
+    /**
+     * @var string la base URI vers l'application de signature
+     */
+    protected readonly string $baseAppUri;
+
     public function __construct(
         protected readonly LegalySpaceClient $legalySpaceClient,
         protected readonly GenerateurDocumentASigner $generateurDocumentASigner,
         protected readonly EntityManagerInterface $em,
         protected readonly LoggerInterface $logger,
+        protected readonly UrlGeneratorInterface $urlGenerator,
         #[Autowire(env: 'default::LEGALYSPACE_WEBHOOK_HASH')]
         protected readonly ?string $hashWebhook = null,
+        #[Autowire(env: 'default::LEGALYSPACE_BASE_APP_URI')]
+        ?string $appBaseUri = null,
     ) {
+        $this->baseAppUri = rtrim($appBaseUri ?? 'https://esign.legalyspace.com', '/');
     }
 
     public function creerRequeteSignature(Dossier $dossier): RequeteSignatureRequerant
@@ -74,7 +84,11 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
             $requerant->getNom() ?? '',
             $requerant->getCourriel() ?? $dossier->getUsager()->getEmail(),
             $telephone,
-            sansSms: null === $telephone,
+            $this->urlGenerator->generate(
+                'requerant_react',
+                ['extra' => "dossier/bris-de-porte/{$dossier->getId()}/consulter-la-decision"],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ),
         );
 
         $this->legalySpaceClient->positionnerSignature(
@@ -90,7 +104,8 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
         return new RequeteSignatureRequerant()
             ->setDossier($dossier)
             ->setIdentifiantExterieur($idProcess)
-            ->setDateCreation(new \DateTimeImmutable());
+            ->setDateCreation(new \DateTimeImmutable())
+            ->setUrlSignatureExterne("{$this->baseAppUri}/process/{$idProcess}/signer/{$idSignataire}");
     }
 
     /**
@@ -159,34 +174,32 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
             return null;
         }
 
+        // TODO : récupérer le fichier PDF et traiter tout ça en asynchrone
+
         return $requeteSignature->setSignee();
     }
 
     /**
-     * Formate un numéro de téléphone saisi librement au format attendu par LegalySpace (`+33 612345678`), ou retourne
-     * `null` si le numéro est absent ou que son indicatif n'est pas accepté.
+     * Formate un numéro de mobile français saisi librement au format attendu par LegalySpace (`+33 612345678`).
+     *
+     * Sont acceptées les saisies nationales (`06 12 34 56 78`) et internationales (`+33 6 12 34 56 78`,
+     * `0033612345678`, `+33 (0)6 12 34 56 78`). Retourne `null` si le numéro est absent, étranger ou n'est pas un mobile
+     * (06 ou 07) : la signature se fait alors sans code SMS.
      */
     public static function formaterTelephone(?string $telephone): ?string
     {
+        // Ne conserver que les chiffres et le `+` (supprime espaces, points, tirets et parenthèses)
         $numero = preg_replace('/[^0-9+]/', '', $telephone ?? '');
 
+        // Indicatif international en notation `00` plutôt que `+`
         if (str_starts_with($numero, '00')) {
             $numero = '+'.substr($numero, 2);
         }
 
-        // Numéro national français : 0 suivi de 9 chiffres
-        if (preg_match('/^0(\d{9})$/', $numero, $correspondances)) {
+        // Numéro français, national (`0` + 9 chiffres) ou international (`+33`, suivi ou non du `0` national), dont le
+        // numéro national commence par 6 ou 7 (mobile)
+        if (preg_match('/^(?:0|\+330?)([67]\d{8})$/', $numero, $correspondances)) {
             return "+33 {$correspondances[1]}";
-        }
-
-        // Les indicatifs à 3 chiffres sont testés en premier, aucun n'ayant pour préfixe un indicatif à 2 chiffres
-        foreach ([3, 2] as $longueur) {
-            $indicatif = substr($correspondances[1], 0, $longueur);
-            $national = ltrim(substr($correspondances[1], $longueur), '0');
-
-            if ('33' === $indicatif && 8 === strlen($national)) {
-                return "+{$indicatif} {$national}";
-            }
         }
 
         return null;
