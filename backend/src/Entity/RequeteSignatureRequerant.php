@@ -29,6 +29,9 @@ class RequeteSignatureRequerant
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     protected ?\DateTimeImmutable $dateSignature = null;
 
+    #[ORM\Column(nullable: true)]
+    protected ?string $urlSignatureExterne = null;
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -42,6 +45,7 @@ class RequeteSignatureRequerant
     public function setIdentifiantExterieur(string $identifiantExterieur): RequeteSignatureRequerant
     {
         $this->identifiantExterieur = $identifiantExterieur;
+
         return $this;
     }
 
@@ -77,6 +81,18 @@ class RequeteSignatureRequerant
     public function setSignee(): self
     {
         $this->dateSignature = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getUrlSignatureExterne(): ?string
+    {
+        return $this->urlSignatureExterne;
+    }
+
+    public function setUrlSignatureExterne(?string $urlSignatureExterne): RequeteSignatureRequerant
+    {
+        $this->urlSignatureExterne = $urlSignatureExterne;
 
         return $this;
     }

@@ -64,7 +64,7 @@ class LegalySpaceClient
     }
 
     /**
-     * Dépose un document PDF dans le process et retourne son identifiant.
+     * Dépose un document PDF dans le process et retourne son identifiant ainsi.
      *
      * Voir `POST /processes/{pid}/docs`
      *
@@ -93,6 +93,8 @@ class LegalySpaceClient
      *
      * Voir `POST /processes/{pid}/signers`
      *
+     * Doc: https://esign-api.legalyspace.com/v1/#create-a-signer-in-a-process
+     *
      * @throws TransportExceptionInterface
      * @throws LegalySpaceException
      */
@@ -102,6 +104,7 @@ class LegalySpaceClient
         string $nom,
         string $courriel,
         ?string $telephone,
+        ?string $lien,
     ): string {
         return $this->extraireIdentifiantCree(
             $this->httpClient->request('POST', "processes/{$idProcess}/signers", [
@@ -109,8 +112,22 @@ class LegalySpaceClient
                     'firstName' => $prenom,
                     'lastName' => $nom,
                     'email' => $courriel,
-                    'phone' => null,
-                    'withoutSms' => true,
+                    'phone' => $telephone,
+                    'withoutSms' => null === $telephone,
+                    'mails' => [
+                        'allSigned' => true,
+                        'signed' => false,
+                        'cancelled' => false,
+                        'invite' => true,
+                    ],
+                    'cta' => $lien ? [
+                        // TODO générer un lien vers la signature
+                        'link' => $lien,
+                        'title' => "Accepter l'indemnisation",
+                        'label' => "Accepter l'indemnisation",
+                        // 'description' => "",
+                        // 'redirect' => true,
+                    ] : null,
                 ], fn ($valeur) => null !== $valeur),
             ])
         );
@@ -211,12 +228,14 @@ class LegalySpaceClient
      * Les créations répondent `201` avec l'URL de la ressource créée dans l'en-tête `Location`, dont le dernier segment
      * est l'identifiant. À défaut, on se rabat sur le champ `id` du corps de la réponse.
      *
+     * @param ResponseInterface $response la réponse découlant d'un appel à l'API
+     *
      * @throws LegalySpaceException
      */
     protected function extraireIdentifiantCree(ResponseInterface $response): string
     {
-        $data = $this->extraireDonneesReponse($response);
         $location = $response->getHeaders(false)['location'][0] ?? null;
+        $data = $this->extraireDonneesReponse($response);
 
         if (null !== $location && '' !== ($id = basename(rtrim(parse_url($location, PHP_URL_PATH) ?: '', '/')))) {
             return $id;
@@ -225,9 +244,6 @@ class LegalySpaceClient
         if (isset($data['id'])) {
             return (string) $data['id'];
         }
-
-        // TODO extraire `externalLink`
-
 
         throw new LegalySpaceException("Réponse inattendue de l'API LegalySpace : identifiant de la ressource créée introuvable.");
     }
