@@ -86,6 +86,11 @@ function Etape4Recapitulatif() {
   // Récupérer les données chargées (Dossier)
   const { dossier }: { dossier: Dossier } = Route.useLoaderData();
 
+  const piecesJointes = useMemo<PieceJointe[]>(
+    () => dossier.piecesJointes.filter((pj) => !pj.type.estEchange),
+    [dossier],
+  );
+
   const e = useMemo(
     () => (dossier.getRequerantPersonne()?.estFeminin() ? "e" : ""),
     [dossier.getRequerantPersonne()],
@@ -99,36 +104,36 @@ function Etape4Recapitulatif() {
 
   // La pièce jointe sélectionnée pour être visualisée.
   const [pieceJointeSelectionnee, selectionnerPieceJointe] =
-    useState<PieceJointe>(dossier.piecesJointes.at(0) as PieceJointe);
+    useState<PieceJointe>(piecesJointes.at(0) as PieceJointe);
 
   const nomPieceJointePrecedente =
     (
-      dossier.piecesJointes.at(
-        dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
+      piecesJointes.at(
+        piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
       ) as PieceJointe
     ).nom || "";
   const selectionnerPieceJointePrecedente = () => {
     selectionnerPieceJointe(
-      dossier.piecesJointes.at(
-        dossier.piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
+      piecesJointes.at(
+        piecesJointes.indexOf(pieceJointeSelectionnee) - 1,
       ) as PieceJointe,
     );
   };
 
   const selectionnerPieceJointeSuivante = () => {
     selectionnerPieceJointe(
-      dossier.piecesJointes.at(
-        (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
-          dossier.piecesJointes.length,
+      piecesJointes.at(
+        (piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
+          piecesJointes.length,
       ) as PieceJointe,
     );
   };
 
   const nomPieceJointeSuivante =
     (
-      dossier.piecesJointes.at(
-        (dossier.piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
-          dossier.piecesJointes.length,
+      piecesJointes.at(
+        (piecesJointes.indexOf(pieceJointeSelectionnee) + 1) %
+          piecesJointes.length,
       ) as PieceJointe
     )?.nom || "";
 
@@ -304,7 +309,7 @@ function Etape4Recapitulatif() {
 
                 {/* Toutes les visualisations de pièces jointes sont intégrées au DOM, mais cachée si pas actives afin
                   d'anticiper le chargement des images / PDFs */}
-                {dossier.piecesJointes.map((pieceJointe: PieceJointe) => (
+                {piecesJointes.map((pieceJointe: PieceJointe) => (
                   <div
                     key={`piece—jointe-${pieceJointe.id}`}
                     id={`piece—jointe-${pieceJointe.id}`}

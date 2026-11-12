@@ -83,6 +83,17 @@ class DocumentController extends AbstractController
             throw new NotFoundHttpException('Document non trouvé');
         }
 
+        /** @var Usager $usager */
+        $usager = $request->getUser();
+
+        if (in_array($document->getType(), [DocumentType::TYPE_COURRIER_MINISTERE, DocumentType::TYPE_COURRIER_REQUERANT, DocumentType::TYPE_ARRETE_PAIEMENT, DocumentType::TYPE_FORMULAIRE_ACCEPTATION]) && !$document->getDossier()->estDecide()) {
+            $this->logger->warning("Tentative d'accès à un document non communiqué", [
+                'document' => $document->getId(),
+                'usager' => $usager->getId(),
+            ]);
+            throw new NotFoundHttpException('Document non trouvé');
+        }
+
         try {
             $stream = $this->documentManager->getContenuRessource($document);
 

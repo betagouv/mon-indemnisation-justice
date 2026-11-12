@@ -177,9 +177,12 @@ enum EtatDossierType: string
         return str_ends_with($this->value, 'A_SIGNER');
     }
 
+    /**
+     * On considère un dossier comme décidé dès lors que la décision a été communiquée au requérant.
+     */
     public function estDecide(): bool
     {
-        return $this->estASigner();
+        return $this->estSigne();
     }
 
     public function estSigne(): bool
