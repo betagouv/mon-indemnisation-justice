@@ -222,6 +222,28 @@ class DocumentManager
         return $document;
     }
 
+    /**
+     * Relance l'impression PDF d'un document éditable à partir de son corps déjà enregistré, sans le regénérer depuis
+     * le gabarit (les éventuelles modifications de l'agent sont donc conservées).
+     */
+    public function reimprimer(Document $document): Document
+    {
+        if (!$document->getType()->estEditableAgent()) {
+            throw new \LogicException("Les documents de type '{$document->getType()->value}' ne sont pas éditables");
+        }
+
+        if (null === $document->getCorps()) {
+            throw new \LogicException("Le document {$document->getId()} n'a pas de corps à imprimer");
+        }
+
+        $document = $this->imprimanteCourrier->imprimerDocument($document);
+
+        $this->em->persist($document);
+        $this->em->flush();
+
+        return $document;
+    }
+
     public function calculerTypeMime(string $cheminFichier): string
     {
         return mime_content_type($cheminFichier);

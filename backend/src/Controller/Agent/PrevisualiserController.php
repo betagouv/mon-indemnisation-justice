@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/agent/beta/previsualiser', condition: "env('APP_DEBUG')")]
+#[Route('/agent/beta/previsualiser', condition: "env('bool:default::APP_DEBUG')")]
 class PrevisualiserController extends AbstractController
 {
     public function __construct(

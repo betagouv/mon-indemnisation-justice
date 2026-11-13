@@ -28,12 +28,9 @@ RUN install-php-extensions \
     bcmath \
     gd
 
-# PHP config
-RUN echo 'date.timezone = "Europe/Paris"' >> $PHP_INI_DIR/php.ini
-RUN echo 'memory_limit = -1' >> $PHP_INI_DIR/php.ini
-RUN echo 'upload_max_filesize = 20M' >> $PHP_INI_DIR/php.ini
-RUN echo 'post_max_size = 30M' >> $PHP_INI_DIR/php.ini
-RUN echo 'intl.default_locale = "fr"' >> $PHP_INI_DIR/php.ini
+# PHP config : la même que sur CleverCloud. FrankenPHP charge aussi `/app/php.ini` (répertoire courant), mais la CLI
+# (bin/console, phpunit, composer) ne lit que `$PHP_INI_DIR/php.ini`.
+COPY backend/php.ini $PHP_INI_DIR/php.ini
 
 # Node
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
