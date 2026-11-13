@@ -46,6 +46,10 @@ const QuillEditor = ({
     <ReactQuill
       theme="snow"
       value={value}
+      // Depuis react-quill-new 3.5, `onChange` renvoie par défaut `getSemanticHTML()`, qui avec Quill 2.0.3 remplace
+      // chaque espace par `&nbsp;` : le texte ne revient alors plus à la ligne à l'impression du courrier. On récupère
+      // donc le HTML brut de l'éditeur.
+      useSemanticHTML={false}
       onChange={(
         value,
         delta: DeltaStatic,
