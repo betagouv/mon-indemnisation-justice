@@ -27,6 +27,11 @@ const destination = process.argv.at(-1);
     printBackground: true,
     omitBackground: false,
     format: "A4",
+    // Avec Firefox (WebDriver BiDi), puppeteer envoie `shrinkToFit: !preferCSSPageSize` : sans cette option, le moindre
+    // débordement horizontal fait réduire toute la page (et donc la police). On s'appuie sur la règle `@page` du
+    // template (A4, marges en cm) et on impose une échelle de 1.
+    preferCSSPageSize: true,
+    scale: 1,
     margin: {
       bottom: 0,
       left: 0,
