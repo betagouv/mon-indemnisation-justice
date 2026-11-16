@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace MonIndemnisationJustice\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Message\EvenementSignatureRequerant;
 use MonIndemnisationJustice\Service\CollecteurEvenementBrevo;
-use MonIndemnisationJustice\Service\Signature\GestionnaireSignatureRequerantInterface;
+use MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\PrestataireSignatureRequerantInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/webhooks')]
@@ -46,36 +48,16 @@ class WebhookController extends AbstractController
     public function evenementSignatureRequerant(
         Request $request,
         string $hash,
-        GestionnaireSignatureRequerantInterface $gestionnaireSignatureRequerant,
-        EntityManagerInterface $em,
+        MessageBusInterface $bus,
+        PrestataireSignatureRequerantInterface $gestionnaireSignatureRequerant,
     ): Response {
 
         if ($gestionnaireSignatureRequerant->verifierRequeteWebhook($request, $hash)) {
             if (is_array($donnees = json_decode($request->getContent(), true))) {
-                try {
-                    $requeteSignature = $gestionnaireSignatureRequerant->gererWebhookEvenementSignature($donnees);
-
-                    if (null !== $requeteSignature) {
-                        $em->persist($requeteSignature);
-                        $em->flush();
-                    }
-                } catch (\Throwable $exception) {
-                    $this->logger->error("Erreur lors du traitement du webhook d'évènement signature requérant", [
-                        'erreur' => $exception->getMessage(),
-                        'donnees' => $donnees,
-                    ]);
-                    if (!$gestionnaireSignatureRequerant->estDerniereTentative($request)) {
-
-                        return new JsonResponse('', Response::HTTP_INTERNAL_SERVER_ERROR);
-                    }
-
-                    // TODO envoyer le message pour traitement en asynchrone
-                }
+                $bus->dispatch(new EvenementSignatureRequerant($donnees));
             }
         }
 
-
         return new JsonResponse('', Response::HTTP_NO_CONTENT);
-
     }
 }

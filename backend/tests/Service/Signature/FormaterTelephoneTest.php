@@ -2,7 +2,7 @@
 
 namespace MonIndemnisationJustice\Tests\Service\Signature;
 
-use MonIndemnisationJustice\Service\Signature\GestionnaireSignatureRequerantLegalySpace;
+use MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\LegalySpace\PrestataireSignatureLegalySpace;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -39,6 +39,6 @@ class FormaterTelephoneTest extends TestCase
     #[DataProvider('fournirTelephones')]
     public function testFormaterTelephone(?string $saisie, ?string $attendu): void
     {
-        $this->assertSame($attendu, GestionnaireSignatureRequerantLegalySpace::formaterTelephone($saisie));
+        $this->assertSame($attendu, PrestataireSignatureLegalySpace::formaterTelephone($saisie));
     }
 }

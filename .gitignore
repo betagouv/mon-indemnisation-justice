@@ -1,5 +1,6 @@
 # Docker
 .docker/postgres/data/
+.docker/rabbitmq/data/
 
 # Playwright
 node_modules/

@@ -1,11 +1,14 @@
 <?php
 
-namespace MonIndemnisationJustice\Service\Signature;
+namespace MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\LegalySpace;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
-use MonIndemnisationJustice\Service\Signature\LegalySpace\LegalySpaceClient;
+use MonIndemnisationJustice\Service\Signature\DocumentASigner;
+use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignature;
+use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignatureType;
+use MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\PrestataireSignatureRequerantInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,22 +20,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * Le parcours du signataire (lecture, consentement, code SMS, signature) est entièrement porté par l'interface de
  * LegalySpace, dont le lien est envoyé par courriel au requérant au démarrage du process.
  */
-class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignatureRequerantInterface
+class PrestataireSignatureLegalySpace implements PrestataireSignatureRequerantInterface
 {
-    /**
-     * Zone du champ de signature sur la dernière page de la déclaration d'acceptation, en points PDF (origine en bas à
-     * gauche) pour une page A4 de 595 × 842 points. Équivalent de la zone utilisée pour Documenso (10 %, 72 %, 35 %,
-     * 8 % depuis le haut de la page).
-     */
-    protected const array ZONE_SIGNATURE = ['x' => 60, 'y' => 168, 'width' => 208, 'height' => 67];
-
-    /**
-     * Indicatifs téléphoniques acceptés par LegalySpace pour l'envoi du code SMS.
-     */
-    protected const array INDICATIFS_ACCEPTES = ['32', '33', '34', '39', '41', '44', '49', '262', '351', '352', '376', '377', '508', '590', '594', '596', '681', '687', '689'];
-
     public const string EVENEMENT_TOUS_SIGNE = 'signer_all_signed';
-    public const string EVENEMENT_SIGNATAIRE_A_SIGNE = 'signer_signed';
     public const string EVENEMENT_COURRIEL_INVALIDE = 'signer_invalid_mail';
     public const string EVENEMENT_PROCESS_PERIME = 'process_outdated';
 
@@ -43,7 +33,6 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
 
     public function __construct(
         protected readonly LegalySpaceClient $legalySpaceClient,
-        protected readonly GenerateurDocumentASigner $generateurDocumentASigner,
         protected readonly EntityManagerInterface $em,
         protected readonly LoggerInterface $logger,
         protected readonly UrlGeneratorInterface $urlGenerator,
@@ -55,10 +44,9 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
         $this->baseAppUri = rtrim($appBaseUri ?? 'https://esign.legalyspace.com', '/');
     }
 
-    public function creerRequeteSignature(Dossier $dossier): RequeteSignatureRequerant
+    public function creerRequeteSignature(Dossier $dossier, DocumentASigner $documentASigner): RequeteSignatureRequerant
     {
         $requerant = $dossier->getRequerantPersonne();
-        $declarationAcceptation = $this->generateurDocumentASigner->genererDeclarationAcceptation($dossier);
         $telephone = self::formaterTelephone($requerant->getTelephone());
 
         if (null === $telephone) {
@@ -75,7 +63,7 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
         $idDocument = $this->legalySpaceClient->deposerDocument(
             $idProcess,
             "Déclaration d'acceptation {$dossier->getReference()}.pdf",
-            $declarationAcceptation->contenu,
+            $documentASigner->contenu,
         );
 
         $idSignataire = $this->legalySpaceClient->ajouterSignataire(
@@ -95,8 +83,13 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
             $idProcess,
             $idDocument,
             $idSignataire,
-            $declarationAcceptation->nombrePages,
-            self::ZONE_SIGNATURE,
+            $documentASigner->emplacementSignature->numeroPage,
+            [
+                'x' => $documentASigner->emplacementSignature->x,
+                'y' => $documentASigner->emplacementSignature->y,
+                'width' => $documentASigner->emplacementSignature->largeur,
+                'height' => $documentASigner->emplacementSignature->hauteur,
+            ],
         );
 
         $this->legalySpaceClient->demarrerProcess($idProcess);
@@ -106,15 +99,6 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
             ->setIdentifiantExterieur($idProcess)
             ->setDateCreation(new \DateTimeImmutable())
             ->setUrlSignatureExterne("{$this->baseAppUri}/process/{$idProcess}/signer/{$idSignataire}");
-    }
-
-    /**
-     * LegalySpace ré-essaie un webhook en échec (8 tentatives sur une dizaine de jours) sans en indiquer le numéro de
-     * tentative : on ne considère donc jamais une tentative comme la dernière.
-     */
-    public function estDerniereTentative(Request $request): bool
-    {
-        return false;
     }
 
     /**
@@ -137,46 +121,42 @@ class GestionnaireSignatureRequerantLegalySpace implements GestionnaireSignature
      * La livraison étant « au moins une fois », un même évènement peut être reçu plusieurs fois : le contrôle sur
      * {@see RequeteSignatureRequerant::estSignee()} assure le dédoublonnage.
      */
-    public function gererWebhookEvenementSignature(array $donnees): ?RequeteSignatureRequerant
+    public function extraireEvenementSignatureWebhook(array $donnees): ?EvenementSignature
     {
         $type = $donnees['type'] ?? null;
         $idProcess = isset($donnees['processId']) ? (string) $donnees['processId'] : null;
+
 
         if (null === $idProcess) {
             return null;
         }
 
-        if (in_array($type, [self::EVENEMENT_COURRIEL_INVALIDE, self::EVENEMENT_PROCESS_PERIME], true)) {
-            $this->logger->warning("Évènement LegalySpace bloquant pour la signature du requérant : $type", [
-                'process' => $idProcess,
-                'reference' => $donnees['externalId'] ?? null,
-                'payload' => $donnees['payload'] ?? null,
-            ]);
+        if (!in_array($type, [self::EVENEMENT_COURRIEL_INVALIDE, self::EVENEMENT_PROCESS_PERIME, self::EVENEMENT_TOUS_SIGNE], true)) {
+            $this->logger->warning("Évènement LegalySpace ignoré : $type", $donnees);
 
-            return null;
-        }
-
-        if (self::EVENEMENT_TOUS_SIGNE !== $type) {
             return null;
         }
 
         $requeteSignature = $this->em->getRepository(RequeteSignatureRequerant::class)->findOneBy(['identifiantExterieur' => $idProcess]);
 
-        if (!$requeteSignature instanceof RequeteSignatureRequerant || $requeteSignature->estSignee()) {
+        if (!$requeteSignature instanceof RequeteSignatureRequerant) {
             return null;
         }
 
-        if (LegalySpaceClient::STATUT_PROCESS_TERMINE !== ($this->legalySpaceClient->recupererProcess($idProcess)['status'] ?? null)) {
-            $this->logger->warning("Webhook LegalySpace `signer_all_signed` reçu pour un process qui n'est pas terminé", [
-                'process' => $idProcess,
-            ]);
-
-            return null;
+        if (self::EVENEMENT_COURRIEL_INVALIDE === $type) {
+            return new EvenementSignature($requeteSignature, EvenementSignatureType::ECHOUEE, erreur: 'Adresse email invalide');
         }
 
-        // TODO : récupérer le fichier PDF et traiter tout ça en asynchrone
+        if (self::EVENEMENT_PROCESS_PERIME === $type) {
+            return new EvenementSignature($requeteSignature, EvenementSignatureType::EXPIREE);
+        }
 
-        return $requeteSignature->setSignee();
+        return new EvenementSignature($requeteSignature, EvenementSignatureType::SIGNEE);
+    }
+
+    public function telechargerDocumentSigne(RequeteSignatureRequerant $requeteSignatureRequerant): ?string
+    {
+        return $this->legalySpaceClient->telechargerDocument($requeteSignatureRequerant->getIdentifiantExterieur());
     }
 
     /**

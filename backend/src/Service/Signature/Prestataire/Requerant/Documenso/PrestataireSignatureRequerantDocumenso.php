@@ -1,11 +1,14 @@
 <?php
 
-namespace MonIndemnisationJustice\Service\Signature;
+namespace MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\Documenso;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
-use MonIndemnisationJustice\Service\Signature\Documenso\DocumensoClient;
+use MonIndemnisationJustice\Service\Signature\DocumentASigner;
+use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignature;
+use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignatureType;
+use MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\PrestataireSignatureRequerantInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Signature électronique via une instance Documenso auto-hébergée, alternative locale à l'implémentation utilisée en
  * production nécessitant un accès à / depuis Internet ainsi qu'un abonnement payant.
  */
-class GestionnaireSignatureRequerantDocumenso implements GestionnaireSignatureRequerantInterface
+class PrestataireSignatureRequerantDocumenso implements PrestataireSignatureRequerantInterface
 {
     /**
      * Zone du champ de signature sur la dernière page de la déclaration d'acceptation, en pourcentage de la page.
@@ -22,7 +25,6 @@ class GestionnaireSignatureRequerantDocumenso implements GestionnaireSignatureRe
 
     public function __construct(
         protected readonly DocumensoClient $documensoClient,
-        protected readonly GenerateurDocumentASigner $generateurDocumentASigner,
         protected readonly EntityManagerInterface $em,
         // Secret du webhook, saisi dans Documenso sous Paramètres de l'équipe > Webhooks
         #[Autowire(env: 'default::DOCUMENSO_WEBHOOK_SECRET')]
@@ -30,16 +32,21 @@ class GestionnaireSignatureRequerantDocumenso implements GestionnaireSignatureRe
     ) {
     }
 
-    public function creerRequeteSignature(Dossier $dossier): RequeteSignatureRequerant
+    public function creerRequeteSignature(Dossier $dossier, DocumentASigner $documentASigner): RequeteSignatureRequerant
     {
         $requerant = $dossier->getRequerantPersonne();
-        $declarationAcceptation = $this->generateurDocumentASigner->genererDeclarationAcceptation($dossier);
 
         $idEnveloppe = $this->documensoClient->creerEnveloppe(
             "Acceptation de l'indemnisation {$dossier->getReference()}",
             "Déclaration d'acceptation {$dossier->getReference()}.pdf",
-            $declarationAcceptation->contenu,
-            ['page' => $declarationAcceptation->nombrePages] + self::ZONE_SIGNATURE,
+            $documentASigner->contenu,
+            [
+                'page' => $documentASigner->emplacementSignature->numeroPage,
+                'positionX' => (float) $documentASigner->emplacementSignature->x,
+                'positionY' => (float) $documentASigner->emplacementSignature->y,
+                'width' => (float) $documentASigner->emplacementSignature->largeur,
+                'height' => (float) $documentASigner->emplacementSignature->hauteur,
+            ],
             "{$requerant->getPrenom()} {$requerant->getNom()}",
             $requerant->getCourriel() ?? $dossier->getUsager()->getEmail(),
             $dossier->getReference(),
@@ -50,16 +57,8 @@ class GestionnaireSignatureRequerantDocumenso implements GestionnaireSignatureRe
         return new RequeteSignatureRequerant()
             ->setDossier($dossier)
             ->setIdentifiantExterieur($idEnveloppe)
+            // TODO générer l'URL de signature
             ->setDateCreation(new \DateTimeImmutable());
-    }
-
-    /**
-     * Documenso ré-essaie un webhook en échec via sa file de tâches, sans en indiquer le numéro de tentative à
-     * l'application : on ne considère donc jamais une tentative comme la dernière.
-     */
-    public function estDerniereTentative(Request $request): bool
-    {
-        return false;
     }
 
     /**
@@ -77,9 +76,9 @@ class GestionnaireSignatureRequerantDocumenso implements GestionnaireSignatureRe
 
     /**
      * Détecte un évènement de type `DOCUMENT_COMPLETED` et si une entité `RequeteSignatureRequerant` est trouvée et
-     * n'est pas traitée, alors on la traite et on la retourne.
+     * n'est pas traitée, alors on la traite.
      */
-    public function gererWebhookEvenementSignature(array $donnees): ?RequeteSignatureRequerant
+    public function extraireEvenementSignatureWebhook(array $donnees): ?EvenementSignature
     {
         if ('DOCUMENT_COMPLETED' !== ($donnees['event'] ?? null) || !isset($donnees['payload']['envelopeId'])) {
             return null;
@@ -87,12 +86,15 @@ class GestionnaireSignatureRequerantDocumenso implements GestionnaireSignatureRe
 
         $requeteSignature = $this->em->getRepository(RequeteSignatureRequerant::class)->findOneBy(['identifiantExterieur' => (string) $donnees['payload']['envelopeId']]);
 
-        if ($requeteSignature instanceof RequeteSignatureRequerant && !$requeteSignature->estSignee()) {
-            $requeteSignature->setSignee();
-
-            return $requeteSignature;
+        if ($requeteSignature instanceof RequeteSignatureRequerant) {
+            return new EvenementSignature($requeteSignature, EvenementSignatureType::SIGNEE);
         }
 
         return null;
+    }
+
+    public function telechargerDocumentSigne(RequeteSignatureRequerant $requeteSignatureRequerant): ?string
+    {
+        return $this->documensoClient->telechargerDocument($requeteSignatureRequerant->getIdentifiantExterieur());
     }
 }

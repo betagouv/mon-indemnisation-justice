@@ -1,0 +1,24 @@
+framework:
+    messenger:
+        failure_transport: failed
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+            # Messages en échec, conservés dans une file RabbitMQ dédiée
+            failed:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: failed
+                    queues:
+                        failed: ~
+            sync: 'sync://'
+
+        routing:
+            # Router les messages vers le transport voulu
+            # 'App\Message\YourMessage': async

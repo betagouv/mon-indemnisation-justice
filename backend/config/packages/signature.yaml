@@ -1,3 +1,3 @@
 services:
-  MonIndemnisationJustice\Service\Signature\GestionnaireSignatureRequerantInterface:
-    factory: [ '@MonIndemnisationJustice\Service\Signature\GestionnaireSignatureRequerantFactory', 'creerGestionnaireSignatureRequerant' ]
+  MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\PrestataireSignatureRequerantInterface:
+    factory: [ '@MonIndemnisationJustice\Service\Signature\PrestataireSignatureRequerantFactory', 'creerPrestataireSignatureRequerant' ]

@@ -41,6 +41,24 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
+  # RabbitMQ : transport de Symfony Messenger, interface d'administration sur http://localhost:15672
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-precondev}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-precondev}
+    volumes:
+      - ./.docker/rabbitmq/data:/var/lib/rabbitmq:rw
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   # The Symfony app
   symfony:
     hostname: symfony
@@ -63,10 +81,12 @@ services:
       - INSTANCE_NUMBER=0
       - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/dev
       - LEGALYSPACE_BASE_APP_URI=https://esign.ppr.legalyspace.com
+      - MESSENGER_TRANSPORT_DSN=amqp://${RABBITMQ_USER:-precondev}:${RABBITMQ_PASSWORD:-precondev}@rabbitmq:5672/%2f/messages
     restart: always
     depends_on:
       - postgres
       - mailpit
+      - rabbitmq
       - vite
       - idconnect
       - nginx
@@ -97,6 +117,7 @@ services:
     depends_on:
       - postgres
       - mailpit
+      - rabbitmq
       - idconnect
       - nginx
       - documenso
@@ -109,6 +130,7 @@ services:
       - DOSSIER_STOCKAGE_LOCAL=/app/fichiers/test
       - CC_FRANKENPHP_PORT=80
       - APP_HOME=/app
+      - MESSENGER_TRANSPORT_DSN=amqp://${RABBITMQ_USER:-precondev}:${RABBITMQ_PASSWORD:-precondev}@rabbitmq:5672/%2f/messages
     volumes:
       - .docker/php/fichiers:/app/fichiers
       - ./backend/.env.test:/app/.env.test
