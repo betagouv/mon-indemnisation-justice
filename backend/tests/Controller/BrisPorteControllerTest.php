@@ -371,7 +371,7 @@ class BrisPorteControllerTest extends WebTestCase
         }
     }
 
-    public static function donneesFinaliserLaCreation()
+    public static function donneesFinaliserLaCreation(): array
     {
         return [
             'sans_test' => [null, '/bris-de-porte/tester-mon-eligibilite'],

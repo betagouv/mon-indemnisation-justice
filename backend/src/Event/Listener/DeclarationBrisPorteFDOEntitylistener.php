@@ -75,6 +75,7 @@ class DeclarationBrisPorteFDOEntitylistener
             do {
                 $reference = $this->generateurCodeInvitation->generer();
             } while (null !== $repository->findOneBy(['reference' => $reference]));
+
             $declaration->setReference($reference);
 
             $this->invitationsAEnvoyer[$declaration->getId()->toRfc4122()] = $declaration;
@@ -96,6 +97,7 @@ class DeclarationBrisPorteFDOEntitylistener
         $this->envoiEnCours = true;
         try {
             foreach ($declarations as $declaration) {
+                // Envoi du mail d'invitation à déclarer
                 $this->envoiInvitationDeposer->envoyer($declaration);
             }
 

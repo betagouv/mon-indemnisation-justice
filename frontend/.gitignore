@@ -6,3 +6,5 @@ node_modules/
 # Fichiers générés par le plugin @tanstack/router-plugin à chaque dev/build
 src/apps/*/routeur/*.gen.ts
 src/apps/*/*/routeur/*.gen.ts
+src/apps/*/routeur/*.gen.ts*
+src/apps/*/*/routeur/*.gen.ts*
