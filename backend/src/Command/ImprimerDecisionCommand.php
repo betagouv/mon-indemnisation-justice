@@ -11,7 +11,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -28,8 +27,7 @@ class ImprimerDecisionCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('dossier', InputArgument::REQUIRED, 'Identifiant ou référence du dossier')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Réimprimer même si la décision a déjà été signée (le PDF signé sera remplacé)');
+            ->addArgument('dossier', InputArgument::REQUIRED, 'Identifiant ou référence du dossier');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
