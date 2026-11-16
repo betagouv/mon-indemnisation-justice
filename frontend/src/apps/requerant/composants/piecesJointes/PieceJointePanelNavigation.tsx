@@ -51,7 +51,8 @@ export const PieceJointePanelNavigation = ({
         details={`${pieceJointe.infoFichier}`}
         label={pieceJointe.nom}
         linkProps={{
-          href: `${pieceJointe.url}?download`,
+          href: `${window.location.origin}${pieceJointe.url}`,
+          download: true,
         }}
       />
     </div>

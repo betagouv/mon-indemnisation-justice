@@ -33,39 +33,72 @@ export const AjouterPiecesJointesModaleEtapes = [
 type AjouterPiecesJointesModaleEtape =
   (typeof AjouterPiecesJointesModaleEtapes)[number];
 
+/**
+ * Détecte le type réel d'un fichier d'après ses premiers octets (« magic bytes »), à l'image de la vérification faite
+ * côté serveur : `File.type` n'est déduit que de l'extension du nom de fichier, et n'est donc pas fiable.
+ */
+const detecterTypeFichier = async (fichier: File): Promise<string | null> => {
+  const octets = new Uint8Array(await fichier.slice(0, 12).arrayBuffer());
+  const commencePar = (signature: number[], decalage: number = 0) =>
+    signature.every((octet, i) => octets[decalage + i] === octet);
+  const ascii = (texte: string) =>
+    Array.from(texte).map((c) => c.charCodeAt(0));
+
+  if (commencePar(ascii("%PDF-"))) {
+    return "application/pdf";
+  }
+  if (commencePar([0xff, 0xd8, 0xff])) {
+    return "image/jpeg";
+  }
+  if (commencePar([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) {
+    return "image/png";
+  }
+  if (commencePar(ascii("RIFF")) && commencePar(ascii("WEBP"), 8)) {
+    return "image/webp";
+  }
+
+  return null;
+};
+
+// Taille maximale d'un fichier, alignée sur `upload_max_filesize` (5 Mo) de `backend/php.ini`
+const TAILLE_MAXIMALE_FICHIER = 5_000_000;
+
 const SchemaValidationSelectionFichiers = z.object({
   fichiers: z
     .array(z.instanceof(File))
     .min(1, { error: "Veuillez sélectionner au moins un fichier" })
-    .max(10, {
-      error: "Veuillez sélectionner jusqu'à 10 fichiers au maximum",
-    })
-    .superRefine((fichiers: File[], contexte) => {
-      fichiers
-        .filter(
-          (fichier) =>
-            ![
-              "application/pdf",
-              "image/jpg",
-              "image/jpeg",
-              "image/png",
-              "image/webp",
-            ].includes(fichier.type),
-        )
-        .forEach((fichier) => {
+    .superRefine(async (fichiers: File[], contexte) => {
+      // Vérifié ici plutôt qu'avec `.max()`, qui empêcherait zod d'exécuter les vérifications ci-dessous
+      if (fichiers.length > 10) {
+        contexte.addIssue({
+          code: "custom",
+          message: "Veuillez sélectionner jusqu'à 10 fichiers au maximum",
+        });
+      }
+
+      for (const fichier of fichiers) {
+        if (fichier.size === 0) {
           contexte.addIssue({
             code: "custom",
-            message: `Le format du fichier "${fichier.name}" n'est pas valide (jpg, png, webp, pdf)`,
+            message: `Le fichier "${fichier.name}" est vide`,
           });
-        });
-      fichiers
-        .filter((fichier) => fichier.size > 5_000_000)
-        .forEach((fichier) => {
+          continue;
+        }
+
+        if (fichier.size > TAILLE_MAXIMALE_FICHIER) {
           contexte.addIssue({
             code: "custom",
             message: `La taille du fichier "${fichier.name}" excède 5 Mo`,
           });
-        });
+        }
+
+        if (null === (await detecterTypeFichier(fichier))) {
+          contexte.addIssue({
+            code: "custom",
+            message: `Le format du fichier "${fichier.name}" n'est pas valide (jpg, png, webp, pdf)`,
+          });
+        }
+      }
     }),
 });
 
@@ -75,9 +108,10 @@ const SelectionnerFichierFormulaire = ({
   onSelectionne: (fichiers: File[]) => void;
 }) => {
   const formulaire = useForm({
+    // Validation asynchrone, car la détection du type de fichier nécessite de lire son contenu
     validators: {
-      onSubmit: SchemaValidationSelectionFichiers,
-      onChange: SchemaValidationSelectionFichiers,
+      onSubmitAsync: SchemaValidationSelectionFichiers,
+      onChangeAsync: SchemaValidationSelectionFichiers,
     },
     defaultValues: { fichiers: [] as File[] },
     onSubmit: ({ value: { fichiers }, formApi }) => {
