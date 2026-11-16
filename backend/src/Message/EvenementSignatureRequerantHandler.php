@@ -1,0 +1,37 @@
+<?php
+
+namespace MonIndemnisationJustice\Message;
+
+use Doctrine\ORM\EntityManagerInterface;
+use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
+use MonIndemnisationJustice\Service\Signature\GestionnaireSignature;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
+#[AsMessageHandler]
+class EvenementSignatureRequerantHandler
+{
+    public function __construct(
+        protected readonly GestionnaireSignature $gestionnaireSignature,
+        protected readonly EntityManagerInterface $em,
+        protected readonly LoggerInterface $logger,
+    ) {
+
+    }
+
+    public function __invoke(EvenementSignatureRequerant $evenement)
+    {
+        try {
+            $requeteSignature = $this->gestionnaireSignature->synchroniserEvenement($evenement->donnees);
+            if ($requeteSignature instanceof RequeteSignatureRequerant) {
+                $this->logger->info("Requête de signature {$requeteSignature->getId()} synchronisée");
+            }
+        } catch (\Throwable $exception) {
+            $this->logger->error("Erreur lors du traitement du webhook d'évènement signature requérant", [
+                'erreur' => $exception->getMessage(),
+                'donnees' => $evenement->donnees,
+            ]);
+
+        }
+    }
+}

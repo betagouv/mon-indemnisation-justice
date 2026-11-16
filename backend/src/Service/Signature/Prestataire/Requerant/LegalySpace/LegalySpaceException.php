@@ -1,6 +1,6 @@
 <?php
 
-namespace MonIndemnisationJustice\Service\Signature\LegalySpace;
+namespace MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\LegalySpace;
 
 /**
  * Erreur renvoyée par l'API LegalySpace, dont le corps JSON porte un `code` métier (ex : `PROCESS_NOT_READY`,

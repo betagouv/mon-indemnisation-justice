@@ -1,7 +1,10 @@
 <?php
 
-namespace MonIndemnisationJustice\Service\Signature\LegalySpace;
+namespace MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\LegalySpace;
 
+use MonIndemnisationJustice\Entity\Document;
+use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Component\Mime\Part\Multipart\FormDataPart;
@@ -23,10 +26,16 @@ class LegalySpaceClient
     public const string STATUT_PROCESS_ANNULE = 'CANCELED';
     public const string STATUT_PROCESS_PERIME = 'OUTDATED';
 
+    /**
+     * En-tête `Accept` des téléchargements : le PDF, et le JSON pour le corps des réponses en erreur.
+     */
+    protected const string ACCEPT_PDF = 'application/pdf, application/json;q=0.9, */*;q=0.8';
+
     protected readonly HttpClientInterface $httpClient;
 
     public function __construct(
         HttpClientInterface $httpClient,
+        protected readonly DocumentManager $documentManager,
         #[Autowire(env: 'default::LEGALYSPACE_BASE_API_URI')]
         ?string $baseUri,
         #[Autowire(env: 'default::LEGALYSPACE_API_KEY')]
@@ -206,9 +215,13 @@ class LegalySpaceClient
      * @throws TransportExceptionInterface
      * @throws LegalySpaceException
      */
-    public function telechargerDocument(string $idProcess, string $idDocument): string
+    public function telechargerDocument(string $idProcess): string
     {
-        return $this->extraireContenuBinaire($this->httpClient->request('GET', "processes/{$idProcess}/docs/{$idDocument}/download"));
+        $idDocument = self::extraireIdentifiantPremierDocument($this->recupererProcess($idProcess));
+
+        return $this->extraireContenuBinaire($this->httpClient->request('GET', "processes/{$idProcess}/docs/{$idDocument}/download", [
+            'headers' => ['Accept' => self::ACCEPT_PDF],
+        ]));
     }
 
     /**
@@ -219,9 +232,25 @@ class LegalySpaceClient
      * @throws TransportExceptionInterface
      * @throws LegalySpaceException
      */
-    public function telechargerDossierPreuve(string $idProcess, string $idDocument): string
+    public function telechargerDossierPreuve(string $idProcess): string
     {
-        return $this->extraireContenuBinaire($this->httpClient->request('GET', "processes/{$idProcess}/docs/{$idDocument}/download-audit"));
+        $idDocument ??= self::extraireIdentifiantPremierDocument($this->recupererProcess($idProcess));
+
+        return $this->extraireContenuBinaire($this->httpClient->request('GET', "processes/{$idProcess}/docs/{$idDocument}/download-audit", [
+            // L'en-tête par défaut `Accept: application/json` provoque une erreur `406 Not Acceptable` sur les
+            // téléchargements, qui renvoient du PDF
+            'headers' => ['Accept' => self::ACCEPT_PDF],
+        ]));
+    }
+
+    /**
+     * Retourne l'identifiant du premier document listé dans le détail d'un process (cf. {@see recupererProcess()}).
+     */
+    public static function extraireIdentifiantPremierDocument(array $process): ?string
+    {
+        $document = $process['docs'][0] ?? null;
+
+        return isset($document['id']) ? (string) $document['id'] : null;
     }
 
     /**

@@ -7,20 +7,19 @@ namespace MonIndemnisationJustice\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DossierType;
-use MonIndemnisationJustice\Entity\EtatDossierType;
-use MonIndemnisationJustice\Service\Signature\GestionnaireSignatureRequerantInterface;
+use MonIndemnisationJustice\Service\Signature\GestionnaireSignature;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'mij:signature:requerant:initier', description: 'Initier la signature électronique par le requérant')]
+#[AsCommand(name: 'mij:initier:signature:requerant', description: 'Initier la signature électronique par le requérant')]
 class InitierSignatureRequerantCommand extends Command
 {
     public function __construct(
         protected readonly EntityManagerInterface $em,
-        protected readonly ?GestionnaireSignatureRequerantInterface $gestionnaireSignatureRequerant,
+        protected readonly GestionnaireSignature $gestionnaireSignature,
     ) {
         parent::__construct();
     }
@@ -32,10 +31,6 @@ class InitierSignatureRequerantCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (null === $this->gestionnaireSignatureRequerant) {
-            throw new \LogicException("Aucune implémentation de `GestionnaireSignatureRequerantInterface` définie, impossible d'initier la requête de signature");
-        }
-
         $id = $input->getArgument('id');
         $dossier = $this->em->getRepository(Dossier::class)->getByIdOuReference($id, DossierType::BRIS_PORTE);
 
@@ -43,14 +38,9 @@ class InitierSignatureRequerantCommand extends Command
             throw new \LogicException("Aucun dossier trouve pour l'id {$id}");
         }
 
-        if (EtatDossierType::DOSSIER_OK_A_APPROUVER !== $dossier->getEtatDossier()->getEtat()) {
-            throw new \LogicException("Ce dossier n'est pas à accepter par le requérant");
-        }
-        if (null !== ($requeteSignature = $this->gestionnaireSignatureRequerant->creerRequeteSignature($dossier))) {
-            $this->em->persist($requeteSignature);
-            $this->em->flush();
-        }
+        $requeteSignature = $this->gestionnaireSignature->initierSignatureRequerant($dossier);
 
+        $output->writeln("<info>Requête de signature {$requeteSignature->getId()} ({$requeteSignature->getUrlSignatureExterne()}) initiée</info>");
 
         return Command::SUCCESS;
     }
