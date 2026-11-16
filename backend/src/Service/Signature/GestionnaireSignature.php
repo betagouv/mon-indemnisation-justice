@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\DossierManager;
 use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignatureType;
 use MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\PrestataireSignatureRequerantInterface;
+use Psr\Log\LoggerInterface;
 
 class GestionnaireSignature
 {
@@ -20,6 +21,7 @@ class GestionnaireSignature
         protected readonly DossierManager $dossierManager,
         protected readonly PrestataireSignatureRequerantInterface $prestataireSignatureRequerant,
         protected readonly EntityManagerInterface $em,
+        protected readonly LoggerInterface $logger,
     ) {
 
     }
