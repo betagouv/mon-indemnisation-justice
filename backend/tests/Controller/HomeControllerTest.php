@@ -42,7 +42,7 @@ class HomeControllerTest extends WebTestCase
 
     /**
      * ETQ visiteur, dans un environnement où la brique dysfonctionnement est exposée, la tuile "déni de justice" est un
-     * lien actif vers "/dysfonctionnement/", sans mention "Bientôt disponible".
+     * lien actif vers "/dysfonctionnement", sans mention "Bientôt disponible".
      */
     public function testTuileDeniDeJusticeActiveQuandDysfonctionnementExpose(): void
     {
@@ -50,7 +50,7 @@ class HomeControllerTest extends WebTestCase
 
         $lien = $crawler->selectLink('Déclarer un déni de justice')->link();
 
-        $this->assertSame('/dysfonctionnement/', parse_url($lien->getUri(), PHP_URL_PATH));
+        $this->assertSame('/dysfonctionnement', parse_url($lien->getUri(), PHP_URL_PATH));
         $this->assertStringNotContainsString('Bientôt disponible', $crawler->text());
     }
 
