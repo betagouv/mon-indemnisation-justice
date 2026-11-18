@@ -1,5 +1,8 @@
 {% extends 'courrier/_base_courrier.html.twig' %}
 
+{% set estSignatureElectronique = dossier.estEligibleSignatureElectronique %}
+{% set villeSignature = dossier.adresseRequerant?.localite ?? dossier.brisPorte.adresse?.localite %}
+
 {% block style %}
     <style>
         body {
@@ -38,14 +41,6 @@
                         margin: 0 0 1.5cm 0;
                     }
 
-                    &.marge-plus {
-                        margin: 1.5cm 0 0 0;
-                    }
-
-                    &.marge-plus-plus {
-                        margin: 3cm 0 0 0;
-                    }
-
                     margin: 10pt 0;
                 }
 
@@ -53,6 +48,26 @@
                     display:inline-block;
                     width:12rem;
                     border-bottom:1px dotted #000;
+                }
+
+                #signature {
+                    break-inside: avoid;
+                    page-break-inside: avoid;
+                }
+
+                .visuel-signature {
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+
+                    p {
+                        content: "Signature";
+                    }
+
+                    p,a {
+                        width: 8cm;
+                        height: 3cm;
+                    }
                 }
 
             }
@@ -127,16 +142,32 @@
             </i>
         </p>
 
-        <p>Fait à <span class="champ-a-remplir">&nbsp;</span>,
-            le <span class="champ-a-remplir">&nbsp;</span>
+        <p>
+            {% if estSignatureElectronique %}
+                Fait à {{ villeSignature|default('')|capitalize }}
+            {% else %}
+                Fait à <span class="champ-a-remplir">&nbsp;</span>, le <span class="champ-a-remplir">&nbsp;</span>
+            {% endif %}
+
         </p>
 
 
-        <p style="margin-bottom:5rem;">Signature</p>
+        <div id="signature">
+            <div class="visuel-signature">
+                {% if estSignatureElectronique %}
+                    <a href="objet://visuel-signature">
+                    </a>
+                {% else %}
+                    <p></p>
+                {% endif %}
+            </div>
 
-        <p>La déclaration d’acceptation doit être retournée via votre espace personnel.</p>
+            {% if not estSignatureElectronique %}
+            <p>La déclaration d’acceptation doit être retournée via votre espace personnel.</p>
+            {% endif %}
 
-        <p><u>Référence à rappeler</u> :{{ dossier.reference }}</p>
+            <p><u>Référence à rappeler</u> :{{ dossier.reference }}</p>
+        </div>
     </div>
 
 {% endblock pages %}
