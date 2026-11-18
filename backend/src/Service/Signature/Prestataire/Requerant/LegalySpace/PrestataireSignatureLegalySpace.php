@@ -86,7 +86,7 @@ class PrestataireSignatureLegalySpace implements PrestataireSignatureRequerantIn
             $documentASigner->emplacementSignature->numeroPage,
             [
                 'x' => $documentASigner->emplacementSignature->x,
-                'y' => $documentASigner->emplacementSignature->y,
+                'y' => $documentASigner->emplacementSignature->y - ($documentASigner->emplacementSignature->hauteur / 2),
                 'width' => $documentASigner->emplacementSignature->largeur,
                 'height' => $documentASigner->emplacementSignature->hauteur,
             ],

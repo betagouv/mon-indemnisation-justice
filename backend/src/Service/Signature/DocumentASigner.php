@@ -10,7 +10,7 @@ final readonly class DocumentASigner
     public function __construct(
         public string $nomFichier,
         public string $contenu,
-        public EmplacementSignature $emplacementSignature,
+        public ?EmplacementSignature $emplacementSignature = null,
     ) {
     }
 }

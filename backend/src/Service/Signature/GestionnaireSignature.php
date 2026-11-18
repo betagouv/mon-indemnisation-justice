@@ -67,21 +67,31 @@ class GestionnaireSignature
                             'type' => 'personnel',
                         ],
                     ],
-                ]
+                ],
+                extraireObjets: true
             );
+
+        $objets = $declarationAcceptation->getMetaDonnee('objets');
+        $emplacementSignature = null;
+
+        if (is_array($objets) && isset($objets['visuel-signature'])) {
+            $emplacementSignature = new EmplacementSignature(
+                x: $objets['visuel-signature']['x'],
+                y: $objets['visuel-signature']['y'],
+                largeur: $objets['visuel-signature']['width'],
+                hauteur: $objets['visuel-signature']['height'],
+                numeroPage: $objets['visuel-signature']['page'],
+            );
+        } else {
+
+        }
 
         $contenu = $this->documentManager->getContenuTexte($declarationAcceptation);
 
         return new DocumentASigner(
             $declarationAcceptation->getFilename(),
             $contenu,
-            // TODO extraire l'emplacement suite à l'impression (méthode du faux lien) au lieu de ces valeurs arbitraires
-            new EmplacementSignature(
-                60,
-                160,
-                250,
-                100,
-            )
+            $emplacementSignature
         );
     }
 
