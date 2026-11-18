@@ -4,11 +4,9 @@ namespace MonIndemnisationJustice\Service;
 
 use League\Flysystem\FilesystemOperator;
 use MonIndemnisationJustice\Entity\Document;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Twig\Environment;
@@ -36,50 +34,35 @@ class ImprimanteCourrier
 
     public function imprimerDocument(Document $document): Document
     {
-        // Création d'un préfixe de chemin temporaire, dédié à la génération des documents HTML et PDF
-        $path = Path::normalize(sys_get_temp_dir().'/'.Uuid::uuid4()->toString());
+        // Générer le contenu de la page HTML statique, transmis au script d'impression sur son entrée standard
+        $html = $this->twig->render($document->getType()->getGabarit(), [
+            'dossier' => $document->getDossier(),
+            'corps' => $document->getCorps(),
+            'contexte' => $document->getMetaDonnees() ?? [],
+        ]);
 
-        $this->filesystem->mkdir($path);
+        $impression = new Process([$this->binDirectory.'/imprimer.js'], $this->projectDirectory, input: $html);
 
-        try {
-            $fichierHtml = "{$path}/{$document->getType()->value}_{$document->getDossier()->getId()}.html";
-            $fichierPdf = "{$path}/{$document->getType()->value}_{$document->getDossier()->getId()}.pdf";
-            // Générer le contenu de la page HTML statique
-            $this->filesystem->dumpFile($fichierHtml, $this->twig->render($document->getType()->getGabarit(), [
-                'dossier' => $document->getDossier(),
-                'corps' => $document->getCorps(),
-                'contexte' => $document->getMetaDonnees() ?? [],
-            ]));
+        $impression->run();
 
-            $impression = new Process([$this->binDirectory.'/print.js', $fichierHtml, $fichierPdf], $this->projectDirectory);
-
-            $impression->run();
-
-            // executes after the command finishes
-            if (!$impression->isSuccessful()) {
-                throw new ProcessFailedException($impression);
-            }
-
-            if (!$this->filesystem->exists($fichierPdf)) {
-                throw new \LogicException("Le fichier '{$fichierPdf}' n'a pas été créé");
-            }
-
-            $destination = hash('sha256', file_get_contents($fichierPdf)).'.pdf';
-
-            $this->storage->write($destination, file_get_contents($fichierPdf));
-
-            $document->setFilename($destination)
-                ->setModifie()
-                ->setSize(filesize($fichierPdf))
-                ->setMime('application/pdf')
-                ->setOriginalFilename($document->getType()->nommerFichier($document->getDossier()));
-
-            return $document;
-        } catch (\Exception $e) {
-            // Supprimer les fichiers temporaires
-            $this->filesystem->remove($path);
-
-            throw new \LogicException($e->getMessage(), previous: $e);
+        if (!$impression->isSuccessful()) {
+            throw new ProcessFailedException($impression);
         }
+
+        dump($impression->getOutput());
+
+        ['contenu' => $contenu] = json_decode($impression->getOutput(), true, 512, JSON_THROW_ON_ERROR);
+        $fichierPDF = base64_decode($contenu, true);
+        $destination = hash('sha256', $fichierPDF).'.pdf';
+
+        $this->storage->write($destination, $fichierPDF);
+
+        $document->setFilename($destination)
+            ->setModifie()
+            ->setSize(strlen($fichierPDF))
+            ->setMime('application/pdf')
+            ->setOriginalFilename($document->getType()->nommerFichier($document->getDossier()));
+
+        return $document;
     }
 }
