@@ -1,2 +1,4 @@
 paths-ignore:
   - "compose.yaml"
+  - ".env.dist"
+  - "backend/.env.dist"
