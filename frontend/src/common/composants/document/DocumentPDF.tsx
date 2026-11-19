@@ -25,9 +25,6 @@ export const DocumentPDF = ({ url }: { url: string }) => {
     () => ({
       cMapUrl: "/cmaps/",
       standardFontDataUrl: "/standard_fonts/",
-      // Requis par pdf.js pour décoder certaines images (JPX, JBIG2) et les profils ICC.
-      // Ce chemin est valable en dev (servi par Vite) comme au build (copié par vite-plugin-static-copy,
-      // qui conserve l'arborescence). `BASE_URL` n'a pas de slash final avec vite-plugin-symfony.
       wasmUrl: `${import.meta.env.BASE_URL.replace(/\/$/, "")}/node_modules/pdfjs-dist/wasm/`,
     }),
     [1],
@@ -66,11 +63,11 @@ export const DocumentPDF = ({ url }: { url: string }) => {
           </button>
         </div>
       )}
-      <div className="fr-grid-row fr-col-12" ref={refConteneur}>
-        {/* Depuis react-pdf v11, `Document` et `Page` suspendent par défaut : sans frontière `Suspense` locale, c'est
-         celle de la route (son `pendingComponent`) qui prend le relais, masquant toute la page et détachant les refs
-         (ex : la modale d'ajout de pièces jointes ne peut plus être refermée). On conserve donc le mode non-suspensif,
-         qui s'appuie sur les props `loading` / `onLoadError`. */}
+      <div
+        className="fr-grid-row fr-col-12"
+        ref={refConteneur}
+        style={{ position: "relative", overflow: "hidden" }}
+      >
         <Document
           suspense={false}
           loading={<>Chargement du document en cours...</>}
@@ -82,14 +79,13 @@ export const DocumentPDF = ({ url }: { url: string }) => {
           onLoadError={(error) => console.error("DocumentPDF error:", error)}
           options={options}
         >
-          {Array.from(Array(nombreDePages).keys()).map((index) => (
+          {!!nombreDePages && (
             <Page
-              key={`page-${index + 1}`}
-              pageNumber={index + 1}
-              width={index + 1 === numeroPage ? largeurConteneur : undefined}
-              renderMode={index + 1 === numeroPage ? "canvas" : "none"}
+              key={`page-${numeroPage}`}
+              pageNumber={numeroPage}
+              width={largeurConteneur}
             />
-          ))}
+          )}
         </Document>
       </div>
     </>
