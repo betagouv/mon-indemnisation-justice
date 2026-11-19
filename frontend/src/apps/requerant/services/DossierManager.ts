@@ -9,7 +9,7 @@ import {
   plainToClassFromExist,
   plainToInstance,
 } from "class-transformer";
-import { ServiceIdentifier } from "inversify"; // Source - https://stackoverflow.com/a/61132308
+import { ServiceIdentifier } from "inversify";
 
 // Source - https://stackoverflow.com/a/61132308
 // Posted by Terry, modified by community. See post 'Timeline' for change history
@@ -24,6 +24,14 @@ export type NouvellePieceJointe = {
   fichier: File;
   type: TypePieceJointe;
   contexte?: any;
+};
+
+export type ContexteSignatureElectronique = {
+  rib: {
+    estAvocat: boolean;
+    avocat?: string;
+    rib?: string;
+  };
 };
 
 export interface DossierManagerInterface {
@@ -47,6 +55,11 @@ export interface DossierManagerInterface {
   mesDemandes(): Promise<DossierApercu[]>;
 
   soumettre(id: number): Promise<Dossier>;
+
+  demarrerSignature(
+    id: number,
+    contexte: ContexteSignatureElectronique,
+  ): Promise<Dossier>;
 
   accepter(id: number, declarationAcceptationSignee: File): Promise<Dossier>;
 }
@@ -244,6 +257,15 @@ export class ApiDossierManager implements DossierManagerInterface {
 
       return dossierDepose;
     }
+  }
+
+  async demarrerSignature(
+    id: number,
+    contexte: ContexteSignatureElectronique,
+  ): Promise<Dossier> {
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+
+    return (await this.getDossier(id)) as Dossier;
   }
 
   async accepter(
