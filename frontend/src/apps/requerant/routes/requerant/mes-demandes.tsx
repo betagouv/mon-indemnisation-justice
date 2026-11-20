@@ -2,7 +2,10 @@ import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { EtatDossierType } from "@/apps/requerant/models/EtatDossier.ts";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
 import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
-import { Modale, ModaleRef } from "@/common/composants/dsfr/Modale.tsx";
+import {
+  ModaleDsfr,
+  useModaleDsfr,
+} from "@/common/composants/dsfr/useModaleDsfr.ts";
 import { Loader } from "@/common/composants/Loader.tsx";
 import { dateEtHeureSimple } from "@/common/services/date.ts";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
@@ -15,7 +18,7 @@ import Tooltip from "@codegouvfr/react-dsfr/Tooltip";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { useRef } from "react";
+import React, { useMemo } from "react";
 
 export const Route = createFileRoute("/requerant/mes-demandes")({
   component: RouteComponent,
@@ -33,17 +36,80 @@ const severiteBadgeEtat = (
   }
 };
 
-const severiteBadgeExtraClass = (etat?: EtatDossierType): string => {
-  switch (etat?.type) {
-    case "CLOTURE":
-      return "fr-badge--beige-gris-galet";
-    case "EN_INSTRUCTION":
-      return "fr-badge--blue-ecume";
-    case "DEPOSE":
-      return "fr-badge--blue-cumulus";
-  }
+type Flash = {
+  type: "success" | "error" | "warning" | "info";
+  titre: string;
+  message: string | string[];
+};
 
-  return "";
+/**
+ * Crée le composant de modale d'affichage d'un message flash, lié à la modale
+ * DSFR `modale`.
+ *
+ * Chaque appel retourne un nouveau composant : l'appel doit donc être mémoïsé,
+ * sans quoi React le démonterait (et perdrait son état) à chaque rendu.
+ */
+const creerModaleMessageFlash = (modale: ModaleDsfr) =>
+  function ModaleMessageFlash({ flash }: { flash: Flash }) {
+    return (
+      <modale.Component title="" size="medium">
+        <div className="fr-grid-row" style={{ gap: "1rem" }}>
+          <Alert
+            severity={flash.type}
+            title={flash.titre || ""}
+            description={
+              Array.isArray(flash.message) ? (
+                <>
+                  {flash.message.map((message, index) => (
+                    <p key={index}>{message}</p>
+                  ))}
+                </>
+              ) : (
+                flash.message || ""
+              )
+            }
+          />
+          <ButtonsGroup
+            className="fr-col-12 fr-mx-0"
+            inlineLayoutWhen="always"
+            alignment="right"
+            buttonsEquisized={false}
+            buttonsSize="small"
+            buttons={[
+              {
+                className: "fr-mx-0",
+                children: "Fermer",
+                priority: "primary",
+                onClick: () => modale.close(),
+              },
+            ]}
+          />
+        </div>
+      </modale.Component>
+    );
+  };
+
+/**
+ * Fournit une modale d'affichage d'un message flash, propre au composant
+ * appelant, ainsi que les fonctions pour l'ouvrir et la fermer.
+ *
+ * La modale s'ouvre d'elle-même dès qu'elle est présente dans le DOM.
+ */
+const useModaleMessageFlash = () => {
+  const modale = useModaleDsfr("modale-message-flash", {
+    ouverteParDefaut: true,
+  });
+
+  const ModaleMessageFlash = useMemo(
+    () => creerModaleMessageFlash(modale),
+    [modale],
+  );
+
+  return {
+    modale: ModaleMessageFlash,
+    ouvrir: modale.open,
+    fermer: modale.close,
+  };
 };
 
 function RouteComponent() {
@@ -65,26 +131,10 @@ function RouteComponent() {
     throwOnError: true,
   });
 
-  const modaleRef = useRef<ModaleRef>(null);
+  const { modale: ModaleMessageFlash } = useModaleMessageFlash();
 
-  const state = useRouterState<
-    typeof RouteurRequerant,
-    {
-      flash?: {
-        type: "success" | "error" | "warning" | "info";
-        titre: string;
-        message: string;
-      };
-    }
-  >({
-    select: (s) =>
-      s.location.state as {
-        flash?: {
-          type: "success" | "error" | "warning" | "info";
-          titre: string;
-          message: string;
-        };
-      },
+  const state = useRouterState<typeof RouteurRequerant, { flash?: Flash }>({
+    select: (s) => s.location.state as { flash?: Flash },
     router: RouteurRequerant,
   });
 
@@ -110,48 +160,7 @@ function RouteComponent() {
 
   return (
     <>
-      {state.flash && (
-        <Modale
-          id="dossier-depose-modale"
-          title=""
-          size="medium"
-          ref={modaleRef}
-          ouverte={true}
-        >
-          <div className="fr-grid-row" style={{ gap: "1rem" }}>
-            <Alert
-              severity={state.flash.type}
-              title={state.flash.titre || ""}
-              description={
-                Array.isArray(state.flash.message) ? (
-                  <>
-                    {state.flash.message.map((message, index) => (
-                      <p key={index}>{message}</p>
-                    ))}
-                  </>
-                ) : (
-                  state.flash.message || ""
-                )
-              }
-            />
-            <ButtonsGroup
-              className="fr-col-12 fr-mx-0"
-              inlineLayoutWhen="always"
-              alignment="right"
-              buttonsEquisized={false}
-              buttonsSize="small"
-              buttons={[
-                {
-                  className: "fr-mx-0",
-                  children: "Fermer",
-                  priority: "primary",
-                  onClick: () => modaleRef.current?.fermer(),
-                },
-              ]}
-            />
-          </div>
-        </Modale>
-      )}
+      {state.flash && <ModaleMessageFlash flash={state.flash} />}
 
       <div>
         <div className="fr-grid-row">
