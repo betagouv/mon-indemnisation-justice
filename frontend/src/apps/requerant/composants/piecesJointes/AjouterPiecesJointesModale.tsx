@@ -8,18 +8,17 @@ import {
 } from "@/apps/requerant/models/TypePieceJointe.ts";
 import { NouvellePieceJointe } from "@/apps/requerant/services/DossierManager.ts";
 import {
-  Modale,
-  ModaleProps,
-  ModaleRef,
-} from "@/common/composants/dsfr/Modale.tsx";
+  ModaleDsfr,
+  useModaleDsfr,
+} from "@/common/composants/dsfr/useModaleDsfr.ts";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
 import { useForm } from "@tanstack/react-form";
 import React, {
-  ForwardedRef,
-  forwardRef,
-  useImperativeHandle,
+  RefObject,
+  useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -359,42 +358,38 @@ const PrevisualiserFichierFormulaire = ({
   );
 };
 
-export type AjouterPiecesJointesModaleRef = {
-  ouvrir: (typePieceJointe?: TypePieceJointe) => void;
-};
-
-export type AjouterPiecesJointesModaleProps = Omit<
-  ModaleProps,
-  "children" | "id"
-> & {
+export type AjouterPiecesJointesModaleProps = {
   dossier: Dossier;
   typesPiecesjointes: TypePieceJointe[];
   onComplete: (piecesJointes: NouvellePieceJointe[]) => Promise<void>;
 };
 
-export const AjouterPiecesJointesModale = forwardRef<
-  AjouterPiecesJointesModaleRef,
-  AjouterPiecesJointesModaleProps
->(
-  (
-    {
-      dossier,
-      typesPiecesjointes,
-      onComplete,
-      ...props
-    }: AjouterPiecesJointesModaleProps,
-    ref: ForwardedRef<AjouterPiecesJointesModaleRef>,
-  ) => {
+/**
+ * Crée le composant de modale d'ajout de pièces jointes, lié à la modale DSFR
+ * `modale`.
+ *
+ * Le type de pièce jointe éventuellement prédéfini à l'ouverture est transmis
+ * via la référence `refTypePieceJointePredefini`, renseignée par la fonction
+ * `ouvrir` du hook.
+ *
+ * Chaque appel retourne un nouveau composant : l'appel doit donc être mémoïsé,
+ * sans quoi React le démonterait (et perdrait son état) à chaque rendu.
+ */
+const creerAjouterPiecesJointesModale = (
+  modale: ModaleDsfr,
+  refTypePieceJointePredefini: RefObject<TypePieceJointe | undefined>,
+) =>
+  function AjouterPiecesJointesModale({
+    dossier,
+    typesPiecesjointes,
+    onComplete,
+  }: AjouterPiecesJointesModaleProps) {
     const [etape, setEtape] =
       useState<AjouterPiecesJointesModaleEtape>("selectionner");
 
     const [piecesJointes, setPiecesJointes] = useState<NouvellePieceJointe[]>(
       [],
     );
-
-    const [typePieceJointePredefini, setTypePieceJointePredefini] = useState<
-      TypePieceJointe | undefined
-    >(undefined);
 
     const [indicePieceJointePrevisualisee, setIndicePieceJointePrevisualisee] =
       useState<number>(0);
@@ -404,35 +399,26 @@ export const AjouterPiecesJointesModale = forwardRef<
       [piecesJointes, indicePieceJointePrevisualisee],
     );
 
-    const refModale = useRef<ModaleRef>(null);
-
     const reinitialiser = () => {
       setPiecesJointes([]);
-      setTypePieceJointePredefini(undefined);
       setIndicePieceJointePrevisualisee(0);
       setEtape("selectionner");
     };
 
-    const fermer = () => {
-      refModale.current?.fermer();
-      reinitialiser();
-    };
+    // Réinitialiser la modale à chaque fermeture, quelle qu'en soit l'origine
+    // (bouton « Fermer », touche Échap, fin du téléversement)
+    useEffect(() => {
+      const element = document.getElementById(modale.id);
+      element?.addEventListener("dsfr.conceal", reinitialiser);
 
-    useImperativeHandle(ref, () => ({
-      ouvrir: (typePieceJointe?: TypePieceJointe) => {
-        setEtape("selectionner");
-        setTypePieceJointePredefini(typePieceJointe);
-        refModale.current?.ouvrir();
-      },
-    }));
+      return () => element?.removeEventListener("dsfr.conceal", reinitialiser);
+    }, []);
 
     return (
-      <Modale
-        {...props}
-        id="ajouter-pieces-jointes-modale"
-        ref={refModale}
+      <modale.Component
+        title="Ajouter des pièces jointes"
+        iconId="fr-icon-add-line"
         size={etape == "selectionner" ? "medium" : "full"}
-        onFerme={() => reinitialiser()}
       >
         {etape === "selectionner" && (
           <SelectionnerFichierFormulaire
@@ -442,7 +428,7 @@ export const AjouterPiecesJointesModale = forwardRef<
                   (f) =>
                     ({
                       fichier: f,
-                      type: typePieceJointePredefini,
+                      type: refTypePieceJointePredefini.current,
                     }) as NouvellePieceJointe,
                 ),
               );
@@ -479,7 +465,7 @@ export const AjouterPiecesJointesModale = forwardRef<
                     i === indice ? pieceJointe : pj,
                   ),
                 );
-                fermer();
+                modale.close();
               } else {
                 setIndicePieceJointePrevisualisee(
                   (indicePieceJointePrevisualisee) =>
@@ -492,7 +478,40 @@ export const AjouterPiecesJointesModale = forwardRef<
             }}
           />
         )}
-      </Modale>
+      </modale.Component>
     );
-  },
-);
+  };
+
+/**
+ * Fournit une modale d'ajout de pièces jointes, propre au composant appelant,
+ * ainsi que les fonctions pour l'ouvrir et la fermer.
+ *
+ * La fonction `ouvrir` accepte un type de pièce jointe, pré-sélectionné pour
+ * les fichiers ajoutés.
+ */
+export const useAjouterPiecesJointesModale = () => {
+  const modale = useModaleDsfr("ajouter-pieces-jointes-modale");
+
+  const refTypePieceJointePredefini = useRef<TypePieceJointe | undefined>(
+    undefined,
+  );
+
+  const AjouterPiecesJointesModale = useMemo(
+    () => creerAjouterPiecesJointesModale(modale, refTypePieceJointePredefini),
+    [modale],
+  );
+
+  const ouvrir = useCallback(
+    (typePieceJointe?: TypePieceJointe) => {
+      refTypePieceJointePredefini.current = typePieceJointe;
+      modale.open();
+    },
+    [modale],
+  );
+
+  return {
+    modale: AjouterPiecesJointesModale,
+    ouvrir,
+    fermer: modale.close,
+  };
+};
