@@ -1,5 +1,6 @@
 import "reflect-metadata";
 
+import { ApplicationRechargeur } from "@/common/services/ApplicationRechargeur";
 import { disableReactDevTools } from "@/apps/requerant/dossier/services/devtools";
 import * as Sentry from "@sentry/react";
 import "es-iterator-helpers/auto";
@@ -10,6 +11,15 @@ import { z } from "zod";
 if (import.meta.hot) {
   import.meta.hot.on("vite:beforeUpdate", () => console.clear());
 }
+
+// Échec de préchargement d'un chunk par Vite (typiquement après un redéploiement) : on recharge la page pour récupérer
+// la nouvelle version. `preventDefault()` empêche alors l'erreur d'être propagée (et d'afficher l'écran d'erreur).
+// cf. https://vite.dev/guide/build#load-error-handling
+window.addEventListener("vite:preloadError", (event) => {
+  if (ApplicationRechargeur.rechargerSiPossible()) {
+    event.preventDefault();
+  }
+});
 
 // Polyfill de Promise.withResolvers, requis pour `react-pdf`
 if (typeof Promise.withResolvers === "undefined") {
