@@ -1,7 +1,7 @@
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import ToggleSwitch from "@codegouvfr/react-dsfr/ToggleSwitch";
+import { creerModaleDsfr } from "@common/composants/dsfr/useModaleDsfr.ts";
 import { FormInput } from "@common/composants/dsfr/champs/form/FormInput.tsx";
 import { FormSuggestedInput } from "@common/composants/dsfr/champs/form/FormSuggestedInput.tsx";
 import { dateChiffre } from "@common/services/date.ts";
@@ -22,10 +22,10 @@ export type ModaleAutoAffectationProps = {
 
 // Une seule modale d'affectation peut être affichée à la fois : elle est donc
 // partagée au niveau du module. Elle s'ouvre d'elle-même dès qu'elle est
-// présente dans le DOM.
-const _modale = createModal({
+// montée.
+const _modale = creerModaleDsfr({
   id: "modale-affectation-agent",
-  isOpenedByDefault: true,
+  ouverteParDefaut: true,
 });
 
 export const ModaleAutoAffectation = ({

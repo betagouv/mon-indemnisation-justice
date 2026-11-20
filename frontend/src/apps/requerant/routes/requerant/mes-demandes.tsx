@@ -93,7 +93,7 @@ const creerModaleMessageFlash = (modale: ModaleDsfr) =>
  * Fournit une modale d'affichage d'un message flash, propre au composant
  * appelant, ainsi que les fonctions pour l'ouvrir et la fermer.
  *
- * La modale s'ouvre d'elle-même dès qu'elle est présente dans le DOM.
+ * La modale s'ouvre d'elle-même dès qu'elle est montée.
  */
 const useModaleMessageFlash = () => {
   const modale = useModaleDsfr("modale-message-flash", {
