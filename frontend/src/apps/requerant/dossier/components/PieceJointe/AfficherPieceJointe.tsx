@@ -1,12 +1,9 @@
-import {
-  SupprimerPieceJointeModale,
-  SupprimerPiecesJointesModaleRef,
-} from "@/apps/requerant/composants/piecesJointes/SupprimerPieceJointeModale";
+import { useSupprimerPieceJointeModale } from "@/apps/requerant/composants/piecesJointes/SupprimerPieceJointeModale";
 import { PieceJointe } from "@/apps/requerant/models";
 import { DocumentPDF } from "@/common/composants/document/DocumentPDF.tsx";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Download from "@codegouvfr/react-dsfr/Download";
-import { default as React, useRef } from "react";
+import { default as React } from "react";
 
 export const AfficherPieceJointe = ({
   pieceJointe,
@@ -17,19 +14,18 @@ export const AfficherPieceJointe = ({
   telecharger?: boolean;
   supprimer?: (pieceJointe: PieceJointe) => void | Promise<void> | undefined;
 }) => {
-  // La référence vers la modale de suppression de pièce jointe
-  const refModaleSuppressionPieceJointe =
-    useRef<SupprimerPiecesJointesModaleRef>(null);
+  const {
+    modale: SupprimerPieceJointeModale,
+    ouvrir: ouvrirModaleSuppressionPieceJointe,
+  } = useSupprimerPieceJointeModale();
 
   return (
     <>
       {supprimer && (
         <SupprimerPieceJointeModale
-          ref={refModaleSuppressionPieceJointe}
           pieceJointe={pieceJointe}
           onConfirme={async () => {
             await supprimer(pieceJointe);
-            refModaleSuppressionPieceJointe.current?.fermer();
           }}
         />
       )}
@@ -60,8 +56,7 @@ export const AfficherPieceJointe = ({
                   children: "Supprimer cette pièce jointe",
                   iconId: "fr-icon-delete-line",
                   priority: "tertiary no outline",
-                  onClick: () =>
-                    refModaleSuppressionPieceJointe.current?.ouvrir(),
+                  onClick: () => ouvrirModaleSuppressionPieceJointe(),
                 },
               ]}
             />

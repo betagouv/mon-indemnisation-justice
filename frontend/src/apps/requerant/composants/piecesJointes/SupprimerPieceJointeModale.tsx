@@ -1,68 +1,52 @@
 import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe";
 import { PieceJointe } from "@/apps/requerant/models";
 import {
-  Modale,
-  ModaleProps,
-  ModaleRef,
-} from "@/common/composants/dsfr/Modale.tsx";
+  ModaleDsfr,
+  useModaleDsfr,
+} from "@/common/composants/dsfr/useModaleDsfr.ts";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import React, {
-  ForwardedRef,
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import React, { useMemo, useState } from "react";
 
-export type SupprimerPiecesJointesModaleRef = {
-  ouvrir: () => void;
-  fermer: () => void;
-};
-
-export type SupprimerPiecesJointesModaleProps = Omit<
-  ModaleProps,
-  "children" | "id" | "title" | "titleProps" | "titleAs"
-> & {
+export type SupprimerPieceJointeModaleProps = {
   pieceJointe: PieceJointe;
   onConfirme: (pieceJointe: PieceJointe) => Promise<void>;
 };
 
-export const SupprimerPieceJointeModale = forwardRef<
-  SupprimerPiecesJointesModaleRef,
-  SupprimerPiecesJointesModaleProps
->(
-  (
-    { pieceJointe, onConfirme, ...props }: SupprimerPiecesJointesModaleProps,
-    ref: ForwardedRef<SupprimerPiecesJointesModaleRef>,
-  ) => {
-    const refModale = useRef<ModaleRef>(null);
+/**
+ * Crée le composant de modale de suppression de pièce jointe, à partir d'une `modale`
+ * donnée.
+ *
+ * Chaque appel retournant un nouveau composant, l'appel doit donc être mémoïsé.
+ */
+const creerSupprimerPieceJointeModale = (modale: ModaleDsfr) =>
+  function SupprimerPieceJointeModale({
+    pieceJointe,
+    onConfirme,
+  }: SupprimerPieceJointeModaleProps) {
+    const [suppressionEnCours, setSuppressionEnCours] = useState(false);
 
-    const fermer = () => {
-      refModale.current?.fermer();
+    const confirmer = async () => {
+      setSuppressionEnCours(true);
+      try {
+        await onConfirme(pieceJointe);
+        modale.close();
+      } finally {
+        setSuppressionEnCours(false);
+      }
     };
 
-    useImperativeHandle(ref, () => ({
-      ouvrir: () => {
-        refModale.current?.ouvrir();
-      },
-      fermer: () => {
-        refModale.current?.fermer();
-      },
-    }));
-
     return (
-      <Modale
-        {...props}
+      <modale.Component
         title="Supprimer la pièce jointe"
-        id="supprimer-piece-jointe-modale"
-        ref={refModale}
         size="large"
+        concealingBackdrop={!suppressionEnCours}
       >
         <p>
           Vous souhaitez supprimer la pièce jointe "{pieceJointe.nom}" de type{" "}
           {pieceJointe.type.libelle({ enCapitales: false, court: true })},
           confirmez-vous ?
         </p>
-        <AfficherPieceJointe pieceJointe={pieceJointe} />
+        <AfficherPieceJointe pieceJointe={pieceJointe} telecharger={false} />
 
         <ButtonsGroup
           inlineLayoutWhen="always"
@@ -73,17 +57,37 @@ export const SupprimerPieceJointeModale = forwardRef<
             {
               priority: "secondary",
               children: "Annuler",
-              onClick: () => refModale.current?.fermer(),
+              disabled: suppressionEnCours,
+              onClick: () => modale.close(),
             },
             {
               priority: "primary",
               children: "Confirmer",
               iconId: "fr-icon-delete-line",
-              onClick: () => onConfirme(pieceJointe),
+              disabled: suppressionEnCours,
+              onClick: confirmer,
             },
           ]}
         />
-      </Modale>
+      </modale.Component>
     );
-  },
-);
+  };
+
+/**
+ * Fournit une modale de confirmation de suppression de pièce jointe, propre au
+ * composant appelant, ainsi que les fonctions pour l'ouvrir et la fermer.
+ */
+export const useSupprimerPieceJointeModale = () => {
+  const modale = useModaleDsfr("supprimer-piece-jointe-modale");
+
+  const SupprimerPieceJointeModale = useMemo(
+    () => creerSupprimerPieceJointeModale(modale),
+    [modale],
+  );
+
+  return {
+    modale: SupprimerPieceJointeModale,
+    ouvrir: modale.open,
+    fermer: modale.close,
+  };
+};
