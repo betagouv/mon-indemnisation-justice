@@ -1,9 +1,9 @@
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import ToggleSwitch from "@codegouvfr/react-dsfr/ToggleSwitch";
+import { creerModaleDsfr } from "@common/composants/dsfr/useModaleDsfr.ts";
 import { FormInput } from "@common/composants/dsfr/champs/form/FormInput.tsx";
 import { FormSuggestedInput } from "@common/composants/dsfr/champs/form/FormSuggestedInput.tsx";
-import { Modale } from "@common/composants/dsfr/Modale.tsx";
 import { dateChiffre } from "@common/services/date.ts";
 import { EtablissementFDO } from "@fdo/modeles/EtablissementFDO.ts";
 import { AgentManagerInterface } from "@fdo/services/agent.ts";
@@ -15,13 +15,23 @@ import { z } from "zod";
 import { AgentFDOContexte } from "@fdo/routeur/contexte.ts";
 import type { LinkProps } from "@tanstack/react-router";
 
+export type ModaleAutoAffectationProps = {
+  contexte: AgentFDOContexte;
+  onAffecte: () => Promise<void> | void;
+};
+
+// Une seule modale d'affectation peut être affichée à la fois : elle est donc
+// partagée au niveau du module. Elle s'ouvre d'elle-même dès qu'elle est
+// montée.
+const _modale = creerModaleDsfr({
+  id: "modale-affectation-agent",
+  ouverteParDefaut: true,
+});
+
 export const ModaleAutoAffectation = ({
   contexte,
   onAffecte,
-}: {
-  contexte: AgentFDOContexte;
-  onAffecte: () => Promise<void> | void;
-}) => {
+}: ModaleAutoAffectationProps) => {
   const estGendarmerie = useMemo<boolean>(
     () => contexte.agent.administration.type === "GN",
     [contexte.agent.id],
@@ -69,19 +79,18 @@ export const ModaleAutoAffectation = ({
           etablissement: value.affectation.etablissement,
           dateAffectation: value.affectation.dateAffectation,
         });
+        _modale.close();
         await onAffecte();
       }
     },
   });
 
   return (
-    <Modale
+    <_modale.Component
+      className="mij-modale--non-refermable"
       iconId="fr-icon-community-line"
       title={`Affectation à ${estGendarmerie ? "une gendarmerie" : "un commissariat"}`}
-      id={"modale-affectation-agent"}
       concealingBackdrop={false}
-      ouverte={true}
-      refermable={false}
       size="large"
     >
       <p className="fr-my-1w">
@@ -276,6 +285,6 @@ export const ModaleAutoAffectation = ({
           ]}
         />
       </form>
-    </Modale>
+    </_modale.Component>
   );
 };
