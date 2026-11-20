@@ -1,7 +1,4 @@
-import {
-  AjouterPiecesJointesModale,
-  AjouterPiecesJointesModaleRef,
-} from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
+import { useAjouterPiecesJointesModale } from "@/apps/requerant/composants/piecesJointes/AjouterPiecesJointesModale.tsx";
 import { container } from "@/apps/requerant/container.ts";
 import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe.tsx";
 import {
@@ -39,7 +36,7 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import { default as React, useEffect, useMemo, useRef, useState } from "react";
+import { default as React, useEffect, useMemo, useState } from "react";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$id/3-pieces-jointes",
@@ -109,8 +106,11 @@ function Etape3PiecesJointes() {
   // ... que l'on écrase lorsque le routeur la met à jour après invalidation tout en évitant l'affichage du loader
   useEffect(() => setDossier(dossierCharge), [dossierCharge]);
 
-  // La référence vers la modale d'ajout de pièce jointe
-  const refModaleAjoutPieceJointe = useRef<AjouterPiecesJointesModaleRef>(null);
+  // La modale d'ajout de pièce jointe
+  const {
+    modale: AjouterPiecesJointesModale,
+    ouvrir: ouvrirModaleAjoutPieceJointe,
+  } = useAjouterPiecesJointesModale();
 
   // La pièce jointe sélectionnée pour être visualisée.
   const [pieceJointeSelectionnee, selectionnerPieceJointe] = useState<
@@ -210,7 +210,6 @@ function Etape3PiecesJointes() {
   return (
     <>
       <AjouterPiecesJointesModale
-        ref={refModaleAjoutPieceJointe}
         dossier={dossier}
         onComplete={async (
           piecesJointes: NouvellePieceJointe[],
@@ -248,9 +247,6 @@ function Etape3PiecesJointes() {
           await formulaire.validate("submit");
         }}
         typesPiecesjointes={typesPiecesJointesDemandes}
-        title="Ajouter des pièces jointes"
-        iconId={"fr-icon-add-line"}
-        size="medium"
       />
 
       <h1>Déclarer un bris de porte</h1>
@@ -307,9 +303,7 @@ function Etape3PiecesJointes() {
                       type: "button",
                     },
                     disabled: sauvegardeEnCours,
-                    onClick: () => {
-                      refModaleAjoutPieceJointe.current?.ouvrir();
-                    },
+                    onClick: () => ouvrirModaleAjoutPieceJointe(),
                   },
                 ]}
               />
@@ -454,7 +448,7 @@ function Etape3PiecesJointes() {
                         iconPosition="right"
                         disabled={sauvegardeEnCours}
                         onClick={() =>
-                          refModaleAjoutPieceJointe.current?.ouvrir(
+                          ouvrirModaleAjoutPieceJointe(
                             typePieceJointeSelectionne,
                           )
                         }
