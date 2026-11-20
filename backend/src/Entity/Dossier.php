@@ -57,7 +57,7 @@ class Dossier
     protected ?EtatDossier $etatDossier = null;
 
     #[ORM\OneToMany(targetEntity: EtatDossier::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
-    #[ORM\OrderBy(['dateEntree' => 'ASC'])]
+    #[ORM\OrderBy(['dateEntree' => \SortDirection::Ascending])]
     /** @var Collection<EtatDossier> */
     protected Collection $historiqueEtats;
 
@@ -80,6 +80,9 @@ class Dossier
 
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
+
+    #[ORM\OneToOne(targetEntity: RequeteSignatureRequerant::class, mappedBy: 'dossier', cascade: ['persist', 'remove'])]
+    protected ?RequeteSignatureRequerant $requeteSignatureRequerant = null;
 
     public function __construct()
     {
@@ -508,6 +511,18 @@ class Dossier
     public function setPropositionIndemnisation(float $propositionIndemnisation): self
     {
         $this->propositionIndemnisation = $propositionIndemnisation;
+
+        return $this;
+    }
+
+    public function getRequeteSignatureRequerant(): ?RequeteSignatureRequerant
+    {
+        return $this->requeteSignatureRequerant;
+    }
+
+    public function setRequeteSignatureRequerant(?RequeteSignatureRequerant $requeteSignatureRequerant): Dossier
+    {
+        $this->requeteSignatureRequerant = $requeteSignatureRequerant;
 
         return $this;
     }

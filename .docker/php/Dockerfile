@@ -26,7 +26,8 @@ RUN install-php-extensions \
     calendar \
     pdo pdo_pgsql pgsql \
     bcmath \
-    gd
+    gd \
+    amqp
 
 # PHP config : la même que sur CleverCloud. FrankenPHP charge aussi `/app/php.ini` (répertoire courant), mais la CLI
 # (bin/console, phpunit, composer) ne lit que `$PHP_INI_DIR/php.ini`.
