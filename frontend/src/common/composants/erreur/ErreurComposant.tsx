@@ -1,7 +1,9 @@
 import { MiseEnAvant } from "@/common/composants/dsfr/MiseEnAvant";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import artworkSystemErrorUrl from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/system/error.svg?url&no-inline";
-import React, { type ReactNode } from "react";
+import { Chargement } from "@/common/composants/dsfr/Chargement";
+import { ApplicationRechargeur } from "@/common/services/ApplicationRechargeur";
+import React, { type ReactNode, useEffect, useState } from "react";
 
 export const ErreurComposant = ({
   titre,
@@ -14,8 +16,26 @@ export const ErreurComposant = ({
   retour?: ReactNode;
   action?: ReactNode;
 }) => {
+  // Erreur de chargement de module (ex : chunk supprimé suite à un redéploiement) : on recharge la page une seule fois
+  const [rechargementEnCours, setRechargementEnCours] = useState(false);
+
+  useEffect(() => {
+    if (ApplicationRechargeur.rechargerSiErreurChargementModule(erreur)) {
+      setRechargementEnCours(true);
+    }
+  }, [erreur]);
+
   if (import.meta.env.DEV) {
     console.error(erreur);
+  }
+
+  if (rechargementEnCours) {
+    return (
+      <Chargement
+        titre="Mon Indemnisation Justice"
+        message="La plateforme doit être mise à jour, rechargement de la page en cours..."
+      />
+    );
   }
 
   return (
