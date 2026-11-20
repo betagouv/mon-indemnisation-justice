@@ -198,8 +198,14 @@ class DocumentManager
         );
     }
 
-    public function generer(Dossier $dossier, DocumentType $type, ?float $montantIndemnisation = null, ?MotifRejetBrisPorte $motifRejet = null, array $contexte = []): Document
-    {
+    public function generer(
+        Dossier $dossier,
+        DocumentType $type,
+        ?float $montantIndemnisation = null,
+        ?MotifRejetBrisPorte $motifRejet = null,
+        array $contexte = [],
+        bool $extraireObjets = false,
+    ): Document {
         if (!$type->estEditableAgent()) {
             throw new \LogicException("Les documents de type '$type->value' ne sont pas éditables");
 
@@ -214,7 +220,7 @@ class DocumentManager
                 $contexte
             ));
 
-        $document = $this->imprimanteCourrier->imprimerDocument($document)
+        $document = $this->imprimanteCourrier->imprimerDocument($document, $extraireObjets)
             ->setOriginalFilename($type->nommerFichier($dossier));
 
         $this->em->persist($document);

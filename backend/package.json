@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "@gouvfr/dsfr": "^1.14.1",
+    "pdf-lib": "^1.17.1",
     "puppeteer": "^24.18.0",
     "remixicon": "^4.6.0"
   },

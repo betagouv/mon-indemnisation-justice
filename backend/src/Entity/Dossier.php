@@ -171,6 +171,11 @@ class Dossier
             : $this->requerantPersonnePhysique?->getPersonne();
     }
 
+    public function getAdresseRequerant(): ?Adresse
+    {
+        return $this->estPersonneMorale() ? $this->requerantPersonneMorale->getAdresse() : $this->requerantPersonnePhysique->getAdresse();
+    }
+
     public function getCourrielRequerant(): string
     {
         return $this->getRequerantPersonne()->getCourriel();
@@ -513,6 +518,11 @@ class Dossier
         $this->propositionIndemnisation = $propositionIndemnisation;
 
         return $this;
+    }
+
+    public function estEligibleSignatureElectronique(): bool
+    {
+        return DossierType::BRIS_PORTE === $this->type && !$this->estPersonneMorale();
     }
 
     public function getRequeteSignatureRequerant(): ?RequeteSignatureRequerant
