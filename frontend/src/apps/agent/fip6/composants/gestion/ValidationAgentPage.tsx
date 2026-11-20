@@ -1,4 +1,7 @@
-import { Modale, ModaleProps, ModaleRef } from "@common/composants/dsfr/Modale";
+import {
+  ModaleDsfr,
+  useModaleDsfr,
+} from "@common/composants/dsfr/useModaleDsfr.ts";
 import { Loader } from "@common/composants/Loader.tsx";
 import { Administration, Agent } from "@common/models";
 import {
@@ -25,14 +28,7 @@ import { RegisteredLinkProps } from "@codegouvfr/react-dsfr/src/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { UseNavigateResult } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, {
-  ChangeEvent,
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 
 const ValidationAgentLigne = ({
   agent,
@@ -430,10 +426,7 @@ const modaleEditionAgent = createModal({
   isOpenedByDefault: false,
 });
 
-export type ModaleSelectionRechercheProps = Omit<
-  ModaleProps,
-  "children" | "id" | "title" | "titleAs" | "titleProps"
-> & {
+export type ModaleSelectionRechercheProps = {
   onSelection: ({
     recherche,
     administrations,
@@ -447,106 +440,112 @@ export type ModaleSelectionRechercheProps = Omit<
   };
 };
 
-const ModaleSelectionRecherche = forwardRef<
-  ModaleRef,
-  ModaleSelectionRechercheProps
->(({ onSelection, criteres, ...props }, ref) => {
-  const refModale = useRef<ModaleRef>(null);
+/**
+ * Crée le composant de modale de suppression de pièce jointe, lié à la modale DSFR
+ * `modale`.
+ *
+ * Chaque appel retournant un nouveau composant, l'appel doit donc être mémoïsé.
+ */
+const creerModaleSelectionRecherche = (modale: ModaleDsfr) =>
+  function ModaleSelectionRecherche({
+    onSelection,
+    criteres,
+  }: ModaleSelectionRechercheProps) {
+    const [recherche, setRecherche] = useState<string>(criteres.recherche);
+    const [administrations, setAdministrations] = useState<Administration[]>(
+      criteres.administrations,
+    );
 
-  const [recherche, setRecherche] = useState<string>(criteres.recherche);
-  const [administrations, setAdministrations] = useState<Administration[]>(
-    criteres.administrations,
-  );
+    return (
+      <modale.Component title="Critères de recherche" size="large">
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-lg-6">
+            <Input
+              label="Nom"
+              nativeInputProps={{
+                defaultValue: recherche,
+                onChange: (e) => setRecherche(() => e.target.value || ""),
+              }}
+            />
+          </div>
 
-  useImperativeHandle(ref, () => ({
-    ouvrir: () => {
-      refModale.current?.ouvrir();
-    },
+          <div className="fr-col-12 fr-col-lg-6">
+            <Checkbox
+              legend="Administration de rattachement"
+              options={Administration.liste().map(
+                (administration: Administration) => ({
+                  label: administration.libelle,
+                  nativeInputProps: {
+                    name: `administration-${administration.type}`,
+                    value: administration.type,
+                    defaultChecked: administrations.includes(administration),
+                    onChange: (e) =>
+                      setAdministrations((administrations: Administration[]) =>
+                        administrations
+                          .filter((a) => a.type !== e.target.value)
+                          .concat(
+                            ...(e.target.checked
+                              ? [
+                                  Administration.pourType(
+                                    e.target.value as TypeAdministration,
+                                  ),
+                                ]
+                              : []),
+                          ),
+                      ),
+                  },
+                }),
+              )}
+              state="default"
+            />
+          </div>
 
-    fermer: () => {
-      refModale.current?.fermer();
-    },
-  }));
-
-  return (
-    <Modale
-      {...props}
-      ref={refModale}
-      title="Critères de recherche"
-      size="large"
-      id="modale-selection-recherche"
-    >
-      <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12 fr-col-lg-6">
-          <Input
-            label="Nom"
-            nativeInputProps={{
-              defaultValue: recherche,
-              onChange: (e) => setRecherche(() => e.target.value || ""),
-            }}
-          />
-        </div>
-
-        <div className="fr-col-12 fr-col-lg-6">
-          <Checkbox
-            legend="Administration de rattachement"
-            options={Administration.liste().map(
-              (administration: Administration) => ({
-                label: administration.libelle,
-                nativeInputProps: {
-                  name: `administration-${administration.type}`,
-                  value: administration.type,
-                  defaultChecked: administrations.includes(administration),
-                  onChange: (e) =>
-                    setAdministrations((administrations: Administration[]) =>
-                      administrations
-                        .filter((a) => a.type !== e.target.value)
-                        .concat(
-                          ...(e.target.checked
-                            ? [
-                                Administration.pourType(
-                                  e.target.value as TypeAdministration,
-                                ),
-                              ]
-                            : []),
-                        ),
-                    ),
+          <ButtonsGroup
+            inlineLayoutWhen="always"
+            alignment="right"
+            className="fr-col-12"
+            buttons={[
+              {
+                children: "Fermer",
+                priority: "secondary",
+                onClick: () => modale.close(),
+              },
+              {
+                children: "Valider",
+                priority: "primary",
+                onClick: () => {
+                  onSelection({
+                    recherche,
+                    administrations,
+                  });
+                  modale.close();
                 },
-              }),
-            )}
-            state="default"
+              },
+            ]}
           />
         </div>
+      </modale.Component>
+    );
+  };
 
-        <ButtonsGroup
-          inlineLayoutWhen="always"
-          alignment="right"
-          className="fr-col-12"
-          buttons={[
-            {
-              children: "Fermer",
-              priority: "secondary",
-              onClick: () => {
-                refModale.current?.fermer();
-              },
-            },
-            {
-              children: "Valider",
-              priority: "primary",
-              onClick: () => {
-                onSelection({
-                  recherche,
-                  administrations,
-                });
-                refModale.current?.fermer();
-              },
-            },
-          ]}
-        />
-      </div>
-    </Modale>
+/**
+ * Fournit une modale de sélection des critères de recherche, propre au
+ * composant appelant, ainsi que les fonctions pour l'ouvrir et la fermer.
+ */
+const useModaleSelectionRecherche = () => {
+  const modale = useModaleDsfr("modale-selection-recherche");
+
+  const ModaleSelectionRecherche = useMemo(
+    () => creerModaleSelectionRecherche(modale),
+    [modale],
   );
-});
+
+  return {
+    modale: ModaleSelectionRecherche,
+    ouvrir: modale.open,
+    fermer: modale.close,
+  };
+};
 
 export type RequeteRechercheAgent = {
   actifs: boolean;
@@ -573,7 +572,10 @@ export const ValidationAgentPage = ({
     AgentManagerInterface.$,
   );
 
-  const refModaleSelectionRecherche = useRef<ModaleRef>(null);
+  const {
+    modale: ModaleSelectionRecherche,
+    ouvrir: ouvrirModaleSelectionRecherche,
+  } = useModaleSelectionRecherche();
 
   const queryClient = useQueryClient();
 
@@ -610,7 +612,6 @@ export const ValidationAgentPage = ({
       </modaleEditionAgent.Component>
 
       <ModaleSelectionRecherche
-        ref={refModaleSelectionRecherche}
         criteres={{
           administrations: requete.administrations || [],
           recherche: requete.requete || "",
@@ -649,9 +650,7 @@ export const ValidationAgentPage = ({
                 {
                   iconId: "fr-icon-equalizer-line",
                   priority: "secondary",
-                  onClick: () => {
-                    refModaleSelectionRecherche.current?.ouvrir();
-                  },
+                  onClick: () => ouvrirModaleSelectionRecherche(),
                   children: "Critères de recherche",
                   title: "Critères de recherche",
                   size: "medium",
