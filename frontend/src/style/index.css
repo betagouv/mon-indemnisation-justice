@@ -15,6 +15,11 @@ main {
     }
 }
 
+/** Masquer le bouton de fermeture d'une modale DSFR qui ne doit pas être refermée par l'usager **/
+.mij-modale--non-refermable .fr-modal__header .fr-btn--close {
+    display: none;
+}
+
 .fr-input-group--error::before {
     background-image: none !important;
 }
