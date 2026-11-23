@@ -45,7 +45,9 @@ class GestionnaireSignature
                 $dossier,
             ));
 
-            $this->em->persist($requeteSignature);
+            $dossier->setRequeteSignatureRequerant($requeteSignature);
+
+            $this->em->persist($dossier);
             $this->em->flush();
 
             return $requeteSignature;
@@ -84,9 +86,9 @@ class GestionnaireSignature
                 hauteur: $objets['visuel-signature']['height'],
                 numeroPage: $objets['visuel-signature']['page'],
             );
-        } else {
-
         }
+
+
 
         $contenu = $this->documentManager->getContenuTexte($declarationAcceptation);
 

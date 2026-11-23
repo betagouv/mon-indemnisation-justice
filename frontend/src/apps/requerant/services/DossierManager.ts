@@ -27,11 +27,7 @@ export type NouvellePieceJointe = {
 };
 
 export type ContexteSignatureElectronique = {
-  rib: {
-    estAvocat: boolean;
-    avocat?: string;
-    rib?: string;
-  };
+  rib: string;
 };
 
 export interface DossierManagerInterface {
@@ -263,9 +259,34 @@ export class ApiDossierManager implements DossierManagerInterface {
     id: number,
     contexte: ContexteSignatureElectronique,
   ): Promise<Dossier> {
-    await new Promise((resolve) => setTimeout(resolve, 2500));
+    const reponse = await fetch(
+      // Route 'api_requerant_dossier_bris_porte_demarrer_signature'
+      `/api/requerant/dossier/bris-de-porte/${id}/demarrer-signature`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contexte),
+      },
+    );
 
-    return (await this.getDossier(id)) as Dossier;
+    const data = await reponse.json();
+
+    if (!reponse.ok) {
+      throw new Error(data.erreur ?? data.detail);
+    } else {
+      const dossier = plainToInstance(Dossier, data);
+      this.dossiers.set(id, {
+        original: dossier,
+        modifie: dossier,
+      });
+      // On vide la liste des dossiers pour forcer le rafraîchissement.
+      this.mesDossiers = undefined;
+
+      return dossier;
+    }
   }
 
   async accepter(

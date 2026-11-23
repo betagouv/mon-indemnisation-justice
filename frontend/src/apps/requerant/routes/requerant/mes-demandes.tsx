@@ -1,7 +1,7 @@
 import { DossierApercu } from "@/apps/requerant/models/Dossier.ts";
 import { EtatDossierType } from "@/apps/requerant/models/EtatDossier.ts";
 import { RouteurRequerant } from "@/apps/requerant/routeur";
-import DossierManagerInterface from "@/apps/requerant/services/DossierManager.ts";
+import { DossierManagerInterface } from "@/apps/requerant/services/DossierManager.ts";
 import {
   ModaleDsfr,
   useModaleDsfr,

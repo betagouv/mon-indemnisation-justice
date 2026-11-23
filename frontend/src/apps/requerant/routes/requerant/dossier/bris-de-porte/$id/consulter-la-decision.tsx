@@ -12,6 +12,7 @@ import { useInjection } from "inversify-react";
 import React from "react";
 import { SignatureManuelleModale } from "@/apps/requerant/composants/signature/SignatureManuelleModale.tsx";
 import { SignatureElectroniqueModale } from "@/apps/requerant/composants/signature/SignatureElectroniqueModale.tsx";
+import { convertirEnEuros } from "@common/services/devise.ts";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$id/consulter-la-decision",
@@ -75,15 +76,17 @@ function ConsulterDecisionBrisPorte() {
                 <span className="fr-text--bold">
                   montant de l’indemnisation proposé
                 </span>
-                est de{" "}
+                &nbsp;est de{" "}
                 <span className="fr-text--bold">
-                  {(dossier.montantIndemnisation as number).toLocaleString()}
+                  {convertirEnEuros(dossier.montantIndemnisation as number)}
                 </span>
                 . Pour{" "}
                 <span className="fr-text--bold">accepter la proposition</span>{" "}
                 et
-                <span className="fr-text--bold">déclencher le versement</span>,
-                veuillez cliquer sur le bouton{" "}
+                <span className="fr-text--bold">
+                  &nbsp;déclencher le versement
+                </span>
+                , veuillez cliquer sur le bouton{" "}
                 <span className="fr-text--bold">
                   « Accepter la proposition »
                 </span>
@@ -139,7 +142,9 @@ function ConsulterDecisionBrisPorte() {
                   ? "Proposition d'indemnisation"
                   : "Courrier de rejet",
                 iconId: "fr-icon-checkbox-circle-line",
-                isDefault: true,
+                isDefault:
+                  !dossier.estEligibleSignatureElectronique ||
+                  !dossier.requeteSignature,
                 content: dossier.getCourrierDecision() && (
                   <AfficherPieceJointe
                     pieceJointe={dossier.getCourrierDecision() as PieceJointe}
@@ -148,13 +153,28 @@ function ConsulterDecisionBrisPorte() {
                 ),
               },
               ...(dossier.estAccepte &&
-              !dossier.estEligibleSignatureElectronique
+              (!dossier.estEligibleSignatureElectronique ||
+                dossier.requeteSignature)
                 ? [
                     {
                       label: "Déclaration d'acceptation",
-                      isDefault: false,
+                      isDefault:
+                        dossier.estEligibleSignatureElectronique &&
+                        !!dossier.requeteSignature,
                       iconId: "fr-icon-chat-check-line" as FrIconClassName,
-                      content:
+                      content: dossier.estEligibleSignatureElectronique ? (
+                        <iframe
+                          src={dossier.requeteSignature?.urlExterne}
+                          title="Signature électronique de la déclaration d'acceptation"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            height: "85vh",
+                            minHeight: "600px",
+                            border: "none",
+                          }}
+                        />
+                      ) : (
                         dossier.getFormulaireDeclarationAcceptation() && (
                           <AfficherPieceJointe
                             pieceJointe={
@@ -163,7 +183,8 @@ function ConsulterDecisionBrisPorte() {
                             }
                             telecharger={false}
                           />
-                        ),
+                        )
+                      ),
                     },
                   ]
                 : []),
