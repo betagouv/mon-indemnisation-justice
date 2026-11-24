@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Service\DocumentManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -77,19 +78,19 @@ class DocumentController extends AbstractController
     }
 
     #[Route('/{id}/{filename}', name: 'document_download', methods: ['GET'])]
-    public function download(#[MapEntity(id: 'id')] Document $document, string $filename, Request $request): Response
+    public function download(#[MapEntity(id: 'id')] Document $document, string $filename, Request $request, Security $security): Response
     {
         if ($document->getFilename() !== $filename) {
             throw new NotFoundHttpException('Document non trouvé');
         }
 
         /** @var Usager $usager */
-        $usager = $request->getUser();
+        $usager = $security->getUser();
 
-        if (in_array($document->getType(), [DocumentType::TYPE_COURRIER_MINISTERE, DocumentType::TYPE_COURRIER_REQUERANT, DocumentType::TYPE_ARRETE_PAIEMENT, DocumentType::TYPE_FORMULAIRE_ACCEPTATION]) && !$document->getDossier()->estDecide()) {
+        if (!$document->getDossier()->estDecide() && in_array($document->getType(), [DocumentType::TYPE_COURRIER_MINISTERE, DocumentType::TYPE_COURRIER_REQUERANT, DocumentType::TYPE_ARRETE_PAIEMENT, DocumentType::TYPE_FORMULAIRE_ACCEPTATION])) {
             $this->logger->warning("Tentative d'accès à un document non communiqué", [
                 'document' => $document->getId(),
-                'usager' => $usager->getId(),
+                'usager' => $usager?->getId(),
             ]);
             throw new NotFoundHttpException('Document non trouvé');
         }
