@@ -102,14 +102,38 @@ export default defineConfig(({ mode }: UserConfig): UserConfig => {
         : []),
     ],
     resolve: {
-      alias: {
-        "@": fileURLToPath(new URL("./src", import.meta.url)),
-        "@common": fileURLToPath(new URL("./src/common", import.meta.url)),
-        "@fdo": fileURLToPath(new URL("./src/apps/agent/fdo", import.meta.url)),
-        "@fip6": fileURLToPath(
-          new URL("./src/apps/agent/fip6", import.meta.url),
-        ),
-      },
+      alias: [
+        {
+          find: "@",
+          replacement: fileURLToPath(new URL("./src", import.meta.url)),
+        },
+        {
+          find: "@common",
+          replacement: fileURLToPath(new URL("./src/common", import.meta.url)),
+        },
+        {
+          find: "@fdo",
+          replacement: fileURLToPath(
+            new URL("./src/apps/agent/fdo", import.meta.url),
+          ),
+        },
+        {
+          find: "@fip6",
+          replacement: fileURLToPath(
+            new URL("./src/apps/agent/fip6", import.meta.url),
+          ),
+        },
+        // pdfjs-dist >= 6 utilise des API récentes (ex : Map.prototype.getOrInsertComputed) non supportées par tous les
+        // navigateurs : on force le build "legacy", i.e. "polyfillé"
+        {
+          find: /^pdfjs-dist$/,
+          replacement: path.join(pdfjsDistPath, "legacy/build/pdf.mjs"),
+        },
+        {
+          find: /^pdfjs-dist\/web\/pdf_viewer\.mjs$/,
+          replacement: path.join(pdfjsDistPath, "legacy/web/pdf_viewer.mjs"),
+        },
+      ],
     }, // TODO retirer la console et le debugger au build https://github.com/vitejs/vite/discussions/7920#discussioncomment-2709119
     oxc: {
       target: "esnext",
