@@ -68,6 +68,8 @@ async function extraireContenuEtObjets(pdf, prefix = 'objet://') {
             y: pageHeight - Math.max(y1, y2),
             width: x2 - x1,
             height: y2 - y1,
+            // Hauteur de la page, pour les prestataires qui placent l'origine en bas à gauche (repère PDF natif)
+            pageHeight,
           }
       ]);
 

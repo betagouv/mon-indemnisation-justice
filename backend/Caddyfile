@@ -25,6 +25,12 @@
 
 	import headers_securite
 
+	mercure {
+		protocol_version_compatibility 8
+		publisher_jwt {env.MERCURE_PUBLISHER_JWT_KEY}
+		subscriber_jwt {env.MERCURE_SUBSCRIBER_JWT_KEY}
+	}
+
 	php_server
 
 	# Les réponses d'erreur générées par Caddy (404, 500…) court-circuitent la directive `header` ci-dessus : il faut

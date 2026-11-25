@@ -9,10 +9,12 @@ import { FrIconClassName } from "@codegouvfr/react-dsfr/fr/generatedFromCss/clas
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { createFileRoute, notFound, useRouter } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SignatureManuelleModale } from "@/apps/requerant/composants/signature/SignatureManuelleModale.tsx";
 import { SignatureElectroniqueModale } from "@/apps/requerant/composants/signature/SignatureElectroniqueModale.tsx";
 import { convertirEnEuros } from "@common/services/devise.ts";
+import { useAbonnementMercure } from "@common/hooks/useAbonnementMercure.ts";
+import { plainToInstance } from "class-transformer";
 
 export const Route = createFileRoute(
   "/requerant/dossier/bris-de-porte/$id/consulter-la-decision",
@@ -57,7 +59,23 @@ function ConsulterDecisionBrisPorte() {
   const routeur = useRouter<typeof RouteurRequerant>();
 
   // Récupérer la référence depuis le paramètre de la route
-  const { dossier }: { dossier: Dossier } = Route.useLoaderData();
+  const { dossier: dossierCharge }: { dossier: Dossier } =
+    Route.useLoaderData();
+
+  // Le dossier affiché, rechargé par le loader ou mis à jour en direct par Mercure
+  const [dossier, setDossier] = useState<Dossier>(dossierCharge);
+  useEffect(() => setDossier(dossierCharge), [dossierCharge]);
+
+  // Tant que la signature électronique est en cours, être notifié du dossier à jour dès qu'elle est validée
+  useAbonnementMercure<object>(
+    dossier.requeteSignature && !dossier.estAccepteRequerant
+      ? `requerant/signature/${dossier.requeteSignature.id}`
+      : null,
+    (donnees) => {
+      console.log("données reçues", donnees);
+      setDossier(plainToInstance(Dossier, donnees));
+    },
+  );
 
   return (
     <div className="fr-container">
@@ -136,6 +154,7 @@ function ConsulterDecisionBrisPorte() {
 
         <div className="fr-col-12">
           <Tabs
+            key={`signature-${dossier.requeteSignature?.id ? "electronique-" + dossier.requeteSignature?.id : "manuelle"}-${dossier.estAccepteRequerant ? "ok" : "en-cours"}`}
             tabs={[
               {
                 label: dossier.estAccepte
@@ -162,29 +181,33 @@ function ConsulterDecisionBrisPorte() {
                         dossier.estEligibleSignatureElectronique &&
                         !!dossier.requeteSignature,
                       iconId: "fr-icon-chat-check-line" as FrIconClassName,
-                      content: dossier.estEligibleSignatureElectronique ? (
-                        <iframe
-                          src={dossier.requeteSignature?.urlExterne}
-                          title="Signature électronique de la déclaration d'acceptation"
-                          style={{
-                            display: "block",
-                            width: "100%",
-                            height: "85vh",
-                            minHeight: "600px",
-                            border: "none",
-                          }}
-                        />
-                      ) : (
-                        dossier.getFormulaireDeclarationAcceptation() && (
-                          <AfficherPieceJointe
-                            pieceJointe={
-                              dossier.getDeclarationAcceptation() ??
-                              (dossier.getFormulaireDeclarationAcceptation() as PieceJointe)
-                            }
-                            telecharger={false}
+                      content:
+                        dossier.estEligibleSignatureElectronique &&
+                        !dossier.estAccepteRequerant ? (
+                          <iframe
+                            allow="geolocation"
+                            src={dossier.requeteSignature?.urlExterne}
+                            title="Signature électronique de la déclaration d'acceptation"
+                            style={{
+                              display: "block",
+                              width: "100%",
+                              height: "85vh",
+                              minHeight: "600px",
+                              border: "none",
+                            }}
                           />
-                        )
-                      ),
+                        ) : (
+                          (dossier.getDeclarationAcceptation() ??
+                            dossier.getFormulaireDeclarationAcceptation()) && (
+                            <AfficherPieceJointe
+                              pieceJointe={
+                                (dossier.getDeclarationAcceptation() ??
+                                  dossier.getFormulaireDeclarationAcceptation()) as PieceJointe
+                              }
+                              telecharger={false}
+                            />
+                          )
+                        ),
                     },
                   ]
                 : []),

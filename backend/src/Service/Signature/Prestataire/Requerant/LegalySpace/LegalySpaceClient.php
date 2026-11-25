@@ -2,8 +2,6 @@
 
 namespace MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\LegalySpace;
 
-use MonIndemnisationJustice\Entity\Document;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Service\DocumentManager;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mime\Part\DataPart;
@@ -113,7 +111,6 @@ class LegalySpaceClient
         string $nom,
         string $courriel,
         ?string $telephone,
-        ?string $lien,
     ): string {
         return $this->extraireIdentifiantCree(
             $this->httpClient->request('POST', "processes/{$idProcess}/signers", [
@@ -129,14 +126,9 @@ class LegalySpaceClient
                         'cancelled' => false,
                         'invite' => true,
                     ],
-                    'cta' => $lien ? [
-                        // TODO générer un lien vers la signature
-                        'link' => $lien,
-                        'title' => "Accepter l'indemnisation",
-                        'label' => "Accepter l'indemnisation",
-                        // 'description' => "",
-                        // 'redirect' => true,
-                    ] : null,
+                    // On ne personnalise pas le lien, car une fois le document signé LegalySpace redirige vers cette page.
+                    // Or, nous privilégions une signature _in app_ via l'affichage en iframe
+                    'cta' => null,
                 ], fn ($valeur) => null !== $valeur),
             ])
         );

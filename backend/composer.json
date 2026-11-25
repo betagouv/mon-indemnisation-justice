@@ -45,6 +45,7 @@
     "symfony/http-client": "8.1.*",
     "symfony/intl": "8.1.*",
     "symfony/mailer": "8.1.*",
+    "symfony/mercure-bundle": "*",
     "symfony/messenger": "8.1.*",
     "symfony/mime": "8.1.*",
     "symfony/monolog-bundle": "^v4.0",

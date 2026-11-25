@@ -85,6 +85,7 @@ class GestionnaireSignature
                 largeur: $objets['visuel-signature']['width'],
                 hauteur: $objets['visuel-signature']['height'],
                 numeroPage: $objets['visuel-signature']['page'],
+                hauteurPage: (int) round($objets['visuel-signature']['pageHeight'] ?? EmplacementSignature::HAUTEUR_PAGE_A4),
             );
         }
 

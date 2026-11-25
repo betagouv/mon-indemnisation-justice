@@ -8,6 +8,8 @@ use MonIndemnisationJustice\Api\Requerant\Voter\RequerantDossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
 use MonIndemnisationJustice\Service\Signature\GestionnaireSignature;
+use MonIndemnisationJustice\Service\Signature\DiffuseurSignatureRequerant;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +25,7 @@ class DemarrerSignatureEndpoint
     public function __construct(
         protected readonly GestionnaireSignature $gestionnaireSignature,
         protected readonly NormalizerInterface $normalizer,
+        protected readonly DiffuseurSignatureRequerant $diffuseurSignatureRequerant,
     ) {
     }
 
@@ -31,6 +34,7 @@ class DemarrerSignatureEndpoint
         Dossier $dossier,
         #[MapRequestPayload]
         ContexteSignatureElectroniqueDto $contexte,
+        Request $request,
     ) {
         if (EtatDossierType::DOSSIER_OK_A_APPROUVER !== $dossier->getEtatDossier()->getEtat()) {
             return new JsonResponse([
@@ -39,6 +43,7 @@ class DemarrerSignatureEndpoint
         }
 
         $requeteSignature = $this->gestionnaireSignature->initierSignatureRequerant($dossier);
+        $this->diffuseurSignatureRequerant->autoriserAbonnement($request, $requeteSignature);
 
         return new JsonResponse(
             $this->normalizer->normalize(DossierDto::depuisDossier($requeteSignature->getDossier()), 'json'),
