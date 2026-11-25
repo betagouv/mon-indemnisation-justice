@@ -277,6 +277,7 @@ export const SignatureElectroniqueModale = ({
         buttons={[
           {
             children: "Accepter la proposition",
+            disabled: !!dossier.requeteSignature,
             onClick: () => _modale.open(),
           },
         ]}

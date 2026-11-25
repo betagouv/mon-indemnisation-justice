@@ -3,7 +3,6 @@
 namespace MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\LegalySpace;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
 use MonIndemnisationJustice\Service\Signature\DocumentASigner;
 use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignature;
@@ -44,8 +43,9 @@ class PrestataireSignatureLegalySpace implements PrestataireSignatureRequerantIn
         $this->baseAppUri = rtrim($appBaseUri ?? 'https://esign.legalyspace.com', '/');
     }
 
-    public function creerRequeteSignature(Dossier $dossier, DocumentASigner $documentASigner): RequeteSignatureRequerant
+    public function activerRequeteSignature(RequeteSignatureRequerant $requeteSignature, DocumentASigner $documentASigner): RequeteSignatureRequerant
     {
+        $dossier = $requeteSignature->getDossier();
         $requerant = $dossier->getRequerantPersonne();
         $telephone = self::formaterTelephone($requerant->getTelephone());
 
@@ -90,10 +90,9 @@ class PrestataireSignatureLegalySpace implements PrestataireSignatureRequerantIn
 
         $this->legalySpaceClient->demarrerProcess($idProcess);
 
-        return new RequeteSignatureRequerant()
-            ->setDossier($dossier)
+        return $requeteSignature
             ->setIdentifiantExterieur($idProcess)
-            ->setDateCreation(new \DateTimeImmutable())
+            ->activer()
             ->setUrlSignatureExterne("{$this->baseAppUri}/process/{$idProcess}/signer/{$idSignataire}");
     }
 

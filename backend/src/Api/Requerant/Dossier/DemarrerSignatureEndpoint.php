@@ -7,13 +7,13 @@ use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\DossierDto;
 use MonIndemnisationJustice\Api\Requerant\Voter\RequerantDossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Message\ActivationSignatureRequerant;
 use MonIndemnisationJustice\Service\Signature\GestionnaireSignature;
-use MonIndemnisationJustice\Service\Signature\DiffuseurSignatureRequerant;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -25,7 +25,6 @@ class DemarrerSignatureEndpoint
     public function __construct(
         protected readonly GestionnaireSignature $gestionnaireSignature,
         protected readonly NormalizerInterface $normalizer,
-        protected readonly DiffuseurSignatureRequerant $diffuseurSignatureRequerant,
     ) {
     }
 
@@ -34,7 +33,7 @@ class DemarrerSignatureEndpoint
         Dossier $dossier,
         #[MapRequestPayload]
         ContexteSignatureElectroniqueDto $contexte,
-        Request $request,
+        MessageBusInterface $bus,
     ) {
         if (EtatDossierType::DOSSIER_OK_A_APPROUVER !== $dossier->getEtatDossier()->getEtat()) {
             return new JsonResponse([
@@ -42,8 +41,11 @@ class DemarrerSignatureEndpoint
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        // TODO vérifier que le dossier n'a pas déjà une signature active
+
         $requeteSignature = $this->gestionnaireSignature->initierSignatureRequerant($dossier);
-        $this->diffuseurSignatureRequerant->autoriserAbonnement($request, $requeteSignature);
+        $bus->dispatch(new ActivationSignatureRequerant(id: $requeteSignature->getId(), contexte: $contexte));
+
 
         return new JsonResponse(
             $this->normalizer->normalize(DossierDto::depuisDossier($requeteSignature->getDossier()), 'json'),

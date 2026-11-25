@@ -9,9 +9,14 @@ import { FrIconClassName } from "@codegouvfr/react-dsfr/fr/generatedFromCss/clas
 import Tabs from "@codegouvfr/react-dsfr/Tabs";
 import { createFileRoute, notFound, useRouter } from "@tanstack/react-router";
 import { useInjection } from "inversify-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SignatureManuelleModale } from "@/apps/requerant/composants/signature/SignatureManuelleModale.tsx";
 import { SignatureElectroniqueModale } from "@/apps/requerant/composants/signature/SignatureElectroniqueModale.tsx";
+import {
+  DeclarationAcceptation,
+  estSignatureEnCours,
+  etatDeclarationAcceptation,
+} from "@/apps/requerant/composants/signature/DeclarationAcceptation.tsx";
 import { convertirEnEuros } from "@common/services/devise.ts";
 import { useAbonnementMercure } from "@common/hooks/useAbonnementMercure.ts";
 import { plainToInstance } from "class-transformer";
@@ -50,6 +55,8 @@ export const Route = createFileRoute(
   },
 });
 
+type Onglet = "decision" | "declaration";
+
 function ConsulterDecisionBrisPorte() {
   const dossierManager = useInjection<DossierManagerInterface>(
     DossierManagerInterface.$,
@@ -66,15 +73,49 @@ function ConsulterDecisionBrisPorte() {
   const [dossier, setDossier] = useState<Dossier>(dossierCharge);
   useEffect(() => setDossier(dossierCharge), [dossierCharge]);
 
-  // Tant que la signature électronique est en cours, être notifié du dossier à jour dès qu'elle est validée
-  useAbonnementMercure<object>(
-    dossier.requeteSignature && !dossier.estAccepteRequerant
-      ? `requerant/signature/${dossier.requeteSignature.id}`
-      : null,
-    (donnees) => {
-      console.log("données reçues", donnees);
-      setDossier(plainToInstance(Dossier, donnees));
-    },
+  // Recevoir le dossier à jour dès qu'il change (ex : signature électronique validée). Le cookie d'abonnement est
+  // posé par l'API au chargement du dossier (cf. `DiffuseurDossierRequerant`)
+  useAbonnementMercure<object>(`requerant/dossier/${dossier.id}`, (donnees) => {
+    setDossier(plainToInstance(Dossier, donnees));
+  });
+
+  const etatDeclaration = useMemo(
+    () => etatDeclarationAcceptation(dossier),
+    [dossier],
+  );
+
+  // Onglet sélectionné, mémorisé pour survivre aux mises à jour du dossier (Mercure, rechargement par le routeur).
+  // Au chargement, la déclaration est affichée si une signature électronique est en cours
+  const [ongletSelectionne, setOngletSelectionne] = useState<Onglet>(() =>
+    estSignatureEnCours(etatDeclarationAcceptation(dossierCharge))
+      ? "declaration"
+      : "decision",
+  );
+
+  // L'onglet de la déclaration peut ne pas (ou plus) exister : on se rabat alors sur celui de la décision
+  const onglet: Onglet =
+    etatDeclaration === "absente" ? "decision" : ongletSelectionne;
+
+  const onglets = useMemo(
+    () => [
+      {
+        tabId: "decision",
+        label: dossier.estAccepte
+          ? "Proposition d'indemnisation"
+          : "Courrier de rejet",
+        iconId: "fr-icon-checkbox-circle-line" as FrIconClassName,
+      },
+      ...(etatDeclaration !== "absente"
+        ? [
+            {
+              tabId: "declaration",
+              label: "Déclaration d'acceptation",
+              iconId: "fr-icon-chat-check-line" as FrIconClassName,
+            },
+          ]
+        : []),
+    ],
+    [dossier.estAccepte, etatDeclaration],
   );
 
   return (
@@ -108,9 +149,15 @@ function ConsulterDecisionBrisPorte() {
                 <span className="fr-text--bold">
                   « Accepter la proposition »
                 </span>
-                , ensuite{" "}
-                <span className="fr-text--bold">signer et téléverser</span> la
-                déclaration d’acceptation ci-jointe en suivant les instructions.
+                , pour ensuite{" "}
+                <span className="fr-text--bold">
+                  signer
+                  {!dossier.estEligibleSignatureElectronique && (
+                    <> et téléverser</>
+                  )}
+                </span>{" "}
+                la déclaration d’acceptation ci-jointe en suivant les
+                instructions.
               </p>
             </>
           ) : (
@@ -140,6 +187,8 @@ function ConsulterDecisionBrisPorte() {
               onDemarrer={async (contexte) => {
                 await dossierManager.demarrerSignature(dossier.id, contexte);
                 await routeur.invalidate();
+                // Afficher la signature électronique (ou sa préparation) dès son démarrage
+                setOngletSelectionne("declaration");
               }}
             />
           ) : (
@@ -148,71 +197,32 @@ function ConsulterDecisionBrisPorte() {
               onSigne={async (fichierSigne: File) => {
                 await dossierManager.accepter(dossier.id, fichierSigne);
                 await routeur.invalidate();
+                // Afficher la déclaration signée qui vient d'être déposée
+                setOngletSelectionne("declaration");
               }}
             />
           ))}
 
         <div className="fr-col-12">
           <Tabs
-            key={`signature-${dossier.requeteSignature?.id ? "electronique-" + dossier.requeteSignature?.id : "manuelle"}-${dossier.estAccepteRequerant ? "ok" : "en-cours"}`}
-            tabs={[
-              {
-                label: dossier.estAccepte
-                  ? "Proposition d'indemnisation"
-                  : "Courrier de rejet",
-                iconId: "fr-icon-checkbox-circle-line",
-                isDefault:
-                  !dossier.estEligibleSignatureElectronique ||
-                  !dossier.requeteSignature,
-                content: dossier.getCourrierDecision() && (
-                  <AfficherPieceJointe
-                    pieceJointe={dossier.getCourrierDecision() as PieceJointe}
-                    telecharger={false}
-                  />
-                ),
-              },
-              ...(dossier.estAccepte &&
-              (!dossier.estEligibleSignatureElectronique ||
-                dossier.requeteSignature)
-                ? [
-                    {
-                      label: "Déclaration d'acceptation",
-                      isDefault:
-                        dossier.estEligibleSignatureElectronique &&
-                        !!dossier.requeteSignature,
-                      iconId: "fr-icon-chat-check-line" as FrIconClassName,
-                      content:
-                        dossier.estEligibleSignatureElectronique &&
-                        !dossier.estAccepteRequerant ? (
-                          <iframe
-                            allow="geolocation"
-                            src={dossier.requeteSignature?.urlExterne}
-                            title="Signature électronique de la déclaration d'acceptation"
-                            style={{
-                              display: "block",
-                              width: "100%",
-                              height: "85vh",
-                              minHeight: "600px",
-                              border: "none",
-                            }}
-                          />
-                        ) : (
-                          (dossier.getDeclarationAcceptation() ??
-                            dossier.getFormulaireDeclarationAcceptation()) && (
-                            <AfficherPieceJointe
-                              pieceJointe={
-                                (dossier.getDeclarationAcceptation() ??
-                                  dossier.getFormulaireDeclarationAcceptation()) as PieceJointe
-                              }
-                              telecharger={false}
-                            />
-                          )
-                        ),
-                    },
-                  ]
-                : []),
-            ]}
-          />
+            tabs={onglets}
+            selectedTabId={onglet}
+            onTabChange={(tabId) => setOngletSelectionne(tabId as Onglet)}
+          >
+            {onglet === "declaration" ? (
+              <DeclarationAcceptation
+                dossier={dossier}
+                etat={etatDeclaration}
+              />
+            ) : (
+              dossier.getCourrierDecision() && (
+                <AfficherPieceJointe
+                  pieceJointe={dossier.getCourrierDecision() as PieceJointe}
+                  telecharger={false}
+                />
+              )
+            )}
+          </Tabs>
         </div>
       </div>
     </div>

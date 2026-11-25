@@ -8,7 +8,7 @@ use MonIndemnisationJustice\Api\Requerant\Request\Attribute\MapDossier;
 use MonIndemnisationJustice\Api\Requerant\Request\Attribute\MapDossierDto;
 use MonIndemnisationJustice\Api\Requerant\Voter\RequerantDossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
-use MonIndemnisationJustice\Service\Signature\DiffuseurSignatureRequerant;
+use MonIndemnisationJustice\Service\DiffuseurDossierRequerant;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +23,7 @@ class ConsulterDossierEndpoint
     public function __construct(
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
-        protected readonly DiffuseurSignatureRequerant $diffuseurSignatureRequerant,
+        protected readonly DiffuseurDossierRequerant $diffuseurDossierRequerant,
     ) {
     }
 
@@ -34,8 +34,8 @@ class ConsulterDossierEndpoint
         Dossier $dossier,
         Request $request,
     ) {
-        // Permettre au requérant de recevoir en direct la diffusion de la signature électronique
-        $this->diffuseurSignatureRequerant->autoriserAbonnement($request, $dossier->getRequeteSignatureRequerant());
+        // Permettre au requérant de s'abonner, dès le chargement du dossier, à la diffusion en direct de ses changements
+        $this->diffuseurDossierRequerant->autoriserAbonnement($request, $dossier->getUsager());
 
         return new JsonResponse(
             $this->normalizer->normalize($dto, 'json'),

@@ -4,8 +4,8 @@ namespace MonIndemnisationJustice\Message;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
+use MonIndemnisationJustice\Service\DiffuseurDossierRequerant;
 use MonIndemnisationJustice\Service\Signature\GestionnaireSignature;
-use MonIndemnisationJustice\Service\Signature\DiffuseurSignatureRequerant;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -14,14 +14,14 @@ class EvenementSignatureRequerantHandler
 {
     public function __construct(
         protected readonly GestionnaireSignature $gestionnaireSignature,
-        protected readonly DiffuseurSignatureRequerant $diffuseurSignatureRequerant,
+        protected readonly DiffuseurDossierRequerant $diffuseurDossierRequerant,
         protected readonly EntityManagerInterface $em,
         protected readonly LoggerInterface $logger,
     ) {
 
     }
 
-    public function __invoke(EvenementSignatureRequerant $evenement)
+    public function __invoke(EvenementSignatureRequerant $evenement): void
     {
         try {
             $requeteSignature = $this->gestionnaireSignature->synchroniserEvenement($evenement->donnees);
@@ -39,9 +39,9 @@ class EvenementSignatureRequerantHandler
 
             // La synchronisation est déjà enregistrée : une indisponibilité du hub Mercure ne doit pas la remettre en cause
             try {
-                $this->diffuseurSignatureRequerant->diffuserSignature($requeteSignature);
+                $this->diffuseurDossierRequerant->diffuserDossier($requeteSignature->getDossier());
             } catch (\Throwable $exception) {
-                $this->logger->warning("Impossible de diffuser la signature de la requête {$requeteSignature->getId()}", [
+                $this->logger->warning("Impossible de diffuser le dossier de la requête de signature {$requeteSignature->getId()}", [
                     'erreur' => $exception->getMessage(),
                 ]);
             }

@@ -2,7 +2,6 @@
 
 namespace MonIndemnisationJustice\Service\Signature\Prestataire\Requerant;
 
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
 use MonIndemnisationJustice\Service\Signature\DocumentASigner;
 use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignature;
@@ -13,7 +12,7 @@ interface PrestataireSignatureRequerantInterface
     /**
      * Initie une requête de signature électronique pour le requérant et retourne l'entité créée.
      */
-    public function creerRequeteSignature(Dossier $dossier, DocumentASigner $documentASigner): RequeteSignatureRequerant;
+    public function activerRequeteSignature(RequeteSignatureRequerant $requeteSignature, DocumentASigner $documentASigner): RequeteSignatureRequerant;
 
     /**
      * Vérifier la véracité de la requête de webhook.
