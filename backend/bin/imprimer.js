@@ -3,6 +3,10 @@
 import puppeteer from "puppeteer";
 import {PDFArray, PDFDict, PDFDocument, PDFHexString, PDFName, PDFString} from 'pdf-lib';
 import {parseArgs} from "node:util";
+import {mkdtemp, rm, writeFile} from "node:fs/promises";
+import {tmpdir} from "node:os";
+import {join} from "node:path";
+import {pathToFileURL} from "node:url";
 
 /**
  * Les options :
@@ -94,19 +98,27 @@ async function extraireContenuEtObjets(pdf, prefix = 'objet://') {
     throw new Error("Aucun contenu HTML reçu sur l'entrée standard");
   }
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    timeout: delai,
-    protocolTimeout: delai,
-    browser: "firefox",
-  });
+  // Le HTML est écrit dans un fichier temporaire, ouvert par Firefox : `page.setContent()` (un `document.write` via
+  // WebDriver BiDi) peut, de façon intermittente, ne jamais rendre la main (`script.callFunction timed out`)
+  const repertoire = await mkdtemp(join(tmpdir(), "imprimer-"));
+  const fichierHtml = join(repertoire, "document.html");
+  await writeFile(fichierHtml, html, "utf8");
+
+  let browser;
 
   try {
+    browser = await puppeteer.launch({
+      headless: true,
+      timeout: delai,
+      protocolTimeout: delai,
+      browser: "firefox",
+    });
+
     const page = await browser.newPage();
 
-    await page.setContent(html, {
+    await page.goto(pathToFileURL(fichierHtml).href, {
       waitUntil: "domcontentloaded",
-      timeout: 0,
+      timeout: delai,
     });
 
     const pdf = await page.pdf({
@@ -137,7 +149,8 @@ async function extraireContenuEtObjets(pdf, prefix = 'objet://') {
       ),
     );
   } finally {
-    await browser.close();
+    await browser?.close();
+    await rm(repertoire, {recursive: true, force: true});
   }
 })().catch((erreur) => {
   console.error(erreur);

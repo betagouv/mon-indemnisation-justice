@@ -37,7 +37,9 @@ class ImprimanteCourrier
         $this->filesystem = new Filesystem();
         $this->projectDirectory = $projectDirectory;
         $this->binDirectory = "{$projectDirectory}/bin";
-        $this->timeout = in_array($environment, ['dev', 'test']) ? 200 : 10;
+        // Une impression prend un peu plus d'une seconde : un délai court fait échouer vite une impression bloquée, au lieu
+        // de geler les tests
+        $this->timeout = in_array($environment, ['dev', 'test']) ? 30 : 10;
     }
 
     /**
