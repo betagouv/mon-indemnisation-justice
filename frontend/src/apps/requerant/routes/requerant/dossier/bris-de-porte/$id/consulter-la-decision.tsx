@@ -14,7 +14,7 @@ import { SignatureManuelleModale } from "@/apps/requerant/composants/signature/S
 import { SignatureElectroniqueModale } from "@/apps/requerant/composants/signature/SignatureElectroniqueModale.tsx";
 import {
   DeclarationAcceptation,
-  estSignatureEnCours,
+  estDeclarationAConsulter,
   etatDeclarationAcceptation,
 } from "@/apps/requerant/composants/signature/DeclarationAcceptation.tsx";
 import { convertirEnEuros } from "@common/services/devise.ts";
@@ -85,9 +85,9 @@ function ConsulterDecisionBrisPorte() {
   );
 
   // Onglet sélectionné, mémorisé pour survivre aux mises à jour du dossier (Mercure, rechargement par le routeur).
-  // Au chargement, la déclaration est affichée si une signature électronique est en cours
+  // Au chargement, la déclaration est affichée si une signature électronique est en cours, ou fermée et à recommencer
   const [ongletSelectionne, setOngletSelectionne] = useState<Onglet>(() =>
-    estSignatureEnCours(etatDeclarationAcceptation(dossierCharge))
+    estDeclarationAConsulter(etatDeclarationAcceptation(dossierCharge))
       ? "declaration"
       : "decision",
   );

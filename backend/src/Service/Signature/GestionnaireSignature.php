@@ -41,10 +41,13 @@ class GestionnaireSignature
             return null;
         }
 
+        if (!$dossier->peutDemarrerSignature()) {
+            throw new \Exception('Une signature est déjà en cours pour ce dossier');
+        }
+
         $requeteSignature = new RequeteSignatureRequerant()
-            ->setDossier($dossier)
             ->setIdentifiantExterieur('');
-        $dossier->setRequeteSignatureRequerant($requeteSignature);
+        $dossier->ajouterRequeteSignatureRequerant($requeteSignature);
 
         $this->em->persist($requeteSignature);
         $this->em->flush();
@@ -115,10 +118,23 @@ class GestionnaireSignature
     public function synchroniserEvenement(array $donnees): ?RequeteSignatureRequerant
     {
         $evenementSignature = $this->prestataireSignatureRequerant->extraireEvenementSignatureWebhook($donnees);
-        $requeteSignature = $evenementSignature->requeteSignatureRequerant;
-        $dossier = $requeteSignature->getDossier();
 
         if (null !== $evenementSignature) {
+            $requeteSignature = $evenementSignature->requeteSignatureRequerant;
+            $dossier = $requeteSignature->getDossier();
+
+            // Signature expirée chez le prestataire : on la date de l'évènement, sauf si elle a été signée entre-temps.
+            // La livraison étant « au moins une fois », une requête déjà expirée n'est pas modifiée
+            if (EvenementSignatureType::EXPIREE === $evenementSignature->type) {
+                if (!$requeteSignature->estSignee() && !$requeteSignature->estExpiree()) {
+                    $requeteSignature->setDateExpiration($evenementSignature->date);
+                    $this->em->persist($requeteSignature);
+                    $this->em->flush();
+                }
+
+                return $requeteSignature;
+            }
+
             // TODO vérifier si pas déjà signée
             if (EvenementSignatureType::SIGNEE === $evenementSignature->type) {
                 $requeteSignature->setSignee();
@@ -145,7 +161,6 @@ class GestionnaireSignature
                 return $requeteSignature;
             }
             // TODO gérer en erreur
-            // TODO gérer expirée
         }
 
         return null;
