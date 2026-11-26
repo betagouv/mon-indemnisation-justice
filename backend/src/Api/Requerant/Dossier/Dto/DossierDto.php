@@ -34,6 +34,8 @@ class DossierDto
         public ?string $description = null,
         /** @var PieceJointeDto[] */
         public array $piecesJointes = [],
+        public bool $estEligibleSignatureElectronique = false,
+        public ?RequeteSignature $requeteSignature = null,
     ) {
     }
 
@@ -78,6 +80,8 @@ class DossierDto
             estPorteBlindee: $dossier->getBrisPorte()?->estPorteBlindee(),
             description: $dossier->getBrisPorte()->getDescriptionRequerant(),
             piecesJointes: $dossier->getPiecesJointes()->map(fn (Document $pieceJointe) => PieceJointeDto::depuisDocument($pieceJointe))->getValues(),
+            estEligibleSignatureElectronique: $dossier->estEligibleSignatureElectronique(),
+            requeteSignature: $dossier->getRequeteSignatureRequerant() ? RequeteSignature::depuisRequeteSignature($dossier->getRequeteSignatureRequerant()) : null
         );
     }
 }

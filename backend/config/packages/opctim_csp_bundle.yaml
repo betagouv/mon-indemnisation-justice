@@ -25,6 +25,7 @@ opctim_csp_bundle:
     frame-src:
       - "'self'"
       - "blob:"
+      - '%env(LEGALYSPACE_BASE_APP_URI)%'
     script-src:
       - "'self'"
       - 'stats.beta.gouv.fr'

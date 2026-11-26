@@ -27,10 +27,24 @@ class RequeteSignatureRequerant
     protected \DateTimeImmutable $dateCreation;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    protected ?\DateTimeImmutable $dateActivation = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     protected ?\DateTimeImmutable $dateSignature = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    protected ?\DateTimeImmutable $dateAnnulation = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    protected ?\DateTimeImmutable $dateExpiration = null;
 
     #[ORM\Column(nullable: true)]
     protected ?string $urlSignatureExterne = null;
+
+    public function __construct()
+    {
+        $this->dateCreation = new \DateTimeImmutable();
+    }
 
     public function getId(): ?Uuid
     {
@@ -66,11 +80,26 @@ class RequeteSignatureRequerant
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeImmutable $dateCreation): RequeteSignatureRequerant
+    public function getDateActivation(): ?\DateTimeImmutable
     {
-        $this->dateCreation = $dateCreation;
+        return $this->dateActivation;
+    }
+
+    public function activer(): RequeteSignatureRequerant
+    {
+        $this->dateActivation = new \DateTimeImmutable();
 
         return $this;
+    }
+
+    public function estActive(): bool
+    {
+        return null !== $this->dateActivation;
+    }
+
+    public function estASigner(): bool
+    {
+        return $this->estActive() && !$this->estSignee() && !$this->estExpiree() && !$this->estAnnulee();
     }
 
     public function estSignee(): bool
@@ -83,6 +112,52 @@ class RequeteSignatureRequerant
         $this->dateSignature = new \DateTimeImmutable();
 
         return $this;
+    }
+
+    public function getDateSignature(): ?\DateTimeImmutable
+    {
+        return $this->dateSignature;
+    }
+
+    public function setDateSignature(?\DateTimeImmutable $dateSignature): RequeteSignatureRequerant
+    {
+        $this->dateSignature = $dateSignature;
+
+        return $this;
+    }
+
+    public function getDateAnnulation(): ?\DateTimeImmutable
+    {
+        return $this->dateAnnulation;
+    }
+
+    public function annuler(): RequeteSignatureRequerant
+    {
+        $this->dateAnnulation = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function estAnnulee(): bool
+    {
+        return null !== $this->dateAnnulation;
+    }
+
+    public function getDateExpiration(): ?\DateTimeImmutable
+    {
+        return $this->dateExpiration;
+    }
+
+    public function setDateExpiration(?\DateTimeImmutable $dateExpiration): RequeteSignatureRequerant
+    {
+        $this->dateExpiration = $dateExpiration;
+
+        return $this;
+    }
+
+    public function estExpiree(): bool
+    {
+        return null !== $this->dateExpiration && $this->dateExpiration <= new \DateTimeImmutable();
     }
 
     public function getUrlSignatureExterne(): ?string

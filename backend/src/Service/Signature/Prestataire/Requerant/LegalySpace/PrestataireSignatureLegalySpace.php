@@ -3,7 +3,6 @@
 namespace MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\LegalySpace;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
 use MonIndemnisationJustice\Service\Signature\DocumentASigner;
 use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignature;
@@ -44,8 +43,9 @@ class PrestataireSignatureLegalySpace implements PrestataireSignatureRequerantIn
         $this->baseAppUri = rtrim($appBaseUri ?? 'https://esign.legalyspace.com', '/');
     }
 
-    public function creerRequeteSignature(Dossier $dossier, DocumentASigner $documentASigner): RequeteSignatureRequerant
+    public function activerRequeteSignature(RequeteSignatureRequerant $requeteSignature, DocumentASigner $documentASigner): RequeteSignatureRequerant
     {
+        $dossier = $requeteSignature->getDossier();
         $requerant = $dossier->getRequerantPersonne();
         $telephone = self::formaterTelephone($requerant->getTelephone());
 
@@ -72,32 +72,27 @@ class PrestataireSignatureLegalySpace implements PrestataireSignatureRequerantIn
             $requerant->getNom() ?? '',
             $requerant->getCourriel() ?? $dossier->getUsager()->getEmail(),
             $telephone,
-            $this->urlGenerator->generate(
-                'requerant_react',
-                ['extra' => "dossier/bris-de-porte/{$dossier->getId()}/consulter-la-decision"],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ),
         );
 
         $this->legalySpaceClient->positionnerSignature(
             $idProcess,
             $idDocument,
             $idSignataire,
-            $documentASigner->emplacementSignature->numeroPage,
+            $documentASigner->emplacementSignature->getNumeroPage(),
             [
-                'x' => $documentASigner->emplacementSignature->x,
-                'y' => $documentASigner->emplacementSignature->y - ($documentASigner->emplacementSignature->hauteur / 2),
-                'width' => $documentASigner->emplacementSignature->largeur,
-                'height' => $documentASigner->emplacementSignature->hauteur,
+                'x' => $documentASigner->emplacementSignature->getX(),
+                // LegalySpace place l'origine en bas à gauche de la page, contrairement à l'emplacement extrait
+                'y' => $documentASigner->emplacementSignature->getY(false),
+                'width' => $documentASigner->emplacementSignature->getLargeur(),
+                'height' => $documentASigner->emplacementSignature->getHauteur(),
             ],
         );
 
         $this->legalySpaceClient->demarrerProcess($idProcess);
 
-        return new RequeteSignatureRequerant()
-            ->setDossier($dossier)
+        return $requeteSignature
             ->setIdentifiantExterieur($idProcess)
-            ->setDateCreation(new \DateTimeImmutable())
+            ->activer()
             ->setUrlSignatureExterne("{$this->baseAppUri}/process/{$idProcess}/signer/{$idSignataire}");
     }
 

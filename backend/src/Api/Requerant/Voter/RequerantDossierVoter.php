@@ -18,6 +18,7 @@ class RequerantDossierVoter extends Voter
     public const string ACTION_DOSSIER_TELEVERSER = 'dossier:televerser';
     public const string ACTION_DOSSIER_SUPPRIMER_PIECE_JOINTE = 'dossier:supprimer-piece-jointe';
     public const string ACTION_DOSSIER_PUBLIER = 'dossier:publier';
+    public const string ACTION_DOSSIER_DEMARRER_SIGNATURE = 'dossier:demarrer_signature';
     public const string ACTION_DOSSIER_ACCEPTER_INDEMNISATION = 'dossier:accepter_indemnisation';
 
     protected function supports(string $attribute, mixed $subject): bool
@@ -32,6 +33,7 @@ class RequerantDossierVoter extends Voter
                 self::ACTION_DOSSIER_TELEVERSER,
                 self::ACTION_DOSSIER_SUPPRIMER_PIECE_JOINTE,
                 self::ACTION_DOSSIER_PUBLIER,
+                self::ACTION_DOSSIER_DEMARRER_SIGNATURE,
                 self::ACTION_DOSSIER_ACCEPTER_INDEMNISATION,
             ]
         );

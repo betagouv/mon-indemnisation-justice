@@ -12,6 +12,7 @@ use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\DossierManager;
 use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignatureType;
 use MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\PrestataireSignatureRequerantInterface;
+use Psr\Log\LoggerInterface;
 
 class GestionnaireSignature
 {
@@ -20,6 +21,7 @@ class GestionnaireSignature
         protected readonly DossierManager $dossierManager,
         protected readonly PrestataireSignatureRequerantInterface $prestataireSignatureRequerant,
         protected readonly EntityManagerInterface $em,
+        protected readonly LoggerInterface $logger,
     ) {
 
     }
@@ -29,30 +31,48 @@ class GestionnaireSignature
         return DossierType::BRIS_PORTE === $dossier->getType() && !$dossier->estPersonneMorale();
     }
 
-    /**
-     * @throws \Exception
-     */
     public function initierSignatureRequerant(Dossier $dossier): ?RequeteSignatureRequerant
     {
         if (EtatDossierType::DOSSIER_OK_A_APPROUVER !== $dossier->getEtatDossier()->getEtat()) {
             throw new \Exception("Ce dossier n'est pas à accepter par le requérant");
         }
 
-        if ($this->estEligibleSignatureRequerant($dossier)) {
-            $requeteSignature = $this->prestataireSignatureRequerant->creerRequeteSignature($dossier, $this->genererDeclarationAcceptation(
-                $dossier,
-            ));
-
-            $this->em->persist($requeteSignature);
-            $this->em->flush();
-
-            return $requeteSignature;
+        if (!$this->estEligibleSignatureRequerant($dossier)) {
+            return null;
         }
 
-        return null;
+        $requeteSignature = new RequeteSignatureRequerant()
+            ->setDossier($dossier)
+            ->setIdentifiantExterieur('');
+        $dossier->setRequeteSignatureRequerant($requeteSignature);
+
+        $this->em->persist($requeteSignature);
+        $this->em->flush();
+
+        return $requeteSignature;
     }
 
-    public function genererDeclarationAcceptation(Dossier $dossier): DocumentASigner
+    /**
+     * @throws \Exception
+     */
+    public function activerSignatureRequerant(RequeteSignatureRequerant $requeteSignature, string $rib): ?RequeteSignatureRequerant
+    {
+        $requeteSignature = $this->prestataireSignatureRequerant->activerRequeteSignature(
+            $requeteSignature,
+            $this->genererDeclarationAcceptation(
+                $requeteSignature->getDossier(),
+                $rib
+            )
+        );
+
+
+        $this->em->persist($requeteSignature);
+        $this->em->flush();
+
+        return $requeteSignature;
+    }
+
+    public function genererDeclarationAcceptation(Dossier $dossier, string $rib): DocumentASigner
     {
         $declarationAcceptation = $this->documentManager
             ->generer(
@@ -61,11 +81,8 @@ class GestionnaireSignature
                 montantIndemnisation: $dossier->getMontantIndemnisation(),
                 contexte: [
                     'signature' => [
-                        'date' => new \DateTimeImmutable(),
                         'lieu' => $dossier->getRequerantPersonnePhysique()?->getAdresse()?->getLocalite() ?? $dossier->getRequerantPersonneMorale()?->getAdresse()?->getLocalite() ?? $dossier->getBrisPorte()->getAdresse()->getLocalite() ?? '',
-                        'rib' => [
-                            'type' => 'personnel',
-                        ],
+                        'rib' => $rib,
                     ],
                 ],
                 extraireObjets: true
@@ -81,10 +98,10 @@ class GestionnaireSignature
                 largeur: $objets['visuel-signature']['width'],
                 hauteur: $objets['visuel-signature']['height'],
                 numeroPage: $objets['visuel-signature']['page'],
+                hauteurPage: (int) round($objets['visuel-signature']['pageHeight'] ?? EmplacementSignature::HAUTEUR_PAGE_A4),
             );
-        } else {
-
         }
+
 
         $contenu = $this->documentManager->getContenuTexte($declarationAcceptation);
 

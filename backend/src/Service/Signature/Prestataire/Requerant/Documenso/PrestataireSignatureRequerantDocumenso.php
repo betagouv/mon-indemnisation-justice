@@ -3,7 +3,6 @@
 namespace MonIndemnisationJustice\Service\Signature\Prestataire\Requerant\Documenso;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
 use MonIndemnisationJustice\Service\Signature\DocumentASigner;
 use MonIndemnisationJustice\Service\Signature\Evenement\EvenementSignature;
@@ -32,8 +31,9 @@ class PrestataireSignatureRequerantDocumenso implements PrestataireSignatureRequ
     ) {
     }
 
-    public function creerRequeteSignature(Dossier $dossier, DocumentASigner $documentASigner): RequeteSignatureRequerant
+    public function activerRequeteSignature(RequeteSignatureRequerant $requeteSignature, DocumentASigner $documentASigner): RequeteSignatureRequerant
     {
+        $dossier = $requeteSignature->getDossier();
         $requerant = $dossier->getRequerantPersonne();
 
         $idEnveloppe = $this->documensoClient->creerEnveloppe(
@@ -41,11 +41,11 @@ class PrestataireSignatureRequerantDocumenso implements PrestataireSignatureRequ
             "Déclaration d'acceptation {$dossier->getReference()}.pdf",
             $documentASigner->contenu,
             [
-                'page' => $documentASigner->emplacementSignature->numeroPage,
-                'positionX' => (float) $documentASigner->emplacementSignature->x,
-                'positionY' => (float) $documentASigner->emplacementSignature->y,
-                'width' => (float) $documentASigner->emplacementSignature->largeur,
-                'height' => (float) $documentASigner->emplacementSignature->hauteur,
+                'page' => $documentASigner->emplacementSignature->getNumeroPage(),
+                'positionX' => (float) $documentASigner->emplacementSignature->getX(),
+                'positionY' => (float) $documentASigner->emplacementSignature->getY(),
+                'width' => (float) $documentASigner->emplacementSignature->getLargeur(),
+                'height' => (float) $documentASigner->emplacementSignature->getHauteur(),
             ],
             "{$requerant->getPrenom()} {$requerant->getNom()}",
             $requerant->getCourriel() ?? $dossier->getUsager()->getEmail(),
@@ -58,7 +58,7 @@ class PrestataireSignatureRequerantDocumenso implements PrestataireSignatureRequ
             ->setDossier($dossier)
             ->setIdentifiantExterieur($idEnveloppe)
             // TODO générer l'URL de signature
-            ->setDateCreation(new \DateTimeImmutable());
+            ->activer();
     }
 
     /**

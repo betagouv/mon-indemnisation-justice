@@ -9,7 +9,7 @@ import {
   plainToClassFromExist,
   plainToInstance,
 } from "class-transformer";
-import { ServiceIdentifier } from "inversify"; // Source - https://stackoverflow.com/a/61132308
+import { ServiceIdentifier } from "inversify";
 
 // Source - https://stackoverflow.com/a/61132308
 // Posted by Terry, modified by community. See post 'Timeline' for change history
@@ -24,6 +24,10 @@ export type NouvellePieceJointe = {
   fichier: File;
   type: TypePieceJointe;
   contexte?: any;
+};
+
+export type ContexteSignatureElectronique = {
+  rib: string;
 };
 
 export interface DossierManagerInterface {
@@ -47,6 +51,11 @@ export interface DossierManagerInterface {
   mesDemandes(): Promise<DossierApercu[]>;
 
   soumettre(id: number): Promise<Dossier>;
+
+  demarrerSignature(
+    id: number,
+    contexte: ContexteSignatureElectronique,
+  ): Promise<Dossier>;
 
   accepter(id: number, declarationAcceptationSignee: File): Promise<Dossier>;
 }
@@ -246,6 +255,40 @@ export class ApiDossierManager implements DossierManagerInterface {
     }
   }
 
+  async demarrerSignature(
+    id: number,
+    contexte: ContexteSignatureElectronique,
+  ): Promise<Dossier> {
+    const reponse = await fetch(
+      // Route 'api_requerant_dossier_bris_porte_demarrer_signature'
+      `/api/requerant/dossier/bris-de-porte/${id}/demarrer-signature`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contexte),
+      },
+    );
+
+    const data = await reponse.json();
+
+    if (!reponse.ok) {
+      throw new Error(data.erreur ?? data.detail);
+    } else {
+      const dossier = plainToInstance(Dossier, data);
+      this.dossiers.set(id, {
+        original: dossier,
+        modifie: dossier,
+      });
+      // On vide la liste des dossiers pour forcer le rafraîchissement.
+      this.mesDossiers = undefined;
+
+      return dossier;
+    }
+  }
+
   async accepter(
     id: number,
     declarationAcceptationSignee: File,
@@ -271,8 +314,9 @@ export class ApiDossierManager implements DossierManagerInterface {
       },
     );
 
+    const data = await reponse.json();
+
     if (!reponse.ok) {
-      const data = await reponse.json();
       throw new Error(data.erreurs);
     } else {
       // On remplace le dossier brouillon par celui déposé

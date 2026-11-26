@@ -8,6 +8,8 @@ use MonIndemnisationJustice\Api\Requerant\Request\Attribute\MapDossier;
 use MonIndemnisationJustice\Api\Requerant\Request\Attribute\MapDossierDto;
 use MonIndemnisationJustice\Api\Requerant\Voter\RequerantDossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Service\DiffuseurDossierRequerant;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,6 +23,7 @@ class ConsulterDossierEndpoint
     public function __construct(
         protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
+        protected readonly DiffuseurDossierRequerant $diffuseurDossierRequerant,
     ) {
     }
 
@@ -29,7 +32,11 @@ class ConsulterDossierEndpoint
         DossierDto $dto,
         #[MapDossier]
         Dossier $dossier,
+        Request $request,
     ) {
+        // Permettre au requérant de s'abonner, dès le chargement du dossier, à la diffusion en direct de ses changements
+        $this->diffuseurDossierRequerant->autoriserAbonnement($request, $dossier->getUsager());
+
         return new JsonResponse(
             $this->normalizer->normalize($dto, 'json'),
             Response::HTTP_OK

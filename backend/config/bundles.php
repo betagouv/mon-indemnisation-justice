@@ -19,4 +19,5 @@ return [
     Acsiomatic\DeviceDetectorBundle\AcsiomaticDeviceDetectorBundle::class => ['all' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
     Opctim\CspBundle\OpctimCspBundle::class => ['all' => true],
+    Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
 ];
