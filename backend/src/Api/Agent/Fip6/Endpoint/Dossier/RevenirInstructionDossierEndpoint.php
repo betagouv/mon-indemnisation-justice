@@ -44,6 +44,10 @@ class RevenirInstructionDossierEndpoint
             return new JsonResponse(['erreur' => "Ce dossier n'est pas éligible pour revenir à l'instruction"], Response::HTTP_BAD_REQUEST);
         }
 
+        if ($dossier->getRequeteSignatureRequerant()?->estActive()) {
+            $dossier->getRequeteSignatureRequerant()->annuler();
+        }
+
         $dossier->changerStatut(EtatDossierType::DOSSIER_EN_INSTRUCTION, agent: $security->getUser(), contexte: [
             'retour' => true,
         ]);
