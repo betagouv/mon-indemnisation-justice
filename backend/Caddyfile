@@ -25,6 +25,14 @@
 
 	import headers_securite
 
+	# Un SVG ouvert directement s'exécute dans notre origine : on y interdit scripts et ressources externes (seuls les
+	# styles internes au document sont permis), en complément de la vérification `bin/verifier-svg` en CI
+	@svg path *.svg
+	header @svg {
+		Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'"
+		X-Content-Type-Options "nosniff"
+	}
+
 	mercure {
 		protocol_version_compatibility 8
 		publisher_jwt {env.MERCURE_PUBLISHER_JWT_KEY}

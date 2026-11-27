@@ -41,6 +41,13 @@ class RequeteSignatureRequerant
     #[ORM\Column(nullable: true)]
     protected ?string $urlSignatureExterne = null;
 
+    /**
+     * Coordonnées bancaires du compte sur lequel le requérant accepte d'être indemnisé.
+     */
+    #[ORM\ManyToOne(targetEntity: ReferenceBancaire::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'reference_bancaire_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    protected ?ReferenceBancaire $referenceBancaire = null;
+
     public function __construct()
     {
         $this->dateCreation = new \DateTimeImmutable();
@@ -176,6 +183,18 @@ class RequeteSignatureRequerant
     public function setUrlSignatureExterne(?string $urlSignatureExterne): RequeteSignatureRequerant
     {
         $this->urlSignatureExterne = $urlSignatureExterne;
+
+        return $this;
+    }
+
+    public function getReferenceBancaire(): ?ReferenceBancaire
+    {
+        return $this->referenceBancaire;
+    }
+
+    public function setReferenceBancaire(?ReferenceBancaire $referenceBancaire): RequeteSignatureRequerant
+    {
+        $this->referenceBancaire = $referenceBancaire;
 
         return $this;
     }

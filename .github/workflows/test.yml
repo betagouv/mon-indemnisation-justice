@@ -239,7 +239,12 @@ jobs:
           node-version: 24.x
 
       - name: Install system packages
-        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils libxml2-utils
+
+      # Les logos sont servis depuis notre domaine : aucun script ni référence externe ne doit s'y trouver
+      - name: Vérifier les logos SVG des établissements bancaires
+        run: bin/verifier-svg public/images/logos/etablissements_bancaires/*.svg
+        working-directory: backend
 
       - name: Cache composer dependencies
         uses: actions/cache@v6
