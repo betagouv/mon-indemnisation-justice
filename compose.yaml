@@ -148,7 +148,8 @@ services:
       - MERCURE_JWT_SECRET=${MERCURE_JWT_SECRET:-mercure-dev-cle-secrete-hs256-a-changer-0123456789}
     # Pas de `demarrage.sh` : dépendances et migrations sont gérées par le conteneur `symfony`
     entrypoint: [ ]
-    command: [ "php", "bin/console", "messenger:consume", "async", "-vv", "--time-limit=3600", "--memory-limit=256M" ]
+    # Redémarre `messenger:consume` à chaque modification du code PHP (cf. le script)
+    command: [ "/usr/local/bin/worker-dev.sh" ]
     restart: always
     healthcheck:
       test: [ "NONE" ]
@@ -163,6 +164,7 @@ services:
       - ./backend:/app
       - .docker/php/fichiers:/app/fichiers
       - symfony_vendor:/app/vendor
+      - ./.docker/php/worker-dev.sh:/usr/local/bin/worker-dev.sh:ro
       - symfony_node_modules:/app/node_modules
       # Navigateur installé par `demarrage.sh` (`npx puppeteer browsers install`), partagé avec le `worker`
       - puppeteer_cache:/root/.cache/puppeteer
