@@ -32,11 +32,11 @@ class DossierManager
     public function avancer(Dossier $dossier, ?Agent $agent = null, ?array $contexte = null): Dossier
     {
         /** @var EtatDossierType $etat */
-        $etat = $dossier->getEtatDossier()->getEtat()->etatSuivant($contexte ?? []);
+        $etat = $dossier->getEtatDossier()->etatSuivant($contexte ?? []);
 
         $dossier->changerStatut(
             $etat,
-            requerant: in_array($etat, [EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_OK_A_VERIFIER]),
+            requerant: null === $agent && $etat->estActionRequerant(),
             agent: $agent,
             contexte: $contexte
         );

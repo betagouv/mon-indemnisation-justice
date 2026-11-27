@@ -1,7 +1,12 @@
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { Document, DocumentType, DossierDetail } from "@common/models";
+import {
+  Document,
+  DocumentType,
+  DossierDetail,
+  EtatDossierType,
+} from "@common/models";
 import { DocumentManagerInterface } from "@common/services/agent/document.ts";
 import { EditeurDocument } from "@fip6/dossiers/components/consultation/document/EditeurDocument.tsx";
 import { ChampPieceJointe } from "@fip6/dossiers/components/consultation/piecejointe";
@@ -22,7 +27,7 @@ type ValidationAcceptationEtat = {
   sauvegardeEnCours: boolean;
 };
 
-const estAVerifier = ({
+const estArreteAEditer = ({
   dossier,
   agent,
 }: {
@@ -30,13 +35,13 @@ const estAVerifier = ({
   agent: AgentFIP6;
 }): boolean =>
   dossier.estBrisDePorte() && // TODO supprimer ce test pour élargir aux autres dossiers
-  dossier.estAVerifier &&
+  dossier.enAttenteEditionArrete &&
   agent.instruit(dossier);
 
 /**
  * Le rédacteur vérifie la déclaration d'acceptation et la valide
  */
-export const GenererArretePaiementModale =
+export const EditerArretePaiementModale =
   function GenererArretePaiementActionModale({
     dossier,
     agent,
@@ -123,7 +128,7 @@ export const GenererArretePaiementModale =
       setSauvegardeEnCours(false);
     };
 
-    return estAVerifier({ dossier, agent }) ? (
+    return estArreteAEditer({ dossier, agent }) ? (
       <_modale.Component
         title="Vérifier la déclaration d'acceptation"
         size="large"
@@ -132,10 +137,17 @@ export const GenererArretePaiementModale =
       >
         {etatValidation.action === "verification" && (
           <>
-            <p>
-              Inspectez le document de déclaration d'acceptation ci-dessous et
-              vérifiez que tous les champs sont correctement remplis :
-            </p>
+            {dossier.etat.etat === EtatDossierType.OK_ACCEPTE ? (
+              <p>
+                L'indemnisation a été acceptée par le requérant par signature
+                électronique. Voici la déclaration d'acceptation :
+              </p>
+            ) : (
+              <p>
+                Inspectez le document de déclaration d'acceptation ci-dessous et
+                vérifiez que tous les champs sont correctement remplis :
+              </p>
+            )}
             <ChampPieceJointe
               className="fr-my-2w"
               pieceJointe={dossier.getDeclarationAcceptation() as Document}
@@ -145,8 +157,21 @@ export const GenererArretePaiementModale =
               alignment="right"
               buttonsSize="small"
               buttons={[
+                // TODO ajouter un bouton pour renvoyer à la signature avec un message
                 {
-                  children: "Valider et éditer l'arrêté de paiement",
+                  children:
+                    dossier.etat.etat === EtatDossierType.OK_ACCEPTE
+                      ? dossier.hasDocumentsType(
+                          DocumentType.TYPE_ARRETE_PAIEMENT,
+                        )
+                        ? "Éditer l'arrêté de paiement"
+                        : "Générer l'arrêté de paiement"
+                      : dossier.hasDocumentsType(
+                            DocumentType.TYPE_ARRETE_PAIEMENT,
+                          )
+                        ? "Valider et éditer l'arrêté de paiement"
+                        : "Valider et générer l'arrêté de paiement",
+                  priority: "secondary",
                   onClick: async () => {
                     if (
                       dossier.hasDocumentsType(
@@ -174,6 +199,7 @@ export const GenererArretePaiementModale =
                 {
                   disabled: etatValidation.sauvegardeEnCours,
                   children: "Éditer l'arrêté de paiement",
+                  priority: "secondary",
                   onClick: () => editer(),
                 } as ButtonProps,
               ]}
@@ -239,7 +265,7 @@ export const genererArretePaiementBoutons = ({
   dossier: DossierDetail;
   agent: AgentFIP6;
 }): ButtonProps[] => {
-  return estAVerifier({ dossier, agent })
+  return estArreteAEditer({ dossier, agent })
     ? [
         {
           children: "Générer l'arrêté de paiement",

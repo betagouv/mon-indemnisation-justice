@@ -13,8 +13,9 @@ dossier de bris de porte ou est déjà traité en version papier
 - **Accepté - à signer** (`OK_A_SIGNER`): le rédacteur accepte la demande en rédigeant une première de la proposition d'indemnisation 
 - **Accepté - en attente déclaration** (`OK_A_APPROUVER`): le validateur peut également éditer le PI et signe électroniquement
 le document, lequel est transmis au requérant via son espace
-- **Accepté - déclaration retournée** (`OK_A_VERIFIER`): le requérant a accepté la proposition en retournant la déclaration
-d'acceptation depuis son espace. Le rédacteur la valide puis édite une première version de l'arrêté de paiement  
+- **Accepté - déclaration signée manuellement** (`OK_A_VERIFIER`): le requérant a accepté la proposition en signant la déclaration d'acceptation manuellement
+- **Accepté - déclaration signée électroniquement** (`OK_ACCEPTE`): le requérant a accepté la proposition en signant la déclaration d'acceptation électroniquement
+  d'acceptation depuis son espace. Le rédacteur la valide puis édite une première version de l'arrêté de paiement  
 - **Accepté - arrêté à signer** (`OK_VERIFIE`): le validateur peut également éditer l'arrêté mais surtout le signe électroniquement 
 - **Accepté - arrêté à transmettre à FIP3** (`OK_A_INDEMNISER`): l'agent de liaison récupère les documents nécessaires à
 l'établissement du virement et les transmet à FIP3
@@ -41,7 +42,7 @@ stateDiagram-v2
     classDef cloture font-weight:bold,text-transform:uppercase,color:#6a6156,fill:#f3ede5
     classDef ok_a_signer font-weight:bold,text-transform:uppercase,color:#66673d,fill:#fceeac
     classDef ok_a_approuver font-weight:bold,text-transform:uppercase,color:#447049,fill:#c9fcac
-    classDef ok_a_verifier font-weight:bold,text-transform:uppercase,color:#447049,fill:#c9fcac
+    classDef ok_accepte font-weight:bold,text-transform:uppercase,color:#447049,fill:#c9fcac
     classDef ok_verifie font-weight:bold,text-transform:uppercase,color:#297254,fill:#c3fad5
     classDef ok_a_indemniser font-weight:bold,text-transform:uppercase,color:#297254,fill:#c3fad5
     classDef ok_en_attente_paiement font-weight:bold,text-transform:uppercase,color:#297254,fill:#c3fad5
@@ -56,7 +57,8 @@ stateDiagram-v2
     CLOTURE: Clôturé
     OK_A_SIGNER: Accepté - à signer
     OK_A_APPROUVER: Accepté - en attente déclaration
-    OK_A_VERIFIER: Accepté - déclaration retournée
+    OK_A_VERIFIER: Accepté - déclaration signée manuellement
+    OK_ACCEPTE: Accepté - déclaration signée électroniquement
     OK_VERIFIE: Accepté - arrêté à signer
     OK_A_INDEMNISER: Accepté - arrêté à transmettre à FIP3
     OK_EN_ATTENTE_PAIEMENT: Accepté - arrêté transmis à FIP3
@@ -73,8 +75,10 @@ stateDiagram-v2
     CLOTURE --> [*]
     EN_INSTRUCTION --> OK_A_SIGNER ::: ok_a_signer : Rédacteur propose l'indemnisation
     OK_A_SIGNER --> OK_A_APPROUVER ::: ok_a_approuver : Validateur signe et envoie la PI
-    OK_A_APPROUVER --> OK_A_VERIFIER ::: ok_a_verifier : Requérant accepte l'indemnisation
-    OK_A_VERIFIER --> OK_VERIFIE ::: ok_verifie : Rédacteur édite l'arrêté
+    OK_A_APPROUVER --> OK_A_VERIFIER ::: ok_accepte : Requérant accepte l'indemnisation
+    OK_A_APPROUVER --> OK_ACCEPTE ::: ok_accepte : Requérant accepte l'indemnisation
+    OK_A_VERIFIER --> OK_VERIFIE ::: ok_verifie : Rédacteur édite l'arrêté de paiement
+    OK_ACCEPTE --> OK_VERIFIE ::: ok_verifie : Rédacteur édite l'arrêté de paiement
     OK_VERIFIE --> OK_A_INDEMNISER ::: ok_a_indemniser : Validateur signe l'arrêté
     OK_A_INDEMNISER --> OK_EN_ATTENTE_PAIEMENT ::: ok_en_attente_paiement : Rédacteur transmet les documents à FIP3
     OK_EN_ATTENTE_PAIEMENT --> OK_INDEMNISE ::: ok_indemnise : Rédacteur marque comme indemnisé

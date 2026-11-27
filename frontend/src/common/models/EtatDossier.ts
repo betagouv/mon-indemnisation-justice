@@ -49,9 +49,14 @@ export class EtatDossierType implements EtatInterface {
     "Accepté - en attente déclaration",
   );
 
+  public static OK_ACCEPTE = new EtatDossierType(
+    "OK_ACCEPTE",
+    "Accepté - déclaration signée électroniquement",
+  );
+
   public static OK_A_VERIFIER = new EtatDossierType(
     "OK_A_VERIFIER",
-    "Accepté - déclaration retournée",
+    "Accepté - déclaration signée manuellement",
   );
 
   public static OK_VERIFIE = new EtatDossierType(
@@ -95,6 +100,7 @@ export class EtatDossierType implements EtatInterface {
     EtatDossierType.CLOTURE,
     EtatDossierType.OK_A_SIGNER,
     EtatDossierType.OK_A_APPROUVER,
+    EtatDossierType.OK_ACCEPTE,
     EtatDossierType.OK_A_VERIFIER,
     EtatDossierType.OK_VERIFIE,
     EtatDossierType.OK_A_INDEMNISER,
@@ -115,6 +121,7 @@ export class EtatDossierType implements EtatInterface {
   public estEnvoye(): boolean {
     return [
       EtatDossierType.OK_A_APPROUVER,
+      EtatDossierType.OK_ACCEPTE,
       EtatDossierType.OK_A_VERIFIER,
       EtatDossierType.OK_VERIFIE,
       EtatDossierType.OK_A_INDEMNISER,
@@ -130,6 +137,7 @@ export class EtatDossierType implements EtatInterface {
 
   public estAccepteRequerant(): boolean {
     return [
+      EtatDossierType.OK_ACCEPTE,
       EtatDossierType.OK_A_VERIFIER,
       EtatDossierType.OK_VERIFIE,
       EtatDossierType.OK_A_INDEMNISER,

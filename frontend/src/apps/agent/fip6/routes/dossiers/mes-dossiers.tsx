@@ -76,6 +76,7 @@ function MesDossiersComposant() {
             EtatDossierType.EN_INSTRUCTION,
             EtatDossierType.OK_A_SIGNER,
             EtatDossierType.OK_A_APPROUVER,
+            EtatDossierType.OK_ACCEPTE,
             EtatDossierType.OK_A_VERIFIER,
             EtatDossierType.OK_VERIFIE,
             EtatDossierType.OK_A_INDEMNISER,

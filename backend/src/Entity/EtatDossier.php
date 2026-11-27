@@ -54,6 +54,26 @@ class EtatDossier
         return $this;
     }
 
+    public function etatSuivant(array $contexte = []): ?EtatDossierType
+    {
+        $contexte = array_merge($this->contexte ?? [], $contexte);
+
+        return match ($this->etat) {
+            EtatDossierType::DOSSIER_A_FINALISER => EtatDossierType::DOSSIER_A_ATTRIBUER,
+            EtatDossierType::DOSSIER_A_ATTRIBUER => EtatDossierType::DOSSIER_A_INSTRUIRE,
+            EtatDossierType::DOSSIER_A_INSTRUIRE => EtatDossierType::DOSSIER_EN_INSTRUCTION,
+            EtatDossierType::DOSSIER_EN_INSTRUCTION => isset($contexte['montantIndemnisation']) ? EtatDossierType::DOSSIER_OK_A_SIGNER : EtatDossierType::DOSSIER_KO_A_SIGNER,
+            EtatDossierType::DOSSIER_OK_A_SIGNER => EtatDossierType::DOSSIER_OK_A_APPROUVER,
+            EtatDossierType::DOSSIER_OK_A_APPROUVER => isset($contexte['signature']) ? EtatDossierType::DOSSIER_OK_ACCEPTE : EtatDossierType::DOSSIER_OK_A_VERIFIER,
+            EtatDossierType::DOSSIER_OK_A_VERIFIER, EtatDossierType::DOSSIER_OK_ACCEPTE => EtatDossierType::DOSSIER_OK_VERIFIE,
+            EtatDossierType::DOSSIER_OK_VERIFIE => EtatDossierType::DOSSIER_OK_A_INDEMNISER,
+            EtatDossierType::DOSSIER_OK_A_INDEMNISER => EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT,
+            EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT => EtatDossierType::DOSSIER_OK_INDEMNISE,
+            EtatDossierType::DOSSIER_KO_A_SIGNER => EtatDossierType::DOSSIER_KO_REJETE,
+            default => null,
+        };
+    }
+
     /**
      * Ce que l'état doit changer sur le dossier dès lors qu'il est actif.
      */
