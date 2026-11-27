@@ -7,6 +7,7 @@ use MonIndemnisationJustice\Entity\DocumentType;
 use MonIndemnisationJustice\Entity\Dossier;
 use MonIndemnisationJustice\Entity\DossierType;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\ReferenceBancaire;
 use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
 use MonIndemnisationJustice\Service\DocumentManager;
 use MonIndemnisationJustice\Service\DossierManager;
@@ -58,13 +59,17 @@ class GestionnaireSignature
     /**
      * @throws \Exception
      */
-    public function activerSignatureRequerant(RequeteSignatureRequerant $requeteSignature, string $rib): ?RequeteSignatureRequerant
+    public function activerSignatureRequerant(RequeteSignatureRequerant $requeteSignature): ?RequeteSignatureRequerant
     {
+        if (null === $requeteSignature->getReferenceBancaire()) {
+            throw new \LogicException("La requête de signature {$requeteSignature->getId()} n'a pas de référence bancaire");
+        }
+
         $requeteSignature = $this->prestataireSignatureRequerant->activerRequeteSignature(
             $requeteSignature,
             $this->genererDeclarationAcceptation(
                 $requeteSignature->getDossier(),
-                $rib
+                $requeteSignature->getReferenceBancaire()
             )
         );
 
@@ -75,7 +80,7 @@ class GestionnaireSignature
         return $requeteSignature;
     }
 
-    public function genererDeclarationAcceptation(Dossier $dossier, string $rib): DocumentASigner
+    public function genererDeclarationAcceptation(Dossier $dossier, ReferenceBancaire $referenceBancaire): DocumentASigner
     {
         $declarationAcceptation = $this->documentManager
             ->generer(
@@ -85,7 +90,7 @@ class GestionnaireSignature
                 contexte: [
                     'signature' => [
                         'lieu' => $dossier->getRequerantPersonnePhysique()?->getAdresse()?->getLocalite() ?? $dossier->getRequerantPersonneMorale()?->getAdresse()?->getLocalite() ?? $dossier->getBrisPorte()->getAdresse()->getLocalite() ?? '',
-                        'rib' => $rib,
+                        'rib' => $referenceBancaire->getLibelle(),
                     ],
                 ],
                 extraireObjets: true

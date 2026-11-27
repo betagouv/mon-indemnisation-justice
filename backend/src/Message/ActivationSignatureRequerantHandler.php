@@ -33,7 +33,7 @@ class ActivationSignatureRequerantHandler
             return;
         }
 
-        $requeteSignature = $this->gestionnaireSignature->activerSignatureRequerant($requeteSignature, $activation->contexte->rib);
+        $requeteSignature = $this->gestionnaireSignature->activerSignatureRequerant($requeteSignature);
         $this->em->persist($requeteSignature);
         $this->em->flush();
 

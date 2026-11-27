@@ -8,12 +8,6 @@ import { convertirEnEuros } from "@common/services/devise.ts";
 import { type ReferenceBancaire } from "@/apps/requerant/models/ReferenceBancaire.ts";
 import { EtapeReferenceBancaire } from "@/apps/requerant/composants/signature/EtapeReferenceBancaire.tsx";
 
-/**
- * TODO : transmettre la référence bancaire saisie une fois le backend branché ; en attendant, un IBAN fictif (mais
- * valide) est envoyé à l'API de démarrage de la signature.
- */
-const IBAN_FACTICE = "FR7630006000011234567890189";
-
 const _modale = createModal({
   id: "modale-signature-electronique-dossier",
   isOpenedByDefault: false,
@@ -179,7 +173,7 @@ export const SignatureElectroniqueModale = ({
             }
 
             setSauvegardeEnCours(true);
-            await onDemarrer({ rib: IBAN_FACTICE });
+            await onDemarrer(referenceBancaire);
             setSauvegardeEnCours(false);
             _modale.close();
           }}

@@ -10,6 +10,7 @@ import {
   plainToInstance,
 } from "class-transformer";
 import { ServiceIdentifier } from "inversify";
+import { type ReferenceBancaire } from "@/apps/requerant/models/ReferenceBancaire.ts";
 
 // Source - https://stackoverflow.com/a/61132308
 // Posted by Terry, modified by community. See post 'Timeline' for change history
@@ -26,9 +27,12 @@ export type NouvellePieceJointe = {
   contexte?: any;
 };
 
-export type ContexteSignatureElectronique = {
-  rib: string;
-};
+/**
+ * Les coordonnées bancaires saisies, enregistrées sur le dossier au démarrage de la signature.
+ *
+ * @see backend/src/Api/Requerant/Dossier/Dto/ContexteSignatureElectroniqueDto.php
+ */
+export type ContexteSignatureElectronique = ReferenceBancaire;
 
 export interface DossierManagerInterface {
   //aDossier(reference: string): Promise<boolean>;

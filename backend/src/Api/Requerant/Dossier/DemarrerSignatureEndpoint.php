@@ -2,11 +2,15 @@
 
 namespace MonIndemnisationJustice\Api\Requerant\Dossier;
 
+use Doctrine\ORM\EntityManagerInterface;
 use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\ContexteSignatureElectroniqueDto;
 use MonIndemnisationJustice\Api\Requerant\Dossier\Dto\DossierDto;
 use MonIndemnisationJustice\Api\Requerant\Voter\RequerantDossierVoter;
 use MonIndemnisationJustice\Entity\Dossier;
+use MonIndemnisationJustice\Entity\EtablissementBancaire;
 use MonIndemnisationJustice\Entity\EtatDossierType;
+use MonIndemnisationJustice\Entity\ReferenceBancaire;
+use MonIndemnisationJustice\Entity\RequeteSignatureRequerant;
 use MonIndemnisationJustice\Message\ActivationSignatureRequerant;
 use MonIndemnisationJustice\Service\Signature\GestionnaireSignature;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -24,6 +28,7 @@ class DemarrerSignatureEndpoint
 {
     public function __construct(
         protected readonly GestionnaireSignature $gestionnaireSignature,
+        protected readonly EntityManagerInterface $em,
         protected readonly NormalizerInterface $normalizer,
     ) {
     }
@@ -48,13 +53,40 @@ class DemarrerSignatureEndpoint
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $requeteSignature = $this->gestionnaireSignature->initierSignatureRequerant($dossier);
-        $bus->dispatch(new ActivationSignatureRequerant(id: $requeteSignature->getId(), contexte: $contexte));
+        $referenceBancaire = $this->enregistrerReferenceBancaire($dossier, $contexte);
 
+        $requeteSignature = $this->gestionnaireSignature->initierSignatureRequerant($dossier);
+        $requeteSignature->setReferenceBancaire($referenceBancaire);
+        $this->em->flush();
+
+        // La déclaration d'acceptation est générée par le worker, d'après la référence bancaire de la requête
+        $bus->dispatch(new ActivationSignatureRequerant(id: $requeteSignature->getId()));
 
         return new JsonResponse(
             $this->normalizer->normalize(DossierDto::depuisDossier($requeteSignature->getDossier()), 'json'),
             Response::HTTP_OK
         );
+    }
+
+    /**
+     * Met à jour la référence bancaire actuelle du dossier tant qu'aucune requête de signature n'y est rattachée ; sinon
+     * en crée une nouvelle, pour que chaque requête passée conserve les coordonnées avec lesquelles elle a été émise.
+     */
+    protected function enregistrerReferenceBancaire(Dossier $dossier, ContexteSignatureElectroniqueDto $contexte): ReferenceBancaire
+    {
+        $actuelle = $dossier->getReferenceBancaire();
+        $estDejaUtilisee = null !== $actuelle && $dossier->getRequetesSignatureRequerant()->exists(
+            fn (int $index, RequeteSignatureRequerant $requete) => $requete->getReferenceBancaire() === $actuelle
+        );
+
+        $referenceBancaire = $contexte->appliquer($estDejaUtilisee ? null : $actuelle);
+
+        $codeBanque = $referenceBancaire->getCodeBanque();
+        $referenceBancaire->setEtablissement(null !== $codeBanque ? $this->em->find(EtablissementBancaire::class, $codeBanque) : null);
+
+        $dossier->setReferenceBancaire($referenceBancaire);
+        $this->em->persist($referenceBancaire);
+
+        return $referenceBancaire;
     }
 }

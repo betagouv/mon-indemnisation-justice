@@ -65,21 +65,49 @@ class ReferenceBancaire
 
     public static function depuisIban(string $iban, string $titulaireDuCompte): self
     {
-        $reference = new self(TypeReferenceBancaire::IBAN, $titulaireDuCompte);
-        $reference->iban = self::normaliser($iban);
-
-        return $reference;
+        return new self(TypeReferenceBancaire::IBAN, $titulaireDuCompte)->definirIban($iban);
     }
 
     public static function depuisRib(string $codeBanque, string $codeGuichet, string $numeroCompte, string $cleRib, string $titulaireDuCompte): self
     {
-        $reference = new self(TypeReferenceBancaire::RIB, $titulaireDuCompte);
-        $reference->codeBanque = self::normaliser($codeBanque);
-        $reference->codeGuichet = self::normaliser($codeGuichet);
-        $reference->numeroCompte = self::normaliser($numeroCompte);
-        $reference->cleRib = self::normaliser($cleRib);
+        return new self(TypeReferenceBancaire::RIB, $titulaireDuCompte)->definirRib($codeBanque, $codeGuichet, $numeroCompte, $cleRib);
+    }
 
-        return $reference;
+    /**
+     * Passe la référence en IBAN : les champs du RIB sont effacés.
+     */
+    public function definirIban(string $iban): self
+    {
+        $this->type = TypeReferenceBancaire::IBAN;
+        $this->iban = self::normaliser($iban);
+        $this->codeBanque = $this->codeGuichet = $this->numeroCompte = $this->cleRib = null;
+
+        return $this;
+    }
+
+    /**
+     * Passe la référence en RIB : l'IBAN est effacé.
+     */
+    public function definirRib(string $codeBanque, string $codeGuichet, string $numeroCompte, string $cleRib): self
+    {
+        $this->type = TypeReferenceBancaire::RIB;
+        $this->codeBanque = self::normaliser($codeBanque);
+        $this->codeGuichet = self::normaliser($codeGuichet);
+        $this->numeroCompte = self::normaliser($numeroCompte);
+        $this->cleRib = self::normaliser($cleRib);
+        $this->iban = null;
+
+        return $this;
+    }
+
+    /**
+     * Coordonnées lisibles, telles qu'imprimées dans les documents : IBAN groupé par 4, ou les 4 champs du RIB.
+     */
+    public function getLibelle(): string
+    {
+        return TypeReferenceBancaire::IBAN === $this->type
+            ? 'IBAN '.trim(chunk_split($this->iban ?? '', 4, ' '))
+            : sprintf('RIB %s %s %s %s', $this->codeBanque, $this->codeGuichet, $this->numeroCompte, $this->cleRib);
     }
 
     /**

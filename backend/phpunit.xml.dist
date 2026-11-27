@@ -18,6 +18,8 @@
         <env name="SENTRY_DSN" value=""/>
         <env name="APP_ENV" value="test" force="true"/>
         <env name="CORS_ALLOW_ORIGIN" value="*" force="true"/>
+        <!-- Messages asynchrones conservés en mémoire : les tests vérifient leur émission sans RabbitMQ -->
+        <env name="MESSENGER_TRANSPORT_DSN" value="in-memory://" force="true"/>
         <!-- ###- sentry/sentry-symfony ### -->
     </php>
     <testsuites>

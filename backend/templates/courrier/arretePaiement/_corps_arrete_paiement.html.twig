@@ -44,7 +44,7 @@
     de {{ montantLitteral }} pour les causes sus-énoncées.</p>
 <p>
     <b><u>Article 2.</u></b> - Cette somme sera versée sur le compte bancaire de {{ dossier.requerantPersonne.nomComplet }}
-    ouvert à la banque ?BANQUE?.
+    ouvert à la banque {{ (dossier.referenceBancaire.nomBanque ?? null) ?: '?BANQUE?' }}.
 </p>
 <p>
     <b><u>Article 3.</u></b> - Le montant de cette indemnité sera imputé sur les crédits inscrits au programme
