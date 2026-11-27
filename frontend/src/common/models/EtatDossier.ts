@@ -51,12 +51,12 @@ export class EtatDossierType implements EtatInterface {
 
   public static OK_ACCEPTE = new EtatDossierType(
     "OK_ACCEPTE",
-    "Accepté - déclaration signée électroniquement",
+    "Accepté - déclaration signée",
   );
 
   public static OK_A_VERIFIER = new EtatDossierType(
     "OK_A_VERIFIER",
-    "Accepté - déclaration signée manuellement",
+    "Accepté - déclaration à vérifier",
   );
 
   public static OK_VERIFIE = new EtatDossierType(

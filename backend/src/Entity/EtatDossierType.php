@@ -162,7 +162,7 @@ enum EtatDossierType: string
     public function estSigne(): bool
     {
         return in_array($this, [
-            self::DOSSIER_OK_A_APPROUVER, self::DOSSIER_OK_A_VERIFIER, self::DOSSIER_OK_A_INDEMNISER, self::DOSSIER_OK_INDEMNISE, self::DOSSIER_OK_EN_ATTENTE_PAIEMENT, self::DOSSIER_KO_REJETE,
+            self::DOSSIER_OK_A_APPROUVER, self::DOSSIER_OK_A_VERIFIER, self::DOSSIER_OK_ACCEPTE, self::DOSSIER_OK_A_INDEMNISER, self::DOSSIER_OK_INDEMNISE, self::DOSSIER_OK_EN_ATTENTE_PAIEMENT, self::DOSSIER_KO_REJETE,
         ]);
     }
 

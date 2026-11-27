@@ -57,8 +57,8 @@ stateDiagram-v2
     CLOTURE: Clôturé
     OK_A_SIGNER: Accepté - à signer
     OK_A_APPROUVER: Accepté - en attente déclaration
-    OK_A_VERIFIER: Accepté - déclaration signée manuellement
-    OK_ACCEPTE: Accepté - déclaration signée électroniquement
+    OK_A_VERIFIER: Accepté - déclaration à vérifier
+    OK_ACCEPTE: Accepté - déclaration signée
     OK_VERIFIE: Accepté - arrêté à signer
     OK_A_INDEMNISER: Accepté - arrêté à transmettre à FIP3
     OK_EN_ATTENTE_PAIEMENT: Accepté - arrêté transmis à FIP3
