@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Vérifie que des fichiers SVG versionnés (ex : logos des établissements bancaires) ne contiennent rien d'exécutable ni
+# de référence externe : un SVG servi depuis notre domaine et ouvert directement exécuterait ses scripts dans notre
+# origine.
+#
+# Usage : bin/verifier-svg public/images/logos/etablissements_bancaires/*.svg
+#
+# Requiert `xmllint` (paquet `libxml2-utils` sous Debian/Ubuntu, présent par défaut sous macOS).
+# Code de sortie : 0 si tous les fichiers sont sains, 1 sinon.
+
+set -u
+
+# Éléments actifs, gestionnaires d'évènement `on*`, liens (`href`, `xlink:href`) hors ancre locale, `url(...)`
+# externes dans les attributs, `@import` / `url(http...)` dans les feuilles de style
+XPATH="//*[local-name()='script' or local-name()='foreignObject' or local-name()='iframe' or local-name()='embed' or local-name()='object' or local-name()='image' or local-name()='a']
+ | //@*[starts-with(local-name(),'on')]
+ | //@*[local-name()='href' and not(starts-with(normalize-space(.),'#'))]
+ | //@*[contains(translate(.,'URL','url'),'url(') and not(contains(translate(.,' ',''),'url(#'))]
+ | //*[local-name()='style'][contains(.,'@import') or contains(translate(.,'URL','url'),'url(http') or contains(translate(.,'URL','url'),'url(data') or contains(translate(.,'URL','url'),'url(//')]"
+
+if [ $# -eq 0 ]; then
+    echo "Usage : $0 fichier.svg [...]" >&2
+    exit 2
+fi
+
+erreurs=0
+
+for fichier in "$@"; do
+    problemes=()
+
+    if ! xmllint --noout --nonet "$fichier" 2>/dev/null; then
+        problemes+=("XML invalide")
+    else
+        racine=$(xmllint --nonet --xpath "local-name(/*)" "$fichier" 2>/dev/null)
+        [ "$racine" = "svg" ] || problemes+=("racine <$racine> au lieu de <svg>")
+
+        # DOCTYPE et entités (déclarations `<!ENTITY`) : rien à faire dans un logo, et vecteur d'attaques XML
+        grep -qiE '<!DOCTYPE|<!ENTITY' "$fichier" && problemes+=("DOCTYPE ou entité")
+        grep -qiE 'javascript:' "$fichier" && problemes+=("javascript:")
+
+        trouves=$(xmllint --nonet --xpath "$XPATH" "$fichier" 2>/dev/null)
+        [ -n "$trouves" ] && problemes+=("$(echo "$trouves" | tr '\n' ' ' | cut -c1-200)")
+    fi
+
+    if [ ${#problemes[@]} -gt 0 ]; then
+        erreurs=$((erreurs + 1))
+        printf '✗ %s : %s\n' "$fichier" "$(IFS='; '; echo "${problemes[*]}")"
+    fi
+done
+
+if [ $erreurs -gt 0 ]; then
+    echo "$erreurs fichier(s) SVG non conforme(s) sur $#" >&2
+    exit 1
+fi
+
+echo "$# fichier(s) SVG conforme(s)"

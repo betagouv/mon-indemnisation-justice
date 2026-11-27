@@ -12,7 +12,11 @@ RUN echo "export LC_ALL=fr_FR.UTF-8" >> /root/.bashrc
 RUN apt-get update -y && \
     apt-get upgrade -y --fix-missing && \
     apt-get install -y vim wget locales && \
-    apt-get install -y libgtk-3-0 libasound2 libx11-xcb1 # Librairies requises pour que Firefox (installé par puppeteer) fonctionne
+    # Librairies requises pour que Firefox (installé par puppeteer) fonctionne \
+    apt-get install -y libgtk-3-0 libasound2 libx11-xcb1 && \
+    # Librairies pour vérifier via `xmllint` la présence de scripts dans les fichiers SVG \
+    apt-get install -y libxml2-utils && \
+    rm -rf /var/lib/apt/lists/*
 
 # Configurer la langue Française 🇫🇷
 RUN sed -i '/fr_FR.UTF-8/s/^#//g' /etc/locale.gen

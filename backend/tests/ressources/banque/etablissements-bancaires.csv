@@ -1,0 +1,5 @@
+code_banque,nom,logo_url,logo
+99901,Banque de test,,
+99902,"Banque, avec virgule",https://exemple.fr/logo.svg,0123456789abcdef.svg
+code-invalide,Ligne ignorée,,
+

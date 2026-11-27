@@ -98,6 +98,13 @@ class Dossier
     #[ORM\OrderBy(['dateCreation' => \SortDirection::Ascending])]
     protected Collection $requetesSignatureRequerant;
 
+    /**
+     * Coordonnées bancaires actuelles du compte sur lequel verser l'indemnisation.
+     */
+    #[ORM\ManyToOne(targetEntity: ReferenceBancaire::class)]
+    #[ORM\JoinColumn(name: 'reference_bancaire_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    protected ?ReferenceBancaire $referenceBancaire = null;
+
     public function __construct()
     {
         $this->brisPorte = new BrisPorte();
@@ -567,6 +574,18 @@ class Dossier
     public function getRequetesSignatureRequerant(): Collection
     {
         return $this->requetesSignatureRequerant;
+    }
+
+    public function getReferenceBancaire(): ?ReferenceBancaire
+    {
+        return $this->referenceBancaire;
+    }
+
+    public function setReferenceBancaire(?ReferenceBancaire $referenceBancaire): Dossier
+    {
+        $this->referenceBancaire = $referenceBancaire;
+
+        return $this;
     }
 
     /**
