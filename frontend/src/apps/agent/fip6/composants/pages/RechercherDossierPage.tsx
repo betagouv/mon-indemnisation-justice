@@ -1,6 +1,11 @@
 import { ListeDossiers } from "@fip6/composants/dossiers/ListeDossiers.tsx";
 import { Loader } from "@common/composants/Loader.tsx";
-import { Agent, DossierApercu, EtatDossierType, Redacteur } from "@common/models";
+import {
+  Agent,
+  DossierApercu,
+  EtatDossierType,
+  Redacteur,
+} from "@common/models";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -44,6 +49,7 @@ export const validerParametres = (
         EtatDossierType.EN_INSTRUCTION,
         EtatDossierType.OK_A_SIGNER,
         EtatDossierType.OK_A_APPROUVER,
+        EtatDossierType.OK_ACCEPTE,
         EtatDossierType.OK_A_VERIFIER,
         EtatDossierType.OK_VERIFIE,
         EtatDossierType.OK_A_INDEMNISER,
@@ -239,7 +245,9 @@ export const RechercherDossierPage = ({
                             redacteur.nom
                           ),
                         nativeInputProps: {
-                          onChange: async (e: React.ChangeEvent<HTMLInputElement>) => {
+                          onChange: async (
+                            e: React.ChangeEvent<HTMLInputElement>,
+                          ) => {
                             await naviguer(
                               construireLien({
                                 changement: {

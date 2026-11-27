@@ -15,8 +15,8 @@ import {
   envoyerPourIndemnisationBoutons,
 } from "@fip6/dossiers/components/consultation/action/EnvoyerPourIndemnisationActionModale.tsx";
 import {
+  EditerArretePaiementModale,
   genererArretePaiementBoutons,
-  GenererArretePaiementModale,
 } from "@fip6/dossiers/components/consultation/action/GenererArretePaiementAction.tsx";
 import {
   MarquerIndemniseActionModale,
@@ -133,7 +133,7 @@ export const DossierActions = ({
         agent={agent}
         onRevenu={onTermine}
       />
-      <GenererArretePaiementModale
+      <EditerArretePaiementModale
         dossier={dossier}
         agent={agent}
         onGenere={onSigneArrete}

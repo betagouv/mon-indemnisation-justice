@@ -441,12 +441,30 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
+    public static function etatPrecedent(EtatDossierType $etat): ?EtatDossierType
+    {
+        return match ($etat) {
+            EtatDossierType::DOSSIER_CLOTURE, EtatDossierType::DOSSIER_EN_INSTRUCTION => EtatDossierType::DOSSIER_A_INSTRUIRE,
+            EtatDossierType::DOSSIER_A_ATTRIBUER => EtatDossierType::DOSSIER_A_FINALISER,
+            EtatDossierType::DOSSIER_A_INSTRUIRE => EtatDossierType::DOSSIER_A_ATTRIBUER,
+            EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER => EtatDossierType::DOSSIER_EN_INSTRUCTION,
+            EtatDossierType::DOSSIER_OK_A_APPROUVER => EtatDossierType::DOSSIER_OK_A_SIGNER,
+            EtatDossierType::DOSSIER_OK_ACCEPTE, EtatDossierType::DOSSIER_OK_A_VERIFIER => EtatDossierType::DOSSIER_OK_A_APPROUVER,
+            EtatDossierType::DOSSIER_OK_VERIFIE => EtatDossierType::DOSSIER_OK_ACCEPTE,
+            EtatDossierType::DOSSIER_OK_A_INDEMNISER => EtatDossierType::DOSSIER_OK_VERIFIE,
+            EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT => EtatDossierType::DOSSIER_OK_A_INDEMNISER,
+            EtatDossierType::DOSSIER_OK_INDEMNISE => EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT,
+            EtatDossierType::DOSSIER_KO_REJETE => EtatDossierType::DOSSIER_KO_A_SIGNER,
+            default => null,
+        };
+    }
+
     /**
      * @return EtatDossierType[]
      */
     public static function historiqueTheorique(EtatDossierType $etat): array
     {
-        $etatPrecedent = $etat->etatPrecedent();
+        $etatPrecedent = self::etatPrecedent($etat);
 
         if ($etatPrecedent) {
             return array_merge(self::historiqueTheorique($etatPrecedent), [$etat]);
@@ -509,9 +527,10 @@ class DossierFixture extends Fixture implements DependentFixtureInterface
                         ? $dossier->getDateCreation()
                         : (clone($historique[count($historique) - 1])->getDate())->modify(sprintf('+ %d minutes', random_int(10, 3 * 24 * 60)))
                 )
-                ->setRequerant(in_array($etat, [EtatDossierType::DOSSIER_A_FINALISER, EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_OK_A_VERIFIER]) ? $dossier->getUsager() : null)
+                ->setRequerant($etat->estActionRequerant() ? $dossier->getUsager() : null)
                 ->setAgent($this->getAgentPourEtat($dossier, $etat));
         }
+
 
         $dossier->setHistoriqueEtats($historique);
 

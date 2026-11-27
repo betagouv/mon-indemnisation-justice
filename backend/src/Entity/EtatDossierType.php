@@ -32,11 +32,16 @@ enum EtatDossierType: string
     // Le rédacteur a approuvé l'indemnisation
     case DOSSIER_OK_A_SIGNER = 'OK_A_SIGNER';
 
-    // Le validateur a signé le courrier d'indemnisation, c'est au tour du requérant d'approuver
+    // Le validateur a signé le courrier d'indemnisation, c'est au tour du requérant d'accepter l'indemnisation
+    // TODO renommer en `OK_A_ACCEPTER`
     case DOSSIER_OK_A_APPROUVER = 'OK_A_APPROUVER';
+
+    // La déclaration d'acceptation est signée électroniquement par le requérant, le rédacteur peut éditer l'arrêté de paiement
+    case DOSSIER_OK_ACCEPTE = 'OK_ACCEPTE';
 
     // Le requérant a accepté la proposition d'indemnisation, le rédacteur doit vérifier la déclaration d'acceptation
     case DOSSIER_OK_A_VERIFIER = 'OK_A_VERIFIER';
+
 
     // La déclaration d'acceptation est validée par le rédacteur, l'agent validateur doit générer l'arrêté de paiement
     case DOSSIER_OK_VERIFIE = 'OK_VERIFIE';
@@ -84,40 +89,9 @@ enum EtatDossierType: string
         };
     }
 
-    public function etatPrecedent(): ?EtatDossierType
+    public function estActionRequerant(): bool
     {
-        return match ($this) {
-            self::DOSSIER_CLOTURE, self::DOSSIER_EN_INSTRUCTION => self::DOSSIER_A_INSTRUIRE,
-            self::DOSSIER_A_ATTRIBUER => self::DOSSIER_A_FINALISER,
-            self::DOSSIER_A_INSTRUIRE => self::DOSSIER_A_ATTRIBUER,
-            self::DOSSIER_OK_A_SIGNER, self::DOSSIER_KO_A_SIGNER => self::DOSSIER_EN_INSTRUCTION,
-            self::DOSSIER_OK_A_APPROUVER => self::DOSSIER_OK_A_SIGNER,
-            self::DOSSIER_OK_A_VERIFIER => self::DOSSIER_OK_A_APPROUVER,
-            self::DOSSIER_OK_VERIFIE => self::DOSSIER_OK_A_VERIFIER,
-            self::DOSSIER_OK_A_INDEMNISER => self::DOSSIER_OK_VERIFIE,
-            self::DOSSIER_OK_EN_ATTENTE_PAIEMENT => self::DOSSIER_OK_A_INDEMNISER,
-            self::DOSSIER_OK_INDEMNISE => self::DOSSIER_OK_EN_ATTENTE_PAIEMENT,
-            self::DOSSIER_KO_REJETE => self::DOSSIER_KO_A_SIGNER,
-            default => null,
-        };
-    }
-
-    public function etatSuivant(array $contexte = []): ?EtatDossierType
-    {
-        return match ($this) {
-            self::DOSSIER_A_FINALISER => self::DOSSIER_A_ATTRIBUER,
-            self::DOSSIER_A_ATTRIBUER => self::DOSSIER_A_INSTRUIRE,
-            self::DOSSIER_A_INSTRUIRE => self::DOSSIER_EN_INSTRUCTION,
-            self::DOSSIER_EN_INSTRUCTION => isset($contexte['montantIndemnisation']) ? self::DOSSIER_OK_A_SIGNER : self::DOSSIER_KO_A_SIGNER,
-            self::DOSSIER_OK_A_SIGNER => self::DOSSIER_OK_A_APPROUVER,
-            self::DOSSIER_OK_A_APPROUVER => self::DOSSIER_OK_A_VERIFIER,
-            self::DOSSIER_OK_A_VERIFIER => self::DOSSIER_OK_VERIFIE,
-            self::DOSSIER_OK_VERIFIE => self::DOSSIER_OK_A_INDEMNISER,
-            self::DOSSIER_OK_A_INDEMNISER => self::DOSSIER_OK_EN_ATTENTE_PAIEMENT,
-            self::DOSSIER_OK_EN_ATTENTE_PAIEMENT => self::DOSSIER_OK_INDEMNISE,
-            self::DOSSIER_KO_A_SIGNER => self::DOSSIER_KO_REJETE,
-            default => null,
-        };
+        return in_array($this, [EtatDossierType::DOSSIER_A_FINALISER, EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_OK_A_VERIFIER]);
     }
 
     /**
@@ -188,7 +162,7 @@ enum EtatDossierType: string
     public function estSigne(): bool
     {
         return in_array($this, [
-            self::DOSSIER_OK_A_APPROUVER, self::DOSSIER_OK_A_VERIFIER, self::DOSSIER_OK_A_INDEMNISER, self::DOSSIER_OK_INDEMNISE, self::DOSSIER_OK_EN_ATTENTE_PAIEMENT, self::DOSSIER_KO_REJETE,
+            self::DOSSIER_OK_A_APPROUVER, self::DOSSIER_OK_A_VERIFIER, self::DOSSIER_OK_ACCEPTE, self::DOSSIER_OK_A_INDEMNISER, self::DOSSIER_OK_INDEMNISE, self::DOSSIER_OK_EN_ATTENTE_PAIEMENT, self::DOSSIER_KO_REJETE,
         ]);
     }
 

@@ -22,7 +22,7 @@ enum EtatDossierUsager: string
             EtatDossierType::DOSSIER_A_ATTRIBUER, EtatDossierType::DOSSIER_A_INSTRUIRE => self::DEPOSE,
             EtatDossierType::DOSSIER_EN_INSTRUCTION, EtatDossierType::DOSSIER_OK_A_SIGNER, EtatDossierType::DOSSIER_KO_A_SIGNER => self::EN_INSTRUCTION,
             EtatDossierType::DOSSIER_OK_A_APPROUVER => self::OK_A_ACCEPTER,
-            EtatDossierType::DOSSIER_OK_A_VERIFIER, EtatDossierType::DOSSIER_OK_VERIFIE, EtatDossierType::DOSSIER_OK_A_INDEMNISER, EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT => self::OK_A_INDEMNISER,
+            EtatDossierType::DOSSIER_OK_A_VERIFIER, EtatDossierType::DOSSIER_OK_ACCEPTE, EtatDossierType::DOSSIER_OK_A_INDEMNISER, EtatDossierType::DOSSIER_OK_EN_ATTENTE_PAIEMENT => self::OK_A_INDEMNISER,
             EtatDossierType::DOSSIER_OK_INDEMNISE => self::OK_INDEMNISE,
             EtatDossierType::DOSSIER_KO_REJETE => self::KO_REJETE,
             EtatDossierType::DOSSIER_CLOTURE => self::CLOTURE,

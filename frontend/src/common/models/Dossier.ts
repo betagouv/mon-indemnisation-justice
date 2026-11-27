@@ -108,8 +108,10 @@ export abstract class BaseDossier {
     return [EtatDossierType.OK_A_APPROUVER].includes(this.etat.etat);
   }
 
-  get estAVerifier(): boolean {
-    return [EtatDossierType.OK_A_VERIFIER].includes(this.etat.etat);
+  get enAttenteEditionArrete(): boolean {
+    return [EtatDossierType.OK_ACCEPTE, EtatDossierType.OK_A_VERIFIER].includes(
+      this.etat.etat,
+    );
   }
 
   get enAttentePaiement(): boolean {

@@ -123,8 +123,7 @@ class GestionnaireSignature
             $requeteSignature = $evenementSignature->requeteSignatureRequerant;
             $dossier = $requeteSignature->getDossier();
 
-            // Signature expirée chez le prestataire : on la date de l'évènement, sauf si elle a été signée entre-temps.
-            // La livraison étant « au moins une fois », une requête déjà expirée n'est pas modifiée
+            // Signature expirée chez le prestataire (délai de 30 jours)
             if (EvenementSignatureType::EXPIREE === $evenementSignature->type) {
                 if (!$requeteSignature->estSignee() && !$requeteSignature->estExpiree()) {
                     $requeteSignature->setDateExpiration($evenementSignature->date);
@@ -135,32 +134,35 @@ class GestionnaireSignature
                 return $requeteSignature;
             }
 
-            // TODO vérifier si pas déjà signée
-            if (EvenementSignatureType::SIGNEE === $evenementSignature->type) {
-                $requeteSignature->setSignee();
-                $type = DocumentType::TYPE_COURRIER_REQUERANT;
+            if (!$requeteSignature->estSignee()) {
+                if (EvenementSignatureType::SIGNEE === $evenementSignature->type) {
+                    $type = DocumentType::TYPE_COURRIER_REQUERANT;
 
-                $this->documentManager->ajouterDocument(
-                    $dossier,
-                    $dossier->getOrCreateDocument($type)
-                        ->setOriginalFilename($type->nommerFichier($dossier))
-                        ->setType($type)
-                        ->setMime('application/pdf')
-                        ->setAjoutRequerant(true),
-                    $this->prestataireSignatureRequerant->telechargerDocumentSigne($requeteSignature),
-                    'pdf',
-                );
+                    $this->documentManager->ajouterDocument(
+                        $dossier,
+                        $dossier->getOrCreateDocument($type)
+                            ->setOriginalFilename($type->nommerFichier($dossier))
+                            ->setType($type)
+                            ->setMime('application/pdf')
+                            ->setAjoutRequerant(true),
+                        $this->prestataireSignatureRequerant->telechargerDocumentSigne($requeteSignature),
+                        'pdf',
+                    );
 
-                $requeteSignature->setSignee();
-                $this->em->persist($requeteSignature);
+                    $requeteSignature->setSignee();
+                    $this->em->persist($requeteSignature);
+                    $this->em->flush();
 
-                $dossier = $this->dossierManager->avancer($dossier);
-                $this->em->persist($dossier);
-                $this->em->flush();
+                    if (EtatDossierType::DOSSIER_OK_A_APPROUVER === $dossier->getEtatDossier()->getEtat()) {
+                        $this->dossierManager->avancer($dossier, contexte: [
+                            'signature' => $requeteSignature->getId(),
+                        ]);
+                    }
 
-                return $requeteSignature;
+                    return $requeteSignature;
+                }
             }
-            // TODO gérer en erreur
+
         }
 
         return null;

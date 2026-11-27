@@ -17,7 +17,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 class GenererArretePaiementEndpointTest extends APIEndpointTestCase
 {
     /**
-     * ETQ agent rédacteur, je dois pouvoir générer l'arrêté d'un dossier à l'état `OK_A_VERIFIER`.
+     * ETQ agent rédacteur, je dois pouvoir générer l'arrêté d'un dossier dont l'indemnisation vient d'être acceptée par
+     * le requérant.
      */
     public function testGenerationOk(): void
     {

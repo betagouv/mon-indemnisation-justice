@@ -51,6 +51,9 @@ a:not([href])[role="button"] {
     /* OK_A_APPROUVER, = 'green-bourgeon' */
     --var-couleur-pp-ok-a-approuver: #447049;
     --var-couleur-ap-ok-a-approuver: #c9fcac;
+    /* OK_ACCEPTE, = 'green-bourgeon' */
+    --var-couleur-pp-ok-accepte: #447049;
+    --var-couleur-ap-ok-accepte: #c9fcac;
     /* OK_A_VERIFIER, = 'green-bourgeon' */
     --var-couleur-pp-ok-a-verifier: #447049;
     --var-couleur-ap-ok-a-verifier: #c9fcac;
@@ -130,6 +133,10 @@ a:not([href]) {
         border-left-color: var(--var-couleur-pp-ok-a-approuver);
     }
 
+    &.fr-dossier-etat--ok-accepte {
+        border-left-color: var(--var-couleur-pp-ok-accepte);
+    }
+
     &.fr-dossier-etat--ok-a-verifier {
         border-left-color: var(--var-couleur-pp-ok-a-verifier);
     }
@@ -193,6 +200,11 @@ a:not([href]) {
     &.fr-badge--dossier-etat--ok-a-approuver {
         color: var(--var-couleur-pp-ok-a-approuver);
         background-color: var(--var-couleur-ap-ok-a-approuver);
+    }
+
+    &.fr-badge--dossier-etat--ok-accepte {
+        color: var(--var-couleur-pp-ok-accepte);
+        background-color: var(--var-couleur-ap-ok-accepte);
     }
 
     &.fr-badge--dossier-etat--ok-a-verifier {
