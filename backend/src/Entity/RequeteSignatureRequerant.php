@@ -20,7 +20,7 @@ class RequeteSignatureRequerant
     #[ORM\Column(type: 'string', length: 255)]
     protected string $identifiantExterieur;
 
-    #[ORM\OneToOne(targetEntity: Dossier::class, inversedBy: 'requeteSignatureRequerant', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Dossier::class, inversedBy: 'requetesSignatureRequerant')]
     protected Dossier $dossier;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
@@ -141,6 +141,14 @@ class RequeteSignatureRequerant
     public function estAnnulee(): bool
     {
         return null !== $this->dateAnnulation;
+    }
+
+    /**
+     * Une requête fermée (expirée ou annulée) ne peut plus être signée : elle peut être remplacée par une nouvelle.
+     */
+    public function estFermee(): bool
+    {
+        return $this->estExpiree() || $this->estAnnulee();
     }
 
     public function getDateExpiration(): ?\DateTimeImmutable

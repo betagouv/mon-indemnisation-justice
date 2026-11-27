@@ -109,7 +109,7 @@ class ImprimerCourrierCommand extends Command
 
     /**
      * La déclaration d'acceptation peut être réimprimée tant que le requérant ne l'a pas signée, et qu'aucune requête
-     * de signature n'a été initiée (le document envoyé au prestataire de signature ne correspondrait plus).
+     * de signature n'est en cours (le document envoyé au prestataire de signature ne correspondrait plus).
      */
     protected function traiterAcceptation(Dossier $dossier): Document
     {
@@ -117,9 +117,9 @@ class ImprimerCourrierCommand extends Command
             throw new \DomainException("Le dossier {$dossier->getReference()} n'est pas en attente d'acceptation par le requérant");
         }
 
-        // TODO vérifier que la signature est active et non expirée
-        if (null !== $dossier->getRequeteSignatureRequerant()) {
-            throw new \DomainException("Une requête de signature a déjà été initiée pour le dossier {$dossier->getReference()}");
+        // Réimpression possible tant qu'aucune signature n'est en cours (pas de requête, ou requête fermée)
+        if (!$dossier->peutDemarrerSignature()) {
+            throw new \DomainException("Une requête de signature est en cours pour le dossier {$dossier->getReference()}");
         }
 
         return $this->reimprimer(

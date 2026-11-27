@@ -1,6 +1,7 @@
 import { AfficherPieceJointe } from "@/apps/requerant/dossier/components/PieceJointe/AfficherPieceJointe.tsx";
 import { Dossier } from "@/apps/requerant/models";
 import { Loader } from "@/common/composants/Loader.tsx";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import React from "react";
 
 /**
@@ -10,9 +11,12 @@ import React from "react";
  * - `en-preparation` : signature électronique créée, mais pas encore activée du côté du prestataire
  * - `a-signer` : signature électronique active et à signer par le requérant
  * - `signee` : déclaration signée, manuellement ou électroniquement
+ * - `expiree` : signature électronique expirée, qui peut être recommencée
+ *
+ * Une signature annulée (par un agent) est ignorée : pour le requérant, tout se passe comme s'il n'y en avait jamais eu.
  */
 export type EtatDeclarationAcceptation =
-  "absente" | "en-preparation" | "a-signer" | "signee";
+  "absente" | "en-preparation" | "a-signer" | "signee" | "expiree";
 
 export function etatDeclarationAcceptation(
   dossier: Dossier,
@@ -29,15 +33,24 @@ export function etatDeclarationAcceptation(
   // Signature électronique : la requête est créée à la fin du parcours de la modale « Accepter l'indemnisation »
   const requeteSignature = dossier.requeteSignature;
 
-  if (!requeteSignature) {
+  // Une signature annulée l'a été par un agent : le requérant repart de zéro
+  if (!requeteSignature || requeteSignature.estAnnulee) {
     return "absente";
+  }
+
+  if (requeteSignature.estSignee) {
+    return "signee";
+  }
+
+  if (requeteSignature.estExpiree) {
+    return "expiree";
   }
 
   if (!requeteSignature.estActive) {
     return "en-preparation";
   }
 
-  return requeteSignature.estSignee ? "signee" : "a-signer";
+  return "a-signer";
 }
 
 /**
@@ -45,6 +58,12 @@ export function etatDeclarationAcceptation(
  */
 export const estSignatureEnCours = (etat: EtatDeclarationAcceptation) =>
   etat === "en-preparation" || etat === "a-signer";
+
+/**
+ * Le requérant doit consulter l'onglet de la déclaration : signature en cours, ou expirée et à recommencer.
+ */
+export const estDeclarationAConsulter = (etat: EtatDeclarationAcceptation) =>
+  estSignatureEnCours(etat) || etat === "expiree";
 
 export const DeclarationAcceptation = ({
   dossier,
@@ -77,10 +96,23 @@ export const DeclarationAcceptation = ({
       );
     }
 
+    case "expiree":
+      return <SignatureExpiree />;
+
     case "absente":
       return null;
   }
 };
+
+const SignatureExpiree = () => (
+  <Alert
+    className="fr-my-4w"
+    severity="warning"
+    title="Signature expirée"
+    description="Le délai pour signer la déclaration d'acceptation est dépassé. Pour accepter l'indemnisation, cliquez à nouveau sur « Accepter la proposition »."
+    closable={false}
+  />
+);
 
 const DocumentEnPreparation = ({ message }: { message: string }) => (
   <div className="fr-my-4w" style={{ textAlign: "center" }}>

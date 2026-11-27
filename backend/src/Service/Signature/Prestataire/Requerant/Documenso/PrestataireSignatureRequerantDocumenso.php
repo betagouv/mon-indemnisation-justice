@@ -54,8 +54,8 @@ class PrestataireSignatureRequerantDocumenso implements PrestataireSignatureRequ
 
         $this->documensoClient->distribuerEnveloppe($idEnveloppe);
 
-        return new RequeteSignatureRequerant()
-            ->setDossier($dossier)
+        // Compléter la requête initiée (et déjà rattachée au dossier comme requête actuelle) plutôt qu'en créer une autre
+        return $requeteSignature
             ->setIdentifiantExterieur($idEnveloppe)
             // TODO générer l'URL de signature
             ->activer();

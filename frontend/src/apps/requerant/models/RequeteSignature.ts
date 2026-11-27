@@ -33,4 +33,11 @@ export class RequeteSignature {
   public get estExpiree(): boolean {
     return !!this.dateExpiration && this.dateExpiration <= new Date();
   }
+
+  /**
+   * Requête fermée (expirée ou annulée) : elle ne peut plus être signée, mais une nouvelle peut la remplacer.
+   */
+  public get estFermee(): boolean {
+    return this.estExpiree || this.estAnnulee;
+  }
 }

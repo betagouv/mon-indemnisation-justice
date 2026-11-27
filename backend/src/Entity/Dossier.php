@@ -81,8 +81,22 @@ class Dossier
     #[ORM\Column(type: Types::FLOAT, precision: 10, scale: 2, nullable: true)]
     private ?float $propositionIndemnisation = null;
 
-    #[ORM\OneToOne(targetEntity: RequeteSignatureRequerant::class, mappedBy: 'dossier', cascade: ['persist', 'remove'])]
+    /**
+     * Requête de signature actuelle, la plus récente de {@see $requetesSignatureRequerant}.
+     */
+    #[ORM\OneToOne(targetEntity: RequeteSignatureRequerant::class, inversedBy: null)]
+    #[ORM\JoinColumn(name: 'requete_signature_actuelle_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     protected ?RequeteSignatureRequerant $requeteSignatureRequerant = null;
+
+    /**
+     * Historique des requêtes de signature : une nouvelle requête peut remplacer l'actuelle une fois celle-ci fermée
+     * (expirée ou annulée).
+     *
+     * @var Collection<RequeteSignatureRequerant>
+     */
+    #[ORM\OneToMany(targetEntity: RequeteSignatureRequerant::class, mappedBy: 'dossier', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['dateCreation' => \SortDirection::Ascending])]
+    protected Collection $requetesSignatureRequerant;
 
     public function __construct()
     {
@@ -90,6 +104,7 @@ class Dossier
         $this->dateCreation = new \DateTimeImmutable();
         $this->piecesJointes = new ArrayCollection([]);
         $this->historiqueEtats = new ArrayCollection([]);
+        $this->requetesSignatureRequerant = new ArrayCollection([]);
     }
 
     #[ORM\PrePersist]
@@ -530,11 +545,36 @@ class Dossier
         return $this->requeteSignatureRequerant;
     }
 
-    public function setRequeteSignatureRequerant(?RequeteSignatureRequerant $requeteSignatureRequerant): Dossier
+    /**
+     * Rattache la requête de signature au dossier, l'ajoute à l'historique et en fait la requête actuelle.
+     */
+    public function ajouterRequeteSignatureRequerant(RequeteSignatureRequerant $requeteSignatureRequerant): Dossier
     {
+        $requeteSignatureRequerant->setDossier($this);
+
+        if (!$this->requetesSignatureRequerant->contains($requeteSignatureRequerant)) {
+            $this->requetesSignatureRequerant->add($requeteSignatureRequerant);
+        }
+
         $this->requeteSignatureRequerant = $requeteSignatureRequerant;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<RequeteSignatureRequerant>
+     */
+    public function getRequetesSignatureRequerant(): Collection
+    {
+        return $this->requetesSignatureRequerant;
+    }
+
+    /**
+     * Une (nouvelle) signature peut être démarrée s'il n'y en a pas encore, ou si l'actuelle est fermée.
+     */
+    public function peutDemarrerSignature(): bool
+    {
+        return null === $this->requeteSignatureRequerant || $this->requeteSignatureRequerant->estFermee();
     }
 
     public function getType(): DossierType

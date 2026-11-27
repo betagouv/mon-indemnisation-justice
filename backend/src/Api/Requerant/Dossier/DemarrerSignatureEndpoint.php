@@ -41,7 +41,12 @@ class DemarrerSignatureEndpoint
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // TODO vérifier que le dossier n'a pas déjà une signature active
+        // Une nouvelle signature ne peut remplacer l'actuelle qu'une fois celle-ci fermée (expirée ou annulée)
+        if (!$dossier->peutDemarrerSignature()) {
+            return new JsonResponse([
+                'erreur' => 'Une signature est déjà en cours pour ce dossier',
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
         $requeteSignature = $this->gestionnaireSignature->initierSignatureRequerant($dossier);
         $bus->dispatch(new ActivationSignatureRequerant(id: $requeteSignature->getId(), contexte: $contexte));

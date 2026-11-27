@@ -277,7 +277,9 @@ export const SignatureElectroniqueModale = ({
         buttons={[
           {
             children: "Accepter la proposition",
-            disabled: !!dossier.requeteSignature,
+            // Une nouvelle signature peut remplacer l'actuelle une fois celle-ci fermée (expirée ou annulée)
+            disabled:
+              !!dossier.requeteSignature && !dossier.requeteSignature.estFermee,
             onClick: () => _modale.open(),
           },
         ]}
